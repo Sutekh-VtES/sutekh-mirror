@@ -272,6 +272,9 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         if sCardSet:
             oCardSet = self._dCache[sCardSet]['Card Set']
             sAuthor = oCardSet.author
+            if not sAuthor:
+                # Handle None sensibly
+                sAuthor = ''
             aIcons = []
             if bGetIcons:
                 aIcons = [None]
@@ -289,6 +292,9 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         if sCardSet:
             oCardSet = self._dCache[sCardSet]['Card Set']
             sDesc = oCardSet.comment
+            if not sDesc:
+                # Handle None sensibly
+                sDesc = ''
             aIcons = []
             if bGetIcons:
                 aIcons = [None]

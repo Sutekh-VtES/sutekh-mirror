@@ -77,7 +77,7 @@ class ClanDisciplineStats(SutekhPlugin):
         for oChild in self._oStatsVbox.get_children():
             self._oStatsVbox.remove(oChild)
 
-        oView = StatsView(self.model.bHideIllegal)
+        oView = StatsView(self.model.hideillegal)
 
         # top align, using viewport to scroll
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))

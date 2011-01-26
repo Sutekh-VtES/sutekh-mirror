@@ -13,7 +13,8 @@ from sqlobject import SQLObjectNotFound
 import string
 # pylint: enable-msg=W0402
 from sutekh.core.SutekhObjects import IPhysicalCard, IExpansion, IAbstractCard
-from sutekh.core.Filters import CardNameFilter
+from sutekh.core.Filters import CardNameFilter, FilterAndBox, \
+        make_illegal_filter
 
 
 # pylint: disable-msg=R0922
@@ -164,7 +165,8 @@ def best_guess_filter(sName):
     sFilterString = sFilterString.replace(' ', '%')
     # Add % on outside
     sFilterString = '%' + sFilterString + '%'
-    return CardNameFilter(sFilterString)
+    oLegalFilter = make_illegal_filter()
+    return FilterAndBox([CardNameFilter(sFilterString), oLegalFilter])
 
 
 DEFAULT_LOOKUP = SimpleLookup()

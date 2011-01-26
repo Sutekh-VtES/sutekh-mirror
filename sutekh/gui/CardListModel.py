@@ -9,9 +9,8 @@
 
 import gtk
 import gobject
-from sqlobject import SQLObjectNotFound
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
-        MultiKeywordFilter, CardTextFilter, FilterNot, CachedFilter
+        make_illegal_filter, CachedFilter
 from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
         PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
@@ -86,16 +85,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self._cCardClass = PhysicalCard  # card class to use
         # Filter to exclude illegal cards. Needs to be defined after
         # we esablish database connections, et al.
-        # NB - Remove exception after Sutekh 0.8 is out
-        try:
-            # We use MultiKeywordFilter to work around a performance
-            # oddity of sqlite, where IN(a, b) outperforms a == b
-            # for large sets
-            self.oLegalFilter = CachedFilter(FilterNot(MultiKeywordFilter(
-                ['not for legal play'])))
-        except SQLObjectNotFound:
-            self.oLegalFilter = CachedFilter(FilterNot(CardTextFilter(
-                    'Added to the V:EKN banned list')))
+        self.oLegalFilter = CachedFilter(make_illegal_filter())
         self._bApplyFilter = False  # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
@@ -108,7 +98,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.oEmptyIter = None
         self.oIconManager = None
         self.bUseIcons = True
-        self.bHideIllegal = True
+        self._bHideIllegal = True
         self._oController = None
 
     # pylint: disable-msg=W0212, C0103
@@ -120,6 +110,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             fset=lambda self, x: setattr(self, '_cGroupBy', x))
     basefilter = property(fget=lambda self: self._oBaseFilter,
             fset=lambda self, x: setattr(self, '_oBaseFilter', x))
+    hideillegal = property(fget=lambda self: self._bHideIllegal,
+            fset=lambda self, x: setattr(self, '_bHideIllegal', x))
     applyfilter = property(fget=lambda self: self._bApplyFilter,
             fset=lambda self, x: setattr(self, '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
@@ -370,9 +362,9 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         """Get the current applied filter.
 
            This is also responsible for handling the not legal filter case."""
-        if self.applyfilter and self.bHideIllegal and self.selectfilter:
+        if self.applyfilter and self._bHideIllegal and self.selectfilter:
             return FilterAndBox([self.selectfilter, self.oLegalFilter])
-        elif self.bHideIllegal:
+        elif self._bHideIllegal:
             # either not self.apply, or self.selectfilter is None
             return self.oLegalFilter
         elif self.applyfilter:
@@ -554,8 +546,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     def _change_illegal_mode(self, bMode):
         """Set whether illegal cards should be shown."""
-        if self.bHideIllegal != bMode:
-            self.bHideIllegal = bMode
+        if self._bHideIllegal != bMode:
+            self._bHideIllegal = bMode
             return True
         return False
 

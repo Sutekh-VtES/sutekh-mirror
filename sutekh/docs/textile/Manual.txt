@@ -560,8 +560,8 @@ this happens, Sutekh will prompt you for the correct card.
 
 The card lookup window displays two lists: the list of all White Wolf cards
 and the list of unknown cards. Below the unknown card list are options
-to specify a "filter":#filters, to apply or unapply the filter or to 
-"search":#search the card list.
+to specify a "filter":#filters, to apply or unapply the filter, to show or
+hide cards not legal for tournament play or to "search":#search the card list.
 
 The unknown card list has two columns -- the name of the unknown card and
 the currently selected replacement from the White Wolf card list -- and three

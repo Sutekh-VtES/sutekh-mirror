@@ -701,7 +701,9 @@ class FilterBoxModelStore(gtk.TreeStore):
         sText = oFilterItem.aCurValues[0]
         if not sText:
             sText = self.NO_VALUE
-        self.set(oChild, 0, gobject.markup_escape_text(sText), 1, None)
+        else:
+            sText = gobject.markup_escape_text(sText)
+        self.set(oChild, 0, sText, 1, None)
         return self.get_path(oChild)
 
     def get_drop_iter(self, tRowInfo):
