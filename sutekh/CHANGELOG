@@ -1,3 +1,21 @@
+26 Jan 2011
+  * Fix handling of author or Description is None when sorting on extra columns
+
+24 Jan 2011
+  * Add hide/show illegal cards button to gui card lookup
+  * Make best guess filter only look at legal cards
+
+10 Jan 2011
+  * Escape card set name properly in snapshot dialog
+  * Fix some escaping issues in filter dialog
+  * Escape card set name in plugins
+
+30 Dec 2010
+  * Fix corner case which led to missed crypt keywords
+
+24 Dec 2010
+  * Protect against ini-file and database being out of sync in fix_profile_map
+
 21 Dec 2010
   * Finish test case for the filter model panes
 
