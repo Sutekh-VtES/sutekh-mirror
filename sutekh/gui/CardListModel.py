@@ -126,6 +126,11 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     # pylint: enable-msg=W0212, C0103
 
+    def cleanup(self):
+        """Remove the config file listener if needed"""
+        self._oController = None
+        self._oConfig.remove_listener(self)
+
     def add_listener(self, oListener):
         """Add a listener to the list of interested listeners."""
         self.dListeners[oListener] = None

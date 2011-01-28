@@ -39,3 +39,8 @@ class PhysicalCardFrame(CardListFrame):
     def get_menu_name(self):
         """Get the menu key"""
         return self._sName
+
+    def cleanup(self):
+        """Cleanup function called before pane is removed by the Main Window"""
+        super(PhysicalCardFrame, self).cleanup()
+        self._oController.cleanup()

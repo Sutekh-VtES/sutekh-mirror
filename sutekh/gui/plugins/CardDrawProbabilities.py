@@ -185,7 +185,7 @@ class CardDrawSimPlugin(SutekhPlugin):
         if self.iTotal <= self.iOpeningDraw:
             if bLibrary:
                 do_complaint_error("Library must be larger than the opening"
-                        "hand")
+                        " hand")
             else:
                 do_complaint_error("Crypt must be larger than"
                         " the opening draw")

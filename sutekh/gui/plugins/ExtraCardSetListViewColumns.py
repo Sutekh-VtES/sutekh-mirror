@@ -115,6 +115,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                     PhysicalCardSet)
             disconnect_row_created(self.card_set_added_deleted,
                     PhysicalCardSet)
+        super(ExtraCardSetListViewColumns, self).cleanup()
 
     # Rendering Functions
 

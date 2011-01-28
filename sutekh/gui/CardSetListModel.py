@@ -212,8 +212,7 @@ class CardSetCardListModel(CardListModel):
         disconnect_changed(self.card_changed, PhysicalCardSet)
         disconnect_row_update(self.card_set_changed, PhysicalCardSet)
         disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
-        self._oController = None
-        self._oConfig.remove_listener(self)
+        super(CardSetCardListModel, self).cleanup()
 
     def set_count_colour(self):
         """Format the card count accordingly"""

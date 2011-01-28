@@ -152,6 +152,7 @@ class SutekhPlugin(object):
         self._oView = oCardListView
         self._oModel = oCardListModel
         self._cModelType = cModelType
+        self._oListener = None
         if self._oModel is not None and hasattr(self._oModel, "frame_id"):
             self._oListener = PluginConfigFileListener(self)
             # listener automatically removed when plugin is garbage collected
@@ -220,6 +221,9 @@ class SutekhPlugin(object):
            pane it's attached to goes away.
 
            Used for things like database signal cleanup, etc."""
+        if self._oListener:
+            self.config.remove_listener(self._oListener)
+            self._oListener = None
         return None
 
     def get_toolbar_widget(self):

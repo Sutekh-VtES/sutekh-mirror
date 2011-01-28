@@ -145,6 +145,10 @@ def _format_cost_numbers(sCardType, sCostString, aCost, iNum):
     """Format the display of the card cost information"""
     sVarPercent = _percentage(aCost[0], iNum, '%s cards' % sCardType)
     sNumPercent = _percentage(aCost[3], iNum, '%s cards' % sCardType)
+    if iNum > 0:
+        fAvg = aCost[2] / float(iNum)
+    else:
+        fAvg = 0.0
     sText = "Most Expensive %(name)s Card  (%(type)s) = %(max)d\n" \
             "Cards with variable cost = %(var)d %(per)s\n" \
             "Cards with %(type)s cost = %(numcost)d %(percost)s\n" \
@@ -154,11 +158,25 @@ def _format_cost_numbers(sCardType, sCostString, aCost, iNum):
                     'var': aCost[0],
                     'per': sVarPercent,
                     'max': aCost[1],
-                    'avg': aCost[2] / float(iNum),
+                    'avg': fAvg,
                     'numcost': aCost[3],
                     'percost': sNumPercent,
                     }
     return sText
+
+
+def _crypt_avg(iCostTot, iCryptSize):
+    """Calculate the crypt averages"""
+    if iCryptSize > 0:
+        fAvg = float(iCostTot) / iCryptSize
+    else:
+        fAvg = 0.0
+    if iCryptSize < 4:
+        fAvgDraw = iCryptSize * fAvg
+    else:
+        fAvgDraw = 4 * fAvg
+
+    return fAvg, fAvgDraw
 
 
 def _format_disciplines(sDiscType, dDisc, iNum):
@@ -580,13 +598,14 @@ class AnalyzeCardList(SutekhPlugin):
             if self.dTypeNumbers[sCardType] > 0:
                 sMainText += 'Number of %s = %d\n' % (sCardType,
                         self.dTypeNumbers[sCardType])
-        if self.dTypeNumbers['Vampire'] > 0 and \
-                self.dTypeNumbers['Imbued'] > 0:
+        if (self.dTypeNumbers['Vampire'] > 0 and
+                self.dTypeNumbers['Imbued'] > 0) or self.iCryptSize == 0:
             sMainText += "Total Crypt size = %d\n" % self.iCryptSize
-        sMainText += "Minimum Group in Crypt = %d\n" % \
-                self.dCryptStats['min group']
-        sMainText += "Maximum Group in Crypt = %d\n" % \
-                self.dCryptStats['max group']
+        if self.iCryptSize > 0:
+            sMainText += "Minimum Group in Crypt = %d\n" % \
+                    self.dCryptStats['min group']
+            sMainText += "Maximum Group in Crypt = %d\n" % \
+                    self.dCryptStats['max group']
 
         if self.iCryptSize < 12:
             sMainText += '<span foreground = "red">Less than 12 Crypt Cards' \
@@ -600,13 +619,16 @@ class AnalyzeCardList(SutekhPlugin):
             sMainText += '<span foreground = "red">Card Set uses cards that ' \
                     'are not legal for tournament play</span>\n'
 
-        sMainText += '\nMaximum cost in crypt = %d\n' % \
-                self.dCryptStats['max cost']
-        sMainText += 'Minimum cost in crypt = %d\n' % \
-                self.dCryptStats['min cost']
-        fAvg = float(self.dCryptStats['total cost']) / self.iCryptSize
+        if self.iCryptSize > 0:
+            sMainText += '\nMaximum cost in crypt = %d\n' % \
+                    self.dCryptStats['max cost']
+            sMainText += 'Minimum cost in crypt = %d\n' % \
+                    self.dCryptStats['min cost']
+        fAvg, fAvgDraw = _crypt_avg(self.dCryptStats['total cost'],
+                self.iCryptSize)
+
         sMainText += 'Average cost = %3.2f (%3.2f average crypt draw cost)\n' \
-                % (fAvg, 4 * fAvg)
+                % (fAvg, fAvgDraw)
         sMainText += 'Minimum draw cost = %d\n' % self.dCryptStats['min draw']
         sMainText += 'Maximum Draw cost = %d\n' % self.dCryptStats['max draw']
 

@@ -70,6 +70,7 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         """Remove the listener"""
         if self.check_versions() and self.check_model_type():
             self.model.remove_listener(self)
+        super(CountWWListCards, self).cleanup()
 
     def _get_card_count(self, oAbsCard):
         """Get the count for the card for the current mode"""

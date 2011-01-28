@@ -47,6 +47,7 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
         """Remove the listener"""
         if self.check_versions() and self.check_model_type():
             self.model.remove_listener(self)
+        super(CountCardSetCards, self).cleanup()
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""

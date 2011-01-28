@@ -35,6 +35,10 @@ class PhysicalCardController(object):
             doc="Associated Type")
     # pylint: enable-msg=W0212
 
+    def cleanup(self):
+        """Remove the signal handlers."""
+        self.model.cleanup()
+
     def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
         self.__oMainWin.set_card_text(oCard)
