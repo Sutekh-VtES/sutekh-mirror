@@ -116,7 +116,7 @@ class CardSetIndependence(SutekhPlugin):
         self.oCSView.set_filter(oFilter, None)
         self.oCSView.load()
         self.oCSView.expand_to_entry(self.view.sSetName)
-        self.oCSView.set_size_request(150, 300)
+        self.oCSView.set_size_request(450, 300)
         self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
                 " marked as in use")
         if bInUseSets:
