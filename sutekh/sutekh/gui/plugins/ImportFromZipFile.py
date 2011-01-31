@@ -165,7 +165,8 @@ class ImportFromZipFile(SutekhPlugin):
             # so if the parent name clashes, we want to follow the renamed
             # parent, rather than be added to the existing card set of the
             # same name
-            if sParentName is not None and sParentName in dSelected:
+            if sParentName is not None and sParentName in dSelected and \
+                    sParentName not in dRenames:
                 # Do have a parent to look at, so skip for now
                 if not bParentExists:
                     # The parent is in the list of cards to read, so it
