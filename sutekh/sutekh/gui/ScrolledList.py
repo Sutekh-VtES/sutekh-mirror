@@ -55,7 +55,7 @@ class ScrolledListView(CustomDragIconView):
             aSelectedList.append(sName)
         return aSelectedList
 
-    def set_selection(self, aRowsToSelect):
+    def set_selected_rows(self, aRowsToSelect):
         """Set the selection to the correct list"""
         aRowsToSelect = set(aRowsToSelect)
         oIter = self._oModel.get_iter_first()
@@ -66,7 +66,7 @@ class ScrolledListView(CustomDragIconView):
                 self._oSelection.select_iter(oIter)
             oIter = self._oModel.iter_next(oIter)
 
-    def set_selected(self, sEntry):
+    def set_selected_entry(self, sEntry):
         """Set the selection to the correct entry"""
         oIter = self._oModel.get_iter_first()
         while oIter is not None:
@@ -112,13 +112,13 @@ class ScrolledList(gtk.Frame):
         """Return a list of the selected elements of the list"""
         return self._oTreeView.get_selected_data()
 
-    def set_selection(self, aRowsToSelect):
+    def set_selected_rows(self, aRowsToSelect):
         """Set the selected rows to aRowsToSelect."""
-        self._oTreeView.set_selection(aRowsToSelect)
+        self._oTreeView.set_selected_rows(aRowsToSelect)
 
-    def set_selected(self, sEntry):
+    def set_selected_entry(self, sEntry):
         """Select the current entry"""
-        self._oTreeView.set_selected(sEntry)
+        self._oTreeView.set_selected_entry(sEntry)
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""

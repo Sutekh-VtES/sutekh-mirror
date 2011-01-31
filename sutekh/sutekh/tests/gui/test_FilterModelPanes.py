@@ -110,7 +110,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
         # check we can round trip setting a discipline on the list
         oList = oWidget.get_child()
-        oList.set_selected('Equipment')
+        oList.set_selected_entry('Equipment')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
         # ENTER_KEYS contains longs, but keyval needs int
@@ -156,7 +156,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
         # check we can round trip setting a discipline on the list
         oList = oWidget.get_child()
-        oList.set_selected('location')
+        oList.set_selected_entry('location')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
                 oEvent, oFilter, 'Value')
@@ -220,7 +220,7 @@ class TestFilterModelPane(GuiSutekhTest):
         self.assertTrue(isinstance(oWidget, AutoScrolledWindow))
         # check we can round trip setting a discipline on the list
         oList = oWidget.get_child()
-        oList.set_selected('Presence')
+        oList.set_selected_entry('Presence')
         self.assertEqual(oList.get_selected_data(), ['Presence'])
 
 

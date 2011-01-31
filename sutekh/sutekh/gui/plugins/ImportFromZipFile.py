@@ -29,9 +29,9 @@ def _do_rename_parent(sOldName, sNewName, dRemaining):
     return dResult
 
 
-def _set_selection(_oButton, oScrolledList, aData):
+def _set_selected_rows(_oButton, oScrolledList, aData):
     """Helper to manage changing the se;ection of the scrolled list"""
-    oScrolledList.set_selection(aData)
+    oScrolledList.set_selected_rows(aData)
 
 
 class ImportFromZipFile(SutekhPlugin):
@@ -94,9 +94,9 @@ class ImportFromZipFile(SutekhPlugin):
         # Select all and unselect all
         oSelectAll = gtk.Button('Select All')
         oUnSelectAll = gtk.Button('Unselect All')
-        oSelectAll.connect('clicked', _set_selection, oScrolledList,
+        oSelectAll.connect('clicked', _set_selected_rows, oScrolledList,
                 dEscapedList)
-        oUnSelectAll.connect('clicked', _set_selection, oScrolledList, [])
+        oUnSelectAll.connect('clicked', _set_selected_rows, oScrolledList, [])
         oSelectButtons = gtk.VBox(False, 2)
         oSelectButtons.pack_start(oSelectAll, expand=False)
         oSelectButtons.pack_start(oUnSelectAll, expand=False)

@@ -321,7 +321,7 @@ class FilterValuesBox(gtk.VBox):
         for sDesc, tInfo in BOXTYPE.iteritems():
             sBoxType, bNegate = tInfo
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
-                oWidget.set_selected(sDesc)
+                oWidget.set_selected_entry(sDesc)
 
     # pylint: enable-msg=R0201
 
