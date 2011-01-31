@@ -7,13 +7,14 @@
 """Useful utilities for managing card sets that need to access the gui"""
 
 import gtk
+import datetime
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
         do_complaint_error
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
-from sutekh.gui.RenameDialog import RenameDialog, RENAME, REPLACE
+from sutekh.gui.RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children, detect_loop, get_loop_names, break_loop
 
@@ -85,12 +86,22 @@ def create_card_set(oMainWindow):
 
 
 # import helpers
-def get_import_name(oHolder):
+def get_import_name(oHolder, iClashMode=PROMPT):
     """Helper for importing a card set holder.
 
        Deals with prompting the user for a new name if required, and properly
        dealing with child card sets if the user decides to replace an
        existing card set."""
+
+    def setup_for_replace():
+        """Little helper function to handle getting children and deleting
+           the card set consistently"""
+        oCS = IPhysicalCardSet(oHolder.name)
+        aChildren = find_children(oCS)
+        # Delete existing card set
+        delete_physical_card_set(oHolder.name)
+        return aChildren
+
     bRename = False
     if oHolder.name:
         # Check if we need to prompt for rename
@@ -101,20 +112,31 @@ def get_import_name(oHolder):
         bRename = True
     aChildren = []
     if bRename:
-        oDlg = RenameDialog(oHolder.name)
-        iResponse = oDlg.run()
-        if iResponse == RENAME:
-            oHolder.name = oDlg.sNewName
-        elif iResponse == REPLACE:
-            # Get child card sets
-            oCS = IPhysicalCardSet(oHolder.name)
-            aChildren = find_children(oCS)
-            # Delete existing card set
-            delete_physical_card_set(oHolder.name)
-        else:
-            # User cancelled, so bail
-            oHolder.name = None
-        oDlg.destroy()
+        if iClashMode == PROMPT:
+            oDlg = RenameDialog(oHolder.name)
+            iResponse = oDlg.run()
+            if iResponse == RENAME:
+                oHolder.name = oDlg.sNewName
+            elif iResponse == REPLACE:
+                # Get child card sets
+                aChildren = setup_for_replace()
+            else:
+                # User cancelled, so bail
+                oHolder.name = None
+            oDlg.destroy()
+        elif iClashMode == REPLACE:
+            aChildren = setup_for_replace()
+        elif iClashMode == RENAME:
+             # Create a unique name based on our current name
+            sTime = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
+            sBaseName = '%s (imported %s)' % (oHolder.name, sTime)
+            sNewName = sBaseName
+            iCount = 0
+            while PhysicalCardSet.selectBy(name=sNewName).count() != 0:
+                iCount += 1
+                sNewName = '%s (%d)' % (sBaseName, iCount)
+            oHolder.name = sNewName
+
     return oHolder, aChildren
 
 
