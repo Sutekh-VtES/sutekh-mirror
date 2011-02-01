@@ -8,7 +8,8 @@
 """Test whether card sets can be constructed independently"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
+        IAbstractCard
 from sutekh.core.Filters import ParentCardSetFilter
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardSetsListView import CardSetsListView
@@ -29,11 +30,16 @@ class CardInfo(object):
         return ", ".join(self.dCardSets)
 
 
-def _get_cards(oCardSet, dCards):
+def _get_cards(oCardSet, dCards, bIgnoreExpansions):
     """Extract the abstract cards from the card set oCardSet"""
     # pylint: disable-msg=E1101
     # SQLObject + pyprotocol methods confuse pylint
+    if bIgnoreExpansions:
+        fCard = lambda oCard: oCard.abstractCard
+    else:
+        fCard = lambda oCard: oCard
     for oCard in oCardSet.cards:
+        oCard = fCard(oCard)
         dCards.setdefault(oCard, CardInfo())
         dCards[oCard].iCount += 1
         dCards[oCard].dCardSets.setdefault(oCardSet.name, 0)
@@ -117,6 +123,8 @@ class CardSetIndependence(SutekhPlugin):
         self.oCSView.load()
         self.oCSView.expand_to_entry(self.view.sSetName)
         self.oCSView.set_size_request(450, 300)
+        self.oIgnoreExpansions = gtk.CheckButton(label="Ignore card expansions")
+        oDlg.vbox.pack_start(self.oIgnoreExpansions, False, False)
         self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
                 " marked as in use")
         if bInUseSets:
@@ -138,6 +146,7 @@ class CardSetIndependence(SutekhPlugin):
         # pylint: disable-msg=E1101
         # Pyprotocols confuses pylint
         if oResponse == gtk.RESPONSE_OK:
+            bIgnoreExpansions = self.oIgnoreExpansions.get_active()
             if self.oInUseButton.get_active():
                 oInUseSets = PhysicalCardSet.selectBy(
                         parentID=self.oThisCardSet.parent.id, inuse=True)
@@ -147,7 +156,8 @@ class CardSetIndependence(SutekhPlugin):
             else:
                 aCardSetNames = [self.view.sSetName]
                 aCardSetNames.extend(self.oCSView.get_all_selected_sets())
-            self._test_card_sets(aCardSetNames, self.oThisCardSet.parent)
+            self._test_card_sets(aCardSetNames, self.oThisCardSet.parent,
+                                    bIgnoreExpansions)
         oDlg.destroy()
 
     def _display_results(self, dMissing, oParentCS):
@@ -161,8 +171,10 @@ class CardSetIndependence(SutekhPlugin):
         dFormatted = {}
         aParentList = []
         for oCard, oInfo in dMissing.iteritems():
-            sCardName = self.escape(oCard.abstractCard.name)
-            if oCard.expansion:
+            sCardName = self.escape(IAbstractCard(oCard).name)
+            if not hasattr(oCard, 'expansion'):
+                sExpansion = ""
+            elif oCard.expansion:
                 sExpansion = self.escape(oCard.expansion.name)
             else:
                 sExpansion = "(unspecified expansion)"
@@ -194,15 +206,15 @@ class CardSetIndependence(SutekhPlugin):
         oResultDlg.run()
         oResultDlg.destroy()
 
-    def _test_card_sets(self, aCardSetNames, oParentCS):
+    def _test_card_sets(self, aCardSetNames, oParentCS, bIgnoreExpansions):
         """Test if the Card Sets are actaully independent by
            looking for cards common to the sets"""
         dCards = {}
         for sCardSetName in aCardSetNames:
             oCS = IPhysicalCardSet(sCardSetName)
-            _get_cards(oCS, dCards)
+            _get_cards(oCS, dCards, bIgnoreExpansions)
         dParent = {}
-        _get_cards(oParentCS, dParent)
+        _get_cards(oParentCS, dParent, bIgnoreExpansions)
         dMissing = {}
         for oCard, oInfo in dCards.iteritems():
             if oCard not in dParent:
