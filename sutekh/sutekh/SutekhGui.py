@@ -20,7 +20,8 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.ConfigFileLegacy import ConfigFileLegacy
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning, \
+        do_complaint_error_details
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -67,15 +68,7 @@ def exception_handler(oType, oValue, oTraceback):
     # the progress bar update hack is ongoing, the error dialog won't work
     # correctly, and the exception may be lost
 
-    oErrorDlg = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-        gtk.BUTTONS_CLOSE, sMessage)
-    oErrorDlg.set_name("Sutekh.dialog")
-
-    oErrorDlg.format_secondary_text("".join(aTraceback))
-
-    # we ignore the response here
-    oErrorDlg.run()
-    oErrorDlg.destroy()
+    do_complaint_error_details(sMessage, "".join(aTraceback))
 
 
 def setup_logging(oOpts):
@@ -216,7 +209,7 @@ def main():
         oType, oValue, oTraceback = sys.exc_info()
         aTraceback = traceback.format_exception(oType, oValue, oTraceback)
         logging.error("%s:\n%s", sMessage, "".join(aTraceback))
-        do_complaint_error(sMesg)
+        do_complaint_error_details(sMesg, "".join(aTraceback))
 
     logging.shutdown()
 
