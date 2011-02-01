@@ -20,7 +20,7 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.ConfigFileLegacy import ConfigFileLegacy
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -148,6 +148,14 @@ def main():
     # (re-validated later after plugins are loaded)
     oConfig.validate()
 
+    if not oConfig.check_writeable():
+        # Warn the user
+        iRes = do_complaint_warning('Unable to write to the config file %s.\n'
+                'Config changes will NOT be saved.\n'
+                'Do you wish to continue?' % oOpts.sRCFile)
+        if iRes == gtk.RESPONSE_CANCEL:
+            return 1
+
     if oOpts.db is None:
         oOpts.db = oConfig.get_database_uri()
 
@@ -199,7 +207,16 @@ def main():
     oMultiPaneWindow.run()
 
     # Save Config Changes
-    oConfig.write()
+    try:
+        oConfig.write()
+    except IOError, oExp:
+        sMesg = 'Unable to write the configuration file\n' \
+                'Error was: %s' % oExp
+        # Log traceback
+        oType, oValue, oTraceback = sys.exc_info()
+        aTraceback = traceback.format_exception(oType, oValue, oTraceback)
+        logging.error("%s:\n%s", sMessage, "".join(aTraceback))
+        do_complaint_error(sMesg)
 
     logging.shutdown()
 

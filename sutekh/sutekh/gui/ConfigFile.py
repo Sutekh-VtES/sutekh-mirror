@@ -79,6 +79,7 @@ class ConfigFile(object):
 
     def __init__(self, sFileName):
         self.__sFileName = sFileName
+        self.__bWriteable = False
         self.__oConfigSpec = None
         self.__oConfig = None
         self.__dLocalFrameOptions = {}
@@ -201,9 +202,20 @@ class ConfigFile(object):
             self.add_frame(4, 'physical_card_set', 'My Collection', False,
                     False, -1, None)
 
+    def check_writeable(self):
+        """Test that we can open the file for writing"""
+        self.__bWriteable = True
+        try:
+            oFile = open(self.__sFileName, 'a')
+            oFile.close()
+        except IOError:
+            self.__bWriteable = False
+        return self.__bWriteable
+
     def write(self):
         """Write the config file to disk."""
-        self.__oConfig.write()
+        if self.__bWriteable:
+            self.__oConfig.write()
 
     #
     # Open Frame Handling
