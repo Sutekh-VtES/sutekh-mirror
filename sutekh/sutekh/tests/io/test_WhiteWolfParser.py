@@ -435,6 +435,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oKemintiri.life, None)
         self.assertEqual(oKemintiri.costtype, None)
         self.assertEqual(oKemintiri.level, 'advanced')
+        self.failUnless(IKeyword('advanced') in oKemintiri.keywords)
 
         self.failUnless(IClan('Follower of Set') in oKemintiri.clan)
         self.assertEqual(len(oKemintiri.clan), 1)

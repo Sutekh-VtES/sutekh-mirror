@@ -532,6 +532,8 @@ class CardDict(dict):
 
         if self.has_key('level'):
             self._add_level(oCard, self['level'])
+            # Also add a keyword for this
+            self._add_keyword(oCard, oCard.level)
 
         if self.has_key('expansion'):
             self._add_expansions(oCard, self['expansion'])
