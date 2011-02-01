@@ -6,6 +6,7 @@
 """Plugin to import selected card sets from a zip file"""
 
 import gtk
+import gobject
 import os
 from logging import Logger
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -34,6 +35,39 @@ def _set_selected_rows(_oButton, oScrolledList, aData):
     oScrolledList.set_selected_rows(aData)
 
 
+class ZipFileDirStore(gtk.TreeStore):
+    # pylint: disable-msg=R0904
+    # gtk.Widget, so many public methods
+    """Simple tree store to show card set hierachy in a ScrolledList widget"""
+    def __init__(self):
+        super(ZipFileDirStore, self).__init__(gobject.TYPE_STRING)
+
+    def fill_list(self, dEscapedList):
+        """Fill the list"""
+        self.clear()
+        aNames = sorted(dEscapedList)
+        dAdded = {}
+        while aNames:
+            for sEntry in aNames[:]:
+                sParent = dEscapedList[sEntry][3]
+                if sParent:
+                    # Need escaped version for comparisons
+                    sParent = gobject.markup_escape_text(sParent)
+                oIter = None
+                if sParent in dAdded:
+                    oParIter = dAdded[sParent]
+                    oIter = self.append(oParIter)
+                elif sParent is None or sParent not in aNames:
+                    oIter = self.append(None)
+                else:
+                    # Can't add this entry yet, so look at next one
+                    continue
+                self.set(oIter, 0, sEntry)
+                dAdded[sEntry] = oIter
+                aNames.remove(sEntry)
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)  # Sort the display
+
+
 class SelectZipFileContents(SutekhDialog):
     """Dialog for querying contents of the zip file"""
     # pylint: disable-msg=R0904
@@ -48,13 +82,16 @@ class SelectZipFileContents(SutekhDialog):
 
         self.dEscapedList = dEscapedList
 
+        oModel = ZipFileDirStore()
+
         # Ask user to select entries to import
-        self.oScrolledList = ScrolledList('Available Card Sets')
+        self.oScrolledList = ScrolledList('Available Card Sets', oModel)
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         self.vbox.pack_start(self.oScrolledList)
         self.oScrolledList.set_size_request(450, 300)
-        self.oScrolledList.fill_list(sorted(self.dEscapedList))
+        self.oScrolledList.fill_list(self.dEscapedList)
+        self.oScrolledList.view.expand_all()
         # Add the various buttons
         # Select all and unselect all
         oSelectAll = gtk.Button('Select All')
