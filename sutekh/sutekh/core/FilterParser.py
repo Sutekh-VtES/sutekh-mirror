@@ -68,7 +68,7 @@ class ParseFilterDefinitions(object):
 
     t_AND = r'\&\&'
     t_OR = r'\|\|'
-    t_STRING = r'\".*?\"|\'.*?\''
+    t_STRING = r'"(\\\\|\\\'|\\"|[^"\\])*?"|\'(\\\\|\\\'|\\"|[^\'\\])*?\''
     t_COMMA = r','
     t_IN = r'='
     t_LPAREN = r'\('
@@ -268,6 +268,32 @@ class FilterParser(object):
         return oAST
 
 
+# Helper functions for dealing with strings
+def escape(sData):
+    """Escape quotes and \\'s in the string"""
+    # escape \'s
+    sResult = sData.replace('\\', '\\\\')
+    # escape quotes
+    sResult = sResult.replace("'", "\\'")
+    sResult = sResult.replace('"', '\\"')
+    return sResult
+
+
+def unescape(sData):
+    """Unescape quotes and \\'s in the string.
+
+       should be the inverse of escape."""
+    # unescape quotes
+    # We assume that this is called on a escaped sring, after any
+    # surrounding quotes have been stripped off, so there are no unescaped
+    # quotes to worry about
+    sResult = sData.replace("\\'", "'")
+    sResult = sResult.replace('\\"', '"')
+    # unsecape \\
+    sResult = sResult.replace('\\\\', '\\')
+    return sResult
+
+
 # Object used by get_values representation
 # Should be made more robust
 class ValueObject(object):
@@ -413,6 +439,8 @@ class StringNode(TermNode):
             self.sValue = sValue[1:-1]
         else:
             self.sValue = sValue
+        # Unescape quotes and \'s if needed
+        self.sValue = unescape(self.sValue)
 
     def get_values(self):
         """Return the ValueObject holding the string"""

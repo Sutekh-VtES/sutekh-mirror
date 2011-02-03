@@ -164,6 +164,39 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
 
+    def test_quoting(self):
+        """Test that quotes are properly escaped from the gui widget"""
+        # pylint: disable-msg=W0212, R0915
+        # W0212: We directly access lots of internals details for testing
+        # setup
+        # R0915: Long test case to avoid repeated setups
+        oParser = FilterParser()
+        oDialog = DummyDialog()
+        oFilterPanes = FilterModelPanes('PhysicalCard', oDialog)
+        oAST = oParser.apply('CardName in $x')
+        oFilterPanes.replace_ast(oAST)
+        oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
+        # check we have entry widget
+        oEntry = oFilterPanes._oSelectBar._oWidget.get_children()[1]
+
+        oEntry.set_text('"')
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        oDoubleQuoteAST = oParser.apply('CardName in \'"\'')
+        self._check_asts(oDoubleQuoteAST, oFilterAST)
+
+        oEntry.set_text("'")
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        oSingleQuoteAST = oParser.apply('CardName in "\'"')
+        self._check_asts(oSingleQuoteAST, oFilterAST)
+
+        # Check quotes round trip properly
+        oFilterPanes.replace_ast(oSingleQuoteAST)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oSingleQuoteAST, oFilterAST)
+        oFilterPanes.replace_ast(oDoubleQuoteAST)
+        oFilterAST = oFilterPanes.get_ast_with_values()
+        self._check_asts(oDoubleQuoteAST, oFilterAST)
+
     def test_widgets(self):
         """Test that various filters lead to the right type of widget"""
         # pylint: disable-msg=W0212
