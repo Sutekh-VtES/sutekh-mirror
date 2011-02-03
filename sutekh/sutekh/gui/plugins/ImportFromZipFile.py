@@ -10,7 +10,8 @@ import gobject
 import os
 from logging import Logger
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
+        do_exception_complaint
 from sutekh.gui.SutekhFileWidget import ZipFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.ScrolledList import ScrolledList
@@ -269,7 +270,7 @@ class ImportFromZipFile(SutekhPlugin):
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                         oException)
-                do_complaint_error(sMsg)
+                do_exception_complaint(sMsg)
         return dRemaining
 
 

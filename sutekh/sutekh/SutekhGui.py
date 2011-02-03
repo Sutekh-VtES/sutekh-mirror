@@ -21,7 +21,7 @@ from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.ConfigFileLegacy import ConfigFileLegacy
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning, \
-        do_complaint_error_details
+        do_exception_complaint, do_complaint_error_details
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -102,9 +102,9 @@ def setup_logging(oOpts):
 
 
 def main():
-    # pylint: disable-msg=R0912, R0914
-    # lots of different cases to consider, so lots of variables and
-    # if statement
+    # pylint: disable-msg=R0912, R0914, R0915
+    # lots of different cases to consider, so long and has lots of variables
+    # and if statement
     """Start the Sutekh Gui.
 
        Check that database exists, doesn't need to be upgraded, then
@@ -205,11 +205,7 @@ def main():
     except IOError, oExp:
         sMesg = 'Unable to write the configuration file\n' \
                 'Error was: %s' % oExp
-        # Log traceback
-        oType, oValue, oTraceback = sys.exc_info()
-        aTraceback = traceback.format_exception(oType, oValue, oTraceback)
-        logging.error("%s:\n%s", sMessage, "".join(aTraceback))
-        do_complaint_error_details(sMesg, "".join(aTraceback))
+        do_exception_complaint(sMesg)
 
     logging.shutdown()
 

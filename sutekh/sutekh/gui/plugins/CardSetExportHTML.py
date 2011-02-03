@@ -11,7 +11,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.gui.SutekhDialog import do_complaint_error, do_exception_complaint
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.SutekhUtility import safe_filename
 
@@ -115,9 +115,8 @@ class CardSetExportHTML(SutekhPlugin):
                 oWriter.write(fOut, CardSetWrapper(oCardSet))
                 fOut.close()
             except Exception, oExp:
-                sMsg = "Failed to open output file.\n\n" + str(oExp)
-                do_complaint_error(sMsg)
-                return
+                sMsg = "Failed to open output file.\n\n%s" % oExp
+                do_exception_complaint(sMsg)
 
 
 plugin = CardSetExportHTML
