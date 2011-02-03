@@ -10,6 +10,9 @@
 """Dialog wrapper and functions for Sutekh"""
 
 import gtk
+import logging
+import sys
+import traceback
 from gobject import markup_escape_text
 
 
@@ -113,3 +116,14 @@ def do_complaint_error_details(sMessage, sDetails):
     iResponse = oComplaint.run()
     oComplaint.destroy()
     return iResponse
+
+
+def do_exception_complaint(sMessage):
+    """Handle an exception - log the details for verbose info, and popup
+       a detailed dialog with the info."""
+    oType, oValue, oTraceback = sys.exc_info()
+    aTraceback = traceback.format_exception(oType, oValue, oTraceback,
+            limit=30)
+    logging.error("%s:\n%s", sMessage, "".join(aTraceback))
+    do_complaint_error_details(sMessage, "".join(aTraceback))
+
