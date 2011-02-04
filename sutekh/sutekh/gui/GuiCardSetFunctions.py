@@ -10,7 +10,7 @@ import gtk
 import datetime
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
-        do_complaint_error
+        do_complaint_error, do_exception_complaint
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
@@ -185,7 +185,7 @@ def import_cs(fIn, oParser, oMainWindow):
         sMsg = "Reading the card set failed with the following error:\n" \
                "%s\n The file is probably not in the format the Parser" \
                " expects.\nAborting" % oExp
-        do_complaint_error(sMsg)
+        do_exception_complaint(sMsg)
         # Fail out
         return
 
@@ -214,7 +214,7 @@ def import_cs(fIn, oParser, oMainWindow):
     except RuntimeError, oExp:
         sMsg = "Creating the card set failed with the following error:\n" \
                "%s\nAborting" % oExp
-        do_complaint_error(sMsg)
+        do_exception_complaint(sMsg)
         return
     except LookupFailed, oExp:
         return

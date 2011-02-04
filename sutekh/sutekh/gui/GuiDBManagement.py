@@ -6,6 +6,7 @@
 """This handles the gui aspects of upgrading the database."""
 
 import gtk
+import logging
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
@@ -13,8 +14,9 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
         SutekhCountLogHandler
 from sutekh.core.DatabaseUpgrade import create_memory_copy, \
         create_final_copy, UnknownVersion, copy_to_new_abstract_card_db
-from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint_error, \
-        do_complaint, do_complaint_warning
+from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint, \
+        do_complaint_warning, do_exception_complaint, \
+        do_complaint_error_details
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import TABLE_LIST, PhysicalCardSet
@@ -156,7 +158,7 @@ def refresh_ww_card_list(oWin):
         try:
             save_backup(sBackupFile, oProgressDialog)
         except Exception, oErr:
-            do_complaint_error("Failed to write backup.\n\n%s\n"
+            do_exception_complaint("Failed to write backup.\n\n%s\n"
                     "Not touching the database further." % oErr)
             return False
     oOldConn = sqlhub.processConnection
@@ -179,12 +181,11 @@ def refresh_ww_card_list(oWin):
     oProgressDialog.show()
     (bOK, aErrors) = create_final_copy(oTempConn, oLogHandler)
     if not bOK:
-        sMesg = "There was a problem updating the database\n"
-        for sStr in aErrors:
-            sMesg += sStr + "\n"
-        sMesg += "Your database may be in an inconsistent state -" \
+        sMesg = "There was a problem updating the database\n" \
+                "Your database may be in an inconsistent state -" \
                 " sorry"
-        do_complaint_error(sMesg)
+        logging.warn('\n'.join([sMesg] + aErrors))
+        do_complaint_error_details(sMesg, "\n".join(aErrors))
     else:
         sMesg = "Import Completed\n"
         sMesg += "Everything seems to have gone OK"
@@ -236,12 +237,12 @@ def do_db_upgrade(aLowerTables, aHigherTables):
                 sqlhub.processConnection = oTempConn
                 return True
         else:
-            sMesg = '\n'.join(["Unable to create memory copy!"] +
-                    aMessages + ["Upgrade Failed."])
-            do_complaint_error(sMesg)
+            sMesg = "Unable to create memory copy!\nUpgrade Failed."
+            logging.warn('\n'.join([sMesg] + aMessages))
+            do_complaint_error_details(sMesg, "\n".join(aMessages))
     except UnknownVersion, oErr:
         oProgressDialog.destroy()
-        do_complaint_error("Upgrade Failed. " + str(oErr))
+        do_exception_complaint("Upgrade Failed. %s" % oErr)
     return False
 
 
@@ -262,9 +263,8 @@ def _do_commit_db(oLogHandler, oTempConn):
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
         return True
     else:
-        sMesg = '\n'.join(["Unable to commit updated database!"] +
-                aMessages +
-                ["Upgrade Failed.", "Your database may be"
-                    " in an inconsistent state."])
-        do_complaint_error(sMesg)
+        sMesg = "Unable to commit updated database!\nUpgrade Failed.\n" \
+                "Your database may be in an inconsistent state."
+        logging.warn('\n'.join([sMesg] + aMessages))
+        do_complaint_error_details(sMesg, "\n".join(aMessages))
         return False
