@@ -30,8 +30,6 @@ For 0.8.0 cycle
       - and mechanism for plugins to provide their own documentation to the
         help menu.
     * Cluster plugin speed-up
-    * Improve the error & warnings dialogs.
-      - include exception backtrace in error dialogs
     * Add more keyboard shortcuts
     * Right-click context menus
     * Make MultiSelectCombo less evil (turn it into a proper widget?)

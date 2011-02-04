@@ -1,5 +1,27 @@
+03 Feb 2011
+ * Fix FilterParser to deal allow escaping quotes.
+ * Add a helper function to display detail dialogs for and log exceptions
+ * Convert to using the helper function in several place
+
+01 Feb 2011
+ * Display card sets in zip file in correct hierarchy.
+ * Add check that config file is writeable during start up and warn the user
+ * Add support for ignoring card expansion when testing card set independence
+ * Add advanced as a keyword
+ * Add a error dialog with details hidden in an expander.
+ * Use details dialog for uncaught exceptions and errors writing the config
+   file on exit.
+
+31 Jan 2011
+ * Support for forcing replace or automatic renames when importing card sets
+   from a zip file
+ * Add select all / unselect all buttons to zip file import dialog
+ * Fix name escaping bug in zip file import dialog
+ * Fix bug with renamed parents when importing from zip file
+
 26 Jan 2011
   * Fix handling of author or Description is None when sorting on extra columns
+  * Fix exception in Analyze deck plugin when the crypt size is 0
 
 24 Jan 2011
   * Add hide/show illegal cards button to gui card lookup
