@@ -255,17 +255,34 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         dCards = {}
         dUnknownCards = {}
 
+        aNewNames = []  # If we need to recode the name
+
         for sName in aNames:
             if not sName:
                 # None here is an explicit ignore from the lookup cache
                 dCards[sName] = None
             else:
+                # Check we can encode the name properly
+                try:
+                    _ = sName.encode('utf8')
+                except UnicodeDecodeError:
+                    # Wrong assumptions somewhere - let the user sort it
+                    # out
+                    # We bounce through unicode to ensure
+                    # we have something usable everywhere
+                    # FIXME: Fix best guess filter and card lookup
+                    # code so we don't need to encode back to ascii
+                    sName = sName.decode('ascii', 'replace').encode('ascii',
+                            'replace')
+
                 try:
                     # Use IAbstractCard to cover more variations
                     oAbs = IAbstractCard(sName.encode('utf8'))
                     dCards[sName] = oAbs
                 except SQLObjectNotFound:
                     dUnknownCards[sName] = None
+
+                aNewNames.append(sName)
 
         if dUnknownCards:
             if not self._handle_unknown_abstract_cards(dUnknownCards, sInfo):
@@ -293,7 +310,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             else:
                 return dUnknownCards[sName]
 
-        return [new_card(sName) for sName in aNames]
+        return [new_card(sName) for sName in aNewNames]
 
     def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
         """Lookup missing physical cards.
