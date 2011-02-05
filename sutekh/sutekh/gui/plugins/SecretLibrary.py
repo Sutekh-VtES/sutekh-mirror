@@ -454,6 +454,8 @@ class SecretLibrary(SutekhPlugin):
         for oAbsCard, iCnt in dCrypt.iteritems():
             sCsvName = canonical_to_sl(oAbsCard.name)
             sCsvName = sCsvName.replace('(Advanced)', '(Adv)')
+            # Secret library doesn't like "'s here, it seems.
+            sCsvName = sCsvName.replace('"', '')
             # TODO: populate wanted field sensibly.
             # HAVE; WANTED; Card Name
             aCrypt.append("%d;%d;%s" % (iCnt, iCnt, sCsvName))
