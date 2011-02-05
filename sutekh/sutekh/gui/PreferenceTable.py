@@ -7,7 +7,7 @@
 
 """Widget that constructs an interface to manipulate the profile options.
 
-   Used bby the various Profile editor dialogs."""
+   Used by the various Profile editor dialogs."""
 
 import gtk
 
@@ -48,7 +48,7 @@ class PreferenceTable(gtk.Table):
             self.attach(oOpt.oInherit, self.INHERIT_COL, self.INHERIT_COL + 1,
                 iRow, iRow + 1, **dAttachOpts)
 
-    def update_values(self, dNewValues, dInherit, dEditable):
+    def update_values(self, dNewValues, dInherit, dEditable, dInheritedValues):
         """Update the option values.
 
            dNewValues is an sKey -> sValue mapping.
@@ -56,9 +56,10 @@ class PreferenceTable(gtk.Table):
            dEditable is an sKey -> bEditable mapping.
            """
         for oOpt in self._aOptions:
+            oInheritedValue = dInheritedValues.get(oOpt.sKey)
             oOpt.set_inheritable(dInherit.get(oOpt.sKey, True))
             oOpt.set_editable(dEditable.get(oOpt.sKey, True))
-            oOpt.set_value(dNewValues.get(oOpt.sKey))
+            oOpt.set_value(dNewValues.get(oOpt.sKey), oInheritedValue)
 
     def get_values(self):
         """Return a dictionary of option values."""
@@ -94,7 +95,7 @@ class PreferenceOption(object):
         self.bEditable = bEditable
         self.oEntry.set_sensitive(bEditable)
 
-    def set_value(self, oValue):
+    def set_value(self, oValue, oInheritedValue):
         """Update the value of the option."""
         if oValue is None and self.bInheritable:
             self.oEntry.set_sensitive(False)
@@ -103,6 +104,10 @@ class PreferenceOption(object):
             self.oEntry.set_sensitive(self.bEditable)
             self.oInherit.set_active(False)
             self.oSpec.set_value(oValue)
+        if hasattr(self.oInherit, 'set_tooltip_markup'):
+            sToolTip = "Inherited value:\n%s" % \
+                self.oSpec.format_value(oInheritedValue)
+            self.oInherit.set_tooltip_markup(sToolTip)
 
     def get_value(self):
         """Return the value of the option."""
@@ -126,6 +131,10 @@ class BaseParsedSpec(object):
         self.sType, self.aArgs, self.dKwargs, self.sDefault = \
             sType, aArgs, dKwargs, sDefault
         self.oEntry = self.create_widget()
+
+    def format_value(self, oValue):
+        """Return a string representation of a value."""
+        return str(oValue)
 
     def create_widget(self):
         """Return a widget for editing this config spec."""
@@ -233,6 +242,13 @@ class OptionListParsedSpec(BaseParsedSpec):
         for sValue in self.aArgs:
             oContainer.pack_start(gtk.CheckButton(sValue))
         return oContainer
+
+    def format_value(self, oValue):
+        """Return a string representation of the value."""
+        if not oValue:
+            return "None"
+        else:
+            return ", ".join(oValue)
 
     def set_value(self, oValue):
         """Set the selected list correctly"""

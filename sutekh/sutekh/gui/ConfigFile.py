@@ -403,7 +403,7 @@ class ConfigFile(object):
     # Per-Deck Options
     #
 
-    def get_deck_option(self, sFrame, sCardset, sKey):
+    def get_deck_option(self, sFrame, sCardset, sKey, bUseLocal=True):
         """Retrieve the value of a per-deck option.
 
            Either sFrame or sCardset may be None, in
@@ -411,7 +411,8 @@ class ConfigFile(object):
            is skipped.
            """
         try:
-            return self.__dLocalFrameOptions[sFrame][sKey]
+            if bUseLocal:
+                return self.__dLocalFrameOptions[sFrame][sKey]
         except KeyError:
             pass
 
