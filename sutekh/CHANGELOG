@@ -1,3 +1,14 @@
+07 Feb 2011
+ * Sort 'No Card' entries first in GuiCarLookup
+ * Bold 'No Card' entires, to be more visible
+ * Fix cursor behaviour when the card lookup dialog is sorted.
+
+05 Feb 2011
+ * Fix issue with double quotes in crypt cards when uploading to the Secret
+   Library
+ * Show inherited profile settings as a tooltip in the profile editor
+ * Make GuiCardLookup a bit more robust against non-unicode input
+
 03 Feb 2011
  * Fix FilterParser to deal allow escaping quotes.
  * Add a helper function to display detail dialogs for and log exceptions
