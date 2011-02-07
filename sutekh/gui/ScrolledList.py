@@ -32,8 +32,9 @@ class ScrolledListView(CustomDragIconView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Simple tree view for the ScrolledList widget"""
-    def __init__(self, sTitle):
-        oModel = ScrolledListStore()
+    def __init__(self, sTitle, oModel=None):
+        if not oModel:
+            oModel = ScrolledListStore()
         super(ScrolledListView, self).__init__(oModel)
         oCell1 = gtk.CellRendererText()
         oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
@@ -55,7 +56,7 @@ class ScrolledListView(CustomDragIconView):
             aSelectedList.append(sName)
         return aSelectedList
 
-    def set_selection(self, aRowsToSelect):
+    def set_selected_rows(self, aRowsToSelect):
         """Set the selection to the correct list"""
         aRowsToSelect = set(aRowsToSelect)
         oIter = self._oModel.get_iter_first()
@@ -66,7 +67,7 @@ class ScrolledListView(CustomDragIconView):
                 self._oSelection.select_iter(oIter)
             oIter = self._oModel.iter_next(oIter)
 
-    def set_selected(self, sEntry):
+    def set_selected_entry(self, sEntry):
         """Set the selection to the correct entry"""
         oIter = self._oModel.get_iter_first()
         while oIter is not None:
@@ -82,9 +83,9 @@ class ScrolledList(gtk.Frame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
-    def __init__(self, sTitle):
+    def __init__(self, sTitle, oModel=None):
         super(ScrolledList, self).__init__(None)
-        self._oTreeView = ScrolledListView(sTitle)
+        self._oTreeView = ScrolledListView(sTitle, oModel)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
         self.set_shadow_type(gtk.SHADOW_NONE)
@@ -112,13 +113,13 @@ class ScrolledList(gtk.Frame):
         """Return a list of the selected elements of the list"""
         return self._oTreeView.get_selected_data()
 
-    def set_selection(self, aRowsToSelect):
+    def set_selected_rows(self, aRowsToSelect):
         """Set the selected rows to aRowsToSelect."""
-        self._oTreeView.set_selection(aRowsToSelect)
+        self._oTreeView.set_selected_rows(aRowsToSelect)
 
-    def set_selected(self, sEntry):
+    def set_selected_entry(self, sEntry):
         """Select the current entry"""
-        self._oTreeView.set_selected(sEntry)
+        self._oTreeView.set_selected_entry(sEntry)
 
     def fill_list(self, aVals):
         """Fill the list store with the given values"""

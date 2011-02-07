@@ -25,13 +25,14 @@ class LocalProfileEditor(SutekhDialog):
     RESPONSE_CLOSE = 1
     RESPONSE_CANCEL = 2
 
-    def __init__(self, oParent, oConfig, sFrame):
+    def __init__(self, oParent, oConfig, sFrame, sCardSet):
         super(LocalProfileEditor, self).__init__("Edit Local Profile",
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
         self.__sFrame = sFrame
+        self.__sCardSet = sCardSet
         self.__dUnsavedChanges = None
 
         aOptions = []
@@ -73,11 +74,14 @@ class LocalProfileEditor(SutekhDialog):
     def _repopulate_options(self):
         """Refresh the contents of the options box."""
         dNewValues = {}
-        sFrame = self.__sFrame
+        dInherited = {}
+        sFrame, sCardSet = self.__sFrame, self.__sCardSet
         for sKey in self.__oConfig.profile_options(FRAME):
             dNewValues[sKey] = \
                 self.__oConfig.get_local_frame_option(sFrame, sKey)
-        self.__oOptionsTable.update_values(dNewValues, {}, {})
+            dInherited[sKey] = self.__oConfig.get_deck_option(sFrame, sCardSet,
+                                                         sKey, bUseLocal=False)
+        self.__oOptionsTable.update_values(dNewValues, {}, {}, dInherited)
 
     def _check_unsaved_changes(self):
         """Check that none of the changes make are bad.

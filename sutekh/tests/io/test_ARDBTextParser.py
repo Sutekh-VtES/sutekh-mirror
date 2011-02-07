@@ -62,6 +62,31 @@ Reaction [1]
 ...
 """
 
+ARDB_TEXT_EXAMPLE_3 = """
+Deck Name : Test Deck 2
+Created By: Anon Y Mous
+
+Crypt: (3 vampires, Min: 2, Max: 10 Ave: 7.33)
+------------------------------------------------------------
+2 x Test Vamp 1			  aus dom for   10 ...
+1 x Test Vamp 2			  DOM for obf   2  ...
+...
+
+Library [19 cards]
+------------------------------------------------------------
+Action [6]
+2 x Test Card 1
+4 x Test Card 2
+
+Action Modifier [12]
+12 Test Card 3
+
+Reaction [1]
+1 Test Card 4
+...
+"""
+
+
 
 class ARDBTextParserTests(SutekhTest):
     """class for the ARDB/FELDB text input parser"""
@@ -93,6 +118,21 @@ class ARDBTextParserTests(SutekhTest):
         self.assertEqual(oHolder.author, "Anon Y Mous")
         self.failUnless(oHolder.comment.startswith(
             "Simple test deck."))
+
+        aCards = oHolder.get_cards()
+
+        self.assertEqual(len(aCards), 6)
+        self.failUnless(("Test Vamp 1", 2) in aCards)
+        self.failUnless(("Test Vamp 2", 1) in aCards)
+        self.failUnless(("Test Card 1", 2) in aCards)
+        self.failUnless(("Test Card 2", 4) in aCards)
+        self.failUnless(("Test Card 3", 12) in aCards)
+        self.failUnless(("Test Card 4", 1) in aCards)
+
+        oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_3)
+
+        self.assertEqual(oHolder.name, "Test Deck 2")
+        self.assertEqual(oHolder.author, "Anon Y Mous")
 
         aCards = oHolder.get_cards()
 

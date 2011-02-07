@@ -13,7 +13,8 @@ from sutekh.core.Filters import PhysicalCardSetFilter, \
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CardTextView import CardTextViewListener
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
+        do_complaint_error
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
@@ -291,7 +292,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                         oException)
-                do_complaint_error(sMsg)
+                do_exception_complaint(sMsg)
                 return False
         return True
 

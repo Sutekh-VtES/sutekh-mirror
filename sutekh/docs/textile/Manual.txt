@@ -976,6 +976,11 @@ are marked as _In Use_ by checking the _Test against all card sets marked as in 
 checkbox when selecting decks for comparison. This checkbox overrides any
 selected entries in the list.
 
+By default the independence test is strict and checks whether the parent set
+contains enough cards to build all the selected child sets with exactly the
+card expansions specified. A less strict check which ignores expansions may
+be selected by checking _Ignore card expansions_.
+
 The first tab of the results displays the full list of cards of which there is a
 shortage in the parent card set. For each selected set which includes any of
 these cards, the list of cards relevant to that set is shown in a separate tab.

@@ -13,6 +13,7 @@ from sutekh.tests.core.test_Filters import make_physical_card_sets
 from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
         PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard
 from sutekh.core import FilterParser, Filters, FilterBox
+from sutekh.core.FilterParser import escape, unescape
 import unittest
 
 
@@ -171,6 +172,22 @@ class FilterParserTests(SutekhTest):
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
                     "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
 
+    def test_escape_helpers(self):
+        """Test the unescape and escape helpers"""
+        aStrings = [
+                ('aaaa', 'aaaa'),
+                ('"', '\\"'),
+                ("'", "\\'"),
+                ("\\", "\\\\"),
+                ("\\'", "\\\\\\'"),
+                ("\\\"", "\\\\\\\""),
+                ('"\\', '\\"\\\\'),
+                ]
+
+        for sData, sEscaped in aStrings:
+            self.assertEqual(sData, unescape(escape(sData)))
+            self.assertEqual(escape(sData), sEscaped)
+
     def test_quoting(self):
         """Check that both single and double quotes work"""
         aTests = [
@@ -183,6 +200,8 @@ class FilterParserTests(SutekhTest):
             ("CardName in 'Aaron'", Filters.CardNameFilter('Aaron')),
             ('CardName in "Aaron"', Filters.CardNameFilter('Aaron')),
             ('CardName in "Aaron\'s"', Filters.CardNameFilter("Aaron's")),
+            ('CardName in "Aaron\\\'s"', Filters.CardNameFilter("Aaron's")),
+            ("CardName in '\\\"Di'", Filters.CardNameFilter('"Di')),
             ("CardName in '\"Di'", Filters.CardNameFilter('"Di')),
             ]
         # Only test on AbstractCards
@@ -192,6 +211,52 @@ class FilterParserTests(SutekhTest):
             aExpectedNames = self._get_abs_names(oEquivFilter)
             self.assertEqual(aNames, aExpectedNames, "Filter Object %s "
                     "failed. %s != %s." % (oFilter, aNames, aExpectedNames))
+
+        # Create some nasty cases for testing escaping
+        _oPCS = PhysicalCardSet(name='\\')
+        _oPCS = PhysicalCardSet(name='\\\\')
+        _oPCS = PhysicalCardSet(name='"')
+        _oPCS = PhysicalCardSet(name="'")
+
+        aPhysicalCardSetTests = [
+            # test different quote types
+            ("CardSetName = '\"'", Filters.CardSetNameFilter('"')),
+            ('CardSetName in "\'"', Filters.CardSetNameFilter("'")),
+            # Test escaping quotes
+            ("CardSetName in '\\\''", Filters.CardSetNameFilter("'")),
+            ("CardSetName in '\\\"'", Filters.CardSetNameFilter('"')),
+            ('CardSetName in "\\\""', Filters.CardSetNameFilter('"')),
+            # Test escaping \
+            # raw strings to save on toothpicks
+            (r'CardSetName in "\\"', Filters.CardSetNameFilter('\\')),
+            (r'CardSetName in "\\\\"', Filters.CardSetNameFilter(r'\\')),
+            ]
+
+        for sFilter, oEquivFilter in aPhysicalCardSetTests:
+            oFilter = self._parse_filter(sFilter)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            aExpectedSets = sorted(oEquivFilter.select(
+                PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+
+        # Test bouncing through filter box code
+        for sFilter, oEquivFilter in aPhysicalCardSetTests:
+            oAST = self.oFilterParser.apply(sFilter)
+            oBoxModel = FilterBox.FilterBoxModel(oAST, 'PhysicalCardSet')
+            # Test get_text round-trip
+            oFilter = self._parse_filter(oBoxModel.get_text())
+            aExpectedSets = sorted(oEquivFilter.select(
+                PhysicalCardSet).distinct())
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
+            # test get_ast + get_values round-trip
+            oAST = oBoxModel.get_ast_with_values()
+            oFilter = oAST.get_filter()
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct())
+            self.assertEqual(aCardSets, aExpectedSets, "Filter Object %s"
+                    " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
     def test_card_set_filters(self):
         """Tests for the physical card set filters."""

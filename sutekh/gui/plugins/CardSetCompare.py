@@ -87,7 +87,7 @@ class CardSetCompare(SutekhPlugin):
         oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
         oIgnoreExpansions = gtk.CheckButton("Ignore Expansions")
         oDlg.vbox.pack_start(oIgnoreExpansions)
-        oCSView.set_size_request(150, 300)
+        oCSView.set_size_request(450, 300)
         oDlg.connect("response", self.handle_response, oCSView,
                 oIgnoreExpansions)
         oDlg.show_all()

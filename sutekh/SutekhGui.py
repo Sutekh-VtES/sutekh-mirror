@@ -20,7 +20,8 @@ from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.ConfigFileLegacy import ConfigFileLegacy
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning, \
+        do_exception_complaint, do_complaint_error_details
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -67,15 +68,7 @@ def exception_handler(oType, oValue, oTraceback):
     # the progress bar update hack is ongoing, the error dialog won't work
     # correctly, and the exception may be lost
 
-    oErrorDlg = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR,
-        gtk.BUTTONS_CLOSE, sMessage)
-    oErrorDlg.set_name("Sutekh.dialog")
-
-    oErrorDlg.format_secondary_text("".join(aTraceback))
-
-    # we ignore the response here
-    oErrorDlg.run()
-    oErrorDlg.destroy()
+    do_complaint_error_details(sMessage, "".join(aTraceback))
 
 
 def setup_logging(oOpts):
@@ -109,9 +102,9 @@ def setup_logging(oOpts):
 
 
 def main():
-    # pylint: disable-msg=R0912, R0914
-    # lots of different cases to consider, so lots of variables and
-    # if statement
+    # pylint: disable-msg=R0912, R0914, R0915
+    # lots of different cases to consider, so long and has lots of variables
+    # and if statement
     """Start the Sutekh Gui.
 
        Check that database exists, doesn't need to be upgraded, then
@@ -147,6 +140,14 @@ def main():
     # initial config validation to set sane defaults
     # (re-validated later after plugins are loaded)
     oConfig.validate()
+
+    if not oConfig.check_writeable():
+        # Warn the user
+        iRes = do_complaint_warning('Unable to write to the config file %s.\n'
+                'Config changes will NOT be saved.\n'
+                'Do you wish to continue?' % oOpts.sRCFile)
+        if iRes == gtk.RESPONSE_CANCEL:
+            return 1
 
     if oOpts.db is None:
         oOpts.db = oConfig.get_database_uri()
@@ -199,7 +200,12 @@ def main():
     oMultiPaneWindow.run()
 
     # Save Config Changes
-    oConfig.write()
+    try:
+        oConfig.write()
+    except IOError, oExp:
+        sMesg = 'Unable to write the configuration file\n' \
+                'Error was: %s' % oExp
+        do_exception_complaint(sMesg)
 
     logging.shutdown()
 

@@ -14,6 +14,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import logging
 # pylint: disable-msg=E0611
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
@@ -36,7 +37,8 @@ from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
 from sutekh.gui.IconManager import IconManager
-from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.gui.SutekhDialog import do_complaint_error_details, \
+        do_exception_complaint
 
 
 class MultiPaneWindow(gtk.Window):
@@ -112,10 +114,11 @@ class MultiPaneWindow(gtk.Window):
         oValidationResults = oConfig.validate()
         aErrors = oConfig.validation_errors(oValidationResults)
         if aErrors:
-            aErrors.insert(0, "The following configuration file errors were"
-                    " encountered:")
-            aErrors.insert(1, "")
-            do_complaint_error("\n".join(aErrors))
+            logging.warn('Configuration file validation errors:\n %s' %
+                    "\n".join(aErrors))
+            do_complaint_error_details(
+                    "The configuration file validation failed:",
+                    "\n".join(aErrors))
         oConfig.sanitize()
 
         # Create object cache
@@ -304,9 +307,9 @@ class MultiPaneWindow(gtk.Window):
                 oPane = CardSetFrame(self, sName, bStartEditable)
                 self.replace_frame(oFrame, oPane, bDoReloadPCS)
                 return oPane
-            except RuntimeError:
-                # add warning dialog?
-                pass
+            except RuntimeError, oExp:
+                do_exception_complaint("Unable to open Card Set %s\n"
+                        "Error: %s" % (sName, oExp))
         return None
 
     def add_new_physical_card_set(self, sName, bStartEditable=False):

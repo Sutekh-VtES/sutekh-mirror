@@ -118,7 +118,7 @@ class MultiSelectComboBox(gtk.HBox):
             sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
             if sKeyName in ('Return', 'Escape'):
                 if sKeyName == 'Escape':
-                    self.set_selection(self._aOldSelection)
+                    self.set_selected_rows(self._aOldSelection)
                 self.__hide_list()
                 return True  # event handled
         return False  # process further
@@ -152,6 +152,6 @@ class MultiSelectComboBox(gtk.HBox):
         """Return a list of the selected elements of the list"""
         return self._oTreeView.get_selected_data()
 
-    def set_selection(self, aRowsToSelect):
+    def set_selected_rows(self, aRowsToSelect):
         """Set the selected rows in the drop-down to aRowsToSelect"""
-        self._oTreeView.set_selection(aRowsToSelect)
+        self._oTreeView.set_selected_rows(aRowsToSelect)

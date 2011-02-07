@@ -195,6 +195,7 @@ class CardTextView(gtk.TextView):
         logging.info('Pango Font Description : %s',
                 oContext.get_font_description())
         self._oBurnOption = None
+        self._oAdvanced = None
         self.update_to_new_db()  # lookup burn option
         self.dListeners = {}  # dictionary of CardTextViewListeners
 
@@ -220,15 +221,23 @@ class CardTextView(gtk.TextView):
         """Cached lookup of the burn option keyword"""
         # Burn option is a special case because of the icon, so we test for it
         # a lot, so we cache the result
+        # Likewise, we cache advanced
         # we can't do this during import, because we're not assured that the
         # database exists yet
         try:
             self._oBurnOption = IKeyword('burn option')
         except SQLObjectNotFound:
             # protect against burn option being missing from the database
-            # (this shouldn't happen but it seems a shame to crash)
             self._oBurnOption = None
             logging.warn("Keyword 'burn option' not present in database.")
+
+        try:
+            self._oAdvanced = IKeyword('advanced')
+        except SQLObjectNotFound:
+            # protect against advanced being missing
+            self._oAdvanced = None
+            logging.warn("Keyword 'advanced' not present in database.")
+
 
     def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
@@ -286,6 +295,8 @@ class CardTextView(gtk.TextView):
             for oItem in oCard.keywords:
                 if self._oBurnOption == oItem:
                     oIcon = self._oIconManager.get_icon_by_name('burn option')
+                elif self._oAdvanced == oItem:
+                    oIcon = self._oIconManager.get_icon_by_name('advanced')
                 else:
                     oIcon = None
                 dIcons[oItem.keyword] = oIcon

@@ -9,7 +9,7 @@
 """FilterBox model of the filters. Mainly used in filter editor"""
 
 from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
-        FilterPartNode
+        FilterPartNode, escape
 
 
 class FilterBoxModel(list):
@@ -288,23 +288,27 @@ class FilterBoxItem(object):
         return set([self.sVariableName])
 
     def get_current_values(self):
-        """Get the current values set for this filter."""
+        """Get the current values set for this filter.
+
+           We escape the values to ensure we handle quotes and so forth
+           sanely"""
         dVars = {}
         # Flag as empty by default
         dVars[self.sVariableName] = None
         if self.aCurValues:
             if self.iValueType == self.LIST:
-                dVars[self.sVariableName] = ['"%s"' % sValue for sValue in
-                        self.aCurValues]
+                dVars[self.sVariableName] = ['"%s"' % escape(sValue)
+                        for sValue in self.aCurValues]
             elif self.iValueType == self.LIST_FROM:
                 aValues, aFrom = self.aCurValues
                 if aFrom:
-                    aFrom = ['"%s"' % x for x in aFrom]
+                    aFrom = ['"%s"' % escape(x) for x in aFrom]
                     if aValues:
-                        aValues = ['"%s"' % x for x in aValues]
+                        aValues = ['"%s"' % escape(x) for x in aValues]
                         dVars[self.sVariableName] = [aValues, aFrom]
             elif self.iValueType == self.ENTRY:
-                dVars[self.sVariableName] = ['"%s"' % self.aCurValues[0]]
+                dVars[self.sVariableName] = ['"%s"' %
+                        escape(self.aCurValues[0])]
         return dVars
 
     def get_ast(self):
@@ -326,20 +330,21 @@ class FilterBoxItem(object):
             sValues = None
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
             if self.iValueType == self.LIST:
-                sValues = ",".join(['"%s"' % sValue for sValue in
+                sValues = ",".join(['"%s"' % escape(sValue) for sValue in
                         self.aCurValues])
             elif self.iValueType == self.LIST_FROM:
                 aValues, aFrom = self.aCurValues
                 sFromValues = '"-1"'
                 sFrom = '""'  # Sentinals
                 if aValues:
-                    sFromValues = ",".join(['"%s"' % x for x in aValues])
+                    sFromValues = ",".join(['"%s"' % escape(x)
+                        for x in aValues])
                 if aFrom:
-                    sFrom = ",".join(['"%s"' % x for x in aFrom])
+                    sFrom = ",".join(['"%s"' % escape(x) for x in aFrom])
                 if aFrom or aValues:
                     sValues = "%s FROM %s" % (sFromValues, sFrom)
             elif self.iValueType == self.ENTRY:
-                sValues = '"%s"' % self.aCurValues[0]
+                sValues = '"%s"' % escape(self.aCurValues[0])
             if sValues:
                 sText = '%s in %s' % (self.sFilterName, sValues)
         else:

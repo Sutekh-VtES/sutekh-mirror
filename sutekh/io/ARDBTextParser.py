@@ -61,13 +61,18 @@ class NameAndAuthor(State):
            if needed."""
         aParts = sLine.split(':')
         if len(aParts) != 2:
-            return self
+            # Check for crypt line, as description isn't always present
+            if sLine.strip().startswith('Crypt ['):
+                return Cards(self._oHolder)
+            elif sLine.strip().startswith('Crypt: ('):
+                return Cards(self._oHolder)
+            return self  # Nothing of interest seen
 
         sKey, sValue = aParts[0].strip(), aParts[1].strip()
 
         if sKey == "Deck Name":
             self._oHolder.name = sValue
-        elif sKey == "Author":
+        elif sKey == "Author" or sKey == "Created By" or sKey == "Created by":
             self._oHolder.author = sValue
         elif sKey == "Description":
             oDesc = Description(self._oHolder)
@@ -96,7 +101,8 @@ class Description(State):
 
 class Cards(State):
     """State for extracting the cards"""
-    _oCardRe = re.compile(r'\s*(?P<cnt>[0-9]+)(x)*\s+(?P<name>[^\t\r\n]+)')
+    _oCardRe = re.compile(
+            r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
 
     def transition(self, sLine):
         """Extract the cards from the data.
