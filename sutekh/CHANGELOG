@@ -2,6 +2,7 @@
  * Sort 'No Card' entries first in GuiCarLookup
  * Bold 'No Card' entires, to be more visible
  * Fix cursor behaviour when the card lookup dialog is sorted.
+ * Tweak ARDBTextParser to be a bit more liberal
 
 05 Feb 2011
  * Fix issue with double quotes in crypt cards when uploading to the Secret
