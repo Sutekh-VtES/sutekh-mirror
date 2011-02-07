@@ -3,6 +3,7 @@
  * Bold 'No Card' entires, to be more visible
  * Fix cursor behaviour when the card lookup dialog is sorted.
  * Tweak ARDBTextParser to be a bit more liberal
+ * Fix bug with ARDBTextParser missing advanced vampires
 
 05 Feb 2011
  * Fix issue with double quotes in crypt cards when uploading to the Secret

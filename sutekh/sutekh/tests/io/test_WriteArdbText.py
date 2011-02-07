@@ -10,6 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.ARDBTextParser import ARDBTextParser
 import unittest
 
 # This doesn't match the ARDB export for the same card set, due to
@@ -54,6 +55,31 @@ class ArdbTextWriterTests(SutekhTest):
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, ARDB_TEXT_EXPECTED_1)
+
+    def test_roundtrip(self):
+        """Test we can round-trip a deck"""
+        oPhysCardSet1 = make_set_1()
+        oParser = ARDBTextParser()
+
+        oWriter = WriteArdbText()
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+
+        oHolder = self._make_holder_from_string(oParser, sData)
+
+        self.assertEqual(oHolder.name, oPhysCardSet1.name)
+        self.assertEqual(oHolder.author, oPhysCardSet1.author)
+        self.assertEqual(oHolder.comment.strip(), oPhysCardSet1.comment)
+
+        aCards = oHolder.get_cards()
+        dSetCards = {}
+        # Reformat cards in deck to match holder
+        for sName in [x.abstractCard.name for x in oPhysCardSet1.cards]:
+            dSetCards.setdefault(sName, 0)
+            dSetCards[sName] += 1
+
+        for sName, iCnt in dSetCards.iteritems():
+            self.failUnless((sName, iCnt) in aCards)
+
 
 if __name__ == "__main__":
     unittest.main()
