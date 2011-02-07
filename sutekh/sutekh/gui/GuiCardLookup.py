@@ -23,6 +23,16 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.FilterModelPanes import add_accel_to_button
 
 
+NO_CARD = "  No Card"
+
+
+def _sort_replacement(oModel, oIter1, oIter2):
+    """Sort replacement, honouring spaces"""
+    oVal1 = oModel.get_value(oIter1, 2)
+    oVal2 = oModel.get_value(oIter2, 2)
+    return cmp(oVal1, oVal2)
+
+
 class DummyController(object):
     """Dummy controller class, so we can use the card views directly"""
     def __init__(self, sFilterType):
@@ -49,7 +59,7 @@ class ACLLookupView(PhysicalCardView):
 
     def get_selected_card(self):
         """Return the selected card with a dummy expansion of ''."""
-        sNewName = 'No Card'
+        sNewName = NO_CARD
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
             sNewName, _sExpansion, _iCount, _iDepth = \
@@ -70,7 +80,7 @@ class PCLLookupView(PhysicalCardView):
 
     def get_selected_card(self):
         """Return the selected card and expansion."""
-        sNewName = 'No Card'
+        sNewName = NO_CARD
         sExpansion = '  Unpecified Expansion'
         oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
@@ -99,7 +109,7 @@ class ReplacementTreeView(gtk.TreeView):
         self._dToolTips = {}
 
         oModel = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,
-                               gobject.TYPE_STRING)
+                               gobject.TYPE_STRING, gobject.TYPE_INT)
 
         super(ReplacementTreeView, self).__init__(oModel)
         self.oCardListView = oCardListView
@@ -122,6 +132,9 @@ class ReplacementTreeView(gtk.TreeView):
 
         self.set_property('has-tooltip', True)
         self.connect('query-tooltip', self._show_tooltip)
+
+        oModel.set_sort_func(2, _sort_replacement)
+        oModel.set_sort_column_id(2, 0)
 
     # utility methods to simplify column creation
     def _create_button_column(self, oIcon, sLabel, sToolTip, fClicked):
@@ -162,10 +175,21 @@ class ReplacementTreeView(gtk.TreeView):
         """Create a text column, using iColumn from the model"""
         oCell = gtk.CellRendererText()
         oCell.set_property('style', pango.STYLE_ITALIC)
-        oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iColumn)
+        oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iColumn, weight=3)
         oColumn.set_expand(True)
         oColumn.set_sort_column_id(iColumn)
         self.append_column(oColumn)
+
+    def _fix_selection(self, sName):
+        """Fix the cursor position to accomodate the result of the rows
+           being sorted"""
+        oIter = self.oModel.get_iter_first()
+        while oIter:
+            sCurName = self.oModel.get_value(oIter, 1)
+            if sName == sCurName:
+                self.set_cursor(self.oModel.get_path(oIter))
+                return
+            oIter = self.oModel.iter_next(oIter)
 
     def _set_to_selection(self, _oCell, oPath):
         """Set the replacement card to the selected entry"""
@@ -176,9 +200,10 @@ class ReplacementTreeView(gtk.TreeView):
         # best we can
 
         oIter = self.oModel.get_iter(oPath)
+        sName = self.oModel.get_value(oIter, 1)
 
         sNewName, sExpansion = self.oCardListView.get_selected_card()
-        if sNewName == 'No Card':
+        if sNewName == NO_CARD:
             do_complaint_error("Please select a card")
             return
 
@@ -188,11 +213,16 @@ class ReplacementTreeView(gtk.TreeView):
             sReplaceWith = sNewName
 
         self.oModel.set_value(oIter, 2, sReplaceWith)
+        self.oModel.set_value(oIter, 3, pango.WEIGHT_NORMAL)
+        gobject.timeout_add(1, self._fix_selection, sName)
 
     def _set_ignore(self, _oCell, oPath):
         """Mark the card as not having a replacement."""
         oIter = self.oModel.get_iter(oPath)
-        self.oModel.set_value(oIter, 2, "No Card")
+        sName = self.oModel.get_value(oIter, 1)
+        self.oModel.set_value(oIter, 2, NO_CARD)
+        self.oModel.set_value(oIter, 3, pango.WEIGHT_BOLD)
+        gobject.timeout_add(1, self._fix_selection, sName)
 
     def _set_filter(self, _oCell, oPath):
         """Set the card list filter to the best guess filter for this card."""
@@ -252,6 +282,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
            Provides an implementation for AbstractCardLookup.
            """
+        # pylint: disable-msg=R0912
+        # Lots of different cases to consider, to several branches
         dCards = {}
         dUnknownCards = {}
 
@@ -264,7 +296,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             else:
                 # Check we can encode the name properly
                 try:
-                    _ = sName.encode('utf8')
+                    _sTemp = sName.encode('utf8')
                 except UnicodeDecodeError:
                     # Wrong assumptions somewhere - let the user sort it
                     # out
@@ -407,11 +439,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         # Populate the model with the card names and best guesses
         for (sName, sExpName), iCnt in dUnknownCards.items():
-            sBestGuess = "No Card"
+            sBestGuess = NO_CARD
             sFullName = "%s [%s]" % (sName, sExpName)
 
             oIter = oModel.append(None)
-            oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess)
+            oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
+                    3, pango.WEIGHT_BOLD)
 
         oUnknownDialog.vbox.show_all()
         oPhysCardView.load()
@@ -430,7 +463,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 sNewName, sNewExpName = \
                     oReplacementView.parse_card_name(sNewFullName)
 
-                if sNewName != "No Card":
+                if sNewName != NO_CARD:
                     iCnt = dUnknownCards[(sName, sExpName)]
 
                     # Find First physical card that matches this name
@@ -560,6 +593,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
            We allow the user to select the correct replacements from the
            Abstract Card List.
            """
+        # pylint: disable-msg=R0914
+        # we use lots of variables for clarity
         oUnknownDialog, oHBox = self._create_dialog(sInfo,
                 "The following card names could not be found")
         # pylint: disable-msg=E1101
@@ -575,12 +610,14 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             aCards = list(oBestGuessFilter.select(AbstractCard))
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
+                iWeight = pango.WEIGHT_NORMAL
             else:
-                sBestGuess = "No Card"
+                sBestGuess = NO_CARD
+                iWeight = pango.WEIGHT_BOLD
 
             oIter = oModel.append(None)
             # second 1 is the dummy card count
-            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess)
+            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess, 3, iWeight)
 
         oUnknownDialog.vbox.show_all()
         oAbsCardView.load()
@@ -593,7 +630,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oIter = oModel.get_iter_root()
             while not oIter is None:
                 sName, sNewName = oModel.get(oIter, 1, 2)
-                if sNewName != "No Card":
+                if sNewName != NO_CARD:
                     dUnknownCards[sName] = sNewName
                 oIter = oModel.iter_next(oIter)
             return True
