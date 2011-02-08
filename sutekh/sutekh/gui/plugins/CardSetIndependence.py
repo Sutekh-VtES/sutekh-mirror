@@ -95,10 +95,6 @@ class CardSetIndependence(SutekhPlugin):
         if not self.oThisCardSet.parent:
             do_complaint_error("Card Set has no parent, so nothing to test.")
             return None
-        if not PhysicalCardSet.selectBy(
-                parentID=self.oThisCardSet.parent.id).count() > 1:
-            do_complaint_error("No sibling card sets, so nothing to test.")
-            return None
 
         bInUseSets = PhysicalCardSet.selectBy(
                 parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
@@ -123,7 +119,8 @@ class CardSetIndependence(SutekhPlugin):
         self.oCSView.load()
         self.oCSView.expand_to_entry(self.view.sSetName)
         self.oCSView.set_size_request(450, 300)
-        self.oIgnoreExpansions = gtk.CheckButton(label="Ignore card expansions")
+        self.oIgnoreExpansions = gtk.CheckButton(
+                label="Ignore card expansions")
         oDlg.vbox.pack_start(self.oIgnoreExpansions, False, False)
         self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
                 " marked as in use")
@@ -155,13 +152,19 @@ class CardSetIndependence(SutekhPlugin):
                     aCardSetNames.append(self.view.sSetName)
             else:
                 aCardSetNames = [self.view.sSetName]
-                aCardSetNames.extend(self.oCSView.get_all_selected_sets())
+                aSelected = self.oCSView.get_all_selected_sets()
+                if aSelected:
+                    aCardSetNames.extend(aSelected)
+            # We may have only 1 set here, but we will still do the
+            # right thing in that case.
             self._test_card_sets(aCardSetNames, self.oThisCardSet.parent,
-                                    bIgnoreExpansions)
+                    bIgnoreExpansions)
         oDlg.destroy()
 
     def _display_results(self, dMissing, oParentCS):
         """Display the list of missing cards"""
+        # pylint: disable-msg=E1101
+        # E1101: PyProtocols confuses pylint
         oResultDlg = SutekhDialog("Missing Cards", None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
@@ -175,17 +178,17 @@ class CardSetIndependence(SutekhPlugin):
             if not hasattr(oCard, 'expansion'):
                 sExpansion = ""
             elif oCard.expansion:
-                sExpansion = self.escape(oCard.expansion.name)
+                sExpansion = " [%s]" % self.escape(oCard.expansion.name)
             else:
-                sExpansion = "(unspecified expansion)"
+                sExpansion = " [(unspecified expansion)]"
             aParentList.append('<span foreground = "blue">'
-                    '%s [%s]</span> : Missing <span foreground="red">%d'
+                    '%s%s</span> : Missing <span foreground="red">%d'
                     '</span> copies (used in %s)'
                     % (sCardName, sExpansion, oInfo.iCount,
                         self.escape(oInfo.format_cs())))
             for sCardSet, iCount in oInfo.dCardSets.iteritems():
                 dFormatted.setdefault(sCardSet, [])
-                dFormatted[sCardSet].append('<span foreground="blue">%s [%s]'
+                dFormatted[sCardSet].append('<span foreground="blue">%s%s'
                         '</span>: Missing <span foreground="red">%d'
                         '</span> copies (%d copies used here)' % (sCardName,
                             sExpansion, oInfo.iCount, iCount))
