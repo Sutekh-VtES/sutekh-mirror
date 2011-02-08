@@ -1,3 +1,6 @@
+08 Feb 2011
+ * Avoid unnecessary database changed signals when editing card set properties
+
 07 Feb 2011
  * Sort 'No Card' entries first in GuiCarLookup
  * Bold 'No Card' entires, to be more visible
