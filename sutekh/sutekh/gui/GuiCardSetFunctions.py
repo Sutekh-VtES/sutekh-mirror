@@ -156,11 +156,22 @@ def update_card_set(oCardSet, oMainWindow):
     sName = oEditDialog.get_name()
     if not sName:
         return  # bail
-    oCardSet.name = sName
-    oCardSet.author = oEditDialog.get_author()
-    oCardSet.comment = oEditDialog.get_comment()
-    oCardSet.annotations = oEditDialog.get_annotations()
-    oCardSet.inuse = oEditDialog.get_in_use()
+    # To ensure we don't send unnecessary changed signals, only update
+    # if things have changed
+    if sName != oCardSet.name:
+        oCardSet.name = sName
+    sAuthor = oEditDialog.get_author()
+    if sAuthor != oCardSet.author:
+        oCardSet.author = sAuthor
+    sComment = oEditDialog.get_comment()
+    if sComment != oCardSet.comment:
+        oCardSet.comment = sComment
+    sAnnotations = oEditDialog.get_annotations()
+    if sAnnotations != oCardSet.annotations:
+        oCardSet.annotations = sAnnotations
+    bInUse = oEditDialog.get_in_use()
+    if bInUse != oCardSet.inuse:
+        oCardSet.inuse = bInUse
     oParent = oEditDialog.get_parent()
     if oParent != oCardSet.parent:
         reparent_card_set(oCardSet, oParent)
