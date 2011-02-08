@@ -103,6 +103,7 @@ class Cards(State):
     """State for extracting the cards"""
     _oCardRe = re.compile(
             r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
+    _oAdvRe = re.compile('\sAdv\s')
 
     def transition(self, sLine):
         """Extract the cards from the data.
@@ -114,6 +115,9 @@ class Cards(State):
         if oMatch:
             iCnt = int(oMatch.group('cnt'))
             sName = oMatch.group('name').split('  ')[0]
+            # Check for the advacned string and append advanced if needed
+            if self._oAdvRe.search(sLine) and not 'Adv' in sName:
+                sName += ' (Advanced)'
             self._oHolder.add(iCnt, sName, None)
         return self
 
