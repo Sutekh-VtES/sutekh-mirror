@@ -79,8 +79,10 @@ class SutekhInfo(object):
     ]
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0, < 0.15',  # fetching the dev version requires svn
-                           # (which is a bit crazy as an install requirement)
+        'SQLObject >= 0.9.0, <= 0.14.9',  # 0.15 changes the db signal
+                                          # signature, so we exclude it for
+                                          # now
+
         'PyProtocols',
         'ply',
         'configobj',
