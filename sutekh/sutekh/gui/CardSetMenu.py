@@ -211,5 +211,8 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
             self._fix_profile_menu()
 
     def profile_changed(self, sType, sId):
-        if (sType == FRAME or sType == FRAME) and sId == self.frame_id:
+        if sType == FRAME and sId == self.frame_id:
+            self._fix_profile_menu()
+        elif sType == CARDSET and sId == self.cardset_id:
+            # Relevant when we have multiple copies of the cardset open
             self._fix_profile_menu()
