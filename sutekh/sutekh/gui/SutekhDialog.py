@@ -126,4 +126,3 @@ def do_exception_complaint(sMessage):
             limit=30)
     logging.error("%s:\n%s", sMessage, "".join(aTraceback))
     do_complaint_error_details(sMessage, "".join(aTraceback))
-
