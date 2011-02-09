@@ -238,7 +238,6 @@ class CardTextView(gtk.TextView):
             self._oAdvanced = None
             logging.warn("Keyword 'advanced' not present in database.")
 
-
     def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
         oStart, oEnd = self._oBuf.get_bounds()
