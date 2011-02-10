@@ -134,6 +134,10 @@ def main():
             if os.path.isfile(sLegacyConfigFile):
                 oLegacyConfig = ConfigFileLegacy(sLegacyConfigFile)
                 oNewConfig = oLegacyConfig.convert(oOpts.sRCFile)
+                # Call check_writeable just to set the right flags.
+                # If it's not writeable, the later check will complain
+                # as required.
+                oNewConfig.check_writeable()
                 oNewConfig.write()
 
     oConfig = ConfigFile(oOpts.sRCFile)

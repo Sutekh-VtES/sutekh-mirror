@@ -1,5 +1,14 @@
+10 Feb 2011
+ * Fix bug that caused a converted rc file not to be written properly
+
+09 Feb 2011
+ * Fix bug with profile menus not updating properly for all open copies of a
+   card set
+
 08 Feb 2011
  * Avoid unnecessary database changed signals when editing card set properties
+ * Tweak display of the card set independence plugin when no expansions are shown
+ * Beahve sensibly if only testing a single card set for independence.
 
 07 Feb 2011
  * Sort 'No Card' entries first in GuiCarLookup
