@@ -28,7 +28,11 @@ def _get_number(dInfo, sKey, fQuery):
     if not dInfo.has_key(sKey):
         try:
             oCardSet = dInfo['Card Set']
-            dInfo[sKey] = fQuery(oCardSet)
+            if oCardSet:
+                dInfo[sKey] = fQuery(oCardSet)
+            else:
+                # We have an earlier failed lookup
+                return -1
         except KeyError:
             # This can arise if we're called while reloading a backup or
             # similiar
@@ -135,6 +139,9 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                         IPhysicalCardSet(sCardSetName)
             return sCardSetName
         except SQLObjectNotFound:
+            self._dCache[sCardSetName] = {}
+            # Cache failed lookup so we don't repeat it later
+            self._dCache[sCardSetName]['Card Set'] = None
             return None
 
     # pylint: disable-msg=R0201
@@ -272,7 +279,10 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         """Get the card set author info"""
         if sCardSet:
             oCardSet = self._dCache[sCardSet]['Card Set']
-            sAuthor = oCardSet.author
+            if oCardSet:
+                sAuthor = oCardSet.author
+            else:
+                sAuthor = ''
             if not sAuthor:
                 # Handle None sensibly
                 sAuthor = ''
@@ -292,7 +302,10 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         """Get the card set description"""
         if sCardSet:
             oCardSet = self._dCache[sCardSet]['Card Set']
-            sDesc = oCardSet.comment
+            if oCardSet:
+                sDesc = oCardSet.comment
+            else:
+                sDesc = ''
             if not sDesc:
                 # Handle None sensibly
                 sDesc = ''
