@@ -59,13 +59,15 @@ class NameAndAuthor(State):
     def transition(self, sLine):
         """Process the line for Name and Author - trnaisiotn to Description
            if needed."""
+        # Check for crypt line, as description isn't always present
+        if sLine.strip().startswith('Crypt ['):
+            return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt: ('):
+            return Cards(self._oHolder)
+
         aParts = sLine.split(':')
+
         if len(aParts) != 2:
-            # Check for crypt line, as description isn't always present
-            if sLine.strip().startswith('Crypt ['):
-                return Cards(self._oHolder)
-            elif sLine.strip().startswith('Crypt: ('):
-                return Cards(self._oHolder)
             return self  # Nothing of interest seen
 
         sKey, sValue = aParts[0].strip(), aParts[1].strip()
