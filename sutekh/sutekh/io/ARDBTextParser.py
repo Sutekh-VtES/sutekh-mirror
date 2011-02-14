@@ -117,6 +117,8 @@ class Cards(State):
         if oMatch:
             iCnt = int(oMatch.group('cnt'))
             sName = oMatch.group('name').split('  ')[0]
+            # We see mixed spaces and tabs in the wild, so we need this
+            sName = sName.strip()
             # Check for the advacned string and append advanced if needed
             if self._oAdvRe.search(sLine) and not 'Adv' in sName:
                 sName += ' (Advanced)'
