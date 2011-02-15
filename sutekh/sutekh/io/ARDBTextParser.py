@@ -64,6 +64,8 @@ class NameAndAuthor(State):
             return Cards(self._oHolder)
         elif sLine.strip().startswith('Crypt: ('):
             return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt ('):
+            return Cards(self._oHolder)
 
         aParts = sLine.split(':')
 
@@ -95,6 +97,8 @@ class Description(State):
             return Cards(self._oHolder)
         elif sLine.strip().startswith('Crypt: ('):
             self._oHolder.comment = self._sData
+            return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt ('):
             return Cards(self._oHolder)
         else:
             self.data(sLine)
