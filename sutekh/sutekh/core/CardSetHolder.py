@@ -134,7 +134,10 @@ class CardSetHolder(object):
         """Helper function to handle wierd encodings in the input
            sanely"""
         try:
-            sSane = sText.encode('utf8')
+            if sText:
+                sSane = sText.encode('utf8')
+            else:
+                sSane = sText  # Nothing to do in this case
         except UnicodeDecodeError:
             sSane = sText.decode('ascii', 'replace').encode('ascii',
                     'replace')
