@@ -130,13 +130,29 @@ class CardSetHolder(object):
 
         sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 
+    def _sanitise_text(self, sText, sIdentifier):
+        """Helper function to handle wierd encodings in the input
+           sanely"""
+        try:
+            sSane = sText.encode('utf8')
+        except UnicodeDecodeError:
+            sSane = sText.decode('ascii', 'replace').encode('ascii',
+                    'replace')
+            self.add_warning('Unexpected encoding encountered for %s.\n'
+                    'Used Ascii fallback.' % sIdentifier)
+        return sSane
+
     def _commit_pcs(self, aPhysCards):
         """Commit the card set to the database."""
         oParent = self.get_parent_pcs()
-        oPCS = PhysicalCardSet(name=self.name.encode('utf8'),
-                               author=self.author, comment=self.comment,
-                               annotations=self.annotations,
-                               inuse=self.inuse, parent=oParent)
+        oPCS = PhysicalCardSet(
+                name=self._sanitise_text(self.name, 'the card set name'),
+                author=self._sanitise_text(self.author,
+                    'the card set author'),
+                comment=self._sanitise_text(self.comment, 'the comments'),
+                annotations=self._sanitise_text(self.annotations,
+                    'the annotations'),
+                inuse=self.inuse, parent=oParent)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
