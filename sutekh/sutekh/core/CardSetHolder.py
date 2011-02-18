@@ -67,11 +67,15 @@ class CardSetHolder(object):
         self._dExpansions[sExpansionName] -= iCnt
         self._dCards[sName] -= iCnt
 
+    def _set_name(self, sValue):
+        """Set the name, ensuring we have santised any encoding issues"""
+        self._sName = self._sanitise_text(sValue, 'the card set name', True)
+
     # pylint: disable-msg=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
     name = property(fget=lambda self: self._sName,
-            fset=lambda self, x: setattr(self, '_sName', x))
+            fset=_set_name)
     author = property(fget=lambda self: self._sAuthor,
             fset=lambda self, x: setattr(self, '_sAuthor', x))
     comment = property(fget=lambda self: self._sComment,
@@ -130,9 +134,11 @@ class CardSetHolder(object):
 
         sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 
-    def _sanitise_text(self, sText, sIdentifier):
+    def _sanitise_text(self, sText, sIdentifier, bIncludeFallback):
         """Helper function to handle wierd encodings in the input
-           sanely"""
+           sanely.
+
+           bIncludeFallback controls how any encoding errors are logged."""
         try:
             if sText:
                 sSane = sText.encode('utf8')
@@ -141,20 +147,24 @@ class CardSetHolder(object):
         except UnicodeDecodeError:
             sSane = sText.decode('ascii', 'replace').encode('ascii',
                     'replace')
-            self.add_warning('Unexpected encoding encountered for %s.\n'
-                    'Used Ascii fallback.' % sIdentifier)
+            if bIncludeFallback:
+                self.add_warning('Unexpected encoding encountered for %s.\n'
+                        'Replaced with %s.' % (sIdentifier, sSane))
+            else:
+                self.add_warning('Unexpected encoding encountered for %s.\n'
+                        'Used Ascii fallback.' % sIdentifier)
         return sSane
 
     def _commit_pcs(self, aPhysCards):
         """Commit the card set to the database."""
         oParent = self.get_parent_pcs()
-        oPCS = PhysicalCardSet(
-                name=self._sanitise_text(self.name, 'the card set name'),
+        oPCS = PhysicalCardSet(name=self.name,
                 author=self._sanitise_text(self.author,
-                    'the card set author'),
-                comment=self._sanitise_text(self.comment, 'the comments'),
+                    'the card set author', True),
+                comment=self._sanitise_text(self.comment, 'the comments',
+                    False),
                 annotations=self._sanitise_text(self.annotations,
-                    'the annotations'),
+                    'the annotations', False),
                 inuse=self.inuse, parent=oParent)
         oPCS.syncUpdate()
 
