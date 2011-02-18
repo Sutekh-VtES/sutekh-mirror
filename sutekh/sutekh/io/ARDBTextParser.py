@@ -67,7 +67,7 @@ class NameAndAuthor(State):
         elif sLine.strip().startswith('Crypt ('):
             return Cards(self._oHolder)
 
-        aParts = sLine.split(':')
+        aParts = sLine.split(':', 1)
 
         if len(aParts) != 2:
             return self  # Nothing of interest seen
