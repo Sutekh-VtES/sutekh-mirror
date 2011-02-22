@@ -99,6 +99,7 @@ class Description(State):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder)
         elif sLine.strip().startswith('Crypt ('):
+            self._oHolder.comment = self._sData
             return Cards(self._oHolder)
         else:
             self.data(sLine)
