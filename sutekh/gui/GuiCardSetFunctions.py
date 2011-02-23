@@ -8,6 +8,7 @@
 
 import gtk
 import datetime
+import logging
 from sutekh.core.CardSetHolder import CardSetHolder
 from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
         do_complaint_error, do_exception_complaint
@@ -212,7 +213,12 @@ def import_cs(fIn, oParser, oMainWindow):
     if aWarnings:
         sMsg = "The following warnings were reported:\n%s" % \
                 "\n".join(aWarnings)
-        do_complaint_warning(sMsg)
+        logging.warn(sMsg)
+        iResponse = do_complaint_warning("%s\nContinue with the import?"
+                % sMsg)
+        if iResponse != gtk.RESPONSE_OK:
+            return  # bail out
+        oHolder.clear_warnings()
 
     # Handle naming issues if needed
     oHolder, aChildren = get_import_name(oHolder)
@@ -222,6 +228,13 @@ def import_cs(fIn, oParser, oMainWindow):
     try:
         oHolder.create_pcs(oCardLookup=oMainWindow.cardLookup)
         reparent_all_children(oHolder.name, aChildren)
+        aWarnings = oHolder.get_warnings()
+        if aWarnings:
+            sMsg = "Card Set Created.\n" \
+                    "The following warnings were reported during the final" \
+                    " import:\n%s" % "\n".join(aWarnings)
+            logging.warn(sMsg)
+            do_complaint(sMsg, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
     except RuntimeError, oExp:
         sMsg = "Creating the card set failed with the following error:\n" \
                "%s\nAborting" % oExp

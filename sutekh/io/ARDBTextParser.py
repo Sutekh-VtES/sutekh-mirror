@@ -59,13 +59,17 @@ class NameAndAuthor(State):
     def transition(self, sLine):
         """Process the line for Name and Author - trnaisiotn to Description
            if needed."""
-        aParts = sLine.split(':')
+        # Check for crypt line, as description isn't always present
+        if sLine.strip().startswith('Crypt ['):
+            return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt: ('):
+            return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt ('):
+            return Cards(self._oHolder)
+
+        aParts = sLine.split(':', 1)
+
         if len(aParts) != 2:
-            # Check for crypt line, as description isn't always present
-            if sLine.strip().startswith('Crypt ['):
-                return Cards(self._oHolder)
-            elif sLine.strip().startswith('Crypt: ('):
-                return Cards(self._oHolder)
             return self  # Nothing of interest seen
 
         sKey, sValue = aParts[0].strip(), aParts[1].strip()
@@ -94,6 +98,9 @@ class Description(State):
         elif sLine.strip().startswith('Crypt: ('):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder)
+        elif sLine.strip().startswith('Crypt ('):
+            self._oHolder.comment = self._sData
+            return Cards(self._oHolder)
         else:
             self.data(sLine)
             return self
@@ -115,6 +122,8 @@ class Cards(State):
         if oMatch:
             iCnt = int(oMatch.group('cnt'))
             sName = oMatch.group('name').split('  ')[0]
+            # We see mixed spaces and tabs in the wild, so we need this
+            sName = sName.strip()
             # Check for the advacned string and append advanced if needed
             if self._oAdvRe.search(sLine) and not 'Adv' in sName:
                 sName += ' (Advanced)'
