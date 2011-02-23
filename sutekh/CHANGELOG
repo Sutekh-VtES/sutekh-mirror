@@ -1,5 +1,30 @@
+23 Feb 2011
+ * Add cleanup calls to gui card lookup, to remove stale profile listeners
+
+22 Feb 2011
+ * Fix bug in ARDBTextParser that could cause the description to be lost
+
+18 Feb 2011
+ * Fix bug in ARDBTextParser when dealing with names and authors containing ':'
+ * Improve handling on incorrectly encoding card set names
+
+17 Feb 2011
+ * Make card set importing a bit more robust against encoding issues with
+   the file
+ * Add warning dialogs for encoding issues
+ * Fix bug when dealing with empty fields introduced by the encoding changes
+
+15 Feb 2011
+ * Handle another Crypt line variant in ARDBTextParser
+
+14 Feb 2011
+ * Fix ARDBTextParser to deal with card sets missing the description section
+ * Fix bug in ARDBTextParser when encountering files with mixed spaces and tabs
+
 10 Feb 2011
  * Fix bug that caused a converted rc file not to be written properly
+ * Fix a bug with extra columns in the card set view when no card sets are
+   shown
 
 09 Feb 2011
  * Fix bug with profile menus not updating properly for all open copies of a
