@@ -66,6 +66,10 @@ class ACLLookupView(PhysicalCardView):
                 oModel.get_all_from_path(oPath)
         return sNewName, ''
 
+    def cleanup(self):
+        """Call model cleanup to remove listeners, etc."""
+        self._oModel.cleanup()
+
 
 class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
@@ -89,6 +93,10 @@ class PCLLookupView(PhysicalCardView):
         if sExpansion is None:
             sExpansion = ''
         return sNewName, sExpansion
+
+    def cleanup(self):
+        """Call model cleanup to remove listeners, etc."""
+        self._oModel.cleanup()
 
 
 class ReplacementTreeView(gtk.TreeView):
@@ -452,6 +460,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         iResponse = oUnknownDialog.run()
         oUnknownDialog.destroy()
 
+        oPhysCardView.cleanup()
+
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the list of
             # Physical Cards
@@ -624,6 +634,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         iResponse = oUnknownDialog.run()
         oUnknownDialog.destroy()
+
+        oAbsCardView.cleanup()
 
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
