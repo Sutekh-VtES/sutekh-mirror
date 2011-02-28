@@ -477,6 +477,7 @@ class FilterValuesBox(gtk.VBox):
             """Get important values out of a gtk.Adjustment"""
             return oAdj.value, oAdj.page_size
 
+        # We must always be calling this with a filter box model shown
         assert len(self._oWidget.get_children()) == 3
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
@@ -499,7 +500,10 @@ class FilterValuesBox(gtk.VBox):
             oAdj.changed()
             oAdj.value_changed()
 
-        assert len(self._oWidget.get_children()) == 3
+        if len(self._oWidget.get_children()) != 3:
+            # Selected widget is not a box model (can happen if we insert
+            # something before the box model, so no sensible default selection
+            return
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
         oSelection = oSubFilterWidget.get_selection()
