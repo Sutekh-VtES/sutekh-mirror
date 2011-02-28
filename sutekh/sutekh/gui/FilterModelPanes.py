@@ -500,6 +500,9 @@ class FilterValuesBox(gtk.VBox):
             oAdj.changed()
             oAdj.value_changed()
 
+        # FIXME: fix selection behaviour so we select the correct
+        # filter box model in this case, rather than the newly added
+        # filter.
         if len(self._oWidget.get_children()) != 3:
             # Selected widget is not a box model (can happen if we insert
             # something before the box model, so no sensible default selection
