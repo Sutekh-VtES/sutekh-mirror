@@ -226,6 +226,9 @@ class CardDict(dict):
             oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+        # Imbued are also mortals, so add the keyword
+        if self['cardtype'] == 'Imbued':
+            self._add_keyword(oCard, 'mortal')
 
     def _find_lib_life_and_keywords(self, oCard):
         """Extract ally and retainer life and strength & bleed keywords from
