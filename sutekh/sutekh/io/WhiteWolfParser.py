@@ -118,7 +118,8 @@ class CardDict(dict):
             'anarch': re.compile('\. Anarch:'),
             'scarce': re.compile('[.:] Scarce.'),
             'sterile': re.compile('[.:] Sterile.'),
-            'blood cursed': re.compile('[.:] \(?Blood Cursed'),
+            # Need the } to handle some of the errata'd cards
+            'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
             'not for legal play': re.compile(
                 '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
             }
