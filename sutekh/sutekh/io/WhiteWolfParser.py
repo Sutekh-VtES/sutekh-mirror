@@ -226,6 +226,9 @@ class CardDict(dict):
             oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+        # Add Non-Unique keyword
+        if 'are not unique' in sText or 'Non-unique' in sText:
+            self._add_keyword(oCard, 'non-unique')
         # Imbued are also mortals, so add the keyword
         if self['cardtype'] == 'Imbued':
             self._add_keyword(oCard, 'mortal')
