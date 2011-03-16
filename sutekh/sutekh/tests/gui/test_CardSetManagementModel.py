@@ -44,6 +44,7 @@ class CardSetManagementModelTests(SutekhTest):
             PhysicalCardSet(name='Child 2 Card Set %d' % iCnt, parent=oChild2)
         oWin = DummyWindow()
         oModel = CardSetManagementModel(oWin)
+        oModel.enable_sorting()
         oModel.load()
 
         self.assertEqual(oModel.get_card_set_iterator(None).count(), 10)
