@@ -14,6 +14,12 @@ from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 
 
+def strip_braces(sText):
+    """Helper function for searching for keywords. Strip all {} tags from the
+       text"""
+    return sText.replace('{', '').replace('}', '')
+
+
 # Card Saver
 def _find_sect_and_title(aLines):
     """Search the first 2 lines of the card text for sect & title
@@ -120,13 +126,13 @@ class CardDict(dict):
             # Need the } to handle some of the errata'd cards
             'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
             'not for legal play': re.compile(
-                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|\{Added to the V:EKN banned list'),
             }
 
     # Properites we check for all library cards
     dLibProperties = {
             'not for legal play': re.compile(
-                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|\{Added to the V:EKN banned list'),
             }
 
     # Ally properties
@@ -216,7 +222,7 @@ class CardDict(dict):
                     self.dCryptKeywordSpecial[self['name']].iteritems():
                 dKeywords[sKeyword] = iVal
         # Make sure we don't detect merged properties
-        sText = self['text'].split('[MERGED]')[0]
+        sText = strip_braces(self['text'].split('[MERGED]')[0])
         for sNum, sType in self.oCryptInfoRgx.findall(sText):
             dKeywords[sType] += int(sNum)
         for sType, iNum in dKeywords.iteritems():
@@ -237,7 +243,7 @@ class CardDict(dict):
         """Extract ally and retainer life and strength & bleed keywords from
            the card text"""
         # Restrict ourselves to text before Superior disciplines
-        sText = re.split('\[[A-Z]{3}\]', self['text'])[0]
+        sText = strip_braces(re.split('\[[A-Z]{3}\]', self['text'])[0])
         # Annoyingly not standardised
         oDetail1Rgx = re.compile('\. (\d strength), (\d bleed)[\.,]')
         oDetail2Rgx = re.compile('\. (\d bleed), (\d strength)[\.,]')
@@ -262,11 +268,14 @@ class CardDict(dict):
 
     def _find_card_keywords(self, oCard, dProps):
         """Find keywords for library cards"""
+        sText = strip_braces(self['text'])
+
         def _do_match(sKeyword, oRegexp):
             """Helper to do the match"""
-            oMatch = oRegexp.search(self['text'])
+            oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+
         for sKeyword, oRegexp in dProps.iteritems():
             _do_match(sKeyword, oRegexp)
         for sKeyword, oRegexp in self.dLibProperties.iteritems():
@@ -305,7 +314,7 @@ class CardDict(dict):
             self._find_card_keywords(oCard, self.dOtherProperties)
         if sType == 'Vampire':
             # Sect attributes: more text. Title is in the attributes
-            aLines = self['text'].split(':')
+            aLines = strip_braces(self['text']).split(':')
             sSect, sTitle = _find_sect_and_title(aLines)
             # check if the vampire has flight (text ends has Flight [FLIGHT].)
             oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
@@ -666,7 +675,7 @@ class InCardText(LogStateWithInfo):
 
     def transition(self, sLine, _dAttr):
         """Transition back to InCard if needed."""
-        if sLine.startswith('Artist:'):
+        if sLine.startswith('Artist:') or not sLine.strip():
             self._dInfo['text'] = fix_clarification_markers(
                     self._dInfo['text'].strip())
             oInCard = InCard(self._dInfo, self.oLogger)
@@ -700,6 +709,7 @@ class WhiteWolfTextParser(object):
         """Feed lines to the state machine"""
         for sLine in fIn:
             self.feed(sLine)
+        self.feed('')  # Ensure we flush any open card text states
 
     def feed(self, sLine):
         """Feed the line to the current state"""
