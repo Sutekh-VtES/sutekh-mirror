@@ -126,13 +126,13 @@ class CardDict(dict):
             # Need the } to handle some of the errata'd cards
             'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
             'not for legal play': re.compile(
-                'NOT FOR LEGAL PLAY|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
             }
 
     # Properites we check for all library cards
     dLibProperties = {
             'not for legal play': re.compile(
-                'NOT FOR LEGAL PLAY|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
             }
 
     # Ally properties
