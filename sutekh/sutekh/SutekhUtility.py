@@ -18,6 +18,7 @@ from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
         PhysicalCardSet
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfParser import WhiteWolfParser
+from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 
 
@@ -51,11 +52,10 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
     flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
-    oParser = WhiteWolfParser(oLogHandler)
+    oParser = WhiteWolfTextParser(oLogHandler)
     for oFile in aWwFiles:
         fIn = oFile.open()
-        for sLine in fIn:
-            oParser.feed(sLine)
+        oParser.parse(fIn)
         fIn.close()
     sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
