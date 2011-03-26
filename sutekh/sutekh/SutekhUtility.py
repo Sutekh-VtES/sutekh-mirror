@@ -17,7 +17,6 @@ from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
         PhysicalCardSet
 from sutekh.core.DatabaseVersion import DatabaseVersion
-from sutekh.io.WhiteWolfParser import WhiteWolfParser
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 
