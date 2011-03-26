@@ -32,7 +32,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <capacity>4</capacity>
       <group>4</group>
       <text>Independent.</text>
-    </vampire><vampire count="1" databaseID="19">
+    </vampire><vampire count="1" databaseID="20">
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
@@ -42,7 +42,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
-    </vampire><vampire count="1" databaseID="41">
+    </vampire><vampire count="1" databaseID="63">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -86,14 +86,14 @@ Put this card on this acting Sabbat vampire and untap him or her. This Sabbat va
       <type>Master</type>
       <text>Master: Discipline. Trifle.
 Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
-    </card><card count="1" databaseID="37">
+    </card><card count="1" databaseID="52">
       <name>Path of Blood, The</name>
       <set>LotN</set>
       <cost>1 pool</cost>
       <requirement>Assamite</requirement>
       <type>Master</type>
       <text>Unique master.
-Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less blood. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
+Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
     </card>
   </library>
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR)

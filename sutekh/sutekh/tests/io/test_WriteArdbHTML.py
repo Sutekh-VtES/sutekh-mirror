@@ -704,7 +704,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </li>
       </ul><div class="text">
         <p>Unique master.</p>
-        <p>Put this card in play. Cards that require Quietus [qui] cost Assamites 1 less blood. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
+        <p>Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
       </div>
     </div><div>
       <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>
