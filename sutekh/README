@@ -11,10 +11,9 @@ The Python modules required are:
 * Python-rsvg for the sutekh icon
 * configobj to manage the config file
 
-One will also need to download the official cardlist at one of:
+One will also need to download the official cardlist at:
 
-* http://www.white-wolf.com/vtes/index.php?line=cardlist
-* http://www.white-wolf.com/vtes/HTML/cardlist.html
+* http://www.vekn.net/images/stories/downloads/cardlist.txt
 
 to a local file.  Sutekh can also parse the official rulings
 file from:
@@ -36,7 +35,7 @@ either by using the help menu, or in sutekh/docs/html/
 To get started, run:
 
 sutekh-cli --help
-sutekh-cli -c -r vtes_card_file.html
+sutekh-cli -c -r vtes_card_file.txt
 sutekh-cli --ruling-file vtes_ruling_file.html (optional)
 
 The card list and card sets can be manipulated and examined via the gui
@@ -65,7 +64,7 @@ A --reload option exists for when re-importing the official cardlists and
 rulings.  This dumps and then reloads the card list and all the card sets.
 
 Typically used as:
-sutekh-cli -c --reload -r vtes_card_file.html \
+sutekh-cli -c --reload -r vtes_card_file.txt \
       --ruling-file vtes_ruling_file.html
 
 The command line tool can be used to run filters:

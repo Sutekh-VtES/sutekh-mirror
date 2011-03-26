@@ -135,7 +135,7 @@ well as the file name.
 external sources Sutekh uses.
 ** _Import new White Wolf Card List and rulings_: Update the \
 database with a new cardlist and/or rulings file. You can either specify \
-local files, or opt to download them from the White Wolf website directly. \
+local files, or opt to download them from the appropriate websites directly. \
 Sutekh may encounter problems when updating the card list after a new \
 expansion has been published -- this is discussed further in the section \
 "Refreshing the White Wolf Card List":#refresh.
@@ -294,7 +294,7 @@ h3(#refresh). Refreshing the White Wolf Card List
 This allows Sutekh to update the card list to account for new cards, such
 as promos.
 
-Sutekh parses the card list published on the White Wolf site for
+Sutekh parses the card list published on the V:EKN site for
 information about the cards. When new expansions are published, Sutekh may
 require an update to interpret major changes to the cardlist, such as
 new clans or card types. If the expansion does not introduce any significant
