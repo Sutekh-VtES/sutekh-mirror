@@ -28,17 +28,17 @@ class WWFilesDialog(SutekhDialog):
         self._oParent = oParent
         self.oCardListFileButton = SutekhFileButton(oParent,
                 "White Wolf Card List")
-        self.oCardListFileButton.add_filter_with_pattern('HTML files',
-                ['*.html', '*htm'])
+        self.oCardListFileButton.add_filter_with_pattern('TXT files',
+                ['*.txt'])
         self.oUseWwCardListButton = gtk.CheckButton(
-                label="Grab cardlist from White Wolf website?")
+                label="Grab cardlist from V:EKN website?")
 
         # FIXME: Needs better text
         oExtraLabel = gtk.Label("Storyline Card File (optional):")
         self.oExtraFileButton = SutekhFileButton(oParent,
                 "Storyline card file")
-        self.oExtraFileButton.add_filter_with_pattern('HTML files',
-                ['*.html', '*htm'])
+        self.oExtraFileButton.add_filter_with_pattern('TXT files',
+                ['*.txt'])
         self.oUseExtraUrlButton = gtk.CheckButton(
                 label="Grab extra cards from bitbucket.org?")
 
