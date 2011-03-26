@@ -46,11 +46,11 @@ def parse_options(aArgs):
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oOptParser.add_option("-r", "--ww-file",
                   type="string", dest="ww_file", default=None,
-                  help="HTML file (probably from WW website) to read " \
+                  help="Text file (probably from the VEKN website) to read " \
                           "cards from.")
     oOptParser.add_option("-e", "--extra-file",
                   type="string", dest="extra_file", default=None,
-                  help="HTML file to read extra storyline" \
+                  help="Text file to read extra storyline" \
                           "cards from.")
     oOptParser.add_option("--ruling-file",
                   type="string", dest="ruling_file", default=None,
