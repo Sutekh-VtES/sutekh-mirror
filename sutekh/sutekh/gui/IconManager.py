@@ -22,58 +22,76 @@ from sutekh.core import Groupings
 # Utilty functions - convert object to a filename
 def _get_clan_filename(oClan):
     """Get the icon filename for the clan"""
-    if oClan.shortname[0] == '!':
-        sFileName = 'IconClan%sA.gif' % oClan.shortname[1:4].capitalize()
-    elif oClan.shortname == 'Tz':
-        # Special case
-        sFileName = 'IconClanTzi.gif'
-    elif oClan.shortname == 'BB':
-        # Special case
-        sFileName = 'IconClanBBr.gif'
-    else:
-        sFileName = 'IconClan%s.gif' % oClan.shortname[:3].capitalize()
+    sClanName = oClan.name
+    # Fix special cases
+    if 'antitribu' in sClanName:
+        sClanName = sClanName.replace('antitribu', 'anti')
+    elif sClanName == 'Abomination':
+        sClanName = 'abo'
+    elif sClanName == 'Follower of Set':
+        sClanName = 'fos'
+    elif sClanName == 'Daughter of Cacophony':
+        sClanName = 'daughters'
+    elif sClanName == 'Harbinger of Skulls':
+        sClanName = 'harbingers'
+    elif sClanName == 'Blood Brother':
+        sClanName = 'bloodbrothers'
+    elif sClanName == 'Ahrimane':
+        sClanName = 'ahrimanes'
+    sClanName = sClanName.lower()
+    sClanName = sClanName.replace(' ', '')
+    sFileName = 'clans/iconclan%s.gif' % sClanName
     return sFileName
 
 
 def _get_card_type_filename(oType):
     """Get the filename for the card type"""
-    if oType.name == 'Conviction':
-        sFileName = 'IconConviction.gif'
-    elif oType.name == 'Equipment':
-        sFileName = 'IconTypeEquip.gif'
+    if oType.name == 'Action Modifier':
+        sFileName = 'cardtype/icontypemodifier.gif'
     elif oType.name == 'Political Action':
-        sFileName = 'IconTypePolitical.gif'
-    elif oType.name == 'Action Modifier':
-        sFileName = 'IconTypeModifier.gif'
+        sFileName = 'cardtype/icontypepolitical.gif'
     elif oType.name in ('Master', 'Vampire', 'Imbued'):
         # These types have no icon
         sFileName = None
     else:
-        sFileName = 'IconType%s.gif' % oType.name.capitalize()
+        sFileName = 'cardtype/icontype%s.gif' % oType.name.lower()
     return sFileName
 
 
 def _get_creed_filename(oCreed):
     """Get the filename for the creed"""
-    sFileName = 'IconCreed%s.gif' % oCreed.shortname[:3].capitalize()
+    sFileName = 'creeds/iconcre%s.gif' % oCreed.name.lower()
     return sFileName
 
 
 def _get_discipline_filename(oDiscipline):
     """Get the filename for the discipline."""
-    if oDiscipline.level == 'inferior':
-        sFileName = 'IconDis%s.gif' % oDiscipline.discipline.name.capitalize()
-    elif oDiscipline.discipline.fullname == 'Flight':
-        # Flight is always Superior
-        sFileName = 'IconFlight.gif'
+    if oDiscipline.discipline.name.lower() in ['mal', 'str', 'fli']:
+        # These are misc icons
+        if oDiscipline.discipline.fullname == 'Flight':
+            sFileName = 'misc/iconmiscflight.gif'
+        elif oDiscipline.level == 'inferior':
+            sFileName = 'misc/iconmisc%s.gif' \
+                    % oDiscipline.discipline.fullname.lower()
+        else:
+            sFileName = 'misc/iconmisc%ssup.gif' \
+                    % oDiscipline.discipline.fullname.lower()
+    elif oDiscipline.level == 'inferior':
+        sFileName = 'disciplines/icondis%s.gif' \
+                % oDiscipline.discipline.fullname.lower()
     else:
-        sFileName = 'IconDis%s2.gif' % oDiscipline.discipline.name.capitalize()
+        sFileName = 'disciplines/icondis%ssup.gif' \
+                % oDiscipline.discipline.fullname.lower()
     return sFileName
 
 
 def _get_virtue_filename(oVirtue):
     """Get the filename for the virtue"""
-    sFileName = 'IconVirtue%s.gif' % oVirtue.name.capitalize()
+    if oVirtue.name != 'jud':
+        sFileName = 'virtues/iconvirtue%s.gif' % oVirtue.fullname.lower()
+    else:
+        # Annoying special case
+        sFileName = 'virtues/iconvirtuejustice.gif'
     return sFileName
 
 
@@ -118,11 +136,11 @@ class IconManager(object):
 
        Given the text and the tag name, look up the suitable matching icon
        for it.  Return none if no suitable icon is found.
-       Also provide an option to download the icons form the white wolf
+       Also provide an option to download the icons form the v:ekn
        site.
        """
 
-    sBaseUrl = "http://www.white-wolf.com/vtes/images/"
+    sBaseUrl = "http://www.vekn.net/images/stories/icons/"
 
     def __init__(self, oConfig):
         self._sPrefsDir = oConfig.get_icon_path()
@@ -205,9 +223,9 @@ class IconManager(object):
     def get_icon_by_name(self, sName):
         """Lookup an icon that's a card property"""
         if sName == 'burn option':
-            sFileName = 'IconBurn.gif'
+            sFileName = 'misc/iconmiscburnoption.gif'
         elif sName == 'advanced':
-            sFileName = 'IconAdv.gif'
+            sFileName = 'misc/iconmiscadvanced.gif'
         return self._get_icon(sFileName)
 
     def get_info(self, sText, cGrouping):
@@ -280,15 +298,30 @@ class IconManager(object):
            doesn't exist"""
         if os.path.lexists(self._sPrefsDir):
             # We accept broken links as stopping the prompt
-            return
-        # Create directory, so we don't prompt next time unless the user
-        # intervenes
-        ensure_dir_exists(self._sPrefsDir)
-        # Ask the user if he wants to download
-        iResponse = do_complaint("Sutekh can download icons for the cards "
-                "from the WW site\nThese icons will be stored in %s\n\n"
-                "Download icons?" % self._sPrefsDir, gtk.MESSAGE_INFO,
-                gtk.BUTTONS_YES_NO, False)
+            if os.path.lexists("%s/clans" % self._sPrefsDir):
+                return
+            else:
+                # Check if we need to upgrade to the V:EKN icons
+                ensure_dir_exists("%s/clans" % self._sPrefsDir)
+                if os.path.exists('%s/IconClanAbo.gif' % self._sPrefsDir):
+                    iResponse = do_complaint(
+                            "Sutekh has switched to using the icons from the "
+                            "V:EKN site.\nIcons won't work until you "
+                            "re-download them.\n\nDownload icons?",
+                            gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, False)
+                else:
+                    # Old icons not present, so skip
+                    return
+        else:
+            # Create directory, so we don't prompt next time unless the user
+            # intervenes
+            ensure_dir_exists(self._sPrefsDir)
+            ensure_dir_exists("%s/clans" % self._sPrefsDir)
+            # Ask the user if he wants to download
+            iResponse = do_complaint("Sutekh can download icons for the cards "
+                    "from the V:EKN site\nThese icons will be stored in "
+                    "%s\n\nDownload icons?" % self._sPrefsDir,
+                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, False)
         if iResponse == gtk.RESPONSE_YES:
             self.download_icons()
         else:
@@ -306,10 +339,12 @@ class IconManager(object):
                 oLogger.info('Processed non-icon')
                 return
             sFullFilename = os.path.join(self._sPrefsDir, sFileName)
+            sBaseDir = os.path.dirname(sFullFilename)
             sUrl = self.sBaseUrl + sFileName
             try:
                 oUrl = urlopen(sUrl)
                 # copy url to file
+                ensure_dir_exists(sBaseDir)
                 fOut = file(sFullFilename, 'wb')
                 fOut.write(oUrl.read())
                 fOut.close()
@@ -342,6 +377,6 @@ class IconManager(object):
         for oType in CardType.select():
             download(_get_card_type_filename(oType), oLogger)
         # download the special cases
-        download('IconBurn.gif', oLogger)
-        download('IconAdv.gif', oLogger)
+        download('misc/iconmiscburnoption.gif', oLogger)
+        download('misc/iconmiscadvanced.gif', oLogger)
         oProgressDialog.destroy()
