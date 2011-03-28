@@ -36,6 +36,7 @@ class ConfigSutekhTest(SutekhTest):
         # Don't try and create a path in the user's home dir
         self.sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
         self.sIconsDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
+        os.makedirs("%s/clans" % self.sIconsDir)  # For new icon check
         self.oConfig.set_plugin_key('CardImagePlugin', 'card image path',
                 self.sImagesDir)
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
@@ -46,6 +47,7 @@ class ConfigSutekhTest(SutekhTest):
     def tearDown(self):
         """Tear down config file stuff after test run"""
         os.rmdir(self.sImagesDir)
+        os.rmdir("%s/clans" % self.sIconsDir)
         os.rmdir(self.sIconsDir)
         super(ConfigSutekhTest, self).tearDown()
         # FIXME: This helps the test suite, but I'm not sure why
