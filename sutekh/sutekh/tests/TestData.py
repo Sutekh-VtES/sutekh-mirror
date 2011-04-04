@@ -1514,25 +1514,26 @@ TEST_RULINGS = """
 <html>
 <head><title>Sutekh Test Rulings</title></head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<body>
+<body id="page_bg">
+    <div id="pillmenu"><ul class="menu"><li class="item5"><a href="http://www.vekn.net/"><span>Home</span></a></li><li class="item2"><a href="/index.php/forum/index"><span>Forum</span></a></li><li class="item117"><a href="/index.php/event-calendar"><span>Event Calendar</span></a></li></ul><form action="http://www.vekn.net/index.php/component/comprofiler/login" method="post" id="mod_loginform" class="cbLoginForm" style="margin:0px;">
 
-<p><b>AK-47:</b>
-<li><span class="errata">The AK-47 provides the bearer one optional maneuver "each combat".</span>
-<a href="http://groups-beta.google.com/groups?selm=46FCEF4C.6050100@white-wolf.com" target="_top" onMouseOver="window.status='Article Archived on Google';return true">[LSJ&nbsp;20070928]</a> </li>
-</a>
-</p>
+<tr>
+<td valign="top">
 
-<p><b>Ablative Skin:</b>
-<li><span class="ruling">Cannot be used to prevent damage that cannot be prevented by cards that require Fortitude (e.g., Blood Rage and Blood Fury).</span>
-<a href="http://groups-beta.google.com/groups?selm=36C98715.81740A4B@wizards.com" target="_top" onMouseOver="window.status='Article Archived on Google';return true">[LSJ&nbsp;19990216]</a> </li>
-</a>
-</p>
+<p><b>AK-47:</b></p>
+<ul>
+<li>The AK-47 provides the bearer one optional maneuver "each combat". <a target="_top" href="http://groups-beta.google.com/groups?selm=46FCEF4C.6050100%40white-wolf.com">[LSJ 20070928]</a></li>
+</ul>
 
-<p><b>Lazar Dobrescu:</b>
-<li><span class="ruling">Cannot use his special ability if his controller has no vampires in her uncontrolled region.</span>
-<a href="http://groups-beta.google.com/groups?selm=36C82B01.3705D2F0@wizards.com" target="_top" onMouseOver="window.status='Article Archived on Google';return true">[LSJ&nbsp;19990215]</a> </li>
-</a>
-</p>
+<p><b>Ablative Skin:</b></p>
+<ul>
+<li>Cannot be used to prevent damage that cannot be prevented by cards that require Fortitude (e.g., Blood Rage and Blood Fury). <a target="_top" href="http://groups-beta.google.com/groups?selm=36C98715.81740A4B%40wizards.com">[LSJ 19990216]</a></li>
+</ul>
+
+<p><b>Lazar Dobrescu:</b></p>
+<ul>
+<li>Cannot use his special ability if his controller has no vampires in her uncontrolled region. <a target="_top" href="http://groups-beta.google.com/groups?selm=36C82B01.3705D2F0%40wizards.com">[LSJ 19990215]</a></li>
+</ul>
 
 </body></html>
 """

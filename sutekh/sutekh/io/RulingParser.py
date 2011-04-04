@@ -149,12 +149,12 @@ class SectionWithTitle(LogStateWithInfo):
 
     def transition(self, sTag, _dAttr):
         """Transition to SectionRule, InSection or NoSection if needed."""
-        if sTag == 'li':
+        if sTag == 'ul':
             return SectionRule(self._dInfo, self.oLogger)
         elif sTag == 'p':
             # skip to next section
             return InSection(RuleDict(self.oLogger), self.oLogger)
-        elif sTag == '/p':
+        elif sTag == '/ul':
             return NoSection(self.oLogger)
         else:
             return self
@@ -163,52 +163,42 @@ class SectionWithTitle(LogStateWithInfo):
 class SectionRule(LogStateWithInfo):
     """In a ruling in the section."""
 
-    def transition(self, sTag, dAttr):
+    def transition(self, sTag, _dAttr):
         """Transition to the appropriate InRule State."""
-        if sTag == 'span' and dAttr.get('class') in ['ruling', 'errata',
-                'clarification']:
+        if sTag == 'li':
             return InRuleText(self._dInfo, self.oLogger)
-        elif sTag == 'a':
-            self._dInfo['url'] = dAttr['href']
-            return InRuleUrl(self._dInfo, self.oLogger)
-        elif sTag == '/li':
-            if not self._dInfo.has_key('code'):
-                self._dInfo['code'] = self._sData.strip()
-            self._dInfo.save()
-            self._dInfo.clear_rule()
-            return SectionWithTitle(self._dInfo, self.oLogger)
-        elif sTag == 'li':
-            # handles unclosed <li> inside section block
-            # skip to next rule
-            if not self._dInfo.has_key('code'):
-                self._dInfo['code'] = self._sData.strip()
-            self._dInfo.save()
-            self._dInfo.clear_rule()
-            return SectionRule(self._dInfo, self.oLogger)
-        elif sTag == '/p':
-            # handles unclosed <li> at end of section block
-            # skip to next section
-            if not self._dInfo.has_key('code'):
-                self._dInfo['code'] = self._sData.strip()
-            self._dInfo.save()
-            self._dInfo.clear_rule()
+        elif sTag == '/ul':
             return NoSection(self.oLogger)
-        return self
+        else:
+            return self
 
 
 class InRuleText(LogStateWithInfo):
     """In the text of a ruling."""
 
-    def transition(self, sTag, _dAttr):
-        """Transition to SectionRule if needed."""
-        if sTag == 'span':
-            raise StateError()
-        elif sTag == '/span':
-            self._dInfo['text'] = self._sData.strip()
-            return SectionRule(self._dInfo, self.oLogger)
-        else:
-            return self
+    oCodePattern = re.compile('\[[^]]*\]')
 
+    def transition(self, sTag, dAttr):
+        """Transition to SectionRule if needed."""
+        if sTag == 'a':
+            if not self._dInfo.has_key('text'):
+                self._dInfo['text'] = self._sData.strip()
+            self._dInfo['url'] = dAttr['href']
+            return InRuleUrl(self._dInfo, self.oLogger)
+        elif sTag == '/li':
+            if not self._dInfo.has_key('code'):
+                # Rule without an url, so extract the last section in []'s
+                # from the text
+                oMatch = self.oCodePattern.search(self._sData)
+                if oMatch:
+                    # Add code, and remove it from text
+                    self._dInfo['code'] = oMatch.group()
+                    self._dInfo['text'] = \
+                            self.oCodePattern.sub('', self._sData).strip()
+            self._dInfo.save()
+            self._dInfo.clear_rule()
+            return SectionRule(self._dInfo, self.oLogger)
+        return self
 
 class InRuleUrl(LogStateWithInfo):
     """In the url associated with this ruling."""
@@ -218,8 +208,10 @@ class InRuleUrl(LogStateWithInfo):
         if sTag == 'a':
             raise StateError()
         elif sTag == '/a':
+            # Some rulings have multiple codes, but we only take the last one
+            # since that matches the url we keep
             self._dInfo['code'] = self._sData.strip()
-            return SectionRule(self._dInfo, self.oLogger)
+            return InRuleText(self._dInfo, self.oLogger)
         else:
             return self
 

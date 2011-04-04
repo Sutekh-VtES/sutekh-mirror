@@ -40,15 +40,15 @@ def read_extra(oExtraFile, oProgressDialog, oLogHandler):
     oProgressDialog.set_complete()
 
 
-def read_ww_rulings(oRulings, oProgressDialog, oLogHandler):
+def read_ww_rulings(aRulingFiles, oProgressDialog, oLogHandler):
     """Read the WW Rulings file into the database"""
     oProgressDialog.set_description("Reading White Wolf Rulings")
     oProgressDialog.reset()
-    read_rulings(oRulings, oLogHandler)
+    read_rulings(aRulingFiles, oLogHandler)
     oProgressDialog.set_complete()
 
 
-def read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog):
+def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, oProgressDialog):
     """Read WW card list and possibly rulings into the given database"""
     refresh_tables(TABLE_LIST, sqlhub.processConnection)
     oProgressDialog.reset()
@@ -58,8 +58,8 @@ def read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog):
     read_cardlist(aCLFile, oProgressDialog, oLogHandler)
     if oExtraFile:
         read_extra([oExtraFile], oProgressDialog, oLogHandler)
-    if oRulingsFile:
-        read_ww_rulings(oRulingsFile, oProgressDialog,  oLogHandler)
+    if aRulingsFiles:
+        read_ww_rulings(aRulingsFiles, oProgressDialog,  oLogHandler)
 
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
@@ -91,10 +91,10 @@ def initialize_db(oParent):
     if iRes != 1:
         return False
     else:
-        aCLFile, oExtraFile, oRulingsFile, _sIgnore = _get_names(oParent)
+        aCLFile, oExtraFile, aRulingsFiles, _sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
-            read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile,
+            read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles,
                     oProgressDialog)
             oProgressDialog.destroy()
         else:
@@ -135,10 +135,14 @@ def _get_names(oWin):
     else:
         oExtraFile = None
     if sRulingsFileName is not None:
-        oRulingsFile = WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)
+        if isinstance(sRulingsFileName, list):
+            aRulingsFiles = [WwFile(x, bUrl=bRulingsIsUrl) for x in
+                    sRulingsFileName]
+        else:
+            aRulingsFiles = [WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)]
     else:
-        oRulingsFile = None
-    return aCLFile, oExtraFile, oRulingsFile, sBackupFile
+        aRulingsFiles = None
+    return aCLFile, oExtraFile, aRulingsFiles, sBackupFile
 
 
 def refresh_ww_card_list(oWin):

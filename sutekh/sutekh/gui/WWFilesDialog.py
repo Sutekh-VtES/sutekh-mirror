@@ -48,7 +48,7 @@ class WWFilesDialog(SutekhDialog):
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
         self.oUseWwRulingsButton = gtk.CheckButton(
-                label="Grab rulings from White Wolf website?")
+                label="Grab rulings from V:EKN website?")
 
         self.oBackupFileButton = gtk.CheckButton(
                 label="Backup database contents to File?")

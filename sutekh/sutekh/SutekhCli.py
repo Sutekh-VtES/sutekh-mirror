@@ -281,7 +281,7 @@ def main_with_args(aTheArgs):
         read_white_wolf_list([WwFile(oOpts.extra_file)], oLogHandler)
 
     if not oOpts.ruling_file is None:
-        read_rulings(WwFile(oOpts.ruling_file), oLogHandler)
+        read_rulings([WwFile(oOpts.ruling_file)], oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)

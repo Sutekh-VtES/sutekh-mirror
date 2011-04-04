@@ -40,7 +40,7 @@ def create_db():
 
     oLogHandler = FileHandler('/dev/null')
     read_white_wolf_list([WwFile(sCardList)], oLogHandler)
-    read_rulings(WwFile(sRulings), oLogHandler)
+    read_rulings([WwFile(sRulings)], oLogHandler)
 
     os.remove(sRulings)
     os.remove(sCardList)

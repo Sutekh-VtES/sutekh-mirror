@@ -60,7 +60,7 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
     sqlhub.processConnection = oOldConn
 
 
-def read_rulings(oRulings, oLogHandler=None):
+def read_rulings(aRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
        oRulings is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
@@ -69,10 +69,11 @@ def read_rulings(oRulings, oLogHandler=None):
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = RulingParser(oLogHandler)
-    fIn = oRulings.open()
-    for sLine in fIn:
-        oParser.feed(sLine)
-    fIn.close()
+    for oFile in aRulings:
+        fIn = oFile.open()
+        for sLine in fIn:
+            oParser.feed(sLine)
+        fIn.close()
     sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
 
