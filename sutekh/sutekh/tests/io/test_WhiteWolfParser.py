@@ -170,7 +170,7 @@ class WhiteWolfParserTests(SutekhTest):
         oRuling = oDob.rulings[0]
         self.assertTrue(oRuling.text.startswith("Cannot use his special"))
         self.assertTrue(oRuling.text.endswith("uncontrolled region."))
-        self.assertEqual(oRuling.code, "[LSJ19990215]")
+        self.assertEqual(oRuling.code, "[LSJ 19990215]")
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
@@ -414,7 +414,7 @@ class WhiteWolfParserTests(SutekhTest):
         oRuling = oAblat.rulings[0]
         self.assertTrue(oRuling.text.startswith("Cannot be used to prevent"))
         self.assertTrue(oRuling.text.endswith("Blood Fury)."))
-        self.assertEqual(oRuling.code, "[LSJ19990216]")
+        self.assertEqual(oRuling.code, "[LSJ 19990216]")
         self.assertEqual(len(oAblat.artists), 1)
         self.failUnless(IArtist('Richard Thomas') in oAblat.artists)
 
