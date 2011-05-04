@@ -208,6 +208,8 @@ class FilterValuesBox(gtk.VBox):
         oFilterTypes.get_selection_object().connect('changed',
                 self.update_box_model, oFilter, oFilterTypes)
         oFilterTypes.set_size_request(100, 150)
+        oFilterTypes.view.connect('key-press-event', self.key_press, oFilter,
+                'Filter Type')
         self._oWidget.pack_start(oFilterTypes, expand=False)
         self._oWidget.pack_start(gtk.Label('Or Drag Filter Element'),
                 expand=False)
@@ -252,7 +254,7 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget = ScrolledList('Select Filter Values')
         self._oWidget.set_select_multiple()
         self._oWidget.fill_list(oFilter.aValues)
-        self._oWidget.connect('key-press-event', self.key_press, oFilter,
+        self._oWidget.view.connect('key-press-event', self.key_press, oFilter,
                 'Value')
         self._set_drag_for_widget(self._oWidget, self.update_filter_list,
                 oFilter)
@@ -268,6 +270,7 @@ class FilterValuesBox(gtk.VBox):
         if oFilter.aCurValues:
             oEntry.set_text(oFilter.aCurValues[0])
         oEntry.connect('changed', self.update_edit_box, oFilter)
+        oEntry.connect('key-press-event', self.key_press, oFilter, 'Entry')
 
     def set_widget(self, oFilter, oBoxModelEditor):
         """Replace the current widget with the correct widget for the
@@ -306,6 +309,8 @@ class FilterValuesBox(gtk.VBox):
             elif oFilter.iValueType == FilterBoxItem.NONE:
                 # None filter, so no selection widget, but we have buttons
                 self._oWidget = self._oNoneWidget
+                self._oWidget.connect('key-press-event', self.key_press, None,
+                        'None')
         else:
             # No selected widget, so clear everything
             self._oWidget = self._oEmptyWidget
@@ -441,7 +446,7 @@ class FilterValuesBox(gtk.VBox):
             self._oBoxModelEditor.paste_value(sSelect)
         elif sSource == 'Value':
             sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
-            self._format_selection(sSelect, oWidget.get_selection())
+            self._format_selection(sSelect, self._oWidget.get_selection())
             self._oBoxModelEditor.paste_value(sSelect)
 
     def toggle_disabled(self, oButton):
@@ -796,6 +801,10 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.connect('drag_data_get', self.drag_element)
         self.connect('button_press_event', self.press_button)
         self.connect('drag_motion', self.do_drag_motion)
+        self.connect('key_press_event', self.key_press)
+
+    def key_press(self, _oW, oEvent):
+        pass
 
     def update_values_widget(self, _oTreeSelection):
         """Update the values widget to the new selection"""
