@@ -15,6 +15,7 @@ from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel, BOXTYPE, \
         BOXTYPE_ORDER
 import gobject
 import gtk
+import pango
 
 DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
 NO_DRAG_TARGET = [("No Drag", 0, 0)]
@@ -31,6 +32,12 @@ NEW_FILTER = 'NewFilter: '
 # Key constants
 ENTER_KEYS = set([gtk.gdk.keyval_from_name('Return'),
     gtk.gdk.keyval_from_name('KP_Enter')])
+
+
+def unescape_markup(sMarkup):
+    """Untiltiy function to strip markup from a string"""
+    _oAttr, sStripped, _oAccel = pango.parse_markup(sMarkup)
+    return sStripped
 
 
 def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
@@ -803,7 +810,8 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.connect('drag_motion', self.do_drag_motion)
         self.connect('key_press_event', self.key_press)
 
-    def key_press(self, _oW, oEvent):
+    def key_press(self, _oWidget, oEvent):
+        """Handle key-press events for the filter box model"""
         pass
 
     def update_values_widget(self, _oTreeSelection):
@@ -860,7 +868,7 @@ class FilterBoxModelEditView(gtk.TreeView):
     def remove_value_at_iter(self, oIter):
         """Remove the filter value at the given point in the tree"""
         oFilter = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
-        sValue = self._oStore.get_value(oIter, 0)
+        sValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if oFilter.iValueType == FilterBoxItem.LIST \
                 and sValue in oFilter.aCurValues:
             oFilter.aCurValues.remove(sValue)
@@ -940,7 +948,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         """Helper function for selecting a value in a filter in the tree.
           Meant to be called via the foreach method."""
         oFilterObj, sValue = tValueInfo
-        sCurValue = self._oStore.get_value(oIter, 0)
+        sCurValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if sCurValue == sValue:
             # Check parent
             oParIter = self._oStore.iter_parent(oIter)
@@ -1127,7 +1135,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         oIter = self._oStore.get_iter_from_string(sIter)
         oSourceFilter = self._oStore.get_value(
                 self._oStore.iter_parent(oIter), 1)
-        sValue = self._oStore.get_value(oIter, 0)
+        sValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if not target_ok(oFilterObj, oSourceFilter):
             return False
         aTarget = []
