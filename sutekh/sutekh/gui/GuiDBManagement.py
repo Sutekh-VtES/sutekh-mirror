@@ -94,9 +94,15 @@ def initialize_db(oParent):
         aCLFile, oExtraFile, aRulingsFiles, _sIgnore = _get_names(oParent)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
-            read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles,
-                    oProgressDialog)
-            oProgressDialog.destroy()
+            try:
+                read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles,
+                        oProgressDialog)
+                oProgressDialog.destroy()
+            except IOError, oErr:
+                do_exception_complaint("Failed to read cardlists.\n\n%s\n"
+                        "Aborting import." % oErr)
+                oProgressDialog.destroy()
+                return False
         else:
             return False
     # Create the Physical Card Collection card set
@@ -168,7 +174,15 @@ def refresh_ww_card_list(oWin):
     oOldConn = sqlhub.processConnection
     oTempConn = connectionForURI("sqlite:///:memory:")
     sqlhub.processConnection = oTempConn
-    read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oProgressDialog)
+    try:
+        read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile,
+            oProgressDialog)
+    except IOError, oErr:
+        # Failed to read one of the card lists, so celan up and abort
+        do_exception_complaint("Failed to read cardlists.\n\n%s\n"
+                    "Aborting import." % oErr)
+        oProgressDialog.destroy()
+        return False
     # Refresh abstract card view for card lookups
     oLogHandler = SutekhCountLogHandler()
     oLogHandler.set_dialog(oProgressDialog)
