@@ -200,6 +200,7 @@ class InRuleText(LogStateWithInfo):
             return SectionRule(self._dInfo, self.oLogger)
         return self
 
+
 class InRuleUrl(LogStateWithInfo):
     """In the url associated with this ruling."""
 

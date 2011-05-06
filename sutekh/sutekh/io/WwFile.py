@@ -56,7 +56,7 @@ WW_RULINGS_URL = [
         #"http://www.vekn.net/index.php/all-rulings/general-rulings",
         "http://www.vekn.net/index.php/all-rulings/card-rulings-a-to-f",
         "http://www.vekn.net/index.php/all-rulings/card-rulings-g-to-o",
-        "http://www.vekn.net/index.php/all-rulings/card-rulings-p-to-z"
+        "http://www.vekn.net/index.php/all-rulings/card-rulings-p-to-z",
         ]
 
 
