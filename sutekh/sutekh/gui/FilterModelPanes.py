@@ -32,6 +32,14 @@ NEW_FILTER = 'NewFilter: '
 # Key constants
 ENTER_KEYS = set([gtk.gdk.keyval_from_name('Return'),
     gtk.gdk.keyval_from_name('KP_Enter')])
+LEFT_RIGHT = set([gtk.gdk.keyval_from_name('KP_Left'),
+    gtk.gdk.keyval_from_name('KP_Right'),
+    gtk.gdk.keyval_from_name('Left'),
+    gtk.gdk.keyval_from_name('Right')])
+LEFT = set([gtk.gdk.keyval_from_name('KP_Left'),
+    gtk.gdk.keyval_from_name('Left')])
+RIGHT = set([gtk.gdk.keyval_from_name('KP_Right'),
+    gtk.gdk.keyval_from_name('Right')])
 
 
 def unescape_markup(sMarkup):
@@ -428,8 +436,30 @@ class FilterValuesBox(gtk.VBox):
         if self._oBoxModelEditor:
             self._oBoxModelEditor.set_negate(oButton.get_active())
 
+    def switch_focus(self, oEvent, sSource):
+        """Handle switching focus between the different filter bits"""
+        if sSource in set(['Value', 'Entry', 'None', 'CardSet']):
+            # Only one entry in the filter pane
+            self._oBoxModelEditor.grab_focus()
+        elif sSource == 'Editor':
+            if isinstance(self._oLastFilter, FilterBoxItem):
+                if self._oLastFilter.iValueType == FilterBoxItem.LIST:
+                    # Only one entry in the filter pane
+                    self._oWidget.view.grab_focus()
+                elif self._oLastFilter.iValueType == FilterBoxItem.ENTRY:
+                    # entry is the second child of the VBox
+                    self._oWidget.get_children()[1].grab_focus()
+        elif sSource == 'Count':
+            pass
+        elif sSource == 'Filter':
+            pass
+
     def key_press(self, oWidget, oEvent, oFilter, sSource):
         """Handle key press events to do allow keyboard pasting"""
+        # Alt-direction moves focus around
+        if oEvent.keyval in LEFT_RIGHT and \
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+            self.switch_focus(oEvent, sSource)
         # We flag on ctrl-enter
         if oEvent.keyval not in ENTER_KEYS or not \
                 (oEvent.get_state() & gtk.gdk.CONTROL_MASK):
@@ -812,7 +842,10 @@ class FilterBoxModelEditView(gtk.TreeView):
 
     def key_press(self, _oWidget, oEvent):
         """Handle key-press events for the filter box model"""
-        pass
+        if oEvent.keyval in LEFT_RIGHT and \
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+            # Pass focus to the value widget
+            self._oValuesWidget.switch_focus(oEvent, 'Editor')
 
     def update_values_widget(self, _oTreeSelection):
         """Update the values widget to the new selection"""
