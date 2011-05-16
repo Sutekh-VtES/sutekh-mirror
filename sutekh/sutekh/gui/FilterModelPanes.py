@@ -449,6 +449,17 @@ class FilterValuesBox(gtk.VBox):
                 elif self._oLastFilter.iValueType == FilterBoxItem.ENTRY:
                     # entry is the second child of the VBox
                     self._oWidget.get_children()[1].grab_focus()
+            if isinstance(self._oLastFilter, FilterBoxModel) or \
+                    (isinstance(self._oLastFilter, FilterBoxItem) and
+                            self._oLastFilter.iValueType == 
+                            FilterBoxItem.LIST_FROM):
+                if oEvent.keyval in LEFT:
+                    # bottom child needs the focus
+                    oAutoScrolled = self._oWidget.get_children()[2]
+                    oAutoScrolled.get_child().grab_focus()
+                else:
+                    # top child needs the focus
+                    self._oWidget.get_children()[0].view.grab_focus()
         elif sSource in set(['Count', 'Set', 'Filter Type', 'Filter']):
             if oEvent.keyval in RIGHT and \
                     sSource in set(['Count', 'Filter Type']):
