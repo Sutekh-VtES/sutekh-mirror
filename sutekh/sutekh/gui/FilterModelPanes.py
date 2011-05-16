@@ -449,10 +449,19 @@ class FilterValuesBox(gtk.VBox):
                 elif self._oLastFilter.iValueType == FilterBoxItem.ENTRY:
                     # entry is the second child of the VBox
                     self._oWidget.get_children()[1].grab_focus()
-        elif sSource == 'Count':
-            pass
-        elif sSource == 'Filter':
-            pass
+        elif sSource in set(['Count', 'Set', 'Filter Type', 'Filter']):
+            if oEvent.keyval in RIGHT and \
+                    sSource in set(['Count', 'Filter Type']):
+                # Top child selected, so pass to bottom
+                oAutoScrolled = self._oWidget.get_children()[2]
+                oAutoScrolled.get_child().grab_focus()
+            elif oEvent.keyval in LEFT and \
+                    sSource in set(['Filter', 'Set']):
+                # Bottom child selected, so pass to top
+                self._oWidget.get_children()[0].view.grab_focus()
+            else:
+                # Passing focus to Model Editor
+                self._oBoxModelEditor.grab_focus()
 
     def key_press(self, oWidget, oEvent, oFilter, sSource):
         """Handle key press events to do allow keyboard pasting"""
