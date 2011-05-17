@@ -128,6 +128,8 @@ class FilterHelpBuffer(gtk.TextBuffer):
         # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
         # for some possible properties
 
+        self.create_tag("header", weight=pango.WEIGHT_BOLD,
+                scale=pango.SCALE_LARGE, underline=pango.UNDERLINE_SINGLE)
         self.create_tag("description", weight=pango.WEIGHT_BOLD)
         self.create_tag("keyword", style=pango.STYLE_ITALIC)
         self.create_tag("helptext", left_margin=10)
@@ -170,18 +172,34 @@ class FilterHelpTextView(gtk.TextView):
 
         oBuf.reset_iter()
 
+        oBuf.tag_text('Usage', 'header')
+        oBuf.tag_text("\n")
+
         oBuf.tag_text(
             "Filter elements and values for the filters can be dragged "
             "from the right hand pane to the filter to add them to "
             "the filter, and dragged from the filter to the right hand "
             "pane to remove them from the filter. Disabled filter elements "
-            "or filter elements with no values set are ignored.\n"
-            "The available filtering options are listed below. "
+            "or filter elements with no values set are ignored.\n\n", 'helptext')
+
+        oBuf.tag_text('Keyboard Navigation', 'header')
+        oBuf.tag_text("\n")
+
+        oBuf.tag_text("You can switch between the different filter lists "
+                "using <Alt>-Left and <Alt>-Right. <Ctrl>-Enter will "
+                "paste the currently selected list of values into the filter. "
+                "<Del> will delete a value or filter part from the filter."
+                "<Ctrl>-Space will disable a filter part, while <Alt>-Space "
+                "will negate it.\n\n", "helptext")
+
+        oBuf.tag_text('Available Filter Elements', 'header')
+        oBuf.tag_text("\n")
+
+        oBuf.tag_text("The available filtering options are listed below. "
             "The first line of each item shows the description "
             "you'll see in the filter editor in bold. "
             "The rest of the description describes the arguments "
-            "the filter takes and the results it produces."
-            "\n\n")
+            "the filter takes and the results it produces.\n\n", "helptext")
 
         # Add test for filter group
         oBuf.add_help_text('Filter Group', "Filter element with holds "
