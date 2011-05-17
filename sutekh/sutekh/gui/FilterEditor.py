@@ -180,7 +180,8 @@ class FilterHelpTextView(gtk.TextView):
             "from the right hand pane to the filter to add them to "
             "the filter, and dragged from the filter to the right hand "
             "pane to remove them from the filter. Disabled filter elements "
-            "or filter elements with no values set are ignored.\n\n", 'helptext')
+            "or filter elements with no values set are ignored.\n\n",
+            'helptext')
 
         oBuf.tag_text('Keyboard Navigation', 'header')
         oBuf.tag_text("\n")

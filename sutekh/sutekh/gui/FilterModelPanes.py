@@ -451,7 +451,7 @@ class FilterValuesBox(gtk.VBox):
                     self._oWidget.get_children()[1].grab_focus()
             if isinstance(self._oLastFilter, FilterBoxModel) or \
                     (isinstance(self._oLastFilter, FilterBoxItem) and
-                            self._oLastFilter.iValueType == 
+                            self._oLastFilter.iValueType ==
                             FilterBoxItem.LIST_FROM):
                 if oEvent.keyval in LEFT:
                     # bottom child needs the focus
