@@ -637,7 +637,9 @@ The buttons also have associated keyboard accelerators. Pressing *&lt;Del&gt;*
 will delete the current filter element, *&lt;Ctrl&gt;-&lt;space&gt;* will
 disable the current filter element and *&lt;Alt&gt;-&lt;space&gt;* will negate
 the filter element. *&lt;Tab&gt;* can be used to move between the different
-elements in the filter dialog.
+elements in the filter dialog. It's possible to switch between the two panes
+(and the filter list elements in a pane) using &lt;Alt&gt;-&lt;left&gt; and
+&lt;Alt&gt;-&lt;right&gt;.
 
 Filter values can be dragged from the right-hand pane into any filter of the
 same type. Filter values can also be dragged between filters of the same
