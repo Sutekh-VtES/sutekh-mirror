@@ -39,6 +39,11 @@ For 0.8.0 cycle
   * use SQL view to work around mysql's poor subselect performance
     (patch exists, to be applied and finished after 0.8.0)
   * use HTML help system for filter dialog help for consistency
+  * Extend Analysis plugin to handle Rapid Thought decks
+    - Add "rapid thought: banned" and "rapid thought: watch list" keywords
+      to extra card list?
+    - Add preference for hiding/showing rapid thought keywords in card text
+      view?
 
 For the future
 --------------
