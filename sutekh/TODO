@@ -36,6 +36,7 @@ For 0.8.0 cycle
 
 * Post 0.8
   * Allow colouring options for the cards
+  * Fetch missing card images from vtes.pl
   * use SQL view to work around mysql's poor subselect performance
     (patch exists, to be applied and finished after 0.8.0)
   * use HTML help system for filter dialog help for consistency
