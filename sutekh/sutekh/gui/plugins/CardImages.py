@@ -380,7 +380,7 @@ class ImageConfigDialog(SutekhDialog):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
-    sDefaultUrl = 'http://csillagbolcselet.hu/feldb/pictures.zip'
+    sDefaultUrl = 'http://csillagmag.hu/upload/pictures.zip'
 
     def __init__(self, oImagePlugin, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
