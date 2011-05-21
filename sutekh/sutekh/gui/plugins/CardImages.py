@@ -221,9 +221,11 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def __convert_cardname(self):
         """Convert sCardName to the form used by the card image list"""
         sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
-        sFilename = _unaccent(self.__sCardName.lower())
-        if sFilename.find('the ') == 0:
+        sFilename = _unaccent(self.__sCardName)
+        if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
+        elif sFilename.startswith('an '):
+            sFilename = sFilename[3:] + 'an'
         sFilename = sFilename.replace('(advanced)', 'adv')
         # Should probably do this via translate
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
@@ -297,7 +299,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         """Set the image in response to a set card name event."""
         if not oPhysCard:
             return
-        sCardName = oPhysCard.abstractCard.name
+        sCardName = oPhysCard.abstractCard.canonicalName
         sExpansionName = ''
         if oPhysCard.expansion:
             sExpansionName = oPhysCard.expansion.name
