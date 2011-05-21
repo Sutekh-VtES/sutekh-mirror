@@ -189,7 +189,10 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IExpansion methods correctly
         oExpansion = IExpansion(sExpansionName)
-        return oExpansion.shortname.lower()
+        sExpName = oExpansion.shortname.lower()
+        # Normalise for storyline cards
+        sExpName = sExpName.replace(' ','_').replace("'", '')
+        return sExpName
 
     def __set_expansion_info(self, sCardName):
         """Set the expansion info."""
