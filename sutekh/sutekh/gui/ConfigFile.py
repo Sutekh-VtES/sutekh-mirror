@@ -152,6 +152,16 @@ class ConfigFile(object):
             for sKey, oValue in dGlobal.items():
                 oConfigSpec['cardset list']['defaults'][sKey] = oValue
 
+        # Set __many__ sections to match defaults sections, so validation
+        # does the value conversion for us
+
+        for sKey, oValue in oConfigSpec['cardlist']['defaults'].items():
+            oConfigSpec['cardlist']['profiles']['__many__'][sKey] = oValue
+        for sKey, oValue in oConfigSpec['cardset list']['defaults'].items():
+            oConfigSpec['cardset list']['profiles']['__many__'][sKey] = oValue
+        for sKey, oValue in oConfigSpec['per_deck']['defaults'].items():
+            oConfigSpec['per_deck']['profiles']['__many__'][sKey] = oValue
+
         self.__oConfigSpec = oConfigSpec
         self.__oConfig = ConfigObj(self.__sFileName, configspec=oConfigSpec,
                 indent_type='    ')

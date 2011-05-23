@@ -197,11 +197,7 @@ class BooleanParsedSpec(BaseParsedSpec):
 
     def set_value(self, oValue):
         """Set the checkbox correctly for the given value"""
-        # Sometimes oValue is a string, so handle that case correctly.
-        # TODO: Find out why it's a string
-        if oValue == 'False':
-            self.oEntry.set_active(False)
-        elif oValue:
+        if oValue:
             self.oEntry.set_active(True)
         else:
             self.oEntry.set_active(False)
