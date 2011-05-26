@@ -587,6 +587,7 @@ class CardDict(dict):
         self._add_physical_cards(oCard)
 
         oCard.syncUpdate()
+        # FIXME: Pass back any error confitions? Missing text, etc.
 
 
 # Parsing helper functions
@@ -600,18 +601,30 @@ def fix_clarification_markers(sLine):
 
 
 # State Classes
-class WaitingForCardName(LogState):
+class WaitingForCardName(LogStateWithInfo):
     """State when we are not in a card."""
 
     def transition(self, sLine, _dAttr):
         """Transition to PotentialCard if needed."""
         if sLine.startswith('Name:'):
+            self.flush()
             sData = sLine.split(':', 1)[1]
-            dInfo = CardDict(self.oLogger)
-            dInfo['name'] = sData.strip()
-            return InExpansion(dInfo, self.oLogger)
-        else:
-            return self
+            self._dInfo['name'] = sData.strip()
+            return InExpansion(self._dInfo, self.oLogger)
+        elif sLine.strip():
+            if self._dInfo.has_key('name') and not self._dInfo.has_key('text'):
+                # We've it a blank line in the middle of a card, so bounce
+                # back to InCard stuff
+                oCard = InCard(self._dInfo, self.oLogger)
+                return oCard.transition(sLine, None)
+        return self
+
+    def flush(self):
+        """Save any existing card and clear out dInfo"""
+        if self._dInfo.has_key('name'):
+            # Ensure we've saved existing card
+            self._dInfo.save()
+        self._dInfo = CardDict(self.oLogger)
 
 
 class InCard(LogStateWithInfo):
@@ -633,8 +646,8 @@ class InCard(LogStateWithInfo):
     def transition(self, sLine, _dAttr):
         oCardText = None
         if ':' in sLine:
-            sTag = sLine.split(':', 1)[0].lower()
-            if sTag in self.aTextTags or ' ' in sTag:
+            sTag = fix_clarification_markers(sLine.split(':', 1)[0].lower())
+            if sTag in self.aTextTags or ' ' in sTag or '{' in sTag:
                 oCardText = InCardText(self._dInfo, self.oLogger)
             else:
                 sData = fix_clarification_markers(sLine.split(':', 1)[1])
@@ -642,9 +655,8 @@ class InCard(LogStateWithInfo):
                 sData = sData.replace('{', '').replace('}', '')
                 self._dInfo[sTag] = sData.strip()
         elif not sLine.strip():
-            # Empty line at end of the card
-            self._dInfo.save()
-            return WaitingForCardName(self.oLogger)
+            # Empty line, so probably end of the card
+            return WaitingForCardName(self._dInfo, self.oLogger)
         else:
             if sLine.strip().lower() == 'burn option':
                 # Annoying special case
@@ -686,7 +698,7 @@ class InCardText(LogStateWithInfo):
             else:
                 # Since we're building this up a line at a time, we add a
                 # trailing space, which we strip before we exit this parser
-                self._dInfo['text'] += sLine.lstrip() + ' '
+                self._dInfo['text'] += sLine.strip() + ' '
             return self
 
 
@@ -703,13 +715,15 @@ class WhiteWolfTextParser(object):
 
     def reset(self):
         """Reset the parser"""
-        self._oState = WaitingForCardName(self.oLogger)
+        self._oState = WaitingForCardName({}, self.oLogger)
 
     def parse(self, fIn):
         """Feed lines to the state machine"""
         for sLine in fIn:
             self.feed(sLine)
-        self.feed('')  # Ensure we flush any open card text states
+        # Ensure we flush any open card text states
+        self.feed('')
+        self._oState.flush()
 
     def feed(self, sLine):
         """Feed the line to the current state"""
