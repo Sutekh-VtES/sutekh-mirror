@@ -1503,6 +1503,37 @@ Discipline: aus cel
 Camarilla.
 Artist: Leif Jones
 
+Name: Hide the Heart
+[HttB:C/PSal2]
+Cardtype: Reaction
+Discipline: Valeren / Auspex
+
+[aus] Reduce a bleed against you by 1.
+[val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action.
+[VAL] Reduce a bleed against you by 2, or tap to reduce a bleed against any Methuselah by 2.
+Artist: Kari Christensen
+
+Name: Anarch Railroad
+[Anarchs:R2]
+Cardtype: Master
+Cost: 2 pool
+Master: unique location.
+Tap to give an anarch +1 stealth for the current action.
+Artist: Joel Biske
+
+Name: Anarch Revolt
+[Jyhad:U, VTES:U, CE:U, Anarchs:PAB2, KMW:PAn, Third:U]
+Cardtype: Master
+Master.
+Put this card in play. A Methuselah who does not control a ready anarch burns 1 pool during his or her untap phase. Any vampire can call a referendum to burn this card as a +1 stealth political action.
+Artist: Pete Venters; Steve Prescott
+
+Name: Anarch Railroad
+[Anarchs and Alastors Storyline]
+
+Name: Anarch Revolt
+[Anarchs and Alastors Storyline]
+
 Name: Motivated by Gehenna
 [Eden's Legacy Storyline:Storyline]
 Cardtype: Master

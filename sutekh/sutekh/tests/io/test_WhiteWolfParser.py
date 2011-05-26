@@ -45,6 +45,8 @@ class WhiteWolfParserTests(SutekhTest):
         u"Alfred Benezri",
         u"Ambrogino Giovanni",
         u'Amisa',
+        u'Anarch Railroad',
+        u'Anarch Revolt',
         u"Anastasz di Zagreb",
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
@@ -60,6 +62,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
+        u'Hide the Heart',
         u"High Top",
         u'Inez "Nurse216" Villagrande',
         u"Kabede Maru",
@@ -142,6 +145,7 @@ class WhiteWolfParserTests(SutekhTest):
         oObfSup = IDisciplinePair((u"Obfuscate", u"superior"))
         oAboInf = IDisciplinePair((u"Abombwe", u"inferior"))
         oAboSup = IDisciplinePair((u"Abombwe", u"superior"))
+        oValSup = IDisciplinePair((u'Valeren', u"superior"))
 
         # Check Dobrescu
         oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
@@ -518,6 +522,40 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('not for legal play') in oDramatic.keywords)
         oMotivated = IAbstractCard('Motivated by Gehenna')
         self.failUnless(IKeyword('not for legal play') in oMotivated.keywords)
+
+        # Test adding extra expansions works
+
+        oAnarchRailroad = IAbstractCard("Anarch Railroad")
+        self.assertEqual(oAnarchRailroad.canonicalName, u"anarch railroad")
+        self.assertEqual(oAnarchRailroad.cost, 2)
+        self.assertEqual(oAnarchRailroad.costtype, 'pool')
+        self.failUnless(oAnarchRailroad.text.startswith(u"Master: unique"))
+        oAnarchs = IExpansion('Anarchs')
+        oAA = IExpansion('Anarchs and Alastors Storyline')
+
+        self.assertTrue(oAnarchs in [oP.expansion for oP in
+            oAnarchRailroad.rarity])
+        self.assertTrue(oAA in [oP.expansion for oP in oAnarchRailroad.rarity])
+
+        oAnarchRevolt = IAbstractCard("Anarch Revolt")
+        self.assertEqual(oAnarchRevolt.canonicalName, u"anarch revolt")
+        self.assertEqual(oAnarchRevolt.cost, None)
+        self.failUnless(oAnarchRevolt.text.startswith(u"Master."))
+
+        self.assertTrue(oAnarchs in [oP.expansion for oP in
+            oAnarchRevolt.rarity])
+        self.assertTrue(oAA in [oP.expansion for oP in oAnarchRevolt.rarity])
+        self.assertTrue(oJyhad in [oP.expansion for oP in
+            oAnarchRevolt.rarity])
+
+        oHtH = IAbstractCard("Hide the Heart")
+        self.assertEqual(oHtH.canonicalName, u"hide the heart")
+        self.assertEqual(len(oHtH.discipline), 2)
+        self.failUnless(oAusSup in oHtH.discipline)
+        self.failUnless(oValSup in oHtH.discipline)
+        self.assertEqual(len(oHtH.cardtype), 1)
+        self.failUnless(ICardType("Reaction") in oHtH.cardtype)
+        self.failUnless(oHtH.text.startswith('[aus] Reduce'))
 
 
 if __name__ == "__main__":

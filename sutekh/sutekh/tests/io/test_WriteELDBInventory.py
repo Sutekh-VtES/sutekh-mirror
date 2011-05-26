@@ -81,6 +81,9 @@ EXPECTED = """"ELDB - Inventory"
 "Bravo",0,0,"","Library"
 "Dramatic Upheaval",0,0,"","Library"
 "Motivated by Gehenna",0,0,"","Library"
+"Hide the Heart",0,0,"","Library"
+"Anarch Railroad",0,0,"","Library"
+"Anarch Revolt",0,0,"","Library"
 """
 
 
