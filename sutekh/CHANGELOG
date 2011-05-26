@@ -1,3 +1,76 @@
+26 May 2011
+ * Tweak test_writeELDBInventory test to make errors more discoverable
+ * Fix missing text cases for 'Smite' and 'Hide the Heart'
+ * Add more test data
+ * Remove obselete WW html parser
+
+23 May 2011
+ * Add missing config file validation - fixes values not being converted
+   properly issues
+
+21 May 2011
+ * Add support for storyline expansions to Card Images plugin
+ * Fix "An X.." name handling in Card Images plugin
+
+20 May 2011
+ * Fix cardimage download url
+
+19 May 2011
+ * Add sect stats to analyse plugin
+
+17 May 2011
+ * Document filter dialog keyboard shortcuts
+
+16 May 2011
+ * Add focus switching keyboard shortcut's to filter editor
+
+12 May 2011
+ * Fix bitbucket url
+
+06 May 2011
+ * Nicer error handling for errors when updating card lists
+
+05 May 2011
+ * Fix WW card count plugin to correctly handled some corner cases around
+   filters including the 'None' expansion
+ * Strip markup from entries read from the gtk.TreeStore in the filter, so
+   they match the contents of the box model
+
+04 May 2011
+ * Fix bug with keyboard pasting in list filters
+
+04 Apr 2011
+ * Change rulings parser to use rulings from the v:ekn site
+
+28 Mar 2011
+ * Prevent test suite prompting to download icons
+
+27 Mar 2011
+ * Change to using icons from v:ekn site
+
+16 Mar 2011
+ * Change over to using the text card list parser
+ * Fix ARDB export to match changes due to using text data
+ * Update docs and help to refect change to use text parser
+ * Fix FELDB homepage reference
+
+18 Mar 2011
+ * Add parser for the text file version of the card list
+ * Add test data for text card list parser
+
+16 Mar 2011
+ * Sort CardSetManagementModel so tests pass with postgresql 8.4
+
+15 Mar 2011
+ * Expose CardNameFilter in sutekh module
+
+04 Mar 2011
+ * Add non-unique keyword
+ * Fix 'blood cursed' checks
+
+03 Mar 2011
+ * Add mortal keyword to Imbued
+
 23 Feb 2011
  * Add cleanup calls to gui card lookup, to remove stale profile listeners
 
