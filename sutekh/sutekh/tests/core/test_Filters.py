@@ -148,14 +148,14 @@ class FilterTests(SutekhTest):
                 u"Kabede Maru"]),
             (Filters.ExpansionFilter('NoR'), [u"Abjure",
                 u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams',
-                u'Inez "Nurse216" Villagrande']),
+                u'Inez "Nurse216" Villagrande', u'Smite']),
             (Filters.MultiExpansionFilter(['NoR', 'LoB']), [u".44 Magnum",
                 u"Abebe", u"Abjure", u"Abombwe",
                 u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
                 u'Earl "Shaka74" Deams', u"High Top",
                 u'Inez "Nurse216" Villagrande', u"Paris Opera House",
-                u"Predator's Communion", u"Rock Cat", u"The Slaughterhouse",
-                u"Vox Domini"]),
+                u"Predator's Communion", u"Rock Cat", u'Smite',
+                u"The Slaughterhouse", u"Vox Domini"]),
             (Filters.ExpansionRarityFilter(('Sabbat', 'Rare')),
                 [u"Ablative Skin", u"Living Manse"]),
             (Filters.ExpansionRarityFilter(('Blood Shadowed Court',
@@ -345,7 +345,7 @@ class FilterTests(SutekhTest):
             (Filters.CardTextFilter('strike'), [u".44 Magnum", u"AK-47",
                 u"Aeron", u"Anastasz di Zagreb", u"Bronwen", u"Ghoul Retainer",
                 u"High Top", u"Ossian", u"Rock Cat",
-                u'Scapelli, The Family "Mechanic"', u"Shade"]),
+                u'Scapelli, The Family "Mechanic"', u"Shade", u'Smite']),
             (Filters.CardNameFilter(u'L\xe1z\xe1r'),
                 [u"L\xe1z\xe1r Dobrescu"]),
             (Filters.NullFilter(), self.aExpectedCards),
@@ -373,7 +373,7 @@ class FilterTests(SutekhTest):
                     u"Paris Opera House", u"Park Hunting Ground",
                     u"Political Hunting Ground", u"Predator's Communion",
                     u"Protracted Investment", u"Raven Spy", u"Rock Cat",
-                    u'Scapelli, The Family "Mechanic"', u"Shade",
+                    u'Scapelli, The Family "Mechanic"', u"Shade", u'Smite',
                     u"The Path of Blood", u"The Slaughterhouse",
                     u"Two Wrongs", u"Vox Domini"]),
         ]
@@ -418,7 +418,7 @@ class FilterTests(SutekhTest):
                 [u"Innocent", u"Martyr", u"Visionary"])
         self.assertEqual(Filters.MultiVirtueFilter.get_values(),
                 [u"Innocence", u"Judgment", u"Martyrdom", u"Redemption",
-                    u"Vision"])
+                    u"Vengeance", u"Vision"])
 
         # Test the physical card filtering
         for oFilter, aExpectedCards in aPhysicalTests:

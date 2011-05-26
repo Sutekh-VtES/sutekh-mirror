@@ -85,6 +85,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
         u"Shade",
+        u"Smite",
         u"The Ankara Citadel, Turkey",
         u"The Path of Blood",
         u"The Siamese",
@@ -556,6 +557,12 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oHtH.cardtype), 1)
         self.failUnless(ICardType("Reaction") in oHtH.cardtype)
         self.failUnless(oHtH.text.startswith('[aus] Reduce'))
+
+        oSmite = IAbstractCard("Smite")
+        self.assertEqual(oSmite.canonicalName, u"smite")
+        self.assertEqual(oSmite.cost, 3)
+        self.assertEqual(oSmite.costtype, "conviction")
+        self.failUnless(oSmite.text.startswith('{Strike:}'))
 
 
 if __name__ == "__main__":

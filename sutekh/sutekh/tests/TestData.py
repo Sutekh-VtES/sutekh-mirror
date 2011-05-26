@@ -1534,6 +1534,14 @@ Name: Anarch Railroad
 Name: Anarch Revolt
 [Anarchs and Alastors Storyline]
 
+Name: Smite
+[NoR:R]
+Cardtype: Combat
+Cost: 3 Conviction
+Virtue: Vengeance
+{Strike:} strength+1 aggravated ranged damage. Even if the strike is dodged, burn any electronic equipment (e.g., IR Goggles, Laptop Computer, or Phased Motion Detector) on either combatant.
+Artist: Heather Kreiter
+
 Name: Motivated by Gehenna
 [Eden's Legacy Storyline:Storyline]
 Cardtype: Master

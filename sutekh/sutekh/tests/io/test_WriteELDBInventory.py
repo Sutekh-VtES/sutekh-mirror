@@ -84,6 +84,7 @@ EXPECTED = """"ELDB - Inventory"
 "Hide the Heart",0,0,"","Library"
 "Anarch Railroad",0,0,"","Library"
 "Anarch Revolt",0,0,"","Library"
+"Smite",0,0,"","Library"
 """
 
 
