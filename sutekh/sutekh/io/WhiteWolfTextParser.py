@@ -9,7 +9,7 @@
 """Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
-from sutekh.io.SutekhBaseHTMLParser import LogState, LogStateWithInfo
+from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 

@@ -191,7 +191,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         oExpansion = IExpansion(sExpansionName)
         sExpName = oExpansion.shortname.lower()
         # Normalise for storyline cards
-        sExpName = sExpName.replace(' ','_').replace("'", '')
+        sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
 
     def __set_expansion_info(self, sCardName):
