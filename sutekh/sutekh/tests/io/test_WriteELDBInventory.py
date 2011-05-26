@@ -96,8 +96,10 @@ class ELDBInventoryWriterTests(SutekhTest):
         oWriter = WriteELDBInventory()
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
-        self.assertEqual(sorted(sData), sorted(EXPECTED), "Output differs : "
-                "%s vs %s" % (sData, EXPECTED))
+        self.assertEqual(sorted(sData.splitlines()),
+                sorted(EXPECTED.splitlines()), "Output differs : "
+                "%s vs %s" % (sorted(sData.splitlines()),
+                    sorted(EXPECTED.splitlines())))
 
 if __name__ == "__main__":
     unittest.main()
