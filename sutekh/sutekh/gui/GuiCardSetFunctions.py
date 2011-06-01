@@ -185,7 +185,7 @@ def update_card_set(oCardSet, oMainWindow):
 
 
 # Common to MainMenu import code and plugins
-def import_cs(fIn, oParser, oMainWindow):
+def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     """Create a card set from the given file object."""
     oHolder = CardSetHolder()
 
@@ -221,6 +221,9 @@ def import_cs(fIn, oParser, oMainWindow):
         oHolder.clear_warnings()
 
     # Handle naming issues if needed
+    if sSetName and not oHolder.name:
+        # Use provided name if we don't have one from the set
+        oHolder.name = sSetName
     oHolder, aChildren = get_import_name(oHolder)
     if not oHolder.name:
         return  # User bailed
