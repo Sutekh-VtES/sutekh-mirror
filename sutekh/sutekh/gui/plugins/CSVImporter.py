@@ -26,7 +26,7 @@ class CSVImporter(SutekhPlugin):
        currently selected file.
        """
     dTableVersions = {
-        PhysicalCardSet: (4, 5),
+        PhysicalCardSet: (4, 5, 6),
     }
     aModelsSupported = ("MainWindow",)
 
@@ -214,7 +214,8 @@ class CSVImporter(SutekhPlugin):
                 return
 
             # Tread the well-worn import path
-            import_cs(fIn, oParser, self.parent)
+            sSetName = self.oSetNameEntry.get_text().strip()
+            import_cs(fIn, oParser, self.parent, sSetName)
 
         self.oDlg.destroy()
 
