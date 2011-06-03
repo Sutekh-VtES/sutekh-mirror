@@ -18,6 +18,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.DataPack import find_data_pack, DOC_URL
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, fetch_data
@@ -34,10 +35,7 @@ class StarterConfigDialog(SutekhDialog):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Starter plugin."""
 
-    sDocUrl = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
-            'UserDocumentation?format=txt'
-
-    sZipUrlBase = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
+    sDocUrl = DOC_URL
 
     def __init__(self, oParent, bFirstTime=False):
         super(StarterConfigDialog, self).__init__(
@@ -64,34 +62,15 @@ class StarterConfigDialog(SutekhDialog):
 
         self.show_all()
 
-    def _get_zip_data(self):
-        """Extract the zip file from the UserDocumentation page on the
-           wiki"""
-        # Extract the first zip file from this
-        oFile = urllib2.urlopen(self.sDocUrl)
-        for sLine in oFile.readlines():
-            if sLine.find('.zip') != -1:
-                # Extract the zip file name
-                # Assumption - rst attachment, and the 1st zip file in
-                # the list
-                sZipRef = sLine.split('[')[1].split(' ')[0]
-                break
-        # Build up the url
-        sZipRef = sZipRef.replace('attachment:', '')
-        # We need to split off the zip file name and the path bits
-        sZipName, sPath = sZipRef.split(':', 1)
-        sPath = sPath.replace(':', '/')
-        sZipUrl = '/'.join((self.sZipUrlBase, sPath, sZipName))
-        oFile = urllib2.urlopen(sZipUrl)
-        return fetch_data(oFile)
-
     def get_data(self):
         """Return the zip file data containing the decks"""
         sFile, _bUrl = self.oFileWidget.get_file_or_url()
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
-            sData = self._get_zip_data()
+            sZipUrl = find_data_pack('starters')
+            oFile = urllib2.urlopen(sZipUrl)
+            sData = fetch_data(oFile)
         elif sFile:
             sData = self.oFileWidget.get_binary_data()
         return sData
