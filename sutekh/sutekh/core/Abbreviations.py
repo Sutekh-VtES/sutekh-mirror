@@ -176,6 +176,7 @@ class Disciplines(AbbreviationLookup):
 class Expansions(AbbreviationLookup):
     """Common names and abbreviations for the different expansions."""
     dKeys = {
+        # Ordinary expansions
         'Anarchs': [],
         'Ancient Hearts': ['AH'],
         # Blackhand is an abbreviation so reading card sets from old versions
@@ -202,6 +203,10 @@ class Expansions(AbbreviationLookup):
         'Third Edition': ['Third'],
         'Twilight Rebellion': ['TR'],
         'VTES': [],
+        # Special cases
+        # The Promo entry is to special-case the AaA cards which
+        # appear with promo entries in the card list
+        'Anarchs and Alastors Storyline' : ['Promo-20080810'],
     }
 
     @classmethod
@@ -214,10 +219,10 @@ class Expansions(AbbreviationLookup):
            Unknown expansions are also allowed in order to make it
            possible to update to a card list that includes expansions
            not in the list known to the Expansion class."""
-        if sName.startswith('Promo-'):
-            return sName
         if sName in cls._dLook:
             return cls._dLook[sName]
+        if sName.startswith('Promo-'):
+            return sName
         return sName
 
     @classmethod
