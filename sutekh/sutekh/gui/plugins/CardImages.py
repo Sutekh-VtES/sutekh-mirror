@@ -189,7 +189,11 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IExpansion methods correctly
         oExpansion = IExpansion(sExpansionName)
-        sExpName = oExpansion.shortname.lower()
+        # special case Anarchs and alastors due to promo hack shortname
+        if oExpansion.name == 'Anarchs and Alastors Storyline':
+            sExpName = oExpansion.name.lower()
+        else:
+            sExpName = oExpansion.shortname.lower()
         # Normalise for storyline cards
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
