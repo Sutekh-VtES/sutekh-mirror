@@ -39,7 +39,7 @@ class StarterConfigDialog(SutekhDialog):
 
     def __init__(self, oParent, bFirstTime=False):
         super(StarterConfigDialog, self).__init__(
-                'Configure Stater Info Plugin', oParent,
+                'Configure Starter Info Plugin', oParent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
