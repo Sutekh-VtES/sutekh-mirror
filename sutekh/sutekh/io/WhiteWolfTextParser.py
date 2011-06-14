@@ -175,6 +175,7 @@ class CardDict(dict):
             'investment': re.compile('Master[.:] (unique )?[Ii]nvestment'),
             'archetype': re.compile('Master: archetype'),
             'watchtower': re.compile('Master: watchtower'),
+            'title': re.compile('Title\.'),
             }
 
     # event properties
@@ -192,6 +193,7 @@ class CardDict(dict):
             'boon': re.compile('Boon\.'),
             'watchtower': re.compile('Watchtower\.'),
             'frenzy': re.compile('Frenzy\.'),
+            'title': re.compile('Title\.'),
             }
 
     # Special cases that aren't handled by the general code
