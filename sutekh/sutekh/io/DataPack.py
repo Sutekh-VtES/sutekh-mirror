@@ -26,9 +26,13 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
 
     The section looked for looks something like:
 
-    || '''Description''' || '''Tag''' || '''File'''
-    || Some text || starters || [attachment:Foo.zip:wiki:FilePage Foo.zip] ||
-    || Other text || rulebooks || [attachment:Bar.zip:wiki:FilePage Bar.zip] ||
+    || '''Description''' || '''Tag''' || '''Date Updated''' || '''File'''
+    || Some text || starters || date || [attachment:Foo.zip:wiki:FilePage Foo.zip] ||
+    || Other text || rulebooks || date || [attachment:Bar.zip:wiki:FilePage Bar.zip] ||
+    || Other text || twd || date || [attachment:Bas.zip:wiki:FilePage Bas.zip] ||
+
+    dates are expected to be formated YYYY-MM-DD (strftime('%Y-%m-%d'))
+    to avoid ambiguity.
     """
     oFile = urllib2.urlopen(sDocUrl)
     oHeaderRe = re.compile(r'^\|\|.*Tag')
