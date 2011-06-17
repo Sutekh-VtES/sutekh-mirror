@@ -32,23 +32,28 @@ class ConfigSutekhTest(SutekhTest):
         # basic validation
         self.oConfig.add_plugin_specs('CardImagePlugin', {})
         self.oConfig.add_plugin_specs('StarterInfoPlugin', {})
+        self.oConfig.add_plugin_specs('RulebookPlugin', {})
         self.oConfig.validate()
         # Don't try and create a path in the user's home dir
-        self.sImagesDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
-        self.sIconsDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
-        os.makedirs("%s/clans" % self.sIconsDir)  # For new icon check
+        self.sPluginDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
+        # For new icon check
+        os.makedirs(os.path.join(self.sPluginDir, 'clans'))
         self.oConfig.set_plugin_key('CardImagePlugin', 'card image path',
-                self.sImagesDir)
+                self.sPluginDir)
+        self.oConfig.set_plugin_key('RulebookPlugin', 'rulebook path',
+                self.sPluginDir)
+        # Touch index file for rulebook plugin
+        open(os.path.join(self.sPluginDir, 'index.txt'), 'w').close()
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
-        self.oConfig.set_icon_path(self.sIconsDir)
+        self.oConfig.set_icon_path(self.sPluginDir)
         # Needed so validate doesn't remove our settings later
         self.oConfig.write()
 
     def tearDown(self):
         """Tear down config file stuff after test run"""
-        os.rmdir(self.sImagesDir)
-        os.rmdir("%s/clans" % self.sIconsDir)
-        os.rmdir(self.sIconsDir)
+        os.remove(os.path.join(self.sPluginDir, 'index.txt'))
+        os.rmdir(os.path.join(self.sPluginDir, 'clans'))
+        os.rmdir(self.sPluginDir)
         super(ConfigSutekhTest, self).tearDown()
         # FIXME: This helps the test suite, but I'm not sure why
         # This warrants further investigation at some point
