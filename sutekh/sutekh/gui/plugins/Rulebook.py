@@ -75,6 +75,10 @@ class RulebookPlugin(SutekhPlugin):
        """
     aModelsSupported = ("MainWindow",)
 
+    dGlobalConfig = {
+        'rulebook path': 'string(default=None)',
+    }
+
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
@@ -84,7 +88,10 @@ class RulebookPlugin(SutekhPlugin):
         #       menu. Remove this once the plugin API provides a better way to
         #       add and remove items from a top-level menu.
         self._oFirstMenuItem = None
-        self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
+        self._sPrefsPath = self.get_config_item('rulebook path')
+        if self._sPrefsPath is None:
+            self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
+            self.set_config_item('rulebook path', self._sPrefsPath)
 
     def _read_index(self):
         """Read the list of rulebooks from the index.txt file.
