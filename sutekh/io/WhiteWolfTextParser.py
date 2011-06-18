@@ -1,18 +1,23 @@
-# WhiteWolfParser.py
+# WhiteWolfTextParser.py
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # WhiteWolf Parser
 # Copyright 2005, 2006 Simon Cross <hodgestar@gmail.com>
-# Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2007, 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""HTML Parser for extracting cards from the WW online cardlist."""
+"""Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
-from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
-        LogState, LogStateWithInfo
+from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
+
+
+def strip_braces(sText):
+    """Helper function for searching for keywords. Strip all {} tags from the
+       text"""
+    return sText.replace('{', '').replace('}', '')
 
 
 # Card Saver
@@ -118,15 +123,16 @@ class CardDict(dict):
             'anarch': re.compile('\. Anarch:'),
             'scarce': re.compile('[.:] Scarce.'),
             'sterile': re.compile('[.:] Sterile.'),
-            'blood cursed': re.compile('[.:] \(?Blood Cursed'),
+            # Need the } to handle some of the errata'd cards
+            'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
             'not for legal play': re.compile(
-                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
             }
 
     # Properites we check for all library cards
     dLibProperties = {
             'not for legal play': re.compile(
-                '\{NOT FOR LEGAL PLAY\}|\{Added to the V:EKN banned list'),
+                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
             }
 
     # Ally properties
@@ -169,6 +175,7 @@ class CardDict(dict):
             'investment': re.compile('Master[.:] (unique )?[Ii]nvestment'),
             'archetype': re.compile('Master: archetype'),
             'watchtower': re.compile('Master: watchtower'),
+            'title': re.compile('Title\.'),
             }
 
     # event properties
@@ -186,6 +193,7 @@ class CardDict(dict):
             'boon': re.compile('Boon\.'),
             'watchtower': re.compile('Watchtower\.'),
             'frenzy': re.compile('Frenzy\.'),
+            'title': re.compile('Title\.'),
             }
 
     # Special cases that aren't handled by the general code
@@ -216,7 +224,7 @@ class CardDict(dict):
                     self.dCryptKeywordSpecial[self['name']].iteritems():
                 dKeywords[sKeyword] = iVal
         # Make sure we don't detect merged properties
-        sText = self['text'].split('[MERGED]')[0]
+        sText = strip_braces(self['text'].split('[MERGED]')[0])
         for sNum, sType in self.oCryptInfoRgx.findall(sText):
             dKeywords[sType] += int(sNum)
         for sType, iNum in dKeywords.iteritems():
@@ -226,12 +234,18 @@ class CardDict(dict):
             oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+        # Add Non-Unique keyword
+        if 'are not unique' in sText or 'Non-unique' in sText:
+            self._add_keyword(oCard, 'non-unique')
+        # Imbued are also mortals, so add the keyword
+        if self['cardtype'] == 'Imbued':
+            self._add_keyword(oCard, 'mortal')
 
     def _find_lib_life_and_keywords(self, oCard):
         """Extract ally and retainer life and strength & bleed keywords from
            the card text"""
         # Restrict ourselves to text before Superior disciplines
-        sText = re.split('\[[A-Z]{3}\]', self['text'])[0]
+        sText = strip_braces(re.split('\[[A-Z]{3}\]', self['text'])[0])
         # Annoyingly not standardised
         oDetail1Rgx = re.compile('\. (\d strength), (\d bleed)[\.,]')
         oDetail2Rgx = re.compile('\. (\d bleed), (\d strength)[\.,]')
@@ -256,11 +270,14 @@ class CardDict(dict):
 
     def _find_card_keywords(self, oCard, dProps):
         """Find keywords for library cards"""
+        sText = strip_braces(self['text'])
+
         def _do_match(sKeyword, oRegexp):
             """Helper to do the match"""
-            oMatch = oRegexp.search(self['text'])
+            oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
+
         for sKeyword, oRegexp in dProps.iteritems():
             _do_match(sKeyword, oRegexp)
         for sKeyword, oRegexp in self.dLibProperties.iteritems():
@@ -278,7 +295,6 @@ class CardDict(dict):
                 if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer',
                         'Equipment', 'Master', 'Event']:
                     sType = sVal
-
         # Check for REFLEX card type
         if self['text'].find(' [REFLEX] ') != -1:
             if self.has_key('cardtype'):
@@ -300,7 +316,7 @@ class CardDict(dict):
             self._find_card_keywords(oCard, self.dOtherProperties)
         if sType == 'Vampire':
             # Sect attributes: more text. Title is in the attributes
-            aLines = self['text'].split(':')
+            aLines = strip_braces(self['text']).split(':')
             sSect, sTitle = _find_sect_and_title(aLines)
             # check if the vampire has flight (text ends has Flight [FLIGHT].)
             oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
@@ -573,63 +589,85 @@ class CardDict(dict):
         self._add_physical_cards(oCard)
 
         oCard.syncUpdate()
+        # FIXME: Pass back any error confitions? Missing text, etc.
+
+
+# Parsing helper functions
+def fix_clarification_markers(sLine):
+    """Standardise the clarification markers from the text"""
+    for sMarker in ['={', '-{']:
+        sLine = sLine.replace(sMarker, '{')
+    for sMarker in ['}=', '}-']:
+        sLine = sLine.replace(sMarker, '}')
+    return sLine
 
 
 # State Classes
-class NoCard(LogState):
+class WaitingForCardName(LogStateWithInfo):
     """State when we are not in a card."""
 
-    def transition(self, sTag, _dAttr):
+    def transition(self, sLine, _dAttr):
         """Transition to PotentialCard if needed."""
-        if sTag == 'p':
-            return PotentialCard(self.oLogger)
-        else:
-            return self
+        if sLine.startswith('Name:'):
+            self.flush()
+            sData = sLine.split(':', 1)[1]
+            self._dInfo['name'] = sData.strip()
+            return InExpansion(self._dInfo, self.oLogger)
+        elif sLine.strip():
+            if self._dInfo.has_key('name') and not self._dInfo.has_key('text'):
+                # We've it a blank line in the middle of a card, so bounce
+                # back to InCard stuff
+                oCard = InCard(self._dInfo, self.oLogger)
+                return oCard.transition(sLine, None)
+        return self
 
-
-class PotentialCard(LogState):
-    """State for a section that may be a card"""
-
-    def transition(self, sTag, dAttr):
-        """Transition to InCard or NoCard if needed."""
-        if sTag == 'a' and dAttr.has_key('name'):
-            return InCard(CardDict(self.oLogger), self.oLogger)
-        else:
-            return NoCard(self.oLogger)
+    def flush(self):
+        """Save any existing card and clear out dInfo"""
+        if self._dInfo.has_key('name'):
+            # Ensure we've saved existing card
+            self._dInfo.save()
+        self._dInfo = CardDict(self.oLogger)
 
 
 class InCard(LogStateWithInfo):
-    """State for in a card description in the WW card list."""
+    """State when we are in a card, waiting for the card text."""
 
-    def transition(self, sTag, dAttr):
-        """Transition to the appropriate section state if needed."""
-        if sTag == 'p':
-            raise StateError()
-        elif sTag == '/p':
-            self._dInfo.save()
-            return NoCard(self.oLogger)
-        elif sTag == 'span' and dAttr.get('class') == 'cardname':
-            return InCardName(self._dInfo, self.oLogger)
-        elif sTag == 'span' and dAttr.get('class') == 'exp':
-            return InExpansion(self._dInfo, self.oLogger)
-        elif sTag == 'span' and dAttr.get('class') == 'key':
-            return InKeyValue(self._dInfo, self.oLogger)
-        elif sTag == 'td' and dAttr.get('colspan') == '2':
-            return InCardText(self._dInfo, self.oLogger)
+    # These look like they start a key: value pair, but actually start
+    # card text
+
+    aTextTags = [
+            'master',
+            'camarilla',
+            'sabbat',
+            'laibon',
+            'independent',
+            'strike',
+            'weapon',
+            ]
+
+    def transition(self, sLine, _dAttr):
+        oCardText = None
+        if ':' in sLine:
+            sTag = fix_clarification_markers(sLine.split(':', 1)[0].lower())
+            if sTag in self.aTextTags or ' ' in sTag or '{' in sTag:
+                oCardText = InCardText(self._dInfo, self.oLogger)
+            else:
+                sData = fix_clarification_markers(sLine.split(':', 1)[1])
+                # We don't want clarification markers here
+                sData = sData.replace('{', '').replace('}', '')
+                self._dInfo[sTag] = sData.strip()
+        elif not sLine.strip():
+            # Empty line, so probably end of the card
+            return WaitingForCardName(self._dInfo, self.oLogger)
         else:
-            return self
-
-
-class InCardName(LogStateWithInfo):
-    """In the card name section."""
-
-    def transition(self, sTag, _dAttr):
-        """Transition back to InCard if needed."""
-        if sTag == '/span':
-            self._dInfo['name'] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogger)
-        elif sTag == 'span':
-            raise StateError()
+            if sLine.strip().lower() == 'burn option':
+                # Annoying special case
+                self._dInfo['burn option'] = None
+            else:
+                oCardText = InCardText(self._dInfo, self.oLogger)
+        if oCardText:
+            # Hand over the line to the card text parser
+            return oCardText.transition(sLine, None)
         else:
             return self
 
@@ -637,13 +675,11 @@ class InCardName(LogStateWithInfo):
 class InExpansion(LogStateWithInfo):
     """In the expansions section."""
 
-    def transition(self, sTag, _dAttr):
+    def transition(self, sLine, _dAttr):
         """Transition back to InCard if needed."""
-        if sTag == '/span':
-            self._dInfo['expansion'] = self._sData.strip()
+        if sLine.startswith('[') and sLine.strip().endswith(']'):
+            self._dInfo['expansion'] = sLine.strip()
             return InCard(self._dInfo, self.oLogger)
-        elif sTag == 'span':
-            raise StateError()
         else:
             return self
 
@@ -651,88 +687,48 @@ class InExpansion(LogStateWithInfo):
 class InCardText(LogStateWithInfo):
     """In the card text section."""
 
-    def data(self, sData):
-        """Add data, cleaning up line breaks"""
-        self._sData += sData.replace('\n', ' ')
-
-    def transition(self, sTag, _dAttr):
+    def transition(self, sLine, _dAttr):
         """Transition back to InCard if needed."""
-        if sTag == '/td' or sTag == 'tr' or sTag == '/tr' or sTag == '/table':
-            if  self._dInfo.has_key('text'):
-                # We use lstrip to ensure we don't add double whitespace
-                # in the middle. We don't use strip, since, as sData can be
-                # empty here, we need to call strip on the entire text
-                # afterwards, anyway
-                self._dInfo['text'] += self._sData.lstrip()
-                self._dInfo['text'] = self._dInfo['text'].strip()
-            else:
-                self._dInfo['text'] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogger)
-        elif sTag == 'td':
-            raise StateError()
-        elif sTag == 'br':
+        if sLine.startswith('Artist:') or not sLine.strip():
+            self._dInfo['text'] = fix_clarification_markers(
+                    self._dInfo['text'].strip())
+            oInCard = InCard(self._dInfo, self.oLogger)
+            return oInCard.transition(sLine, None)
+        else:
             if not self._dInfo.has_key('text'):
-                # 1st br
-                self._dInfo['text'] = self._sData.strip() + '\n'
-                self._sData = ''
-            return self
-        else:
-            return self
-
-
-class InKeyValue(LogStateWithInfo):
-    """Extract a dictionary key from the table holding the card info."""
-
-    def transition(self, sTag, _dAttr):
-        """Transition to WaitingForValue if needed."""
-        if sTag == '/span':
-            sKey = self._sData.strip().strip(':').lower()
-            return WaitingForValue(sKey, self._dInfo, self.oLogger)
-        elif sTag == 'span':
-            raise StateError()
-        else:
-            return self
-
-
-class WaitingForValue(LogStateWithInfo):
-    """Extract a value from the table holding the card info."""
-
-    def __init__(self, sKey, dInfo, oLogHandler):
-        super(WaitingForValue, self).__init__(dInfo, oLogHandler)
-        self._sKey = sKey
-        self._bGotTd = False
-
-    def transition(self, sTag, _dAttr):
-        """Transition back to InCard if needed."""
-        if sTag == 'td':
-            self._sData = ""
-            self._bGotTd = True
-            return self
-        elif sTag == '/td' and self._bGotTd:
-            self._dInfo[self._sKey] = self._sData.strip()
-            return InCard(self._dInfo, self.oLogger)
-        elif sTag == '/tr':
-            self._dInfo[self._sKey] = None
-            return InCard(self._dInfo, self.oLogger)
-        elif sTag == 'tr':
-            raise StateError()
-        else:
+                self._dInfo['text'] = sLine.strip() + '\n'
+            else:
+                # Since we're building this up a line at a time, we add a
+                # trailing space, which we strip before we exit this parser
+                self._dInfo['text'] += sLine.strip() + ' '
             return self
 
 
 # Parser
-class WhiteWolfParser(SutekhBaseHTMLParser):
-    """Actual Parser for the WW cardlist HTML file(s)."""
+class WhiteWolfTextParser(object):
+    """Actual Parser for the WW cardlist text file(s)."""
 
     def __init__(self, oLogHandler):
-        # super().__init__ calls reset, so we need this first
         self.oLogger = Logger('White wolf card parser')
         if oLogHandler is not None:
             self.oLogger.addHandler(oLogHandler)
-        super(WhiteWolfParser, self).__init__()
-        # No need to touch self._oState, since reset will do that
+        self._oState = None
+        self.reset()
 
     def reset(self):
         """Reset the parser"""
-        super(WhiteWolfParser, self).reset()
-        self._oState = NoCard(self.oLogger)
+        self._oState = WaitingForCardName({}, self.oLogger)
+
+    def parse(self, fIn):
+        """Feed lines to the state machine"""
+        for sLine in fIn:
+            self.feed(sLine)
+        # Ensure we flush any open card text states
+        self.feed('')
+        self._oState.flush()
+
+    def feed(self, sLine):
+        """Feed the line to the current state"""
+        # We are overloading HTML parser states, so we have the extra None
+        # for dAttr
+        self._oState = self._oState.transition(sLine, None)

@@ -15,6 +15,7 @@ from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel, BOXTYPE, \
         BOXTYPE_ORDER
 import gobject
 import gtk
+import pango
 
 DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
 NO_DRAG_TARGET = [("No Drag", 0, 0)]
@@ -31,6 +32,20 @@ NEW_FILTER = 'NewFilter: '
 # Key constants
 ENTER_KEYS = set([gtk.gdk.keyval_from_name('Return'),
     gtk.gdk.keyval_from_name('KP_Enter')])
+LEFT_RIGHT = set([gtk.gdk.keyval_from_name('KP_Left'),
+    gtk.gdk.keyval_from_name('KP_Right'),
+    gtk.gdk.keyval_from_name('Left'),
+    gtk.gdk.keyval_from_name('Right')])
+LEFT = set([gtk.gdk.keyval_from_name('KP_Left'),
+    gtk.gdk.keyval_from_name('Left')])
+RIGHT = set([gtk.gdk.keyval_from_name('KP_Right'),
+    gtk.gdk.keyval_from_name('Right')])
+
+
+def unescape_markup(sMarkup):
+    """Untiltiy function to strip markup from a string"""
+    _oAttr, sStripped, _oAccel = pango.parse_markup(sMarkup)
+    return sStripped
 
 
 def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
@@ -208,6 +223,8 @@ class FilterValuesBox(gtk.VBox):
         oFilterTypes.get_selection_object().connect('changed',
                 self.update_box_model, oFilter, oFilterTypes)
         oFilterTypes.set_size_request(100, 150)
+        oFilterTypes.view.connect('key-press-event', self.key_press, oFilter,
+                'Filter Type')
         self._oWidget.pack_start(oFilterTypes, expand=False)
         self._oWidget.pack_start(gtk.Label('Or Drag Filter Element'),
                 expand=False)
@@ -252,7 +269,7 @@ class FilterValuesBox(gtk.VBox):
         self._oWidget = ScrolledList('Select Filter Values')
         self._oWidget.set_select_multiple()
         self._oWidget.fill_list(oFilter.aValues)
-        self._oWidget.connect('key-press-event', self.key_press, oFilter,
+        self._oWidget.view.connect('key-press-event', self.key_press, oFilter,
                 'Value')
         self._set_drag_for_widget(self._oWidget, self.update_filter_list,
                 oFilter)
@@ -268,6 +285,7 @@ class FilterValuesBox(gtk.VBox):
         if oFilter.aCurValues:
             oEntry.set_text(oFilter.aCurValues[0])
         oEntry.connect('changed', self.update_edit_box, oFilter)
+        oEntry.connect('key-press-event', self.key_press, oFilter, 'Entry')
 
     def set_widget(self, oFilter, oBoxModelEditor):
         """Replace the current widget with the correct widget for the
@@ -306,6 +324,8 @@ class FilterValuesBox(gtk.VBox):
             elif oFilter.iValueType == FilterBoxItem.NONE:
                 # None filter, so no selection widget, but we have buttons
                 self._oWidget = self._oNoneWidget
+                self._oWidget.connect('key-press-event', self.key_press, None,
+                        'None')
         else:
             # No selected widget, so clear everything
             self._oWidget = self._oEmptyWidget
@@ -416,8 +436,50 @@ class FilterValuesBox(gtk.VBox):
         if self._oBoxModelEditor:
             self._oBoxModelEditor.set_negate(oButton.get_active())
 
+    def switch_focus(self, oEvent, sSource):
+        """Handle switching focus between the different filter bits"""
+        if sSource in set(['Value', 'Entry', 'None', 'CardSet']):
+            # Only one entry in the filter pane
+            self._oBoxModelEditor.grab_focus()
+        elif sSource == 'Editor':
+            if isinstance(self._oLastFilter, FilterBoxItem):
+                if self._oLastFilter.iValueType == FilterBoxItem.LIST:
+                    # Only one entry in the filter pane
+                    self._oWidget.view.grab_focus()
+                elif self._oLastFilter.iValueType == FilterBoxItem.ENTRY:
+                    # entry is the second child of the VBox
+                    self._oWidget.get_children()[1].grab_focus()
+            if isinstance(self._oLastFilter, FilterBoxModel) or \
+                    (isinstance(self._oLastFilter, FilterBoxItem) and
+                            self._oLastFilter.iValueType ==
+                            FilterBoxItem.LIST_FROM):
+                if oEvent.keyval in LEFT:
+                    # bottom child needs the focus
+                    oAutoScrolled = self._oWidget.get_children()[2]
+                    oAutoScrolled.get_child().grab_focus()
+                else:
+                    # top child needs the focus
+                    self._oWidget.get_children()[0].view.grab_focus()
+        elif sSource in set(['Count', 'Set', 'Filter Type', 'Filter']):
+            if oEvent.keyval in RIGHT and \
+                    sSource in set(['Count', 'Filter Type']):
+                # Top child selected, so pass to bottom
+                oAutoScrolled = self._oWidget.get_children()[2]
+                oAutoScrolled.get_child().grab_focus()
+            elif oEvent.keyval in LEFT and \
+                    sSource in set(['Filter', 'Set']):
+                # Bottom child selected, so pass to top
+                self._oWidget.get_children()[0].view.grab_focus()
+            else:
+                # Passing focus to Model Editor
+                self._oBoxModelEditor.grab_focus()
+
     def key_press(self, oWidget, oEvent, oFilter, sSource):
         """Handle key press events to do allow keyboard pasting"""
+        # Alt-direction moves focus around
+        if oEvent.keyval in LEFT_RIGHT and \
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+            self.switch_focus(oEvent, sSource)
         # We flag on ctrl-enter
         if oEvent.keyval not in ENTER_KEYS or not \
                 (oEvent.get_state() & gtk.gdk.CONTROL_MASK):
@@ -441,7 +503,7 @@ class FilterValuesBox(gtk.VBox):
             self._oBoxModelEditor.paste_value(sSelect)
         elif sSource == 'Value':
             sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
-            self._format_selection(sSelect, oWidget.get_selection())
+            self._format_selection(sSelect, self._oWidget.get_selection())
             self._oBoxModelEditor.paste_value(sSelect)
 
     def toggle_disabled(self, oButton):
@@ -477,6 +539,7 @@ class FilterValuesBox(gtk.VBox):
             """Get important values out of a gtk.Adjustment"""
             return oAdj.value, oAdj.page_size
 
+        # We must always be calling this with a filter box model shown
         assert len(self._oWidget.get_children()) == 3
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
@@ -499,7 +562,13 @@ class FilterValuesBox(gtk.VBox):
             oAdj.changed()
             oAdj.value_changed()
 
-        assert len(self._oWidget.get_children()) == 3
+        # FIXME: fix selection behaviour so we select the correct
+        # filter box model in this case, rather than the newly added
+        # filter.
+        if len(self._oWidget.get_children()) != 3:
+            # Selected widget is not a box model (can happen if we insert
+            # something before the box model, so no sensible default selection
+            return
         oScrolledWindow = self._oWidget.get_children()[2]
         oSubFilterWidget = oScrolledWindow.get_children()[0]
         oSelection = oSubFilterWidget.get_selection()
@@ -789,6 +858,14 @@ class FilterBoxModelEditView(gtk.TreeView):
         self.connect('drag_data_get', self.drag_element)
         self.connect('button_press_event', self.press_button)
         self.connect('drag_motion', self.do_drag_motion)
+        self.connect('key_press_event', self.key_press)
+
+    def key_press(self, _oWidget, oEvent):
+        """Handle key-press events for the filter box model"""
+        if oEvent.keyval in LEFT_RIGHT and \
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+            # Pass focus to the value widget
+            self._oValuesWidget.switch_focus(oEvent, 'Editor')
 
     def update_values_widget(self, _oTreeSelection):
         """Update the values widget to the new selection"""
@@ -844,7 +921,7 @@ class FilterBoxModelEditView(gtk.TreeView):
     def remove_value_at_iter(self, oIter):
         """Remove the filter value at the given point in the tree"""
         oFilter = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
-        sValue = self._oStore.get_value(oIter, 0)
+        sValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if oFilter.iValueType == FilterBoxItem.LIST \
                 and sValue in oFilter.aCurValues:
             oFilter.aCurValues.remove(sValue)
@@ -924,7 +1001,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         """Helper function for selecting a value in a filter in the tree.
           Meant to be called via the foreach method."""
         oFilterObj, sValue = tValueInfo
-        sCurValue = self._oStore.get_value(oIter, 0)
+        sCurValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if sCurValue == sValue:
             # Check parent
             oParIter = self._oStore.iter_parent(oIter)
@@ -1111,7 +1188,7 @@ class FilterBoxModelEditView(gtk.TreeView):
         oIter = self._oStore.get_iter_from_string(sIter)
         oSourceFilter = self._oStore.get_value(
                 self._oStore.iter_parent(oIter), 1)
-        sValue = self._oStore.get_value(oIter, 0)
+        sValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if not target_ok(oFilterObj, oSourceFilter):
             return False
         aTarget = []

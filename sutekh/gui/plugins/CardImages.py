@@ -189,7 +189,14 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IExpansion methods correctly
         oExpansion = IExpansion(sExpansionName)
-        return oExpansion.shortname.lower()
+        # special case Anarchs and alastors due to promo hack shortname
+        if oExpansion.name == 'Anarchs and Alastors Storyline':
+            sExpName = oExpansion.name.lower()
+        else:
+            sExpName = oExpansion.shortname.lower()
+        # Normalise for storyline cards
+        sExpName = sExpName.replace(' ', '_').replace("'", '')
+        return sExpName
 
     def __set_expansion_info(self, sCardName):
         """Set the expansion info."""
@@ -221,9 +228,11 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def __convert_cardname(self):
         """Convert sCardName to the form used by the card image list"""
         sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
-        sFilename = _unaccent(self.__sCardName.lower())
-        if sFilename.find('the ') == 0:
+        sFilename = _unaccent(self.__sCardName)
+        if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
+        elif sFilename.startswith('an '):
+            sFilename = sFilename[3:] + 'an'
         sFilename = sFilename.replace('(advanced)', 'adv')
         # Should probably do this via translate
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
@@ -297,7 +306,7 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         """Set the image in response to a set card name event."""
         if not oPhysCard:
             return
-        sCardName = oPhysCard.abstractCard.name
+        sCardName = oPhysCard.abstractCard.canonicalName
         sExpansionName = ''
         if oPhysCard.expansion:
             sExpansionName = oPhysCard.expansion.name
@@ -380,7 +389,7 @@ class ImageConfigDialog(SutekhDialog):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
-    sDefaultUrl = 'http://csillagbolcselet.hu/feldb/pictures.zip'
+    sDefaultUrl = 'http://csillagmag.hu/upload/pictures.zip'
 
     def __init__(self, oImagePlugin, bFirstTime=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',

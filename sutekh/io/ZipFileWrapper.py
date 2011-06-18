@@ -57,16 +57,15 @@ class ZipFileWrapper(object):
         self.oZip.close()
         self.oZip = None
 
-    def write_all_pcs_to_zip(self, oLogger):
-        """Add all the physical card sets to the zip file"""
+    def write_pcs_list_to_zip(self, aPCSList, oLogger):
+        """Write the given list of card sets to the zip file"""
         bClose = False
         tTime = datetime.datetime.now().timetuple()
         if self.oZip is None:
             self.__open_zip_for_write()
             bClose = True
-        oPhysicalCardSets = PhysicalCardSet.select()
         aList = []
-        for oPCSet in oPhysicalCardSets:
+        for oPCSet in aPCSList:
             sZName = oPCSet.name
             oWriter = PhysicalCardSetWriter()
             oHolder = CardSetWrapper(oPCSet)
@@ -189,14 +188,23 @@ class ZipFileWrapper(object):
 
     def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""
+        aPhysicalCardSets = PhysicalCardSet.select()
+        return self.do_dump_list_to_zip(aPhysicalCardSets, oLogHandler)
+
+    def do_dump_list_to_zip(self, aCSList, oLogHandler=None):
+        """Handle dumping a list of cards to the zip file with log fiddling"""
         self.__open_zip_for_write()
-        oLogger = Logger('Restore zip file')
+        oLogger = Logger('Write zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
             if hasattr(oLogHandler, 'set_total'):
-                iTotal = PhysicalCardSet.select().count()
-                oLogHandler.set_total(iTotal)
-        aPCSList = self.write_all_pcs_to_zip(oLogger)
+                if hasattr(aCSList, 'count'):
+                    # Handle case we have a select result list
+                    iTotal = aCSList.count()
+                    oLogHandler.set_total(iTotal)
+                else:
+                    oLogHandler.set_total(len(aCSList))
+        aPCSList = self.write_pcs_list_to_zip(aCSList, oLogger)
         self.__close_zip()
         return aPCSList
 

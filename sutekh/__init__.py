@@ -20,7 +20,7 @@ from sutekh.core.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
                     MultiClanFilter, PhysicalCardSetFilter, \
                     PhysicalCardFilter, GroupFilter, MultiGroupFilter, \
                     ExpansionFilter, MultiExpansionFilter, \
-                    PhysicalExpansionFilter, \
+                    PhysicalExpansionFilter, CardNameFilter, \
                     MultiPhysicalExpansionFilter, CardSetNameFilter, \
                     CardSetDescriptionFilter, CardSetAuthorFilter, \
                     CardSetAnnotationsFilter

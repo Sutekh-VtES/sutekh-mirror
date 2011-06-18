@@ -14,7 +14,7 @@ import unittest
 class RulingParserTests(SutekhTest):
     """Check the results of the ruling parser call in SutekhTest SetUp"""
     aExpectedRulings = [
-        u"[LSJ19990215]", u"[LSJ19990216]", u"[LSJ20070928]",
+        u"[LSJ 19990215]", u"[LSJ 19990216]", u"[LSJ 20070928]",
     ]
 
     def test_basic(self):

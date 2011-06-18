@@ -75,7 +75,8 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
     def _get_card_count(self, oAbsCard):
         """Get the count for the card for the current mode"""
         if self._iMode == self.COUNT_EXP:
-            return self._dExpCounts[oAbsCard]
+            # We default if we're only showing the unspecified expansion
+            return self._dExpCounts.get(oAbsCard, 0)
         else:
             return self._dAbsCounts[oAbsCard]
 
@@ -120,27 +121,32 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         self._dCardTotals = {TOTAL: 0, CRYPT: 0, LIB: 0}
         self._dExpTotals = {TOTAL: 0, CRYPT: 0, LIB: 0}
         for oCard in aCards:
-            if not oCard.expansionID:
-                continue  # We don't count cards with no expansion set
             oAbsCard = IAbstractCard(oCard)
             if oAbsCard not in self._dAbsCounts:
-                # First time we've seen this card
                 self._dAbsCounts[oAbsCard] = 1
-                self._dExpCounts[oAbsCard] = 1
                 iAbsCount = 1
             else:
-                # Has an expansion, and by the nature of the list, this is
-                # a new expansion for the card we haven't seen before
-                self._dExpCounts[oAbsCard] += 1
                 iAbsCount = 0
+            if oCard.expansionID:
+                # We don't count expansion ifno for cards with no expansion set
+                iExpCount = 1
+                if oAbsCard not in self._dExpCounts:
+                    # First time we've seen this card
+                    self._dExpCounts[oAbsCard] = 1
+                else:
+                    # Has an expansion, and by the nature of the list, this is
+                    # a new expansion for the card we haven't seen before
+                    self._dExpCounts[oAbsCard] += 1
+            else:
+                iExpCount = 0
             if is_crypt_card(oAbsCard):
-                self._dExpTotals[CRYPT] += 1
+                self._dExpTotals[CRYPT] += iExpCount
                 self._dCardTotals[CRYPT] += iAbsCount
             else:
-                self._dExpTotals[LIB] += 1
+                self._dExpTotals[LIB] += iExpCount
                 self._dCardTotals[LIB] += iAbsCount
             self._dCardTotals[TOTAL] += iAbsCount
-            self._dExpTotals[TOTAL] += 1
+            self._dExpTotals[TOTAL] += iExpCount
         self.update_numbers()
 
     def perpane_config_updated(self, _bDoReload=True):

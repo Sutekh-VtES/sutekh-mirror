@@ -81,6 +81,10 @@ EXPECTED = """"ELDB - Inventory"
 "Bravo",0,0,"","Library"
 "Dramatic Upheaval",0,0,"","Library"
 "Motivated by Gehenna",0,0,"","Library"
+"Hide the Heart",0,0,"","Library"
+"Anarch Railroad",0,0,"","Library"
+"Anarch Revolt",0,0,"","Library"
+"Smite",0,0,"","Library"
 """
 
 
@@ -96,8 +100,10 @@ class ELDBInventoryWriterTests(SutekhTest):
         oWriter = WriteELDBInventory()
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
-        self.assertEqual(sorted(sData), sorted(EXPECTED), "Output differs : "
-                "%s vs %s" % (sData, EXPECTED))
+        self.assertEqual(sorted(sData.splitlines()),
+                sorted(EXPECTED.splitlines()), "Output differs : "
+                "%s vs %s" % (sorted(sData.splitlines()),
+                    sorted(EXPECTED.splitlines())))
 
 if __name__ == "__main__":
     unittest.main()

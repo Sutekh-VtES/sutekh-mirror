@@ -45,6 +45,8 @@ class WhiteWolfParserTests(SutekhTest):
         u"Alfred Benezri",
         u"Ambrogino Giovanni",
         u'Amisa',
+        u'Anarch Railroad',
+        u'Anarch Revolt',
         u"Anastasz di Zagreb",
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
@@ -60,6 +62,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
+        u'Hide the Heart',
         u"High Top",
         u'Inez "Nurse216" Villagrande',
         u"Kabede Maru",
@@ -82,6 +85,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
         u"Shade",
+        u"Smite",
         u"The Ankara Citadel, Turkey",
         u"The Path of Blood",
         u"The Siamese",
@@ -142,6 +146,7 @@ class WhiteWolfParserTests(SutekhTest):
         oObfSup = IDisciplinePair((u"Obfuscate", u"superior"))
         oAboInf = IDisciplinePair((u"Abombwe", u"inferior"))
         oAboSup = IDisciplinePair((u"Abombwe", u"superior"))
+        oValSup = IDisciplinePair((u'Valeren', u"superior"))
 
         # Check Dobrescu
         oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
@@ -170,7 +175,7 @@ class WhiteWolfParserTests(SutekhTest):
         oRuling = oDob.rulings[0]
         self.assertTrue(oRuling.text.startswith("Cannot use his special"))
         self.assertTrue(oRuling.text.endswith("uncontrolled region."))
-        self.assertEqual(oRuling.code, "[LSJ19990215]")
+        self.assertEqual(oRuling.code, "[LSJ 19990215]")
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
@@ -414,7 +419,7 @@ class WhiteWolfParserTests(SutekhTest):
         oRuling = oAblat.rulings[0]
         self.assertTrue(oRuling.text.startswith("Cannot be used to prevent"))
         self.assertTrue(oRuling.text.endswith("Blood Fury)."))
-        self.assertEqual(oRuling.code, "[LSJ19990216]")
+        self.assertEqual(oRuling.code, "[LSJ 19990216]")
         self.assertEqual(len(oAblat.artists), 1)
         self.failUnless(IArtist('Richard Thomas') in oAblat.artists)
 
@@ -518,6 +523,46 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('not for legal play') in oDramatic.keywords)
         oMotivated = IAbstractCard('Motivated by Gehenna')
         self.failUnless(IKeyword('not for legal play') in oMotivated.keywords)
+
+        # Test adding extra expansions works
+
+        oAnarchRailroad = IAbstractCard("Anarch Railroad")
+        self.assertEqual(oAnarchRailroad.canonicalName, u"anarch railroad")
+        self.assertEqual(oAnarchRailroad.cost, 2)
+        self.assertEqual(oAnarchRailroad.costtype, 'pool')
+        self.failUnless(oAnarchRailroad.text.startswith(u"Master: unique"))
+        oAnarchs = IExpansion('Anarchs')
+        oAA = IExpansion('Anarchs and Alastors Storyline')
+
+        self.assertTrue(oAnarchs in [oP.expansion for oP in
+            oAnarchRailroad.rarity])
+        self.assertTrue(oAA in [oP.expansion for oP in oAnarchRailroad.rarity])
+
+        oAnarchRevolt = IAbstractCard("Anarch Revolt")
+        self.assertEqual(oAnarchRevolt.canonicalName, u"anarch revolt")
+        self.assertEqual(oAnarchRevolt.cost, None)
+        self.failUnless(oAnarchRevolt.text.startswith(u"Master."))
+
+        self.assertTrue(oAnarchs in [oP.expansion for oP in
+            oAnarchRevolt.rarity])
+        self.assertTrue(oAA in [oP.expansion for oP in oAnarchRevolt.rarity])
+        self.assertTrue(oJyhad in [oP.expansion for oP in
+            oAnarchRevolt.rarity])
+
+        oHtH = IAbstractCard("Hide the Heart")
+        self.assertEqual(oHtH.canonicalName, u"hide the heart")
+        self.assertEqual(len(oHtH.discipline), 2)
+        self.failUnless(oAusSup in oHtH.discipline)
+        self.failUnless(oValSup in oHtH.discipline)
+        self.assertEqual(len(oHtH.cardtype), 1)
+        self.failUnless(ICardType("Reaction") in oHtH.cardtype)
+        self.failUnless(oHtH.text.startswith('[aus] Reduce'))
+
+        oSmite = IAbstractCard("Smite")
+        self.assertEqual(oSmite.canonicalName, u"smite")
+        self.assertEqual(oSmite.cost, 3)
+        self.assertEqual(oSmite.costtype, "conviction")
+        self.failUnless(oSmite.text.startswith('{Strike:}'))
 
 
 if __name__ == "__main__":

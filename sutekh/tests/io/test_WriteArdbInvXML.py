@@ -24,11 +24,11 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv />
       <name>Abebe</name>
       <set>LoB</set>
-    </vampire><vampire databaseID="19" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="20" have="1" need="0" spare="0">
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="41" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="63" have="1" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -46,7 +46,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="14" have="2" need="0" spare="0">
       <name>Abombwe</name>
       <set>LoB</set>
-    </card><card databaseID="37" have="1" need="0" spare="0">
+    </card><card databaseID="52" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
     </card>

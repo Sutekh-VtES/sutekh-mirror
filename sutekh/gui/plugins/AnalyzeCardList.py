@@ -699,6 +699,7 @@ class AnalyzeCardList(SutekhPlugin):
                 'vampires': {},
                 'titles': {},
                 'clans': {},
+                'sects': {},
                 'votes': 0,
                 }
         iNum = self.dTypeNumbers['Vampire']
@@ -708,6 +709,9 @@ class AnalyzeCardList(SutekhPlugin):
             for oClan in oAbsCard.clan:
                 dDeckDetails['clans'].setdefault(oClan, 0)
                 dDeckDetails['clans'][oClan] += 1
+            for oSect in oAbsCard.sect:
+                dDeckDetails['sects'].setdefault(oSect, 0)
+                dDeckDetails['sects'][oSect] += 1
             for oTitle in oAbsCard.title:
                 dDeckDetails['titles'].setdefault(oTitle, 0)
                 dDeckDetails['titles'][oTitle] += 1
@@ -734,6 +738,10 @@ class AnalyzeCardList(SutekhPlugin):
         for oClan, iCount in dDeckDetails['clans'].iteritems():
             sVampText += "%d Vampires of clan %s %s\n" % (iCount,
                     oClan.name, _percentage(iCount, self.iCryptSize, "Crypt"))
+        sVampText += '<span foreground = "blue">Sects</span>\n'
+        for oSect, iCount in dDeckDetails['sects'].iteritems():
+            sVampText += "%d %s vampires %s\n" % (iCount,
+                    oSect.name, _percentage(iCount, self.iCryptSize, "Crypt"))
         sVampText += '\n<span foreground = "blue">Titles</span>\n'
         iTotalTitles = 0
         for oTitle, iCount in dDeckDetails['titles'].iteritems():
