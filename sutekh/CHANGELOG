@@ -1,3 +1,28 @@
+17 Jun 2011
+ * Make rulebook plugin use config key for rulebook path. Tweak test setup code
+   to stub in rulebook path.
+
+16 Jun 2011
+ * Re-write rulebook plugin to download a rulebook data pack from the Sutekh
+   Wiki or local Zip file.
+
+14 Jun 2011
+ * Add Title as keyword
+
+11 Jun 2011
+ * Rework ZipFileWrapper so writing zip files of partial selections is easier
+
+06 Jun 2011
+ * Workaround 'Anarchs and Alastors' promo-entry oddness
+ * Workaround AaA change in card images plugin
+
+03 Jun 2011
+ * Start of DataPack utility routines
+ * Move StarterDeckInfo to new DataPack functions
+
+01 Jun 2011
+  * Renable CSV import plugin. Tweak import_cs to support this
+
 26 May 2011
  * Tweak test_writeELDBInventory test to make errors more discoverable
  * Fix missing text cases for 'Smite' and 'Hide the Heart'
