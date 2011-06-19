@@ -15,7 +15,13 @@ try:
     from xml.etree.ElementTree import parse, ElementTree
 except ImportError:
     from elementtree.ElementTree import parse, ElementTree
-from xml.parsers.expat import ExpatError
+# For compatability with ElementTree 1.3
+try:
+    from xml.etree.ElementTree import ParseError
+except ImportError:
+    from xml.parsers.expat import ExpatError as ParseError
+
+# pylint: enable-msg=E0611, F0401
 
 
 # pylint: disable-msg=R0921, R0922
@@ -86,7 +92,7 @@ class BaseXMLParser(object):
         """Read the XML tree from the file-like object fIn"""
         try:
             self._oTree = parse(fIn)
-        except ExpatError, oExp:
+        except ParseError, oExp:
             raise IOError('Not an XML file: %s' % oExp)
         self._convert_tree(oHolder)
 

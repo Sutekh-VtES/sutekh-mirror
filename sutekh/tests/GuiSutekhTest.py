@@ -47,6 +47,7 @@ class ConfigSutekhTest(SutekhTest):
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
         self.oConfig.set_icon_path(self.sPluginDir)
         # Needed so validate doesn't remove our settings later
+        self.oConfig.check_writeable()  # Make sure we do write the config file
         self.oConfig.write()
 
     def tearDown(self):
