@@ -351,7 +351,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
         """We listen for card set events, and invalidate the cache"""
         self._dCache = {}
 
-    def card_set_added_deleted(self, _oCardSet, _fPostFuncs=None):
+    def card_set_added_deleted(self, _oCardSet, _dKW=None, _fPostFuncs=None):
         """We listen for card set additions & deletions, and
            invalidate the cache when that occurs"""
         self._dCache = {}
