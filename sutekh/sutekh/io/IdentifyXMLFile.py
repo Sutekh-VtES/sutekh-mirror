@@ -16,8 +16,13 @@ try:
     from xml.etree.ElementTree import parse
 except ImportError:
     from elementtree.ElementTree import parse
+# For compatability with ElementTree 1.3
+try:
+    from xml.etree.ElementTree import ParseError
+except ImportError:
+    from xml.parsers.expat import ExpatError as ParseError
 # pylint: enable-msg=E0611, F0401
-from xml.parsers.expat import ExpatError
+
 
 
 class IdentifyXMLFile(object):
@@ -111,7 +116,7 @@ class IdentifyXMLFile(object):
         """Parse the file fIn into the ElementTree."""
         try:
             oTree = parse(fIn)
-        except ExpatError:
+        except ParseError:
             self._clear_id_results()  # Not an XML file
             return
         self.identify_tree(oTree)

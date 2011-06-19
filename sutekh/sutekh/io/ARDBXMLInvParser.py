@@ -13,7 +13,11 @@ try:
     from xml.etree.ElementTree import XMLParser
 except ImportError:
     from elementtree.ElementTree import XMLTreeBuilder as XMLParser
-from xml.parsers.expat import ExpatError
+# For compatability with ElementTree 1.3
+try:
+    from xml.etree.ElementTree import ParseError
+except ImportError:
+    from xml.parsers.expat import ExpatError as ParseError
 # pylint: enable-msg=E0611, F0401
 from sutekh.core.SutekhObjects import csv_to_canonical
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
@@ -118,5 +122,5 @@ class ARDBXMLInvParser(object):
         try:
             for sLine in fIn:
                 oParser.feed(sLine)
-        except ExpatError, oExp:
+        except ParseError, oExp:
             raise IOError('Not an XML file: %s' % oExp)
