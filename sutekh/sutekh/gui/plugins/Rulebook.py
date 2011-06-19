@@ -88,10 +88,7 @@ class RulebookPlugin(SutekhPlugin):
         #       menu. Remove this once the plugin API provides a better way to
         #       add and remove items from a top-level menu.
         self._oFirstMenuItem = None
-        self._sPrefsPath = self.get_config_item('rulebook path')
-        if self._sPrefsPath is None:
-            self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
-            self.set_config_item('rulebook path', self._sPrefsPath)
+        self._sPrefsPath = None
 
     def _read_index(self):
         """Read the list of rulebooks from the index.txt file.
@@ -116,6 +113,12 @@ class RulebookPlugin(SutekhPlugin):
            """
         if not self.check_versions() or not self.check_model_type():
             return None
+
+        # Need to set this up here, after register_with_config has been called
+        self._sPrefsPath = self.get_config_item('rulebook path')
+        if self._sPrefsPath is None:
+            self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
+            self.set_config_item('rulebook path', self._sPrefsPath)
 
         oConfigMenuItem = gtk.MenuItem("Download Rulebook Files")
         oConfigMenuItem.connect("activate", self.config_activate)
