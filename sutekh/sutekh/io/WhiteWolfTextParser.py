@@ -725,7 +725,12 @@ class WhiteWolfTextParser(object):
             self.feed(sLine)
         # Ensure we flush any open card text states
         self.feed('')
-        self._oState.flush()
+        if hasattr(self._oState, 'flush'):
+            self._oState.flush()
+        else:
+            raise IOError('Failed to parse card list - '
+                    'unexpected state at end of file.\n'
+                    'Card list probably truncated.')
 
     def feed(self, sLine):
         """Feed the line to the current state"""
