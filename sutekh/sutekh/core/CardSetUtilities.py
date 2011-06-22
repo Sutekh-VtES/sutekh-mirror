@@ -89,12 +89,19 @@ def find_children(oCardSet):
     return list(PhysicalCardSet.selectBy(parentID=None))
 
 
+def has_children(oCardSet):
+    """Return true if the card set has children"""
+    if oCardSet:
+        return PhysicalCardSet.selectBy(parentID=oCardSet.id).count() > 0
+    return False
+
+
 def format_cs_list(oParent=None, sIndent=' '):
     """Create a formatted string of all the card sets in the database that
        are children of oParent"""
     aResult = []
     for oCS in sorted(find_children(oParent), key=lambda x: x.name):
         aResult.append(sIndent + oCS.name)
-        if find_children(oCS):
+        if has_children(oCS):
             aResult.append(format_cs_list(oCS, sIndent + '   '))
     return '\n'.join(aResult)
