@@ -17,7 +17,7 @@ from sutekh.core.CardLookup import LookupFailed
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children, detect_loop, get_loop_names, break_loop
+        find_children, has_children, detect_loop, get_loop_names, break_loop
 
 
 def reparent_card_set(oCardSet, oNewParent):
@@ -54,15 +54,16 @@ def reparent_all_children(sCardSetName, aChildren):
 
 def check_ok_to_delete(oCardSet):
     """Check if the user is OK with deleting the card set."""
-    aChildren = find_children(oCardSet)
+    bChildren = has_children(oCardSet)
+    bCards = len(oCardSet.cards) > 0
     iResponse = gtk.RESPONSE_OK
-    if len(oCardSet.cards) > 0 and len(aChildren) > 0:
+    if bCards and bChildren:
         iResponse = do_complaint_warning("Card Set %s Not Empty and"
                 " Has Children. Really Delete?" % oCardSet.name)
-    elif len(oCardSet.cards) > 0:
+    elif bCards:
         iResponse = do_complaint_warning("Card Set %s Not Empty."
                 " Really Delete?" % oCardSet.name)
-    elif len(aChildren) > 0:
+    elif bChildren:
         iResponse = do_complaint_warning("Card Set %s"
                 " Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK

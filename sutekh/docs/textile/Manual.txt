@@ -142,7 +142,11 @@ expansion has been published -- this is discussed further in the section \
 ** _Download VTES icons_: Attempt to download the icons from the White Wolf \
 website.
 ** _Download starter decks_: Download and import a list of the White Wolf \
-preconstructed decks from the sutekh wiki.
+preconstructed decks from the sutekh wiki. The zip file also includes the \
+details of the storyline and demo decks released by WW, but these can be \
+excluded using the checkboxes. If you have not imported the details of \
+these extra cards (see "Refreshing the White Wolf Card List":#refresh), \
+these will be greyed out and automaticaly excluded.
 ** _Download or Configure Card Images_: Download images of the cards for the \
 "Card Images":#card_image pane, or use an existing zip file or directory of \
 images.
@@ -302,6 +306,11 @@ changes, Sutekh may be able to import the new card list correctly, but may be
 unable to interpret the new expansion name. If this happens, Sutekh should
 continue working, but you may need to specify the correct mapping for the
 expansion when updating the database during your next upgrade.
+
+The _Storyline Card File_ provides information not included in the official
+V:EKN card list. This includes information about the various special storyline
+cards that have been printed, and also details various special expansions,
+such as those for the demonstration decks, that have been released.
 
 h2(#ww). White Wolf Card List
 
