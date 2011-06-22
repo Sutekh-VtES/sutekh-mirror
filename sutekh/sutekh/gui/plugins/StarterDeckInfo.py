@@ -7,7 +7,7 @@
 """Adds info about the starter decks cards are found in"""
 
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet
+        MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet, IRarityPair
 from sutekh.core.Filters import PhysicalCardSetFilter, \
         FilterAndBox, SpecificCardIdFilter
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -16,7 +16,7 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
         do_complaint_error
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children
+        find_children, has_children
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import find_data_pack, DOC_URL
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
@@ -28,6 +28,7 @@ import gtk
 import urllib2
 from logging import Logger
 from StringIO import StringIO
+from sqlobject import SQLObjectNotFound
 
 
 class StarterConfigDialog(SutekhDialog):
@@ -58,9 +59,36 @@ class StarterConfigDialog(SutekhDialog):
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)
-        self.set_size_request(300, 200)
+        # Add check boxes for the decmo and storyline deck questions
+        self.oExcludeStoryDecks = gtk.CheckButton(
+                'Exclude the Storyline Decks')
+        self.oExcludeDemoDecks = gtk.CheckButton(
+                'Exclude the WW Demo Decks')
+
+        # Check to see if cards are available
+        try:
+            _oSkip = IRarityPair(('White Wolf 2003 Demo', 'Demo'))
+        except SQLObjectNotFound:
+            self.oExcludeDemoDecks.set_active(True)
+            self.oExcludeDemoDecks.set_sensitive(False)
+
+        try:
+            _oSkip = IRarityPair(('Nergal Storyline', 'Storyline'))
+        except SQLObjectNotFound:
+            self.oExcludeStoryDecks.set_active(True)
+            self.oExcludeStoryDecks.set_sensitive(False)
+
+        self.vbox.pack_start(self.oExcludeStoryDecks, False, False)
+        self.vbox.pack_start(self.oExcludeDemoDecks, False, False)
+
+        self.set_size_request(350, 300)
 
         self.show_all()
+
+    def get_excluded_decks(self):
+        """Return selections for excluded decks"""
+        return self.oExcludeStoryDecks.get_active(), \
+                self.oExcludeDemoDecks.get_active()
 
     def get_data(self):
         """Return the zip file data containing the decks"""
@@ -178,9 +206,12 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
             sData = oDialog.get_data()
+            (bExcludeStoryDecks, bExcludeDemoDecks) = \
+                    oDialog.get_excluded_decks()
             if not sData:
                 do_complaint_error('Unable to access zipfile data')
-            elif not self._unzip_file(sData):
+            elif not self._unzip_file(sData, bExcludeStoryDecks,
+                    bExcludeDemoDecks):
                 do_complaint_error('Unable to successfully unzip zipfile')
         if self.check_enabled():
             self.oToggle.set_sensitive(True)
@@ -189,20 +220,22 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         # cleanup
         oDialog.destroy()
 
-    def _unzip_file(self, sData):
+    def _unzip_file(self, sData, bExcludeStoryDecks, bExcludeDemoDecks):
         """Unzip a file containing the decks."""
         bResult = False
         oZipFile = ZipFileWrapper(StringIO(sData))
-        bResult = self._unzip_heart(oZipFile)
+        bResult = self._unzip_heart(oZipFile, bExcludeStoryDecks,
+                bExcludeDemoDecks)
         return bResult
 
-    def _unzip_heart(self, oFile):
+    def _unzip_heart(self, oFile, bExcludeStoryDecks, bExcludeDemoDecks):
         """Heart of the reading loop - ensure we read parents before
            children, and correct for renames that occur."""
         oLogHandler = SutekhCountLogHandler()
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Importing Starters")
         oLogger = Logger('Read zip file')
+        aExistingList = [x.name for x in PhysicalCardSet.select()]
         dList = oFile.get_all_entries()
         # Check that we match starter regex
         bOK = False
@@ -221,19 +254,37 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         bDone = False
         while not bDone:
             dRemaining = {}
-            if self._unzip_list(oFile, dList, oLogger, dRemaining):
+            if self._unzip_list(oFile, dList, oLogger, dRemaining,
+                    bExcludeStoryDecks, bExcludeDemoDecks):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
+                self.reload_pcs_list()
                 oProgressDialog.destroy()
                 return False  # Error
+        # Cleanup
+        self._clean_empty(oFile.get_all_entries(), aExistingList)
+        self.reload_pcs_list()
         oProgressDialog.destroy()
         return True
 
-    def _unzip_list(self, oZipFile, dList, oLogger, dRemaining):
+    def _unzip_list(self, oZipFile, dList, oLogger, dRemaining,
+            bExcludeStoryDecks, bExcludeDemoDecks):
         """Extract the files left in the list."""
+        if bExcludeStoryDecks and bExcludeDemoDecks:
+            aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
+        elif bExcludeStoryDecks:
+            aExcluded = ["White Wolf Storyline Decks"]
+        elif bExcludeDemoDecks:
+            aExcluded = ["White Wolf Demo Decks"]
+        else:
+            aExcluded = []
         for sName, tInfo in dList.iteritems():
             sFilename, _bIgnore, sParentName = tInfo
+            if sName in aExcluded or sParentName in aExcluded:
+                # Ignore these decks
+                oLogger.info('Read %s' % sName)
+                continue
             if sParentName is not None and sParentName in dList:
                 # Do have a parent to look at later, so skip for now
                 dRemaining[sName] = tInfo
@@ -258,22 +309,46 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                     # pyprotocols confuses pylint
                     oCS = IPhysicalCardSet(oHolder.name)
                     aChildren = find_children(oCS)
+                    # Ensure we restore with the correct parent
                     if oCS.parent:
-                        # Ensure we restore with the correct parent
                         oHolder.parent = oCS.parent.name
+                    else:
+                        oHolder.parent = None
                     delete_physical_card_set(oHolder.name)
                 oHolder.create_pcs(self.cardlookup)
                 reparent_all_children(oHolder.name, aChildren)
                 if self.parent.find_cs_pane_by_set_name(oHolder.name):
                     # Already open, so update to changes
                     update_open_card_sets(self.parent, oHolder.name)
-                self.reload_pcs_list()
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                         oException)
                 do_exception_complaint(sMsg)
                 return False
         return True
+
+    # pylint: disable-msg=R0201
+    # Method for consistency with _unzip methods
+    def _clean_empty(self, aMyList, aExistingList):
+        """Remove any newly created sets in that have no cards AND no
+           children"""
+        for sName in aMyList:
+            if sName in aExistingList:
+                continue  # Not a card set we added
+            try:
+                oCS = IPhysicalCardSet(sName)
+            except SQLObjectNotFound:
+                # set not there, so skip
+                continue
+            # pylint: disable-msg=E1101
+            # QLObject + PyProtocols confuses pylint
+            if has_children(oCS):
+                continue
+            if len(oCS.cards) > 0:
+                continue  # has cards
+            delete_physical_card_set(sName)
+
+    # pylint: enable-msg=R0201
 
     def _toggle_starter(self, oToggle):
         """Toggle the show info flag"""
