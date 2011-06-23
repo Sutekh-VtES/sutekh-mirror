@@ -118,7 +118,7 @@ setup   (   # Metadata
                 ],
                 'includes': [
                     # gtk
-                    'cairo', 'pango', 'gobject', 'atk', 'pangocairo',
+                    'cairo', 'pango', 'gobject', 'atk', 'pangocairo', 'gio',
                     # configobj
                     'configobj', 'validate',
                     # plugin only dependencies
