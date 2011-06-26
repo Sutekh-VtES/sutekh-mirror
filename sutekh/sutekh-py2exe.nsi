@@ -12,6 +12,11 @@
   !define ARTWORK_FOLDER "artwork"
   !define DIST_FOLDER "dist"
 
+; vcredist_x86.exe details
+  !define MISC_FOLDER "dist/misc"
+  !define VCREDIST "vcredist_x86.exe"
+  !define VCREDIST_KEY "{FF66E9F6-83E7-3A3E-AF14-8DE9A809A6A4}"
+
   Name "Sutekh"
   OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}.exe"
   InstallDir "$PROGRAMFILES\Sutekh-${SUTEKH_VERSION}"
@@ -51,6 +56,36 @@
 
   Icon "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
   SetCompress off ; all the big stuff is already compressed 
+
+; Installer for the vcredist_x86.exe stuff
+; TODO: This only 32bit support - Do we need to support the 64bit version?
+
+Section "vcredist"
+
+  SetOutPath "$INSTDIR"
+  File "${MISC_FOLDER}\${VCREDIST}"
+   ; Check if it's already installed by checking for the uninstall key
+   ; Idea and key value to check taken post and comments at:
+   ; http://blogs.msdn.com/b/astebner/archive/2009/01/29/9384143.aspx
+
+   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${VCREDIST_KEY}" UninstallString
+   ; NSIS docs say if the key doesn't exist, we get an error and an empty string
+   IfErrors install done
+
+install:
+   ; Runs install with progress bar and no cancel button
+   ; Details taken from
+   ; http://blogs.msdn.com/b/astebner/archive/2010/10/18/9513328.aspx
+
+   DetailPrint "Installing required MS runtime libraries"
+   ExecWait "$INSTDIR/${VCREDIST} /qb!"
+
+done:
+
+   DetailPrint "MS runtime libraries already installed, skipping"
+
+SectionEnd
+
 
 ; Installer Sections
 
@@ -108,5 +143,9 @@ Section "Uninstall"
     MessageBox MB_YESNO "A reboot is required to finish the uninstallation. Do you wish to reboot now?" IDNO noreboot
     Reboot
   noreboot:
+
+  ; TODO: We don't touch the vcredist stuff, since we can't tell a) if we were
+  ; the ones who installed it and b) if anything else needs it. This may cause
+  ; cruft on the users system, so should we tell the user?
 
 SectionEnd
