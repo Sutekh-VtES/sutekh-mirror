@@ -24,7 +24,6 @@ except ImportError:
 # pylint: enable-msg=E0611, F0401
 
 
-
 class IdentifyXMLFile(object):
     """Tries to identify the XML file type.
 
