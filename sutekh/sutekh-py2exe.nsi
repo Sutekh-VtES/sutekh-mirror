@@ -20,7 +20,7 @@
   Name "Sutekh"
   OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}.exe"
   InstallDir "$PROGRAMFILES\Sutekh-${SUTEKH_VERSION}"
-  
+
 ; Interface Settings
 
   !define MUI_ABORTWARNING
@@ -32,7 +32,7 @@
   !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\orange.bmp"
   !define MUI_HEADERIMAGE_UNBITMAP "${NSISDIR}\Contrib\Graphics\Header\orange-uninstall.bmp"
 
-; Dependencies 
+; Dependencies
 
   !define COMBINED_LICENSE "sutekh\COPYING"
   !define SUTEKH_ICON "sutekh-icon-inkscape.ico"
@@ -44,10 +44,10 @@
   !insertmacro MUI_PAGE_LICENSE "${COMBINED_LICENSE}"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
-  
+
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-  
+
 ; Languages
 
   !insertmacro MUI_LANGUAGE "English"
@@ -55,7 +55,7 @@
 ; Other Stuff
 
   Icon "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
-  SetCompress off ; all the big stuff is already compressed 
+  SetCompress off ; all the big stuff is already compressed
 
 ; Installer for the vcredist_x86.exe stuff
 ; TODO: This only 32bit support - Do we need to support the 64bit version?
@@ -86,7 +86,6 @@ done:
 
 SectionEnd
 
-
 ; Installer Sections
 
 Section "Sutekh"
@@ -103,7 +102,7 @@ Section "Sutekh"
   CreateDirectory "$SMPROGRAMS\Sutekh"
 
   # link.lnk target.exe
-  #   parameters icon.file icon_index_number start_options 
+  #   parameters icon.file icon_index_number start_options
   #   keyboard_shortcut description
 
   CreateShortCut "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk" "$INSTDIR\${SUTEKH_UNPACK}\SutekhGui.exe" \
@@ -129,12 +128,12 @@ Section "Uninstall"
   ; Remove shortcut links
   Delete "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk"
   Delete "$SMPROGRAMS\Sutekh\Uninstall Sutekh ${SUTEKH_VERSION}.lnk"
-  
+
   ; Remove shortcut folder if no links left
   IfFileExists "$SMPROGRAMS\Sutekh\*.lnk" shortcuts_exist 0
     RMDir /REBOOTOK "$SMPROGRAMS\Sutekh"
   shortcuts_exist:
-  
+
   ; Final Clean up (no point doing this while the uninstall is incomplete)
   RMDir /r /REBOOTOK $INSTDIR
 
