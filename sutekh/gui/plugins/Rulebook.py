@@ -210,7 +210,8 @@ class RulebookPlugin(SutekhPlugin):
                 self._unpack_zipfile_with_progress_bar(oZipFile)
             except Exception:
                 do_exception_complaint('Unable to successfully download or '
-                                       'copy some or all of the rulebook files')
+                                       'copy some or all of the rulebook '
+                                       'files')
 
         self._update_menu()
 

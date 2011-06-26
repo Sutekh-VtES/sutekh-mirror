@@ -9,6 +9,27 @@ DEPENDENCIES_FOLDER="$2"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 TMP_NSI="$NSI_FILE.tmp"
 
+# We include the pre-SP1 version of the MS redistibutable package  - there are
+# contradictory reports of whether the SP1 release will work with python 2.6,
+# so I haven't tested it. Thiis version works for me
+# This is all for the 32 bit version - things will need to be redone for
+# 64 bit support.
+if [ ! -f "dist/misc/vcredist_x86.exe" ]; then
+   echo "Please copy the required vcredist_x86.exe version into dist/misc"
+   echo "(version downloaded from http://www.microsoft.com/downloads/en/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1b)"
+   exit
+else
+   # md5sum from 2011-06-25 - MS haven't changed this package in some
+   # time, so hopefully this will stay valid
+   EXPECTED="b936f0f378b9a35489353e878154e899"
+   MD5=`md5sum dist/misc/vcredist_x86.exe | cut -d " " -f 1`
+   if [ "$MD5" != "$EXPECTED" ]; then
+      echo "Unexpected md5sum for vcredist_x86.exe"
+      echo "expected $EXPECTED, got $MD5"
+      exit
+   fi
+fi
+
 cp "$NSI_FILE" "$TMP_NSI"
 sed -i -e "s#\\(\\s*!define DEPENDENCIES_FOLDER\\).*#\\1 \"$DEPENDENCIES_FOLDER\"#" "$TMP_NSI"
 sed -i -e "s#\\(\\s*!define SUTEKH_VERSION\\).*#\\1 \"$SUTEKH_VERSION\"#" "$TMP_NSI"

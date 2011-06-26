@@ -5,7 +5,8 @@
 # Copyright 2009,2010,2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # Class and functions to manage zip data pack handling for Sutekh
-# Split off from sutekh/gui/plugins/StarterDeckInfo.py and refactored, June 2011
+# Split off from sutekh/gui/plugins/StarterDeckInfo.py and refactored,
+#    June 2011
 
 """Provide tools for locating and extracting data pack ZIP files."""
 
@@ -42,6 +43,7 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     sZipUrl = None
 
     def fields(sLine):
+        """Helper function to split table lines into the needed structure"""
         sLine = sLine.strip()
         return [sField.strip(" '") for sField in sLine.split('||')]
 
@@ -67,4 +69,3 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
                     sZipUrl = '/'.join((sZipUrlBase, sPath, sZipName))
 
     return sZipUrl
-

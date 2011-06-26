@@ -206,7 +206,7 @@ class Expansions(AbbreviationLookup):
         # Special cases
         # The Promo entry is to special-case the AaA cards which
         # appear with promo entries in the card list
-        'Anarchs and Alastors Storyline' : ['Promo-20080810'],
+        'Anarchs and Alastors Storyline': ['Promo-20080810'],
     }
 
     @classmethod

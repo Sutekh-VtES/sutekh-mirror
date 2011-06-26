@@ -61,10 +61,9 @@ wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
 #  TODO: this fix is rather fragile
 # Copy /bin/*.dll from the GTK Wine installation
 # Copy python dll that py2exe misses   
-# Copy msvcr71 dll that py2exe misses
-#  Note: we can include this DLL because it's required by the Python DLL.
-#  See http://groups.google.com/group/comp.lang.python/msg/512681847a18e684
-#  for an explanation.
+# Note that this doesn't currently handle the msvcr90 dll juggling that's
+# required - the NSIS installer should handle this by installing the
+# correct vcredist_x86.exe 
 # Copy sqlite dll that py2exe misses
 
 echo "=== Copying in GTK and Python dependencies that py2exe missed ==="
@@ -87,8 +86,7 @@ rm "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders.orig"
 echo "'${WINE_GTK}/bin/*.dll' -> '${BUILD_FOLDER}'"
 cp "${WINE_GTK}/bin/"*.dll "${BUILD_FOLDER}"
 
-cp -v "${WINE_SYS32}/python25.dll" "${BUILD_FOLDER}"
-cp -v "${WINE_SYS32}/msvcr71.dll" "${BUILD_FOLDER}"
+cp -v "${WINE_PYTHON}/python26.dll" "${BUILD_FOLDER}"
 cp -v "${WINE_PYTHON}/DLLs/sqlite3.dll" "${BUILD_FOLDER}"
 
 echo ""
