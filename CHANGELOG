@@ -26,7 +26,7 @@
  * Bump required SQLObject version to 0.16 for Fedora 15.
  * Tweak signal handler signature to work with SQLObject 0.15.
  * Handle truncated card list better.
- * Dump miniumum gtk version check, since we require some later features now.
+ * Bump minimum gtk version to 2.16, since we require some later features now.
 
 17 Jun 2011
  * Make rulebook plugin use config key for rulebook path. Tweak test setup code
