@@ -1,3 +1,33 @@
+26 Jun 2011
+ * Add support for including and installing the appropriate MS C runtime
+   library package to the NSIS installer.
+
+23 Jun 2011
+ * Use drag_*_set methods rather than the enable_model_drag_* ones. Needed for
+   dragging in the filter dialog to work on windows with recent gtk versions.
+   See https://bugzilla.gnome.org/show_bug.cgi?id=641924. Fix highlight
+   juggling to work with these changes.
+ * Add gio to py2exe's list of required modules - needed for pygtk 2.16.
+ * Tweak Wine build script to use Python 2.6.
+
+22 Jun 2011
+ * Add has_children utility helper to card sets.
+ * Add checkbuttons for storyline and demo decks. Improve logic around
+   overwriting existing card sets.
+ * Document starter deck download checkboxes. Add note about the extra cardlist
+   file.
+
+19 Jun 2011
+ * Add configobj to rpm deps.
+ * Fix bug with querying config too early in rulebook plugin.
+ * Ensure we properly write the stub config file, so our config fiddling does
+   the right thing.
+ * Tweak IO error handling to work with ElementTree 1.3.
+ * Bump required SQLObject version to 0.16 for Fedora 15.
+ * Tweak signal handler signature to work with SQLObject 0.15.
+ * Handle truncated card list better.
+ * Dump miniumum gtk version check, since we require some later features now.
+
 17 Jun 2011
  * Make rulebook plugin use config key for rulebook path. Tweak test setup code
    to stub in rulebook path.
