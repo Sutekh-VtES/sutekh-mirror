@@ -56,7 +56,7 @@
 		<li><a href="#dialogs">Other dialogs</a>
 	<ol>
 		<li><a href="#lookup">Card Lookup Dialog</a></li>
-		<li><a href="#search">Search Dialog</a></li>
+		<li><a href="#searchdialog">Search Dialog</a></li>
 	</ol></li>
 		<li><a href="#filters">Filters</a>
 	<ol>
@@ -268,7 +268,7 @@
 
 	<ul>
 		<li><em>Copy selection</em>: Copy the currently selected set of cards into the buffer. You can paste this into an editable card set to add the selected cards to it.</li>
-		<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a card with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
+		<li><em>Search</em>: Open up a <a href="#searchdialog">search</a> dialog which will search the list for a card with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
 	</ul>
 
 <h3 id="ww_filter">Filter</h3>
@@ -339,7 +339,7 @@
 <h3 id="card_set_list_edit">Edit</h3>
 
 	<ul>
-		<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a card set with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
+		<li><em>Search</em>: Open up a <a href="#searchdialog">search</a> dialog which will search the list for a card set with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
 		<li><em>Edit Profiles</em>: Open up a <a href="#edit_profile">edit</a> profile dialog for adding or changing profiles for the card set list.</li>
 		<li><em>CardSet List Profile</em>: Allows you to select between the available profiles for the card set list.</li>
 	</ul>
@@ -395,7 +395,7 @@
 		<li><em>Copy selection</em>: Copy the currently selected set of cards into the buffer.  You can paste this into an editable card set to add the selected cards to it.</li>
 		<li><em>Paste</em>: Paste the previously copied selection into the current card set. This option is only available when the card set is editable.</li>
 		<li><em>Delete selection</em>: Delete the selected cards from the card set. This is only possible when the card set is editable. The deleted selection is not placed in the buffer.</li>
-		<li><em>Search</em>: Open up a <a href="#search">search</a> dialog which will search the list for a card with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
+		<li><em>Search</em>: Open up a <a href="#searchdialog">search</a> dialog which will search the list for a card with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
 		<li><em>Set selected cards to a single expansion</em>: This searches for expansions which are common to all the selected cards, and allows you to choose one of these. The physical expansion for all the selected cards is set to this choice.</li>
 		<li><em>Take a snapshot of this card set</em>: This creates a copy of the current state of the card set, and appends the current date and time to the name. The newly created card set is a child of the current card set.</li>
 	</ul>
@@ -447,7 +447,7 @@
 
 <p>For various reasons, Sutekh may fail to identify a card correctly when importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;, &#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When this happens, Sutekh will prompt you for the correct card.</p>
 
-<p>The card lookup window displays two lists: the list of all White Wolf cards and the list of unknown cards. Below the unknown card list are options to specify a <a href="#filters">filter</a>, to apply or unapply the filter, to show or hide cards not legal for tournament play or to <a href="#search">search</a> the card list.</p>
+<p>The card lookup window displays two lists: the list of all White Wolf cards and the list of unknown cards. Below the unknown card list are options to specify a <a href="#filters">filter</a>, to apply or unapply the filter, to show or hide cards not legal for tournament play or to <a href="#searchdialog">search</a> the card list.</p>
 
 <p>The unknown card list has two columns &#8212; the name of the unknown card and the currently selected replacement from the White Wolf card list &#8212; and three buttons. Use the first button to replace the card with the currently selected card, the second button to mark the card as ignored, and the last to view a list of reasonable options (Sutekh finds these by applying a filter based on the unknown card name).</p>
 
@@ -457,7 +457,7 @@
 
 <p>If Sutekh cannot identify an expansion in the file, it will prompt you for the correct replacement. If Sutekh finds an impossible card and expansion combination, it will prompt you to resolve the situation using the card lookup dialog &#8212; but you will have the opportunity to select both the card and the expansion.</p>
 
-<h3 id="search">Search Dialog</h3>
+<h3 id="searchdialog">Search Dialog</h3>
 
 <p>The search dialog can be used to find specific cards or card sets quickly.</p>
 

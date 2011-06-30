@@ -36,7 +36,7 @@ h2. Contents
 ## "Keyboard Shortcuts":#cardsets_keyboard
 # "Other dialogs":#dialogs
 ## "Card Lookup Dialog":#lookup
-## "Search Dialog":#search
+## "Search Dialog":#searchdialog
 # "Filters":#filters
 ## "Card Filters":#card_filters
 ## "Card Set Filters":#card_set_filters
@@ -332,9 +332,9 @@ h3(#ww_edit). Edit
 
 * _Copy selection_: Copy the currently selected set of cards into the buffer. \
 You can paste this into an editable card set to add the selected cards to it.
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card with a name starting with the typed text. The search dialog can also \
-be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
+* _Search_: Open up a "search":#searchdialog dialog which will search the list \
+for a card with a name starting with the typed text. The search dialog can \
+also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
 starting to type in the list view.
 
 h3(#ww_filter). Filter
@@ -420,10 +420,10 @@ or _not in use_.
 
 h3(#card_set_list_edit). Edit
 
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card set with a name starting with the typed text. The search dialog can \
-also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
-starting to type in the list view.
+* _Search_: Open up a "search":#searchdialog dialog which will search the \
+list for a card set with a name starting with the typed text. The search \
+dialog can also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or \
+by simply starting to type in the list view.
 * _Edit Profiles_: Open up a "edit":#edit_profile profile dialog for \
 adding or changing profiles for the card set list.
 * _CardSet List Profile_: Allows you to select between the available \
@@ -493,10 +493,10 @@ This option is only available when the card set is editable.
 * _Delete selection_: Delete the selected cards from the card set. This \
 is only possible when the card set is editable. The deleted selection is \
 not placed in the buffer.
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card with a name starting with the typed text. The search dialog can also be \
-opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply starting \
-to type in the list view.
+* _Search_: Open up a "search":#searchdialog dialog which will search the \
+list for a card with a name starting with the typed text. The search dialog \
+can also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by \
+simply starting to type in the list view.
 * _Set selected cards to a single expansion_: This searches for expansions \
 which are common to all the selected cards, and allows you to choose one of \
 these. The physical expansion for all the selected cards is set to this \
@@ -570,7 +570,8 @@ this happens, Sutekh will prompt you for the correct card.
 The card lookup window displays two lists: the list of all White Wolf cards
 and the list of unknown cards. Below the unknown card list are options
 to specify a "filter":#filters, to apply or unapply the filter, to show or
-hide cards not legal for tournament play or to "search":#search the card list.
+hide cards not legal for tournament play or to "search":#searchdialog the card
+list.
 
 The unknown card list has two columns -- the name of the unknown card and
 the currently selected replacement from the White Wolf card list -- and three
@@ -591,7 +592,7 @@ combination, it will prompt you to resolve the situation using the card lookup
 dialog -- but you will have the opportunity to select both the card and the
 expansion.
 
-h3(#search). Search Dialog
+h3(#searchdialog). Search Dialog
 
 The search dialog can be used to find specific cards or card sets quickly.
 
