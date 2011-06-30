@@ -1,9 +1,9 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Sutekh Manual</title>
+<title>Sutekh Manual</title>
 </head>
 <body>
 <h1>Manual for Sutekh 0.8</h1>
@@ -392,7 +392,7 @@
 
 	<ul>
 		<li><em>Card Set is Editable</em>: Toggle whether the card set is editable. When the card set is not editable, you may not add cards to the set or delete cards from the set directly.</li>
-		<li><em>Copy selection</em>: Copy the currently selected set of cards into the buffer.  You can paste this into an editable card set to add the selected cards to it.</li>
+		<li><em>Copy selection</em>: Copy the currently selected set of cards into the buffer.You can paste this into an editable card set to add the selected cards to it.</li>
 		<li><em>Paste</em>: Paste the previously copied selection into the current card set. This option is only available when the card set is editable.</li>
 		<li><em>Delete selection</em>: Delete the selected cards from the card set. This is only possible when the card set is editable. The deleted selection is not placed in the buffer.</li>
 		<li><em>Search</em>: Open up a <a href="#searchdialog">search</a> dialog which will search the list for a card with a name starting with the typed text. The search dialog can also be opened by either using the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by simply starting to type in the list view.</li>
@@ -463,7 +463,7 @@
 
 <p>In the main window, it can be popped up by using the menu item, the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by starting to type in the window directly.</p>
 
-<p>In the card lookup window, it can be popped up by using the search button, the <strong>&lt;Ctrl&gt;-F</strong>  shortcut, or by starting to type.</p>
+<p>In the card lookup window, it can be popped up by using the search button, the <strong>&lt;Ctrl&gt;-F</strong>shortcut, or by starting to type.</p>
 
 <p>The dialog can be hidden by either pressing the <strong>Escape</strong> key, the <strong>Enter</strong> key, or by clicking outside the search dialog. Note that, to prevent unexpected side-effects, while the search dialog is shown, clicking will only hide the dialog and not effect any else.</p>
 
@@ -483,7 +483,7 @@
 
 <p>The left hand pane lists all the different possible filter types. Individual filter elements can be dragged from this into the central filter pane, and the filter elements can be re-arranged within the central pane as well. This is mostly useful when using multiple filter groups (see <a href="#combining">Combining Basic Filters</a>).</p>
 
-<p>When a filter element is selected, the right hand pane allows for the values for that filter element to be selected. This also provides buttons to delete filter elements or values, negate the meaning of the filter element and to temporarily disable filter elements.  Disabled filter elements are not used in the filter, but the values set for the element are preserved. These options are also available from a <strong>Right-Click</strong> context menu.</p>
+<p>When a filter element is selected, the right hand pane allows for the values for that filter element to be selected. This also provides buttons to delete filter elements or values, negate the meaning of the filter element and to temporarily disable filter elements.Disabled filter elements are not used in the filter, but the values set for the element are preserved. These options are also available from a <strong>Right-Click</strong> context menu.</p>
 
 <p>The buttons also have associated keyboard accelerators. Pressing <strong>&lt;Del&gt;</strong> will delete the current filter element, <strong>&lt;Ctrl&gt;-&lt;space&gt;</strong> will disable the current filter element and <strong>&lt;Alt&gt;-&lt;space&gt;</strong> will negate the filter element. <strong>&lt;Tab&gt;</strong> can be used to move between the different elements in the filter dialog. It&#8217;s possible to switch between the two panes (and the filter list elements in a pane) using &lt;Alt&gt;-&lt;left&gt; and &lt;Alt&gt;-&lt;right&gt;.</p>
 
@@ -499,8 +499,8 @@
 
 	<ul>
 		<li><em>Card Type</em>: Filter on the type of card. You must specify a <a href="#list">list</a> of card types. A card matches if any one of its types matches any type in the list.</li>
-		<li><em>Cost Type</em>: Filter on the type of cost which must be paid for the card. You must specify a <a href="#list">list</a> of cost types. The filter ignores the numerical cost, and considers only the cost type. If you wish to filter on a specific cost and cost type, you must combine this filter with the <em>Cost</em> filter.  Presently, the recognised types of cost are pool, blood and conviction, and this filter matches only library cards. Vampire capacity and ally/retainer life are not considered to be cost types.</li>
-		<li><em>Clan</em>: Filter on the clan(s) listed on the card. You must specify a  <a href="#list">list</a> of clans. A card matches if any clan listed on the card matches any clan in the list.</li>
+		<li><em>Cost Type</em>: Filter on the type of cost which must be paid for the card. You must specify a <a href="#list">list</a> of cost types. The filter ignores the numerical cost, and considers only the cost type. If you wish to filter on a specific cost and cost type, you must combine this filter with the <em>Cost</em> filter.Presently, the recognised types of cost are pool, blood and conviction, and this filter matches only library cards. Vampire capacity and ally/retainer life are not considered to be cost types.</li>
+		<li><em>Clan</em>: Filter on the clan(s) listed on the card. You must specify a<a href="#list">list</a> of clans. A card matches if any clan listed on the card matches any clan in the list.</li>
 		<li><em>Discipline</em>: Filter on the discipline(s) listed on the card. You must specify a <a href="#list">list</a> of disciplines. A card matches if any discipline listed on the card matches any discipline in the list. This filter ignores discipline levels.</li>
 		<li><em>Group</em>: Filter on the group of a crypt card. You must specify a <a href="#list">list</a> of groups. A card matches if its group matches any group in the list.</li>
 		<li><em>Capacity</em>: Filter on the capacity listed on the card. You must specify a <a href="#list">list</a> of capacities. A card matches if its capacity matches any capacity in the list.</li>
@@ -519,7 +519,7 @@
 		<li><em>Physical Expansion</em>: Filter on a card&#8217;s expansion information. You must specify a <a href="#list">list</a> of expansions. A card matches if its listed expansion matches any expansion in the list. This is different from the _Expansion_with_Rarity_ filter, since it ignores rarities, and matches the specific physical expansion of the card, not the list of expansions in which the card has been printed.</li>
 		<li><em>Card Sets</em>: You must specify a <a href="#list">list</a> of card sets. A card matches if it belongs to at least one set in the list. This filter matches on name and expansion, so the filter will return as many copies of the card exist in this set, not the same number as in the listed sets.</li>
 		<li><em>In Card Sets In Use</em>: A card matches if it belongs to a card set which is marked as <em>In Use</em> and is a child of the given card set. Like the <em>Card Sets</em> filter, this matches solely on the card name and expansion, and the numbers are those for this card set, not the number in the in use children.</li>
-		<li><em>Card Count</em>: Filter on card count within the current card set or a different card set. You must specify a <a href="#list">list</a> of card counts, and a <a href="#list">list</a> of card sets.  A card matches if it belongs to one of the specified sets, and has a count within that set equal to any count in the list.</li>
+		<li><em>Card Count</em>: Filter on card count within the current card set or a different card set. You must specify a <a href="#list">list</a> of card counts, and a <a href="#list">list</a> of card sets.A card matches if it belongs to one of the specified sets, and has a count within that set equal to any count in the list.</li>
 		<li><em>Card Function</em>: Filter on common card functions. You must specify a <a href="#list">list</a> of card functions. A card matches if it satisfies at least one function in the list.</li>
 		<li><em>Filter Group</em>: Add an additional filter group to the filter. See <a href="#combining">Combining Basic Filters</a></li>
 	</ul>
@@ -557,7 +557,7 @@
 		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
 
-<p>Each filter group can also contain further filters groups.  You can thus construct complex queries by nesting multiple filter groups.</p>
+<p>Each filter group can also contain further filters groups.You can thus construct complex queries by nesting multiple filter groups.</p>
 
 <h3 id="string">String filters</h3>
 
@@ -623,7 +623,7 @@
 
 <p>This tool compares the current card set with a different card set. It displays which cards are common to both card sets, and lists the unique cards in each card set.</p>
 
-<p>By default, the tool considers the expansions of cards, and considers all cards with the same name with different expansions as different.  You can change this behaviour using the <em>Ignore Expansions</em> checkbox when selecting a card set for comparison. If selected, all cards of with the same name are considered the same, regardless of expansion.</p>
+<p>By default, the tool considers the expansions of cards, and considers all cards with the same name with different expansions as different.You can change this behaviour using the <em>Ignore Expansions</em> checkbox when selecting a card set for comparison. If selected, all cards of with the same name are considered the same, regardless of expansion.</p>
 
 <p>The display of the results uses the same grouping as the card set.</p>
 
@@ -677,7 +677,7 @@
 
 <p>New Profiles can be created by selecting the <strong>New Profile</strong> option from the drop down list. Otherwise, the profile to be edited can be selected. Profiles can be renamed by editing the name field.</p>
 
-<p>Changes are only applied if the <strong>Save and Close</strong> option is chosen. The changes are applied to all panes used the edited profile.  Cancel discards all changes made.</p>
+<p>Changes are only applied if the <strong>Save and Close</strong> option is chosen. The changes are applied to all panes used the edited profile.Cancel discards all changes made.</p>
 
 <h3 id="manage_profile">Managing Profiles</h3>
 
@@ -703,14 +703,14 @@
 
 <h4 id="grouping">Card Grouping</h4>
 
-<p>By default, Sutekh groups the cards into the separate card types.   You can change the grouping as part of the pane profile.</p>
+<p>By default, Sutekh groups the cards into the separate card types. You can change the grouping as part of the pane profile.</p>
 
 <p>The following groupings are available:</p>
 
 	<ul>
-		<li><em>Clans and Creeds</em>: Group cards by the Clan(s) or Creed(s) listed on the card.  The Imbued Creeds are treated as if they were Vampire Clans.</li>
+		<li><em>Clans and Creeds</em>: Group cards by the Clan(s) or Creed(s) listed on the card.The Imbued Creeds are treated as if they were Vampire Clans.</li>
 		<li><em>Disciplines and Virtues</em>: Group cards by the Discipline(s) or Virtue(s) listed on the card. The Imbued Virtues are treated as if they were Vampire Disciplines.</li>
-		<li><em>Disciplines (by level)  and Virtues</em>: Group cards by the Discipline(s) or Virtue(s) listed on the card. This distinguishes between inferior and superior levels of the discipline on vampires, but otherwise is the same as the <em>Disciplines and Virtues</em> grouping.</li>
+		<li><em>Disciplines (by level)and Virtues</em>: Group cards by the Discipline(s) or Virtue(s) listed on the card. This distinguishes between inferior and superior levels of the discipline on vampires, but otherwise is the same as the <em>Disciplines and Virtues</em> grouping.</li>
 		<li><em>Crypt or Library</em>: Split the card list into crypt and library cards.</li>
 		<li><em>Card Type</em>: Group by card type. This is the default grouping. This grouping treats multi-type cards, such as <strong>Action Modifier/Combat</strong> cards as members of both the <strong>Action Modifier</strong> and the <strong>Combat</strong> groups.</li>
 		<li><em>Expansion</em>: Group by the expansions in which the cards have been printed.</li>
@@ -727,7 +727,7 @@
 
 <h4 id="columns">Extra Columns (card sets)</h4>
 
-<p>By default, Sutekh only shows card names in the White Wolf Card List, and card names and card counts in other card set card lists.  You can select additional columns to display as part of the pane profile.</p>
+<p>By default, Sutekh only shows card names in the White Wolf Card List, and card names and card counts in other card set card lists.You can select additional columns to display as part of the pane profile.</p>
 
 <p>The possible extra columns are:</p>
 
@@ -739,7 +739,7 @@
 		<li><em>Expansions:</em> Show the expansions in which the card has been printed.</li>
 		<li><em>Capacity or Life:</em> Show the capacity associated with the card, or its life.</li>
 		<li><em>Sect</em>: Show the Sect associated with the card.</li>
-		<li><em>Title</em>: Show the political titles listed on the card, if it is a crypt card.  Titles listed on library cards will not be shown.</li>
+		<li><em>Title</em>: Show the political titles listed on the card, if it is a crypt card.Titles listed on library cards will not be shown.</li>
 		<li><em>Card Text</em>: Show the text printed on the card.</li>
 		<li><em>Cost</em>: Show the cost of the card, together with the cost type.</li>
 	</ul>
@@ -762,12 +762,9 @@
 		<li><em>Show all cards in parent card set</em>: Show all the cards in this card set, as well as any cards in the parent card set that are not in this card set.</li>
 		<li><em>Show all cards in child card sets</em>: Show all the cards in this card set, as well as any cards in those child card sets marked as <em>In Use</em> that are not in this card set.</li>
 	</ul></li>
-		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable)</li>
-	</ul>
-or to show both.
-	<ul>
+		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable) or to show both.</li>
 		<li><em>Extra columns</em>: Select which extra columns of data are shown. See the <a href="#columns" title="card sets">Extra Columns</a> section for more details.</li>
-		<li>_Extra levels: Specify what additional information is displayed below the card names in the tree. The options are:
+		<li><em>Extra levels</em>: Specify what additional information is displayed below the card names in the tree. The options are:
 	<ul>
 		<li><em>Show No Children</em>: Display nothing below the card name.</li>
 		<li><em>Show Expansions</em>: Show the expansions of the cards, and a card count for each expansion.</li>
@@ -808,7 +805,7 @@ or to show both.
 
 <h4 id="cs_columns">Extra Columns (card set list)</h4>
 
-<p>Only card set names are shown in the card set list by default as well.  You can select additional columns to display as part of the card set list profile.</p>
+<p>Only card set names are shown in the card set list by default as well.You can select additional columns to display as part of the card set list profile.</p>
 
 <p>The possible extra columns are:</p>
 

@@ -1171,11 +1171,11 @@ as well as any cards in the parent card set that are not in this card set.
 as well as any cards in those child card sets marked as _In Use_ that are not \
 in this card set.
 * _Column mode_: This controls how information in the extra columns is \
-displayed. You can choose to only show test, only show icons (if applicable)
+displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
 * _Extra columns_: Select which extra columns of data are shown. See the \
 "Extra Columns (card sets)":#columns section for more details.
-* _Extra levels: Specify what additional information is displayed below the \
+* _Extra levels_: Specify what additional information is displayed below the \
 card names in the tree. The options are:
 ** _Show No Children_: Display nothing below the card name.
 ** _Show Expansions_: Show the expansions of the cards, and a card count for \
