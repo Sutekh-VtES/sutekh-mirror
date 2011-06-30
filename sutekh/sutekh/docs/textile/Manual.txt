@@ -59,7 +59,7 @@ h2. Contents
 ### "Card Grouping":#grouping
 ### "Extra Columns -- card sets":#columns
 ## "Card Set Profile Options":#cardset_profile
-### "The Different Profiles".#different_profiles
+### "The Different Profiles":#different_profiles
 ## "CardSet List Profile Options":#cs_profile
 ### "Extra Columns -- card set list":#cs_columns
 
@@ -1066,7 +1066,7 @@ h3(#ww_profile). White Wolf Card List Profile Options
 You can set the following options for the white wolf card list in the profile:
 
 * _Column mode_: This controls how information in the extra columns is \
-displayed. You can choose to only show test, only show icons (if applicable)
+displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
 * _Extra columns_: Select which extra columns of data are shown. See the \
 "Extra Columns (card sets)":#columns section for more details.
@@ -1205,7 +1205,7 @@ is negative, it is shown in red.
 * _Show icons for the grouping_: Toggle whether icons are shown for the top \
 level grouping (when available).
 
-h4(#different_profiles.) The Different Profiles
+h4(#different_profiles). The Different Profiles
 
 The display of a cardset is deteremined by 3 different profiles. These are the
 "local profile", the "pane profile" and the "card set profile". Any options
