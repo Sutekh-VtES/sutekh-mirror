@@ -118,6 +118,12 @@ def main():
     # handle exceptions with a GUI dialog
     sys.excepthook = exception_handler
 
+    # Disable Unity's moving of menubars to the appmenu at
+    # the top of the screen since this moves the panel menus
+    # into limbo.
+    # TODO: we should only disable this on the panel menus
+    os.environ["UBUNTU_MENUPROXY"] = "0"
+
     oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
     sPrefsDir = prefs_dir("Sutekh")
 
