@@ -1,3 +1,11 @@
+01 Jul 2011
+ * Disable Unity's shifting of menubars to the appmenu since it eats the pane
+   menus
+
+30 Jun 2011
+ * Various minor markup fixes to the docs
+ * Update version number in manual
+
 26 Jun 2011
  * Add support for including and installing the appropriate MS C runtime
    library package to the NSIS installer.

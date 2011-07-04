@@ -37,6 +37,8 @@ HTML_FOOTER = """
 
 # pylint: enable-msg=C0103
 
+# TODO: Pull in version number automatically from SutekhInfo
+
 
 def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""

@@ -1,4 +1,4 @@
-h1. Manual for Sutekh 0.6
+h1. Manual for Sutekh 0.8
 
 !sutekh-icon.png (Sutekh Icon)!
 
@@ -36,7 +36,7 @@ h2. Contents
 ## "Keyboard Shortcuts":#cardsets_keyboard
 # "Other dialogs":#dialogs
 ## "Card Lookup Dialog":#lookup
-## "Search Dialog":#search
+## "Search Dialog":#searchdialog
 # "Filters":#filters
 ## "Card Filters":#card_filters
 ## "Card Set Filters":#card_set_filters
@@ -59,7 +59,7 @@ h2. Contents
 ### "Card Grouping":#grouping
 ### "Extra Columns -- card sets":#columns
 ## "Card Set Profile Options":#cardset_profile
-### "The Different Profiles".#different_profiles
+### "The Different Profiles":#different_profiles
 ## "CardSet List Profile Options":#cs_profile
 ### "Extra Columns -- card set list":#cs_columns
 
@@ -332,9 +332,9 @@ h3(#ww_edit). Edit
 
 * _Copy selection_: Copy the currently selected set of cards into the buffer. \
 You can paste this into an editable card set to add the selected cards to it.
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card with a name starting with the typed text. The search dialog can also \
-be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
+* _Search_: Open up a "search":#searchdialog dialog which will search the list \
+for a card with a name starting with the typed text. The search dialog can \
+also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
 starting to type in the list view.
 
 h3(#ww_filter). Filter
@@ -420,10 +420,10 @@ or _not in use_.
 
 h3(#card_set_list_edit). Edit
 
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card set with a name starting with the typed text. The search dialog can \
-also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply \
-starting to type in the list view.
+* _Search_: Open up a "search":#searchdialog dialog which will search the \
+list for a card set with a name starting with the typed text. The search \
+dialog can also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or \
+by simply starting to type in the list view.
 * _Edit Profiles_: Open up a "edit":#edit_profile profile dialog for \
 adding or changing profiles for the card set list.
 * _CardSet List Profile_: Allows you to select between the available \
@@ -493,10 +493,10 @@ This option is only available when the card set is editable.
 * _Delete selection_: Delete the selected cards from the card set. This \
 is only possible when the card set is editable. The deleted selection is \
 not placed in the buffer.
-* _Search_: Open up a "search":#search dialog which will search the list for \
-a card with a name starting with the typed text. The search dialog can also be \
-opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by simply starting \
-to type in the list view.
+* _Search_: Open up a "search":#searchdialog dialog which will search the \
+list for a card with a name starting with the typed text. The search dialog \
+can also be opened by either using the *&lt;Ctrl&gt;-F* shortcut, or by \
+simply starting to type in the list view.
 * _Set selected cards to a single expansion_: This searches for expansions \
 which are common to all the selected cards, and allows you to choose one of \
 these. The physical expansion for all the selected cards is set to this \
@@ -570,7 +570,8 @@ this happens, Sutekh will prompt you for the correct card.
 The card lookup window displays two lists: the list of all White Wolf cards
 and the list of unknown cards. Below the unknown card list are options
 to specify a "filter":#filters, to apply or unapply the filter, to show or
-hide cards not legal for tournament play or to "search":#search the card list.
+hide cards not legal for tournament play or to "search":#searchdialog the card
+list.
 
 The unknown card list has two columns -- the name of the unknown card and
 the currently selected replacement from the White Wolf card list -- and three
@@ -591,7 +592,7 @@ combination, it will prompt you to resolve the situation using the card lookup
 dialog -- but you will have the opportunity to select both the card and the
 expansion.
 
-h3(#search). Search Dialog
+h3(#searchdialog). Search Dialog
 
 The search dialog can be used to find specific cards or card sets quickly.
 
@@ -1066,7 +1067,7 @@ h3(#ww_profile). White Wolf Card List Profile Options
 You can set the following options for the white wolf card list in the profile:
 
 * _Column mode_: This controls how information in the extra columns is \
-displayed. You can choose to only show test, only show icons (if applicable)
+displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
 * _Extra columns_: Select which extra columns of data are shown. See the \
 "Extra Columns (card sets)":#columns section for more details.
@@ -1170,11 +1171,11 @@ as well as any cards in the parent card set that are not in this card set.
 as well as any cards in those child card sets marked as _In Use_ that are not \
 in this card set.
 * _Column mode_: This controls how information in the extra columns is \
-displayed. You can choose to only show test, only show icons (if applicable)
+displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
 * _Extra columns_: Select which extra columns of data are shown. See the \
 "Extra Columns (card sets)":#columns section for more details.
-* _Extra levels: Specify what additional information is displayed below the \
+* _Extra levels_: Specify what additional information is displayed below the \
 card names in the tree. The options are:
 ** _Show No Children_: Display nothing below the card name.
 ** _Show Expansions_: Show the expansions of the cards, and a card count for \
@@ -1205,7 +1206,7 @@ is negative, it is shown in red.
 * _Show icons for the grouping_: Toggle whether icons are shown for the top \
 level grouping (when available).
 
-h4(#different_profiles.) The Different Profiles
+h4(#different_profiles). The Different Profiles
 
 The display of a cardset is deteremined by 3 different profiles. These are the
 "local profile", the "pane profile" and the "card set profile". Any options
