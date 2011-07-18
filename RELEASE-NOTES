@@ -1,0 +1,741 @@
+Sutekh 0.8.0rc1 (2011-07-06)
+----------------------------
+
+Sutekh 0.8.0rc1 is the first release of Sutekh in more than a
+year. The long delay is partially the result of the demise of the
+White Wolf website which Sutekh used as the source of most of its card
+data but also due to the arrival of some significant new features
+(including a re-written filter dialog and a new profile system for
+changing how decks are displayed).
+
+Instructions for installing Sutekh can be found at:
+
+* http://sourceforge.net/apps/trac/sutekh/wiki/InstallInstructions
+
+Sutekh can be downloaded from Sourceforge at:
+
+* http://sourceforge.net/projects/sutekh/files/sutekh/
+
+This is the first release candidate for Sutekh 0.8 -- please test it
+and provide feedback!
+
+Issues may be reported by emailing sutekh-users@lists.sourceforge.net.
+
+
+Known Issues
+------------
+
+* On Ubunty 11.04 (Natty) the new Unity window manager moves
+  application's menus to the global menu bar and breaks applications
+  like Sutekh that provide more than one menu toolbar. This has been
+  fixed in Sutekh trunk. For Sutekh 0.8.0rc1 a workaround is to set
+  the UBUNTU_MENUPROXY environment variable to "0" before launching
+  Sutekh, e.g. UBUNTU_MENUPROXY=0 sutekh.
+
+
+Notable Improvements
+--------------------
+
+* Card text, icons and other data that was read from the old White
+  Wolf site is now downloaded from VEKN.net.
+
+* Additional card data not available from VEKN.net (e.g. Nergal and
+  Cultist storyline decks, pre-constructed starter decks, White Wolf
+  demo decks) may optional be read from Sutekh's own site.
+
+* A completely re-written filter dialog.
+
+* A profile editor for adjusting how individual decks are displayed.
+
+* Improved support for uploading and downloading decks to and from the
+  Secret Library.
+
+* New plugins for:
+  * importing CSV files
+  * displaying statistics on printed expansions and
+  * snapshotting decks (primitive version control).
+
+* Rulebook plugin now downloads a more extensive set of rulebooks
+  (including various FAQs, the official tournament rules and
+  guidelines for judges).
+
+* Explicit support for cards not legal for tournament play.
+
+* Re-organized menus.
+
+* Ability to minimize open decks to a toolbar.
+
+* Improved support of ARDB text files.
+
+* Numerous speed improvements.
+
+* New configuration file format (this should be largely transparent to
+  users).
+
+* The Windows build now uses Python 2.6.
+
+
+Changelog
+---------
+
+01 Jul 2011
+ * Disable Unity's shifting of menubars to the appmenu since it eats the pane
+   menus
+
+30 Jun 2011
+ * Various minor markup fixes to the docs
+ * Update version number in manual
+
+26 Jun 2011
+ * Add support for including and installing the appropriate MS C runtime
+   library package to the NSIS installer.
+
+23 Jun 2011
+ * Use drag_*_set methods rather than the enable_model_drag_* ones. Needed for
+   dragging in the filter dialog to work on windows with recent gtk versions.
+   See https://bugzilla.gnome.org/show_bug.cgi?id=641924. Fix highlight
+   juggling to work with these changes.
+ * Add gio to py2exe's list of required modules - needed for pygtk 2.16.
+ * Tweak Wine build script to use Python 2.6.
+
+22 Jun 2011
+ * Add has_children utility helper to card sets.
+ * Add checkbuttons for storyline and demo decks. Improve logic around
+   overwriting existing card sets.
+ * Document starter deck download checkboxes. Add note about the extra cardlist
+   file.
+
+19 Jun 2011
+ * Add configobj to rpm deps.
+ * Fix bug with querying config too early in rulebook plugin.
+ * Ensure we properly write the stub config file, so our config fiddling does
+   the right thing.
+ * Tweak IO error handling to work with ElementTree 1.3.
+ * Bump required SQLObject version to 0.16 for Fedora 15.
+ * Tweak signal handler signature to work with SQLObject 0.15.
+ * Handle truncated card list better.
+ * Bump minimum gtk version to 2.16, since we require some later features now.
+
+17 Jun 2011
+ * Make rulebook plugin use config key for rulebook path. Tweak test setup code
+   to stub in rulebook path.
+
+16 Jun 2011
+ * Re-write rulebook plugin to download a rulebook data pack from the Sutekh
+   Wiki or local Zip file.
+
+14 Jun 2011
+ * Add Title as keyword
+
+11 Jun 2011
+ * Rework ZipFileWrapper so writing zip files of partial selections is easier
+
+06 Jun 2011
+ * Workaround 'Anarchs and Alastors' promo-entry oddness
+ * Workaround AaA change in card images plugin
+
+03 Jun 2011
+ * Start of DataPack utility routines
+ * Move StarterDeckInfo to new DataPack functions
+
+01 Jun 2011
+  * Renable CSV import plugin. Tweak import_cs to support this
+
+26 May 2011
+ * Tweak test_writeELDBInventory test to make errors more discoverable
+ * Fix missing text cases for 'Smite' and 'Hide the Heart'
+ * Add more test data
+ * Remove obselete WW html parser
+
+23 May 2011
+ * Add missing config file validation - fixes values not being converted
+   properly issues
+
+21 May 2011
+ * Add support for storyline expansions to Card Images plugin
+ * Fix "An X.." name handling in Card Images plugin
+
+20 May 2011
+ * Fix cardimage download url
+
+19 May 2011
+ * Add sect stats to analyse plugin
+
+17 May 2011
+ * Document filter dialog keyboard shortcuts
+
+16 May 2011
+ * Add focus switching keyboard shortcut's to filter editor
+
+12 May 2011
+ * Fix bitbucket url
+
+06 May 2011
+ * Nicer error handling for errors when updating card lists
+
+05 May 2011
+ * Fix WW card count plugin to correctly handled some corner cases around
+   filters including the 'None' expansion
+ * Strip markup from entries read from the gtk.TreeStore in the filter, so
+   they match the contents of the box model
+
+04 May 2011
+ * Fix bug with keyboard pasting in list filters
+
+04 Apr 2011
+ * Change rulings parser to use rulings from the v:ekn site
+
+28 Mar 2011
+ * Prevent test suite prompting to download icons
+
+27 Mar 2011
+ * Change to using icons from v:ekn site
+
+16 Mar 2011
+ * Change over to using the text card list parser
+ * Fix ARDB export to match changes due to using text data
+ * Update docs and help to refect change to use text parser
+ * Fix FELDB homepage reference
+
+18 Mar 2011
+ * Add parser for the text file version of the card list
+ * Add test data for text card list parser
+
+16 Mar 2011
+ * Sort CardSetManagementModel so tests pass with postgresql 8.4
+
+15 Mar 2011
+ * Expose CardNameFilter in sutekh module
+
+04 Mar 2011
+ * Add non-unique keyword
+ * Fix 'blood cursed' checks
+
+03 Mar 2011
+ * Add mortal keyword to Imbued
+
+23 Feb 2011
+ * Add cleanup calls to gui card lookup, to remove stale profile listeners
+
+22 Feb 2011
+ * Fix bug in ARDBTextParser that could cause the description to be lost
+
+18 Feb 2011
+ * Fix bug in ARDBTextParser when dealing with names and authors containing ':'
+ * Improve handling on incorrectly encoding card set names
+
+17 Feb 2011
+ * Make card set importing a bit more robust against encoding issues with
+   the file
+ * Add warning dialogs for encoding issues
+ * Fix bug when dealing with empty fields introduced by the encoding changes
+
+15 Feb 2011
+ * Handle another Crypt line variant in ARDBTextParser
+
+14 Feb 2011
+ * Fix ARDBTextParser to deal with card sets missing the description section
+ * Fix bug in ARDBTextParser when encountering files with mixed spaces and tabs
+
+10 Feb 2011
+ * Fix bug that caused a converted rc file not to be written properly
+ * Fix a bug with extra columns in the card set view when no card sets are
+   shown
+
+09 Feb 2011
+ * Fix bug with profile menus not updating properly for all open copies of a
+   card set
+
+08 Feb 2011
+ * Avoid unnecessary database changed signals when editing card set properties
+ * Tweak display of the card set independence plugin when no expansions are shown
+ * Beahve sensibly if only testing a single card set for independence.
+
+07 Feb 2011
+ * Sort 'No Card' entries first in GuiCarLookup
+ * Bold 'No Card' entires, to be more visible
+ * Fix cursor behaviour when the card lookup dialog is sorted.
+ * Tweak ARDBTextParser to be a bit more liberal
+ * Fix bug with ARDBTextParser missing advanced vampires
+
+05 Feb 2011
+ * Fix issue with double quotes in crypt cards when uploading to the Secret
+   Library
+ * Show inherited profile settings as a tooltip in the profile editor
+ * Make GuiCardLookup a bit more robust against non-unicode input
+
+03 Feb 2011
+ * Fix FilterParser to deal allow escaping quotes.
+ * Add a helper function to display detail dialogs for and log exceptions
+ * Convert to using the helper function in several place
+
+01 Feb 2011
+ * Display card sets in zip file in correct hierarchy.
+ * Add check that config file is writeable during start up and warn the user
+ * Add support for ignoring card expansion when testing card set independence
+ * Add advanced as a keyword
+ * Add a error dialog with details hidden in an expander.
+ * Use details dialog for uncaught exceptions and errors writing the config
+   file on exit.
+
+31 Jan 2011
+ * Support for forcing replace or automatic renames when importing card sets
+   from a zip file
+ * Add select all / unselect all buttons to zip file import dialog
+ * Fix name escaping bug in zip file import dialog
+ * Fix bug with renamed parents when importing from zip file
+
+26 Jan 2011
+  * Fix handling of author or Description is None when sorting on extra columns
+  * Fix exception in Analyze deck plugin when the crypt size is 0
+
+24 Jan 2011
+  * Add hide/show illegal cards button to gui card lookup
+  * Make best guess filter only look at legal cards
+
+10 Jan 2011
+  * Escape card set name properly in snapshot dialog
+  * Fix some escaping issues in filter dialog
+  * Escape card set name in plugins
+
+30 Dec 2010
+  * Fix corner case which led to missed crypt keywords
+
+24 Dec 2010
+  * Protect against ini-file and database being out of sync in fix_profile_map
+
+21 Dec 2010
+  * Finish test case for the filter model panes
+
+18 Dec 2010
+ * Fix bug with the parent count colour not being updated properly when
+   editing
+
+17 Dec 2010
+ * Add CachedFilter, to improve speed of complex card set loads a bit
+
+14 Dec 2010
+ * Update cardset id -> profile map on major database changes
+ * delete profile references when deleting a card set
+ * Fix bug around deleting in-use profiles that also refer to card set ids
+   that no longer exist.
+ * Add 'snapshot cardset' plugin.
+
+13 Dec 2010
+ * Fix bug with reading parents and children from a zip file.
+ * Add support for WW demo decks
+   * Demo Rarity
+   * Support for demo decks as seperate section in starter deck plugin
+ * Report pane and card set names to the user when deleting in-use profiles.
+
+09 Dec 2010
+ * Add cleanup hook for the plugins
+ * Fix bug with not properly using carefully constructed config in tests.
+ * Fix a couple of resource cleanup bugs.
+
+07 Dec 2010
+ * Properly save and restore per-pane profiles settings.
+ * Some test suite speed improvements
+ * Keep scroll position when dragging card sets around in the card set list
+   pane
+
+06 Dec 2010
+ * Fix bug in filter editor when dragging items out of the filter
+ * Remove menu items made redundant by local profile support
+
+04 Dec 2010
+ * Import legacy config files from 0.6
+ * Add basic 'Profile in use' detection when deleting profiles
+ * Keyboard shortcut for pasting values/filters in filter dialog
+ * Local profile support
+ * avoid pyprotocols for speed in card set and card list models
+
+02 Dec 2010
+ * Reorder things in card set list model test to make more use of the cache
+
+30 Nov 2010
+ * Don't reload entire filter model on minor changes
+
+29 Nov 2010
+ * Hook up keyboard shortcuts to delete, disable and negate buttons
+
+27 Nov 2010
+ * Fix saving card sets to use the card set name
+
+26 Nov 2010
+ * Add "involves" method to filters, to save some work
+ * Move physical_filter checks into Filters
+ * Replace some references to "Physical Card Set" with "Card Set" in the UI
+
+19 Nov 2010
+ * More caching in card set list model
+ * Restore card set list scroll position after opening a card set
+
+18 Nov 2010
+ * Limit direct access to the various mode variables in the card set model
+ * Add complex cache test case & fix bug it uncovered
+
+16 Nov 2010
+ * Longer lived filter caching
+
+15 Nov 2010
+ * Use unicode normalisation when talking to Secret Library
+ * Reorganise db signal handling - move code to CardSetListModel
+ * Add some db signal tests
+
+11 Nov 2010
+ * More caching work
+ * Ensure listeners are called before sorting list, for listeners that
+   use cached information
+
+10 Nov 2010
+ * Fix restore_from_config to work with the closed frames.
+ * Fix some other issues around the minimised frames being skipped as well
+
+08 Nov 2010
+ * Make changing to editable views slightly faster
+
+05 Nov 2010
+ * Subdivide card set list model tests a bit
+
+03 Nov 2010
+ * Remove check_editable in favour of explicitly specifying when
+   card sets should be opened editable.
+
+01 Nov 2010
+ * Use bitbucket as source for extra_cards
+ * Minor speed tweaks to card set list model
+ * Add some tests with illegal cards shown and hidden
+
+30 Oct 2010
+ * Show OOT masters & trifles in Anaylze plugin
+
+29 Oct 2010
+ * Update README
+ * Disable qlobject cache (?cache=False) by default.
+ * Bump sqlobject requirement to include 0.14
+
+28 Oct 2010
+ * Fix WW card list to work with queued_reload
+ * Minor speed savings, but removing some unneeded work
+ * Batch child card query for speed
+
+27 Oct 2010
+ * Tweak HTML output when author isn't set
+ * card count listener speedups
+
+26 Oct 2010
+ * Add tests for unset author case
+ * Hide sqlobject differences in CardSetWrapper
+ * Ensure we always include an author attribute in output, for compatability
+   with older versions
+ * Fix caching bugs
+
+25 Oct 2010
+ * Fix exception handling so we still work with sqlobject 0.9
+ * Protect against author returning None with later sqlobject versions
+
+24 Oct 2010
+ * Cache some lookups, to improve card set list model speed
+ * Fix queued_reloads to run.
+ * Fix reloading card set twice on profile changes
+ * Prepopulate abstract card to physical card mapping
+ * Seperate out adaptor cache creation
+ * Fix test breakage caused by changes
+
+20 Oct 2010
+ * Add discipline with level grouping
+
+19 Oct 2010
+ * Reorder card text in CardTextView. Card Text is now above rulings and
+   expansion info
+
+18 Oct 2010
+ * Change discipline order in print-card cli option
+ * Make sutekh fail a bit more robustly in the face of unicode input
+
+17 Oct 2010
+ * Sort disciplines in card text view to match the order printed on crypt cards
+
+3 Oct 2010
+ * Add WW Card Count plugin and docs
+
+29 Sep 2010
+ * Sort expansions when presenting list to select replacement from
+
+25 Sep 2010
+ * Avoid repeatedly reloading card sets on startup
+
+24 Sep 2010
+ * Consider expansions by default when comparing card sets
+
+23 Sep 2010
+ * Add test for the card set model config change handling
+
+20 Sep 2010
+ * WW Analysis plugins (Expansion Stats, Clan discipline stats) now only
+   include illegal cards if the card list does
+
+16 Sep 2010
+ * Better visual hints when dragging filters and filter elements
+
+15 Sep 2010
+ * Improve dragging code
+   - Most panes, except card text pane, can be dragged more easily
+   - Document card text special case
+ * Remove the no longer needed custom search dialog
+
+08 Sep 2010
+ * Add listeners so the menus are updated when the profile changes
+ * Update docs to match current profile status better
+
+02 Sep 2010
+ * Add support for deleting profiles to profile management dialog
+
+30 Aug 2010
+ * Unbreak 0 card count case in the card count filter
+
+29 Aug 2010
+ * Show correct (copy action) symbol on drags
+ * Fix drag_delete signature
+
+20 Aug 2010
+ * Add basic profile management dialog
+
+19 Aug 2010
+ * Show current profile when starting profile editor
+
+18 Aug 2010
+ * Fix bug in card set view column when reloading the database.
+ * Tweak logging to display exceptions earlier, to handle cases involving
+   the progress bar better.
+ * Add support for both single & double quotes to filter parser (for
+   commandline usage), with tests
+
+17 Aug 2010
+ * Add various options to the command line tool
+   - support for running filters
+   - print card set (using ARDB text format)
+   - list the card sets
+ * Unify zip dialog handling in plugins
+
+16 Aug 2010
+ * Fix download url for images from FELDB site
+
+12 Aug 2010
+ * Update docs
+ * Tweak textile2html script to use tidylib if available
+ * Add extra column icon mode to the profiles
+
+11 Aug 2010
+ * Allow dragging filter values onto any suitable filter
+
+10 Aug 2010
+ * Sort column options in the profile editor
+
+05 Aug 2010
+ * Pad various values in the filter editor so that sort better
+ * Finish support for dragging values between filters of the same type
+
+04 Aug 2010
+ * Use custom drag icons to give more visual feedback when dragging objects
+
+03 Aug 2010
+ * Start implementing dragging filter values around
+ * Use treeview methods for more visual feedback when dragging
+
+02 Aug 2010
+ * better fix of the empty filter group deletion / moving issue
+ * Pylint driven cleanups
+
+01 Aug 2010
+ * Fix bug that led to filter groups disappering in the filter editor
+ * Fix bug that made it impossible to delete some empty filter groups
+ * Some pylint cleanups
+
+31 Jul 2010
+ * Remove some dead code
+ * Pylint cleanups
+
+27 Jul 2010
+ * Start profile docs section
+ * Remove some dead code
+ * Remove 'card set extra columns' from menus (only changeable via profiles now)
+
+22 Jul 2010
+ * Unify the profile editors
+ * Unify some of the profile menu handling code
+
+21 Jul 2010
+ * Fix bug that caused unnessecary appending of pane numbers to names
+ * Fix bug wit left default profile entry in the menu incorrectly
+   unselected when loading the profiles
+
+20 Jul 2010
+ * Add a profile type parameter to simplify profile code
+
+18 Jul 2010
+ * Add python-rsvg dependancy note
+
+17 Jul 2010
+ * Add shortcut for Equalize pane sizes
+ * Change Pane menu accelerator to 'P'
+
+16 Jul 2010
+ * Simplify code for handling the 'hide illegal cards' option
+ * Disable 'hide illegal cards' to improve test speed where appropriate
+
+15 Jul 2010
+ * Tweak filter for 'hide illegal cards' option to perfrom better with sqlite
+ * Add some 'not for legal play' cards to the test data.
+
+10 Jul 2010
+ * Add Preference to show or hide illegal cards
+
+08 Jul 2010
+ * Add support for profiles for the card set list view
+ * Hook up extra columns to the profiles
+
+05 Jul 2010
+ * Add profile support for the WW cardlist
+ * Tweak starter deck display. Sort starters by expansion, then name
+
+29 Jun 2010
+ * Add GroupPairGrouping
+
+24 Jun 2010
+ * Display percentage in progress bar
+ * Add support for reading extra cards from a file. Can be used for adding
+   missing information or cards not in the WW cardlist (such as the storyline
+   cards).
+ * Change Analyze plugin to search for new "not for legal play" keyword,
+   instead of banned text.
+
+21 Jun 2010
+ * Tweak display of mixed back info in Analyze plugin
+ * Work-around some gtk+ versions clearing the author text field before we
+   read it.
+
+17 Jun 2010
+ * Fix bug with dragging filters with no input widget out of the filter.
+
+08 Jun 2010
+ * Update help text for filter dialog.
+
+04 Jun 2010
+ * Optimise this_set_only + parent count case for small (deck-sized) card
+   lists
+
+03 Jun 2010
+ * Add more tests to the FilterBox code
+ * Fix pyprotocols interface check to work with newer pylint
+
+01 Jun 2010
+ * Avoid double load when restoring the grouping to a card set.
+
+30 May 2010
+ * Fix some fallout from the FilterBox changes
+
+26 May 2010
+ * Don't display special cases in library overview of AnalyzeDeck
+ * Fix FilterBox code to work with empty filters.
+
+25 May 2010
+ * Split FilterBox code out of FilterEditor into seperate file
+   - Add some basic FilterBox tests as well
+
+21 May 2010
+ * We drag values into the filter now.
+
+05 May 2010
+ * Reorganise the menu structure.
+   - Combine all download operations under File->Data Downloads
+   - Move backup to file
+   - Create Analyze menu for analysis routines
+   - Rename plugins menu to Other.
+   - Hide, rather than diabling, the Other menu if it's empty
+
+02 May 2010
+ * Fix sutekh-cli --reload to work again
+   - Use zip files, so we reload card sets in the correct order
+ * Add watcher as a keyword
+
+29 Apr 2010
+ * Fix filter editor's display of card set filters (broken by description
+   change)
+
+28 Apr 2010
+ * Rename CardFunction filters to be clearer
+ * Add check_cs_size option for plugins - used by Analyze, CardDrawProbablities
+   and OpeningHandSim plugins to query user when called on large card sets
+   (like "My Collection")
+ * Tweak CardDrawProbablities plugin to handle selections with 0 card counts
+   better
+ * Use filter descriptions everywhere in filter editor for consistency
+ * Fix bug in setting first option in a profile
+ * Filters that don't require input should not be treated as disabled by the
+   filter editor
+
+27 Apr 2010
+ * Fix bug in dealing with gtk.Adjustments which could cause a crash when
+   dragging fitlers into the filter editor.
+
+25 Apr 2010
+ * Ignore filter components with unset values.
+ * Add a popup context menu for deleting/disabling filter components
+ * Make default profile name not editable
+ * Sort preference entries sensibly
+ * Add partial support of extra columns to the profile editor
+ * Initial work on local profile support
+ * Tweak some filter names / disply issues
+
+24 Apr 2010
+ * Add support for saving filters with values
+ * Add config file listener to plugins
+ * Add groupings to profile preferences
+
+22 Apr 2010
+ * Avoid calling load twice for each card set on startup
+ * Update old 'Blackhand' expansion name during upgrades
+
+21 Apr 2010
+ * Tweak Card Images plugin to prefer showing existing images more often
+
+20 Apr 2010
+ * Fix database upgrade code to also work with newer sqlobject versions
+
+19 Apr 2010
+ * Add menu options for choosing a profile
+ * Mostly working profile editor
+
+18 Apr 2010
+ * Change filter dialog to a two-pane only layout
+
+13 Apr 2010
+ * Fix bug in parsing 'X from Y' filters
+ * Initial profile editor dialog
+
+10 Apr 2010
+ * Add imbued FAQ to the Rulebook plugin
+
+24 Mar 2010
+ * Compress zipfile entries when creating zip files.
+
+18 Mar 2010
+ * Preserve any existing card set hierachy when importing the starter decks
+
+11 Mar 2010
+ * Add check button to toggle in use status to the Create/Edit card set
+   properties dialog.
+
+09 Mar 2010
+ * Add the new tree-model based filter dialog.
+ * Add plugin to determine some expansion & rarity stats.
+
+08 Mar 2010
+ * Change Card count filter to take multiple card sets as well as multiple
+   counts.
+ * Fix some bugs in the Card Set independence plugin.
+ * Commit some of the less invasive changes required by the filter dialog
+   rewrite.
+
