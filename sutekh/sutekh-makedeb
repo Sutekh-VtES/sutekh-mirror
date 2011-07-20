@@ -1,0 +1,24 @@
+#!/bin/sh
+# Copyright 2011 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+#
+# Usage: sutekh-makedeb <suite> <signer>
+#  * Suite may be something like oneirc, natty, maverick, lucid
+#  * Signer is the name and email address of the package signer.
+#    It is also used to select the key to sign with.
+
+SUITE=$1
+SIGNER=$2
+SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
+
+rm -rf deb_dist
+python setup.py sdist
+py2dsc -z "$SUITE" "$SDIST_FILE"
+
+cd deb_dist/sutekh-${SUTEKH_VERSION}
+debuild -S -e"$SIGNER"
+cd ..
+
+echo "Now do:"
+echo " dput ppa:sutekh/ppa <source.changes>"
