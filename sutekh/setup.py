@@ -10,7 +10,15 @@
 """Setuptools setup.py file for Sutekh."""
 
 from setuptools import setup, find_packages
-from sutekh.SutekhInfo import SutekhInfo
+
+# avoid importing all of Sutkeh and its dependencies
+import imp
+import os
+SutekhInfoMod = imp.load_source("sutekh.SutekhInfo",
+                                os.path.join(os.path.dirname(__file__),
+                                             "sutekh", "SutekhInfo.py"))
+SutekhInfo = SutekhInfoMod.SutekhInfo
+
 
 try:
     # pylint: disable-msg=F0401, W0611
