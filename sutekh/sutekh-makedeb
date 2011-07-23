@@ -1,24 +1,55 @@
 #!/bin/sh
 # Copyright 2011 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-#
-# Usage: sutekh-makedeb <suite> <signer>
-#  * Suite may be something like oneirc, natty, maverick, lucid
-#  * Signer is the name and email address of the package signer.
-#    It is also used to select the key to sign with.
 
-SUITE=$1
-SIGNER=$2
+SIGNER=$1
+if [ "x$SIGNER" = "x" ] ; then
+    echo "Usage: sutekh-makedeb <signer>"
+    echo "  * Signer is the name and email address of the package signer."
+    echo "  It is also used to select the key to sign with."
+    exit 1
+fi
+
+SUITES="oneirc natty maverick lucid"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
 
+make_deb () {
+
+    SUITE=$1
+    EXTRA_CFG="deb_dist/sutekh-$SUITE.cfg"
+
+    # make extra config file
+    touch "$EXTRA_CFG"
+    echo "[Sutekh]" >> $EXTRA_CFG
+    echo "Debian-Version: 1~$SUITE" >> $EXTRA_CFG
+
+    # build source tarball and .dsc
+    py2dsc -z "$SUITE" -x "$EXTRA_CFG" "$SDIST_FILE"
+
+    # build .changes file (see https://github.com/astraw/stdeb/issues/37)
+    cd deb_dist/sutekh-${SUTEKH_VERSION}
+    debuild -S -e"$SIGNER"
+    cd ../..
+
+}
+
+# santize environment
 rm -rf deb_dist
+mkdir deb_dist
+
+# make source tarball
 python setup.py sdist
-py2dsc -z "$SUITE" "$SDIST_FILE"
 
-cd deb_dist/sutekh-${SUTEKH_VERSION}
-debuild -S -e"$SIGNER"
-cd ..
+# build Debian source package for each suite
+for suite in $SUITES ; do
+    echo "================================="
+    echo "Making .deb for: $suite"
+    echo "================================="
+    make_deb $suite
+done
 
+# don't upload for now
+echo "================================="
 echo "Now do:"
 echo " dput ppa:sutekh/ppa <source.changes>"
