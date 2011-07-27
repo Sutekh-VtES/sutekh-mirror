@@ -12,6 +12,8 @@
 """Display interesting statistics and properties of the card set."""
 
 import gtk
+import logging
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES, IKeyword
 from sutekh.core.Filters import CardTypeFilter, FilterNot
@@ -20,8 +22,14 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
-THIRD_ED = IExpansion('Third Edition')
-JYHAD = IExpansion('Jyhad')
+try:
+    THIRD_ED = IExpansion('Third Edition')
+    JYHAD = IExpansion('Jyhad')
+except SQLObjectNotFound, oExp:
+    # log exception at same level as plugin errors (verbose)
+    logging.warn("Expansion caching failed (%s).", oExp, exc_info=1)
+    # Turn exception into a ImportError, so plugin is just disabled
+    raise ImportError('Unable to load the required expansions')
 ODD_BACKS = (None, THIRD_ED, JYHAD)
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
