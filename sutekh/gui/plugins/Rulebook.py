@@ -204,6 +204,8 @@ class RulebookPlugin(SutekhPlugin):
         iResponse = oConfigDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
+            # pylint: disable-msg=W0703
+            # we want to catch all errors here
             try:
                 oRawFile = StringIO.StringIO(oConfigDialog.get_data())
                 oZipFile = zipfile.ZipFile(oRawFile, 'r')

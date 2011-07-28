@@ -20,9 +20,10 @@ import logging
 from pkg_resources import resource_stream, resource_exists
 from itertools import chain
 # pylint: enable-msg=E0611
+from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.SutekhObjects import PhysicalCardSet, flush_cache, \
-        PhysicalCard
+        PhysicalCard, IAbstractCard
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame
@@ -34,11 +35,12 @@ from sutekh.gui.GuiCardLookup import GuiLookup
 from sutekh.gui.GuiCardSetFunctions import break_existing_loops
 from sutekh.gui.CardSetManagementFrame import CardSetManagementFrame
 from sutekh.gui.PluginManager import PluginManager
+from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
 from sutekh.gui.IconManager import IconManager
 from sutekh.gui.SutekhDialog import do_complaint_error_details, \
-        do_exception_complaint
+        do_exception_complaint, do_complaint
 
 
 class MultiPaneWindow(gtk.Window):
@@ -100,6 +102,20 @@ class MultiPaneWindow(gtk.Window):
            data from the database."""
         self._oConfig = oConfig
         self._oCardLookup = GuiLookup(self._oConfig)
+
+        # Check database is correctly populated
+
+        try:
+            _oCard = IAbstractCard('Ossian')
+        except SQLObjectNotFound:
+            # Log error so verbose picks it up
+            logging.warn('Ossian not found in the database')
+            # Inform the user
+            iResponse = do_complaint(
+                    'Database is missing cards. Try import the cardlist now?',
+                    gtk.MESSAGE_ERROR, gtk.BUTTONS_YES_NO, False)
+            if iResponse == gtk.RESPONSE_YES:
+                refresh_ww_card_list(self)
 
         # Load plugins
         self._oPluginManager = PluginManager()
