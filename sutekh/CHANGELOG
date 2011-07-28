@@ -1,3 +1,17 @@
+27 Jul 2011
+ * Make Analyze plugin fail more gracefully in the presence of a incomplete
+   database
+ * Warn user if database appears incomplete
+
+23 Jul 2011
+ * Further debian/ubuntu packaging improvements
+
+20 Jul 2011
+ * Add helper script for building Debian packages
+ * Add copyright to debian packaging
+ * importing SutekhInfo directly in setup.py to simplify build dependencies
+   for building debian packages.
+
 01 Jul 2011
  * Disable Unity's shifting of menubars to the appmenu since it eats the pane
    menus
