@@ -25,9 +25,9 @@ from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 try:
     THIRD_ED = IExpansion('Third Edition')
     JYHAD = IExpansion('Jyhad')
-except SQLObjectNotFound, oExp:
+except SQLObjectNotFound, oExcDetails:
     # log exception at same level as plugin errors (verbose)
-    logging.warn("Expansion caching failed (%s).", oExp, exc_info=1)
+    logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
     # Turn exception into a ImportError, so plugin is just disabled
     raise ImportError('Unable to load the required expansions')
 ODD_BACKS = (None, THIRD_ED, JYHAD)
