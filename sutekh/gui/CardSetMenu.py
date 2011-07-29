@@ -106,6 +106,10 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
 
     # pylint: enable-msg=W0201
 
+    def cleanup(self):
+        """Remove the menu listener"""
+        self._oMainWindow.config_file.remove_listener(self)
+
     def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
         # pylint: disable-msg=E1101

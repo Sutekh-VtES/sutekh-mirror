@@ -1,3 +1,6 @@
+28 Jul 2011
+ * Cleanup config listeners created by the menu
+
 27 Jul 2011
  * Make Analyze plugin fail more gracefully in the presence of a incomplete
    database

@@ -27,6 +27,10 @@ class FilteredViewMenu(SutekhMenu):
         self.oApply = None
         self._oController = oController
 
+    def cleanup(self):
+        """Cleanup hook for menus"""
+        pass
+
     def create_filter_menu(self):
         """Create the Filter Menu."""
         oMenu = self.create_submenu(self, "F_ilter")

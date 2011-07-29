@@ -66,6 +66,10 @@ class PhysicalCardMenu(CardListMenu, ConfigFileListener):
 
         self.add_edit_menu_actions(oMenu)
 
+    def cleanup(self):
+        """Remove the menu listener"""
+        self._oMainWindow.config_file.remove_listener(self)
+
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
