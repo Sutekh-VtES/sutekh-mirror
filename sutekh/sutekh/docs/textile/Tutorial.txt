@@ -73,6 +73,10 @@ You can also copy and paste or drag and drop cards from other card sets. If you
 do this, all copies of each selected card which are in the source set will be
 added to the destination set.
 
+You can select all the cards in a card set using either *&lt;Ctrl&gt;-A* or
+*&lt;Ctrl&gt;-/*, and unselect all selected cards using
+*&lt;Ctrl&gt;-&lt;Shift&gt;-A*.
+
 h3. Removing cards
 
 You can remove cards from a card set by using the *-* button shown in the card
