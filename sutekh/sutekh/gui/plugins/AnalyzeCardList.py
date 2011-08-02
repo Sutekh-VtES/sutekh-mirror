@@ -830,14 +830,19 @@ class AnalyzeCardList(SutekhPlugin):
                 _percentage(iNum, self.iLibSize, "Library"))
         # Extract the number of out-of-turn and trifles
         for sType in ('trifle', 'out-of-turn'):
-            oKeyword = IKeyword(sType)
-            iCount = 0
-            for oCard in aCards:
-                if oKeyword in oCard.keywords:
-                    iCount += 1
-            if iCount:
-                sText += '   Number of %s masters = %d (%s)\n' % (sType,
-                        iCount, _percentage(iCount, iNum, 'Masters'))
+            try:
+                oKeyword = IKeyword(sType)
+                iCount = 0
+                for oCard in aCards:
+                    if oKeyword in oCard.keywords:
+                        iCount += 1
+                if iCount:
+                    sText += '   Number of %s masters = %d (%s)\n' % (sType,
+                            iCount, _percentage(iCount, iNum, 'Masters'))
+            except SQLObjectNotFound:
+                sText += '<span foreground="red">Keyword <b>%s</b> not '\
+                        'in the database -- please re-import the WW ' \
+                        'cardlist</span>\n' % sType
         if aPool[1] > 0:
             sText += '\n<span foreground = "blue">Cost</span>\n'
             sText += _format_cost_numbers('Master', 'pool', aPool, iNum)
