@@ -47,6 +47,9 @@ class CardListView(FilteredView):
 
         # Activating rows
         self.connect('row-activated', self.card_activated)
+
+        # special handling for select all
+        self.connect('select-all', self.select_all)
         # Key combination for searching
 
         # Drag and Drop
@@ -325,3 +328,8 @@ class CardListView(FilteredView):
             # Nothing selected, so we're dragging the entire pane, so use
             # the pane icon
             self.frame.make_drag_icon(self, oDragContext)
+
+    def select_all(self, _oWidget):
+        """Expand the tree and select all the nodes"""
+        self.expand_all()
+        self._oSelection.select_all()
