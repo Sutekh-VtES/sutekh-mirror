@@ -214,7 +214,7 @@ class MainMenu(SutekhMenu):
                 self._oMainWindow.show_last_help)
         self.oHelpLast.set_sensitive(False)
         self.create_menu_item("About Sutekh", oMenu,
-                self._oMainWindow.show_about_dialog, '<Ctrl>A')
+                self._oMainWindow.show_about_dialog)
 
     # pylint: enable-msg=W0201
 

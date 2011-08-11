@@ -1,3 +1,11 @@
+11 Aug 2011
+ * Add special "retain selection on single click" selection behaviour of
+   card sets to filter value lists.
+
+02 Aug 2011
+ * Add support for select-all in card set lists
+ * Make Analyze plugin more robust against missing keywords in the database
+
 28 Jul 2011
  * Cleanup config listeners created by the menu
 

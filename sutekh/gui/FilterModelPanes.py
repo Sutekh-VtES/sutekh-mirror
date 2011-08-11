@@ -238,11 +238,11 @@ class FilterValuesBox(gtk.VBox):
     def _make_list_from(self, oFilter):
         """Create the widget for the 'X form Y' filters"""
         self._oWidget = gtk.VBox()
-        oCountList = ScrolledList('Select Counts')
+        oCountList = ScrolledList('Select Counts', bSpecialSelect=True)
         oCountList.set_select_multiple()
         oCountList.fill_list(oFilter.aValues[0])
         oCountList.connect('key-press-event', self.key_press, oFilter, 'Count')
-        oSetList = CardSetsListView(None, self._oParent)
+        oSetList = CardSetsListView(None, self._oParent, bSpecialSelect=True)
         oSetList.set_select_multiple()
         oSetList.connect('key-press-event', self.key_press, oFilter, 'Set')
         self._set_drag_for_widget(oSetList, self.update_count_set, oFilter)
@@ -258,7 +258,7 @@ class FilterValuesBox(gtk.VBox):
 
     def _make_card_set_list(self, oFilter):
         """Create a card set list widget"""
-        oSetList = CardSetsListView(None, self._oParent)
+        oSetList = CardSetsListView(None, self._oParent, bSpecialSelect=True)
         oSetList.set_select_multiple()
         self._oWidget = AutoScrolledWindow(oSetList, False)
         oSetList.connect('key-press-event', self.key_press, oFilter, 'CardSet')
@@ -267,7 +267,8 @@ class FilterValuesBox(gtk.VBox):
 
     def _make_filter_values_list(self, oFilter):
         """Create a filter values list widget"""
-        self._oWidget = ScrolledList('Select Filter Values')
+        self._oWidget = ScrolledList('Select Filter Values',
+                bSpecialSelect=True)
         self._oWidget.set_select_multiple()
         self._oWidget.fill_list(oFilter.aValues)
         self._oWidget.view.connect('key-press-event', self.key_press, oFilter,

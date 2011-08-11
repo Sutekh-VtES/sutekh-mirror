@@ -32,7 +32,7 @@ class ScrolledListView(CustomDragIconView):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Simple tree view for the ScrolledList widget"""
-    def __init__(self, sTitle, oModel=None):
+    def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
         if not oModel:
             oModel = ScrolledListStore()
         super(ScrolledListView, self).__init__(oModel)
@@ -40,6 +40,9 @@ class ScrolledListView(CustomDragIconView):
         oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
         self.append_column(oColumn1)
         self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+
+        if bSpecialSelect:
+            self._oSelection.connect('changed', self.row_selected)
 
     # pylint: disable-msg=W0212
     # allow access via these properties
@@ -83,9 +86,9 @@ class ScrolledList(gtk.Frame):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
-    def __init__(self, sTitle, oModel=None):
+    def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
         super(ScrolledList, self).__init__(None)
-        self._oTreeView = ScrolledListView(sTitle, oModel)
+        self._oTreeView = ScrolledListView(sTitle, oModel, bSpecialSelect)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
         self.set_shadow_type(gtk.SHADOW_NONE)
