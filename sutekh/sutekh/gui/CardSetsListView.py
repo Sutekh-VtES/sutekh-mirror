@@ -18,7 +18,7 @@ class CardSetsListView(FilteredView):
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
-    def __init__(self, oController, oMainWindow):
+    def __init__(self, oController, oMainWindow, bSpecialSelect=False):
         oModel = CardSetManagementModel(oMainWindow)
         oModel.enable_sorting()
         if hasattr(oMainWindow, 'config_file'):
@@ -41,6 +41,9 @@ class CardSetsListView(FilteredView):
         self.set_expander_column(oColumn)
 
         self._oSelection.set_select_function(self.can_select)
+
+        if bSpecialSelect:
+            self._oSelection.connect('changed', self.row_selected)
 
     def can_select(self, oPath):
         """disable selecting of excluded items"""

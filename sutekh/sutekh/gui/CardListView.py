@@ -25,7 +25,6 @@ class CardListView(FilteredView):
                 oModel, oConfig)
 
         self.set_select_multiple()
-        self._aOldSelection = []
 
         self._oSelection.connect('changed', self.card_selected)
 
@@ -67,7 +66,6 @@ class CardListView(FilteredView):
         self.connect('drag_data_get', self.drag_card)
         self.connect('drag_data_delete', self.drag_delete)
         self.connect('drag_data_received', self.card_drop)
-        self.bReentrant = False
         self.bSelectTop = 0
 
     def can_select(self, oPath):
@@ -87,44 +85,12 @@ class CardListView(FilteredView):
            a single row that is in the selection, we DON'T change
            the selection, but we do update the card text and so on.
            """
-        if self.bReentrant:
-            # This is here because we alter the selection inside
-            # this function (resulting in a nested call).
-            # self.bReentrant is set and unset below.
+        # Check with helper function first
+        oPath = self.row_selected(oSelection)
+        if not oPath:
             return False
 
-        # If the selection is empty, clear everything and return
-        if oSelection.count_selected_rows() <= 0:
-            self._aOldSelection = []
-            return False
-
-        _oModel, aList = oSelection.get_selected_rows()
-        # Implement the non default selection behaviour.
-        tCursorPos = self.get_cursor()
-        if len(aList) == 1 and len(self._aOldSelection) > 1 and \
-            tCursorPos[0] == aList[0] and aList[0] in self._aOldSelection:
-            # reset the list to it's previous state, but set
-            # displayed card to this one
-            try:
-                self.bReentrant = True
-                for oPath in self._aOldSelection:
-                    oSelection.select_path(oPath)
-            finally:
-                self.bReentrant = False
-            oPath = aList[0]
-        else:
-            _oModel, aList = oSelection.get_selected_rows()
-            if not aList:
-                self._aOldSelection = []
-                return False
-
-            if len(aList) <= len(self._aOldSelection):
-                oPath = aList[-1]
-            else:
-                # Find the last entry in aList that's not in _aOldSelection
-                oPath = [x for x in aList if x not in self._aOldSelection][-1]
-            self._aOldSelection = aList
-
+        # Change card text view as required
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
         self._oController.set_card_text(oPhysCard)
 
