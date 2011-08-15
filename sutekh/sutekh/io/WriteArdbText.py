@@ -71,7 +71,8 @@ class WriteArdbText(ArdbInfo):
             # name
             dLine = {'count': iCount}
             if len(oCard.creed) > 0:
-                dLine['clan'] = "Imbued"
+                dLine['clan'] = "%s (Imbued)" % \
+                        [x.name for x in oCard.creed][0]
                 dLine['capacity'] = oCard.life
             else:
                 dLine['clan'] = [x.name for x in oCard.clan][0]

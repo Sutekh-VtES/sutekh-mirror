@@ -135,7 +135,7 @@ def _sort_vampires(dVamps):
     for oCard, (iCount, _sSet) in dVamps.iteritems():
         if len(oCard.creed) > 0:
             iCapacity = oCard.life
-            sClan = "Imbued"
+            sClan = "%s (Imbued)" % [x.name for x in oCard.creed][0]
         else:
             iCapacity = oCard.capacity
             sClan = [oClan.name for oClan in oCard.clan][0]
