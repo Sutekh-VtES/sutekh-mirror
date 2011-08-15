@@ -18,6 +18,7 @@ from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.WriteVEKNForum import WriteVEKNForum
 from sutekh.SutekhUtility import safe_filename
 
 
@@ -38,6 +39,8 @@ class CardSetExport(SutekhPlugin):
             'Lackey': (WriteLackeyCCG, 'Export to Lackey CCG format',
                 '.lackey.txt'),
             'ARDB Text': (WriteArdbText, 'Export to ARDB Text', '.ardb.txt'),
+            'vekn.net': (WriteVEKNForum,
+                'BBcode output for the V:EKN Forums', '.vekn.txt'),
             'FELDB Inv': (WriteELDBInventory,
                 'Export to ELDB CSV Inventory File', '.eldb.csv', 'CSV Files',
                 ['*.csv']),
