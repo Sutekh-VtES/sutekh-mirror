@@ -15,7 +15,7 @@ import sys
 import re
 from sqlobject import sqlhub
 from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
-        PhysicalCardSet
+        PhysicalCardSet, canonical_to_csv
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
@@ -192,3 +192,39 @@ def get_cs_id_name_table():
     for oCS in PhysicalCardSet.select():
         dMapping[oCS.id] = oCS.name
     return dMapping
+
+
+# Helper functions for the io routines
+def monger_url(oCard, bVamp):
+    """Return a monger url for the given AbstractCard"""
+    sName = canonical_to_csv(oCard.name)
+    if bVamp:
+        if oCard.level is not None:
+            sName = sName.replace(' (Advanced)', '')
+            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s ADV" \
+                    % sName
+        else:
+            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s" % sName
+    else:
+        sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sName
+    # May not need this, but play safe
+    sMongerURL = sMongerURL.replace(' ', '%20')
+    return sMongerURL
+
+
+def secret_library_url(oCard, bVamp):
+    """Return a Secret Library url for the given AbstractCard"""
+    sName = canonical_to_csv(oCard.name)
+    if bVamp:
+        if oCard.level is not None:
+            sName = sName.replace(' (Advanced)', '')
+            sURL = "http://www.secretlibrary.info/?crypt=%s+Adv" \
+                    % sName
+        else:
+            sURL = "http://www.secretlibrary.info/?crypt=%s" \
+                    % sName
+    else:
+        sURL = "http://www.secretlibrary.info/?lib=%s" \
+                    % sName
+    sURL = sURL.replace(' ', '+')
+    return sURL

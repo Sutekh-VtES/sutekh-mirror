@@ -7,10 +7,10 @@
 """Export a card set to HTML."""
 
 import time
-from sutekh.core.SutekhObjects import IAbstractCard, canonical_to_csv
+from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import pretty_xml
+from sutekh.SutekhUtility import pretty_xml, monger_url, secret_library_url
 # pylint: disable-msg=F0401, E0611
 # the allowe failures here makes pylint unhappy
 try:
@@ -127,41 +127,6 @@ a:hover {
     text-decoration: none
 }
 """
-
-
-def _monger_url(oCard, bVamp):
-    """Return a monger url for the given AbstractCard"""
-    sName = canonical_to_csv(oCard.name)
-    if bVamp:
-        if oCard.level is not None:
-            sName = sName.replace(' (Advanced)', '')
-            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s ADV" \
-                    % sName
-        else:
-            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s" % sName
-    else:
-        sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sName
-    # May not need this, but play safe
-    sMongerURL = sMongerURL.replace(' ', '%20')
-    return sMongerURL
-
-
-def _secret_library_url(oCard, bVamp):
-    """Return a Secret Library url for the given AbstractCard"""
-    sName = canonical_to_csv(oCard.name)
-    if bVamp:
-        if oCard.level is not None:
-            sName = sName.replace(' (Advanced)', '')
-            sURL = "http://www.secretlibrary.info/?crypt=%s+Adv" \
-                    % sName
-        else:
-            sURL = "http://www.secretlibrary.info/?crypt=%s" \
-                    % sName
-    else:
-        sURL = "http://www.secretlibrary.info/?lib=%s" \
-                    % sName
-    sURL = sURL.replace(' ', '+')
-    return sURL
 
 
 def _sort_vampires(dVamps):
@@ -315,10 +280,10 @@ class WriteArdbHTML(ArdbInfo):
         oRowHREF = oSpan
         if self._sLinkMode == 'Monger':
             oRowHREF = SubElement(oSpan, "a",
-                    href=_monger_url(oCard, bVamp))
+                    href=monger_url(oCard, bVamp))
         elif self._sLinkMode == 'Secret Library':
             oRowHREF = SubElement(oSpan, "a",
-                    href=_secret_library_url(oCard, bVamp))
+                    href=secret_library_url(oCard, bVamp))
         if bVamp:
             oRowHREF.text = sName.replace(' (Advanced)', '')
         else:
