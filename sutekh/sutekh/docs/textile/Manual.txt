@@ -469,6 +469,7 @@ manager
 ** _ARDB XML_: A file that can be imported into the ARDB card manager
 ** _HTML_: A nice HTML file, similar to that produced by ARDB
 ** _ARDB Text_: A text file, similar to that produced by ARDB
+** _V:EKN Forum_: A version formatted for the V:EKN forums at vekn.net
 ** _JOL_: A text file that can be pasted into the Jyhad Online deck \
 builder
 ** _Lackey CCG_: A text file that can be imported into the Lackey CCG client
