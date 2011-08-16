@@ -46,6 +46,7 @@ def add_clan_symbol(dLine):
             'Daughter of Cacophony': ':doca:',
             'Follower of Set': ':fose:',
             'Harbinger of Skulls': ':hosk:',
+            'Blood Brother': ':bbro:',
             }
     if dLine['clan'] in dSpecialClanMap:
         sSymbol = dSpecialClanMap[dLine['clan']]
