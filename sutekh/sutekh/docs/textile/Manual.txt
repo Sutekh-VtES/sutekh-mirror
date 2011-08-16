@@ -477,6 +477,9 @@ builder
 * _Collapse All_: Collapse the tree as far as possible.
 * _Delete Card Set_: Delete the card set from the database.
 * _Print Card Set_: Print the card set.
+* _Display Card Set in alternative format_: Show the card set in some of the \
+formats available via _Export Card Set_. This is useful for copying and \
+pasting the deck into a web browser and so forth.
 
 
 h3(#cardsets_edit). Edit
