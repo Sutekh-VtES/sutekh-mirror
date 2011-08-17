@@ -31,7 +31,7 @@ class WWFilesDialog(SutekhDialog):
     # R0902 - we keep a lot of internal state, so many instance variables
     """Actual dialog widget"""
 
-    def __init__(self, oParent):
+    def __init__(self, oParent, bDisableBackup):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
@@ -68,6 +68,9 @@ class WWFilesDialog(SutekhDialog):
                 label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
+        if bDisableBackup:
+            self.oBackupFileButton.set_sensitive(False)
+            self.oBackupFileLabel.set_sensitive(False)  # For consistency
         # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(oParent,
                 "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
