@@ -24,31 +24,30 @@ class WWFilesDialog(SutekhDialog):
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
-        oCardListLabel = gtk.Label("White Wolf Card List File:")
+        oCardListLabel = gtk.Label("Official Card List:")
         self._oParent = oParent
         self.oCardListFileButton = SutekhFileButton(oParent,
-                "White Wolf Card List")
+                "Official Card List")
         self.oCardListFileButton.add_filter_with_pattern('TXT files',
                 ['*.txt'])
         self.oUseWwCardListButton = gtk.CheckButton(
-                label="Grab cardlist from V:EKN website?")
+                label="Grab official card list from V:EKN website?")
 
-        # FIXME: Needs better text
-        oExtraLabel = gtk.Label("Storyline Card File (optional):")
+        oExtraLabel = gtk.Label("Additional Card List (optional):")
         self.oExtraFileButton = SutekhFileButton(oParent,
-                "Storyline card file")
+                "Additional Card List")
         self.oExtraFileButton.add_filter_with_pattern('TXT files',
                 ['*.txt'])
         self.oUseExtraUrlButton = gtk.CheckButton(
-                label="Grab extra cards from bitbucket.org?")
+                label="Grab default additional cards (from bitbucket.org)?")
 
-        oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
+        oRulingsLabel = gtk.Label("Official Rulings File (optional):")
         self.oRulingsFileButton = SutekhFileButton(oParent,
-                "White Wolf rulings file")
+                "Official Rulings File")
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
         self.oUseWwRulingsButton = gtk.CheckButton(
-                label="Grab rulings from V:EKN website?")
+                label="Grab official rulings from V:EKN website?")
 
         self.oBackupFileButton = gtk.CheckButton(
                 label="Backup database contents to File?")
