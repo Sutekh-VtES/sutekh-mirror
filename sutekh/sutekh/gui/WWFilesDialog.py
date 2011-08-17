@@ -36,7 +36,8 @@ class WWFilesDialog(SutekhDialog):
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
-        oCardListLabel = gtk.Label("Official Card List:")
+        oCardListLabel = gtk.Label()
+        oCardListLabel.set_markup("<b>Official Card List:</b>")
         self._oParent = oParent
         self.oCardListFileButton = SutekhFileButton(oParent,
                 "Official Card List")
@@ -45,7 +46,8 @@ class WWFilesDialog(SutekhDialog):
         self.oUseWwCardListButton = gtk.CheckButton(
                 label="Grab official card list from V:EKN website?")
 
-        oExtraLabel = gtk.Label("Additional Card List (optional):")
+        oExtraLabel = gtk.Label()
+        oExtraLabel.set_markup("<b>Additional Card List (optional):</b>")
         self.oExtraFileButton = SutekhFileButton(oParent,
                 "Additional Card List")
         self.oExtraFileButton.add_filter_with_pattern('TXT files',
@@ -53,7 +55,8 @@ class WWFilesDialog(SutekhDialog):
         self.oUseExtraUrlButton = gtk.CheckButton(
                 label="Grab default additional cards (from bitbucket.org)?")
 
-        oRulingsLabel = gtk.Label("Official Rulings File (optional):")
+        oRulingsLabel = gtk.Label()
+        oRulingsLabel.set_markup("<b>Official Rulings File (optional):</b>")
         self.oRulingsFileButton = SutekhFileButton(oParent,
                 "Official Rulings File")
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
