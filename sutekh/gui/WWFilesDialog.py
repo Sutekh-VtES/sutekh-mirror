@@ -13,47 +13,64 @@ from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL
 
 
+def make_alignment(oLabel, oFileButton, oUseButton):
+    """Helper function for constructing the import dialog"""
+    oAlign = gtk.Alignment(yalign=0.5, xscale=1.0)
+    oAlign.set_padding(0, 15, 0, 0)
+    oVBox = gtk.VBox(False, 2)
+    oVBox.pack_start(oLabel)
+    oVBox.pack_start(oFileButton)
+    oVBox.pack_start(oUseButton)
+    oAlign.add(oVBox)
+    return oAlign
+
+
 class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
     """Actual dialog widget"""
 
-    def __init__(self, oParent):
+    def __init__(self, oParent, bDisableBackup):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
             gtk.RESPONSE_CANCEL))
-        oCardListLabel = gtk.Label("White Wolf Card List File:")
+        oCardListLabel = gtk.Label()
+        oCardListLabel.set_markup("<b>Official Card List:</b>")
         self._oParent = oParent
         self.oCardListFileButton = SutekhFileButton(oParent,
-                "White Wolf Card List")
+                "Official Card List")
         self.oCardListFileButton.add_filter_with_pattern('TXT files',
                 ['*.txt'])
         self.oUseWwCardListButton = gtk.CheckButton(
-                label="Grab cardlist from V:EKN website?")
+                label="Grab official card list from V:EKN website?")
 
-        # FIXME: Needs better text
-        oExtraLabel = gtk.Label("Storyline Card File (optional):")
+        oExtraLabel = gtk.Label()
+        oExtraLabel.set_markup("<b>Additional Card List (optional):</b>")
         self.oExtraFileButton = SutekhFileButton(oParent,
-                "Storyline card file")
+                "Additional Card List")
         self.oExtraFileButton.add_filter_with_pattern('TXT files',
                 ['*.txt'])
         self.oUseExtraUrlButton = gtk.CheckButton(
-                label="Grab extra cards from bitbucket.org?")
+                label="Grab default additional cards (from bitbucket.org)?")
 
-        oRulingsLabel = gtk.Label("White Wolf Rulings File (optional):")
+        oRulingsLabel = gtk.Label()
+        oRulingsLabel.set_markup("<b>Official Rulings File (optional):</b>")
         self.oRulingsFileButton = SutekhFileButton(oParent,
-                "White Wolf rulings file")
+                "Official Rulings File")
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
         self.oUseWwRulingsButton = gtk.CheckButton(
-                label="Grab rulings from V:EKN website?")
+                label="Grab official rulings from V:EKN website?")
 
         self.oBackupFileButton = gtk.CheckButton(
                 label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
+        if bDisableBackup:
+            self.oBackupFileButton.set_sensitive(False)
+            self.oBackupFileLabel.set_sensitive(False)  # For consistency
         # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(oParent,
                 "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -63,15 +80,15 @@ class WWFilesDialog(SutekhDialog):
 
         # pylint: disable-msg=E1101
         # vbox confuses pylint
-        self.vbox.pack_start(oCardListLabel)
-        self.vbox.pack_start(self.oCardListFileButton)
-        self.vbox.pack_start(self.oUseWwCardListButton)
-        self.vbox.pack_start(oExtraLabel)
-        self.vbox.pack_start(self.oExtraFileButton)
-        self.vbox.pack_start(self.oUseExtraUrlButton)
-        self.vbox.pack_start(oRulingsLabel)
-        self.vbox.pack_start(self.oRulingsFileButton)
-        self.vbox.pack_start(self.oUseWwRulingsButton)
+        oCardAlign = make_alignment(oCardListLabel,
+                self.oCardListFileButton, self.oUseWwCardListButton)
+        self.vbox.pack_start(oCardAlign)
+        oExtraAlign = make_alignment(oExtraLabel, self.oExtraFileButton,
+                self.oUseExtraUrlButton)
+        self.vbox.pack_start(oExtraAlign)
+        oRulingsAlign = make_alignment(oRulingsLabel, self.oRulingsFileButton,
+                self.oUseWwRulingsButton)
+        self.vbox.pack_start(oRulingsAlign)
         self.vbox.pack_start(self.oBackupFileButton)
         self.vbox.pack_start(self.oBackupFileLabel)
 
@@ -83,6 +100,10 @@ class WWFilesDialog(SutekhDialog):
         self.oUseWwRulingsButton.connect("toggled",
                 self.use_ww_rulings_toggled)
         self.connect("response", self.handle_response)
+
+        self.oUseWwCardListButton.set_active(True)
+        self.oUseExtraUrlButton.set_active(True)
+        self.oUseWwRulingsButton.set_active(True)
 
         self.show_all()
         self.sCLName = None
@@ -142,20 +163,20 @@ class WWFilesDialog(SutekhDialog):
     def use_ww_cardlist_toggled(self, _oWidget):
         """Update state if user toggles the 'Use WW cardlist' checkbox"""
         if self.oUseWwCardListButton.get_active():
-            self.oCardListFileButton.hide()
+            self.oCardListFileButton.set_sensitive(False)
         else:
-            self.oCardListFileButton.show()
+            self.oCardListFileButton.set_sensitive(True)
 
     def use_ww_rulings_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseWwRulingsButton.get_active():
-            self.oRulingsFileButton.hide()
+            self.oRulingsFileButton.set_sensitive(False)
         else:
-            self.oRulingsFileButton.show()
+            self.oRulingsFileButton.set_sensitive(True)
 
     def use_extra_url_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseExtraUrlButton.get_active():
-            self.oExtraFileButton.hide()
+            self.oExtraFileButton.set_sensitive(False)
         else:
-            self.oExtraFileButton.show()
+            self.oExtraFileButton.set_sensitive(True)

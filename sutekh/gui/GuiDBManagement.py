@@ -91,7 +91,8 @@ def initialize_db(oParent):
     if iRes != 1:
         return False
     else:
-        aCLFile, oExtraFile, aRulingsFiles, _sIgnore = _get_names(oParent)
+        aCLFile, oExtraFile, aRulingsFiles, _sIgnore = _get_names(oParent,
+                True)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
             try:
@@ -121,9 +122,9 @@ def save_backup(sBackupFile, oProgressDialog):
     oProgressDialog.set_complete()
 
 
-def _get_names(oWin):
+def _get_names(oWin, bDisableBackup):
     """Get the names from the user, and ready them for the import."""
-    oWWFilesDialog = WWFilesDialog(oWin)
+    oWWFilesDialog = WWFilesDialog(oWin, bDisableBackup)
     oWWFilesDialog.run()
     (sCLFileName, bCLIsUrl, sExtraFileName, bExtraIsUrl,
             sRulingsFileName, bRulingsIsUrl,
@@ -158,7 +159,7 @@ def refresh_ww_card_list(oWin):
     # of variables
     aEditable = oWin.get_editable_panes()
     dOldMap = get_cs_id_name_table()
-    aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin)
+    aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin, False)
     if not aCLFile:
         return False  # Nothing happened
     oProgressDialog = ProgressDialog()
