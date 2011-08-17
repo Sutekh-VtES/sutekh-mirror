@@ -83,6 +83,10 @@ class WWFilesDialog(SutekhDialog):
                 self.use_ww_rulings_toggled)
         self.connect("response", self.handle_response)
 
+        self.oUseWwCardListButton.set_active(True)
+        self.oUseExtraUrlButton.set_active(True)
+        self.oUseWwRulingsButton.set_active(True)
+
         self.show_all()
         self.sCLName = None
         self.sRulingsName = None
@@ -141,20 +145,20 @@ class WWFilesDialog(SutekhDialog):
     def use_ww_cardlist_toggled(self, _oWidget):
         """Update state if user toggles the 'Use WW cardlist' checkbox"""
         if self.oUseWwCardListButton.get_active():
-            self.oCardListFileButton.hide()
+            self.oCardListFileButton.set_sensitive(False)
         else:
-            self.oCardListFileButton.show()
+            self.oCardListFileButton.set_sensitive(True)
 
     def use_ww_rulings_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseWwRulingsButton.get_active():
-            self.oRulingsFileButton.hide()
+            self.oRulingsFileButton.set_sensitive(False)
         else:
-            self.oRulingsFileButton.show()
+            self.oRulingsFileButton.set_sensitive(True)
 
     def use_extra_url_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""
         if self.oUseExtraUrlButton.get_active():
-            self.oExtraFileButton.hide()
+            self.oExtraFileButton.set_sensitive(False)
         else:
-            self.oExtraFileButton.show()
+            self.oExtraFileButton.set_sensitive(True)
