@@ -10,7 +10,7 @@ if [ "x$SIGNER" = "x" ] ; then
     exit 1
 fi
 
-SUITES="oneirc natty maverick lucid"
+SUITES="oneiric natty maverick lucid"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
 
