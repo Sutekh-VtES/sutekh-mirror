@@ -1,3 +1,11 @@
+16 Aug 2011
+ * Add plugin showing text versions of the card set, to make cutting
+   and pasting easier
+
+15 Aug 2011
+ * Add exporter to nicely format card sets for the V:EKN Forums
+ * Add Creed to ARDB HTML & Text output
+
 11 Aug 2011
  * Add special "retain selection on single click" selection behaviour of
    card sets to filter value lists.
