@@ -13,6 +13,18 @@ from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL
 
 
+def make_alignment(oLabel, oFileButton, oUseButton):
+    """Helper function for constructing the import dialog"""
+    oAlign = gtk.Alignment(yalign=0.5, xscale=1.0)
+    oAlign.set_padding(0, 15, 0, 0)
+    oVBox = gtk.VBox(False, 2)
+    oVBox.pack_start(oLabel)
+    oVBox.pack_start(oFileButton)
+    oVBox.pack_start(oUseButton)
+    oAlign.add(oVBox)
+    return oAlign
+
+
 class WWFilesDialog(SutekhDialog):
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -62,15 +74,15 @@ class WWFilesDialog(SutekhDialog):
 
         # pylint: disable-msg=E1101
         # vbox confuses pylint
-        self.vbox.pack_start(oCardListLabel)
-        self.vbox.pack_start(self.oCardListFileButton)
-        self.vbox.pack_start(self.oUseWwCardListButton)
-        self.vbox.pack_start(oExtraLabel)
-        self.vbox.pack_start(self.oExtraFileButton)
-        self.vbox.pack_start(self.oUseExtraUrlButton)
-        self.vbox.pack_start(oRulingsLabel)
-        self.vbox.pack_start(self.oRulingsFileButton)
-        self.vbox.pack_start(self.oUseWwRulingsButton)
+        oCardAlign = make_alignment(oCardListLabel,
+                self.oCardListFileButton, self.oUseWwCardListButton)
+        self.vbox.pack_start(oCardAlign)
+        oExtraAlign = make_alignment(oExtraLabel, self.oExtraFileButton,
+                self.oUseExtraUrlButton)
+        self.vbox.pack_start(oExtraAlign)
+        oRulingsAlign = make_alignment(oRulingsLabel, self.oRulingsFileButton,
+                self.oUseWwRulingsButton)
+        self.vbox.pack_start(oRulingsAlign)
         self.vbox.pack_start(self.oBackupFileButton)
         self.vbox.pack_start(self.oBackupFileLabel)
 
