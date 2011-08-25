@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test Writing a card set to an ARDB deck XML file"""
+"""Test Writing a card set to an VEKN bbcode file"""
 
 import time
 from sutekh.tests.TestCore import SutekhTest
@@ -13,8 +13,6 @@ from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
 import unittest
 
-# This doesn't match the ARDB export for the same card set, due to
-# the outstanding issues in the Export implementation
 VEKN_EXPECTED_1 = """[size=18][b]Deck Name : Test Set 1[/b][/size]
 [b][u]Author :[/u][/b] A test author
 [b][u]Description :[/u][/b]
@@ -44,10 +42,10 @@ Recorded with : Sutekh 0.8.0a0 [ DATE ]
 
 
 class VEKNForumWriterTests(SutekhTest):
-    """class for the ARDB text file writer tests"""
+    """class for the VEKN bbcode file writer tests"""
 
     def test_deck_writer(self):
-        """Test ARDB text file writing"""
+        """Test VEKN bbcode file writing"""
         oPhysCardSet1 = make_set_1()
 
         sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())
