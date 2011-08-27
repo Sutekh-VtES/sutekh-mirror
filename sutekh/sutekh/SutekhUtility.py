@@ -209,8 +209,6 @@ def monger_url(oCard, bVamp):
         sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sName
     # May not need this, but play safe
     sMongerURL = sMongerURL.replace(' ', '%20')
-    # Hide ElementTree differences
-    sMongerURL = sMongerURL.replace("'", '&apos;')
     return sMongerURL
 
 
@@ -232,6 +230,4 @@ def secret_library_url(oCard, bVamp):
     # ET will replace " with &quot;, which can lead to issues with SL, so we
     # drop double quotes entirely
     sURL = sURL.replace('"', '')
-    # This is to hide ElementTree version issues
-    sURL = sURL.replace("'", '&apos;')
     return sURL
