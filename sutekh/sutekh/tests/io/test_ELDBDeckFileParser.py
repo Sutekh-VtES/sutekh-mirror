@@ -16,12 +16,13 @@ ELDB_TEXT_EXAMPLE_1 = """
 "Simple test deck.
 
 http://www.example.url/in/description"
-4
+5
 "Test Vamp 1"
 "Test Vamp 1"
 "Lazar Dobrescu"
 "Alan Sovereign (ADV)"
-18
+"Inez 'Nurse216' Villagrande"
+19
 "Test Card 1"
 "Test Card 1"
 "Test Card 2"
@@ -42,6 +43,7 @@ http://www.example.url/in/description"
 "Test Card 3"
 "Test Card 4"
 "Path of Blood, The"
+"Scapelli, The Family `Mechanic`"
 """
 
 
@@ -62,14 +64,16 @@ class TestELDBDeckFileParser(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertEqual(len(aCards), 8)
+        self.assertEqual(len(aCards), 10)
         self.failUnless(("Test Vamp 1", 2) in aCards)
         self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
+        self.failUnless(('Inez "Nurse216" Villagrande', 1) in aCards)
         self.failUnless(("Test Card 1", 2) in aCards)
         self.failUnless(("Test Card 2", 4) in aCards)
         self.failUnless(("Test Card 3", 12) in aCards)
         self.failUnless(("Test Card 4", 1) in aCards)
         self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.failUnless(('Scapelli, The Family "Mechanic"', 1) in aCards)
         self.failUnless(("The Path of Blood", 1) in aCards)
 
 if __name__ == "__main__":
