@@ -18,6 +18,7 @@ import unittest
 import os
 from StringIO import StringIO
 
+# Test's include single quotes both escaped and not escape by ET
 PCS_EXAMPLE_1 = '<physicalcardset author="A test author" ' \
         'comment="A test comment" name="Test Set 1" '\
         'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
@@ -41,6 +42,12 @@ PCS_EXAMPLE_2 = '<physicalcardset author="A test author" ' \
         'name="Abombwe" />\n' \
         '<card count="1" expansion = "Jyhad" id="1" ' \
         'name=".44 Magnum" />\n' \
+        '<card count="1" expansion = "Nights of Reckoning" id="16" ' \
+        'name="Inez &quot;Nurse216&quot; " />\n' \
+        '<card count="1" expansion = "Nights of Reckoning" id="16" ' \
+        'name="Inez &quot;Nurse216&quot; Villagrande" />\n' \
+        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
+        'name="Aaron\'s Feeding Razor" />\n' \
         '<card count="1" expansion="Lords of the Night" id="2" ' \
         'name="AK-47" />\n</physicalcardset>'
 
@@ -52,6 +59,10 @@ PCS_EXAMPLE_2_NO_ID = '<physicalcardset author="A test author" ' \
         '<card count="2" expansion="None Specified" name="AK-47" />\n' \
         '<card count="1" expansion="None Specified" name="Abombwe" />\n' \
         '<card count="1" expansion = "Jyhad" name=".44 Magnum" />\n' \
+        '<card count="1" expansion = "Nights of Reckoning" ' \
+        'name="Inez &quot;Nurse216&quot; Villagrande" />\n' \
+        '<card count="1" expansion="Keepers of Tradition" ' \
+        'name="Aaron&apos;s Feeding Razor" />\n' \
         '<card count="1" expansion="Lords of the Night" ' \
         'name="AK-47" />\n</physicalcardset>'
 
@@ -69,6 +80,8 @@ PCS_EXAMPLE_3 = '<physicalcardset author="A test author" ' \
         'name="Abombwe" />\n' \
         '<card count="1" expansion = "Jyhad" id="1" ' \
         'name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
+        'name="Aaron&apos;s Feeding Razor" />\n' \
         '<card count="1" expansion="Lords of the Night" id="2" ' \
         'name="AK-47" />\n</physicalcardset>'
 
@@ -83,6 +96,8 @@ PCS_EXAMPLE_3_NO_ID = '<physicalcardset author="A test author" ' \
         '<card count="2" expansion="None Specified" name="AK-47" />\n' \
         '<card count="1" expansion="None Specified" name="Abombwe" />\n' \
         '<card count="1" expansion="Jyhad" name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Keepers of Tradition" ' \
+        'name="Aaron\'s Feeding Razor" />\n' \
         '<card count="1" expansion="Lords of the Night" name="AK-47" />\n' \
         '</physicalcardset>'
 
@@ -100,6 +115,8 @@ PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
         'name="Abombwe" />\n' \
         '<card count="1" expansion = "Jyhad" id="1" ' \
         'name=".44 Magnum" />\n' \
+        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
+        'name="Aaron\'s Feeding Razor" />\n' \
         '<card count="1" expansion="Lords of the Night" id="2" ' \
         'name="AK-47" />\n</physicalcardset>'
 
@@ -143,17 +160,24 @@ class PhysicalCardSetParserTests(SutekhTest):
         oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
+        self.assertEqual(len(oPhysCardSet2.cards), 8)
+        self.assertEqual(len(oPhysCardSet3.cards), 7)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[7].id).count(), 0)
-        self.assertEqual(len(oPhysCardSet2.cards), 6)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[1].id).count(), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[6].id).count(), 2)
+        # Aaron's Feeding razor
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=aAddedPhysCards[14].id).count(), 2)
+        # Inez
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=aAddedPhysCards[12].id).count(), 1)
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
@@ -161,7 +185,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         oFile = PhysicalCardSetXmlFile(sTempFileName)
         oFile.read()
         oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
-        self.assertEqual(len(oPhysCardSet2.cards), 6)
+        self.assertEqual(len(oPhysCardSet2.cards), 8)
         oFile.delete()
         self.assertFalse(os.path.exists(sTempFileName))
         oFile.write('Test Set 2')
@@ -169,7 +193,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertTrue(os.path.exists(sTempFileName))
         oFile.read()
         oPhysCardSet2 = IPhysicalCardSet("Test Set 2")
-        self.assertEqual(len(oPhysCardSet2.cards), 6)
+        self.assertEqual(len(oPhysCardSet2.cards), 8)
 
         self.assertEqual(oPhysCardSet2.annotations, None)
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
@@ -206,12 +230,15 @@ class PhysicalCardSetParserTests(SutekhTest):
         oParser.parse(StringIO(PCS_EXAMPLE_3_NO_ID), oHolder)
         oHolder.create_pcs()
 
+
         oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
         oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
 
+        self.assertEqual(len(oPhysCardSet2.cards), 8)
+        self.assertEqual(len(oPhysCardSet3.cards), 7)
+
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[7].id).count(), 0)
-        self.assertEqual(len(oPhysCardSet2.cards), 6)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
@@ -220,6 +247,12 @@ class PhysicalCardSetParserTests(SutekhTest):
             physicalCardID=aAddedPhysCards[1].id).count(), 5)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[6].id).count(), 2)
+        # Aaron's Feeding razor
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=aAddedPhysCards[14].id).count(), 2)
+        # Inez
+        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
+            physicalCardID=aAddedPhysCards[12].id).count(), 1)
 
         self.assertEqual(oPhysCardSet2.annotations, None)
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
@@ -239,7 +272,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         oHolder.create_pcs()
 
         oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
-        self.assertEqual(len(oPhysCardSet3.cards), 6)
+        self.assertEqual(len(oPhysCardSet3.cards), 7)
 
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
 
