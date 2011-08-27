@@ -10,13 +10,14 @@ import time
 from sutekh.core.SutekhObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import pretty_xml, monger_url, secret_library_url
+from sutekh.SutekhUtility import pretty_xml, monger_url, secret_library_url, \
+        norm_xml_quotes
 # pylint: disable-msg=F0401, E0611
 # the allowe failures here makes pylint unhappy
 try:
-    from xml.etree.ElementTree import ElementTree, Element, SubElement
+    from xml.etree.ElementTree import Element, SubElement, tostring
 except ImportError:
-    from elementtree.ElementTree import ElementTree, Element, SubElement
+    from elementtree.ElementTree import Element, SubElement, tostring
 # pylint: enable-msg=F0401, E0611
 
 # Style used by the HTML file
@@ -197,16 +198,16 @@ class WriteArdbHTML(ArdbInfo):
         """Handle the response to the dialog"""
         # pylint: disable-msg=E1101
         # SQLObject methods confuse pylint
-        oETree = self.gen_tree(oHolder)
+        oRoot = self._gen_tree(oHolder)
         # We're producing XHTML output, so we need a doctype header
         fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
                 ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
                 'xhtml1-strict.dtd">\n')
-        # We have the elementree with the needed information,
-        # need to produce decent HTML output
-        oETree.write(fOut)
+        sData = tostring(oRoot)
+        sData = norm_xml_quotes(sData)
+        fOut.write(sData)
 
-    def gen_tree(self, oHolder):
+    def _gen_tree(self, oHolder):
         """Convert the Cards to a element tree containing 'nice' HTML"""
         oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml',
                 lang='en')
@@ -233,7 +234,7 @@ class WriteArdbHTML(ArdbInfo):
                 "generator")
 
         pretty_xml(oDocRoot)
-        return ElementTree(oDocRoot)
+        return oDocRoot
 
     # methods to fill in the actual HTML content
     # pylint: disable-msg=R0201

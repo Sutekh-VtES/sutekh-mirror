@@ -8,13 +8,13 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
-from sutekh.SutekhUtility import pretty_xml
+from sutekh.SutekhUtility import pretty_xml, norm_xml_quotes
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
-    from xml.etree.ElementTree import parse, ElementTree
+    from xml.etree.ElementTree import parse, tostring
 except ImportError:
-    from elementtree.ElementTree import parse, ElementTree
+    from elementtree.ElementTree import parse, tostring
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError
@@ -166,4 +166,7 @@ class BaseXMLWriter(CardSetWriter):
            object fOut"""
         oRoot = self._gen_tree(oHolder)
         pretty_xml(oRoot)
-        ElementTree(oRoot).write(fOut)
+        sData = tostring(oRoot)
+        # Standardise quotes
+        sData = norm_xml_quotes(sData)
+        fOut.write(sData)
