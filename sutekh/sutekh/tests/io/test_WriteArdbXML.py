@@ -22,7 +22,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
-  <crypt avg="5.67" max="7" min="4" size="3">
+  <crypt avg="5.00" max="7" min="3" size="4">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -42,6 +42,15 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
+    </vampire><vampire count="1" databaseID="42">
+      <adv />
+      <name>Inez "Nurse216" Villagrande</name>
+      <set>NoR</set>
+      <disciplines>inn</disciplines>
+      <clan>Imbued</clan>
+      <capacity>3</capacity>
+      <group>4</group>
+      <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
     </vampire><vampire count="1" databaseID="63">
       <adv />
       <name>Siamese, The</name>
@@ -52,7 +61,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="12">
+  </crypt><library size="13">
     <card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>Jyhad</set>
@@ -93,6 +102,14 @@ Put this card on this acting Sabbat vampire and untap him or her. This Sabbat va
       <type>Master</type>
       <text>Master: Discipline. Trifle.
 Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
+    </card><card count="1" databaseID="60">
+      <name>Scapelli, The Family "Mechanic"</name>
+      <set>DS</set>
+      <cost>3 pool</cost>
+      <requirement>Giovanni</requirement>
+      <type>Ally</type>
+      <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
+{Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
     </card><card count="1" databaseID="52">
       <name>Path of Blood, The</name>
       <set>LotN</set>

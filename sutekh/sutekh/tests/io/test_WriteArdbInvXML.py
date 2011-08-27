@@ -19,7 +19,7 @@ import time
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>DATE</date>
-  <crypt size="3">
+  <crypt size="4">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
       <name>Abebe</name>
@@ -28,12 +28,16 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
+    </vampire><vampire databaseID="42" have="1" need="0" spare="0">
+      <adv />
+      <name>Inez "Nurse216" Villagrande</name>
+      <set>NoR</set>
     </vampire><vampire databaseID="63" have="1" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
     </vampire>
-  </crypt><library size="12">
+  </crypt><library size="13">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
       <set>CE</set>
@@ -49,6 +53,9 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="14" have="2" need="0" spare="0">
       <name>Abombwe</name>
       <set>LoB</set>
+    </card><card databaseID="60" have="1" need="0" spare="0">
+      <name>Scapelli, The Family "Mechanic"</name>
+      <set>DS</set>
     </card><card databaseID="52" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
