@@ -18,6 +18,7 @@ The Siamese
 
 4x.44 Magnum
 2xAK-47
+Aaron's Feeding Razor
 2xAbbot
 2xAbombwe
 The Path of Blood

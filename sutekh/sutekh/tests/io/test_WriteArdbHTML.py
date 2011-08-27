@@ -97,7 +97,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[11 cards]</span>
+        <span class="stats" id="librarystats">[12 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -116,7 +116,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           </tbody>
         </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[6]</span>
+          <span class="stats">[7]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -133,6 +133,14 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://monger.vekn.org/showcard.html?NAME=AK-47">AK-47</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Aaron's%%20Feeding%%20Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -245,7 +253,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[11 cards]</span>
+        <span class="stats" id="librarystats">[12 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -262,7 +270,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           </tbody>
         </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[6]</span>
+          <span class="stats">[7]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -276,6 +284,12 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">AK-47</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">Aaron's Feeding Razor</span>
               </td>
             </tr>
           </tbody>
@@ -389,7 +403,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[11 cards]</span>
+        <span class="stats" id="librarystats">[12 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -408,7 +422,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           </tbody>
         </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[6]</span>
+          <span class="stats">[7]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -425,6 +439,14 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=AK-47">AK-47</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -543,7 +565,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[11 cards]</span>
+        <span class="stats" id="librarystats">[12 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -562,7 +584,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           </tbody>
         </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[6]</span>
+          <span class="stats">[7]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -579,6 +601,14 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=AK-47">AK-47</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -688,6 +718,15 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       </ul><div class="text">
         <p>Weapon. Gun.</p>
         <p>2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</p>
+      </div><h5 class="cardname">Aaron's Feeding Razor</h5>
+      <ul>
+        <li>
+          <span class="label">Cost:</span>
+          <span class="cost">1 pool</span>
+        </li>
+      </ul><div class="text">
+        <p>Unique equipment.</p>
+        <p>When this vampire successfully hunts, he or she gains 1 additional blood.</p>
       </div><h4 class="libraryttype">Master</h4>
       <h5 class="cardname">Abombwe</h5>
       <div class="text">

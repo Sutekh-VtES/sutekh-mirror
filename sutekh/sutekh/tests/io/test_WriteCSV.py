@@ -17,6 +17,7 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
 "AK-47", "Unknown Expansion", 1
+"Aaron's Feeding Razor", "Keepers of Tradition", 1
 "Abbot", "Third Edition", 1
 "Abbot", "Unknown Expansion", 1
 "Abebe", "Unknown Expansion", 1
@@ -31,6 +32,7 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
 "AK-47", "Unknown Expansion", 1
+"Aaron's Feeding Razor", "Keepers of Tradition", 1
 "Abbot", "Third Edition", 1
 "Abbot", "Unknown Expansion", 1
 "Abebe", "Unknown Expansion", 1
@@ -45,6 +47,7 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 EXPECTED_3 = """"Card Name", "Number"
 ".44 Magnum", 4
 "AK-47", 2
+"Aaron's Feeding Razor", 1
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
@@ -55,6 +58,7 @@ EXPECTED_3 = """"Card Name", "Number"
 
 EXPECTED_4 = """".44 Magnum", 4
 "AK-47", 2
+"Aaron's Feeding Razor", 1
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2

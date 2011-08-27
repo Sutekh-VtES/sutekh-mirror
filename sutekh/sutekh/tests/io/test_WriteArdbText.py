@@ -26,14 +26,15 @@ Crypt [3 vampires] Capacity min: 4 max: 7 average: 5.67
  1x Alan Sovereign     Adv 6 AUS DOM for pre     Ventrue:3
  1x Abebe                  4 nec obf thn         Samedi:4
 
-Library [11 cards]
+Library [12 cards]
 ------------------------------------------------------------
 Action [2]
  2x Abbot
 
-Equipment [6]
+Equipment [7]
  4x .44 Magnum
  2x AK-47
+ 1x Aaron's Feeding Razor
 
 Master [3]
  2x Abombwe

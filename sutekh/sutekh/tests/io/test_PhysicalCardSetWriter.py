@@ -25,6 +25,8 @@ EXPECTED_1 = '<physicalcardset author="A test author"'\
         '  <card count="1" expansion="Lords of the Night"' \
         ' name="AK-47" />\n' \
         '  <card count="1" expansion="None Specified" name="AK-47" />\n' \
+        '  <card count="1" expansion="Keepers of Tradition"' \
+        ' name="Aaron\'s Feeding Razor" />\n' \
         '  <card count="1" expansion="None Specified" name="Abbot" />\n' \
         '  <card count="1" expansion="Third Edition" name="Abbot" />\n' \
         '  <card count="1" expansion="None Specified" name="Abebe" />\n' \

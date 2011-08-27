@@ -52,7 +52,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="11">
+  </crypt><library size="12">
     <card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>Jyhad</set>
@@ -74,6 +74,13 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <type>Equipment</type>
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
+    </card><card count="1" databaseID="6">
+      <name>Aaron's Feeding Razor</name>
+      <set>KoT</set>
+      <cost>1 pool</cost>
+      <type>Equipment</type>
+      <text>Unique equipment.
+When this vampire successfully hunts, he or she gains 1 additional blood.</text>
     </card><card count="2" databaseID="8">
       <name>Abbot</name>
       <set>Third</set>

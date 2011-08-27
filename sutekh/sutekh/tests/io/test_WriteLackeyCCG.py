@@ -14,6 +14,7 @@ import unittest
 
 EXPECTED_1 = """4\t.44 Magnum
 2\tAK-47
+1\tAaron's Feeding Razor
 2\tAbbot
 2\tAbombwe
 1\tPath of Blood, The

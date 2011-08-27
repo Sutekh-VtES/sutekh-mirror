@@ -33,13 +33,16 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <name>Siamese, The</name>
       <set>BL</set>
     </vampire>
-  </crypt><library size="11">
+  </crypt><library size="12">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
       <set>CE</set>
     </card><card databaseID="2" have="2" need="0" spare="0">
       <name>AK-47</name>
       <set>LotN</set>
+    </card><card databaseID="6" have="1" need="0" spare="0">
+      <name>Aaron's Feeding Razor</name>
+      <set>KoT</set>
     </card><card databaseID="8" have="2" need="0" spare="0">
       <name>Abbot</name>
       <set>Third</set>
