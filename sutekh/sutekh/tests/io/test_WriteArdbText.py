@@ -20,16 +20,20 @@ Author : A test author
 Description :
 A test comment
 
-Crypt [3 vampires] Capacity min: 4 max: 7 average: 5.67
+Crypt [4 vampires] Capacity min: 3 max: 7 average: 5.00
 ------------------------------------------------------------
  1x The Siamese            7 PRE SPI ani pro     Ahrimane:2
  1x Alan Sovereign     Adv 6 AUS DOM for pre     Ventrue:3
  1x Abebe                  4 nec obf thn         Samedi:4
+ 1x Inez "Nurse216" Vi     3 inn                 Innocent (Imbued):4
 
-Library [12 cards]
+Library [13 cards]
 ------------------------------------------------------------
 Action [2]
  2x Abbot
+
+Ally [1]
+ 1x Scapelli, The Family "Mechanic"
 
 Equipment [7]
  4x .44 Magnum
@@ -75,6 +79,9 @@ class ArdbTextWriterTests(SutekhTest):
         dSetCards = {}
         # Reformat cards in deck to match holder
         for sName in [x.abstractCard.name for x in oPhysCardSet1.cards]:
+            # We truncate Inez here to match the writer output
+            if sName.startswith('Inez'):
+                sName = sName[:18]
             dSetCards.setdefault(sName, 0)
             dSetCards[sName] += 1
 

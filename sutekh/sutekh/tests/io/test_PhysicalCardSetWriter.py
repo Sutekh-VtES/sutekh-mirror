@@ -34,6 +34,10 @@ EXPECTED_1 = '<physicalcardset author="A test author"'\
         '  <card count="1" expansion="None Specified" name="Abombwe" />\n' \
         '  <card count="1" expansion="Promo-20051001"' \
         ' name="Alan Sovereign (Advanced)" />\n' \
+        '  <card count="1" expansion="Nights of Reckoning"' \
+        ' name="Inez &quot;Nurse216&quot; Villagrande" />\n' \
+        '  <card count="1" expansion="Dark Sovereigns"' \
+        ' name="Scapelli, The Family &quot;Mechanic&quot;" />\n' \
         '  <card count="1" expansion="Lords of the Night"' \
         ' name="The Path of Blood" />\n' \
         '  <card count="1" expansion="Bloodlines" name="The Siamese" />\n' \

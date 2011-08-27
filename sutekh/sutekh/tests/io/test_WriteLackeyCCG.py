@@ -18,9 +18,11 @@ EXPECTED_1 = """4\t.44 Magnum
 2\tAbbot
 2\tAbombwe
 1\tPath of Blood, The
+1\tScapelli, The Family 'Mechanic'
 Crypt:
 1\tAbebe
 1\tAlan Sovereign Adv.
+1\tInez ''Nurse216'' Villagrande
 1\tSiamese, The
 """
 

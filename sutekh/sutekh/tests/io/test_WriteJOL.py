@@ -14,6 +14,7 @@ import unittest
 
 EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)
+Inez "Nurse216" Villagrande
 The Siamese
 
 4x.44 Magnum
@@ -21,6 +22,7 @@ The Siamese
 Aaron's Feeding Razor
 2xAbbot
 2xAbombwe
+Scapelli, The Family "Mechanic"
 The Path of Blood
 """
 

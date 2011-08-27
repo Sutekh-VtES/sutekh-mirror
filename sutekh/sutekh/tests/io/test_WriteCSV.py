@@ -24,6 +24,8 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
+"Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 1
 """
@@ -39,6 +41,8 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
+"Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 1
 """
@@ -52,6 +56,8 @@ EXPECTED_3 = """"Card Name", "Number"
 "Abebe", 1
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
+"Inez ""Nurse216"" Villagrande", 1
+"Scapelli, The Family ""Mechanic""\", 1
 "The Path of Blood", 1
 "The Siamese", 1
 """
@@ -63,6 +69,8 @@ EXPECTED_4 = """".44 Magnum", 4
 "Abebe", 1
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
+"Inez ""Nurse216"" Villagrande", 1
+"Scapelli, The Family ""Mechanic""\", 1
 "The Path of Blood", 1
 "The Siamese", 1
 """
