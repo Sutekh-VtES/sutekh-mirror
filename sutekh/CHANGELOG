@@ -1,3 +1,21 @@
+27 Aug 2011
+ * Handle quotes in XML output consistently across different ElementTree
+   versions
+ * Fix error in the handling of double-quotes in secretlibrary urls
+ * Fix handling of double quotes in CSV output
+ * Fix errors in how the ELDB exporters handle quotes. Handle several ELDB
+   special cases
+ * Fix quote handling in the Lackey exporter
+ * Add several test cases for cards with single and double quotes to the io
+   tests
+ * Add ability to provide a per-suite or generic patch file when creating
+   debs.
+ * Add patches for maverick and lucid to work around broken python-sqlobject
+   packages
+
+22 Aug 2011
+ * Fix FSF address in COPYRIGHT file
+
 17 Aug 2011
  * Make downloading official card lists the default when updating the card
    list.
