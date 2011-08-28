@@ -11,6 +11,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
+from sutekh.SutekhInfo import SutekhInfo
 import unittest
 
 VEKN_EXPECTED_1 = """[size=18][b]Deck Name : Test Set 1[/b][/size]
@@ -42,8 +43,8 @@ A test comment
  1x [url=http://www.secretlibrary.info/?lib=Path+of+Blood,+The]The Path of Blood[/url]
 
 
-Recorded with : Sutekh 0.8.0a0 [ DATE ]
-"""
+Recorded with : Sutekh %s [ DATE ]
+""" % SutekhInfo.VERSION_STR
 
 
 class VEKNForumWriterTests(SutekhTest):
