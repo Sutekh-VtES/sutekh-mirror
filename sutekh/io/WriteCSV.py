@@ -10,6 +10,7 @@
 
    "Card Name", "Expansion", "Number"
    "Aabbt Kindred","Final Nights", 2
+   "Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
    "Aire of Elation", "Camarilla Edition", 3
    "Aire of Elation", "Anarchs", 3
    "Zip Line", "Twilight Rebellion", 3
@@ -47,7 +48,9 @@ class WriteCSV(object):
         dCards = {}
         sResult = ""
         for oCard in oHolder.cards:
-            tKey = (oCard.abstractCard.name, self._expansion_name(oCard))
+            # We parse with doublequote=True so we double "'s in the card name
+            tKey = (oCard.abstractCard.name.replace('"', '""'),
+                    self._expansion_name(oCard))
             dCards.setdefault(tKey, 0)
             dCards[tKey] += 1
         # Sort the output

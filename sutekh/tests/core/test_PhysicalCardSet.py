@@ -21,7 +21,10 @@ CARD_EXPANSIONS = [('.44 magnum', 'Jyhad'),
         ('abombwe', 'Legacy of Blood'),
         ('alan sovereign (advanced)', 'Promo-20051001'),
         ('the path of blood', 'LotN'),
-        ('the siamese', 'BL')]
+        ('the siamese', 'BL'),
+        ('inez "nurse216" villagrande', 'NoR'),
+        ('Scapelli, the Family "Mechanic"', 'DS'),
+        ("Aaron's Feeding Razor", "KoT")]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
 

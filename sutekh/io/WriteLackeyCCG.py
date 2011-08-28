@@ -31,6 +31,12 @@ def lackey_name(oCard):
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "Adv.")
     sName = canonical_to_csv(sName)
+    # Lackey handles double-quotes a bit oddly, so we must as well
+    if oCard.cardtype[0].name == 'Imbued':
+        # Lackey only uses '' for Imbued
+        sName = sName.replace('"', "''")
+    else:
+        sName = sName.replace('"', "'")
     sName = unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
     return sName
 

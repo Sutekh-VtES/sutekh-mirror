@@ -17,12 +17,15 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
 "AK-47", "Unknown Expansion", 1
+"Aaron's Feeding Razor", "Keepers of Tradition", 1
 "Abbot", "Third Edition", 1
 "Abbot", "Unknown Expansion", 1
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
+"Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 1
 """
@@ -31,12 +34,15 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 ".44 Magnum", "Unknown Expansion", 3
 "AK-47", "Lords of the Night", 1
 "AK-47", "Unknown Expansion", 1
+"Aaron's Feeding Razor", "Keepers of Tradition", 1
 "Abbot", "Third Edition", 1
 "Abbot", "Unknown Expansion", 1
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
+"Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 1
 """
@@ -45,20 +51,26 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 EXPECTED_3 = """"Card Name", "Number"
 ".44 Magnum", 4
 "AK-47", 2
+"Aaron's Feeding Razor", 1
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
+"Inez ""Nurse216"" Villagrande", 1
+"Scapelli, The Family ""Mechanic""\", 1
 "The Path of Blood", 1
 "The Siamese", 1
 """
 
 EXPECTED_4 = """".44 Magnum", 4
 "AK-47", 2
+"Aaron's Feeding Razor", 1
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
 "Alan Sovereign (Advanced)", 1
+"Inez ""Nurse216"" Villagrande", 1
+"Scapelli, The Family ""Mechanic""\", 1
 "The Path of Blood", 1
 "The Siamese", 1
 """

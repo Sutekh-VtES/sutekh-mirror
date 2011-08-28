@@ -15,22 +15,25 @@ import unittest
 EXPECTED_1 = """"Test Set 1"
 "A test author"
 "A test comment"
-3
+4
 "Abebe"
 "Alan Sovereign (ADV)"
+"Inez 'Nurse216' Villagrande"
 "Siamese, The"
-11
+13
 ".44 Magnum"
 ".44 Magnum"
 ".44 Magnum"
 ".44 Magnum"
 "AK-47"
 "AK-47"
+"Aaron`s Feeding Razor"
 "Abbot"
 "Abbot"
 "Abombwe"
 "Abombwe"
 "Path of Blood, The"
+"Scapelli, The Family `Mechanic`"
 """
 
 

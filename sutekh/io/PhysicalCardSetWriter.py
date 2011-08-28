@@ -21,17 +21,17 @@
    </physicalcardset>
    """
 
-from sutekh.SutekhUtility import pretty_xml
+from sutekh.io.IOBase import BaseXMLWriter
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
-    from xml.etree.ElementTree import Element, SubElement, ElementTree
+    from xml.etree.ElementTree import Element, SubElement
 except ImportError:
-    from elementtree.ElementTree import Element, SubElement, ElementTree
+    from elementtree.ElementTree import Element, SubElement
 # pylint: enable-msg=E0611, F0401
 
 
-class PhysicalCardSetWriter(object):
+class PhysicalCardSetWriter(BaseXMLWriter):
     """Writer for Physical Card Sets.
 
        We generate an ElementTree representation of the Card Set, which
@@ -39,7 +39,7 @@ class PhysicalCardSetWriter(object):
        """
     sMyVersion = "1.3"
 
-    def make_tree(self, oHolder):
+    def _gen_tree(self, oHolder):
         """Convert the card set wrapped in oHolder to an ElementTree."""
         dPhys = {}
         bInUse = oHolder.inuse
@@ -79,10 +79,4 @@ class PhysicalCardSetWriter(object):
             sName, sExpName = tKey
             SubElement(oRoot, 'card', name=sName, count=str(iNum),
                     expansion=sExpName)
-        pretty_xml(oRoot)
         return oRoot
-
-    def write(self, fOut, oHolder):
-        """Generate prettier XML and write it to the file fOut."""
-        oRoot = self.make_tree(oHolder)
-        ElementTree(oRoot).write(fOut)
