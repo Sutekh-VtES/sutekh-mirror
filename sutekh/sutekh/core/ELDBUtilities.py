@@ -10,7 +10,7 @@ import unicodedata
 from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
 from sutekh.SutekhUtility import is_crypt_card
 
-SINGLE_QUOTE_NAMES=[
+SINGLE_QUOTE_NAMES = [
         "Al-Muntathir, God's Witness",
         "Crypt's Sons",
         "Poacher's Hunting Ground",

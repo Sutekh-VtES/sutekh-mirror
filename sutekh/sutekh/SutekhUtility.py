@@ -232,8 +232,10 @@ def secret_library_url(oCard, bVamp):
     sURL = sURL.replace('"', '')
     return sURL
 
+
 def norm_xml_quotes(sData):
-    """Normalise quote escaping from ElementTree, to hide version differences"""
+    """Normalise quote escaping from ElementTree, to hide version
+       differences"""
     # Bescause of how ElementTree adds quotes internally, this should always
     # be safe
     return sData.replace('&apos;', "'")

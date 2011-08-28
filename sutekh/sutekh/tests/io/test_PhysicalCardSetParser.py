@@ -230,7 +230,6 @@ class PhysicalCardSetParserTests(SutekhTest):
         oParser.parse(StringIO(PCS_EXAMPLE_3_NO_ID), oHolder)
         oHolder.create_pcs()
 
-
         oPhysCardSet2 = IPhysicalCardSet(CARD_SET_NAMES[1])
         oPhysCardSet3 = IPhysicalCardSet(CARD_SET_NAMES[2])
 
