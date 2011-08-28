@@ -9,7 +9,7 @@
 from sutekh.core.SutekhObjects import TABLE_LIST, VersionTable
 from sutekh.SutekhUtility import read_white_wolf_list, read_rulings, \
         refresh_tables
-from sutekh.tests.TestData import TEST_TEXT_CARD_LIST, TEST_RULINGS
+from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.WwFile import WwFile
 from sqlobject import sqlhub, connectionForURI
@@ -35,7 +35,7 @@ def create_db():
     """Create the database"""
     assert refresh_tables(TABLE_LIST, sqlhub.processConnection)
 
-    sCardList = _create_pkg_tmp_file(TEST_TEXT_CARD_LIST)
+    sCardList = _create_pkg_tmp_file(TEST_CARD_LIST)
     sRulings = _create_pkg_tmp_file(TEST_RULINGS)
 
     oLogHandler = FileHandler('/dev/null')
