@@ -76,6 +76,8 @@ class GuiSutekhTest(ConfigSutekhTest):
         # which will fail if not under a windowing system
         if gtk.gdk.screen_get_default() is None:
             raise SkipTest
+        # avoid menu proxy stuff on Ubuntu
+        os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiSutekhTest, self).setUp()
         # Carry on with the test
         self.oWin = MultiPaneWindow()
