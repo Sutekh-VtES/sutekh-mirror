@@ -1,0 +1,40 @@
+#!/bin/bash
+# Create a rpm package
+# We cannot just use bdist_rpm, as we need to do some fiddling in the middle
+# to handle rc version numbers and the like
+
+SPEC_FILE='dist/Sutekh.spec'
+SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+BASE_VERSION=`echo "$SUTEKH_VERSION" | grep -o "^[0-9\.]*"`
+SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
+
+# In-elegant hackery to get the correct RPM release setup
+RELEASE=`echo $SUTEKH_VERSION | grep -o "\(rc\|a\|b\).*"`
+# Expand release to right format if it exists
+RELEASE=${RELEASE:+"0.1.$RELEASE"}
+# default to 1 if no rc/alpha tag
+RPM_RELEASE=${RELEASE:-1}
+
+# Create sdist, needed for building rpm
+python ./setup.py sdist
+# Create spec file
+python ./setup.py bdist_rpm --spec-only
+# Fix spec file
+# We add a dist tag which rpm will fill in for us with the correct version
+sed -i -e "s/ version $SUTEKH_VERSION/ version $BASE_VERSION/;s/ release .*$/ release $RPM_RELEASE%{?dist}/" $SPEC_FILE
+
+# Build stuff under build
+RPM_DIR="$PWD/build/rpm"
+SRPM_DIR="$PWD/build/srpm"
+BUILD_DIR="$PWD/build/build"
+export RPM_DIR SRPM_DIR BUILD_DIR
+# rpmbuild is fincky here. This approach is convoluted, but at least works.
+rpmbuild --define='%_sourcedir %{getenv:PWD}/dist' --define='%_srcrpmdir %{getenv:SRPM_DIR}' \
+   --define='%_rpmdir %{getenv:RPM_DIR}' --define='%_builddir %{getenv:BUILD_DIR}' -ba $SPEC_FILE
+
+# Move packages
+mv $RPM_DIR/noarch/Sutekh-${BASE_VERSION}-${RPM_RELEASE}.*.noarch.rpm dist
+mv $SRPM_DIR/Sutekh-${BASE_VERSION}-${RPM_RELEASE}.*.src.rpm dist
+
+# cleanup
+rm -rf $RPM_DIR $SRPM_DIR $BUILD_DIR

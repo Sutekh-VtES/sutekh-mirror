@@ -693,7 +693,11 @@ class ConfigFile(object):
             if sProfile is None or sProfile.lower() == "default":
                 return self.__oConfig[sType]['defaults'][sKey]
             else:
-                return self.__oConfig[sType]['profiles'][sProfile][sKey]
+                # We fall back to the defaults if the key isn't set yet
+                try:
+                    return self.__oConfig[sType]['profiles'][sProfile][sKey]
+                except KeyError:
+                    return self.__oConfig[sType]['defaults'][sKey]
         except KeyError:
             return None
 

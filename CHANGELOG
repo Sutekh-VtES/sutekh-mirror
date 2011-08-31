@@ -1,3 +1,16 @@
+31 Aug 2011
+ * Change how pre-release version tags are handling in sutekh-makedeb
+   to ensure that they are treated as older than final releases
+ * Add helper script for creating rpm's with the correct version
+   numbering scheme
+ * Fix bug with newly created non-cardset profiles not passing
+   through the default values
+ * Add __init__.py to docs directory so Tutorial and Manual
+   are included in built packages.
+
+28 Aug 2011
+ * Remove obselete HTML test data
+
 27 Aug 2011
  * Handle quotes in XML output consistently across different ElementTree
    versions
