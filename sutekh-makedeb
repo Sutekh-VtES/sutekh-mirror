@@ -12,6 +12,7 @@ fi
 
 SUITES="oneiric natty maverick lucid"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
 DEBPATCH_FOLDER="deb-patches"
 
@@ -24,6 +25,7 @@ make_deb () {
     touch "$EXTRA_CFG"
     echo "[Sutekh]" >> $EXTRA_CFG
     echo "Debian-Version: 1~$SUITE" >> $EXTRA_CFG
+    echo "Forced-Upstream-Version: $DEB_VERSION" >> $EXTRA_CFG
 
     PATCHFILE=""
     if [ -f "$DEBPATCH_FOLDER/$SUITE.diff" ]; then
@@ -40,7 +42,7 @@ make_deb () {
     py2dsc -z "$SUITE" -x "$EXTRA_CFG" $PATCHFILE "$SDIST_FILE"
 
     # build .changes file (see https://github.com/astraw/stdeb/issues/37)
-    cd deb_dist/sutekh-${SUTEKH_VERSION}
+    cd deb_dist/sutekh-${DEB_VERSION}
     debuild -S -e"$SIGNER"
     cd ../..
 
