@@ -21,7 +21,7 @@ python ./setup.py sdist
 python ./setup.py bdist_rpm --spec-only
 # Fix spec file
 # We add a dist tag which rpm will fill in for us with the correct version
-sed -i -e "s/ version $SUTEKH_VERSION/ version $BASE_VERSION/;s/ release .*$/ release $RPM_RELEASE.%{?dist}/" $SPEC_FILE
+sed -i -e "s/ version $SUTEKH_VERSION/ version $BASE_VERSION/;s/ release .*$/ release $RPM_RELEASE%{?dist}/" $SPEC_FILE
 
 # Build stuff under build
 RPM_DIR="$PWD/build/rpm"
