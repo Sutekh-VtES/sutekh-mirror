@@ -1,8 +1,31 @@
-For 0.8.0 cycle
+For 1.0.0
+==========
 
  (see mailing list for the details, this is just a reminder list)
 
- - Postponed
+Stuff that's fairly easy (we think)
+-----------------------------------
+
+ * Replace the listeners with some sort of generic bus
+ * Using views to address the slow speed of count filters with MySQL
+ * Extend Analysis plugin to RT decks
+ * Use HTML help dialog for filter help
+ * Fetch missing images for vtes.pl
+ * pep8 cleanup
+ * reduce the number of FIXME's and TODO's in the code base
+ * TWD plugin
+ * Storing SL credentials in the config file
+ * More Error handling/reporting
+ * Cluster Plugin Speed-up
+ * Automate mirroring help to the wiki
+ * Add more keyboard shortcuts
+ * Right-click context menus
+ * Add a "default filter" to profiles
+
+Needs planning
+--------------
+
+ * Card Requirements
     - Requires versus provided for disciplines & clan cards ?
        - each card provides a set of keywords
        - each card potentially requires one of a list of keyword sets.
@@ -10,44 +33,13 @@ For 0.8.0 cycle
        - Requires (anarch, titled, prince, etc.)
        [ implement a plugin which can filter out what a set of crypt
          cards can play first ]
-
- - Definite
-    * Add decent error checking for the io files
-    * More access to debugging info
-      - Make it easier to get relevant info from users
-      - Use logging module to store more info, to be easily
-        extracted (partly done)
-      - Do more with the --verbose flag?
-
-    Website:
-       * Mirror documentation on website. (sort of done, needs automating)
-
- - Nice to have
-    * Add ways of specifying more limited test data sets
-    * Address code duplication issues - (largely done)
-    * Abstract Card Editor
-    * Real plugin support
-      - and mechanism for plugins to provide their own documentation to the
-        help menu.
-    * Cluster plugin speed-up
-    * Add more keyboard shortcuts
-    * Right-click context menus
-    * Make MultiSelectCombo less evil (turn it into a proper widget?)
-
-* Post 0.8
-  * Allow colouring options for the cards
-  * Fetch missing card images from vtes.pl
-  * use SQL view to work around mysql's poor subselect performance
-    (patch exists, to be applied and finished after 0.8.0)
-  * use HTML help system for filter dialog help for consistency
-  * Extend Analysis plugin to handle Rapid Thought decks
-    - Add "rapid thought: banned" and "rapid thought: watch list" keywords
-      to extra card list?
-    - Add preference for hiding/showing rapid thought keywords in card text
-      view?
+ * Replace PyProtocols with something else
+ * Real Plugin System
+ * Abstract Card Editor
+ * Stripped down UI for smart-phones
 
 For the future
---------------
+===============
 
 Backend:
  * DatabaseUpgrade could be less brittle
@@ -62,8 +54,7 @@ Code Cleanup
  * More tests
  * MultiPaneWindow mixes code for handling the widget hopping and application
    code - these should be seperated.
- * Replace the profileration of listeners with a generic event bus (using
-   gobject signals?)
+ * Make MultiSelectCombo less evil (turn it into a proper widget?)
 
 Gui (Functionality):
  * Compare CardSet Plugin (basic version done. Could be improved)
@@ -73,6 +64,8 @@ Gui (Functionality):
  * Improved card set sorting
    - Allow specifying order of columns to use, etc.
  * Add an undo stack for card set and filter editing operations
+ * Allow colouring options for the cards
+   (use-case for this?)
 
 Gui (Presentation):
  * Clean up the card set controller/model/view interactions
