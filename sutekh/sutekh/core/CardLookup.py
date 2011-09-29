@@ -34,9 +34,9 @@ class AbstractCardLookup(object):
         """Return a list of AbstractCards, one for each item in aNames.
 
            Names for which AbstractCards could not be found will be marked with
-           a None in the returned list. The method may raise LookupFailed if the
-           entire list should be considered invalid (e.g. if the names are
-           presented to a user who then cancels the operation).
+           a None in the returned list. The method may raise LookupFailed
+           if the entire list should be considered invalid (e.g. if the names
+           are presented to a user who then cancels the operation).
            """
         raise NotImplementedError
 
@@ -76,9 +76,9 @@ class ExpansionLookup(object):
         """Return a list of Expansions, one for each item in aExpansionNames.
 
            Names for which Expansions could not be found will be marked with
-           a None in the returned list. The method may raise LookupFailed if the
-           entire list should be considered invalid (e.g. if the names are
-           presented to a user who then cancels the operation).
+           a None in the returned list. The method may raise LookupFailed if
+           the entire list should be considered invalid (e.g. if the names
+           are presented to a user who then cancels the operation).
            """
         raise NotImplementedError
 

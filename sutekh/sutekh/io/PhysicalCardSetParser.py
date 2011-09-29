@@ -63,7 +63,7 @@ class PhysicalCardSetParser(BaseSutekhXMLParser):
             pass
         # pylint: enable-msg=W0704
 
-        if oRoot.attrib.has_key('parent'):
+        if 'parent' in oRoot.attrib:
             oHolder.parent = oRoot.attrib['parent']
 
         for oElem in oRoot:

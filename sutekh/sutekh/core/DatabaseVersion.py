@@ -63,7 +63,7 @@ class DatabaseVersion(object):
     def ensure_table_exists(cls, oConn):
         """Enusre the table exists, but that describe is only called
            once per connection."""
-        if not cls._dConns.has_key(oConn):
+        if not oConn in cls._dConns:
             VersionTable.createTable(ifNotExists=True, connection=oConn)
             cls._dConns[oConn] = True
 
@@ -72,7 +72,7 @@ class DatabaseVersion(object):
         """Expire the created table for this connection.
            Needed in the database upgrade code.
            """
-        if not cls._dConns.has_key(oConn):
+        if not oConn in cls._dConns:
             return  # Nothing to do
         del cls._dConns[oConn]
 
@@ -117,7 +117,7 @@ class DatabaseVersion(object):
             sName = oTable.sqlmeta.table
         except AttributeError:
             return iTableVersion
-        if dCache.has_key(sName):
+        if sName in dCache:
             return dCache[sName]
         aVer = list(VersionTable.selectBy(TableName=sName, connection=oConn))
         iTableCount = len(aVer)

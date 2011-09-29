@@ -278,11 +278,11 @@ def _check_same(aPhysCards):
 def _simple_back_checks(dCards, sType):
     """Simple checks on the card backs. Returns None if we need
        further investigation"""
-    if len(dCards) == 1 and not dCards.has_key(None):
+    if len(dCards) == 1 and None not in dCards:
         sText = "All %s cards have identical backs\n" % sType.lower() + \
                     UNSLEEVED % sType
         return sText
-    elif dCards.has_key(None):
+    elif None in dCards:
         sText = "%s has cards from unspecified expansions." \
                     " Ignoring the %s\n" % (sType, sType.lower())
         return sText
@@ -1077,7 +1077,7 @@ class AnalyzeCardList(SutekhPlugin):
         dCrypt = _get_back_counts(aCrypt)
         dLib = _get_back_counts(aLib)
         sText = "\t\t<b>Mixed Card Backs :</b>\n\n"
-        if dCrypt.has_key(None) and dLib.has_key(None):
+        if None in dCrypt and None in dLib:
             sText += "Both library and crypt have cards with unspecified" \
                     " expansions.\nIgnoring the mixed backs.\n"
             return sText
@@ -1192,7 +1192,7 @@ class AnalyzeCardList(SutekhPlugin):
                         self.dLibStats['discipline']['No Discipline'])
         for sDisc in aDiscsToUse:
             iHFNum = dDiscNumbers[sDisc]
-            if self.dLibStats['discipline'].has_key(sDisc):
+            if sDisc in self.dLibStats['discipline']:
                 iLibNum = self.dLibStats['discipline'][sDisc]
             else:
                 iLibNum = 0

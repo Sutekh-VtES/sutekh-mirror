@@ -25,7 +25,7 @@ SORT_COLUMN_OFFSET = 200  # ensure we don't clash with other extra columns
 
 def _get_number(dInfo, sKey, fQuery):
     """Handle the use query & cache interaction for numbers"""
-    if not dInfo.has_key(sKey):
+    if sKey not in dInfo:
         try:
             oCardSet = dInfo['Card Set']
             if oCardSet:
@@ -131,7 +131,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                     self.model.get_value(oIter, 0))[1]
             # Cache lookups, so we don't hit the database so hard when
             # sorting
-            if not self._dCache.has_key(sCardSetName):
+            if sCardSetName not in self._dCache:
                 # pylint: disable-msg=E1101
                 # pylint + AbstractCard method wierdness
                 self._dCache[sCardSetName] = {}

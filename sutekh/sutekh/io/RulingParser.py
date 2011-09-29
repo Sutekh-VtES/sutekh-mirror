@@ -76,7 +76,7 @@ class RuleDict(dict):
         """Remove current contents of the rule."""
         dKeep = {}
         for sKey in self._aSectionKeys:
-            if self.has_key(sKey):
+            if sKey in self:
                 dKeep[sKey] = self[sKey]
         self.clear()
         for (sKey, sValue) in dKeep.items():
@@ -84,11 +84,11 @@ class RuleDict(dict):
 
     def save(self):
         """Add the rulings to the database."""
-        if not (self.has_key('title') and self.has_key('code') \
-                and self.has_key('text')):
+        if not ('title' in self and 'code' in self \
+                and 'text' in self):
             return
 
-        if not self.has_key('card'):
+        if 'card' not in self:
             self['card'] = self._find_card(self['title'])
 
         if self['card'] is None:
@@ -98,7 +98,7 @@ class RuleDict(dict):
 
         oRuling = self._oMaker.make_ruling(self['text'], self['code'])
 
-        if self.has_key('url'):
+        if 'url' in self:
             oRuling.url = self['url']
 
         self['card'].addRuling(oRuling)
@@ -181,12 +181,12 @@ class InRuleText(LogStateWithInfo):
     def transition(self, sTag, dAttr):
         """Transition to SectionRule if needed."""
         if sTag == 'a':
-            if not self._dInfo.has_key('text'):
+            if 'text' not in self._dInfo:
                 self._dInfo['text'] = self._sData.strip()
             self._dInfo['url'] = dAttr['href']
             return InRuleUrl(self._dInfo, self.oLogger)
         elif sTag == '/li':
-            if not self._dInfo.has_key('code'):
+            if 'code' not in self._dInfo:
                 # Rule without an url, so extract the last section in []'s
                 # from the text
                 oMatch = self.oCodePattern.search(self._sData)

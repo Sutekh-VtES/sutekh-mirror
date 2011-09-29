@@ -195,7 +195,7 @@ class MultiPaneWindow(gtk.Window):
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
         """Add a key to the list of menu items to manage."""
-        if not self.__dMenus.has_key(sMenuFlag):
+        if sMenuFlag not in self.__dMenus:
             self.__dMenus[sMenuFlag] = oMenuActiveFunc
 
     # working directory methods

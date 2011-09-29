@@ -63,7 +63,8 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
 def read_rulings(aRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
-       oRulings is an object with a .open() method (e.g. a sutekh.io.WwFile.WwFile)
+       oRulings is an object with a .open() method (e.g. a
+       sutekh.io.WwFile.WwFile)
        """
     flush_cache()
     oOldConn = sqlhub.processConnection
@@ -148,7 +149,8 @@ def pretty_xml(oElement, iIndentLevel=0):
     """
     Helper function to add whitespace text attributes to a ElementTree.
     Makes for 'pretty' indented XML output.
-    Based on the example indent function at http://effbot.org/zone/element-lib.htm [22/01/2008]
+    Based on the example indent function at
+    http://effbot.org/zone/element-lib.htm [22/01/2008]
     """
     sIndent = "\n" + iIndentLevel * "  "
     if len(oElement):

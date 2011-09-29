@@ -288,7 +288,7 @@ class CardDict(dict):
         # pylint: disable-msg=R0912
         # Complex set of conditions, so many branches
         sType = None
-        if self.has_key('cardtype'):
+        if 'cardtype' in self:
             sTypes = self['cardtype']
             # Determine if we need to examine the card further based on type
             for sVal in sTypes.split('/'):
@@ -297,7 +297,7 @@ class CardDict(dict):
                     sType = sVal
         # Check for REFLEX card type
         if self['text'].find(' [REFLEX] ') != -1:
-            if self.has_key('cardtype'):
+            if 'cardtype' in self:
                 # append to card types
                 self['cardtype'] += '/Reflex'
             else:
@@ -322,7 +322,7 @@ class CardDict(dict):
             oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
             oMatch = oFlightRexegp.search(aLines[-1])
             if oMatch:
-                if self.has_key('discipline'):
+                if 'discipline' in self:
                     self['discipline'] += ' FLI'
                 else:
                     self['discipline'] = 'FLI'
@@ -521,67 +521,67 @@ class CardDict(dict):
            This fills in the needed fields and creates entries in the join
            tables as needed.
            """
-        if not self.has_key('name'):
+        if not 'name' in self:
             return
 
-        if self.has_key('level'):
+        if 'level' in self:
             self['name'] = self._add_level_to_name(self['name'], self['level'])
 
         oCard = self._make_card(self['name'])
 
         self.oLogger.info('Card: %s', self['name'])
 
-        if self.has_key('text'):
+        if 'text' in self:
             self._parse_text(oCard)
 
-        if self.has_key('group'):
+        if 'group' in self:
             self._add_group(oCard, self['group'])
 
-        if self.has_key('capacity'):
+        if 'capacity' in self:
             self._add_capacity(oCard, self['capacity'])
 
-        if self.has_key('cost'):
+        if 'cost' in self:
             self._add_cost(oCard, self['cost'])
 
-        if self.has_key('life'):
+        if 'life' in self:
             self._add_life(oCard, self['life'])
 
-        if self.has_key('level'):
+        if 'level' in self:
             self._add_level(oCard, self['level'])
             # Also add a keyword for this
             self._add_keyword(oCard, oCard.level)
 
-        if self.has_key('expansion'):
+        if 'expansion' in self:
             self._add_expansions(oCard, self['expansion'])
 
-        if self.has_key('discipline'):
+        if 'discipline' in self:
             self._add_disciplines(oCard, self['discipline'])
 
-        if self.has_key('virtue'):
+        if 'virtue' in self:
             self._add_virtues(oCard, self['virtue'])
 
-        if self.has_key('clan'):
+        if 'clan' in self:
             self._add_clans(oCard, self['clan'])
 
-        if self.has_key('creed'):
+        if 'creed' in self:
             self._add_creeds(oCard, self['creed'])
 
-        if self.has_key('cardtype'):
+        if 'cardtype' in self:
             self._add_card_type(oCard, self['cardtype'])
 
-        if self.has_key('burn option'):
+        if 'burn option' in self:
             self._add_keyword(oCard, "burn option")
 
-        if self.has_key('title'):
+        if 'title' in self:
             self._add_title(oCard, self['title'])
 
-        if self.has_key('sect'):
+        if 'sect' in self:
             self._add_sect(oCard, self['sect'])
 
-        if self.has_key('artist'):
+        if 'artist' in self:
             self._add_artists(oCard, self['artist'])
 
-        if self.has_key('text'):
+        if 'text' in self:
             oCard.text = self['text'].replace('\r', '')
 
         self._add_blood_shadowed_court(oCard)
@@ -614,7 +614,7 @@ class WaitingForCardName(LogStateWithInfo):
             self._dInfo['name'] = sData.strip()
             return InExpansion(self._dInfo, self.oLogger)
         elif sLine.strip():
-            if self._dInfo.has_key('name') and not self._dInfo.has_key('text'):
+            if 'name' in self._dInfo and 'text' not in self._dInfo:
                 # We've it a blank line in the middle of a card, so bounce
                 # back to InCard stuff
                 oCard = InCard(self._dInfo, self.oLogger)
@@ -623,7 +623,7 @@ class WaitingForCardName(LogStateWithInfo):
 
     def flush(self):
         """Save any existing card and clear out dInfo"""
-        if self._dInfo.has_key('name'):
+        if 'name' in self._dInfo:
             # Ensure we've saved existing card
             self._dInfo.save()
         self._dInfo = CardDict(self.oLogger)
@@ -695,7 +695,7 @@ class InCardText(LogStateWithInfo):
             oInCard = InCard(self._dInfo, self.oLogger)
             return oInCard.transition(sLine, None)
         else:
-            if not self._dInfo.has_key('text'):
+            if 'text' not in self._dInfo:
                 self._dInfo['text'] = sLine.strip() + '\n'
             else:
                 # Since we're building this up a line at a time, we add a

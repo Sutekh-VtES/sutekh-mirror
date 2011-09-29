@@ -5,9 +5,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0111, C0321, C0302
+# pylint: disable-msg=C0111, C0302
 # C0111 - No point in docstrings for these classes, really
-# C0321 - Compactness of single line definitions is good here
 # C0302 - lots of lines as we want all these related definitions in one file
 
 """The database definitions and pyprotocols adaptors for Sutekh"""
@@ -27,58 +26,76 @@ from protocols import advise, Interface
 # Interfaces
 
 
-class IAbstractCard(Interface): pass
+class IAbstractCard(Interface):
+    pass
 
 
-class IPhysicalCard(Interface): pass
+class IPhysicalCard(Interface):
+    pass
 
 
-class IPhysicalCardSet(Interface): pass
+class IPhysicalCardSet(Interface):
+    pass
 
 
-class IRarityPair(Interface): pass
+class IRarityPair(Interface):
+    pass
 
 
-class IExpansion(Interface): pass
+class IExpansion(Interface):
+    pass
 
 
-class IExpansionName(Interface): pass
+class IExpansionName(Interface):
+    pass
 
 
-class IRarity(Interface): pass
+class IRarity(Interface):
+    pass
 
 
-class IDisciplinePair(Interface): pass
+class IDisciplinePair(Interface):
+    pass
 
 
-class IDiscipline(Interface): pass
+class IDiscipline(Interface):
+    pass
 
 
-class IClan(Interface): pass
+class IClan(Interface):
+    pass
 
 
-class ICardType(Interface): pass
+class ICardType(Interface):
+    pass
 
 
-class ISect(Interface): pass
+class ISect(Interface):
+    pass
 
 
-class ITitle(Interface): pass
+class ITitle(Interface):
+    pass
 
 
-class ICreed(Interface): pass
+class ICreed(Interface):
+    pass
 
 
-class IVirtue(Interface): pass
+class IVirtue(Interface):
+    pass
 
 
-class IRuling(Interface): pass
+class IRuling(Interface):
+    pass
 
 
-class IArtist(Interface): pass
+class IArtist(Interface):
+    pass
 
 
-class IKeyword(Interface): pass
+class IKeyword(Interface):
+    pass
 
 # pylint: enable-msg=C0321
 # Table Objects

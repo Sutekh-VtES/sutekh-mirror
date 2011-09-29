@@ -84,7 +84,7 @@ class IdentifyXMLFile(object):
                 self._bSetExists = True
             except SQLObjectNotFound:
                 self._bSetExists = False
-            if oRoot.attrib.has_key('parent'):
+            if 'parent' in oRoot.attrib:
                 self._sParent = oRoot.attrib['parent']
                 try:
                     PhysicalCardSet.byName(self._sParent.encode('utf8'))

@@ -70,8 +70,9 @@ class FileOrUrlWidget(gtk.VBox):
         """Create a FileOrUrlWidget.
 
            dUrls is used a dictionary of URLs to suggest to the user.
-           dUrls' keys are URL names, its values are URLs. 'Enter other URL ...' and
-           'Select file ...' may not be used as a key in dUrls.
+           dUrls' keys are URL names, its values are URLs.
+           'Enter other URL ...' and 'Select file ...' may not be used as
+           a key in dUrls.
            """
         super(FileOrUrlWidget, self).__init__(homogeneous=homogeneous,
                 spacing=spacing)

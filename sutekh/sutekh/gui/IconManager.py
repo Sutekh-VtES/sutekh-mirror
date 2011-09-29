@@ -152,7 +152,7 @@ class IconManager(object):
         """get the cached icon, or load it if needed."""
         if not sFileName:
             return None
-        if self._dIconCache.has_key(sFileName):
+        if sFileName in self._dIconCache:
             return self._dIconCache[sFileName]
         try:
             sFullFilename = os.path.join(self._sPrefsDir, sFileName)
