@@ -1,3 +1,7 @@
+14 Oct 2011
+ * Fix bug with creating card sets from the comparison plugin when no
+   expansion is set for a card
+
 31 Aug 2011
  * Change how pre-release version tags are handling in sutekh-makedeb
    to ensure that they are treated as older than final releases
