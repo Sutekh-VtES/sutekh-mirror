@@ -16,6 +16,8 @@ from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.GuiCardSetFunctions import create_card_set
 
+UNKNOWN_EXP = 'Unspecified Expansion'
+
 
 def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
     """Get the differences and common cards for the card sets."""
@@ -34,7 +36,7 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
                 if oCard.expansion:
                     oKey = (oCard, oAbsCard.name, oCard.expansion.name)
                 else:
-                    oKey = (oAbsCard, oAbsCard.name, 'Unspecified Expansion')
+                    oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
             dFullCardList.setdefault(oKey, {aCardSetNames[0]: 0,
                 aCardSetNames[1]: 0})
             dFullCardList[oKey][sCardSetName] += 1
@@ -192,7 +194,7 @@ class CardSetCompare(SutekhPlugin):
         oCardSet = IPhysicalCardSet(sCSName)
         for oCard in dCardData:
             _sCardName, sExpansionName, iCnt = dCardData[oCard]
-            if not sExpansionName:
+            if sExpansionName == UNKNOWN_EXP:
                 # Dealing with abstract cards in the list
                 oPhysCard = IPhysicalCard((oCard, None))
             else:
