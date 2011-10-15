@@ -480,6 +480,9 @@ builder
 * _Display Card Set in alternative format_: Show the card set in some of the \
 formats available via _Export Card Set_. This is useful for copying and \
 pasting the deck into a web browser and so forth.
+* _Generate random groups of cards_: Show groups of random cards from the \
+card set (after applying the current filter). This is useful for generating \
+random groups of cards to use as prize support.
 
 
 h3(#cardsets_edit). Edit
