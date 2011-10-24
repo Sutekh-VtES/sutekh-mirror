@@ -1040,7 +1040,15 @@ class CardNameFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern.lower().encode('utf-8')
+        try:
+            self.__sPattern = sPattern.lower().encode('utf-8')
+        except UnicodeDecodeError:
+            # Terminal encoding issues, so we rework the pattern to replace
+            # special chars with _
+            # We stomp on any ?'s in the original pattern, but that's
+            # too bad
+            sTemp = sPattern.decode('utf-8', 'replace').replace('?', '_')
+            self.__sPattern = sTemp.lower()
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
