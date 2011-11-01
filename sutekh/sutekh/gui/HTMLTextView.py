@@ -381,11 +381,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 oType_ = oAttrs['type']
             except KeyError:
                 oType_ = None
-            if oAttrs.has_key('href'):
+            if 'href' in oAttrs:
                 oTag.connect('event', self._anchor_event, oAttrs['href'],
                         oType_)
                 oTag.is_anchor = True
-            if oAttrs.has_key('name'):
+            if 'name' in oAttrs:
                 # Add it to the list of valid targets
                 oMark = self._oTextBuf.create_mark(None, self._oIter, True)
                 self._dTargets[oAttrs['name']] = oMark
@@ -430,7 +430,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
         self._begin_span(oStyle, oTag)
 
-        if oAttrs.has_key('id'):
+        if 'id' in oAttrs:
             # Add it to the list of valid targets
             oMark = self._oTextBuf.create_mark(None, self._oIter, True)
             self._dTargets[oAttrs['id']] = oMark
@@ -620,7 +620,7 @@ class HTMLTextView(gtk.TextView):
 
     def set_text_pos(self, sTextAnchor):
         """Set the position to the anchor sTextAnchor"""
-        if self._dTargets.has_key(sTextAnchor):
+        if sTextAnchor in self._dTargets:
             oMark = self._dTargets[sTextAnchor]
             self.scroll_to_mark(oMark, 0, True)
         # We just silently ignore invalid anchors

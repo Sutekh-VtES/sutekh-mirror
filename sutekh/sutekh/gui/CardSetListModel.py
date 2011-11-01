@@ -1320,7 +1320,7 @@ class CardSetCardListModel(CardListModel):
         # E1101, E1103: Pyprotocols confuses pylint
         # R0912: We do need all these branches
         if oCardSet.id == self._oCardSet.id and \
-                dChanges.has_key('parentID'):
+                'parentID' in dChanges:
             # This card set's parent is changing
             self._dCache['parent filter'] = None
             self._dCache['sibling filter'] = None
@@ -1332,7 +1332,7 @@ class CardSetCardListModel(CardListModel):
                 self._try_queue_reload()
         elif oCardSet.parentID and oCardSet.parentID == self._oCardSet.id:
             # This is a child card set, and this can require a reload
-            if dChanges.has_key('inuse') or (dChanges.has_key('parentID')
+            if 'inuse' in dChanges or ('parentID' in dChanges
                     and oCardSet.inuse):
                 # inuse flag being toggled
                 # or inuse card set is being reparented
@@ -1342,7 +1342,7 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['full child card list'] = None
                 if self.changes_with_children():
                     self._try_queue_reload()
-        elif dChanges.has_key('parentID') and \
+        elif 'parentID' in dChanges and \
                 dChanges['parentID'] == self._oCardSet.id and \
                 oCardSet.inuse:
             # acquiring a new inuse child card set
@@ -1354,7 +1354,7 @@ class CardSetCardListModel(CardListModel):
                 self._try_queue_reload()
         elif self._oCardSet.parentID:
             # Sibling's are possible, so check for them
-            if dChanges.has_key('ParentID') and oCardSet.inuse:
+            if 'parentID' in dChanges and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
                 if (dChanges['ParentID'] == self._oCardSet.parentID) or \
                         (oCardSet.parentID and oCardSet.parentID ==
@@ -1364,7 +1364,7 @@ class CardSetCardListModel(CardListModel):
                     if self.changes_with_siblings():
                         # Reload if needed
                         self._try_queue_reload()
-            elif dChanges.has_key('inuse') and oCardSet.parentID and \
+            elif 'inuse' in dChanges and oCardSet.parentID and \
                     oCardSet.parentID == self._oCardSet.parentID:
                 # changing inuse status of sibling
                 self._dCache['sibling filter'] = None

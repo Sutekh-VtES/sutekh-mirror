@@ -126,9 +126,9 @@ class CardTextBuffer(gtk.TextBuffer):
         self.tag_text(":")
         for sValue in aValues:
             if dIcons:
-                if dIcons.has_key(sValue) and dIcons[sValue]:
+                if sValue in dIcons and dIcons[sValue]:
                     _insert_line(sValue, sTag, dIcons[sValue])
-                elif dIcons.has_key(sValue.lower()) and dIcons[sValue.lower()]:
+                elif sValue.lower() in dIcons and dIcons[sValue.lower()]:
                     _insert_line(sValue, sTag, dIcons[sValue.lower()])
                 else:
                     _insert_line(sValue, sTag, None)

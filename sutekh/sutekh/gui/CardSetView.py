@@ -481,7 +481,7 @@ class CardSetView(CardListView):
 
     def restore_iter_state(self, aIters, dStates):
         """Restore expanded state of the iters."""
-        if not dStates or not dStates.has_key('selected'):
+        if not dStates or 'selected' not in dStates:
             return  # Don't do anything if dStates is empty
         for oIter in aIters:
             sKey = self.get_iter_identifier(oIter)

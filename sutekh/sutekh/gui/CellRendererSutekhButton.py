@@ -53,14 +53,14 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         if oProp.name == 'showicon':
             return self.bShowIcon
         else:
-            raise AttributeError, 'unknown property %s' % oProp.name
+            raise AttributeError('unknown property %s' % oProp.name)
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the showicon property"""
         if oProp.name == 'showicon':
             self.bShowIcon = oValue
         else:
-            raise AttributeError, 'unknown property %s' % oProp.name
+            raise AttributeError('unknown property %s' % oProp.name)
 
     def on_get_size(self, _oWidget, oCellArea):
         """Handle get_size requests"""

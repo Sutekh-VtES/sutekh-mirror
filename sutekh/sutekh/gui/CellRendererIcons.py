@@ -56,7 +56,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         elif oProp.name == 'text':
             return self.sText
         else:
-            raise AttributeError, 'unknown property %s' % oProp.name
+            raise AttributeError('unknown property %s' % oProp.name)
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the properties"""
@@ -72,7 +72,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 else:
                     self.aData = [(None, x) for x in oValue]
             else:
-                raise AttributeError, 'Incorrect type for icons'
+                raise AttributeError('Incorrect type for icons')
         elif oProp.name == 'textlist':
             if oValue is None:
                 # Special case
@@ -83,12 +83,12 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 else:
                     self.aData = [(x, None) for x in oValue]
             else:
-                raise AttributeError, 'Incorrect type of textlist'
+                raise AttributeError('Incorrect type of textlist')
         elif oProp.name == 'text':
             # Just the text string, so no icon info possible
             self.sText = oValue
         else:
-            raise AttributeError, 'unknown property %s' % oProp.name
+            raise AttributeError('unknown property %s' % oProp.name)
 
     def set_data(self, aText, aIcons, iMode=SHOW_ICONS_AND_TEXT):
         """Load the info needed to render the icon"""
