@@ -1356,7 +1356,7 @@ class CardSetCardListModel(CardListModel):
             # Sibling's are possible, so check for them
             if 'parentID' in dChanges and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
-                if (dChanges['ParentID'] == self._oCardSet.parentID) or \
+                if (dChanges['parentID'] == self._oCardSet.parentID) or \
                         (oCardSet.parentID and oCardSet.parentID ==
                                 self._oCardSet.parentID):
                     self._dCache['sibling filter'] = None
