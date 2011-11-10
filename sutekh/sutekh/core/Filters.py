@@ -21,7 +21,7 @@ from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, ICreed, \
         RarityPair, PhysicalCardSet, PhysicalCard, IDisciplinePair, \
         MapPhysicalCardToPhysicalCardSet, Artist, Keyword, IArtist, IKeyword, \
         CRYPT_TYPES
-from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, \
+from sqlobject import SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub, \
         IN as SQLOBJ_IN
 from sqlobject.sqlbuilder import Table, Alias, LEFTJOINOn, Select, \
         SQLTrueClause as TRUE
@@ -1239,9 +1239,10 @@ class CardSetMultiCardCountFilter(DirectFilter):
         aCounts = set([x.strip() for x in list(aCounts)])
         self._oFilters = []
         self._aCardSetIds = aIds
+        self._oZeroQuery = None
         if '0' in aCounts:
             aCounts.remove('0')
-            oZeroQuery = NOT(IN(PhysicalCard.q.abstractCardID, Select(
+            self._oZeroQuery = Select(
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                     aIds),
@@ -1249,11 +1250,10 @@ class CardSetMultiCardCountFilter(DirectFilter):
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
                 groupBy=PhysicalCard.q.abstractCardID,
-                having=func.COUNT(PhysicalCard.q.abstractCardID) > 0)))
-            self._oFilters.append(oZeroQuery)
+                having=func.COUNT(PhysicalCard.q.abstractCardID) > 0)
         if '>30' in aCounts:
             aCounts.remove('>30')
-            oGreater30Query = IN(PhysicalCard.q.abstractCardID, Select(
+            oGreater30Query = Select(
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                     aIds),
@@ -1262,11 +1262,11 @@ class CardSetMultiCardCountFilter(DirectFilter):
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
                 groupBy=(PhysicalCard.q.abstractCardID,
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID),
-                having=func.COUNT(PhysicalCard.q.abstractCardID) > 30))
+                having=func.COUNT(PhysicalCard.q.abstractCardID) > 30)
             self._oFilters.append(oGreater30Query)
         if aCounts:
             # SQLite doesn't like strings here, so convert to int
-            oCountFilter = IN(PhysicalCard.q.abstractCardID, Select(
+            oCountFilter = Select(
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                     aIds),
@@ -1276,7 +1276,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
                 groupBy=(PhysicalCard.q.abstractCardID,
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID),
                 having=IN(func.COUNT(PhysicalCard.q.abstractCardID),
-                    [int(x) for x in aCounts])))
+                    [int(x) for x in aCounts]))
             self._oFilters.append(oCountFilter)
 
     # pylint: disable-msg=C0111
@@ -1292,7 +1292,27 @@ class CardSetMultiCardCountFilter(DirectFilter):
     # pylint: disable-msg=W0142
     # *magic is needed by SQLObject
     def _get_expression(self):
-        return OR(*self._oFilters)
+        # We duplicate subselect logic here, rather than letting the database
+        # handle it, because mysql handles this case very poorly, resulting in
+        # horrible performance.  This approach, while ugly, is at least
+        # reasonably fast on all the databases we're concerned with.
+        # We create the actual filters here, which filter for cards with the
+        # correct numbers as we can't create the lists in __init__ since
+        # the numbers can change between calls to _get_expression
+        # pylint: disable-msg=E1101
+        # E1101 - avoid SQLObject method not detected problems
+        aFinalFilters = []
+        oConn = sqlhub.processConnection
+        if self._oZeroQuery:
+            oQuery = oConn.sqlrepr(self._oZeroQuery)
+            aNonZeroIds = oConn.queryAll(oQuery)
+            aFinalFilters.append(NOT(IN(PhysicalCard.q.abstractCardID,
+                aNonZeroIds)))
+        if self._oFilters:
+            oQuery = oConn.sqlrepr(OR(*self._oFilters))
+            aIds = oConn.queryAll(oQuery)
+            aFinalFilters.append(IN(PhysicalCard.q.abstractCardID, aIds))
+        return OR(*aFinalFilters)
 
     def involves(self, oCardSet):
         return oCardSet.id in self._aCardSetIds
