@@ -7,7 +7,6 @@ Stuff that's fairly easy (we think)
 -----------------------------------
 
  * Replace the listeners with some sort of generic bus
- * Using views to address the slow speed of count filters with MySQL
  * Extend Analysis plugin to RT decks
  * Use HTML help dialog for filter help
  * Fetch missing images for vtes.pl

@@ -1,3 +1,7 @@
+10 Nov 2011
+ * Add workaround to card count filter to address the slow performance
+   of mysql with subselects
+
 14 Oct 2011
  * Fix bug with creating card sets from the comparison plugin when no
    expansion is set for a card
