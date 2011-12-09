@@ -1,3 +1,6 @@
+09 Dec 2011
+ * Merge card images aspect ratio fix (r2969)
+
 14 Oct 2011
  * backport fix for bug with creating card sets from the comparison plugin
    when no expansion is set for a card from trunk

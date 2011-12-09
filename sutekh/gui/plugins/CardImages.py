@@ -41,7 +41,7 @@ def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
         # wider
         fDestWidth = iPaneWidth
         fDestHeight = iPaneWidth * fImageAspectRatio
-    elif fPaneAspectRatio < fImageAspectRatio:
+    else:
         fDestHeight = iPaneHeight
         fDestWidth = iPaneHeight / fImageAspectRatio
     return int(fDestWidth), int(fDestHeight)
