@@ -348,7 +348,7 @@ class CardDict(dict):
     def _add_expansions(self, oCard, sExp):
         """Add expansion information to the card, creating expansion pairs
            as needed."""
-        aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
+        aPairs = [x.split(':') for x in sExp.strip('[]').split(',') if x]
         aExp = []
         for aPair in aPairs:
             if len(aPair) == 1:
@@ -553,6 +553,10 @@ class CardDict(dict):
 
         if 'expansion' in self:
             self._add_expansions(oCard, self['expansion'])
+
+        if 'keywords' in self:
+            for sKeyword in self['keywords'].split(','):
+                self._add_keyword(oCard, sKeyword)
 
         if 'discipline' in self:
             self._add_disciplines(oCard, self['discipline'])
