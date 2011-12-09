@@ -348,7 +348,7 @@ class CardDict(dict):
     def _add_expansions(self, oCard, sExp):
         """Add expansion information to the card, creating expansion pairs
            as needed."""
-        aPairs = [x.split(':') for x in sExp.strip('[]').split(',')]
+        aPairs = [x.split(':') for x in sExp.strip('[]').split(',') if x]
         aExp = []
         for aPair in aPairs:
             if len(aPair) == 1:
