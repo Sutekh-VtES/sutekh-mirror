@@ -1,3 +1,8 @@
+09 Dec 2011
+ * Add support for reading arbitary keywords from the extra card lists
+   (Keywords: .. entries)
+ * Fix bug in card images when image and pane aspect ratios are equal
+
 10 Nov 2011
  * Add workaround to card count filter to address the slow performance
    of mysql with subselects
