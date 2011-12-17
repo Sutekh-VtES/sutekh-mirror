@@ -16,7 +16,7 @@ import logging
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
         IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES, IKeyword
-from sutekh.core.Filters import CardTypeFilter, FilterNot
+from sutekh.core.Filters import CardTypeFilter, FilterNot, KeywordFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
@@ -35,6 +35,16 @@ ODD_BACKS = (None, THIRD_ED, JYHAD)
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
 SPECIAL = set(['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'])
+
+RT_WATCHLIST = 'RT:Watchlist'
+RT_BANNED = 'RT:Banned'
+
+# Lookup for titles for the not legal tabs
+ILLEGAL_LOOKUP = {
+        RT_BANNED: 'Cards Banned in Rapid Thoughts',
+        RT_WATCHLIST: 'Cards on the Rapid Thoughts WAtchlist',
+        'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
+        }
 
 
 # utility functions
@@ -397,7 +407,17 @@ class AnalyzeCardList(SutekhPlugin):
             return None
         oAnalyze = gtk.MenuItem("Analyze Deck")
         oAnalyze.connect("activate", self.activate)
-        return ('Analyze', oAnalyze)
+        oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
+        oAnalyzeRT.connect("activate", self.activate_rt)
+        return [('Analyze', oAnalyze), ('Analyze', oAnalyzeRT)]
+
+    def activate(self, _oWidget):
+        """Activate for non RT analysis"""
+        self.activate_heart(False)
+
+    def activate_rt(self, _oWidget):
+        """Activate for non RT analysis"""
+        self.activate_heart(True)
 
     # pylint: disable-msg=W0201, R0915
     # W0201 - We define a lot of class variables here, because a) this is the
@@ -405,7 +425,7 @@ class AnalyzeCardList(SutekhPlugin):
     # so they can't be filled properly in __init__
     # R0915 - This is responsible for filling the whole notebook, so quite
     # a long function, and there's no benefit to splitting it up further
-    def activate(self, _oWidget):
+    def activate_heart(self, bRapid=False):
         """Create the actual dialog, and populate it"""
         if not self.check_cs_size('Analyze Deck', 500):
             return
@@ -455,6 +475,19 @@ class AnalyzeCardList(SutekhPlugin):
                 dCardLists[sCardType] = _get_abstract_cards(
                         self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
+                if bRapid:
+                    try:
+                        for sType in [RT_BANNED, RT_WATCHLIST]:
+                            oKeyword = IKeyword(sType)
+                            oFilter = KeywordFilter(oKeyword)
+                            dCardLists[sType] = _get_abstract_cards(
+                                    self.model.get_card_iterator(oFilter))
+                            self.dTypeNumbers[sType] = \
+                                    len(dCardLists[sType])
+                    except SQLObjectNotFound:
+                        # We ignore this if the keywords aren't present
+                        self.dTypeNumbers[RT_BANNED] = 0
+                        self.dTypeNumbers[RT_WATCHLIST] = 0
             elif sCardType == 'Mixed Card Backs':
                 # Assume not mixed, so we skip
                 self.dTypeNumbers[sCardType] = 0
@@ -487,16 +520,23 @@ class AnalyzeCardList(SutekhPlugin):
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = sorted(CRYPT_TYPES) + \
                 [x for x in sorted(self.dTypeNumbers) if
-                        (x not in CRYPT_TYPES and x not in SPECIAL)] + \
+                        (x not in CRYPT_TYPES and x not in SPECIAL
+                            and x not in [RT_BANNED, RT_WATCHLIST])] + \
                                 sorted(SPECIAL)
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
                 oNotebook.append_page(_wrap(fProcess(dCardLists[sCardType])),
                         gtk.Label(sCardType))
+        if bRapid:
+            fProcess = dConstruct['Not Tournament Legal Cards']
+            for sType in [RT_BANNED, RT_WATCHLIST]:
+                if self.dTypeNumbers[sType]:
+                    oNotebook.append_page(_wrap(fProcess(dCardLists[sType],
+                        sType)), gtk.Label(ILLEGAL_LOOKUP[sType]))
 
         # Setup the main notebook
-        oMainBox.pack_start(_wrap(self._prepare_main()))
+        oMainBox.pack_start(_wrap(self._prepare_main(bRapid)))
         if self.iLibSize > 0:
             oMainBox.pack_start(self._process_library())
         # pylint: disable-msg=E1101
@@ -589,7 +629,7 @@ class AnalyzeCardList(SutekhPlugin):
                 self.dLibStats['discipline'].setdefault(sDisc, 0)
                 self.dLibStats['discipline'][sDisc] += 1
 
-    def _prepare_main(self):
+    def _prepare_main(self, bRapid):
         """Setup the main notebook display"""
         oCS = self.get_card_set()
 
@@ -600,6 +640,8 @@ class AnalyzeCardList(SutekhPlugin):
                         'author': self.escape(oCS.author),
                         'desc': self.escape(oCS.comment),
                         }
+        if bRapid:
+            sMainText += '<i>Rapid Thoughts Analysis</i>'
 
         # Set main notebook text
         for sCardType in CRYPT_TYPES:
@@ -615,7 +657,11 @@ class AnalyzeCardList(SutekhPlugin):
             sMainText += "Maximum Group in Crypt = %d\n" % \
                     self.dCryptStats['max group']
 
-        if self.iCryptSize < 12:
+        if bRapid:
+            if self.iCryptSize < 6:
+                sMainText += '<span foreground = "red">Less than 6 Crypt' \
+                        ' Cards</span>\n'
+        elif self.iCryptSize < 12:
             sMainText += '<span foreground = "red">Less than 12 Crypt Cards' \
                     '</span>\n'
 
@@ -626,6 +672,14 @@ class AnalyzeCardList(SutekhPlugin):
         if self.dTypeNumbers['Not Tournament Legal Cards'] > 0:
             sMainText += '<span foreground = "red">Card Set uses cards that ' \
                     'are not legal for tournament play</span>\n'
+
+        if bRapid and self.dTypeNumbers[RT_BANNED]:
+            sMainText += '<span foreground = "red">Card Set uses cards that ' \
+                    'are not legal for rapid thought play</span>\n'
+
+        if bRapid and self.dTypeNumbers[RT_WATCHLIST]:
+            sMainText += '<span foreground = "yellow">Card Set uses cards ' \
+                    ' that are on the rapid thoughts watchlist</span>\n'
 
         if self.iCryptSize > 0:
             sMainText += '\nMaximum cost in crypt = %d\n' % \
@@ -645,7 +699,7 @@ class AnalyzeCardList(SutekhPlugin):
         if self.iLibSize < 40:
             sMainText += '<span foreground = "red">Less than 40 Library' \
                     ' Cards</span>\n'
-        elif self.iLibSize < 60:
+        elif self.iLibSize < 60 and not bRapid:
             sMainText += '<span foreground = "orange">Less than 60 Library' \
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>'
@@ -985,18 +1039,17 @@ class AnalyzeCardList(SutekhPlugin):
 
         return sText
 
-    def _process_non_legal(self, aCards):
+    def _process_non_legal(self, aCards, sType='Not Tournament Legal Cards'):
         """Fill the non_legal card tab"""
         iTotal = self.iCryptSize + self.iLibSize
         dNonLegal = {}
-        sPerCards = _percentage(
-                self.dTypeNumbers['Not Tournament Legal Cards'],
-                iTotal, 'Deck')
-        sText = "\t\t<b>Not Tournament Legal Cards :</b>\n\n" \
-                "Number of cards not legal for tournament play =" \
+        sPerCards = _percentage(self.dTypeNumbers[sType], iTotal, 'Deck')
+        sText = "\t\t<b>%(type)s :</b>\n\n" \
+                "Number of cards %(lowertype)s =" \
                 " %(num)d %(per)s\n" % {
-                        'num': self.dTypeNumbers[
-                            'Not Tournament Legal Cards'],
+                        'type': ILLEGAL_LOOKUP[sType],
+                        'lowertype': ILLEGAL_LOOKUP[sType].lower(),
+                        'num': self.dTypeNumbers[sType],
                         'per': sPerCards,
                         }
         for oAbsCard in aCards:
