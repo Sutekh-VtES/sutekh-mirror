@@ -188,7 +188,7 @@ def check_can_read_old_database(oConn):
 def old_database_count(oConn):
     """Check number of items in old DB fro progress bars, etc."""
     oVer = DatabaseVersion()
-    iCount = 12  # Card property tables
+    iCount = 14  # Card property tables
     if oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oConn):
         iCount += AbstractCard.select(connection=oConn).count()
@@ -713,7 +713,7 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     if oLogHandler:
         oLogger.addHandler(oLogHandler)
         if hasattr(oLogHandler, 'set_total'):
-            iTotal = 12 + AbstractCard.select(connection=oOrigConn).count() + \
+            iTotal = 14 + AbstractCard.select(connection=oOrigConn).count() + \
                     PhysicalCard.select(connection=oOrigConn).count() + \
                     PhysicalCardSet.select(connection=oOrigConn).count()
             oLogHandler.set_total(iTotal)
