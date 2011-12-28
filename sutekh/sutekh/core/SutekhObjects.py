@@ -122,12 +122,13 @@ class VersionTable(SQLObject):
 class AbstractCard(SQLObject):
     advise(instancesProvide=[IAbstractCard])
 
-    tableversion = 5
+    tableversion = 6
     sqlmeta.lazyUpdate = True
 
     canonicalName = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     name = UnicodeCol()
     text = UnicodeCol()
+    search_text = UnicodeCol(default="")
     group = IntCol(default=None, dbName='grp')
     capacity = IntCol(default=None)
     cost = IntCol(default=None)
@@ -988,14 +989,15 @@ def make_adaptor_caches():
         cAdaptor.make_object_cache()
 
 
-def flush_cache():
+def flush_cache(bMakeCache=True):
     """Flush all the object caches - needed before importing new card lists
        and such"""
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.flush_cache()
 
-    make_adaptor_caches()
+    if bMakeCache:
+        make_adaptor_caches()
 
 
 def init_cache():

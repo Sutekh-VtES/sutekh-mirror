@@ -21,7 +21,7 @@ from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 
 
-def refresh_tables(aTables, oConn):
+def refresh_tables(aTables, oConn, bMakeCache=True):
     """Drop and recreate the given list of tables"""
     aTables.reverse()
     for cCls in aTables:
@@ -38,7 +38,7 @@ def refresh_tables(aTables, oConn):
         cCls.createTable(connection=oConn)
         if not oVerHandler.set_version(cCls, cCls.tableversion, oConn):
             return False
-    flush_cache()
+    flush_cache(bMakeCache)
     return True
 
 

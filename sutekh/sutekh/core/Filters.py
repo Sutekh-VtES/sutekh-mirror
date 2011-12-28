@@ -1015,6 +1015,7 @@ class CardTextFilter(DirectFilter):
 
     def __init__(self, sPattern):
         self.__sPattern = sPattern.lower().encode('utf-8')
+        self.__bBraces = '{' in self.__sPattern or '}' in self.__sPattern
 
     # pylint: disable-msg=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1025,7 +1026,10 @@ class CardTextFilter(DirectFilter):
     def _get_expression(self):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
-        return LIKE(func.LOWER(AbstractCard.q.text),
+        if self.__bBraces:
+            return LIKE(func.LOWER(AbstractCard.q.text),
+                    '%' + self.__sPattern + '%')
+        return LIKE(func.LOWER(AbstractCard.q.search_text),
                 '%' + self.__sPattern + '%')
 
 

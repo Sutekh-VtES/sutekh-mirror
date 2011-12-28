@@ -17,7 +17,9 @@ from sutekh.core.SutekhObjects import SutekhObjectMaker
 def strip_braces(sText):
     """Helper function for searching for keywords. Strip all {} tags from the
        text"""
-    return sText.replace('{', '').replace('}', '')
+    # We also strip the trailing ' ()' left over from the tweaks to
+    # the text of cost-reducing vampires
+    return sText.replace('{', '').replace('}', '').replace(' ()', '')
 
 
 # Card Saver
@@ -587,6 +589,7 @@ class CardDict(dict):
 
         if 'text' in self:
             oCard.text = self['text'].replace('\r', '')
+            oCard.search_text = strip_braces(oCard.text)
 
         self._add_blood_shadowed_court(oCard)
 

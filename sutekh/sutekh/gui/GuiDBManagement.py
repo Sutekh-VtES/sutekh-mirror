@@ -1,4 +1,4 @@
-# GuiDBManagement.py
+
 # -*- coding: utf8 -*-
 # vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmil.com>
@@ -14,6 +14,7 @@ from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
         SutekhCountLogHandler
 from sutekh.core.DatabaseUpgrade import create_memory_copy, \
         create_final_copy, UnknownVersion, copy_to_new_abstract_card_db
+from sutekh.core.SutekhObjects import flush_cache
 from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint, \
         do_complaint_warning, do_exception_complaint, \
         do_complaint_error_details
@@ -254,6 +255,8 @@ def do_db_upgrade(aLowerTables, aHigherTables):
             elif iRes == 1:
                 # Try running with the upgraded database
                 sqlhub.processConnection = oTempConn
+                # Ensure adaptors are correctly updated
+                flush_cache()
                 return True
         else:
             sMesg = "Unable to create memory copy!\nUpgrade Failed."
