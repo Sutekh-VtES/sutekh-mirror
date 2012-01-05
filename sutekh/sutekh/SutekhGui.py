@@ -18,7 +18,6 @@ from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
-from sutekh.gui.ConfigFileLegacy import ConfigFileLegacy
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
 from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning, \
         do_exception_complaint, do_complaint_error_details
@@ -134,17 +133,6 @@ def main():
     if oOpts.sRCFile is None:
         ensure_dir_exists(sPrefsDir)
         oOpts.sRCFile = os.path.join(sPrefsDir, "sutekh.ini")
-        if not os.path.isfile(oOpts.sRCFile):
-            # look for old sutekhrc config file
-            sLegacyConfigFile = os.path.join(sPrefsDir, "sutekhrc")
-            if os.path.isfile(sLegacyConfigFile):
-                oLegacyConfig = ConfigFileLegacy(sLegacyConfigFile)
-                oNewConfig = oLegacyConfig.convert(oOpts.sRCFile)
-                # Call check_writeable just to set the right flags.
-                # If it's not writeable, the later check will complain
-                # as required.
-                oNewConfig.check_writeable()
-                oNewConfig.write()
 
     oConfig = ConfigFile(oOpts.sRCFile)
     # initial config validation to set sane defaults
