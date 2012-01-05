@@ -1,5 +1,5 @@
 # TestData.py
-# -*- coding: cp1252 -*-
+# -*- coding: utf8 -*-
 # vim:fileencoding=cp1252 ai ts=4 sts=4 et sw=4
 # Based on the card data published by WhiteWolf at:
 #  * http://www.white-wolf.com/vtes/index.php?line=cardlist
@@ -18,7 +18,7 @@ Cardtype: Equipment
 Cost: 2 pool
 Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.
-Artist: NÈ NÈ Thomas; Greg Simanson
+Artist: N√© N√© Thomas; Greg Simanson
 
 Name: AK-47
 [LotN:R]
@@ -89,7 +89,7 @@ Group: 2
 Capacity: 5
 Discipline: obf CEL QUI
 Independent: (Blood Cursed)
-Artist: Tom W‰nerstrand
+Artist: Tom W√§nerstrand
 
 Name: Abdelsobek
 [LotN:U]
@@ -434,14 +434,14 @@ Advanced, Independent. Red List: +1 stealth.
 [MERGED] Kemintiri has 3 votes (titled). She can play {minion} cards that require Camarilla, Ventrue, and/or a justicar title {as if she met that/those requirement(s)}.
 Artist: Lawrence Snelly
 
-Name: L·z·r Dobrescu
+Name: L√°z√°r Dobrescu
 [AH:V3, FN:PR]
 Cardtype: Vampire
 Clan: Ravnos
 Group: 2
 Capacity: 3
 Discipline: for
-Independent: L·z·r may move one blood from {an uncontrolled minion} in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.
+Independent: L√°z√°r may move one blood from {an uncontrolled minion} in your prey's uncontrolled region to a vampire in your uncontrolled region as a (D) action.
 Artist: Rebecca Guay
 
 Name: Living Manse
