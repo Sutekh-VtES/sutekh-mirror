@@ -78,11 +78,13 @@ class WwFile(object):
     # pylint: enable-msg=C0103
 
     def open(self):
-        """Return a file object for the file."""
+        """Return a file object for the file.
+
+           This expects a utf8 encoded file (possibly with BOM) and
+           returns a file object producing utf8 strings."""
         if self.bFileObj:
             return self.sfFile
         elif self.bUrl:
-            return codecs.EncodedFile(urllib2.urlopen(self.sfFile), 'utf8',
-                    'cp1252')
+            return codecs.EncodedFile(urllib2.urlopen(self.sfFile), 'utf8')
         else:
-            return codecs.open(self.sfFile, 'rU', 'cp1252')
+            return codecs.EncodedFile(open(self.sfFile, 'rU'), 'utf8')

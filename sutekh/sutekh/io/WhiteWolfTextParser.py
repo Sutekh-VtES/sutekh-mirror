@@ -9,6 +9,7 @@
 """Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
+import codecs
 from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
@@ -741,6 +742,6 @@ class WhiteWolfTextParser(object):
 
     def feed(self, sLine):
         """Feed the line to the current state"""
-        # We are overloading HTML parser states, so we have the extra None
-        # for dAttr
+        # Strip BOM from line start
+        sLine = sLine.decode('utf8').lstrip(u'\ufeff')
         self._oState = self._oState.transition(sLine, None)
