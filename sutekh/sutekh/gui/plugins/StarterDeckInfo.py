@@ -130,7 +130,7 @@ def _check_exp_name(sExpName, oAbsCard):
 
 
 class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
-    """Plugin providing access to CardImageFrame."""
+    """Plugin providing access to starter deck info."""
     dTableVersions = {PhysicalCardSet: (5, 6)}
     aModelsSupported = ("MainWindow",)
 
@@ -153,7 +153,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     def get_menu_item(self):
         """Overrides method from base class.
 
-           Adds the menu item on the MainWindow if the images can be found.
+           Adds the menu item on the MainWindow if the starters can be found.
            """
         if not self.check_versions() or not self.check_model_type():
             return None
