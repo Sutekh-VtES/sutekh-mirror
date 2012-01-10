@@ -1354,9 +1354,9 @@ class CardSetCardListModel(CardListModel):
                 self._try_queue_reload()
         elif self._oCardSet.parentID:
             # Sibling's are possible, so check for them
-            if dChanges.has_key('ParentID') and oCardSet.inuse:
+            if dChanges.has_key('parentID') and oCardSet.inuse:
                 # Possibling acquiring or losing inuse sibling
-                if (dChanges['ParentID'] == self._oCardSet.parentID) or \
+                if (dChanges['parentID'] == self._oCardSet.parentID) or \
                         (oCardSet.parentID and oCardSet.parentID ==
                                 self._oCardSet.parentID):
                     self._dCache['sibling filter'] = None
