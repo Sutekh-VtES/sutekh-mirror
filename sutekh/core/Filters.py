@@ -429,7 +429,7 @@ class MultiExpansionRarityFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
         self._aIds = []
-        if type(aExpansionRarities[0]) is str:
+        if isinstance(aExpansionRarities[0], basestring):
             aValues = split_list(aExpansionRarities)
         else:
             aValues = aExpansionRarities
@@ -487,7 +487,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
         self._aIds = []
-        if type(aDiscLevels[0]) is str:
+        if isinstance(aDiscLevels[0], basestring):
             aValues = split_list(aDiscLevels)
         else:
             aValues = aDiscLevels
