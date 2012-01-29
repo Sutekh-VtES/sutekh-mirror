@@ -118,6 +118,7 @@ class ProgressDialog(gtk.Window):
         oAlign.add(self.oProgressBar)
         self.oVBox.pack_end(oAlign)
         self.add(self.oVBox)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_UTILITY)
         self.show_all()
         self.set_modal(True)
 
