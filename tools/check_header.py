@@ -123,9 +123,11 @@ def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
     if dScores['emacs coding'] < 1:
         print '%s is is missing a -*- emacs coding line' % sFileName
     elif bScript and not bValidEmacs:
-        print 'emacs coding line not 2nd line for python script'
+        print 'emacs coding line not 2nd line for python script: %s' \
+                % sFileName
     elif not bValidEmacs:
-        print 'emacs coding line not 1st line for python file'
+        print 'emacs coding line not 1st line for python file: %s' \
+                % sFileName
 
     if dScores['python encoding'] < 2:
         print '%s is missing an encoding line' % sFileName
@@ -133,7 +135,8 @@ def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
         print '%s is has too many encoding lines' % sFileName
 
     if bWrongUTF8:
-        print 'Encoding line uses "utf8" instead of "utf-8"'
+        print 'Encoding line uses "utf8" instead of "utf-8" in %s' \
+                % sFileName
 
     if not bValidCoding and dScores['python encoding'] > 1:
         print '%s: One of the emacs coding must be in " \
