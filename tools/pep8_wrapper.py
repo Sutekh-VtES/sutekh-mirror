@@ -16,7 +16,10 @@
 # to import this
 
 from pylint.interfaces import IRawChecker
-from pylint.checkers import BaseChecker
+try:
+    from pylint.checkers import BaseRawChecker as Base
+except ImportError:
+    from pylint.checkers import BaseChecker as Base
 import pep8
 
 
@@ -40,6 +43,9 @@ class DummyOptions(object):
         self.show_pep8 = False
         self.physical_checks = []
         self.logical_checks = []
+        # Need to do this to initialise counters in later pep8 versions
+        if hasattr(pep8, 'BENCHMARK_KEYS'):
+            self.counters = dict.fromkeys(pep8.BENCHMARK_KEYS, 0)
 
     def fix_checks(self):
         """Setup the check list correctly, after monkey-patching options"""
@@ -47,7 +53,7 @@ class DummyOptions(object):
         self.logical_checks = pep8.find_checks('logical_line')
 
 
-class PEP8Checker(BaseChecker):
+class PEP8Checker(Base):
     """Run pep8 and report a subset of it's issues."""
 
     __implements__ = IRawChecker
@@ -75,7 +81,7 @@ class PEP8Checker(BaseChecker):
             'C5714': ("Whitespace before '{', '[' or '('", ['E211']),
             'C5715': ("Spaces around keyword / parameter =", ['E251']),
             'C5716': ("Multiple imports on one line", ['E401']),
-            'C5717': ("Trailing whitespace", ['W291']),
+            'C5717': ("Trailing whitespace", ['W291', 'W293']),
             }
     options = ()
 
@@ -117,9 +123,16 @@ class PEP8Checker(BaseChecker):
     def process_module(self, aStream):
         """process a module."""
         self.oChecker = pep8.Checker(None)
+        # Handle recent pylint changes
+        if hasattr(aStream, 'file_stream'):
+            aStream = aStream.file_stream
         self.oChecker.lines = list(aStream)
         self.oChecker.report_error = self._transform_error
         self.oChecker.check_all()
+
+    def process_tokens(self, _aTokens):
+        """Dummy method to make pyline happy"""
+        pass
 
 
 def register(oLinter):

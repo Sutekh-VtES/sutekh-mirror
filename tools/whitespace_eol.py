@@ -12,10 +12,13 @@
 # to import this
 
 from pylint.interfaces import IRawChecker
-from pylint.checkers import BaseChecker
+try:
+    from pylint.checkers import BaseRawChecker as Base
+except ImportError:
+    from pylint.checkers import BaseChecker as Base
 
 
-class WhitespaceEOLChecker(BaseChecker):
+class WhitespaceEOLChecker(Base):
     """Check for whitespace at the end of a line."""
 
     __implements__ = IRawChecker
@@ -29,11 +32,17 @@ class WhitespaceEOLChecker(BaseChecker):
 
     def process_module(self, aStream):
         """process a module."""
+        if hasattr(aStream, 'file_stream'):
+            aStream = aStream.file_stream
         for (iLineNo, sLine) in enumerate(aStream):
             sText = sLine[:-1]  # Ignore final newline
             if sText != sText.rstrip():
                 # iLineNo starts at 0, so need to add 1
                 self.add_message('C9968', line=(iLineNo + 1))
+
+    def process_tokens(self, _aTokens):
+        """Dummy method to make pyline happy"""
+        pass
 
 
 def register(oLinter):
