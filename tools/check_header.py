@@ -1,22 +1,32 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
-# check_header.py
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see license file for details
 
 """Simple script to check that the comment headers are correct.
 
-   This script checks that the headers have a encoding line, a
-   vim modeline, a copyright notice, and a comment mentioning
-   the correct filename. There are some heuristics to detect
-   incorrectly formatted copyright lines.
+   This script checks that the headers have a emacs encoding line, a vim
+   modeline, a copyright notice, and a comment mentioning the correct
+   filename. There are some heuristics to detect incorrectly formatted
+   copyright lines.
    """
 
 import optparse
 import sys
 import re
 import os
+
+# Possible copyright notice (email + possible date), but not in
+# right form
+COPYRIGHT = re.compile('^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
+    ' \S+?.* <.*@.*>')
+WRONG_COPYRIGHT = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
+    '|^# Copyright.*')
+# encoding lines
+VIM_MODELINE = re.compile('^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
+EMACS_CODING = re.compile('^# -\*- coding: ')
+PYCODING = re.compile('^# -\*- coding: |^# vim:fileencoding=')
 
 
 def parse_options(aArgs):
@@ -31,63 +41,62 @@ def parse_options(aArgs):
 
 def search_file(oFile, dScores, aWrongCopyrights, sFileName):
     """Loop through the comments header and assign the scores."""
-
-    # Setup test expressions
+    # pylint: disable-msg=R0912
+    # Lot's of cases to consider, so many branches
     sName = sFileName.split(os.path.sep)[-1]
-    oCopyright = re.compile('^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
-            ' \S+?.* <.*@.*>')
-    oWrongCopyright = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
-            '|^# Copyright.*')
-    # Possible copyright notice (email + possible date), but not in
-    # right form
-    oVimModeline = re.compile('^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
-    oCodingLine = re.compile('^# -\*- coding: ')
-    oEnCodingLine = re.compile('^# -\*- coding: |^# vim:fileencoding=')
     sCommentHeader = '# %s\n' % sName
     bValidCoding = False
+    bValidEmacs = False
+    bWrongUTF8 = False
+    bScript = False
 
-    iLineCount = 0
-    for sLine in oFile:
+    for iLineCount, sLine in enumerate(oFile):
         if not sLine.startswith('#'):
             # End of comment block
             break
 
-        iLineCount += 1
+        if iLineCount == 0 and sLine.startswith('#!'):
+            bScript = True
 
         if sLine == sCommentHeader:
             dScores['filename'] += 1
 
-        if oCodingLine.search(sLine) is not None:
-            dScores['coding lines'] += 1
+        if EMACS_CODING.search(sLine) is not None:
+            dScores['emacs coding'] += 1
             # Encoding declaration must be one of the 1st
             # two lines (see python docs)
-            if (iLineCount < 3):
-                bValidCoding = True
+            if (bScript and iLineCount == 1) or iLineCount == 0:
+                bValidEmacs = True
 
-        if oCopyright.search(sLine) is not None:
+        if COPYRIGHT.search(sLine) is not None:
             dScores['copyright'] += 1
-        elif oWrongCopyright.search(sLine) is not None:
+        elif WRONG_COPYRIGHT.search(sLine) is not None:
             aWrongCopyrights.append(sLine)
             dScores['wrong copyright'] += 1
 
         if sLine.find(' GPL ') != -1:
             dScores['license'] += 1
 
-        if oVimModeline.search(sLine) is not None:
+        if VIM_MODELINE.search(sLine) is not None:
             dScores['modeline'] += 1
-            if (iLineCount < 3):
+
+        if PYCODING.search(sLine) is not None:
+            dScores['python encoding'] += 1
+            if (iLineCount < 2):
                 bValidCoding = True
+            if 'utf8' in sLine:
+                bWrongUTF8 = True
 
-        if oEnCodingLine.search(sLine) is not None:
-            dScores['encoding'] += 1
-
-    return bValidCoding
+    return bValidCoding, bValidEmacs, bWrongUTF8, bScript
 
 
-def print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName):
+def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
     """Display any errors found in the file"""
-    if dScores['filename'] < 1:
-        print '%s is missing # Name Header' % sFileName
+    # pylint: disable-msg=R0912
+    # Lot's of cases to consider, so many branches
+    bValidCoding, bValidEmacs, bWrongUTF8, bScript = tFlags
+    if dScores['filename'] == 1:
+        print '%s has an obselete # Name Header' % sFileName
     elif dScores['filename'] > 1:
         print '%s has multiple # Name Headers' % sFileName
 
@@ -110,24 +119,31 @@ def print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName):
         print '(not "Copyright Years Name <email>")'
         print 'Possibly incorrect line(s) : ', aWrongCopyrights
 
-    if dScores['coding lines'] < 1:
-        print '%s is is missing a -*- coding lines' % sFileName
+    if dScores['emacs coding'] < 1:
+        print '%s is is missing a -*- emacs coding line' % sFileName
+    elif bScript and not bValidEmacs:
+        print 'emacs coding line not 2nd line for python script'
+    elif not bValidEmacs:
+        print 'emacs coding line not 1st line for python file'
 
-    if dScores['encoding'] < 2:
+    if dScores['python encoding'] < 2:
         print '%s is missing an encoding line' % sFileName
-    elif dScores['encoding'] > 2:
-        print '%s is has multiple a -*- coding lines' % sFileName
+    elif dScores['python encoding'] > 2:
+        print '%s is has too many encoding lines' % sFileName
 
-    if not bValidCoding and dScores['encoding'] > 1:
-        print '%s: One of the coding lines must be in " \
+    if bWrongUTF8:
+        print 'Encoding line uses "utf8" instead of "utf-8"'
+
+    if not bValidCoding and dScores['python encoding'] > 1:
+        print '%s: One of the emacs coding must be in " \
                 "the 1st 2 lines of the file' % sFileName
 
 
 def score_failed(dScores):
     """Test if the file fails the test criteria"""
-    return (dScores['coding lines'] == 1 | dScores['copyright'] == 1 |
+    return (dScores['emacs coding'] == 1 | dScores['copyright'] == 1 |
             dScores['modeline'] == 1 | dScores['license'] == 1 |
-            dScores['filename'] == 1 | dScores['encoding'] == 2 |
+            dScores['filename'] == 0 | dScores['python encoding'] == 2 |
             dScores['wrong copyright'] == 0)
 
 
@@ -143,20 +159,20 @@ def file_check(sFileName):
             'copyright': 0,
             'license': 0,
             'modeline': 0,
-            'coding lines': 0,
-            'encoding': 0,
+            'emacs coding': 0,
+            'python encoding': 0,
             'filename': 0,
             'wrong copyright': 0,
             }
     aWrongCopyrights = []
 
-    bValidCoding = search_file(oFile, dScores, aWrongCopyrights, sFileName)
+    tFlags = search_file(oFile, dScores, aWrongCopyrights, sFileName)
 
     oFile.close()
 
-    print_search_results(dScores, aWrongCopyrights, bValidCoding, sFileName)
+    print_search_results(dScores, aWrongCopyrights, tFlags, sFileName)
 
-    return not (score_failed(dScores) | bValidCoding)
+    return not (score_failed(dScores) | tFlags[0])
 
 
 def main(aArgs):
