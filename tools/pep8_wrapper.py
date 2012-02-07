@@ -125,6 +125,8 @@ class PEP8Checker(Base):
         # Handle recent pylint changes
         if hasattr(aStream, 'file_stream'):
             aStream = aStream.file_stream
+            # Only needed for older pylints
+            aStream.seek(0)
         self.oChecker.lines = list(aStream)
         self.oChecker.report_error = self._transform_error
         self.oChecker.check_all()

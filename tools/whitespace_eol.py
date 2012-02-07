@@ -33,6 +33,8 @@ class WhitespaceEOLChecker(Base):
         """process a module."""
         if hasattr(aStream, 'file_stream'):
             aStream = aStream.file_stream
+            # Only needed for older pylints
+            aStream.seek(0)
         for (iLineNo, sLine) in enumerate(aStream):
             sText = sLine[:-1]  # Ignore final newline
             if sText != sText.rstrip():
