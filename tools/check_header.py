@@ -7,9 +7,10 @@
 """Simple script to check that the comment headers are correct.
 
    This script checks that the headers have a emacs encoding line, a vim
-   modeline, a copyright notice, and a comment mentioning the correct
-   filename. There are some heuristics to detect incorrectly formatted
-   copyright lines.
+   modeline and a copyright notice.  There are some heuristics to detect
+   incorrectly formatted copyright lines and incorrect encoding lines.
+   Formerly, we required a filename in the comments, but we've dropped
+   that, so this warns about obselete filename comments as well.
    """
 
 import optparse
