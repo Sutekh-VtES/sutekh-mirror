@@ -131,7 +131,7 @@ class PEP8Checker(Base):
         self.oChecker.check_all()
 
     def process_tokens(self, _aTokens):
-        """Dummy method to make pyline happy"""
+        """Dummy method to make pylint happy"""
         pass
 
 

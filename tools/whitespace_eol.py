@@ -41,7 +41,7 @@ class WhitespaceEOLChecker(Base):
                 self.add_message('C9968', line=(iLineNo + 1))
 
     def process_tokens(self, _aTokens):
-        """Dummy method to make pyline happy"""
+        """Dummy method to make pylint happy"""
         pass
 
 
