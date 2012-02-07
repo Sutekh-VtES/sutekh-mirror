@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
+# Copyright 2011 Simon Cross <hodgestar@gmail.com>
+# GPL - see license file for details
+
 from launchpadlib.launchpad import Launchpad
 
 sApp = "sutekh-stats"
