@@ -66,6 +66,8 @@ class ShowExported(SutekhPlugin):
         oTextView.set_wrap_mode(gtk.WRAP_NONE)  # preserve long lines
         oTextView.set_border_width(5)
         oTextView.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("white"))
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         oDlg.vbox.pack_start(AutoScrolledWindow(oTextView))
         # Add the radio buttons
         oTable = gtk.Table(len(self._dExporters) / 2, 2)

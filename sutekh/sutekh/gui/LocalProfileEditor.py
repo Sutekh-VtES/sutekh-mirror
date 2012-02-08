@@ -43,6 +43,8 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                 oConfig.get_validator())
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
             bUseViewport=True))
 

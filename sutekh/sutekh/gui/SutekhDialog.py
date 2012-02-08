@@ -103,6 +103,8 @@ class DetailDialog(SutekhDialog):
         oExpander.add(oFrame)
         oMessageBox.pack_start(oExpander)
         oHBox.pack_start(oMessageBox)
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
         self.vbox.pack_start(oHBox)
         oExpander.set_expanded(False)
         self.show_all()

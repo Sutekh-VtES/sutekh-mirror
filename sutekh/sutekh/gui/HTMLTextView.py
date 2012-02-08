@@ -146,7 +146,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 "large": pango.SCALE_LARGE,
                 "x-large": pango.SCALE_X_LARGE,
                 "xx-large": pango.SCALE_XX_LARGE,
-                } [sValue]
+                }[sValue]
         except KeyError:
             pass
         else:
@@ -168,7 +168,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 "normal": pango.STYLE_NORMAL,
                 "italic": pango.STYLE_ITALIC,
                 "oblique": pango.STYLE_OBLIQUE,
-                } [sValue]
+                }[sValue]
         except KeyError:
             warnings.warn("unknown font-style %s" % sValue)
         else:
@@ -206,7 +206,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 '900': pango.WEIGHT_HEAVY,
                 'normal': pango.WEIGHT_NORMAL,
                 'bold': pango.WEIGHT_BOLD,
-                } [sValue]
+                }[sValue]
         except KeyError:
             warnings.warn("unknown font-style %s" % sValue)
         else:
@@ -224,7 +224,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 'right': gtk.JUSTIFY_RIGHT,
                 'center': gtk.JUSTIFY_CENTER,
                 'justify': gtk.JUSTIFY_FILL,
-                } [sValue]
+                }[sValue]
         except KeyError:
             warnings.warn("Invalid text-align:%s requested" % sValue)
         else:
