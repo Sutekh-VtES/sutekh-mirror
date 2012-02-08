@@ -1,6 +1,5 @@
-# SutekhDialog.py
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # Provides base class for the dailogs used in Sutekh - ensures set_name

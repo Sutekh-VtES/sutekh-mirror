@@ -1,6 +1,5 @@
-# MultiPaneWindow.py
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Handle the multi pane UI for Sutkeh
 # Copyright 2007, 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - See COPYING for details

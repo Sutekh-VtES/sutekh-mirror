@@ -1,6 +1,5 @@
-# LocalProfileEditor.py
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Dialog for editing the temporary / local profile associated with
 # a cardset.
 # Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>

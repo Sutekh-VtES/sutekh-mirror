@@ -1,6 +1,5 @@
-# FilterDialog.py
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Dialog for setting Filter Parameters
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Copyright 2006, 2008 Simon Cross <hodgestar@gmail.com>

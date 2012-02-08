@@ -1,8 +1,7 @@
-# DataPack.py
-# -*- coding: utf8 -*-
-# vim:fileencoding=utf8 ai ts=4 sts=4 et sw=4
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2011 Simon Cross <hodgestar+sutekh@gmail.com>,
-# Copyright 2009,2010,2011 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2009, 2010, 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 # Class and functions to manage zip data pack handling for Sutekh
 # Split off from sutekh/gui/plugins/StarterDeckInfo.py and refactored,
