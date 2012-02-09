@@ -12,6 +12,8 @@ import unittest
 
 class RulingParserTests(SutekhTest):
     """Check the results of the ruling parser call in SutekhTest SetUp"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
     aExpectedRulings = [
         u"[LSJ 19990215]", u"[LSJ 19990216]", u"[LSJ 20070928]",
     ]

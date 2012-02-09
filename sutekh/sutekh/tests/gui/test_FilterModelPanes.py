@@ -30,6 +30,8 @@ class DummyDialog(gtk.Dialog):
 
 class TestFilterModelPane(GuiSutekhTest):
     """Class for the FilterModelPanes tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def _check_asts(self, oAST1, oAST2):
         """Helper utility to check that two AST's generate identical

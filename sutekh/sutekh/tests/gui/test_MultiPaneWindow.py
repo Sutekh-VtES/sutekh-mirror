@@ -12,6 +12,8 @@ from sutekh.core.SutekhObjects import PhysicalCardSet
 
 class TestMultiPaneWindow(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Set of simple tests of the MultiPaneWindow"""

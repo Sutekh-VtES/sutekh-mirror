@@ -28,6 +28,8 @@ Crypt:
 
 class LackeyWriterTests(SutekhTest):
     """class for the Lackey CCG deck writer tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test Lackey CCG deck writing"""

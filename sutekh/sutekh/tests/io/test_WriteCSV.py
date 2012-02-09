@@ -77,6 +77,8 @@ EXPECTED_4 = """".44 Magnum", 4
 
 class CSVWriterTests(SutekhTest):
     """class for the CSV deck writer tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test CSV deck writing"""

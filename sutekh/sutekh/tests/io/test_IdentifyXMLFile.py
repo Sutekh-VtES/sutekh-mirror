@@ -16,6 +16,8 @@ from StringIO import StringIO
 
 class TestIdentifyXMLFile(SutekhTest):
     """class for the IdentifyXMLFile tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""

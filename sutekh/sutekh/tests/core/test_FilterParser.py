@@ -18,6 +18,8 @@ import unittest
 
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
     oFilterParser = FilterParser.FilterParser()
 

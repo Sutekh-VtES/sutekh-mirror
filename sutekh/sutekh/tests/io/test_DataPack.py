@@ -32,6 +32,8 @@ A comment.
 
 class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_find_data_pack(self):
         """Test finding data pack in sane documentation page"""

@@ -14,6 +14,8 @@ import unittest
 
 class CardSetUtilTests(SutekhTest):
     """class for the Card Set Utility tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Test behaviour without loops"""

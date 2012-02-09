@@ -40,6 +40,8 @@ ELDB_HTML_EXAMPLE_1 = """<HTML>
 
 class ELDBHTMLParserTests(SutekhTest):
     """class for the ELDB HTML input parser"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Run the input test."""

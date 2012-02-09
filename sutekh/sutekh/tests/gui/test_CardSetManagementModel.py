@@ -29,6 +29,8 @@ class DummyWindow(object):
 
 class CardSetManagementModelTests(SutekhTest):
     """Class for the test cases"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Test the basic functionality"""

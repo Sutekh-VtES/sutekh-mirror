@@ -89,6 +89,8 @@ EXPECTED = """"ELDB - Inventory"
 
 class ELDBInventoryWriterTests(SutekhTest):
     """class for the ELDB Inventory writer tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_inventory_writer(self):
         """Test ELDB inventory writing"""

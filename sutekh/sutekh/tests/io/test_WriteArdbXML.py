@@ -125,6 +125,8 @@ Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less b
 
 class ArdbXMLWriterTests(SutekhTest):
     """class for the ARDB deck XML writer tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test ARDB XML deck writing"""

@@ -48,6 +48,8 @@ Master [3]
 
 class ArdbTextWriterTests(SutekhTest):
     """class for the ARDB text file writer tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test ARDB text file writing"""

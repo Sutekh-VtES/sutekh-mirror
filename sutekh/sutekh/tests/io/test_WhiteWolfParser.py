@@ -19,6 +19,8 @@ class WhiteWolfParserTests(SutekhTest):
        Check the parsing done in SutekhTest setup and verify the results
        are correct.
        """
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = [
         u".44 Magnum",
         u"AK-47",

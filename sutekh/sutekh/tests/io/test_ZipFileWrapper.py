@@ -22,6 +22,8 @@ import zipfile
 
 class ZipFileWrapperTest(SutekhTest):
     """class for the Zip File tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_zip_file(self):
         """Test zip file handling"""

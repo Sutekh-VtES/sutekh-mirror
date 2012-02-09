@@ -22,6 +22,8 @@ class SutekhTest(unittest.TestCase):
 
        Define common setup and teardown routines common to test cases.
        """
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     TEST_CONN = None
 

@@ -19,8 +19,10 @@ class ConfigSutekhTest(SutekhTest):
     """Base class for Sutekh tests that need a config file.
 
        Defines common startUp and tearDown routines."""
-    # pylint: disable-msg=C0103
-    # setUp + tearDown names are needed by unittest - use their convention
+    # pylint: disable-msg=C0103, R0904
+    # C0103 - setUp + tearDown names are needed by unittest,
+    #         so use their convention
+    # R0904 - unittest.TestCase, so many public methods
 
     def setUp(self):
         """Setup config file for the tests"""
@@ -65,8 +67,10 @@ class GuiSutekhTest(ConfigSutekhTest):
 
        Define common setup and teardown routines common to gui test cases.
        """
-    # pylint: disable-msg=C0103
-    # setUp + tearDown names are needed by unittest - use their convention
+    # pylint: disable-msg=C0103, R0904
+    # C0103 - setUp + tearDown names are needed by unittest,
+    #         so use their convention
+    # R0904 - unittest.TestCase, so many public methods
 
     def setUp(self):
         """Setup gtk window for the tests"""

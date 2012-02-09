@@ -68,6 +68,8 @@ def make_physical_card_sets():
 
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
     def _physical_test(self, tTest):

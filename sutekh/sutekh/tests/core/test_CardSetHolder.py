@@ -15,6 +15,8 @@ import unittest
 
 class CardSetHolderTests(SutekhTest):
     """class for the Card Set Holder tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Basic card set holder tests."""

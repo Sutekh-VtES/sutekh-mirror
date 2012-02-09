@@ -88,6 +88,8 @@ Reaction [1]
 
 class ARDBTextParserTests(SutekhTest):
     """class for the ARDB/FELDB text input parser"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Run the input test."""

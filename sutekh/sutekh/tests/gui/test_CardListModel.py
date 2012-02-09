@@ -28,6 +28,8 @@ class TestListener(CardListModelListener):
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     # pylint: disable-msg=R0201
     # I prefer to have these as methods

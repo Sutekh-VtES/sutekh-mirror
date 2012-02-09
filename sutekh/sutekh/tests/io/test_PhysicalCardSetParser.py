@@ -122,6 +122,8 @@ PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_physical_card_set_parser(self):
         """Test physical card set reading"""

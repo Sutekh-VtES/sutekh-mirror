@@ -19,6 +19,8 @@ from logging import FileHandler
 
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_copy_to_new_ac_db(self):
         """Test copying an existing database to a freshly created one using

@@ -61,6 +61,8 @@ def make_set_1():
 
 class PhysicalCardSetTests(SutekhTest):
     """class for the Physical Card Set tests"""
+    # pylint: disable-msg=R0904
+    # R0904 - unittest.TestCase, so many public methods
 
     def test_physical_card_set(self):
         """Test physical card set object"""
