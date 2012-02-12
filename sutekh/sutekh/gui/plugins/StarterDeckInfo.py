@@ -134,7 +134,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     aModelsSupported = ("MainWindow",)
 
     dGlobalConfig = {
-        'show starters': 'option("Yes", "No", default="No")',
+        'show starters': 'option("Yes", "No", "Unasked", default="Unasked")',
     }
 
     # FIXME: Expose this to the user?
@@ -188,10 +188,10 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
     def setup(self):
         """1st time setup tasks"""
         sPrefsValue = self.get_config_item('show starters')
-        if sPrefsValue is None:
-            # First time
+        if sPrefsValue == 'Unasked':
             self.set_config_item('show starters', 'No')
             if not self.check_enabled():
+                # First time
                 oDialog = StarterConfigDialog(self.parent, True)
                 self.handle_response(oDialog)
 
