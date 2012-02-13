@@ -1,3 +1,12 @@
+12 Feb 2012
+ * Backport first time starter run fix (r3003)
+
+29 Jan 2012
+ * Backport WM hint fix for progress dialog (r2985)
+
+13 Jan 2012
+ * Backport unicode input handling in filters fix (r2983)
+
 10 Jan 2012
  * Backport typo fix from trunk (r2694)
 
