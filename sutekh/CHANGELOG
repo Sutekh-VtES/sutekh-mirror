@@ -1,3 +1,23 @@
+12 Feb 2012
+ * Fix bug in the ShowStarter plugin's checks for whether it's the
+   first time it's been run
+
+08 Feb 2012
+ * Update the rest of the comment headers
+
+07 Feb 2012
+ * Fix the pylint pep8_wrapper
+ * Tweak the comment header specification to fix emacs modeline entries
+   and match emacs' expectations.
+ * Update check_header script to match our new requirements
+ * Update comment headers of a few files to the new format
+
+29 Jan 2012
+ * Set appropriate WM hint for progress dialog (useful for tiling WM's)
+
+13 Jan 2012
+ * Fix bug with filter code doing the wrong thing with unicode input.
+
 05 Jan 2012
  * Fix handling of vekn.net cardlist to deal with the changed encoding
 
