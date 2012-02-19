@@ -43,14 +43,18 @@ class RulebookConfigDialog(SutekhDialog):
             oDescLabel.set_markup('<b>Choose how to configure the rulebook'
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
-        self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
+        self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
                 "rulebook zip file", {'Sutekh Wiki': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)
-        self.set_size_request(300, 200)
+        if bFirstTime:
+            # description is longer, so request should be taller
+            self.set_size_request(340, 240)
+        else:
+            self.set_size_request(340, 200)
 
         self.show_all()
 
