@@ -20,6 +20,7 @@ Stuff that's fairly easy (we think)
  * Add more keyboard shortcuts
  * Right-click context menus
  * Add a "default filter" to profiles
+ * Add timeout to the url-reading stuff and appropriate error handling
 
 Needs planning
 --------------
