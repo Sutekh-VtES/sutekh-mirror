@@ -1,3 +1,8 @@
+19 Feb 2012
+ * Fix typo in rulebook plugin download dialog
+ * Tweak download dialog size request on first time download, to avoid
+   hidden text with some themes (seen on FC 16).
+
 12 Feb 2012
  * Fix bug in the ShowStarter plugin's checks for whether it's the
    first time it's been run
