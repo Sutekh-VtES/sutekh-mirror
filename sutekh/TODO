@@ -20,7 +20,13 @@ Stuff that's fairly easy (we think)
  * Add more keyboard shortcuts
  * Right-click context menus
  * Add a "default filter" to profiles
+
+
+Bugfixes
+--------
+
  * Add timeout to the url-reading stuff and appropriate error handling
+ * Fix analyse plugin display with very long descriptions
 
 Needs planning
 --------------
