@@ -21,6 +21,7 @@ Stuff that's fairly easy (we think)
  * Right-click context menus
  * Add a "default filter" to profiles
  * Check sha256 sum of downloaded files to warn of corrupt/truncated downloads
+ * Write a script for tagging releases from a branch and generating release notes.
 
 Bugfixes
 --------
