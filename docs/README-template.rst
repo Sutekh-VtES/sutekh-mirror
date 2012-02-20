@@ -28,13 +28,13 @@ Known Issues
 * No known issues at this stage.
 
 
-Notable Improvements
---------------------
+Notable Improvements since <last real release, e.g. 0.8.0>
+----------------------------------------------------------
 
 <summary of improvements since last real release>
 
 
-Changelog
----------
+Changelog since <last real release, e.g. 0.8.0>
+-----------------------------------------------
 
 <detail changelog since last real release>
