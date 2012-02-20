@@ -20,13 +20,14 @@ Stuff that's fairly easy (we think)
  * Add more keyboard shortcuts
  * Right-click context menus
  * Add a "default filter" to profiles
-
+ * Check sha256 sum of downloaded files to warn of corrupt/truncated downloads
 
 Bugfixes
 --------
 
  * Add timeout to the url-reading stuff and appropriate error handling
  * Fix analyse plugin display with very long descriptions
+ * Improve rpm building script (don't regenerate the tarball each time)
 
 Needs planning
 --------------
