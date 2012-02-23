@@ -216,7 +216,8 @@ class IconManager(object):
         return aText, aIcons
 
     def get_icon_list(self, aValues):
-        """Get a list of appropriate icons for the given values"""
+        """Get a dictionary of appropriate (value, icon) pairs for the
+           given values"""
         if not aValues:
             return None
         dIcons = None
