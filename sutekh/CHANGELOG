@@ -1,3 +1,7 @@
+23 Feb 2012
+ * Split IconManager into gui and non-gui portions. Move non-gui part
+   to io/
+
 19 Feb 2012
  * Fix typo in rulebook plugin download dialog
  * Tweak download dialog size request on first time download, to avoid

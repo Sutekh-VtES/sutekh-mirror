@@ -37,7 +37,7 @@ from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.gui import SutekhIcon
 from sutekh.gui.HTMLTextView import HTMLViewDialog
-from sutekh.gui.IconManager import IconManager
+from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.SutekhDialog import do_complaint_error_details, \
         do_exception_complaint, do_complaint
 
@@ -140,7 +140,7 @@ class MultiPaneWindow(gtk.Window):
         self.__oSutekhObjectCache = SutekhObjectCache()
 
         # Create global icon manager
-        self._oIconManager = IconManager(oConfig)
+        self._oIconManager = GuiIconManager(oConfig.get_icon_path())
         # Create card text pane
         self._oCardTextPane = None  # So we can call get_pane_ids
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
