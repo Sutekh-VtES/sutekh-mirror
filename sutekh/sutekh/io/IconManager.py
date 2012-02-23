@@ -219,18 +219,18 @@ class IconManager(object):
         """Get a list of appropriate icons for the given values"""
         if not aValues:
             return None
-        aIcons = None
+        dIcons = None
         if isinstance(aValues[0], CardType):
-            aIcons = self._get_card_type_icons(aValues)
+            dIcons = self._get_card_type_icons(aValues)
         elif isinstance(aValues[0], DisciplinePair):
-            aIcons = self._get_discipline_icons(aValues)
+            dIcons = self._get_discipline_icons(aValues)
         elif isinstance(aValues[0], Virtue):
-            aIcons = self._get_virtue_icons(aValues)
+            dIcons = self._get_virtue_icons(aValues)
         elif isinstance(aValues[0], Clan):
-            aIcons = self._get_clan_icons(aValues)
+            dIcons = self._get_clan_icons(aValues)
         elif isinstance(aValues[0], Creed):
-            aIcons = self._get_creed_icons(aValues)
-        return aIcons
+            dIcons = self._get_creed_icons(aValues)
+        return dIcons
 
     def download_icons(self, oLogHandler=None):
         """Download the icons from the WW site"""
