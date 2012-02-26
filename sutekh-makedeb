@@ -4,17 +4,36 @@
 
 SIGNER=$1
 if [ "x$SIGNER" = "x" ] ; then
-    echo "Usage: sutekh-makedeb <signer>"
+    echo "Usage: sutekh-makedeb <signer> [<build-counter>]"
     echo "  * Signer is the name and email address of the package signer."
-    echo "  It is also used to select the key to sign with."
+    echo "    It is also used to select the key to sign with."
+    echo "  * The optional build-counter determines the Debian-Version."
+    echo "    The Debian-Version is <build-counter>~<suite name>."
+    echo "    The default build counter is 1. Increment it if you need"
+    echo "    to create new deb builds of the same Sutekh release."
     exit 1
+fi
+
+BUILD_COUNTER=$2
+if [ "x$BUILD_COUNTER" = "x" ] ; then
+    BUILD_COUNTER="1"
 fi
 
 SUITES="oneiric natty maverick lucid"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
-SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
+SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.orig.tar.gz"
 DEBPATCH_FOLDER="deb-patches"
+
+if [ ! -e "$SDIST_FILE" ] ; then
+    echo "Please copy the source tarball for this release to $SDIST_FILE."
+    echo "NB: Do not simply re-build the source tarball -- it should be"
+    echo "    the same source tarball uploaded to sourceforge (for sanity)"
+    echo "    and used in any previous uploads to Launchpad's build system"
+    echo "    (or Launchpad will reject your package)."
+    exit 1
+fi
+
 
 make_deb () {
 
@@ -24,7 +43,7 @@ make_deb () {
     # make extra config file
     touch "$EXTRA_CFG"
     echo "[Sutekh]" >> $EXTRA_CFG
-    echo "Debian-Version: 1~$SUITE" >> $EXTRA_CFG
+    echo "Debian-Version: $BUILD_COUNTER~$SUITE" >> $EXTRA_CFG
     echo "Forced-Upstream-Version: $DEB_VERSION" >> $EXTRA_CFG
 
     PATCHFILE=""
@@ -51,9 +70,6 @@ make_deb () {
 # santize environment
 rm -rf deb_dist
 mkdir deb_dist
-
-# make source tarball
-python setup.py sdist
 
 # build Debian source package for each suite
 for suite in $SUITES ; do
