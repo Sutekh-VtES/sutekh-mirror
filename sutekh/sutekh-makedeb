@@ -4,10 +4,19 @@
 
 SIGNER=$1
 if [ "x$SIGNER" = "x" ] ; then
-    echo "Usage: sutekh-makedeb <signer>"
+    echo "Usage: sutekh-makedeb <signer> [<build-counter>]"
     echo "  * Signer is the name and email address of the package signer."
-    echo "  It is also used to select the key to sign with."
+    echo "    It is also used to select the key to sign with."
+    echo "  * The optional build-counter determines the Debian-Version."
+    echo "    The Debian-Version is <build-counter>~<suite name>."
+    echo "    The default build counter is 1. Increment it if you need"
+    echo "    to create new deb builds of the same Sutekh release."
     exit 1
+fi
+
+BUILD_COUNTER=$2
+if [ "x$BUILD_COUNTER" = "x" ] ; then
+    BUILD_COUNTER="1"
 fi
 
 SUITES="oneiric natty maverick lucid"
@@ -24,7 +33,7 @@ make_deb () {
     # make extra config file
     touch "$EXTRA_CFG"
     echo "[Sutekh]" >> $EXTRA_CFG
-    echo "Debian-Version: 1~$SUITE" >> $EXTRA_CFG
+    echo "Debian-Version: $BUILD_COUNTER~$SUITE" >> $EXTRA_CFG
     echo "Forced-Upstream-Version: $DEB_VERSION" >> $EXTRA_CFG
 
     PATCHFILE=""

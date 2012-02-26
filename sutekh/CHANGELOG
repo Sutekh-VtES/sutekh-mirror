@@ -1,3 +1,7 @@
+26 Feb 2012
+ * Add build number option to allow re-building new .debs for the same
+   Sutekh release.
+
 23 Feb 2012
  * Split IconManager into gui and non-gui portions. Move non-gui part
    to io/
