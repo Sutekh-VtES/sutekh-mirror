@@ -1,6 +1,9 @@
 26 Feb 2012
  * Add build number option to allow re-building new .debs for the same
    Sutekh release.
+ * Change sutekh-makedeb to not build the source tarball (which is
+   wrong) but rather to use a supplied copy of the original source
+   tarball.
 
 23 Feb 2012
  * Split IconManager into gui and non-gui portions. Move non-gui part

@@ -22,8 +22,18 @@ fi
 SUITES="oneiric natty maverick lucid"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
-SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
+SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.orig.tar.gz"
 DEBPATCH_FOLDER="deb-patches"
+
+if [ ! -e "$SDIST_FILE" ] ; then
+    echo "Please copy the source tarball for this release to $SDIST_FILE."
+    echo "NB: Do not simply re-build the source tarball -- it should be"
+    echo "    the same source tarball uploaded to sourceforge (for sanity)"
+    echo "    and used in any previous uploads to Launchpad's build system"
+    echo "    (or Launchpad will reject your package)."
+    exit 1
+fi
+
 
 make_deb () {
 
@@ -60,9 +70,6 @@ make_deb () {
 # santize environment
 rm -rf deb_dist
 mkdir deb_dist
-
-# make source tarball
-python setup.py sdist
 
 # build Debian source package for each suite
 for suite in $SUITES ; do
