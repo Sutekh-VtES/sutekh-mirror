@@ -1,3 +1,7 @@
+27 Feb 2012
+ * Record supported Python versions (2.4 - 2.7) in PyPI trove
+   classifier list.
+
 26 Feb 2012
  * Add build number option to allow re-building new .debs for the same
    Sutekh release.
