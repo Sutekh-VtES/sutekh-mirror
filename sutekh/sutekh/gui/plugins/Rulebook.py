@@ -7,9 +7,8 @@
 
 from sutekh.io.DataPack import find_data_pack, DOC_URL
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, progress_fetch_data
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint
-from sutekh.gui.FileOrUrlWidget import fetch_data
 from sutekh.gui.SutekhFileWidget import add_filter
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
@@ -64,9 +63,9 @@ class RulebookConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
-            sZipUrl = find_data_pack('rulebooks')
+            sZipUrl, sHash = find_data_pack('rulebooks')
             oFile = urllib2.urlopen(sZipUrl)
-            sData = fetch_data(oFile)
+            sData = progress_fetch_data(oFile, None, sHash)
         elif sFile:
             sData = self.oFileWidget.get_binary_data()
         return sData

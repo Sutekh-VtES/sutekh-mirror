@@ -8,49 +8,22 @@
 import gtk
 import urllib2
 import os.path
-from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.io.WwFile import WwFile
-from sutekh.gui.ProgressDialog import ProgressDialog
+from sutekh.io.DataPack import fetch_data
+from sutekh.gui.SutekhFileWidget import SutekhFileButton
+from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 
 
-def fetch_data(oFile, oOutFile=None):
-    """Fetch data from a file'ish object (WwFile, urlopen or file)"""
-    if hasattr(oFile, 'info') and callable(oFile.info):
-        sLength = oFile.info().getheader('Content-Length')
-    else:
-        sLength = None
-
-    if sLength:
-        aData = []
-        iLength = int(sLength)
-        oProgress = ProgressDialog()
-        oProgress.set_description('Download progress')
-        iTotal = 0
-        bCont = True
-        while bCont:
-            sInf = oFile.read(10000)
-            iTotal += 10000
-            oProgress.update_bar(float(iTotal) / iLength)
-            if sInf:
-                if oOutFile:
-                    oOutFile.write(sInf)
-                else:
-                    aData.append(sInf)
-            else:
-                bCont = False
-                oProgress.destroy()
-        if oOutFile:
-            sData = None
-        else:
-            sData = ''.join(aData)
-    else:
-        # Just try and download
-        if oOutFile:
-            oOutFile.write(oFile.read())
-            sData = None
-        else:
-            sData = oFile.read()
-    return sData
+def progress_fetch_data(oFile, oOutFile=None, sHash=None):
+    """Wrap a Progress Dialog around fetch_data"""
+    oProgress = ProgressDialog()
+    oProgress.set_description('Download progress')
+    oLogHandler = SutekhCountLogHandler()
+    oLogHandler.set_dialog(oProgress)
+    try:
+        return fetch_data(oFile, oOutFile, sHash, oLogHandler)
+    finally:
+        oProgress.destroy()
 
 
 class FileOrUrlWidget(gtk.VBox):
@@ -169,7 +142,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         oFile = WwFile(sUrl, bUrl=bUrl).open()
 
-        return fetch_data(oFile)
+        return progress_fetch_data(oFile)
 
     def get_binary_data(self, oOutFile=None):
         """Open the selected file and retrieve the binary data.
@@ -183,7 +156,7 @@ class FileOrUrlWidget(gtk.VBox):
         else:
             oFile = file(sUrl, "rb")
 
-        return fetch_data(oFile, oOutFile)
+        return progress_fetch_data(oFile, oOutFile)
 
     # Methods needed by the add_filter utility function in SutekhFileWidget
 

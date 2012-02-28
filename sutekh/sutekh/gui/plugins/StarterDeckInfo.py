@@ -20,7 +20,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import find_data_pack, DOC_URL
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
-from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, fetch_data
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, progress_fetch_data
 from sutekh.gui.SutekhFileWidget import add_filter
 import re
 import gtk
@@ -95,9 +95,9 @@ class StarterConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
-            sZipUrl = find_data_pack('starters')
+            sZipUrl, sHash = find_data_pack('starters')
             oFile = urllib2.urlopen(sZipUrl)
-            sData = fetch_data(oFile)
+            sData = progress_fetch_data(oFile, None, sHash)
         elif sFile:
             sData = self.oFileWidget.get_binary_data()
         return sData

@@ -24,9 +24,9 @@ TEST_DATA = """
 A comment.
 }}}
 
-|| '''Description''' || '''Tag''' || '''File'''
-|| Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] ||
-|| Zip file of userful rulings and rulebooks || rulebooks || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] ||
+|| '''Description''' || '''Tag''' || '''File''' || SHA256 Checksum ||
+|| Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] || aaabb ||
+|| Zip file of userful rulings and rulebooks || rulebooks || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] || dddeee ||
 """
 
 
@@ -43,15 +43,21 @@ class DataPackTest(SutekhTest):
         fFile.write(TEST_DATA)
         fFile.close()
 
-        self.assertEqual(find_data_pack('starters', sTempUrl),
-                         "http://sourceforge.net/apps/trac/sutekh/"
+        sUrl, sHash = find_data_pack('starters', sTempUrl)
+
+        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
                          "raw-attachment/wiki/MiscWikiFiles/"
                          "Starters_SW_to_HttB.zip")
 
-        self.assertEqual(find_data_pack('rulebooks', sTempUrl),
-                         "http://sourceforge.net/apps/trac/sutekh/"
+        self.assertEqual(sHash, 'aaabb')
+
+        sUrl, sHash = find_data_pack('rulebooks', sTempUrl)
+
+        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
                          "raw-attachment/wiki/MiscWikiFiles/"
                          "Rulebooks.zip")
+
+        self.assertEqual(sHash, 'dddeee')
 
 
 if __name__ == "__main__":
