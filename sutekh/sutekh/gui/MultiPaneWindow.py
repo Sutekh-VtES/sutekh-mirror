@@ -228,6 +228,10 @@ class MultiPaneWindow(gtk.Window):
         iWidth, iHeight = self._oConfig.get_window_size()
         if iWidth > 0 and iHeight > 0:
             self.resize(iWidth, iHeight)
+            # Process the resize event before continuing,
+            # otherwise the size may be wrong in the following code
+            while gtk.events_pending():
+                gtk.main_iteration()
         # Reset the pane number count, since we're starting afresh
         self._iCount = 0
         dPaneMap = {}
