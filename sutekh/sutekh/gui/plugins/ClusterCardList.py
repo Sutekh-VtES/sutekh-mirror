@@ -125,7 +125,7 @@ class ClusterCardList(SutekhPlugin):
             oHbx = gtk.HBox(False, 0)
 
             iCols = 3
-            iPropsPerCol = len(dPropFuncs) / iCols
+            iPropsPerCol = len(dPropFuncs) // iCols
             if len(dPropFuncs) % iCols != 0:
                 iPropsPerCol += 1
 

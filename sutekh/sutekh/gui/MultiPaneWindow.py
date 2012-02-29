@@ -867,7 +867,7 @@ class MultiPaneWindow(gtk.Window):
             oParent.remove(oPart1)
             oParent.add1(oNewPane)
             # Going to the left of the current pane,
-            iPos = oParent.get_position() / 2
+            iPos = oParent.get_position() // 2
         else:
             oParent.remove(oPart1)
             oParent.add2(oNewPane)
@@ -879,10 +879,10 @@ class MultiPaneWindow(gtk.Window):
                 # We want to split ourselves into equally sized
                 # sections
                 oCur = self.oVBox.get_allocation()
-                iPos = oCur.width / (len(self._aHPanes) + 2)
+                iPos = oCur.width // (len(self._aHPanes) + 2)
                 self.set_pos_for_all_hpanes(iPos)
             else:
-                iPos = (oCur.width - oParent.get_position()) / 2
+                iPos = (oCur.width - oParent.get_position()) // 2
         return iPos
 
     def add_pane(self, bVertical=False, iConfigPos=-1):
@@ -911,7 +911,7 @@ class MultiPaneWindow(gtk.Window):
                 oNewPane = gtk.VPaned()
                 oCurAlloc = self.oVBox.get_allocation()
                 oMenuAlloc = self.__oMenu.get_allocation()
-                iPos = (oCurAlloc.height - oMenuAlloc.height) / 2
+                iPos = (oCurAlloc.height - oMenuAlloc.height) // 2
             else:
                 oNewPane = gtk.HPaned()
             if len(self._aHPanes) > 0:
@@ -932,7 +932,7 @@ class MultiPaneWindow(gtk.Window):
                 # Just split the window
                 oCur = oParent.get_allocation()
                 if not bVertical:
-                    iPos = oCur.width / 2
+                    iPos = oCur.width // 2
                 oParent.remove(oPart1)
                 oParent.pack_start(oNewPane)
             oNewPane.add1(oPart1)
@@ -1027,14 +1027,14 @@ class MultiPaneWindow(gtk.Window):
     def set_all_panes_equal(self):
         """Evenly distribute the space between all the frames."""
         oCurAlloc = self.oVBox.get_allocation()
-        iNewPos = oCurAlloc.width / (len(self._aHPanes) + 1)
+        iNewPos = oCurAlloc.width // (len(self._aHPanes) + 1)
         self.set_pos_for_all_hpanes(iNewPos)
 
     def set_pos_for_all_hpanes(self, iNewPos):
         """Set all the panes to the same Position value"""
         oCurAlloc = self.oVBox.get_allocation()
         oMenuAlloc = self.__oMenu.get_allocation()
-        iVertPos = (oCurAlloc.height - oMenuAlloc.height) / 2
+        iVertPos = (oCurAlloc.height - oMenuAlloc.height) // 2
 
         def set_pos_children(oPane, iPos, iVertPos):
             """Walk the tree in display order, setting positions accordingly"""

@@ -96,7 +96,7 @@ class ACSImporter(SutekhPlugin):
         self._oFirstBut = gtk.RadioButton(None, 'Guess file format', False)
         self._oFirstBut.set_active(True)
         self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
-        oTable = gtk.Table(len(self._dParsers) / 2, 2)
+        oTable = gtk.Table(len(self._dParsers) // 2, 2)
         self.oDlg.vbox.pack_start(oTable)
         oIter = self._dParsers.iterkeys()
         iXPos, iYPos = 0, 0

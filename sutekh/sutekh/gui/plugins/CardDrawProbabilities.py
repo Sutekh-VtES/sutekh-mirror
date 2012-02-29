@@ -26,7 +26,7 @@ def _choose(iChoices, iTotal):
     for iNum in range(1, iChoices):
         iNumerator *= (iTotal - iNum)
         iDenom *= iNum
-    return iNumerator / iDenom
+    return iNumerator // iDenom
 
 
 def _gen_choice_list(dSelectedCounts):

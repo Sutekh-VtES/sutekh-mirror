@@ -70,7 +70,7 @@ class ShowExported(SutekhPlugin):
         # vbox confuses pylint
         oDlg.vbox.pack_start(AutoScrolledWindow(oTextView))
         # Add the radio buttons
-        oTable = gtk.Table(len(self._dExporters) / 2, 2)
+        oTable = gtk.Table(len(self._dExporters) // 2, 2)
         oIter = self._dExporters.iterkeys()
         iXPos, iYPos = 0, 0
         oFirstBut = None

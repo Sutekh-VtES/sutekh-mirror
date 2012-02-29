@@ -108,7 +108,7 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None):
         if hasattr(oLogHandler, 'set_total'):
             # We promote to next integer, as we emit a signal
             # for any left over bits
-            oLogHandler.set_total((iLength + 9999) / 10000)
+            oLogHandler.set_total((iLength + 9999) // 10000)
         iTotal = 0
         bCont = True
         while bCont:
