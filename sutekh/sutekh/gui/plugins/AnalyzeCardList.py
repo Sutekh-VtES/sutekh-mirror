@@ -66,17 +66,10 @@ def _lookup_discipline(sKey, dDisciplines):
     return [x for x in dDisciplines if sKey == x.fullname][0]
 
 
-def _disc_sort_cmp(oTuple1, oTuple2):
+def _disc_sort_key(tData):
     """Sort disciplines by reverse number, then reverse superior number,
        then alphabetically by name"""
-    # Check numbers force, reversing cmp's results
-    iCmp = cmp(oTuple1[1][1], oTuple2[1][1])
-    if iCmp != 0:
-        return -iCmp
-    iCmp = cmp(oTuple1[1][2], oTuple2[1][2])
-    if iCmp != 0:
-        return -iCmp
-    return cmp(oTuple1[0].fullname, oTuple2[0].fullname)
+    return (-tData[1][1], -tData[1][2], tData[0].fullname)
 
 
 def _format_card_line(sString, sTrailer, iNum, iLibSize):
@@ -818,7 +811,7 @@ class AnalyzeCardList(SutekhPlugin):
         sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
         for oDisc, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
-                cmp=_disc_sort_cmp):
+                key=_disc_sort_key):
             if aInfo[0] == 'discipline':
                 sVampText += "%(infcount)d Vampires with %(disc)s %(iper)s," \
                         " %(supcount)d at Superior %(sper)s\n" % {
@@ -865,7 +858,7 @@ class AnalyzeCardList(SutekhPlugin):
                     oCreed.name, _percentage(iCount, self.iCryptSize, "Crypt"))
         for oVirtue, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
-                cmp=_disc_sort_cmp):
+                key=_disc_sort_key):
             if aInfo[0] == 'virtue':
                 sImbuedText += "%d Imbued with %s %s\n" % (aInfo[1],
                         oVirtue.fullname, _percentage(aInfo[1],
@@ -1185,7 +1178,7 @@ class AnalyzeCardList(SutekhPlugin):
                 "</span>\n"
         # Discipline analysis
         aSortedDiscs = [x[0].fullname for x in sorted(
-            self.dCryptStats['crypt discipline'].items(), cmp=_disc_sort_cmp)]
+            self.dCryptStats['crypt discipline'].items(), key=_disc_sort_key)]
         oMainLabel.set_markup(sHappyFamilyText)
         oDiscSelect = DisciplineNumberSelect(aSortedDiscs, oDlg)
         oHFVBox.pack_start(oDiscSelect, False, False)

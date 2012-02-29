@@ -20,8 +20,7 @@ class RulingParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic test method for ruling parser tests."""
-        aRulings = sorted(list(Ruling.select()), cmp=lambda oR1, oR2:
-                cmp(oR1.code, oR2.code))
+        aRulings = sorted(list(Ruling.select()), key=lambda oR: oR.code)
 
         self.assertEqual([oR.code for oR in aRulings], self.aExpectedRulings)
 

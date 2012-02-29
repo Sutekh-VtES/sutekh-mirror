@@ -256,17 +256,18 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
                                " removed from the %s:\n" % (sSrc,)\
                                + "\n".join(aErrMsgs))
 
-        def filter_cmp(oFilt1, oFilt2):
-            """Sort filters alphabetically by name, but with default
+        def filter_key(tFiltInfo):
+            """We sort filters alphabetically by name, but with default
                filter first if it is present"""
-            if oFilt1[0] == self.INITIAL_FILTER:
-                return -1
-            elif oFilt2[0] == self.INITIAL_FILTER:
-                return 1
+            if tFiltInfo[0] == self.INITIAL_FILTER:
+                # Return empty string, so we sort ahead of everything else
+                # Should be safe, since we don't allow empty names for
+                # filters
+                return ''
             else:
-                return cmp(oFilt1[0], oFilt2[0])
+                return tFiltInfo[0]
 
-        aFilters.sort(cmp=filter_cmp)
+        aFilters.sort(key=filter_key)
 
         return aFilters
 
