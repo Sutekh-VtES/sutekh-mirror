@@ -12,10 +12,17 @@
 import urllib2
 import re
 from logging import Logger
-# pylint: disable-msg=E0611
-# E0611: hashlib is stange, and confuses pylint
-from hashlib import sha256
-# pyline: enable-msg=E0611
+try:
+    # pylint: disable-msg=E0611
+    # E0611: hashlib is stange, and confuses pylint
+    from hashlib import sha256
+    # pylint: enable-msg=E0611
+except ImportError:
+    # Python2.4 doesn't have hashlib, so we just skip the checks
+    # pylint: disable-msg=C0103
+    # C0103: Using the module name here
+    sha256 = None
+    # pylint: enable-msg=C0103
 
 
 DOC_URL = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
@@ -133,7 +140,7 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None):
             sData = None
         else:
             sData = oFile.read()
-    if sHash is not None:
+    if sHash is not None and sha256 is not None:
         sDataHash = sha256(sData).hexdigest()
         if sDataHash != sHash:
             raise HashError(sData)
