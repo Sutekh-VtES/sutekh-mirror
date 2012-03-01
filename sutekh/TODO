@@ -15,6 +15,7 @@ Stuff that's fairly easy (we think)
  * TWD plugin
  * Storing SL credentials in the config file
  * More Error handling/reporting
+   - Include version number and other such useful info in the exception dialog
  * Cluster Plugin Speed-up
  * Automate mirroring help to the wiki
  * Add more keyboard shortcuts
