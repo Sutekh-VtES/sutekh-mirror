@@ -99,6 +99,7 @@ class RuleDict(dict):
 
         if 'url' in self:
             oRuling.url = self['url']
+            oRuling.syncUpdate()
 
         self['card'].addRuling(oRuling)
 

@@ -37,6 +37,7 @@ class RulingParserTests(SutekhTest):
         # IRuling confuses pylint
         oRuling = IRuling((aRulings[0].text, aRulings[0].code))
         self.assertEqual(oRuling.code, self.aExpectedRulings[0])
+        self.assertNotEqual(oRuling.url, None)
 
 if __name__ == "__main__":
     unittest.main()
