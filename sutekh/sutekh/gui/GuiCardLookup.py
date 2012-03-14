@@ -321,7 +321,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 except SQLObjectNotFound:
                     dUnknownCards[sName] = None
 
-                aNewNames.append(sName)
+            aNewNames.append(sName)
 
         if dUnknownCards:
             if not self._handle_unknown_abstract_cards(dUnknownCards, sInfo):
