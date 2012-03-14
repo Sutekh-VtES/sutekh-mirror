@@ -1,3 +1,24 @@
+14 Mar 2012
+ * Fix logic bug in GuiCardLookup. Keep previously ignored cards in the
+   lookup list to avoid the seen name to card mapping getting out of sync and
+   breaking.
+
+07 Mar 2012
+  * Don't silently drop urls from the rulings
+
+29 Feb 2012
+ * Use key= rather than cmp= everywhere (python -3 fix)
+ * Use explicit integer division in several places (python -3 fix)
+ * Don't break if hashlib isn't present (python 2.4 compatability fix). Note
+   that hash checking is disabled on python 2.4 as a result (no SHA256
+   implementation)
+
+28 Feb 2012
+ * Add hash fetching and verification to data pack downloads.
+ * Seperate the progress bar adjustment fromt the actual data-pack download
+ * Force window reszie earlier in the startup, so we restore pane positions
+   correctly
+
 27 Feb 2012
  * Record supported Python versions (2.4 - 2.7) in PyPI trove
    classifier list.
