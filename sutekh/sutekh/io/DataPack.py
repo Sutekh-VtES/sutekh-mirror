@@ -41,10 +41,11 @@ class HashError(Exception):
         self.sData = sData
 
 
-def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
-    """Read a documentation page and find a data pack URL.
+def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
+    """Read a documentation page and find all the data pack URLs and hashes
+    for the given tag.
 
-    Returns None if no file could be found for the given tag.
+    Returns empty lists if no file could be found for the given tag.
 
     The section looked for looks something like:
 
@@ -52,6 +53,7 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     || Some text || starters || date || [attachment:Foo.zip:wiki:FilePage Foo.zip] || sha256sum ||
     || Other text || rulebooks || date || [attachment:Bar.zip:wiki:FilePage Bar.zip] || sha256sum ||
     || Other text || twd || date || [attachment:Bas.zip:wiki:FilePage Bas.zip] || sha256sum ||
+    || Other text || twd || date || [attachment:Bas2.zip:wiki:FilePage Bas2.zip] || sha256sum ||
 
     dates are expected to be formated YYYY-MM-DD (strftime('%Y-%m-%d'))
     to avoid ambiguity.
@@ -61,8 +63,8 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     oAttachmentRe = re.compile(r'\[attachment:(?P<path>[^ ]*) ')
     iTagField = None
     iAttachField = None
-    sZipUrl = None
-    sHash = None
+    aZipUrls = []
+    aHashes = []
 
     def fields(sLine):
         """Helper function to split table lines into the needed structure"""
@@ -92,11 +94,29 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
                     # We need to split off the zip file name and the path bits
                     sZipName, sPath = sPath.split(':', 1)
                     sPath = sPath.replace(':', '/')
-                    sZipUrl = '/'.join((sZipUrlBase, sPath, sZipName))
+                    aZipUrls.append('/'.join((sZipUrlBase, sPath, sZipName)))
                     if iShaSumField is not None:
-                        sHash = aFields[iShaSumField]
+                        aHashes.append(aFields[iShaSumField])
 
-    return sZipUrl, sHash
+    return aZipUrls, aHashes
+
+
+def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
+    """Find a single data pack for a tag. Return url and hash, if appropriate.
+
+    Return None if no match is found.
+
+    See find_all_data_packs for details for the wiki page format.
+
+    If multiple datapack are found, return the last."""
+    aZipUrls, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase)
+    if not aZipUrls:
+        # No match
+        return None, None
+    elif not aHashes:
+        # No hash
+        return aZipUrls[-1], None
+    return aZipUrls[-1], aHashes[-1]
 
 
 def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None):

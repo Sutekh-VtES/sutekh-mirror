@@ -8,7 +8,7 @@
 import urllib
 import unittest
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.io.DataPack import find_data_pack
+from sutekh.io.DataPack import find_data_pack, find_all_data_packs
 
 TEST_DATA = """
 = User Documentation =
@@ -27,6 +27,8 @@ A comment.
 || '''Description''' || '''Tag''' || '''File''' || SHA256 Checksum ||
 || Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] || aaabb ||
 || Zip file of userful rulings and rulebooks || rulebooks || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] || dddeee ||
+|| 2009 decks || twd || [attachment:TWDA_2009.zip:wiki:MiscWikiFiles TWDA_2009.zip] || a ||
+|| 2010 decks || twd || [attachment:TWDA_2010.zip:wiki:MiscWikiFiles TWDA_2010.zip] || b ||
 """
 
 
@@ -59,6 +61,26 @@ class DataPackTest(SutekhTest):
 
         self.assertEqual(sHash, 'dddeee')
 
+        aUrls, aHashes = find_all_data_packs('twd', sTempUrl)
+
+        self.assertEqual(len(aUrls), 2)
+        self.assertEqual(len(aHashes), 2)
+
+        self.assertEqual(aUrls[0], "http://sourceforge.net/apps/trac/sutekh/"
+                         "raw-attachment/wiki/MiscWikiFiles/"
+                         "TWDA_2009.zip")
+        self.assertEqual(aUrls[1], "http://sourceforge.net/apps/trac/sutekh/"
+                         "raw-attachment/wiki/MiscWikiFiles/"
+                         "TWDA_2010.zip")
+        self.assertEqual(aHashes[0], 'a')
+        self.assertEqual(aHashes[1], 'b')
+
+        sUrl, sHash = find_data_pack('twd', sTempUrl)
+        # We return the last one in this case
+        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
+                         "raw-attachment/wiki/MiscWikiFiles/"
+                         "TWDA_2010.zip")
+        self.assertEqual(sHash, 'b')
 
 if __name__ == "__main__":
     unittest.main()
