@@ -1228,8 +1228,10 @@ class AnalyzeCardList(SutekhPlugin):
             iDiff -= iHFNumber
         if iDiff > 0:
             iHFNoDiscipline += iDiff  # Shove rounding errors here
-        sHappyFamilyText += "Number of Cards requiring No discipline : %s\n" \
-                % self.dLibStats['discipline']['No Discipline']
+        sHappyFamilyText += "Number of Minion cards requiring " \
+                " No discipline : %s\n" \
+                % (self.dLibStats['discipline']['No Discipline']
+                        - self.dTypeNumbers['Master'])
         sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
                 iHFNoDiscipline, (80 * self.iCryptSize / fDemon))
         sHappyFamilyText += '<span foreground = "blue">Difference = ' \
@@ -1241,7 +1243,7 @@ class AnalyzeCardList(SutekhPlugin):
                 iLibNum = self.dLibStats['discipline'][sDisc]
             else:
                 iLibNum = 0
-            sHappyFamilyText += "Number of Cards requiring %(disc)s :" \
+            sHappyFamilyText += "Number of Minion cards requiring %(disc)s :" \
                     " %(lib)d (%(crypt)d crypt members)\n" % {
                             'disc': sDisc,
                             'lib': iLibNum,
