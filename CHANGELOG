@@ -1,3 +1,7 @@
+12 Apr 2012
+ * Backport "Don't include masters in the happy familiies non-discipline
+   minion card count" fix (r3043)
+
 14 Mar 2012
  * Fix logic bug in GuiCardLookup. Keep previously ignored cards in the
    lookup list to avoid the seen name to card mapping getting out of sync and
