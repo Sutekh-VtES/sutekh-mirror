@@ -1,3 +1,10 @@
+08 Apr 2012
+ * Don't include masters in the happy familiies non-discipline minion
+   card count
+
+05 Apr 2012
+ * Add find_all_data_packs helper function
+
 14 Mar 2012
  * Fix logic bug in GuiCardLookup. Keep previously ignored cards in the
    lookup list to avoid the seen name to card mapping getting out of sync and
