@@ -1,3 +1,8 @@
+26 Apr 2012
+ * Backport 'ANY' group entry fix (r3046)
+ * Backport guessing encoding of data files (needed for latest cardlist)
+   fix (r3047)
+
 12 Apr 2012
  * Backport "Don't include masters in the happy familiies non-discipline
    minion card count" fix (r3043)

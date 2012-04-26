@@ -435,7 +435,7 @@ class CardDict(dict):
         """Add the group to the card. Replace '*' with -1."""
         sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
 
-        if sGroup == '*':
+        if sGroup == '*' or sGroup.lower() == 'any':
             iGroup = -1
         else:
             iGroup = int(sGroup, 10)
