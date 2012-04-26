@@ -1,3 +1,8 @@
+26 Apr 2012
+ * Handle 'ANY' group entries in the cardlist
+ * Attempt to guess the encoding of files before parsing them (needed due to
+   changing encodings of the cardlist).
+
 08 Apr 2012
  * Don't include masters in the happy familiies non-discipline minion
    card count
