@@ -19,6 +19,9 @@ FRAME = 'Frame'
 WW_CARDLIST = 'cardlist'
 CARDSET_LIST = 'cardset list'
 
+# Reserved filter names (for filter in profile special cases)
+DEF_PROFILE_FILTER = 'No profile filter'
+
 
 def is_option_list(sValue, *aOptions):
     """Validator function for option_list configspec type."""
@@ -164,11 +167,49 @@ class ConfigFile(object):
         self.__oConfigSpec = oConfigSpec
         self.__oConfig = ConfigObj(self.__sFileName, configspec=oConfigSpec,
                 indent_type='    ')
+        # We do this before validation, so validation will flag errors
+        # for us
+        self.update_filter_list()
         self.__oValidator = Validator(self.dCustomConfigTypes)
 
         oResults = self.__oConfig.validate(self.__oValidator,
                 preserve_errors=True)
+
+        # It's OK to do this after validation, since this is only
+        # to catch the case when filter entries have not been set yet,
+        # which don't cause a validation error.
+        self._fix_filter_defaults()
+
         return oResults
+
+    def update_filter_list(self):
+        """Add/Update a option validator for the filters.
+
+           This is so the profile editor lists things sensibly."""
+        try:
+            aValidProfileFilters = self.__oConfig['filters'].keys()
+        except KeyError:
+            aValidProfileFilters = []
+        aValidProfileFilters.append(DEF_PROFILE_FILTER)
+        # We set this directly on the spec object, since we need to
+        # override the existing value whenever the filter list changes
+        for sType in ['per_deck', WW_CARDLIST]:
+            self.__oConfigSpec[sType]['defaults']['filter'] = \
+                    "option(%s, default=%s)" % (
+                            ", ".join(aValidProfileFilters),
+                            DEF_PROFILE_FILTER)
+            # Also add to the __many__ section
+            self.__oConfigSpec[sType]['profiles']['__many__']['filter'] = \
+                    "option(%s, default=%s)" % (
+                            ", ".join(aValidProfileFilters),
+                            DEF_PROFILE_FILTER)
+
+    def _fix_filter_defaults(self):
+        """Ensure we are set in the default profile if needed"""
+        for sType in ['per_deck', WW_CARDLIST]:
+            if 'filter' not in self.__oConfig[sType]['defaults']:
+                self.__oConfig[sType]['defaults']['filter'] = \
+                        DEF_PROFILE_FILTER
 
     def validation_errors(self, oValidationResults):
         """Return a list of string describing any validation errors.
@@ -351,6 +392,25 @@ class ConfigFile(object):
         return [(sKey, dFilter['query']) for sKey, dFilter in
             self.__oConfig['filters'].items()]
 
+    def get_profiles_for_filter(self, sMatchFilter):
+        """Return a dictionary of profiles currently using the given filter"""
+        dProfileFilters = {}
+        for sType in [CARDSET, WW_CARDLIST]:
+            dProfileFilters[sType] = []
+            if sType == CARDSET:
+                dConfig = self.__oConfig['per_deck']
+            else:
+                dConfig = self.__oConfig[sType]
+            sFilter = dConfig['defaults'].get('filter', DEF_PROFILE_FILTER)
+            if sFilter == sMatchFilter:
+                dProfileFilters[sType].append('defaults')
+            for sProfile in dConfig['profiles']:
+                sFilter = dConfig['profiles'][sProfile].get('filter',
+                        DEF_PROFILE_FILTER)
+                if sFilter == sMatchFilter:
+                    dProfileFilters[sType].append(sProfile)
+        return dProfileFilters
+
     def get_filter(self, sKey):
         """Return the filter associated with the given key.
 
@@ -398,6 +458,21 @@ class ConfigFile(object):
             del self.__oConfig['filters'][sKey]
             for oListener in self.listeners():
                 oListener.remove_filter(sKey, sFilter)
+            # Cleanup filter from config profiles
+            dProfileFilters = self.get_profiles_for_filter(sKey)
+            for sType in dProfileFilters:
+                aProfiles = dProfileFilters[sType]
+                for sProfile in aProfiles:
+                    # We set removed filters to the default value
+                    # Since we don't allow a name clash, this will
+                    # always return None as the filter text, which
+                    # is the desired behaviour
+                    if sProfile == 'defaults':
+                        self.set_profile_option(sType, None, 'filter',
+                                DEF_PROFILE_FILTER)
+                    else:
+                        self.set_profile_option(sType, sProfile, 'filter',
+                                DEF_PROFILE_FILTER)
 
     def replace_filter(self, sKey, sOldFilter, sNewFilter):
         """Replace a filter in the file with new filter"""

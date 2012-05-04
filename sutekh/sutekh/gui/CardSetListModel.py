@@ -2276,17 +2276,20 @@ class CardSetCardListModel(CardListModel):
 
         bHideIllegal = self._oConfig.get_deck_option(self.frame_id,
                 self.cardset_id, HIDE_ILLEGAL)
+        sConfigFilter = self._oConfig.get_deck_option(self.frame_id,
+                self.cardset_id, 'filter')
 
+        bReloadFilter = self._change_config_filter(sConfigFilter)
         bReloadELM = self._change_level_mode(iExtraLevelMode)
         bReloadSCM = self._change_count_mode(iShowCardMode)
         bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
-        if bReloadIllegal:
+        if bReloadIllegal or bReloadFilter:
             # Invalidate card list cache
             self._dCache = {}
         if not bSkipLoad and (bReloadELM or bReloadSCM or bReloadPCM
-                or bReloadIcons or bReloadIllegal):
+                or bReloadIcons or bReloadIllegal or bReloadFilter):
             # queue reload for later
             self._try_queue_reload()
 
@@ -2309,3 +2312,14 @@ class CardSetCardListModel(CardListModel):
         if sType == FRAME and sId != self.frame_id:
             return
         self.update_options()
+
+    # Filter change events that affect us.
+    # We can't use CardListModel's version, due to the need to
+    # invalidate the cache
+    def replace_filter(self, sKey, _sOldFilter, _sNewFilter):
+        """Reload if the current config has changed"""
+        if sKey == self._sCurConfigFilter:
+            self._sCurConfigFilter = None
+            if self._change_config_filter(sKey):
+                self._dCache = {}
+                self._try_queue_reload()

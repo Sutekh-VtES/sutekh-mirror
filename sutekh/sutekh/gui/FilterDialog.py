@@ -10,7 +10,8 @@
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.core import FilterParser
-from sutekh.gui.ConfigFile import ConfigFileListener
+from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST, CARDSET, \
+        DEF_PROFILE_FILTER
 from sutekh.gui.FilterEditor import FilterEditor
 import gtk
 import gobject
@@ -240,6 +241,9 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sFilter)
+                if sName.lower() == DEF_PROFILE_FILTER.lower():
+                    # jump into the error path
+                    raise RuntimeError('Reserved name used for filter name')
                 if oAST.get_filter_expression() is None or \
                     self.__sFilterType in oAST.get_type():
                     aFilters.append((sName, sFilter))
@@ -298,6 +302,11 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         sConfigFilter = self.__oConfig.get_filter(sName)
         bSaved = False
 
+        if sName.lower() == DEF_PROFILE_FILTER.lower():
+            do_complaint_error("%s is a reserved filter name.\nNot Saving" %
+                    sName)
+            return
+
         if sConfigFilter is not None:
             iResponse = do_complaint_buttons(
                             "Replace existing filter '%s'?" % (sName,),
@@ -312,6 +321,8 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
             bSaved = True
 
         if bSaved:
+            # Update list for profiles
+            self.__oConfig.update_filter_list()
             # load saved filter to set everything correctly
             oAST = self.__oParser.apply(sFilter)
             self.__load_filter(sName, oAST)
@@ -321,10 +332,36 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         sName = self.__oFilterEditor.get_name()
         sConfigFilter = self.__oConfig.get_filter(sName)
 
+        dProfiles = self.__oConfig.get_profiles_for_filter(sName)
+
         if sConfigFilter is not None:
-            self.__oConfig.remove_filter(sName, sConfigFilter)
+            if dProfiles[WW_CARDLIST] or dProfiles[CARDSET]:
+                # Filter is in use as a config filter, so prompt
+                sCardlist = '\n'.join(['Cardlist profile : %s' %
+                    self.__oConfig.get_profile_option(WW_CARDLIST, x, 'name')
+                    for x in dProfiles[WW_CARDLIST]])
+                sCardset = '\n'.join(['Cardset profile : %s' %
+                    self.__oConfig.get_profile_option(CARDSET, x, 'name')
+                    for x in dProfiles[CARDSET]])
+                sProfiles = '\n'.join([sCardlist, sCardset])
+                iResponse = do_complaint_buttons(
+                    "Filter '%s' used in the followin profiles:\n%s\n"
+                    "Really delete?" % (sName, sProfiles),
+                    gtk.MESSAGE_QUESTION,
+                                (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                                 gtk.STOCK_NO, gtk.RESPONSE_NO))
+                if iResponse == gtk.RESPONSE_YES:
+                    self.__oConfig.remove_filter(sName, sConfigFilter)
+                else:
+                    # Cancelled, so skip out
+                    return
+            else:
+                # Not in use, just delete
+                self.__oConfig.remove_filter(sName, sConfigFilter)
 
         self.__load_filter("", None)
+        # Update list for profiles
+        self.__oConfig.update_filter_list()
 
     def __update_sensitivity(self):
         """Update which responses are available."""

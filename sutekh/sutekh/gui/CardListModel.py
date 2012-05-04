@@ -14,6 +14,7 @@ from sutekh.core.Groupings import CardTypeGrouping
 from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
         PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
         canonical_to_csv
+from sutekh.core.FilterParser import FilterParser
 from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
 
 EXTRA_LEVEL_OPTION = "extra levels"
@@ -88,6 +89,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self._bApplyFilter = False  # whether to apply the select filter
         # additional filters for selecting from the list
         self._oSelectFilter = None
+        self._oConfigFilter = None
+        self._sCurConfigFilter = None
         self._oConfig = oConfig
         self._oConfig.add_listener(self)
 
@@ -99,6 +102,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self.bUseIcons = True
         self._bHideIllegal = True
         self._oController = None
+        self._oFilterParser = FilterParser()
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -115,6 +119,10 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             fset=lambda self, x: setattr(self, '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
             fset=lambda self, x: setattr(self, '_oSelectFilter', x))
+    # configfilter is read only, since it's only changed via the
+    # profile management stuff
+    configfilter = property(fget=lambda self: self._oConfigFilter,
+            doc="Filter from the current profile.")
 
     frame_id = property(fget=lambda self: WW_CARDLIST,
             doc="Frame ID of the card list (for selecting profiles)")
@@ -380,14 +388,25 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         """Return the combination of oOtherFilter with the base filter.
 
            This handles the cases where either filter is None properly."""
-        if self.basefilter is None and oOtherFilter is None:
+        # This is a bit combinational explosion'ish, I'm afraid
+        if self.basefilter is None and self.configfilter is None and \
+                oOtherFilter is None:
             return NullFilter()
-        elif self.basefilter is None:
+        elif self.configfilter is None and self.basefilter is None:
             return oOtherFilter
-        elif oOtherFilter is None:
+        elif self.basefilter is None and oOtherFilter is None:
+            return self.configfilter
+        elif self.configfilter is None and oOtherFilter is None:
             return self.basefilter
-        else:
+        elif oOtherFilter is None:
+            return FilterAndBox([self.basefilter, self.configfilter])
+        elif self.configfilter is None:
             return FilterAndBox([self.basefilter, oOtherFilter])
+        elif self.basefilter is None:
+            return FilterAndBox([self.configfilter, oOtherFilter])
+        else:
+            return FilterAndBox([self.basefilter, self.configfilter,
+                oOtherFilter])
 
     def get_card_name_from_path(self, oPath):
         """Get the card name associated with the current path. Handle the
@@ -534,6 +553,22 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             sText = 'No Cards found'
         return sText
 
+    def _change_config_filter(self, sFilter):
+        """Update the config filter when needed"""
+        if sFilter == self._sCurConfigFilter:
+            return False
+        self._sCurConfigFilter = sFilter
+        sFilterText = self._oConfig.get_filter(sFilter)
+        oFilter = None
+        if sFilterText:
+            oAST = self._oFilterParser.apply(sFilterText)
+            if oAST:
+                oFilter = oAST.get_filter()
+        if oFilter == self._oConfigFilter:
+            return False
+        self._oConfigFilter = oFilter
+        return True
+
     def _change_level_mode(self, bLevel):
         """Set which extra information is shown."""
         if self.bExpansions != bLevel:
@@ -568,10 +603,15 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         bHideIllegal = self._oConfig.get_profile_option(WW_CARDLIST, sProfile,
                 HIDE_ILLEGAL)
 
+        sConfigFilter = self._oConfig.get_profile_option(WW_CARDLIST, sProfile,
+                'filter')
+
+        bReloadFilter = self._change_config_filter(sConfigFilter)
         bReloadELM = self._change_level_mode(bExpMode)
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
-        if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal):
+        if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal
+                or bReloadFilter):
             self._oController.frame.queue_reload()
 
     # Listen for changes to the cardlist config options
@@ -587,3 +627,14 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         if sType != WW_CARDLIST or sId != WW_CARDLIST:
             return
         self.update_options()
+
+    # Listen for filter events, since we need to respond sensibly
+    # We don't need to listen for remove_filter, since that will
+    # generate "profile_option_changed" signals
+
+    def replace_filter(self, sKey, _sOldFilter, _sNewFilter):
+        """Reload if the current config has changed"""
+        if sKey == self._sCurConfigFilter:
+            self._sCurConfigFilter = None
+            if self._change_config_filter(sKey):
+                self._oController.frame.queue_reload()
