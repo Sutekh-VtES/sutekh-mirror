@@ -7,6 +7,7 @@ h2. Contents
 # "Manipulating Panes":#panes
 # "Managing Card Sets":#sets
 # "Filtering":#filtering
+# "Profiles":#profiles
 # "Useful Tips":#tips
 
 h2(#intro). The Initial Layout
@@ -296,6 +297,52 @@ those sets are also displayed even if they do not match the filter themselves,
 so that the matching sets can be shown in their correct position in the
 hierarchy.
 
+
+h2(#profiles). Profiles
+
+h3. Overview
+
+Sutekh has a lot of options for customising the way a card set is displayed.
+These options are controlled by the profile feature. Profiles are available
+for individual card sets, the WW cardlist and the card set list.
+
+You can create several profiles and switch between them easily using the
+*Cardset profile*, *Cardlist profile* or *CardSet List profile* menus as
+required. Profiles are saved and will be re-applied one the next run.
+
+In addition, for card sets, there's the *Pane profile* menu. You can have
+multiple copies of a card set open at the same time. The cardset profile
+choice applies to all open copies of the same card set, while the
+*pane profile* overrides that for a specific pane. 
+
+There's also the *local profile*, which makes changes that *aren't* saved
+in the config file. This is useful for making quick changes to the local
+view that you don't want to keep or apply to other panes using the same
+profile.
+
+h3. Group by
+
+The *Group by* option controls the top level division used to arrange the cards.
+By default, this is the *CardType* grouping, which groups cards together by
+their card types (Vampire, Master, Action, etc.). Other groupings
+include: *Clan or Creed*, to arrange on clans, *Group*, to arrange
+by the vampire grouping and *Cost* to arrange by card cost.
+
+h3. Extra Columns
+
+The *Extra Columns* option allows you to specify additional information
+about the cards to be displayed in the pane. These extra columns can also
+be used to sort the card set, which can be useful with columns such as
+*Cost* or *Capacity*.
+
+h3. Filter
+
+The *Filter* option in the profile allows you to specify a saved filter
+that is always applied when this profile is used. This is can be used
+to create specify views of a card set, such as showing all vampires
+grouped by clan or so forth.
+
+
 h2(#tips). Useful Tips
 
 h3. Entering card sets
@@ -356,5 +403,15 @@ The _Take a snapshot of this card set_ option can be used to keep a history of
 how a card set evolves. Snapshots are children of the current card set, so the
 different view modes can be used and the _Compare with another Card Set_ can be
 used to see how a card set has changed between different versions.
+
+h3. Separating crypt and library views.
+
+It is sometimes useful to work with the crypt and library of a card set
+separately, showing different information about both. The easiest way is to
+open two copies of the card set, and use different pane profiles for each. The
+crypt profile should include a filter that selects crypt cards and display the
+desired extra information (Clan, Capacity, etc.), while the library profile
+should filter on non-crypt cards and show columns such as cost or disciplines. 
+
 
 "The Sutekh Manual":Manual.html
