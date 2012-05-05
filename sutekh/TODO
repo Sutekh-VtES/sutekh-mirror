@@ -7,7 +7,6 @@ Stuff that's fairly easy (we think)
 -----------------------------------
 
  * Replace the listeners with some sort of generic bus
- * Extend Analysis plugin to RT decks
  * Use HTML help dialog for filter help
  * Fetch missing images for vtes.pl
  * pep8 cleanup
@@ -20,8 +19,6 @@ Stuff that's fairly easy (we think)
  * Automate mirroring help to the wiki
  * Add more keyboard shortcuts
  * Right-click context menus
- * Add a "default filter" to profiles
- * Check sha256 sum of downloaded files to warn of corrupt/truncated downloads
  * Write a script for tagging releases from a branch and generating release notes.
 
 Bugfixes
