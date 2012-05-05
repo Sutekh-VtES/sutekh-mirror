@@ -146,7 +146,7 @@ preconstructed decks from the sutekh wiki. The zip file also includes the \
 details of the storyline and demo decks released by WW, but these can be \
 excluded using the checkboxes. If you have not imported the details of \
 these extra cards (see "Refreshing the White Wolf Card List":#refresh), \
-these will be greyed out and automaticaly excluded.
+these will be greyed out and automatically excluded.
 ** _Download or Configure Card Images_: Download images of the cards for the \
 "Card Images":#card_image pane, or use an existing zip file or directory of \
 images.
@@ -632,6 +632,8 @@ them using the _Load_ button. When modifying a filter, you can revert to the
 saved version using the _Revert Filter_ button. A saved filter will include
 all values currently set for the filter.
 
+Saved filters can also be used in "cardset and cardlist profiles":#profiles.
+
 h3(#filter_dialog). The Filter Dialog
 
 The filter dialog is laid out with 3 panes. The central pane shows the current
@@ -1081,6 +1083,8 @@ or to show both.
 * _Extra levels_: Controls whether the card expansions are listed.
 * _Group by_: Controls how the cards are grouped together. See the \
 "Card Grouping":#grouping section for more details.
+* _Filter_: Specify a saved "filter":#filters that is always applied when \
+this profile is selected.
 * _Hide cards not legal for tournament play_: Controls whether cards flagged \
 as not legal for tournament play (i.e. banned or storyline only cards) are \
 shown in the list.
@@ -1200,6 +1204,8 @@ as not legal for tournament play (i.e. banned or storyline only cards) are \
 shown in the list.
 * _Show icons for grouping_: Controls whether icons are shown with the group \
 name.
+* _Filter_: Specify a saved "filter":#filters that is always applied when \
+this profile is selected.
 * _Parent Count Mode_: Specify how the _Parent count_ column is displayed \
 in card sets with a parent set. The options are:
 ** _Ignore Parent_: Hide the parent count column.
@@ -1215,7 +1221,7 @@ level grouping (when available).
 
 h4(#different_profiles). The Different Profiles
 
-The display of a cardset is deteremined by 3 different profiles. These are the
+The display of a cardset is determined by 3 different profiles. These are the
 "local profile", the "pane profile" and the "card set profile". Any options
 that aren't set by one of these profiles is taken from the *Default profile*.
 
