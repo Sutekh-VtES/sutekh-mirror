@@ -1,3 +1,6 @@
+07 May 2012
+ * Backport "Normalise names from the WW cardlist" fix (r3056)
+
 26 Apr 2012
  * Backport 'ANY' group entry fix (r3046)
  * Backport guessing encoding of data files (needed for latest cardlist)

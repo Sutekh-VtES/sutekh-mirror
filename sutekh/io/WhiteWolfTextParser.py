@@ -12,7 +12,7 @@ import re
 import codecs
 from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
-from sutekh.core.SutekhObjects import SutekhObjectMaker
+from sutekh.core.SutekhObjects import SutekhObjectMaker, csv_to_canonical
 
 
 def strip_braces(sText):
@@ -612,7 +612,9 @@ class WaitingForCardName(LogStateWithInfo):
         if sLine.startswith('Name:'):
             self.flush()
             sData = sLine.split(':', 1)[1]
-            self._dInfo['name'] = sData.strip()
+            # CSV style names sometimes creep into the cardlist.txt,
+            # so ensure we normalise them consistently
+            self._dInfo['name'] = csv_to_canonical(sData.strip())
             return InExpansion(self._dInfo, self.oLogger)
         elif sLine.strip():
             if self._dInfo.has_key('name') and not self._dInfo.has_key('text'):
