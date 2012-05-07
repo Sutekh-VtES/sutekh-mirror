@@ -42,6 +42,7 @@ class DummyOptions(object):
         self.show_pep8 = False
         self.physical_checks = []
         self.logical_checks = []
+        self.max_line_length = 79
         # Need to do this to initialise counters in later pep8 versions
         if hasattr(pep8, 'BENCHMARK_KEYS'):
             self.counters = dict.fromkeys(pep8.BENCHMARK_KEYS, 0)
