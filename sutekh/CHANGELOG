@@ -1,3 +1,7 @@
+07 May 2012
+ * Normalise names from the WW cardlist, to avoid issues with occasional
+   CSV-style names appearing.
+
 05 May 2012
  * Add support for specifying a filter to associate with a profile. Useful
    for crypt analysis profiles and so forth.
