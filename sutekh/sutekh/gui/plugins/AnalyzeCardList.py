@@ -1150,6 +1150,10 @@ class AnalyzeCardList(SutekhPlugin):
             sHappyFamilyText += '\n<span foreground = "red">This is not' \
                     ' optimised for Imbued, and treats them as small ' \
                     'vampires</span>\n'
+        if self.dTypeNumbers['Event'] > 0:
+            sHappyFamilyText += '\n<span foreground = "red">Events are' \
+                    ' not considered by Happy Families. We treat them' \
+                    ' as additional masters.</span>'
         if self.iCryptSize == 0:
             sHappyFamilyText += '\n<span foreground = "red">Need to have' \
                     ' a crypt to do the analysis</span>\n'
@@ -1166,15 +1170,23 @@ class AnalyzeCardList(SutekhPlugin):
         # OK, for analysis, so set eveything up
         # Masters analysis
         iHFMasters = int(round(0.2 * self.iLibSize))
-        iNonMasters = self.iLibSize - self.dTypeNumbers['Master']
+        iLibMasters = self.dTypeNumbers['Master'] + self.dTypeNumbers['Event']
+        iNonMasters = (self.iLibSize - self.dTypeNumbers['Master']
+                - self.dTypeNumbers['Event'])
         sHappyFamilyText += "\n\t<b>Master Cards</b>\n"
-        sHappyFamilyText += str(self.dTypeNumbers['Master']) + " Masters " + \
+        sHappyFamilyText += "%d Masters %s\n" % (self.dTypeNumbers['Master'],
                 _percentage(self.dTypeNumbers['Master'],
-                        self.iLibSize, "Library") + \
-                ",\nHappy Families recommends 20%, which would be " + \
-                str(iHFMasters) + '  : '
+                        self.iLibSize, "Library"))
+        if self.dTypeNumbers['Event'] > 0:
+            sHappyFamilyText += "%d Events %s\n" % (self.dTypeNumbers['Event'],
+                    _percentage(self.dTypeNumbers['Event'], self.iLibSize,
+                        "Library"))
+            sHappyFamilyText += "%d Total %s\n" % (iLibMasters,
+                    _percentage(iLibMasters, self.iLibSize, 'Library'))
+        sHappyFamilyText += "Happy Families recommends 20%, which would" \
+                " be " + str(iHFMasters) + '  : '
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
-                str(abs(iHFMasters - self.dTypeNumbers['Master'])) + \
+                str(abs(iHFMasters - iLibMasters)) + \
                 "</span>\n"
         # Discipline analysis
         aSortedDiscs = [x[0].fullname for x in sorted(
@@ -1231,13 +1243,15 @@ class AnalyzeCardList(SutekhPlugin):
         sHappyFamilyText += "Number of Minion cards requiring " \
                 " No discipline : %s\n" \
                 % (self.dLibStats['discipline']['No Discipline']
-                        - self.dTypeNumbers['Master'])
+                        - self.dTypeNumbers['Master']
+                        - self.dTypeNumbers['Event'])
         sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
                 iHFNoDiscipline, (80 * self.iCryptSize / fDemon))
         sHappyFamilyText += '<span foreground = "blue">Difference = ' \
                 '%s</span>\n\n' % abs(iHFNoDiscipline -
                         (self.dLibStats['discipline']['No Discipline']
-                            - self.dTypeNumbers['Master']))
+                            - self.dTypeNumbers['Master']
+                            - self.dTypeNumbers['Event']))
         for sDisc in aDiscsToUse:
             iHFNum = dDiscNumbers[sDisc]
             if sDisc in self.dLibStats['discipline']:
