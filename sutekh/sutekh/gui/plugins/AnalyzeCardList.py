@@ -41,7 +41,7 @@ RT_BANNED = 'RT:Banned'
 # Lookup for titles for the not legal tabs
 ILLEGAL_LOOKUP = {
         RT_BANNED: 'Cards Banned in Rapid Thoughts',
-        RT_WATCHLIST: 'Cards on the Rapid Thoughts WAtchlist',
+        RT_WATCHLIST: 'Cards on the Rapid Thoughts Watchlist',
         'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
         }
 
