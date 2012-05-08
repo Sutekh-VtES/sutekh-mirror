@@ -1236,7 +1236,8 @@ class AnalyzeCardList(SutekhPlugin):
                 iHFNoDiscipline, (80 * self.iCryptSize / fDemon))
         sHappyFamilyText += '<span foreground = "blue">Difference = ' \
                 '%s</span>\n\n' % abs(iHFNoDiscipline -
-                        self.dLibStats['discipline']['No Discipline'])
+                        (self.dLibStats['discipline']['No Discipline']
+                            - self.dTypeNumbers['Master']))
         for sDisc in aDiscsToUse:
             iHFNum = dDiscNumbers[sDisc]
             if sDisc in self.dLibStats['discipline']:
