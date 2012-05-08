@@ -1,3 +1,7 @@
+08 May 2012
+ * Backport HF non-discipline card calculation fix (r3059)
+ * Backport HF "treat events as masters" fix (r3061)
+
 07 May 2012
  * Backport "Normalise names from the WW cardlist" fix (r3056)
 
