@@ -91,7 +91,8 @@ class CardListView(FilteredView):
 
         # Change card text view as required
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
-        self._oController.set_card_text(oPhysCard)
+        if oPhysCard:
+            self._oController.set_card_text(oPhysCard)
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -250,7 +251,8 @@ class CardListView(FilteredView):
     def card_activated(self, _oTree, oPath, _oColumn):
         """Update card text and notify listeners when a card is selected."""
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)
-        self._oController.set_card_text(oPhysCard)
+        if oPhysCard:
+            self._oController.set_card_text(oPhysCard)
 
     # Selecting
 

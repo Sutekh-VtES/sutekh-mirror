@@ -8,6 +8,7 @@
 
 import gtk
 import gobject
+import logging
 from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
         make_illegal_filter, CachedFilter
 from sutekh.core.Groupings import CardTypeGrouping
@@ -430,8 +431,15 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
 
     def get_physical_card_from_path(self, oPath):
         """Get the physical card name for the current path."""
-        oIter = self.get_iter(oPath)
-        return self.get_physical_card_from_iter(oIter)
+        try:
+            oIter = self.get_iter(oPath)
+            return self.get_physical_card_from_iter(oIter)
+        except ValueError:
+            # Something bad has happened, and we have an invalid path
+            # log this and return None
+            logging.warn('Invalid path (%s) in get_physical_card_from_path',
+                    oPath)
+            return None
 
     def check_card_visible(self, oPhysCard):
         """Returns true if oPhysCard should be shown.

@@ -261,6 +261,8 @@ class CardSetView(CardListView):
 
     def inc_card(self, _oCell, oPath):
         """Called to increment the count for a card."""
+        # We ignore the 'invalid path' failure case, since nothing should be
+        # able to remove the row out from under us.
         if self._oModel.bEditable:
             bInc, _bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bInc:
@@ -271,6 +273,7 @@ class CardSetView(CardListView):
 
     def dec_card(self, _oCell, oPath):
         """Called to decrement the count for a card"""
+        # Same assumption as inc_card about invalid path
         if self._oModel.bEditable:
             _bInc, bDec = self._oModel.get_inc_dec_flags_from_path(oPath)
             if bDec:
