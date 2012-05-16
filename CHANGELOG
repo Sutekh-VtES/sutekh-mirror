@@ -1,3 +1,6 @@
+16 May 2012
+ * Backport work-around "tree path vanishing" bug reported on windows (r3064)
+
 08 May 2012
  * Backport HF non-discipline card calculation fix (r3059)
  * Backport HF "treat events as masters" fix (r3061)
