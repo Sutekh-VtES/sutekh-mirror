@@ -1,3 +1,7 @@
+16 May 2012
+ * Add work-around for the rather mysterious "tree path vanishing" bug
+   reported on windows.
+
 08 May 2012
  * Fix calculation error with non-discipline cards in happy familiy
    analysis
