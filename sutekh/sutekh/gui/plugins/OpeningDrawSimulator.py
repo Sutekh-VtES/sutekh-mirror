@@ -148,6 +148,8 @@ class OpeningHandSimulator(SutekhPlugin):
         self.aLibrary = []
         self.aCrypt = []
         self.iCurHand = 0
+        self.iMoreLib = 0
+        self.iMoreCrypt = 0
         self.aDrawnHands = []
         self.bShowDetails = False
 
@@ -359,14 +361,30 @@ class OpeningHandSimulator(SutekhPlugin):
             aThisCrypt.remove(oCard)  # drawing without replacement
             dCrypt.setdefault(oCard.name, 0)
             dCrypt[oCard.name] += 1
+        dNextHand = {}
+        dNextCrypt = {}
+        for iNextDraw in range(3):
+            dNextHand[iNextDraw] = {}
+            dNextCrypt[iNextDraw] = {}
+            for _iCard in range(5):
+                oCard = choice(aThisLib)
+                aThisLib.remove(oCard)  # drawing without replacement
+                dNextHand[iNextDraw].setdefault(oCard.name, 0)
+                dNextHand[iNextDraw][oCard.name] += 1
+            oCard = choice(aThisCrypt)
+            aThisCrypt.remove(oCard)  # drawing without replacement
+            dNextCrypt[iNextDraw].setdefault(oCard.name, 0)
+            dNextCrypt[iNextDraw][oCard.name] += 1
         self.aDrawnHands.append([format_dict(dHand),
             fill_string(dTypes, dHand, self.dCardTypes),
             fill_string(dProps, dHand, self.dCardProperties),
-            format_dict(dCrypt)])
+            format_dict(dCrypt), dNextHand, dNextCrypt])
         return self._redraw_hand()
 
     def _redraw_hand(self):
         """Create a gtk.HBox holding a hand"""
+        self.iMoreLib = 0
+        self.iMoreCrypt = 0
         oHandBox = gtk.VBox(False, 2)
         oDrawLabel = gtk.Label()
         oHBox = gtk.HBox()
@@ -379,14 +397,56 @@ class OpeningHandSimulator(SutekhPlugin):
         oAlign = gtk.Alignment(xalign=0.5, xscale=0.7)
         oAlign.add(gtk.HSeparator())
         oHandBox.pack_start(oAlign, False, False)
+
+        oCryptInfoBox = gtk.VBox(False, 0)
+        oHandInfoBox = gtk.VBox(False, 0)
+        oHandInfoBox.pack_start(oHandLabel, True, True)
+        oMoreCards = gtk.Button('Next 5')
+        oMoreCards.connect('clicked', self._more_lib, oHandInfoBox)
+        oHandInfoBox.pack_start(oMoreCards, False, False)
+
+        oCryptInfoBox.pack_start(oCryptLabel, True, True)
+        oMoreCrypt = gtk.Button('Next 1')
+        oMoreCrypt.connect('clicked', self._more_crypt, oCryptInfoBox)
+        oCryptInfoBox.pack_start(oMoreCrypt, False, False)
         oFrame = gtk.Frame('Opening Hand')
-        oFrame.add(oHandLabel)
+        oFrame.add(oHandInfoBox)
         oHBox.pack_start(oFrame)
         oFrame = gtk.Frame('Opening Crypt Draw')
-        oFrame.add(oCryptLabel)
+        oFrame.add(oCryptInfoBox)
         oHBox.pack_start(oFrame)
         oHandBox.pack_start(oHBox)
         return oHandBox
+
+    def _more_lib(self, oButton, oBox):
+        """Add the next 5 library cards"""
+        if self.iMoreLib < 3:
+            dNextHand = \
+                    self.aDrawnHands[self.iCurHand - 1][4][self.iMoreLib]
+            # pop out button show we can add our text
+            oCardLabel = gtk.Label()
+            oCardLabel.set_markup(format_dict(dNextHand))
+            oBox.remove(oButton)
+            oBox.pack_start(oCardLabel, True, True)
+            self.iMoreLib += 1
+            if self.iMoreLib < 3:
+                oBox.pack_start(oButton, False, False)
+            oBox.show_all()
+
+    def _more_crypt(self, oButton, oBox):
+        """Add the next crypt card"""
+        if self.iMoreCrypt < 3:
+            dNextCrypt = \
+                    self.aDrawnHands[self.iCurHand - 1][5][self.iMoreCrypt]
+            # pop out button show we can add our text
+            oCardLabel = gtk.Label()
+            oCardLabel.set_markup(format_dict(dNextCrypt))
+            oBox.remove(oButton)
+            oBox.pack_start(oCardLabel, True, True)
+            self.iMoreCrypt += 1
+            if self.iMoreCrypt < 3:
+                oBox.pack_start(oButton, False, False)
+            oBox.show_all()
 
     def _redraw_detail_box(self):
         """Fill in the details for the given hand"""
