@@ -382,7 +382,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return aCards
 
-    def expansion_lookup(self, aExpansionNames, sInfo):
+    def expansion_lookup(self, aExpansionNames, sInfo, dCardExpansions):
         """Lookup missing expansions.
 
            Provides an implementation for ExpansionLookup.
@@ -401,7 +401,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     dUnknownExps[sExp] = None
 
         if dUnknownExps:
-            if not self._handle_unknown_expansions(dUnknownExps, sInfo):
+            if not self._handle_unknown_expansions(dUnknownExps, sInfo,
+                    dCardExpansions):
                 raise LookupFailed("Lookup of missing expansions aborted by" \
                                    " the user.")
 
@@ -648,8 +649,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         else:
             return False
 
-    @staticmethod
-    def _handle_unknown_expansions(dUnknownExps, sInfo):
+    def _handle_unknown_expansions(self, dUnknownExps, sInfo, dCardExpansions):
         """Handle the list of unknown expansions.
 
            We allow the user to select the correct replacements from the
@@ -680,9 +680,22 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # Fill in the Expansions and options
         dReplacement = {}
         for sName in dUnknownExps:
+            # Find the corresponding cards
+            aCards = []
+            for sCard in dCardExpansions:
+                if sName in dCardExpansions[sCard]:
+                    aCards.append('%s [%s]' % (sCard, sName))
             oBox = gtk.HBox()
-            oLabel = gtk.Label("%s is Unknown: Replace with " % sName)
+            oLabel = gtk.Label("%s is Unknown: " % sName)
             oBox.pack_start(oLabel)
+
+            oPopup = gtk.Button('Show cards')
+            oPopup.connect('clicked', self._popup_list,
+                    '\n'.join(sorted(aCards)), sName)
+            oBox.pack_start(oPopup)
+
+            oLabel2 = gtk.Label("Replace with ")
+            oBox.pack_start(oLabel2)
 
             oSelector = gtk.combo_box_new_text()
             oSelector.append_text("No Expansion")
@@ -691,7 +704,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
             dReplacement[sName] = oSelector
 
+            oPopupExpList = gtk.Button('Show cards')
+            oPopupExpList.connect('clicked', self._popup_exp, oSelector)
+
             oBox.pack_start(dReplacement[sName])
+            oBox.pack_start(oPopupExpList)
             oButtonBox.pack_start(oBox)
 
         oUnknownDialog.vbox.pack_start(oButtonBox, True, True)
@@ -712,3 +729,44 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             return True
         else:
             return False
+
+    @staticmethod
+    def _popup_list(_oButton, sCardText, sName):
+        """Popup the list of cards from the unknown expansion"""
+        oCardDialog = SutekhDialog(
+            "Cards with unknown expansion %s" % sName, None,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        # pylint: disable-msg=E1101
+        # vbox confuses pylint
+        oLabel = gtk.Label(sCardText)
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
+        oCardDialog.set_size_request(300, 400)
+        oCardDialog.show_all()
+        oCardDialog.run()
+        oCardDialog.destroy()
+
+    @staticmethod
+    def _popup_exp(_oButton, oSelector):
+        """Popup the list of cards from the unknown expansion"""
+        # pylint: disable-msg=E1101
+        # vbox & SQLObject confuse pylint
+        sNewName = oSelector.get_active_text()
+        if sNewName == 'No Expansion' or sNewName is None:
+            # No cards to show, so do nothing
+            sTitle = "No Expansion Selected"
+            oLabel = gtk.Label('No Expansion selected')
+        else:
+            sTitle = "Cards with expansion %s" % sNewName
+            aCards = set()
+            for aRP in IExpansion(sNewName).pairs:
+                aCards.update([x.name for x in aRP.cards])
+            oLabel = gtk.Label('\n'.join(sorted(aCards)))
+        oCardDialog = SutekhDialog(sTitle, None,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
+        oCardDialog.set_size_request(300, 400)
+        oCardDialog.show_all()
+        oCardDialog.run()
+        oCardDialog.destroy()

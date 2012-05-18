@@ -71,7 +71,7 @@ class ExpansionLookup(object):
        objects
        """
 
-    def expansion_lookup(self, aExpansionNames, sInfo):
+    def expansion_lookup(self, aExpansionNames, sInfo, dCardExpansions):
         """Return a list of Expansions, one for each item in aExpansionNames.
 
            Names for which Expansions could not be found will be marked with
@@ -124,7 +124,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                         pass
         return aCards
 
-    def expansion_lookup(self, aExpansionNames, _sInfo):
+    def expansion_lookup(self, aExpansionNames, _sInfo, _dCardExpansions):
         """Lookup for expansion names, excluding unknown expansions."""
         aExps = []
         for sExp in aExpansionNames:
