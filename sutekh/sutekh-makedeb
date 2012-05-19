@@ -62,7 +62,9 @@ make_deb () {
 
     # build .changes file (see https://github.com/astraw/stdeb/issues/37)
     cd deb_dist/sutekh-${DEB_VERSION}
-    debuild -S -e"$SIGNER"
+    # We pass auto-commit through to dpkg-source, so it doesn't complain about
+    # any changes we've made via the py2dsc patch
+    debuild -S -e"$SIGNER" --source-option=--auto-commit
     cd ../..
 
 }
