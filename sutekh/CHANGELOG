@@ -1,3 +1,15 @@
+19 May 2012
+ * Add precise to the list of releases we build for
+ * Tweak RPM build script
+ * Fix patches for the debian build. 
+
+18 May 2012
+ * Provide access to lists of affected cards when dealing with unknown
+   expansions, to make it easier to deal with.
+
+17 May 2012
+ * Add initial "draw more cards" option to the Opening Hand plugin
+
 16 May 2012
  * Add work-around for the rather mysterious "tree path vanishing" bug
    reported on windows.
