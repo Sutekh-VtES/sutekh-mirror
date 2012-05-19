@@ -15,8 +15,15 @@ RELEASE=${RELEASE:+"0.1.$RELEASE"}
 # default to 1 if no rc/alpha tag
 RPM_RELEASE=${RELEASE:-1}
 
-# Create sdist, needed for building rpm
-python ./setup.py sdist
+# Check we have sdist (created by python ./setup.py sdist) in place
+if [ ! -e $SDIST_FILE ]; then
+   echo "Please copy the source tarball for this release to $SDIST_FILE."
+   echo "NB: Do not simply re-build the source tarball -- it should be"
+   echo "    the same source tarball uploaded to sourceforge, so md5sums"
+   echo "    match up with those published"
+   exit 1
+fi
+
 # Create spec file
 python ./setup.py bdist_rpm --spec-only
 # Fix spec file
