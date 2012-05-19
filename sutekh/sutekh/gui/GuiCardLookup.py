@@ -748,7 +748,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
     @staticmethod
     def _popup_exp(_oButton, oSelector):
-        """Popup the list of cards from the unknown expansion"""
+        """Popup the list of cards from the selected replacement expansion"""
         # pylint: disable-msg=E1101
         # vbox & SQLObject confuse pylint
         sNewName = oSelector.get_active_text()
