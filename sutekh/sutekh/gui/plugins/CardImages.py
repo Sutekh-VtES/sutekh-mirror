@@ -11,6 +11,7 @@ import unicodedata
 import os
 import zipfile
 import tempfile
+import logging
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -187,7 +188,15 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
             return ''
         # pylint: disable-msg=E1101
         # pylint doesn't pick up IExpansion methods correctly
-        oExpansion = IExpansion(sExpansionName)
+        try:
+            oExpansion = IExpansion(sExpansionName)
+        except SQLObjectNotFound:
+            # This can happen because we cache the expansion name and
+            # a new database import may cause that to vanish.
+            # We return just return a blank path segment, as the safest choice
+            logging.warn('Expansion %s no longer found in the database',
+                    sExpansionName)
+            return ''
         # special case Anarchs and alastors due to promo hack shortname
         if oExpansion.name == 'Anarchs and Alastors Storyline':
             sExpName = oExpansion.name.lower()
