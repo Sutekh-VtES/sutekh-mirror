@@ -1,6 +1,7 @@
 21 May 2012
  * Backport the "show lists of cards" buttons for dealing with
    unknown expansions (r3071, r3072)
+ * Backport 'expansion changing in card images plugin' fix (r3082)
 
 19 May 2012
  * Merge adding precise to the list of releases we build for (r3076)
