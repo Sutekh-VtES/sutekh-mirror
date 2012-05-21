@@ -1,3 +1,7 @@
+21 May 2012
+ * Backport the "show lists of cards" buttons for dealing with
+   unknown expansions (r3071, r3072)
+
 19 May 2012
  * Merge adding precise to the list of releases we build for (r3076)
  * Merge rpm build script fixes (r3073)

@@ -126,7 +126,8 @@ class CardSetHolder(object):
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         aExpNames = self._dExpansions.keys()
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
+                self._dCardExpansions)
         dExpansionLookup = dict(zip(aExpNames, aExps))
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
@@ -282,7 +283,8 @@ class CachedCardSetHolder(CardSetHolder):
             for sExp, iCnt in self._dCardExpansions[sName].iteritems():
                 dCardExpansions[sName][dLookupCache['expansions'].get(sExp,
                     sExp)] = iCnt
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List")
+        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
+                self._dCardExpansions)
         dExpansionLookup = dict(zip(aExpNames, aExps))
         # Update expansion lookup cache
         for sName, oExp in dExpansionLookup.iteritems():
