@@ -1,3 +1,7 @@
+21 May 2012
+ * Handle expansion names changing on importingd data more
+   elegantly in the card images plugin
+
 19 May 2012
  * Add precise to the list of releases we build for
  * Tweak RPM build script
