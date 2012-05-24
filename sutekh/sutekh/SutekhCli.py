@@ -32,7 +32,8 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         write_all_pcs
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.io.WwFile import WwFile
+from sutekh.io.WwFile import WwFile, WW_CARDLIST_URL, WW_RULINGS_URL, \
+        EXTRA_CARD_URL
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -133,6 +134,12 @@ def parse_options(aArgs):
     oOptParser.add_option("--print-encoding",
             type="string", dest="print_encoding", default='ascii',
             help="Encoding to use when printing output")
+    oOptParser.add_option("--fetch-files",
+            action="store_true", dest="fetch", default=False,
+            help="Fetch the rulings, WW cardlist and extra card text"
+                    " files from their respective default sites."
+                    " Should be used with the -c option to refresh the"
+                    " database contents")
 
     return oOptParser, oOptParser.parse_args(aArgs)
 
@@ -281,6 +288,12 @@ def main_with_args(aTheArgs):
 
     if not oOpts.ruling_file is None:
         read_rulings([WwFile(oOpts.ruling_file)], oLogHandler)
+
+    if oOpts.fetch:
+        read_white_wolf_list([WwFile(WW_CARDLIST_URL, True)], oLogHandler)
+        aRulings = [WwFile(sUrl, True) for sUrl in WW_RULINGS_URL]
+        read_rulings(aRulings, oLogHandler)
+        read_white_wolf_list([WwFile(EXTRA_CARD_URL, True)], oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
