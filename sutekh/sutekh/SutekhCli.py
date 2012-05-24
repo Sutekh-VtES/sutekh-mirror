@@ -46,15 +46,15 @@ def parse_options(aArgs):
                   help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oOptParser.add_option("-r", "--ww-file",
                   type="string", dest="ww_file", default=None,
-                  help="Text file (probably from the VEKN website) to read " \
+                  help="Text file (probably from the VEKN website) to read "
                           "cards from.")
     oOptParser.add_option("-e", "--extra-file",
                   type="string", dest="extra_file", default=None,
-                  help="Text file to read extra storyline" \
+                  help="Text file to read extra storyline"
                           "cards from.")
     oOptParser.add_option("--ruling-file",
                   type="string", dest="ruling_file", default=None,
-                  help="HTML file (probably from WW website) to read " \
+                  help="HTML file (probably from WW website) to read "
                           "rulings from.")
     oOptParser.add_option("-c", "--refresh-tables",
                   action="store_true", dest="refresh_tables", default=False,
@@ -66,7 +66,7 @@ def parse_options(aArgs):
     oOptParser.add_option("--refresh-physical-card-tables",
                   action="store_true", dest="refresh_physical_card_tables",
                   default=False,
-                  help="Drop (if possible) and recreate physical card " \
+                  help="Drop (if possible) and recreate physical card "
                           "tables only.")
     oOptParser.add_option("--sql-debug",
                   action="store_true", dest="sql_debug", default=False,
@@ -76,15 +76,15 @@ def parse_options(aArgs):
                   help="Read physical card list from the given XML file.")
     oOptParser.add_option("--save-cs",
                   type="string", dest="save_cs", default=None,
-                  help="Save the given Card Set to an XML file " \
+                  help="Save the given Card Set to an XML file "
                           "(by default named <csname>.xml).")
     oOptParser.add_option("--cs-filename",
                   type="string", dest="cs_filename", default=None,
-                  help="Give an alternative filename to save the " \
+                  help="Give an alternative filename to save the "
                           "Card Set as")
     oOptParser.add_option("--save-all-cs",
                   action="store_true", dest="save_all_css", default=False,
-                  help="Save all Card Sets in the database to files" \
+                  help="Save all Card Sets in the database to files"
                           " - Cannot be used with --save-cs.")
     oOptParser.add_option("--read-cs",
                   type="string", dest="read_cs", default=None,
@@ -94,12 +94,12 @@ def parse_options(aArgs):
                   help="Load an Abstract Card Set from the given XML file.")
     oOptParser.add_option("--reload", action="store_true", dest="reload",
                   default=False,
-                  help="Dump all card sets and reload them - intended to be" \
-                          " used with -c and refreshing the abstract card" \
+                  help="Dump all card sets and reload them - intended to be"
+                          " used with -c and refreshing the abstract card"
                           " list")
     oOptParser.add_option("--upgrade-db",
                   action="store_true", dest="upgrade_db", default=False,
-                  help="Attempt to upgrade a database to the latest version." \
+                  help="Attempt to upgrade a database to the latest version."
                           " Cannot be used with --refresh-tables")
     oOptParser.add_option("--dump-zip",
                   type="string", dest="dump_zip_name", default=None,
@@ -122,11 +122,11 @@ def parse_options(aArgs):
             help="Filter to run on the database")
     oOptParser.add_option("--filter-cs",
             type="string", dest="filter_cs", default=None,
-            help="card set to filter. If not specified, filter the WW" \
+            help="card set to filter. If not specified, filter the WW"
                     " card list")
     oOptParser.add_option("--filter-detailed",
             action="store_true", dest="filter_detailed", default=False,
-            help="Print card details for filter results, rather than just" \
+            help="Print card details for filter results, rather than just"
                     " card names")
     oOptParser.add_option("--print-card",
             type="string", dest="print_card", default=None,
