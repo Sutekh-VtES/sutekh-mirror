@@ -1,0 +1,128 @@
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
+# Copyright 2008 Simon Cross <hodgestar@gmail.com>
+# GPL - see COPYING for details
+
+"""Writer for pmwiki lists
+
+   Example deck:
+
+   (:title Example deck by Auth :)
+
+   !! Description
+   Followers of Set Preconstructed Starter from Lords of the Night.
+
+   http://www.white-wolf.com/vtes/index.php?line=Checklist_LordsOfTheNight
+
+   !! Notes
+
+   (annotations)
+
+   !! Crypt [12 vampires]
+   2x Nakhthorheb
+   ...
+
+   !! Library [77 cards]
+
+   !!! Action [20]
+     2x Blithe Acceptance
+     4x Dream World
+   ...
+   """
+
+from sutekh.core.ArdbInfo import ArdbInfo
+
+
+class WritePmwiki(ArdbInfo):
+    """Create a string in pmwiki format representing a dictionary of cards."""
+
+    # pylint: disable-msg=R0201
+    # method for consistency with the other methods
+    def _gen_header(self, oHolder):
+        """Generate an pmwiki header."""
+        return "(:title %s by %s :)\n\n" \
+               "!! Description\n%s\n" \
+               "!! Notes\n%s\n" % (oHolder.name, oHolder.author,
+                       oHolder.comment, oHolder.annotations)
+    # pylint: enable-msg=R0201
+
+    def _gen_crypt(self, dCards):
+        """Generate an pmwiki crypt description.
+
+           dCards is mapping of (card id, card name) -> card count.
+           """
+        (dVamps, dCryptStats) = self._extract_crypt(dCards)
+        dCombinedVamps = self._group_sets(dVamps)
+
+        sCrypt = "!! Crypt [%(size)d vampires]\n" % dCryptStats
+
+        aCryptLines = []
+        for oCard,  (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+                key=lambda x: (-x[1][0], -max(x[0].capacity, x[0].life),
+                    x[0].name)):
+            # We sort inversely on count, then capacity and then normally by
+            # name
+            dLine = {'count': iCount}
+            if len(oCard.creed) > 0:
+                dLine['capacity'] = oCard.life
+            else:
+                dLine['capacity'] = oCard.capacity
+            dLine['name'] = oCard.name
+            dLine['adv'] = ''
+            if oCard.level is not None:
+                dLine['name'] = dLine['name'].replace(' (Advanced)', '')
+                dLine['adv'] = 'Adv'
+            aCryptLines.append(dLine)
+
+        for dLine in aCryptLines:
+            sCrypt += " %(count)dx %(name)s %(adv)s\n" % dLine
+
+        return sCrypt
+
+    def _gen_library(self, dCards):
+        """Generaten an pmwiki library description.
+
+           dCards is mapping of (card id, card name) -> card count.
+           """
+        (dLib, iLibSize) = self._extract_library(dCards)
+        dCombinedLib = self._group_sets(dLib)
+
+        sLib = "!! Library [%d cards]\n\n" % (iLibSize,)
+
+        dTypes = {}
+        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.iteritems():
+            if sTypeString not in dTypes:
+                dTypes[sTypeString] = {}
+            dTypes[sTypeString].setdefault(oCard, 0)
+            dTypes[sTypeString][oCard] += iCount
+
+        for sTypeString in sorted(dTypes):
+            dCards = dTypes[sTypeString]
+            iTotal = sum(dCards.values())
+
+            sLib += "!!! %s [%d]\n" % (sTypeString, iTotal)
+
+            for oCard, iCount in sorted(dCards.iteritems(),
+                    key=lambda x: x[0].name):
+                sLib += " %dx %s\n" % (iCount, oCard.name)
+
+            sLib += "\n"
+
+        return sLib
+
+    # pylint: disable-msg=R0913
+    # we need all these arguments
+    def write(self, fOut, oHolder):
+        """Takes filename, deck details and a dictionary of cards, of the
+           form dCard[(id, name, set)] = count and writes the file."""
+        # We don't encode strange characters, and just write the unicode string
+        # to file. This looks to match ARDB's behaviour (tested against
+        # ARDB version 2.8
+        dCards = self._get_cards(oHolder.cards)
+        fOut.write(self._gen_header(oHolder))
+        fOut.write("\n")
+        fOut.write(self._gen_crypt(dCards))
+        fOut.write("\n")
+        fOut.write(self._gen_library(dCards))
+
+    # pylint: enable-msg=R0913

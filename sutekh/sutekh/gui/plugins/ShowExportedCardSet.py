@@ -17,6 +17,7 @@ from sutekh.io.WriteJOL import WriteJOL
 from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.WritePmwiki import WritePmwiki
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
 from sutekh.io.WriteCSV import WriteCSV
 
@@ -40,6 +41,7 @@ class ShowExported(SutekhPlugin):
             'BBcode output for the V:EKN Forums': WriteVEKNForum,
             'Export to ELDB ELD Deck File': WriteELDBDeckFile,
             'CSV Export (with headers)': WriteCSV,
+            'Export to pmwiki': WritePmwiki,
             }
 
     def get_menu_item(self):
