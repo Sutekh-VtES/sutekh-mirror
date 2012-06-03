@@ -1,3 +1,10 @@
+03 Jun 2012
+ * Make the results text selectable in the card set compare and
+   card set independence plugins.
+
+28 May 2012
+ * Support exporting decks to a pmwiki formatted deck list
+
 21 May 2012
  * Handle expansion names changing on importingd data more
    elegantly in the card images plugin
