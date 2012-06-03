@@ -53,6 +53,7 @@ def _make_align_list(aList):
     oAlign.set_padding(0, 0, 5, 0)  # offset a little from the left edge
     sContents = "\n".join(aList)
     oLabel.set_markup(sContents)
+    oLabel.set_selectable(True)
     return oAlign
 
 
