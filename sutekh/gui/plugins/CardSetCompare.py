@@ -139,6 +139,7 @@ class CardSetCompare(SutekhPlugin):
                 oLabel.set_markup(sContents)
             else:
                 oLabel.set_text('No Cards')
+            oLabel.set_selectable(True)
             return oAlign
 
         def make_page(oList, dCardData):

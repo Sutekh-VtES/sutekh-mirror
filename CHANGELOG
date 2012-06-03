@@ -1,3 +1,7 @@
+03 Jun 2012
+ * Backport 'Make the results text of card set compare and card set
+   independence plugins selectable' fix (r3090)
+
 21 May 2012
  * Backport the "show lists of cards" buttons for dealing with
    unknown expansions (r3071, r3072)
