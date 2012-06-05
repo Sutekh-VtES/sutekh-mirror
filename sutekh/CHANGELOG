@@ -1,3 +1,7 @@
+05 Jun 2012
+ * Make cardlist encoding info messsages use logging.info rather than
+   loggin.warn
+
 03 Jun 2012
  * Make the results text selectable in the card set compare and
    card set independence plugins.
