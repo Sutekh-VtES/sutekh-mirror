@@ -68,7 +68,7 @@ def guess_encoding(sData, sFile):
     aEncodings = ['utf8', 'iso8859-1']
     for sEnc in aEncodings:
         try:
-            logging.warn('Trying %s for %s', sEnc, sFile)
+            logging.info('Trying %s for %s', sEnc, sFile)
             sData.decode(sEnc)
             return sEnc
         except UnicodeDecodeError:
