@@ -1,3 +1,6 @@
+05 Jun 2012
+ * Backport 'use logging.info for cardlist encoding message' fix (r3093)
+
 03 Jun 2012
  * Backport 'Make the results text of card set compare and card set
    independence plugins selectable' fix (r3090)
