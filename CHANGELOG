@@ -1,3 +1,6 @@
+09 Jun 2012
+ * Backport fixes to the location and unique keyword detection (r3097)
+
 05 Jun 2012
  * Backport 'use logging.info for cardlist encoding message' fix (r3093)
 

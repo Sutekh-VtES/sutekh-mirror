@@ -147,8 +147,11 @@ class CardDict(dict):
     # equipment properties
     dEquipmentProperties = {
             'unique': re.compile('Unique (melee )?weapon|Unique equipment|'
-                'represents a unique location'),
-            'location': re.compile('represents a (unique )?location'),
+                'represents a unique location|'
+                'this is a unique location|'
+                'as equipment (while|when) in play. (Haven. )?Unique.'),
+            'location': re.compile('represents a (unique )?location|'
+                'this is a (unique )?location'),
             'melee weapon': re.compile('[mM]elee weapon\.'),
             'cold iron': re.compile('weapon\. Cold iron\.'),
             'gun': re.compile('[wW]eapon[:,.] [gG]un\.'),
