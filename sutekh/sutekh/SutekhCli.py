@@ -13,6 +13,7 @@ import optparse
 import os
 import tempfile
 import StringIO
+import logging
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.core.SutekhObjects import Ruling, TABLE_LIST, PHYSICAL_LIST, \
@@ -134,6 +135,9 @@ def parse_options(aArgs):
     oOptParser.add_option("--print-encoding",
             type="string", dest="print_encoding", default='ascii',
             help="Encoding to use when printing output")
+    oOptParser.add_option("--verbose",
+            action="store_true", dest="verbose", default=False,
+            help="Display warning messages")
     oOptParser.add_option("--fetch-files",
             action="store_true", dest="fetch", default=False,
             help="Fetch the rulings, WW cardlist and extra card text"
@@ -250,6 +254,20 @@ def main_with_args(aTheArgs):
 
     if oOpts.sql_debug:
         oConn.debug = True
+
+    # Only log critical messages by default
+    oRootLogger = logging.getLogger()
+    oRootLogger.setLevel(level=logging.CRITICAL)
+    if oOpts.verbose:
+        # Change logging level to debug
+        oRootLogger.setLevel(logging.DEBUG)
+        # Add logging to stderr
+        oLogHandler = logging.StreamHandler(sys.stderr)
+        oRootLogger.addHandler(oLogHandler)
+    else:
+        # Setup fallback logger for critical messages
+        oLogHandler = logging.StreamHandler(sys.stderr)
+        oRootLogger.addHandler(oLogHandler)
 
     if oOpts.reload:
         if not oOpts.refresh_tables:
