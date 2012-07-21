@@ -840,7 +840,8 @@ class CardSetCardListModel(CardListModel):
         for oPhysCard in self._get_extra_cards(oCurFilter):
             self._adjust_row(dAbsCards, oPhysCard, dChildCardCache, False)
 
-        if not self.applyfilter and self._dCache['this card list']:
+        if (not self.applyfilter and self.configfilter is None and
+                self._dCache['this card list']):
             for oPhysCard in self._dCache['this card list']:
                 self._adjust_row(dAbsCards, oPhysCard,
                         dChildCardCache, True)
@@ -868,7 +869,7 @@ class CardSetCardListModel(CardListModel):
                     self._dAbs2Phys.setdefault(oAbsId, {})
                     self._dAbs2Phys[oAbsId].setdefault(oPhysCard, 0)
                     self._dAbs2Phys[oAbsId][oPhysCard] += 1
-            if not self.applyfilter:
+            if not self.applyfilter and (self.configfilter is None):
                 self._dCache['this card list'] = aCards
 
         self._add_parent_info(dAbsCards, dPhysCards, oCurFilter)
@@ -1448,10 +1449,12 @@ class CardSetCardListModel(CardListModel):
             # Changing a card from this card set
             if self._oCardSet.inuse:
                 self._update_cache(oPhysCard, iChg, 'sibling')
-            if iChg > 0 and self._dCache['this card list'] is not None:
+            if (iChg > 0 and self._dCache['this card list'] is not None
+                    and self.configfilter is None):
                 # this card list can be empty
                 self._dCache['this card list'].append(oPhysCard)
-            elif self._dCache['this card list']:
+            elif (self._dCache['this card list']
+                    and self.configfilter is None):
                 self._dCache['this card list'].remove(oPhysCard)
             if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
                 # This cache may no longer be valid in this case
