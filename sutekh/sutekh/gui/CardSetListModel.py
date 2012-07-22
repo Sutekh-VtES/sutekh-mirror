@@ -262,6 +262,8 @@ class CardSetCardListModel(CardListModel):
         self._bPhysicalFilter = False
         if self.applyfilter and self.selectfilter:
             self._bPhysicalFilter = self.selectfilter.is_physical_card_only()
+        elif self.configfilter is not None:
+            self._bPhysicalFilter = self.configfilter.is_physical_card_only()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
         oGroupedIter, aCards = self.grouped_card_iter(oCardIter)
