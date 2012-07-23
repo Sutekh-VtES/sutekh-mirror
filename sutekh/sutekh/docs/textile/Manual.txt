@@ -1,4 +1,4 @@
-h1. Manual for Sutekh 0.8
+h1. Manual for !Sutekh Version!
 
 !sutekh-icon.png (Sutekh Icon)!
 

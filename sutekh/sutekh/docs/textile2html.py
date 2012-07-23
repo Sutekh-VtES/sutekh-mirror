@@ -9,6 +9,7 @@ Convert Sutekh textile documentation into HTML pages.
 
 import glob
 import os
+import imp
 import textile
 
 # pylint: disable-msg=C0103
@@ -18,6 +19,10 @@ try:
     import tidy
 except ImportError:
     tidy = None
+
+infopath = os.path.join(os.path.dirname(__file__), '..', 'SutekhInfo.py')
+SutekhInfoMod = imp.load_source("SutekhInfo", infopath)
+SutekhInfo = SutekhInfoMod.SutekhInfo
 
 HTML_HEADER = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -36,13 +41,12 @@ HTML_FOOTER = """
 
 # pylint: enable-msg=C0103
 
-# TODO: Pull in version number automatically from SutekhInfo
-
 
 def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""
     sHtml = HTML_HEADER % dContext \
-        + textile.textile(sText) \
+        + textile.textile(sText.replace('!Sutekh Version!',
+            'Sutekh %s' % SutekhInfo.BASE_VERSION_STR)) \
         + HTML_FOOTER % dContext
     sHtml = sHtml.replace('<br />', ' ')  # remove pesky linebreaks
     return sHtml
