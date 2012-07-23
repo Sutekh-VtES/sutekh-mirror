@@ -44,10 +44,10 @@ HTML_FOOTER = """
 
 def textile2html(sText, dContext):
     """Convert a Textile markup string to an HTML file."""
-    sHtml = HTML_HEADER % dContext \
-        + textile.textile(sText.replace('!Sutekh Version!',
-            'Sutekh %s' % SutekhInfo.BASE_VERSION_STR)) \
-        + HTML_FOOTER % dContext
+    sHtml = ''.join([HTML_HEADER % dContext,
+            textile.textile(sText.replace('!Sutekh Version!',
+                'Sutekh %s' % SutekhInfo.BASE_VERSION_STR)),
+            HTML_FOOTER % dContext])
     sHtml = sHtml.replace('<br />', ' ')  # remove pesky linebreaks
     return sHtml
 
