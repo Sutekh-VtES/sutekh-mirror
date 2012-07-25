@@ -183,6 +183,11 @@ def is_crypt_card(oAbsCard):
     return oAbsCard.cardtype[0].name in CRYPT_TYPES
 
 
+def is_vampire(oAbsCard):
+    """Test if a card is a vampire or not"""
+    return oAbsCard.cardtype[0].name == 'Vampire'
+
+
 # Utility function to help with config management and such
 def get_cs_id_name_table():
     """Returns a dictionary id : name for all the card sets.
