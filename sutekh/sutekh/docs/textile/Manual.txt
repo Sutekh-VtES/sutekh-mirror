@@ -50,6 +50,7 @@ h2. Contents
 ## "Compare with another Card Set":#compare
 ## "Analyze Deck":#analyze_deck
 ## "Test Card Set Independence":#test_cs_indep
+## "Find similiar crypt cards":#find_crypt
 ## "Simulate Opening Hand":#opening_hand
 ## "Card draw probabilities":#draw_prob
 # "Profiles":#profiles
@@ -542,6 +543,7 @@ h3(#cardsets_analyze). Analyze
 The following analysis options are available for card sets:
 
 * "Analyze Deck":#analyze_deck
+* "Find similar crypt cards":#find_crypt
 * "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
 * "Compare with another Card Set":#compare
@@ -984,6 +986,17 @@ the card set. The remaining tabs consider specific card types.
 
 The happy family implementation allows you either to select the number of
 disciplines to use, or to select the disciplines to consider manually.
+
+
+h3(#find_crypt). Find similiar crypt cards
+
+This allows you to find crypt cards that are similar to the current selected
+crypt card. It will search for cards in a compatible grouping that share
+the specified number of disciplines or virtues with the selected crypt card.
+
+More complex queries are possible by frist filtering the card set and then
+using the 'Only match cards visible in this pane' option to restrict the
+results of the crypt card search to match the filter.
 
 h3(#test_indep). Test Card Set Independence
 
