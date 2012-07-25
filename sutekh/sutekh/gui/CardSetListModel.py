@@ -1420,7 +1420,10 @@ class CardSetCardListModel(CardListModel):
             # calls to add_new_Card and iter fiddling, so it's worth trying
             # to avoid going down this path if at all possible.
             if oCardSet.id != self._oCardSet.id \
-                    and not oCurFilter.involves(oCardSet) \
+                    and ((oCurFilter is not None and
+                        not oCurFilter.involves(oCardSet)) or
+                        (self.configfilter is not None and
+                            not self.configfilter.involves(oCardSet))) \
                     and not (self.changes_with_parent() and
                             self.is_parent(oCardSet)) \
                     and not (self.changes_with_children() and
@@ -1525,6 +1528,9 @@ class CardSetCardListModel(CardListModel):
                 # We don't use the base filter, to avoid complex logic for the
                 # different display modes.
                 oFilter = self.get_current_filter()
+                if oFilter is None:
+                    # We must be physical because of the configgfilter
+                    oFilter = self.configfilter
                 oFullFilter = FilterAndBox([PhysicalCardFilter(), oFilter,
                     SpecificPhysCardIdFilter(oPhysCard.id)])
                 bResult = oFullFilter.select(PhysicalCard).count() > 0
