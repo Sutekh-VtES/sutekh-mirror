@@ -1,3 +1,18 @@
+25 Jul 2012
+ * Add a 'find similar crypt card' plugin for helping find matching
+   crypt selections
+
+23 Jul 2012
+ * Automatically add the correct version to the docs when generating html
+
+22 Jul 2012
+ * Fix a bug when adding cards to a card set when multiple copies are
+   open with different profile filters
+
+21 Jul 2012
+ * Fix a bug triggering an exception when removing a card from a card set
+   when multiple copies are open with different profile filters
+
 09 Jun 2012
  * Fix some bugs with the 'unique' and 'location' keyword detection
  * Add a '--verbose' flag to the command line script
