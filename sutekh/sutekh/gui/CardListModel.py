@@ -371,43 +371,50 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         return (fGetCard, fGetCount, fGetExpanInfo,
                 self.groupby(aAbsCards, fGetCard), aCards)
 
+    def is_filtered(self):
+        """Helper method for checking filtered state with the config filter"""
+        return self._bApplyFilter or self._oConfigFilter is not None
+
     def get_current_filter(self):
         """Get the current applied filter.
 
-           This is also responsible for handling the not legal filter case."""
-        if self.applyfilter and self._bHideIllegal and self.selectfilter:
-            return FilterAndBox([self.selectfilter, self.oLegalFilter])
-        elif self._bHideIllegal:
-            # either not self.apply, or self.selectfilter is None
-            return self.oLegalFilter
-        elif self.applyfilter:
-            return self.selectfilter
+           This is also responsible for handling the not legal filter case
+           and any filter specified by the profile."""
+        # This is a bit combinational explosion'ish, I'm afraid
+        if self.configfilter:
+            if self.applyfilter and self._bHideIllegal and self.selectfilter:
+                return FilterAndBox([self.configfilter, self.selectfilter,
+                    self.oLegalFilter])
+            elif self._bHideIllegal:
+                # either not self.apply, or self.selectfilter is None
+                return FilterAndBox([self.configfilter, self.oLegalFilter])
+            elif self.applyfilter:
+                return FilterAndBox([self.configfilter, self.selectfilter])
+            else:
+                return self.configfilter
         else:
-            return None
+            if self.applyfilter and self._bHideIllegal and self.selectfilter:
+                return FilterAndBox([self.selectfilter, self.oLegalFilter])
+            elif self._bHideIllegal:
+                # either not self.apply, or self.selectfilter is None
+                return self.oLegalFilter
+            elif self.applyfilter:
+                return self.selectfilter
+            else:
+                return None
 
     def combine_filter_with_base(self, oOtherFilter):
         """Return the combination of oOtherFilter with the base filter.
 
            This handles the cases where either filter is None properly."""
-        # This is a bit combinational explosion'ish, I'm afraid
-        if self.basefilter is None and self.configfilter is None and \
-                oOtherFilter is None:
+        if self.basefilter is None and oOtherFilter is None:
             return NullFilter()
-        elif self.configfilter is None and self.basefilter is None:
-            return oOtherFilter
-        elif self.basefilter is None and oOtherFilter is None:
-            return self.configfilter
-        elif self.configfilter is None and oOtherFilter is None:
-            return self.basefilter
-        elif oOtherFilter is None:
-            return FilterAndBox([self.basefilter, self.configfilter])
-        elif self.configfilter is None:
-            return FilterAndBox([self.basefilter, oOtherFilter])
         elif self.basefilter is None:
-            return FilterAndBox([self.configfilter, oOtherFilter])
+            return oOtherFilter
+        elif oOtherFilter is None:
+            return self.basefilter
         else:
-            return FilterAndBox([self.basefilter, self.configfilter,
-                oOtherFilter])
+            return FilterAndBox([self.basefilter, oOtherFilter])
 
     def get_card_name_from_path(self, oPath):
         """Get the card name associated with the current path. Handle the

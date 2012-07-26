@@ -652,7 +652,7 @@ class CardSetCardListModel(CardListModel):
                                 CachedFilter(PhysicalCardSetFilter(sName))
                     self._dCache['set map'] = dChildren
         dChildCardCache = {}
-        if not self.applyfilter and self._dCache['full child card list']:
+        if not self.is_filtered() and self._dCache['full child card list']:
             aChildCards = self._dCache['full child card list']
         elif self._iShowCardMode != CHILD_CARDS and \
                 self._dCache['full child card list']:
@@ -661,7 +661,7 @@ class CardSetCardListModel(CardListModel):
             oFullFilter = FilterAndBox([self._dCache['all children filter'],
                 oCurFilter])
             aChildCards = list(oFullFilter.select(self.cardclass).distinct())
-            if not self.applyfilter:
+            if not self.is_filtered():
                 self._dCache['full child card list'] = aChildCards
         if self._iExtraLevelsMode in CARD_SETS_LEVEL and \
                 self._dCache['child filters']:
@@ -693,7 +693,8 @@ class CardSetCardListModel(CardListModel):
         if self._oCardSet.parentID and not (
                 self._iParentCountMode == IGNORE_PARENT and
                 self._iShowCardMode != PARENT_CARDS):
-            if not self.applyfilter and self._dCache['full parent card list']:
+            if not self.is_filtered() and \
+                    self._dCache['full parent card list']:
                 aParentCards = self._dCache['full parent card list']
             elif self._iShowCardMode != PARENT_CARDS and \
                     self._dCache['full parent card list']:
@@ -718,7 +719,7 @@ class CardSetCardListModel(CardListModel):
                 aParentCards = [PhysicalCardMappingToPhysicalCardAdapter(x)
                         for x in
                         oParentFilter.select(self.cardclass).distinct()]
-                if not self.applyfilter:
+                if not self.is_filtered():
                     self._dCache['full parent card list'] = aParentCards
             for oPhysCard in aParentCards:
                 self._dCache['parent cards'].setdefault(oPhysCard, 0)
@@ -734,8 +735,7 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable-msg=E1101, E1103
         # Pyprotocols confuses pylint
         if self._iShowCardMode == ALL_CARDS:
-            if not self.applyfilter and \
-                    self._dCache['full card list']:
+            if not self.is_filtered() and self._dCache['full card list']:
                 aExtraCards = self._dCache['full card list']
             elif self._dCache['all cards']:
                 aExtraCards = self._dCache['all cards']
@@ -744,7 +744,7 @@ class CardSetCardListModel(CardListModel):
                     oCurFilter])
                 aExtraCards = list(oFullFilter.select(PhysicalCard).distinct())
                 self._dCache['all cards'] = aExtraCards
-                if not self.applyfilter:
+                if not self.is_filtered():
                     self._dCache['full card list'] = aExtraCards
         elif self._iShowCardMode == PARENT_CARDS and self._oCardSet.parentID:
             # Since we handle numbers later, this works
@@ -842,8 +842,7 @@ class CardSetCardListModel(CardListModel):
         for oPhysCard in self._get_extra_cards(oCurFilter):
             self._adjust_row(dAbsCards, oPhysCard, dChildCardCache, False)
 
-        if (not self.applyfilter and self.configfilter is None and
-                self._dCache['this card list']):
+        if not self.is_filtered() and self._dCache['this card list']:
             for oPhysCard in self._dCache['this card list']:
                 self._adjust_row(dAbsCards, oPhysCard,
                         dChildCardCache, True)
@@ -871,7 +870,7 @@ class CardSetCardListModel(CardListModel):
                     self._dAbs2Phys.setdefault(oAbsId, {})
                     self._dAbs2Phys[oAbsId].setdefault(oPhysCard, 0)
                     self._dAbs2Phys[oAbsId][oPhysCard] += 1
-            if not self.applyfilter and (self.configfilter is None):
+            if not self.is_filtered():
                 self._dCache['this card list'] = aCards
 
         self._add_parent_info(dAbsCards, dPhysCards, oCurFilter)
@@ -959,7 +958,7 @@ class CardSetCardListModel(CardListModel):
 
                 aInUseCards = [PhysicalCardMappingToPhysicalCardAdapter(x)
                         for x in oSibFilter.select(self.cardclass).distinct()]
-                if not self.applyfilter:
+                if not self.is_filtered():
                     self._dCache['full sibling card list'] = aInUseCards
             for oPhysCard in aInUseCards:
                 oAbsId = oPhysCard.abstractCardID
@@ -1420,10 +1419,7 @@ class CardSetCardListModel(CardListModel):
             # calls to add_new_Card and iter fiddling, so it's worth trying
             # to avoid going down this path if at all possible.
             if oCardSet.id != self._oCardSet.id \
-                    and ((oCurFilter is not None and
-                        not oCurFilter.involves(oCardSet)) or
-                        (self.configfilter is not None and
-                            not self.configfilter.involves(oCardSet))) \
+                    and not oCurFilter.involves(oCardSet) \
                     and not (self.changes_with_parent() and
                             self.is_parent(oCardSet)) \
                     and not (self.changes_with_children() and
@@ -1528,9 +1524,6 @@ class CardSetCardListModel(CardListModel):
                 # We don't use the base filter, to avoid complex logic for the
                 # different display modes.
                 oFilter = self.get_current_filter()
-                if oFilter is None:
-                    # We must be physical because of the configgfilter
-                    oFilter = self.configfilter
                 oFullFilter = FilterAndBox([PhysicalCardFilter(), oFilter,
                     SpecificPhysCardIdFilter(oPhysCard.id)])
                 bResult = oFullFilter.select(PhysicalCard).count() > 0
