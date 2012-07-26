@@ -585,6 +585,22 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oPCS, aModels)
         self._cleanup_models(aModels)
 
+    def test_adding_config_filter(self):
+        """Check adding cards with config filter enabled (single card set)"""
+        _oCache = SutekhObjectCache()
+        oPCS = self._setup_simple()
+        aModels = []
+        for oFilter in (Filters.CardTypeFilter('Vampire'),
+                Filters.PhysicalExpansionFilter('Sabbat'),
+                Filters.CardSetMultiCardCountFilter((['2', '3'],
+                    self.aNames[0])),
+                ):
+            oModel = self._get_model(self.aNames[0])
+            oModel._oConfigFilter = oFilter
+            aModels.append(oModel)
+        self._loop_modes(oPCS, aModels)
+        self._cleanup_models(aModels)
+
     def test_cache_simple(self):
         """Test that the special persistent caches don't affect results"""
         # pylint: disable-msg=W0212
@@ -909,12 +925,54 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oChildPCS, aModels)
         self._cleanup_models(aModels)
 
+    def test_relation_config_filters(self):
+        """Test adding with complex relationships and the config filter
+           enabled"""
+        _oCache = SutekhObjectCache()
+        _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
+                self._setup_relationships()
+        aModels = []
+        for oFilter in (
+                Filters.CardTypeFilter('Vampire'),
+                Filters.PhysicalExpansionFilter('Sabbat'),
+                Filters.CardSetMultiCardCountFilter((['2', '3'],
+                    self.aNames[0])),
+                ):
+            for sName in self.aNames[:4]:
+                oModel = self._get_model(sName)
+                oModel._oConfigFilter = oFilter
+                aModels.append(oModel)
+        self._loop_modes(oChildPCS, aModels)
+        self._cleanup_models(aModels)
+
+    def test_rel_filter_cfg_filter(self):
+        """Test with complex relationship, a physical config filter
+           and additional filters"""
+        _oCache = SutekhObjectCache()
+        _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
+                self._setup_relationships()
+        aModels = []
+        oConfigFilter = Filters.CardSetMultiCardCountFilter((['2', '3'],
+                    self.aNames[0]))
+        for oFilter in (
+                Filters.CardTypeFilter('Vampire'),
+                Filters.PhysicalExpansionFilter('Sabbat'),
+                ):
+            for sName in self.aNames[:4]:
+                oModel = self._get_model(sName)
+                oModel._oConfigFilter = oConfigFilter
+                oModel.selectfilter = oFilter
+                oModel.applyfilter = True
+                aModels.append(oModel)
+        self._loop_modes(oChildPCS, aModels)
+        self._cleanup_models(aModels)
+
     def test_filters(self):
         """Test filtering for the card set"""
         # pylint: disable-msg=R0915, W0212
         # R0915: Want a long, sequential test case to reduce
-        # W0212: We need to access protected methods
         # repeated setups, so it has lots of lines
+        # W0212: We need to access protected methods
         # Note that these tests are with the illegal card filter enabled
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
