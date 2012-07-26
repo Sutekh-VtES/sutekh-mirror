@@ -1,3 +1,7 @@
+26 Jul 2012
+ * Add tests for the handling of card sets with profile filters specified
+ * Fix some further bugs with the profile filter handling
+
 25 Jul 2012
  * Add a 'find similar crypt card' plugin for helping find matching
    crypt selections
