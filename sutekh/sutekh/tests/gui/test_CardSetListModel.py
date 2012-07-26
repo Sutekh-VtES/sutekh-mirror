@@ -213,6 +213,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                     oModel.groupby)
         if oModel.applyfilter:
             sModel += "Filter: %s\n" % oModel.selectfilter
+        if oModel.configfilter:
+            sModel += "Config Filter: %s\n" % oModel.configfilter
         sModel += " State : (ExtraLevelsMode %s, ParentCountMode : %s, " \
                 "ShowCardMode : %s, Editable: %s)" % (
                         self.aExtraLevelToStr[oModel._iExtraLevelsMode],
