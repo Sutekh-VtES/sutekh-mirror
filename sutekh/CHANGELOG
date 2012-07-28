@@ -1,3 +1,6 @@
+28 Jul 2012
+ * Tweak test suite so it passes on Windows XP
+
 26 Jul 2012
  * Add tests for the handling of card sets with profile filters specified
  * Fix some further bugs with the profile filter handling
