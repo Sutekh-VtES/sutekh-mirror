@@ -14,7 +14,9 @@ from sqlobject import sqlhub
 import unittest
 import tempfile
 import os
+import sys
 import StringIO
+from logging import FileHandler
 
 
 class SutekhTest(unittest.TestCase):
@@ -145,6 +147,14 @@ class DummyHolder(object):
             dNoExpCards.setdefault(sCardName, 0)
             dNoExpCards[sCardName] += self.dCards[(sCardName, sExpName)]
         return dNoExpCards.items()
+
+
+def make_null_handler():
+    """Utility function to create a logger for /dev/null that works
+       on both windows and Linux"""
+    if sys.platform.startswith("win"):
+        return FileHandler('NUL')
+    return FileHandler('/dev/null')
 
 
 def _iterdump(connection):
