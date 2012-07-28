@@ -85,3 +85,4 @@ class DatabaseUpgradeTests(SutekhTest):
 
         oPCS1 = IPhysicalCardSet("PCS1")
         assert oPCS1.parent == oMyCollection
+        oNewConn.close()
