@@ -1,3 +1,6 @@
+28 Jul 2012
+ * Backport windows XP test suite fixes (r3113 & r3114)
+
 09 Jun 2012
  * Backport fixes to the location and unique keyword detection (r3097)
 

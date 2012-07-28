@@ -6,7 +6,8 @@
 
 """Test database upgrading"""
 
-from sutekh.tests.TestCore import SutekhTest
+import sys
+from sutekh.tests.TestCore import SutekhTest, make_null_handler
 from sutekh.tests import create_db
 from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy
@@ -15,7 +16,6 @@ from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
     AbstractCardAdapter, PhysicalCardAdapter, ExpansionAdapter, \
     IPhysicalCardSet
 from sqlobject import sqlhub, connectionForURI
-from logging import FileHandler
 
 
 class DatabaseUpgradeTests(SutekhTest):
@@ -45,7 +45,11 @@ class DatabaseUpgradeTests(SutekhTest):
         oOrigConn = sqlhub.processConnection
 
         sDbFile = self._create_tmp_file()
-        oNewConn = connectionForURI("sqlite://%s" % sDbFile)
+        # windows is different, since we don't have a starting / for the path
+        if sys.platform.startswith("win"):
+            oNewConn = connectionForURI("sqlite:///%s" % sDbFile)
+        else:
+            oNewConn = connectionForURI("sqlite://%s" % sDbFile)
         sqlhub.processConnection = oNewConn
 
         create_db()
@@ -53,7 +57,7 @@ class DatabaseUpgradeTests(SutekhTest):
         assert list(AbstractCard.select())
 
         oCardLookup = SimpleLookup()
-        oLogHandler = FileHandler('/dev/null')
+        oLogHandler = make_null_handler()
 
         copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
                 oLogHandler)
@@ -80,3 +84,4 @@ class DatabaseUpgradeTests(SutekhTest):
 
         oPCS1 = IPhysicalCardSet("PCS1")
         assert oPCS1.parent == oMyCollection
+        oNewConn.close()
