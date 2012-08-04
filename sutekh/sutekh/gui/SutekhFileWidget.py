@@ -15,7 +15,12 @@ import gtk
 
 def _changed_dir(oFileChooser, oParentWin):
     """Update parent's working dir when the folder changes."""
-    oParentWin.set_working_dir(oFileChooser.get_current_folder())
+    if oFileChooser.get_mapped():
+        # If we're not mapped, we can't be responsible for changing
+        # the directory, so we shouldn't be fiddling with the global
+        # value. The mapped call will ensure everything gets set
+        # correctly when it's our turn to shine
+        oParentWin.set_working_dir(oFileChooser.get_current_folder())
 
 
 def add_filter(oFileChooser, sFilterName, aFilterPatterns):
@@ -52,9 +57,9 @@ class SutekhFileDialog(gtk.FileChooserDialog):
         super(SutekhFileDialog, self).__init__(sTitle, oParent, oAction,
                 oButtons)
         self.set_name('Sutekh.dialog')
-        sWorkingDir = oParent.get_working_dir()
-        if sWorkingDir:
-            self.set_current_folder(sWorkingDir)
+        # We don't set the working directory here, since that
+        # doesn't always work as expected and instead we rely
+        # on the mapped signal to fix stuff
         self.connect('current-folder-changed', _changed_dir, oParent)
         self.connect('show', _mapped, oParent)
         self._oAllFilter = add_filter(self, 'All Files', ['*'])
