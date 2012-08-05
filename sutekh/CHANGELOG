@@ -1,3 +1,11 @@
+05 Aug 2012
+ * Add a check for the wine version in the py2exe script (to work around
+   the issues with wine-1.4 and windows 7)
+
+04 Aug 2012
+ * Fix a bug with the tracking of the active directory doing the wrong
+   thing when multiple file widgets are created.
+
 28 Jul 2012
  * Tweak test suite so it passes on Windows XP
 
