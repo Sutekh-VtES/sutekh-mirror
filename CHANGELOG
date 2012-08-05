@@ -1,3 +1,8 @@
+05 Aug 2012
+ * Backport check for the wine version in the py2exe script (to work around
+   the issues with wine-1.4 and windows 7) (r3118)
+ * backport active directory with multiple file widgers bugfix (r3117)
+
 28 Jul 2012
  * Backport windows XP test suite fixes (r3113 & r3114)
 
