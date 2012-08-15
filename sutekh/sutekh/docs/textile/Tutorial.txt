@@ -356,7 +356,7 @@ When you import card sets from other formats, the expansion information may be
 missing, in which case these cards will be imported without an expansion. If you
 know that all the imported cards are from the same expansion -- for example, if
 the card set is a starter deck -- you can use the
-_Set selection to single expansion_ option from the _Edit_ menu to set all
+_Set selection to single expansion_ option from the _Actions_ menu to set all
 the cards to the correct expansion quickly.
 
 h3. Search for cards and card sets
