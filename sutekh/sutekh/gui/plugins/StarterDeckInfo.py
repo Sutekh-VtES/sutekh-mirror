@@ -412,7 +412,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         if dInfo['Starters']:
             oCardTextBuf.set_cur_iter_to_mark('expansion')
             oCardTextBuf.tag_text("\n")
-            oCardTextBuf.labelled_list('Preconstrcuted Decks',
+            oCardTextBuf.labelled_list('Preconstructed Decks',
                     dInfo['Starters'], 'starters')
         oCardTextBuf.set_cur_iter(oTempIter)
 
