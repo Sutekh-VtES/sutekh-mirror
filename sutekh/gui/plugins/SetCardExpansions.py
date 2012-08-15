@@ -30,7 +30,7 @@ class SetCardExpansions(SutekhPlugin):
             return None
         oMenuItem = gtk.MenuItem("Set selected cards to a single expansion")
         oMenuItem.connect("activate", self.activate)
-        return ('Edit', oMenuItem)
+        return ('Actions', oMenuItem)
 
     def activate(self, _oWidget):
         """Handle menu activation"""
