@@ -1,3 +1,11 @@
+30 Sep 2012
+ * Tag 0.8.2 final release
+
+15 Aug 2012
+ * Move 'set selected cards to single expansion' to 'Actons' menu (r3122)
+ * Backport typo fix in Starter Plugin (r3121)
+ * Update docs & regenerate the html docs
+
 05 Aug 2012
  * Backport check for the wine version in the py2exe script (to work around
    the issues with wine-1.4 and windows 7) (r3118)
