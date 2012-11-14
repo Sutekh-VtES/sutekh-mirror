@@ -83,7 +83,7 @@ class RuleDict(dict):
 
     def save(self):
         """Add the rulings to the database."""
-        if not ('title' in self and 'code' in self \
+        if not ('title' in self and 'code' in self
                 and 'text' in self):
             return
 

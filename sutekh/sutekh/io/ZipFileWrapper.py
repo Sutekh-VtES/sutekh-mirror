@@ -109,9 +109,9 @@ class ZipFileWrapper(object):
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
             _parse_string(oIdParser, oData, None)
-            if (oIdParser.type == 'PhysicalCard' or \
-                    oIdParser.type == 'PhysicalCardSet') and not \
-                    bTablesRefreshed:
+            if ((oIdParser.type == 'PhysicalCard' or
+                    oIdParser.type == 'PhysicalCardSet') and not
+                    bTablesRefreshed):
                 # We delete the Physical Card Sets
                 # Since this is restoring the contents of a zip file,
                 # hopefully this is safe to do
