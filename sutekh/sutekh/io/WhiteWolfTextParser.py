@@ -378,7 +378,7 @@ class CardDict(dict):
             return
 
         for sVal in sDis.split():
-            if  sVal == sVal.lower():
+            if sVal == sVal.lower():
                 oPair = self._oMaker.make_discipline_pair(sVal, 'inferior')
             else:
                 oPair = self._oMaker.make_discipline_pair(sVal, 'superior')
