@@ -137,6 +137,18 @@ class ArdbInfo(object):
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
 
+    def _get_cap_key(self, oCard):
+        """Get a capacity or life value for the card, with sensible
+           defaults for None.
+
+           Intended to avoid "can't compare unequal types" issues"""
+        if oCard.capacity:
+            return -oCard.capacity
+        if oCard.life:
+            return -oCard.life
+        # Shouldn't happen, but ensure we sort last
+        return 1
+
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
         # pylint: disable-msg=E1101
