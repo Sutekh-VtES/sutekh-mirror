@@ -1,3 +1,12 @@
+02 Dec 2012
+ * Display the database URI in the about dialog
+
+26 Nov 2012
+ * Add a helper function to silence a python -3 'compare unequal types' warning
+
+15 Aug 2012
+ * Move 'set expansion' option to the Actions menu
+
 05 Aug 2012
  * Add a check for the wine version in the py2exe script (to work around
    the issues with wine-1.4 and windows 7)
