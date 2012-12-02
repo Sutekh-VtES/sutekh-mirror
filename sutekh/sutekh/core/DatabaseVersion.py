@@ -53,7 +53,7 @@ class DatabaseVersion(object):
             return
         for oVer in VersionTable.select(connection=oConn):
             if oVer.TableName in dCache:
-                raise RuntimeError("Multiple version entries for %s" \
+                raise RuntimeError("Multiple version entries for %s"
                     " found in the database." % oVer.TableName)
             else:
                 dCache[oVer.TableName] = oVer.Version
@@ -98,8 +98,8 @@ class DatabaseVersion(object):
                                  Version=iTableVersion, connection=oConn)
                 dCache[sTableName] = iTableVersion
         else:
-            print "Multiple version entries for %s in the database" \
-                    % sTableName
+            print ("Multiple version entries for %s in the database"
+                    % sTableName)
             print "Giving up. I suggest dumping and reloading everything"
             return False
         return True
@@ -127,8 +127,8 @@ class DatabaseVersion(object):
                 iTableVersion = oVersion.Version
                 dCache[sName] = iTableVersion
         else:
-            print "Multiple version entries for %s in the database" \
-                    % oTable.sqlmeta.table
+            print ("Multiple version entries for %s in the database"
+                    % oTable.sqlmeta.table)
             print "Giving up. I suggest dumping and reloading everything"
             # Should this be an exception?
             iTableVersion = -999
@@ -143,8 +143,7 @@ class DatabaseVersion(object):
            """
         bRes = True
         for oTable, iVersion in zip(aTable, aTableVersion):
-            bRes = bRes and \
-                    self.get_table_version(oTable, oConn) == iVersion
+            bRes = bRes and (self.get_table_version(oTable, oConn) == iVersion)
         return bRes
 
     def check_table_in_versions(self, oTable, aTableVersions, oConn=None):

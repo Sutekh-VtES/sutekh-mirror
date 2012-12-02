@@ -14,8 +14,8 @@
 import ply.lex as lex
 import ply.yacc as yacc
 # pylint: enable-msg=E0611
-from sutekh.core.Filters import PARSER_FILTERS, FilterNot, FilterAndBox, \
-        FilterOrBox
+from sutekh.core.Filters import (PARSER_FILTERS, FilterNot, FilterAndBox,
+        FilterOrBox)
 
 
 ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS
@@ -339,14 +339,14 @@ class AstBaseNode(object):
 
            Useful for debugging
            """
-        sAttrs = '(' + ",".join([str(oValue) for sKey, oValue \
-                in self.__dict__.items() if not sKey.startswith("_") and \
+        sAttrs = '(' + ",".join([str(oValue) for sKey, oValue
+                in self.__dict__.items() if not sKey.startswith("_") and
                 sKey != "aChildren" and oValue not in self.aChildren]) + ")"
         sOutput = self.__class__.__name__ + sAttrs
         for oChild in self.aChildren:
-            sOutput += "\n" + \
+            sOutput += ("\n" +
                     "\n".join(["\t" + sVal for sVal in
-                        str(oChild).split("\n")])
+                        str(oChild).split("\n")]))
         return sOutput
 
     def get_values(self):
@@ -488,13 +488,13 @@ class FilterPartNode(OperatorNode):
         """List of ValueObjects describing the filter and its associated
            values."""
         if self.sFilterName in ENTRY_FILTERS:
-            aResults = \
+            aResults = (
                     [ValueObject(get_filter_type(self.sFilterName).description
-                        + ' includes', self)]
+                        + ' includes', self)])
         elif self.sFilterName in LIST_FILTERS:
-            aResults = \
+            aResults = (
                     [ValueObject(get_filter_type(self.sFilterName).description
-                        + ' in', self)]
+                        + ' in', self)])
         else:
             # We don't take any input for this filter, so there are no
             # values to return
@@ -514,8 +514,8 @@ class FilterPartNode(OperatorNode):
         aCurVals = self.aFilterValues.get_values()
         oTemp = get_filter_type(self.sFilterName)([])  # Create Instance
         aValidVals = oTemp.get_values()
-        if isinstance(aValidVals[0], list) and len(aCurVals) == \
-                len(aValidVals):
+        if isinstance(aValidVals[0], list) and (len(aCurVals) ==
+                len(aValidVals)):
             for aSubCurVals, aSubValidVals in zip(aCurVals, aValidVals):
                 for oVal in aSubCurVals:
                     if oVal.oValue == ',':
@@ -543,11 +543,11 @@ class FilterPartNode(OperatorNode):
         elif self.sFilterName in FROM_FILTERS:
             sCountList = ",".join(aVals[0])
             sSetList = ",".join(aVals[1])
-            sInternalFilter = self.sFilterName + '=' + sCountList + 'from' + \
-                    sSetList
+            sInternalFilter = '%s=%s from %s' % (self.sFilterName,
+                    sCountList, sSetList)
         else:
             sCommaList = ",".join(aVals)
-            sInternalFilter = self.sFilterName + '=' + sCommaList
+            sInternalFilter = '%s=%s' % (self.sFilterName, sCommaList)
         oParser = FilterParser()
         oInternalAST = oParser.apply(sInternalFilter)
         # The filter we create is trivially of the FilterType = X, Y type
@@ -558,8 +558,8 @@ class FilterPartNode(OperatorNode):
 
     def get_filter(self):
         """Get Filter object for this Filter"""
-        if self.sFilterName in ENTRY_FILTERS or \
-                self.sFilterName in LIST_FILTERS:
+        if (self.sFilterName in ENTRY_FILTERS or
+                self.sFilterName in LIST_FILTERS):
             if self.aFilterValues is None:
                 return None
         cFilterType = get_filter_type(self.sFilterName)
@@ -601,7 +601,7 @@ class NotOpNode(OperatorNode):
     def get_values(self):
         """NOT(X)'s values are the subfilter's values"""
         aResults = [ValueObject('NOT (', None)] + \
-                 self.oSubExpression.get_values() +\
+                 self.oSubExpression.get_values() + \
                  [ValueObject(')', None)]
         return aResults
 
@@ -644,8 +644,8 @@ class BinOpNode(OperatorNode):
         else:
             # Add the extra brackets so the display in the dialog
             # reflects the correct precedence
-            aResults = [ValueObject('(', None)] + aLeft +\
-                    [ValueObject(') ' + self.oOp + ' (', self)] +\
+            aResults = [ValueObject('(', None)] + aLeft + \
+                    [ValueObject(') ' + self.oOp + ' (', self)] + \
                     aRight + [ValueObject(')', None)]
             return aResults
 
