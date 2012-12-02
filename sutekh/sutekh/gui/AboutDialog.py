@@ -9,6 +9,9 @@ from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
 import gtk
 
+from sqlobject import sqlhub
+import urlparse
+
 
 # pylint: disable-msg=R0904
 # R0904 - gtk Widget, so has many public methods
@@ -33,3 +36,20 @@ class SutekhAboutDialog(gtk.AboutDialog):
         self.set_artists([tAuth[0] for tAuth in SutekhInfo.ARTISTS])
         self.set_logo(SutekhIcon.SUTEKH_ICON)
         # self.set_translator_credits(translator_credits)
+
+        sDBuri = sqlhub.processConnection.uri()
+        # pylint: disable-msg=E1103, E1101
+        # pylint doesn't like the SpiltResult named tuple and the dialog
+        # vbox
+        tParsed = urlparse.urlsplit(sDBuri)
+        if tParsed.password:
+            tCombined = (tParsed.scheme,
+                    tParsed.netloc.replace(tParsed.password, '****'),
+                    tParsed.path, tParsed.query, tParsed.fragment)
+            sUrl = urlparse.urlunsplit(tCombined)
+        else:
+            sUrl = sDBuri
+
+        oUrlText = gtk.Label('Database URI: %s' % sUrl)
+        self.vbox.pack_end(oUrlText, False, False)
+        oUrlText.show()
