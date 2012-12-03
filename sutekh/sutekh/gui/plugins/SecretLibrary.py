@@ -506,6 +506,8 @@ class SecretLibrary(SutekhPlugin):
         aLibrary = []
         for oAbsCard, iCnt in dLibrary.iteritems():
             sCsvName = canonical_to_sl(oAbsCard.name)
+            # See above
+            sCsvName = sCsvName.replace('"', '')
             # TODO: populate wanted field sensibly.
             # HAVE; WANTED; Card Name
             aLibrary.append("%d;%d;%s" % (iCnt, iCnt, sCsvName))
