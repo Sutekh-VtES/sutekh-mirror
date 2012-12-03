@@ -14,7 +14,7 @@ import keyring
 import unicodedata
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
-    canonical_to_csv
+    IKeyword, canonical_to_csv
 from sutekh.core.Filters import CryptCardFilter, FilterNot
 from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
@@ -213,6 +213,8 @@ class SecretLibrary(SutekhPlugin):
     SL_AGENT_VERSION = SutekhInfo.VERSION_STR
 
     SL_API_URL = "http://www.secretlibrary.info/api.php"
+
+    ILLEGAL = IKeyword('not for legal play')
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
@@ -416,6 +418,18 @@ class SecretLibrary(SutekhPlugin):
 
         self._check_sl_result(sResponse)
 
+    def _exclude(self, oAbsCard):
+        """Secret Library does not support storyline cards yet, so
+           exclude them"""
+        if self.ILLEGAL not in oAbsCard.keywords:
+            # Excluded cards are all not legal for play
+            return False
+        for oPair in oAbsCard.rarity:
+            if oPair.rarity.name == 'Storyline':
+                # not legal for play, storyline card, so exclude
+                return True
+        return False
+
     def _cs_as_deck(self):
         """Convert a card set to an SL (crypt, library) string pair."""
         # populate crypt
@@ -427,6 +441,8 @@ class SecretLibrary(SutekhPlugin):
             # pylint: disable-msg=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
+            if self._exclude(oAbsCard):
+                continue
             sCsvName = canonical_to_sl(oAbsCard.name)
             sCsvName = sCsvName.replace('(Advanced)', '(Adv)')
             aCrypt.append(sCsvName)
@@ -440,6 +456,8 @@ class SecretLibrary(SutekhPlugin):
             # pylint: disable-msg=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
+            if self._exclude(oAbsCard):
+                continue
             aLibrary.append(canonical_to_sl(oAbsCard.name))
 
         return "\n".join(aCrypt), "\n".join(aLibrary)
@@ -455,6 +473,8 @@ class SecretLibrary(SutekhPlugin):
 
         for oCard in oCryptIter:
             oAbsCard = IAbstractCard(oCard)
+            if self._exclude(oAbsCard):
+                continue
             dCrypt.setdefault(oAbsCard, 0)
             dCrypt[oAbsCard] += 1
 
@@ -465,6 +485,8 @@ class SecretLibrary(SutekhPlugin):
 
         for oCard in oLibraryIter:
             oAbsCard = IAbstractCard(oCard)
+            if self._exclude(oAbsCard):
+                continue
             dLibrary.setdefault(oAbsCard, 0)
             dLibrary[oAbsCard] += 1
 
