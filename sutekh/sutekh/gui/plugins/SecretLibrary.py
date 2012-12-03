@@ -10,6 +10,7 @@ import urllib2
 import urllib
 import StringIO
 import re
+import keyring
 import unicodedata
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
@@ -34,14 +35,11 @@ class ImportExportBase(SutekhDialog):
     # R0902 - we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
-    _sCachedUsername = None
-    _sCachedPassword = None
-
     # pylint: disable-msg=W0201
     # we define attributes outside __init__, but it's OK because of plugin
     # structure
     def _setup_vbox(self, sTitlePhrase, sSourcePhrase, aDeckWidgets,
-                    aInvWidgets):
+                    aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
 
         # pylint: disable-msg=E1101
@@ -86,8 +84,8 @@ class ImportExportBase(SutekhDialog):
         # Username
 
         self._oUsernameEntry = gtk.Entry()
-        if self._sCachedUsername:
-            self._oUsernameEntry.set_text(self._sCachedUsername)
+        if sUsername:
+            self._oUsernameEntry.set_text(sUsername)
 
         self.vbox.pack_start(gtk.Label("Username"), False, False)
         self.vbox.pack_start(self._oUsernameEntry)
@@ -96,8 +94,8 @@ class ImportExportBase(SutekhDialog):
 
         self._oPasswordEntry = gtk.Entry()
         self._oPasswordEntry.set_visibility(False)
-        if self._sCachedPassword:
-            self._oPasswordEntry.set_text(self._sCachedPassword)
+        if sPassword:
+            self._oPasswordEntry.set_text(sPassword)
 
         self.vbox.pack_start(gtk.Label("Password"), False, False)
         self.vbox.pack_start(self._oPasswordEntry)
@@ -125,15 +123,9 @@ class ImportExportBase(SutekhDialog):
         """Return the current API URL."""
         return self._oUrlEntry.get_active_text()
 
-    def get_username(self):
-        """Return the username entered."""
-        ImportExportBase._sCachedUsername = self._oUsernameEntry.get_text()
-        return self._sCachedUsername
-
-    def get_password(self):
-        """Return the password entered."""
-        ImportExportBase._sCachedPassword = self._oPasswordEntry.get_text()
-        return self._sCachedPassword
+    def get_auth(self):
+        """Return the username and password entered."""
+        return self._oUsernameEntry.get_text(), self._oPasswordEntry.get_text()
 
     def get_sl_type(self):
         """Return whether the card set should be treated as a Secret Library
@@ -150,7 +142,7 @@ class ImportDialog(ImportExportBase):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for importing card sets from the Secret Library."""
 
-    def __init__(self, oParent):
+    def __init__(self, oParent, sUsername, sPassword):
         super(ImportDialog, self).__init__('Import from Secret Library',
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -162,7 +154,8 @@ class ImportDialog(ImportExportBase):
             self._oDeckId,
         ]
 
-        self._setup_vbox("Import from", "Import from", aDeckWidgets, [])
+        self._setup_vbox("Import from", "Import from", aDeckWidgets, [],
+                         sUsername, sPassword)
 
         self.show_all()
 
@@ -178,7 +171,7 @@ class ExportDialog(ImportExportBase):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for exporting cards sets to the Secret Library."""
 
-    def __init__(self, oParent):
+    def __init__(self, oParent, sUsername, sPassword):
         super(ExportDialog, self).__init__('Export to Secret Library',
                 oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -190,7 +183,8 @@ class ExportDialog(ImportExportBase):
         self._oPurge = gtk.CheckButton("Purge inventory on upload")
         aInvWidgets = [self._oPurge]
 
-        self._setup_vbox("Export to", "Export as", aDeckWidgets, aInvWidgets)
+        self._setup_vbox("Export to", "Export as", aDeckWidgets, aInvWidgets,
+                         sUsername, sPassword)
 
         self.show_all()
 
@@ -210,6 +204,10 @@ class SecretLibrary(SutekhPlugin):
 
     dTableVersions = {PhysicalCardSet: (5, 6)}
     aModelsSupported = (PhysicalCardSet, "MainWindow")
+
+    dGlobalConfig = {
+        'username': 'string(default=None)',
+    }
 
     SL_USER_AGENT = "Sutekh Secret Library Plugin"
     SL_AGENT_VERSION = SutekhInfo.VERSION_STR
@@ -232,14 +230,32 @@ class SecretLibrary(SutekhPlugin):
 
         return (sSection, oMenuItem)
 
+    def get_auth(self):
+        """Return username and password from configuration."""
+        sUsername = self.get_config_item('username')
+        sPassword = None
+        if sUsername:
+            sPassword = keyring.get_password('www.secretlibrary.info',
+                    sUsername)
+        return sUsername, sPassword
+
+    def set_auth(self, sUsername, sPassword):
+        """Set the username and password in configuration."""
+        self.set_config_item('username', sUsername)
+        if sPassword:
+            keyring.set_password('www.secretlibrary.info',
+                    sUsername, sPassword)
+
     def make_import_dialog(self, _oWidget):
         """Create the importing dialog"""
-        oDialog = ImportDialog(self.parent)
+        sUsername, sPassword = self.get_auth()
+        oDialog = ImportDialog(self.parent, sUsername, sPassword)
         self.handle_import_response(oDialog)
 
     def make_export_dialog(self, _oWidget):
         """Create the exporting dialog"""
-        oDialog = ExportDialog(self.parent)
+        sUsername, sPassword = self.get_auth()
+        oDialog = ExportDialog(self.parent, sUsername, sPassword)
         self.handle_export_response(oDialog)
 
     def handle_import_response(self, oImportDialog):
@@ -247,13 +263,15 @@ class SecretLibrary(SutekhPlugin):
         iResponse = oImportDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
+            sUsername, sPassword = oImportDialog.get_auth()
+            self.set_auth(sUsername, sPassword)
+
             if oImportDialog.get_sl_type() == "deck":
                 dData = {
                     'sl_deck_retrieve': '1',
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
-                    'username': oImportDialog.get_username(),
-                    'password': oImportDialog.get_password(),
+                    'username': sUsername,
                     'deck_id': oImportDialog.get_deck_id(),
                 }
                 sUrl = oImportDialog.get_api_url()
@@ -263,8 +281,7 @@ class SecretLibrary(SutekhPlugin):
                     'sl_inventory_export': '1',
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
-                    'username': oImportDialog.get_username(),
-                    'password': oImportDialog.get_password(),
+                    'username': sUsername,
                 }
                 sUrl = oImportDialog.get_api_url()
                 self._import_inventory(sUrl, dData)
@@ -277,6 +294,9 @@ class SecretLibrary(SutekhPlugin):
         iResponse = oExportDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
+            sUsername, sPassword = oExportDialog.get_auth()
+            self.set_auth(sUsername, sPassword)
+
             if oExportDialog.get_sl_type() == "deck":
                 dData = {
                     # title, author, description, crypt and library filled
@@ -284,8 +304,8 @@ class SecretLibrary(SutekhPlugin):
                     'sl_deck_submit': '1',
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
-                    'username': oExportDialog.get_username(),
-                    'password': oExportDialog.get_password(),
+                    'username': sUsername,
+                    'password': sPassword,
                     'public': oExportDialog.get_public() and '1' or '0',
                 }
                 sUrl = oExportDialog.get_api_url()
@@ -297,8 +317,8 @@ class SecretLibrary(SutekhPlugin):
                     'sl_inventory_import': '1',
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
-                    'username': oExportDialog.get_username(),
-                    'password': oExportDialog.get_password(),
+                    'username': sUsername,
+                    'password': sPassword,
                 }
                 if oExportDialog.get_purge_inventory():
                     dData['inventory_purge'] = '1'
