@@ -26,7 +26,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 def canonical_to_sl(sName):
     """Convert a canonical card name to a Secret Library name."""
     sName = canonical_to_csv(sName)
-    return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
+    return sName.encode('latin1')
 
 
 class ImportExportBase(SutekhDialog):
