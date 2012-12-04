@@ -11,7 +11,6 @@ import urllib
 import StringIO
 import re
 import keyring
-import unicodedata
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     IKeyword, canonical_to_csv
@@ -35,9 +34,10 @@ class ImportExportBase(SutekhDialog):
     # R0902 - we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
-    # pylint: disable-msg=W0201
-    # we define attributes outside __init__, but it's OK because of plugin
-    # structure
+    # pylint: disable-msg=W0201, R0913
+    # W0201: we define attributes outside __init__, but it's OK because of
+    # plugin structure
+    # R0913: We needs lots of parameters for flexibility here
     def _setup_vbox(self, sTitlePhrase, sSourcePhrase, aDeckWidgets,
                     aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
