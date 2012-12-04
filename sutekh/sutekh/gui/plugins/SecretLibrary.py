@@ -332,18 +332,21 @@ class SecretLibrary(SutekhPlugin):
 
     SL_ERROR_RE = re.compile("^(?P<code>\d+)\:.*$")
 
-    def _check_sl_result(self, sLine):
+    def _check_sl_result(self, sResponse):
         """Inspect the line for a Secret Library error report.
            Return True if no error is found, False otherwise. Pops up an
            error dialog to the user if an error is found.
            """
-        oMatch = self.SL_ERROR_RE.match(sLine)
-        if oMatch:
-            if int(oMatch.group('code')) != 0:
-                do_complaint_error(
-                        "The Secret Library site returned the error:\n"
-                        + sLine.strip())
-                return False
+        # SL sometimes has a warning before the error message, hence this
+        # logic
+        for sLine in sResponse.split('\n'):
+            oMatch = self.SL_ERROR_RE.search(sLine)
+            if oMatch:
+                if int(oMatch.group('code')) != 0:
+                    do_complaint_error(
+                            "The Secret Library site returned the error:\n"
+                            + sLine.strip())
+                    return False
         return True
 
     def _import_deck(self, sApiUrl, dData):
