@@ -86,6 +86,7 @@ class SutekhInfo(object):
         'PyProtocols',
         'ply',
         'configobj',
+        'keyring',  # Needed to store the SecretLibrary password
     ]
 
     # Install these manually
