@@ -708,10 +708,19 @@ class InCardText(LogStateWithInfo):
         else:
             if 'text' not in self._dInfo:
                 self._dInfo['text'] = sLine.strip() + '\n'
+                # This newline is added so there's a separation between the
+                # requirements and the rest of the card text, since otherwise
+                # there's no marker for that.
+                # For cards with only a single line, such as Bum's rush,
+                # this will be stripped when we add it to the database
             else:
                 # Since we're building this up a line at a time, we add a
                 # trailing space, which we strip before we exit this parser
                 self._dInfo['text'] += sLine.strip() + ' '
+            # Note that we do no other formatting of the card text. This
+            # is handled by the format_text helper function. This makes
+            # it easy to change text display without needed to update
+            # the database
             return self
 
 
