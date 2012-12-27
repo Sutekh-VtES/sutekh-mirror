@@ -1495,7 +1495,7 @@ class PhysicalCardSetInUseFilter(Filter):
     """Filter on a membership of Physical Card Sets marked in use"""
     keyword = "SetsInUse"
     description = "In the 'In Use' children of"
-    helptext = "Selects cards in the Card Sets marked " \
+    helptext = "list of card sets\nSelects cards in the Card Sets marked " \
             "as in use that are children of the given card sets."
     islistfilter = True
     types = ('PhysicalCard',)
@@ -1745,8 +1745,8 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
     """Filter Physical Card Set on inuse status"""
     keyword = "CSSetsInUse"
     description = "Card Set Marked as in Use"
-    helptext = "Selects those Card Sets in the Card Set List that are " \
-            "marked as in use. This filter takes no parameters."
+    helptext = "This filter takes no parameters\nSelects those Card Sets " \
+            " in the Card Set List that are marked as in use."
     types = ('PhysicalCardSet',)
 
     # pylint: disable-msg=C0111
