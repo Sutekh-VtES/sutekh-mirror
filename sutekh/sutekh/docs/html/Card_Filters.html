@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Sutekh Card Filters</title>
+</head>
+<body>
+	<h1>Card Filters for Sutekh 0.9.0</h1>
+
+	<h2>Contents</h2>
+
+	<ol>
+		<li><a href="#usage">Usage</a></li>
+		<li><a href="#navigation">Keyboard Navigation</a></li>
+		<li><a href="#elements">Filter Elements</a>
+	<ol>
+		<li><a href="#filter_group">Filter Group</a></li>
+		<li><a href="#cardname">Card Name</a></li>
+		<li><a href="#cardtext">Card Text</a></li>
+		<li><a href="#cardtype">Card Type</a></li>
+		<li><a href="#clan">Clan</a></li>
+		<li><a href="#creed">Creed</a></li>
+		<li><a href="#cardfunction">Card Function</a></li>
+		<li><a href="#cardcount">Card Count</a></li>
+		<li><a href="#capacity">Capacity</a></li>
+		<li><a href="#life">Life</a></li>
+		<li><a href="#group">Group</a></li>
+		<li><a href="#card_sets">Card Sets</a></li>
+		<li><a href="#setsinuse">In the 'In Use&#8217; children of</a></li>
+		<li><a href="#title">Title</a></li>
+		<li><a href="#cost">Cost</a></li>
+		<li><a href="#costtype">Cost Type</a></li>
+		<li><a href="#keyword">Keyword</a></li>
+		<li><a href="#virtue">Virtue</a></li>
+		<li><a href="#sect">Sect</a></li>
+		<li><a href="#artist">Artist</a></li>
+		<li><a href="#physicalexpansion">Physical Expansion</a></li>
+		<li><a href="#discipline">Discipline</a></li>
+		<li><a href="#discipline_with_level">Discipline with Level</a></li>
+		<li><a href="#expansion_with_rarity">Expansion with Rarity</a></li>
+	</ol></li>
+	</ol>
+
+	<h2 id="usage">Usage</h2>
+
+	<p>Filter elements and values for the filters can be dragged from the right hand pane to the filter to add them to the filter, and dragged from the filter to the right hand pane to remove them from the filter. Disabled filter elements or filter elements with no values set are ignored.</p>
+
+	<h2 id="navigation">Keyboard Navigation</h2>
+
+	<p>You can switch between the different filter lists using <strong>&lt;Alt&gt;&#8212;&lt;Left&gt;</strong> and <strong>&lt;Alt&gt;&#8212;&lt;Right&gt;</strong>. <strong>&lt;Ctrl&gt;&#8212;&lt;Enter&gt;</strong> will paste the currently selected list of values into the filter.  <strong>&lt;Del&gt;</strong> will delete a value or filter part from the filter <strong>&lt;Ctrl&gt;&#8212;&lt;Space&gt;</strong> will disable a filter part, while <strong>&lt;Alt&gt;&#8212;&lt;Space&gt;</strong> will negate it.</p>
+
+	<h2 id="elements">Filter Elements</h2>
+
+	<p>The available filtering options are listed below.  The first line of each item shows the description you&#8217;ll see in the filter editor in bold.  The rest of the description describes the arguments the filter takes and the results it produces.</p>
+
+	<h3 id="filter_group">Filter Group</h3>
+
+	<p>Filter element with holds other filter elements. The result of is the combination of all the filter elements as specified by the Filter Group type (All of, Any of and so on).</p>
+
+	<h3 id="cardname">Card Name</h3>
+
+	<p><strong>Parameters:</strong> the text to be matched against card names (% can be used as a wildcard).</p>
+
+	<p>Returns all cards whose name contains this string</p>
+
+	<h3 id="cardtext">Card Text</h3>
+
+	<p><strong>Parameters:</strong> the desired card text to search for (% can be used as a wildcard).</p>
+
+	<p>Returns all cards whose text contains this string.</p>
+
+	<h3 id="cardtype">Card Type</h3>
+
+	<p><strong>Parameters:</strong> a list of card types.</p>
+
+	<p>Returns all cards of the given types</p>
+
+	<h3 id="clan">Clan</h3>
+
+	<p><strong>Parameters:</strong> a list of clans</p>
+
+	<p>Returns all cards which require or are of the specified clans</p>
+
+	<h3 id="creed">Creed</h3>
+
+	<p><strong>Parameters:</strong> a list of creeds.</p>
+
+	<p>Returns all cards requiring or of the selected creeds</p>
+
+	<h3 id="cardfunction">Card Function</h3>
+
+	<p><strong>Parameters:</strong> the chosen function from the list of supported types.</p>
+
+	<p>Functions include roles such as untap or bleed modifier. Returns all cards matching the given functions.</p>
+
+	<h3 id="cardcount">Card Count</h3>
+
+	<p><strong>Parameters:</strong> a list of card numbers from a chosen card set (filters on number of cards in the Card Set).</p>
+
+	<p>Returns a list of cards that have the chosen counts in the given card set.</p>
+
+	<h3 id="capacity">Capacity</h3>
+
+	<p><strong>Parameters:</strong> a list of capacities.</p>
+
+	<p>Returns all cards of the selected capacities</p>
+
+	<h3 id="life">Life</h3>
+
+	<p><strong>Parameters:</strong> a list of life values.</p>
+
+	<p>Returns allies (both library and crypt cards) and retainers with the selected life. For cases where the life varies, only the base value for life is used.</p>
+
+	<h3 id="group">Group</h3>
+
+	<p><strong>Parameters:</strong> a list of groups.</p>
+
+	<p>Returns all cards belonging to the listed group.</p>
+
+	<h3 id="card_sets">Card Sets</h3>
+
+	<p><strong>Parameters:</strong> a list of card sets names</p>
+
+	<p>Selects cards in the specified sets.</p>
+
+	<h3 id="setsinuse">In the 'In Use&#8217; children of</h3>
+
+	<p><strong>Parameters:</strong> list of card sets</p>
+
+	<p>Selects cards in the Card Sets marked as in use that are children of the given card sets.</p>
+
+	<h3 id="title">Title</h3>
+
+	<p><strong>Parameters:</strong> a list of titles.</p>
+
+	<p>Returns all cards with the selected titles.</p>
+
+	<h3 id="cost">Cost</h3>
+
+	<p><strong>Parameters:</strong> a list of costs.</p>
+
+	<p>Returns all cards with the given costs.</p>
+
+	<h3 id="costtype">Cost Type</h3>
+
+	<p><strong>Parameters:</strong> a list of cost types.</p>
+
+	<p>Returns cards requiring the selected cost types.</p>
+
+	<h3 id="keyword">Keyword</h3>
+
+	<p><strong>Parameters:</strong> a list of keywords</p>
+
+	<p>Returns all cards where one or more of the specified keywords is associated with the card.</p>
+
+	<h3 id="virtue">Virtue</h3>
+
+	<p><strong>Parameters:</strong> a list of virtues.</p>
+
+	<p>Returns all cards requiring or having the selected virtues</p>
+
+	<h3 id="sect">Sect</h3>
+
+	<p><strong>Parameters:</strong> a list of sects.</p>
+
+	<p>Returns all cards belonging to the given sects</p>
+
+	<h3 id="artist">Artist</h3>
+
+	<p><strong>Parameters:</strong> a list of artists</p>
+
+	<p>Returns all cards where one or more of the specified artists has created art for the card.</p>
+
+	<h3 id="physicalexpansion">Physical Expansion</h3>
+
+	<p><strong>Parameters:</strong> a list of expansions.</p>
+
+	<p>Selects cards with their expansion set to the chosen expansions.</p>
+
+	<h3 id="discipline">Discipline</h3>
+
+	<p><strong>Parameters:</strong> a list of disciplines.</p>
+
+	<p>Returns a list of all cards which have or require the selected disciplines.</p>
+
+	<h3 id="discipline_with_level">Discipline with Level</h3>
+
+	<p><strong>Parameters:</strong> a list of disciplines with levels (each element specified as a discipline with associated level, i.e. superior or inferior)</p>
+
+	<p>Returns all matching cards.</p>
+
+	<h3 id="expansion_with_rarity">Expansion with Rarity</h3>
+
+	<p><strong>Parameters:</strong> a list of expansions and rarities (each element specified as an expansion with associated rarity).</p>
+
+	<p>Returns all matching cards.</p>
+
+	<p>Note: Using filters which require information about cards in a card set will temporarily turn off displaying cards with zero counts (for modes where this is possible) in the card list since there are no associated cards on which to base the query.  Filters affected by this are: Physical Expansion, Card Sets and In Card Sets in Use.</p>
+</body>
+</html>
