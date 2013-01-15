@@ -51,7 +51,7 @@ ALL = [  # Sutekh Objects
          CardTypeFilter, CardTextFilter, MultiCardTypeFilter,
          MultiDisciplineFilter, MultiClanFilter, PhysicalCardSetFilter,
          PhysicalCardFilter, GroupFilter, MultiGroupFilter,
-         ExpansionFilter, MultiExpansionFilter,
+         ExpansionFilter, MultiExpansionFilter, CardNameFilter,
          CardSetNameFilter, CardSetAuthorFilter, CardSetDescriptionFilter,
          CardSetAnnotationsFilter, PhysicalExpansionFilter,
          MultiPhysicalExpansionFilter,
