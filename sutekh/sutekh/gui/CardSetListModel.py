@@ -2254,8 +2254,9 @@ class CardSetCardListModel(CardListModel):
 
            bSkipLoad is set when we first call this function during the model
            creation to avoid calling load twice."""
-        # pylint: disable-msg=E1101, E1103
-        # Pyprotocols confuses pylint
+        # pylint: disable-msg=E1101, E1103, R0914
+        # E1101, E1103: Pyprotocols confuses pylint
+        # R0914: We use a bunch of local variables for clarity
 
         sExtraLevelOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, EXTRA_LEVEL_OPTION).lower()
@@ -2296,7 +2297,7 @@ class CardSetCardListModel(CardListModel):
     # Per-deck configuration listeners
     #
 
-    def profile_option_changed(self, sType, sProfile, sKey):
+    def profile_option_changed(self, sType, _sProfile, _sKey):
         """A profile option changed with a cardset changed."""
         if sType != CARDSET and sType != FRAME:
             return

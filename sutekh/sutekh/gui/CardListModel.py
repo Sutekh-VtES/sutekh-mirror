@@ -350,7 +350,9 @@ class CardListModel(gtk.TreeStore):
 
            This is also responsible for handling the not legal filter case
            and any filter specified by the profile."""
-        # This is a bit combinational explosion'ish, I'm afraid
+        # pylint: disable-msg=R0911
+        # This is a bit combinational explosion'ish, I'm afraid, so
+        # there are a lot of return statements
         if self.configfilter:
             if self.applyfilter and self._bHideIllegal and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter,
@@ -600,7 +602,7 @@ class CardListModel(gtk.TreeStore):
 
     # Listen for changes to the cardlist config options
 
-    def profile_option_changed(self, sType, sProfile, sKey):
+    def profile_option_changed(self, sType, _sProfile, _sKey):
         """One of the per-deck configuration items changed."""
         if sType != WW_CARDLIST:
             return
