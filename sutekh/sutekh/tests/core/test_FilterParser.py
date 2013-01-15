@@ -227,7 +227,7 @@ class FilterParserTests(SutekhTest):
             ("CardSetName in '\\\''", Filters.CardSetNameFilter("'")),
             ("CardSetName in '\\\"'", Filters.CardSetNameFilter('"')),
             ('CardSetName in "\\\""', Filters.CardSetNameFilter('"')),
-            # Test escaping \
+            # Test escaping \ correctly
             # raw strings to save on toothpicks
             (r'CardSetName in "\\"', Filters.CardSetNameFilter('\\')),
             (r'CardSetName in "\\\\"', Filters.CardSetNameFilter(r'\\')),
