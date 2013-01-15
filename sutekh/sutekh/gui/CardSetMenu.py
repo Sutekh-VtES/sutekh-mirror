@@ -223,6 +223,7 @@ class CardSetMenu(CardListMenu):
             self._fix_profile_menu()
 
     def profile_changed(self, sType, sId):
+        """Update the menu if the profile in use has changed"""
         if sType == FRAME and sId == self.frame_id:
             self._fix_profile_menu()
         elif sType == CARDSET and sId == self.cardset_id:
