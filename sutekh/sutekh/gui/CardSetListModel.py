@@ -26,6 +26,7 @@ from sutekh.core.DBSignals import listen_changed, disconnect_changed, \
         listen_row_destroy, listen_row_update, disconnect_row_destroy, \
         disconnect_row_update
 from sutekh.gui.ConfigFile import CARDSET, FRAME
+from sutekh.gui.MessageBus import MessageBus
 import gtk
 
 # consts for the different modes we need (iExtraLevelsMode)
@@ -211,6 +212,7 @@ class CardSetCardListModel(CardListModel):
         disconnect_changed(self.card_changed, PhysicalCardSet)
         disconnect_row_update(self.card_set_changed, PhysicalCardSet)
         disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        MessageBus.clear(self)
         super(CardSetCardListModel, self).cleanup()
 
     def set_count_colour(self):
@@ -335,8 +337,7 @@ class CardSetCardListModel(CardListModel):
         self._check_if_empty()
 
         # Notify Listeners
-        for oListener in self.dListeners:
-            oListener.load(aCards)
+        MessageBus.publish(self, 'load', aCards)
 
         # Restore sorting
         # See comments in CardListModel
@@ -1193,8 +1194,7 @@ class CardSetCardListModel(CardListModel):
 
         # Notify Listeners
         if iCnt:
-            for oListener in self.dListeners:
-                oListener.add_new_card(oPhysCard, iCnt)
+            MessageBus.publish(self, 'add_new_card', oPhysCard, iCnt)
 
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""
@@ -1527,12 +1527,9 @@ class CardSetCardListModel(CardListModel):
                 oFullFilter = FilterAndBox([PhysicalCardFilter(), oFilter,
                     SpecificPhysCardIdFilter(oPhysCard.id)])
                 bResult = oFullFilter.select(PhysicalCard).count() > 0
-        if bResult:
-            # Check the listeners
-            for oListener in self.dListeners:
-                bResult = bResult and oListener.check_card_visible(oPhysCard)
-                if not bResult:
-                    break  # Failed, so bail on loop
+        #if bResult:
+        #    TODO: Reimplement some better way
+        #    # Check the plugins
         self._dCache['visible'][oPhysCard] = bResult
         return bResult
 
@@ -1881,8 +1878,7 @@ class CardSetCardListModel(CardListModel):
             return
         # Update the listeners
         for oPhysCard, iCnt in self._dAbs2Phys[oAbsId].iteritems():
-            for oListener in self.dListeners:
-                oListener.alter_card_count(oPhysCard, -iCnt)
+            MessageBus.publish(self, 'alter_card_count', oPhysCard, -iCnt)
         del self._dAbs2Phys[oAbsId]
 
     def alter_card_count(self, oPhysCard, iChg):
@@ -1942,8 +1938,7 @@ class CardSetCardListModel(CardListModel):
         self._check_if_empty()
 
         # Notify Listeners
-        for oListener in self.dListeners:
-            oListener.alter_card_count(oPhysCard, iChg)
+        MessageBus.publish(self, 'alter_card_count', oPhysCard, iChg)
 
     def alter_parent_count(self, oPhysCard, iChg, bCheckAddRemove=True):
         """Alter the parent count by iChg

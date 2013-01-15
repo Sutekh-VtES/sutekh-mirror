@@ -10,7 +10,7 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
 from sutekh.core.Filters import PhysicalCardSetFilter, \
         FilterAndBox, SpecificCardIdFilter
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.CardTextView import CardTextViewListener
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
         do_complaint_error
@@ -128,7 +128,7 @@ def _check_exp_name(sExpName, oAbsCard):
     return False
 
 
-class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
+class StarterInfoPlugin(SutekhPlugin):
     """Plugin providing access to starter deck info."""
     dTableVersions = {PhysicalCardSet: (5, 6)}
     aModelsSupported = ("MainWindow",)
@@ -148,6 +148,12 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         self.oToggle = None
         self.oLastCard = None
         self.bShowInfo = False
+        MessageBus.subscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+
+    def cleanup(self):
+        """Remove the listener"""
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        super(StarterInfoPlugin, self).cleanup()
 
     def get_menu_item(self):
         """Overrides method from base class.
@@ -158,7 +164,6 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
             return None
         # Make sure we add the tag we need
         oCardTextView = self.parent.card_text_pane.view
-        oCardTextView.add_listener(self)
         oCardTextView.text_buffer.add_list_tag('starters')
 
         self.oToggle = gtk.CheckMenuItem("Show Starter Information")

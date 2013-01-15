@@ -14,8 +14,7 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_warning
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
-from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
-        CARDSET_LIST
+from sutekh.gui.ConfigFile import CARDSET, WW_CARDLIST, CARDSET_LIST
 
 LABELS = {
         CARDSET: 'Card Set Profiles',
@@ -104,7 +103,7 @@ class ScrolledProfileList(gtk.Frame):
     # disable-msg=W0212
 
 
-class ProfileMngDlg(SutekhDialog, ConfigFileListener):
+class ProfileMngDlg(SutekhDialog):
     """Dialog which allows the user to delete and edit profiles."""
     # pylint: disable-msg=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -120,9 +119,6 @@ class ProfileMngDlg(SutekhDialog, ConfigFileListener):
         self.__oParent = oParent
         self.__oConfig = oConfig
         self._dLists = {}
-
-        # Add Listener, so we catch changes in future
-        oConfig.add_listener(self)
 
         self.set_default_size(700, 550)
 

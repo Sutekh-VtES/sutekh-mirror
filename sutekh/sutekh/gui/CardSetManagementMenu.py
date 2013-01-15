@@ -10,10 +10,11 @@
 import gtk
 from sutekh.gui.FilteredViewMenu import FilteredViewMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
-from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET_LIST
+from sutekh.gui.ConfigFile import CARDSET_LIST
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 
 
-class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
+class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
        """
     # pylint: disable-msg=R0904
@@ -29,6 +30,9 @@ class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
         self.create_edit_menu()
         self.create_filter_menu()
         self.add_plugins_to_menus(self._oFrame)
+        MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK
@@ -60,13 +64,14 @@ class CardSetManagementMenu(FilteredViewMenu, ConfigFileListener):
             "CardSet List Profile", CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
-        self._oMainWindow.config_file.add_listener(self)
-
         self.add_edit_menu_actions(oMenu)
 
     def cleanup(self):
         """Remove the menu listener"""
-        self._oMainWindow.config_file.remove_listener(self)
+        MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
+                self.remove_profile)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""

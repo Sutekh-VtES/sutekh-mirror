@@ -8,17 +8,19 @@
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
 from sutekh.core import Filters, Groupings
-from sutekh.gui.CardListModel import CardListModel, CardListModelListener
+from sutekh.gui.CardListModel import CardListModel
+from sutekh.gui.MessageBus import MessageBus
 import unittest
 
 
-class TestListener(CardListModelListener):
+class TestListener(object):
     """Listener used in the test cases."""
     # pylint: disable-msg=W0231
     # CardListModelListener has no __init__
-    def __init__(self):
+    def __init__(self, oModel):
         self.bLoadCalled = False
         self.aCards = []
+        MessageBus.subscribe(oModel, 'load', self.load)
 
     def load(self, aCards):
         """Called when the model is loaded."""
@@ -81,10 +83,8 @@ class CardListModelTests(ConfigSutekhTest):
         oModel = CardListModel(self.oConfig)
         # We test with illegal cards shown
         oModel.hideillegal = False
-        oListener = TestListener()
-        oModel.load()
+        oListener = TestListener(oModel)
         self.assertFalse(oListener.bLoadCalled)
-        oModel.add_listener(oListener)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
         aExpectedCards = set(AbstractCard.select())
@@ -167,7 +167,8 @@ class CardListModelTests(ConfigSutekhTest):
                 [(oModel.sUnknownExpansion, 0), ('Final Nights', 0)])
 
         oListener.bLoadCalled = False
-        oModel.remove_listener(oListener)
+        # Test MessageBus clear does the right thing
+        MessageBus.clear(oModel)
         oModel.load()
         self.assertFalse(oListener.bLoadCalled)
 

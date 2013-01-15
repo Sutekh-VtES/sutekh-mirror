@@ -10,8 +10,8 @@
 
 from configobj import ConfigObj, flatten_errors
 from validate import Validator, is_option, is_list
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 import pkg_resources
-import weakref
 
 # Type definitions
 CARDSET = 'Card Set'
@@ -26,38 +26,6 @@ DEF_PROFILE_FILTER = 'No profile filter'
 def is_option_list(sValue, *aOptions):
     """Validator function for option_list configspec type."""
     return [is_option(sMem, *aOptions) for sMem in is_list(sValue)]
-
-
-class ConfigFileListener(object):
-    """Listener object for config changes - inspired by CardListModeListener"""
-
-    def add_filter(self, sKey, sFilter):
-        """New Filter added"""
-        pass
-
-    def remove_filter(self, sKey, sFilter):
-        """Filter removed"""
-        pass
-
-    def replace_filter(self, sKey, sOldFilter, sNewFilter):
-        """A Filter has been replaced"""
-        pass
-
-    def set_postfix_the_display(self, bPostfix):
-        """Postfix display mode has been set."""
-        pass
-
-    def profile_option_changed(self, sType, sProfile, sKey):
-        """One of the profile configuration items changed."""
-        pass
-
-    def profile_changed(self, sType, sId):
-        """The profile associated with a cardset changed."""
-        pass
-
-    def remove_profile(self, sType, sProfile):
-        """A profile has been removed"""
-        pass
 
 
 class ConfigFile(object):
@@ -86,9 +54,6 @@ class ConfigFile(object):
         self.__oConfig = None
         self.__dLocalFrameOptions = {}
         self.__oValidator = None
-        # allow listeners to be automatically removed by garbage
-        # collection
-        self.__dListeners = weakref.WeakKeyDictionary()
         self.__dPluginSpecs = {}
         self.__dDeckSpecs = {}
         self.__dCardListSpecs = {}
@@ -98,22 +63,6 @@ class ConfigFile(object):
         """Debugging aid - include the filename"""
         return "<%s object at %s; config file: %r>" % (
             self.__class__.__name__, hex(id(self)), self.__sFileName)
-
-    def add_listener(self, oListener):
-        """Add a listener to respond to config file changes."""
-        self.__dListeners[oListener] = None
-
-    def remove_listener(self, oListener):
-        """Remove a listener from the list."""
-        del self.__dListeners[oListener]
-
-    def listeners(self):
-        """Return a list of listeners.
-
-        Useful for iterating over the listeners since the internal
-        list is stored in a weakref dictionary.
-        """
-        return self.__dListeners.keys()
 
     def add_plugin_specs(self, sName, dConfigSpecs):
         """Add a validator to the plugins_main configspec section."""
@@ -320,7 +269,7 @@ class ConfigFile(object):
             self.set_profile(FRAME, sId, None)
         for sOldId, sNewId in dPaneMap.iteritems():
             if sOldId in dOldProfiles:
-                # use set_profile to ensure we call the listeners
+                # use set_profile to ensure we call the message bus
                 self.set_profile(FRAME, sNewId, dOldProfiles[sOldId])
 
     # pylint: disable-msg=R0913
@@ -444,8 +393,7 @@ class ConfigFile(object):
                 'vars': dVars,
             }
             self.__oConfig['filters'][sKey] = dFilter
-            for oListener in self.listeners():
-                oListener.add_filter(sKey, sQuery)
+            MessageBus.publish(CONFIG_MSG, 'add_filter', sKey, sQuery)
 
     # pylint: enable-msg=W0102
 
@@ -456,8 +404,7 @@ class ConfigFile(object):
         if sKey in self.__oConfig['filters'] and \
                 sFilter == self.__oConfig['filters'][sKey]['query']:
             del self.__oConfig['filters'][sKey]
-            for oListener in self.listeners():
-                oListener.remove_filter(sKey, sFilter)
+            MessageBus.publish(CONFIG_MSG, 'remove_filter', sKey, sFilter)
             # Cleanup filter from config profiles
             dProfileFilters = self.get_profiles_for_filter(sKey)
             for sType in dProfileFilters:
@@ -480,8 +427,8 @@ class ConfigFile(object):
         if sKey in self.__oConfig['filters'] and \
                 sOldFilter == self.__oConfig['filters'][sKey]['query']:
             self.__oConfig['filters'][sKey]['query'] = sNewFilter
-            for oListener in self.listeners():
-                oListener.replace_filter(sKey, sOldFilter, sNewFilter)
+            MessageBus.publish(CONFIG_MSG, 'replace_filter', sOldFilter,
+                    sNewFilter)
 
     #
     # Per-Deck Options
@@ -565,8 +512,8 @@ class ConfigFile(object):
                 dProfile[sKey] = sValue
 
         if bChanged:
-            for oListener in self.listeners():
-                oListener.profile_option_changed(sType, sProfile, sKey)
+            MessageBus.publish(CONFIG_MSG, 'profile_option_changed',
+                    sType, sProfile, sKey)
 
     def set_local_frame_option(self, sFrame, sKey, sValue):
         """Set the value of an option in the local frame option dictionary.
@@ -590,15 +537,14 @@ class ConfigFile(object):
                 dOptions[sKey] = sValue
 
         if bChanged:
-            for oListener in self.listeners():
-                oListener.profile_changed(FRAME, sFrame)
+            MessageBus.publish(CONFIG_MSG, 'profile_changed', FRAME, sFrame)
 
     def clear_frame_profile(self, sId):
         """Clear any pane profiles set for this frame"""
         dProfiles = self.__oConfig['per_deck']['frame_profiles']
         if sId in dProfiles:
             # We should only be called while the pane is being closed,
-            # so we don't notify the listeners to avoid causing a
+            # so we don't send a message on the MessageBus to avoid a
             # pointless reload.
             del dProfiles[sId]
 
@@ -610,7 +556,7 @@ class ConfigFile(object):
         dProfiles = self.__oConfig['per_deck']['cardset_profiles']
         if sId in dProfiles:
             # We should only be called while the pane is being closed,
-            # so we don't notify the listeners to avoid causing a
+            # so we don't send a message on the MessageBus to avoid a
             # pointless reload.
             del dProfiles[sId]
 
@@ -658,8 +604,7 @@ class ConfigFile(object):
         else:
             # Unrecognised type / cardset combo
             return
-        for oListener in self.listeners():
-            oListener.profile_changed(sType, sId)
+        MessageBus.publish(CONFIG_MSG, 'profile_changed', sType, sId)
 
     def get_profile(self, sType, sId):
         """Return the current profile of the cardset/cardlist/cardset list."""
@@ -706,8 +651,7 @@ class ConfigFile(object):
             else:
                 self.clear_profiles(sType, sProfile)
             del dData[sProfile]
-            for oListener in self.listeners():
-                oListener.remove_profile(sType, sProfile)
+            MessageBus.publish(CONFIG_MSG, 'remove_profile', sType, sProfile)
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
@@ -835,5 +779,4 @@ class ConfigFile(object):
     def set_postfix_the_display(self, bPostfix):
         """Set the 'postfix name display' option."""
         self.__oConfig['main']['postfix name display'] = bPostfix
-        for oListener in self.listeners():
-            oListener.set_postfix_the_display(bPostfix)
+        MessageBus.publish(CONFIG_MSG, 'set_postfix_the_display', bPostfix)

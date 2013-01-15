@@ -9,7 +9,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.CardListModel import CardListModelListener
+from sutekh.gui.MessageBus import MessageBus
 from sutekh.SutekhUtility import is_crypt_card
 
 TOT_FORMAT = 'Tot: <b>%(tot)d</b> L: <b>%(lib)d</b> C: <b>%(crypt)d</b>'
@@ -18,7 +18,7 @@ TOT_TOOLTIP = 'Total Cards: <b>%(tot)d</b> (Library: <b>%(lib)d</b>' \
 TOTAL, CRYPT, LIB = 'tot', 'crypt', 'lib'
 
 
-class CountCardSetCards(SutekhPlugin, CardListModelListener):
+class CountCardSetCards(SutekhPlugin):
     """Listen to changes on the card list views, and display a toolbar
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
@@ -39,13 +39,20 @@ class CountCardSetCards(SutekhPlugin, CardListModelListener):
         # We only add listeners to windows we're going to display the toolbar
         # on
         if self.check_versions() and self.check_model_type():
-            self.model.add_listener(self)
+            MessageBus.subscribe(self.model, 'add_new_card', self.add_new_card)
+            MessageBus.subscribe(self.model, 'alter_card_count',
+                    self.alter_card_count)
+            MessageBus.subscribe(self.model, 'load', self.load)
     # pylint: enable-msg=W0142
 
     def cleanup(self):
         """Remove the listener"""
         if self.check_versions() and self.check_model_type():
-            self.model.remove_listener(self)
+            MessageBus.unsubscribe(self.model, 'add_new_card',
+                    self.add_new_card)
+            MessageBus.unsubscribe(self.model, 'alter_card_count',
+                    self.alter_card_count)
+            MessageBus.unsubscribe(self.model, 'load', self.load)
         super(CountCardSetCards, self).cleanup()
 
     def get_toolbar_widget(self):

@@ -10,14 +10,14 @@
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
 from sutekh.core import FilterParser
-from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST, CARDSET, \
-        DEF_PROFILE_FILTER
+from sutekh.gui.ConfigFile import WW_CARDLIST, CARDSET, DEF_PROFILE_FILTER
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 from sutekh.gui.FilterEditor import FilterEditor
 import gtk
 import gobject
 
 
-class FilterDialog(SutekhDialog, ConfigFileListener):
+class FilterDialog(SutekhDialog):
     """Dialog which allows the user to select and edit filters.
 
        This dialog exists per card list view, and keeps state during
@@ -69,10 +69,6 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__sOriginalName = None
         self.__sOriginalAST = None
 
-        # Add Listener, so we catch filter changes in future
-        # (this is only to set save / delete / revert button sensitivity)
-        oConfig.add_listener(self)
-
         self.set_default_size(700, 550)
         self.connect("response", self.__button_response)
 
@@ -122,6 +118,10 @@ class FilterDialog(SutekhDialog, ConfigFileListener):
         self.__load_filter(sName, oAST)
 
         self.add_accel_group(self._oAccelGroup)
+
+        MessageBus.subscribe(CONFIG_MSG, 'replace_filter', self.replace_filter)
+        MessageBus.subscribe(CONFIG_MSG, 'add_filter', self.add_filter)
+        MessageBus.subscribe(CONFIG_MSG, 'remove_filter', self.remove_filter)
 
         self.show_all()
 

@@ -16,7 +16,8 @@ from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
         PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
         canonical_to_csv
 from sutekh.core.FilterParser import FilterParser
-from sutekh.gui.ConfigFile import ConfigFileListener, WW_CARDLIST
+from sutekh.gui.ConfigFile import WW_CARDLIST
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 
 EXTRA_LEVEL_OPTION = "extra levels"
 EXTRA_LEVEL_LOOKUP = {
@@ -28,40 +29,7 @@ USE_ICONS = "show icons for grouping"
 HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
-class CardListModelListener(object):
-    """Listens to updates, i.e. .load(...), .alter_card_count(...),
-       .add_new_card(..) calls, to CardListModels."""
-    def load(self, aPhysCards):
-        """The CardListModel has reloaded itself. aPhysCards is the list of
-           PhysicalCards loaded."""
-        pass
-
-    def alter_card_count(self, oCard, iChg):
-        """The count of the given card has been altered by iChg.
-
-           oCard: PhysicalCard for the card altered
-           """
-        pass
-
-    def add_new_card(self, oCard, iCnt):
-        """The card has been added to this set iCnt times.
-
-           oCard: PhysicalCard for the cards altered
-           """
-        pass
-
-    # pylint: disable-msg=R0201
-    # Default of returning true is correct
-    def check_card_visible(self, _oPhysCard):
-        """Check if a card should be shown in the model.
-
-           return False if the card should be hidden, True otherwise.
-           oPhysCard is always a physical card."""
-
-        return True
-
-
-class CardListModel(gtk.TreeStore, ConfigFileListener):
+class CardListModel(gtk.TreeStore):
     # pylint: disable-msg=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
     """Provides a card list specific API for accessing a gtk.TreeStore."""
@@ -93,9 +61,6 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self._oConfigFilter = None
         self._sCurConfigFilter = None
         self._oConfig = oConfig
-        self._oConfig.add_listener(self)
-
-        self.dListeners = {}  # dictionary of CardListModelListeners
 
         self.bExpansions = True
         self.oEmptyIter = None
@@ -104,6 +69,13 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         self._bHideIllegal = True
         self._oController = None
         self._oFilterParser = FilterParser()
+        MessageBus.subscribe(CONFIG_MSG, 'replace_filter', self.replace_filter)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
+        MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
+                self.set_postfix_the_display)
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
@@ -137,15 +109,14 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
     def cleanup(self):
         """Remove the config file listener if needed"""
         self._oController = None
-        self._oConfig.remove_listener(self)
-
-    def add_listener(self, oListener):
-        """Add a listener to the list of interested listeners."""
-        self.dListeners[oListener] = None
-
-    def remove_listener(self, oListener):
-        """Remove a listener from the list."""
-        del self.dListeners[oListener]
+        MessageBus.unsubscribe(CONFIG_MSG, 'replace_filter',
+                self.replace_filter)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
+        # Ensure we clean up all subscribers
+        MessageBus.clear(self)
 
     # various utilty functions for checking the model state
 
@@ -316,8 +287,7 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
             self.set(self.oEmptyIter, 0, sText)
 
         # Notify Listeners
-        for oListener in self.dListeners:
-            oListener.load(aCards)
+        MessageBus.publish(self, 'load', aCards)
 
         # We only re-enable sorting after filling listeners, so sorting on
         # listeners which cache information works properly
@@ -452,12 +422,8 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         """Returns true if oPhysCard should be shown.
 
            Used by plugins to allow extra filtering of cards."""
-        bResult = True
-        for oListener in self.dListeners:
-            bResult = bResult and oListener.check_card_visible(oPhysCard)
-            if not bResult:
-                break  # Failed, so bail on loop
-        return bResult
+        # TODO: Reimplement
+        return True
 
     def get_all_iter_children(self, oIter):
         """Get a list of all the subiters of this iter"""
@@ -625,6 +591,9 @@ class CardListModel(gtk.TreeStore, ConfigFileListener):
         bReloadELM = self._change_level_mode(bExpMode)
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
+        if not self._oController:
+            # This happens in the test suite
+            return
         if not bSkipLoad and (bReloadELM or bReloadIcons or bReloadIllegal
                 or bReloadFilter):
             self._oController.frame.queue_reload()

@@ -16,7 +16,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
-from sutekh.gui.CardTextView import CardTextViewListener
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons, \
         do_complaint_error
@@ -125,7 +125,7 @@ class CardImagePopupMenu(gtk.Menu):
         self.oFrame.set_zoom_mode(iScale)
 
 
-class CardImageFrame(BasicFrame, CardTextViewListener):
+class CardImageFrame(BasicFrame):
     # pylint: disable-msg=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
@@ -172,7 +172,14 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         self.__iZoomMode = FIT
         self._tPaneSize = (0, 0)
 
+        MessageBus.subscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+
+    def cleanup(self):
+        """Remove the listener"""
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        super(CardImageFrame, self).cleanup()
 
     def __have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""
@@ -471,6 +478,12 @@ class CardImagePlugin(SutekhPlugin):
             self.oImageFrame.set_title(self._sMenuFlag)
             self.oImageFrame.add_parts()
 
+    def cleanup(self):
+        """Cleanup listeners if required"""
+        if self.oImageFrame:
+            self.oImageFrame.cleanup()
+        super(CardImagePlugin, self).cleanup()
+
     def get_menu_item(self):
         """Overrides method from base class.
 
@@ -480,7 +493,6 @@ class CardImagePlugin(SutekhPlugin):
             return None
         self.init_image_frame()
         # Add listener
-        self.parent.card_text_pane.view.add_listener(self.oImageFrame)
         self._oReplaceItem = gtk.MenuItem("Replace with Card Image Frame")
         self._oReplaceItem.connect("activate", self.replace_pane)
 

@@ -11,14 +11,8 @@ import pango
 import logging
 from sutekh.core.SutekhObjects import IKeyword
 from sutekh.SutekhUtility import format_text
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sqlobject import SQLObjectNotFound
-
-
-class CardTextViewListener(object):
-    """Listens to changes, i.e. .set_card_text(...) to CardListViews."""
-    def set_card_text(self, oPhysCard):
-        """The CardListView has called set_card_text on the CardText pane"""
-        pass
 
 
 class CardTextBuffer(gtk.TextBuffer):
@@ -196,7 +190,6 @@ class CardTextView(gtk.TextView):
         self._oBurnOption = None
         self._oAdvanced = None
         self.update_to_new_db()  # lookup burn option
-        self.dListeners = {}  # dictionary of CardTextViewListeners
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -205,16 +198,6 @@ class CardTextView(gtk.TextView):
             doc="Return reference to text buffer")
 
     # pylint: enable-msg=W0212
-
-    # Listener helper functions
-
-    def add_listener(self, oListener):
-        """Add a listener to the list."""
-        self.dListeners[oListener] = None
-
-    def remove_listener(self, oListener):
-        """Remove a listener from the list."""
-        del self.dListeners[oListener]
 
     def update_to_new_db(self):
         """Cached lookup of the burn option keyword"""
@@ -242,8 +225,7 @@ class CardTextView(gtk.TextView):
         oStart, oEnd = self._oBuf.get_bounds()
         self._oBuf.delete(oStart, oEnd)
         self.print_card_to_buffer(oPhysCard.abstractCard)
-        for oListener in self.dListeners:
-            oListener.set_card_text(oPhysCard)
+        MessageBus.publish(CARD_TEXT_MSG, 'set_text', oPhysCard)
 
     # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches

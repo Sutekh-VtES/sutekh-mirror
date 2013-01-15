@@ -9,7 +9,6 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
-from sutekh.gui.CardListModel import CardListModelListener
 from sutekh.gui.ConfigFile import CARDSET, FRAME
 from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         EXTRA_LEVEL_OPTION, EXTRA_LEVEL_LOOKUP, SHOW_CARD_OPTION, \
@@ -24,29 +23,29 @@ from sutekh.tests.core.test_Filters import make_card
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.DBSignals import send_changed_signal
+from sutekh.gui.MessageBus import MessageBus
 import unittest
 
 
-class CardSetListener(CardListModelListener):
+class CardSetListener(object):
     """Listener used in the test cases."""
     # pylint: disable-msg=W0231
     # CardListModelListener has no __init__
-    def __init__(self):
+    def __init__(self, oModel):
         self.bLoadCalled = False
         self.iCnt = 0
+        MessageBus.subscribe(oModel, 'load', self.load)
+        MessageBus.subscribe(oModel, 'alter_card_count', self.alter_count)
+        MessageBus.subscribe(oModel, 'add_new_card', self.alter_count)
 
     def load(self, aCards):
         """Called when the model is loaded."""
         self.bLoadCalled = True
         self.iCnt = len(aCards)
 
-    def alter_card_count(self, _oCard, iChg):
-        """Called when the model alters the card count"""
+    def alter_count(self, _oCard, iChg):
+        """Called when the model alters the card count or adds cards"""
         self.iCnt += iChg
-
-    def add_new_card(self, _oCard, iCnt):
-        """Called when the model adds a new card to the model"""
-        self.iCnt += iCnt
 
 
 class DummyController(object):
@@ -251,8 +250,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # R0914: several local variables, as we test a number of conditions
         dModelInfo = {}
         for oModel in aModels:
-            oListener = CardSetListener()
-            oModel.add_listener(oListener)
+            oListener = CardSetListener(oModel)
             oModel.load()
             tStartTotals = (
                     oModel.iter_n_children(None),
@@ -318,7 +316,6 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.assertEqual(oListener.iCnt, iSetCnt, self._format_error(
                 "Listener has wrong count after dec_card", oListener.iCnt,
                 iSetCnt, oModel, oPCS))
-            oModel.remove_listener(oListener)
 
     def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
@@ -388,10 +385,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oListener = CardSetListener()
-        oModel.load()
+        oListener = CardSetListener(oModel)
         self.assertFalse(oListener.bLoadCalled)
-        oModel.add_listener(oListener)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
         self.assertEquals(oListener.iCnt, 0)

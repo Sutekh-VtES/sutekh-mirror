@@ -16,8 +16,8 @@ import zipfile
 import re
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, WW_CARDLIST, \
-        CARDSET_LIST, FRAME
+from sutekh.gui.ConfigFile import CARDSET, WW_CARDLIST, CARDSET_LIST, FRAME
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 from sutekh.gui.SutekhDialog import do_complaint_warning
 
 
@@ -92,13 +92,24 @@ class PluginManager(object):
         return list(self._aPlugins)
 
 
-class PluginConfigFileListener(ConfigFileListener):
-    """ConfigListener tailored to inform plugins when their config changes."""
+class PluginConfigFileListener(object):
+    """Listen for messages and inform plugins when their config changes."""
 
     # pylint: disable-msg=W0231
     # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
+        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
+
+    def cleanup(self):
+        """Unhook from the message bus"""
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
 
     def profile_option_changed(self, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
@@ -154,9 +165,6 @@ class SutekhPlugin(object):
         self._oListener = None
         if self._oModel is not None and hasattr(self._oModel, "frame_id"):
             self._oListener = PluginConfigFileListener(self)
-            # listener automatically removed when plugin is garbage collected
-            # since the config only maintains a weakref to it.
-            self.config.add_listener(self._oListener)
 
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
@@ -221,8 +229,7 @@ class SutekhPlugin(object):
 
            Used for things like database signal cleanup, etc."""
         if self._oListener:
-            self.config.remove_listener(self._oListener)
-            self._oListener = None
+            self._oListener.cleanup()
         return None
 
     def get_toolbar_widget(self):

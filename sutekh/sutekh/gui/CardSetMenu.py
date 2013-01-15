@@ -14,10 +14,11 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu
 from sutekh.gui.FrameProfileEditor import FrameProfileEditor
 from sutekh.gui.LocalProfileEditor import LocalProfileEditor
-from sutekh.gui.ConfigFile import ConfigFileListener, CARDSET, FRAME
+from sutekh.gui.ConfigFile import CARDSET, FRAME
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 
 
-class CardSetMenu(CardListMenu, ConfigFileListener):
+class CardSetMenu(CardListMenu):
     # pylint: disable-msg=R0904
     # gtk.Widget, so many public methods
     """Card Set Menu.
@@ -37,6 +38,11 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
         self.add_plugins_to_menus(self._oFrame)
         self.sort_menu(self._dMenus['Export Card Set'])
         self.sort_menu(self._dMenus['Analyze'])
+        MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
@@ -99,15 +105,18 @@ class CardSetMenu(CardListMenu, ConfigFileListener):
         self._oFrameProfileMenu = self._create_profile_menu(oMenu,
             "Pane Profile", FRAME, self._select_frame_profile, sFrameProfiles)
 
-        self._oMainWindow.config_file.add_listener(self)
-
         self.add_edit_menu_actions(oMenu)
 
     # pylint: enable-msg=W0201
 
     def cleanup(self):
         """Remove the menu listener"""
-        self._oMainWindow.config_file.remove_listener(self)
+        MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
+                self.remove_profile)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+                self.profile_option_changed)
+        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+                self.profile_changed)
 
     def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""

@@ -9,7 +9,7 @@
 import gtk
 from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.CardListModel import CardListModelListener
+from sutekh.gui.MessageBus import MessageBus
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.plugins.CountCardSetCards import TOT_FORMAT, TOT_TOOLTIP, \
         TOTAL, CRYPT, LIB
@@ -17,7 +17,7 @@ from sutekh.gui.plugins.CountCardSetCards import TOT_FORMAT, TOT_TOOLTIP, \
 SORT_COLUMN_OFFSET = 300  # ensure we don't clash with other extra columns
 
 
-class CountWWListCards(SutekhPlugin, CardListModelListener):
+class CountWWListCards(SutekhPlugin):
     """Listen to changes on the card list views, and display a toolbar
        containing a label with a running count of the cards in the card
        set, the library cards and the crypt cards
@@ -62,13 +62,13 @@ class CountWWListCards(SutekhPlugin, CardListModelListener):
         # We only add listeners to windows we're going to display the toolbar
         # on
         if self.check_versions() and self.check_model_type():
-            self.model.add_listener(self)
+            MessageBus.subscribe(self.model, 'load', self.load)
     # pylint: enable-msg=W0142
 
     def cleanup(self):
         """Remove the listener"""
         if self.check_versions() and self.check_model_type():
-            self.model.remove_listener(self)
+            MessageBus.unsubscribe(self.model, 'load', self.load)
         super(CountWWListCards, self).cleanup()
 
     def _get_card_count(self, oAbsCard):
