@@ -40,7 +40,7 @@ class DBUpgradeDialog(SutekhDialog):
             oInfolabel = gtk.Label()
             oInfolabel.set_markup(sLabelInfo)
             self.vbox.pack_start(oInfolabel)
-        self.add_button("Test upgraded database?\n" \
+        self.add_button("Test upgraded database?\n"
                 "(No changes are committed)", 1)
         self.set_default_response(gtk.RESPONSE_OK)
         self.vbox.pack_start(oHBox)

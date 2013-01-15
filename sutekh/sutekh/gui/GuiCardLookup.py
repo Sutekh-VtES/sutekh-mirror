@@ -377,7 +377,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             # We need to lookup cards in the physical card view
             if not self._handle_unknown_physical_cards(dUnknownCards,
                                                        aCards, sInfo):
-                raise LookupFailed("Lookup of missing cards aborted by the" \
+                raise LookupFailed("Lookup of missing cards aborted by the"
                                    " user.")
 
         return aCards
@@ -403,7 +403,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         if dUnknownExps:
             if not self._handle_unknown_expansions(dUnknownExps, sInfo,
                     dCardExpansions):
-                raise LookupFailed("Lookup of missing expansions aborted by" \
+                raise LookupFailed("Lookup of missing expansions aborted by"
                                    " the user.")
 
         for sName, sNewName in dUnknownExps.items():
@@ -413,7 +413,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 oExp = IExpansion(sNewName)
                 dUnknownExps[sName] = oExp
             except SQLObjectNotFound:
-                raise RuntimeError("Unexpectedly encountered" \
+                raise RuntimeError("Unexpectedly encountered"
                                    " missing expansion '%s'." % sNewName)
 
         def new_exp(sName):
@@ -492,7 +492,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         """Create the dialog to present to the user.
 
            This is common to the abstract + physical card cases"""
-        oUnknownDialog = SutekhDialog( \
+        oUnknownDialog = SutekhDialog(
                 "Unknown cards found importing %s" % sInfo, None,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK,

@@ -136,10 +136,10 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         iXOffset = 0
         iYOffset = 0
         if oCellArea is not None and iCellWidth > 0 and iCellHeight > 0:
-            iXOffset = int(self.get_property("xalign") * (oCellArea.width - \
-                fCalcWidth - self.get_property("xpad")))
-            iYOffset = int(self.get_property("yalign") * (oCellArea.height - \
-                fCalcHeight - self.get_property("ypad")))
+            iXOffset = int(self.get_property("xalign") * (
+                oCellArea.width - fCalcWidth - self.get_property("xpad")))
+            iYOffset = int(self.get_property("yalign") * (
+                oCellArea.height - fCalcHeight - self.get_property("ypad")))
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 

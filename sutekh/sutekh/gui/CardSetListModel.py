@@ -1227,7 +1227,7 @@ class CardSetCardListModel(CardListModel):
            the currently visible set of cards."""
         # pylint: disable-msg=E1101, E1103
         # PyProtocols confuse pylint
-        return (self._iParentCountMode != IGNORE_PARENT or \
+        return (self._iParentCountMode != IGNORE_PARENT or
                 self._iShowCardMode == PARENT_CARDS) and \
                 self._oCardSet.parentID is not None
 

@@ -568,7 +568,7 @@ class AnalyzeCardList(SutekhPlugin):
                 [x.group for x in aImbuedCards if x.group != -1], 'group')
         get_info([x.capacity for x in aVampireCards],
                 [x.life for x in aImbuedCards], 'cost')
-        aAllCosts = sorted([x.capacity for x in aVampireCards] + \
+        aAllCosts = sorted([x.capacity for x in aVampireCards] +
                 [x.life for x in aImbuedCards])
         self.dCryptStats['total cost'] = sum(aAllCosts)
         self.dCryptStats['min draw'] = sum(aAllCosts[0:4])

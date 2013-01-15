@@ -35,7 +35,7 @@ class CardListView(FilteredView):
         self._oSelection.set_select_function(self.can_select)
         tGtkVersion = gtk.gtk_version
         if tGtkVersion[0] == 2 and \
-                ((tGtkVersion[1] > 6 and tGtkVersion[1] < 12) or \
+                ((tGtkVersion[1] > 6 and tGtkVersion[1] < 12) or
                 (tGtkVersion[1] == 12 and tGtkVersion[2] == 0)):
             # gtk versions from 2.8 to 2.12.0 have a bug with handling
             # cursor movements, excluded selects and multiple select mode

@@ -256,8 +256,8 @@ class FilterDialog(SutekhDialog):
                     del self.DEFAULT_FILTERS[sName]
 
         if aErrMsgs:
-            do_complaint_error("The following invalid filters have been" \
-                               " removed from the %s:\n" % (sSrc,)\
+            do_complaint_error("The following invalid filters have been"
+                               " removed from the %s:\n" % (sSrc,)
                                + "\n".join(aErrMsgs))
 
         def filter_key(tFiltInfo):
