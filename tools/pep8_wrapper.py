@@ -82,6 +82,8 @@ class PEP8Checker(Base):
             'C5715': ("Spaces around keyword / parameter =", ['E251']),
             'C5716': ("Multiple imports on one line", ['E401']),
             'C5717': ("Trailing whitespace", ['W291', 'W293']),
+            'C5718': ("Unneeded backslash", ['E502']),
+            'C5719': ("Deprecated raise expression", ['W602']),
             }
     options = ()
 
