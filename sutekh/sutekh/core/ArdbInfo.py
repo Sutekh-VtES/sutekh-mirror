@@ -76,6 +76,16 @@ class ArdbInfo(object):
             dCombinedCards[oCard][0] += iNum
         return dCombinedCards
 
+    def _group_types(self, dCombinedLib):
+        """Group the cards together by card type."""
+        dTypes = {}
+        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.iteritems():
+            if sTypeString not in dTypes:
+                dTypes[sTypeString] = {}
+            dTypes[sTypeString].setdefault(oCard, 0)
+            dTypes[sTypeString][oCard] += iCount
+        return dTypes
+
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
         dCryptStats = {

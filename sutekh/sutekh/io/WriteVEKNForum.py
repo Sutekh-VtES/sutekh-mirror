@@ -143,16 +143,10 @@ class WriteVEKNForum(ArdbInfo):
            """
         (dLib, iLibSize) = self._extract_library(dCards)
         dCombinedLib = self._group_sets(dLib)
+        dTypes = self._group_types(dCombinedLib)
 
         sLib = "[size=18][u]Library [%d cards][/u][/size]\n" \
             % (iLibSize,)
-
-        dTypes = {}
-        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.iteritems():
-            if sTypeString not in dTypes:
-                dTypes[sTypeString] = {}
-            dTypes[sTypeString].setdefault(oCard, 0)
-            dTypes[sTypeString][oCard] += iCount
 
         for sTypeString in sorted(dTypes):
             dCards = dTypes[sTypeString]
