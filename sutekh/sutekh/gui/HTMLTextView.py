@@ -49,9 +49,10 @@ def _parse_css_color(sColor):
 
 
 class HtmlHandler(HTMLParser.HTMLParser):
-    # pylint: disable-msg=R0201, R0902
+    # pylint: disable-msg=R0201, R0902, R0904
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
+    # R0904: Lots of public methods from HTMLParser
     """Parse the HTML input and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
         HTMLParser.HTMLParser.__init__(self)
