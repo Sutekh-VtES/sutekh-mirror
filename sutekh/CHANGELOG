@@ -1,3 +1,14 @@
+15 Jan 2013
+ * Replace the various ..Listener classes with a MessageBus publisher / subscriber
+   model
+
+30 Dec 2012
+ * Generate textile documentation for the filters from the filter help text
+
+03 Dec 2012
+ * Use the python-keyring library to handle the secret library password
+ * Fix several issues with exporting to Secret Library
+
 02 Dec 2012
  * Display the database URI in the about dialog
 
