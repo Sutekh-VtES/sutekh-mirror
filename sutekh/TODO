@@ -6,13 +6,11 @@ For 1.0.0
 Stuff that's fairly easy (we think)
 -----------------------------------
 
- * Replace the listeners with some sort of generic bus
  * Use HTML help dialog for filter help
  * Fetch missing images for vtes.pl
  * pep8 cleanup
  * reduce the number of FIXME's and TODO's in the code base
  * TWD plugin
- * Storing SL credentials in the config file
  * More Error handling/reporting
    - Include version number and other such useful info in the exception dialog
  * Cluster Plugin Speed-up
@@ -26,7 +24,6 @@ Bugfixes
 
  * Add timeout to the url-reading stuff and appropriate error handling
  * Fix analyse plugin display with very long descriptions
- * Improve rpm building script (don't regenerate the tarball each time)
 
 Needs planning
 --------------
