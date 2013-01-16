@@ -110,8 +110,6 @@ class WritePmwiki(ArdbInfo):
 
         return sLib
 
-    # pylint: disable-msg=R0913
-    # we need all these arguments
     def write(self, fOut, oHolder):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id, name, set)] = count and writes the file."""
@@ -124,5 +122,3 @@ class WritePmwiki(ArdbInfo):
         fOut.write(self._gen_crypt(dCards))
         fOut.write("\n")
         fOut.write(self._gen_library(dCards))
-
-    # pylint: enable-msg=R0913

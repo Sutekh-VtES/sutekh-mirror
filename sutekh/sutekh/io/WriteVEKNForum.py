@@ -169,8 +169,6 @@ class WriteVEKNForum(ArdbInfo):
 
         return sLib
 
-    # pylint: disable-msg=R0913
-    # we need all these arguments
     def write(self, fOut, oHolder):
         """Takes filename, deck details and a dictionary of cards, of the
            form dCard[(id, name, set)] = count and writes the file."""
@@ -187,5 +185,3 @@ class WriteVEKNForum(ArdbInfo):
         fOut.write("Recorded with : Sutekh %s [ %s ]\n" %
                 (SutekhInfo.VERSION_STR,
                     time.strftime('%Y-%m-%d', time.localtime())))
-
-    # pylint: enable-msg=R0913
