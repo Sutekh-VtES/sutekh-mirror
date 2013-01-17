@@ -14,7 +14,7 @@ import traceback
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
-from sutekh.gui.MultiPaneWindow import MultiPaneWindow
+from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
@@ -106,7 +106,7 @@ def main():
     """Start the Sutekh Gui.
 
        Check that database exists, doesn't need to be upgraded, then
-       pass control off to MultiPaneWindow.
+       pass control off to SutekhMainWindow
        Save preferences on exit if needed
        """
     # Print nice complaint if not under a windowing system
@@ -169,12 +169,12 @@ def main():
         return 1
 
     # construct Window
-    oMultiPaneWindow = MultiPaneWindow()
+    oMainWindow = SutekhMainWindow()
 
     # Test on some tables where we specify the table name
     if not oConn.tableExists('abstract_card') or \
             not oConn.tableExists('physical_map'):
-        if not initialize_db(oMultiPaneWindow):
+        if not initialize_db(oMainWindow):
             return 1
 
     aTables = [VersionTable] + TABLE_LIST
@@ -193,8 +193,8 @@ def main():
 
     _oRootLogger = setup_logging(oOpts)
 
-    oMultiPaneWindow.setup(oConfig)
-    oMultiPaneWindow.run()
+    oMainWindow.setup(oConfig)
+    oMainWindow.run()
 
     # Save Config Changes
     try:

@@ -11,7 +11,7 @@ import gtk
 import tempfile
 import os
 import gc
-from sutekh.gui.MultiPaneWindow import MultiPaneWindow
+from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.gui.ConfigFile import ConfigFile
 
 
@@ -75,7 +75,7 @@ class GuiSutekhTest(ConfigSutekhTest):
     def setUp(self):
         """Setup gtk window for the tests"""
         # Skip if we're not under a windowing system
-        # We need to do this before trying to run MultiPaneWindow's __init__,
+        # We need to do this before trying to run SutekhMainWindow's __init__,
         # which will fail if not under a windowing system
         if gtk.gdk.screen_get_default() is None:
             raise SkipTest
@@ -83,7 +83,7 @@ class GuiSutekhTest(ConfigSutekhTest):
         os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiSutekhTest, self).setUp()
         # Carry on with the test
-        self.oWin = MultiPaneWindow()
+        self.oWin = SutekhMainWindow()
 
     def tearDown(self):
         """Tear down gtk framework after test run"""

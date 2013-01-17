@@ -10,13 +10,13 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 
-class TestMultiPaneWindow(GuiSutekhTest):
+class TestSutekhMainWindow(GuiSutekhTest):
     """Class for the MultiPanewindow test cases"""
     # pylint: disable-msg=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):
-        """Set of simple tests of the MultiPaneWindow"""
+        """Set of simple tests of the SutekhMainWindow"""
         # Add card sets needed for the tests
         oPhysCardSet1 = PhysicalCardSet(name='My Collection')
         PhysicalCardSet(name='Test Set 1',
