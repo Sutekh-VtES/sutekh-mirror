@@ -84,6 +84,10 @@ class PEP8Checker(Base):
             'C5717': ("Trailing whitespace", ['W291', 'W293']),
             'C5718': ("Unneeded backslash", ['E502']),
             'C5719': ("Deprecated raise expression", ['W602']),
+            'C5719': ("Extra whitespace around keyword",
+                ['E271', 'E272', 'E273', 'E274']),
+            'C5720': ('Incorrect whitespace around comma',
+                ['E241', 'E242']),
             }
     options = ()
 
