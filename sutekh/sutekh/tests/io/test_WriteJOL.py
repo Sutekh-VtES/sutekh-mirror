@@ -8,7 +8,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteJOL import  WriteJOL
+from sutekh.io.WriteJOL import WriteJOL
 import unittest
 
 EXPECTED_1 = """Abebe

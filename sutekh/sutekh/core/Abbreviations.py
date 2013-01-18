@@ -283,7 +283,7 @@ class Titles(AbbreviationLookup):
     """Common strings used to refer to the different titles."""
     dKeys = {
         # Camarilla Titles
-        'Primogen': [], 'Prince':  [], 'Justicar': [],
+        'Primogen': [], 'Prince': [], 'Justicar': [],
         'Inner Circle': [],
         # Sabbat Titles
         'Bishop': [], 'Archbishop': [], 'Priscus': [],

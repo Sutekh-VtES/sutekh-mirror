@@ -10,7 +10,7 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 from sutekh.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteArdbHTML import  WriteArdbHTML, HTML_STYLE
+from sutekh.io.WriteArdbHTML import WriteArdbHTML, HTML_STYLE
 import unittest
 
 EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

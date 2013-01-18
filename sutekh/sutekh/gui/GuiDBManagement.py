@@ -59,7 +59,7 @@ def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, oProgressDialog):
     if oExtraFile:
         read_extra([oExtraFile], oProgressDialog, oLogHandler)
     if aRulingsFiles:
-        read_ww_rulings(aRulingsFiles, oProgressDialog,  oLogHandler)
+        read_ww_rulings(aRulingsFiles, oProgressDialog, oLogHandler)
 
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
