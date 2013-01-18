@@ -2,6 +2,7 @@
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>,
 # Copyright 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2013 Adrianna Pińska <adrianna.pinska+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Implement RelatedJoin with caches"""
@@ -33,7 +34,9 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         """Locate the equivalent join on the other class."""
         if self._oOtherJoin is None:
             aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins
-                        if oJ.otherClass is self.soClass]
+                        if oJ.otherClass is self.soClass
+                        and oJ.intermediateTable == self.intermediateTable
+                        and oJ.otherColumn == self.joinColumn]
             assert len(aJoins) == 1
             self._oOtherJoin = aJoins[0]
 
