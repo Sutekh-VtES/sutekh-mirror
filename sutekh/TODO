@@ -55,8 +55,6 @@ Code Cleanup
    between the different View-Window-Controller sets for instance, and this
    looks like something worth addressing (partly done, could use further work)
  * More tests
- * MultiPaneWindow mixes code for handling the widget hopping and application
-   code - these should be seperated.
  * Make MultiSelectCombo less evil (turn it into a proper widget?)
 
 Gui (Functionality):

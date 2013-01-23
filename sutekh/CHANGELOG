@@ -1,3 +1,11 @@
+18 Jan 2013
+ * Update CacheRelatedJoin to support multiple joins between the same models
+   (courtesy of Adrianna Pinska)
+
+17 Jan 2013
+ * Split MultiPaneWindow to seperate the pane manipulation and sutekh-specific
+   code
+
 15 Jan 2013
  * Replace the various ..Listener classes with a MessageBus publisher / subscriber
    model
