@@ -115,6 +115,22 @@ class FileOrUrlWidget(gtk.VBox):
 
         self._oSubBox.show_all()
 
+    def select_by_name(self, sToSelect):
+        """Select the given entry by text.
+
+           return True on success, False otherwise (value isn't in the list)"""
+        oListModel = self._oSrcCombo.get_model()
+        oIter = oListModel.get_iter_first()
+        iPos = 0
+        while oIter:
+            sValue = oListModel.get_value(oIter, 0)
+            if sValue == sToSelect:
+                self._oSrcCombo.set_active(iPos)
+                return True
+            iPos += 1
+            oIter = oListModel.iter_next(oIter)
+        return False
+
     def get_file_or_url(self):
         """Return the selected file name or URL and whether the result
            represents a URL.
