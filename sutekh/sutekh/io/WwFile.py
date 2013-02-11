@@ -53,10 +53,10 @@ WW_OLD_RULINGS_URL = "http://www.white-wolf.com/vtes/index.php?line=rulings"
 
 WW_RULINGS_URL = [
         # We skip the general rulings, since we only want card rulings
-        #"http://www.vekn.net/index.php/all-rulings/general-rulings",
-        "http://www.vekn.net/index.php/all-rulings/card-rulings-a-to-f",
-        "http://www.vekn.net/index.php/all-rulings/card-rulings-g-to-o",
-        "http://www.vekn.net/index.php/all-rulings/card-rulings-p-to-z",
+        #"http://www.vekn.net/index.php/general-rulings",
+        "http://www.vekn.net/index.php/card-rulings/card-rulings-a-to-f",
+        "http://www.vekn.net/index.php/card-rulings/card-rulings-g-to-o",
+        "http://www.vekn.net/index.php/card-rulings/card-rulings-p-to-z",
         ]
 
 
