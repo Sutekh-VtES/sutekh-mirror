@@ -17,14 +17,14 @@ from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
 from sutekh.core.CardSetUtilities import delete_physical_card_set, \
         find_children, has_children
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.io.DataPack import find_data_pack, DOC_URL
+from sutekh.io.DataPack import DOC_URL, urlopen_with_timeout, find_data_pack
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets
-from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, progress_fetch_data
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
+from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.gui.SutekhFileWidget import add_filter
 import re
 import gtk
-import urllib2
 from logging import Logger
 from StringIO import StringIO
 from sqlobject import SQLObjectNotFound
@@ -95,9 +95,17 @@ class StarterConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
-            sZipUrl, sHash = find_data_pack('starters')
-            oFile = urllib2.urlopen(sZipUrl)
-            sData = progress_fetch_data(oFile, None, sHash)
+            sZipUrl, sHash = find_data_pack('starters',
+                    fErrorHandler=gui_error_handler)
+            if not sZipUrl:
+                # Error getting the data pack, so we fail
+                return None
+            oFile = urlopen_with_timeout(sZipUrl,
+                    fErrorHandler=gui_error_handler)
+            if oFile:
+                sData = progress_fetch_data(oFile, None, sHash)
+            else:
+                sData = None
         elif sFile:
             sData = self.oFileWidget.get_binary_data()
         return sData

@@ -14,6 +14,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import logging
+import socket
 # pylint: disable-msg=E0611
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
@@ -131,6 +132,10 @@ class SutekhMainWindow(MultiPaneWindow):
         self._oCardTextPane = CardTextFrame(self, self._oIconManager)
 
         self._oMenu = MainMenu(self, oConfig)
+
+        # setup the global socket timeout to the config default
+        iTimeout = oConfig.get_socket_timeout()
+        socket.setdefaulttimeout(iTimeout)
 
         # Do setup - prompt for downloads, etc. if needed
         self._oIconManager.setup()

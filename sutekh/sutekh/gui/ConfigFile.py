@@ -780,3 +780,7 @@ class ConfigFile(object):
         """Set the 'postfix name display' option."""
         self.__oConfig['main']['postfix name display'] = bPostfix
         MessageBus.publish(CONFIG_MSG, 'set_postfix_the_display', bPostfix)
+
+    def get_socket_timeout(self):
+        """Get the timeout config value"""
+        return self.__oConfig['main']['socket timeout']

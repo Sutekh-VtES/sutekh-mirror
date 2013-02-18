@@ -7,8 +7,10 @@
 
 import urllib
 import unittest
+import urllib2
+import socket
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.io.DataPack import find_data_pack, find_all_data_packs
+from sutekh.io.DataPack import find_data_pack, find_all_data_packs, fetch_data
 
 TEST_DATA = """
 = User Documentation =
@@ -32,10 +34,23 @@ A comment.
 """
 
 
+class FailFile(object):
+    """File'ish that raises exceptions for checking the error handler stuff"""
+
+    def __init__(self, oExp):
+        self._oExp = oExp
+
+    def read(self):
+        """Dummy method"""
+        raise self._oExp
+
+
 class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
     # pylint: disable-msg=R0904
     # R0904 - unittest.TestCase, so many public methods
+
+    bCalled = False  # Used for error handler tests
 
     def test_find_data_pack(self):
         """Test finding data pack in sane documentation page"""
@@ -81,6 +96,21 @@ class DataPackTest(SutekhTest):
                          "raw-attachment/wiki/MiscWikiFiles/"
                          "TWDA_2010.zip")
         self.assertEqual(sHash, 'b')
+
+    def test_error_handler(self):
+        """Test triggering the error handler"""
+
+        def error_handler(_oExp):
+            """Dummy error handler"""
+            self.bCalled = True
+
+        oFile = FailFile(socket.timeout)
+        fetch_data(oFile, fErrorHandler=error_handler)
+        self.assertEqual(self.bCalled, True)
+        self.bCalled = False
+        oFile = FailFile(urllib2.URLError('aaa'))
+        fetch_data(oFile, fErrorHandler=error_handler)
+        self.assertEqual(self.bCalled, True)
 
 if __name__ == "__main__":
     unittest.main()

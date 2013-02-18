@@ -10,6 +10,7 @@
 """Provide tools for locating and extracting data pack ZIP files."""
 
 import urllib2
+import socket
 import re
 from logging import Logger
 try:
@@ -41,7 +42,27 @@ class HashError(Exception):
         self.sData = sData
 
 
-def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
+def urlopen_with_timeout(sUrl, fErrorHandler=None):
+    """Wrap urllib2.urlopen to handle timeouts nicely"""
+    # Note: The global timeout is currently set to the
+    # config value at startup
+    try:
+        return urllib2.urlopen(sUrl)
+    except urllib2.URLError, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
+        else:
+            raise
+    except socket.timeout, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
+        else:
+            raise
+    return None
+
+
+def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
+        fErrorHandler=None):
     """Read a documentation page and find all the data pack URLs and hashes
     for the given tag.
 
@@ -58,7 +79,9 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     dates are expected to be formated YYYY-MM-DD (strftime('%Y-%m-%d'))
     to avoid ambiguity.
     """
-    oFile = urllib2.urlopen(sDocUrl)
+    oFile = urlopen_with_timeout(sDocUrl, fErrorHandler)
+    if not oFile:
+        return None, None
     oHeaderRe = re.compile(r'^\|\|.*Tag')
     oAttachmentRe = re.compile(r'\[attachment:(?P<path>[^ ]*) ')
     iTagField = None
@@ -71,7 +94,22 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
         sLine = sLine.strip()
         return [sField.strip(" '") for sField in sLine.split('||')]
 
-    for sLine in oFile.readlines():
+    try:
+        aData = oFile.readlines()
+    except urllib2.URLError, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
+            aData = []
+        else:
+            raise
+    except socket.timeout, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
+            aData = []
+        else:
+            raise
+
+    for sLine in aData:
         if iTagField is None:
             oMatch = oHeaderRe.match(sLine)
             if oMatch:
@@ -91,17 +129,20 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
                 oMatch = oAttachmentRe.search(aFields[iAttachField])
                 if oMatch:
                     sPath = oMatch.group('path')
-                    # We need to split off the zip file name and the path bits
+                    # We need to split off the zip file name and the path
+                    # bits
                     sZipName, sPath = sPath.split(':', 1)
                     sPath = sPath.replace(':', '/')
-                    aZipUrls.append('/'.join((sZipUrlBase, sPath, sZipName)))
+                    aZipUrls.append('/'.join((sZipUrlBase, sPath,
+                        sZipName)))
                     if iShaSumField is not None:
                         aHashes.append(aFields[iShaSumField])
 
     return aZipUrls, aHashes
 
 
-def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
+def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
+        fErrorHandler=None):
     """Find a single data pack for a tag. Return url and hash, if appropriate.
 
     Return None if no match is found.
@@ -109,7 +150,8 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     See find_all_data_packs for details for the wiki page format.
 
     If multiple datapack are found, return the last."""
-    aZipUrls, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase)
+    aZipUrls, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase,
+            fErrorHandler)
     if not aZipUrls:
         # No match
         return None, None
@@ -119,47 +161,62 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE):
     return aZipUrls[-1], aHashes[-1]
 
 
-def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None):
+def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
+        fErrorHandler=None):
     """Fetch data from a file'ish object (WwFile, urlopen or file)"""
-    if hasattr(oFile, 'info') and callable(oFile.info):
-        sLength = oFile.info().getheader('Content-Length')
-    else:
-        sLength = None
+    try:
+        if hasattr(oFile, 'info') and callable(oFile.info):
+            sLength = oFile.info().getheader('Content-Length')
+        else:
+            sLength = None
 
-    if sLength:
-        oLogger = Logger('Sutekh data fetcher')
-        if oLogHandler is not None:
-            oLogger.addHandler(oLogHandler)
-        aData = []
-        iLength = int(sLength)
-        if hasattr(oLogHandler, 'set_total'):
-            # We promote to next integer, as we emit a signal
-            # for any left over bits
-            oLogHandler.set_total((iLength + 9999) // 10000)
-        iTotal = 0
-        bCont = True
-        while bCont:
-            sInf = oFile.read(10000)
-            iTotal += len(sInf)
-            if sInf:
-                oLogger.info('%d downloaded', iTotal)
-                if oOutFile:
-                    oOutFile.write(sInf)
+        if sLength:
+            oLogger = Logger('Sutekh data fetcher')
+            if oLogHandler is not None:
+                oLogger.addHandler(oLogHandler)
+            aData = []
+            iLength = int(sLength)
+            if hasattr(oLogHandler, 'set_total'):
+                # We promote to next integer, as we emit a signal
+                # for any left over bits
+                oLogHandler.set_total((iLength + 9999) // 10000)
+            iTotal = 0
+            bCont = True
+            while bCont:
+                sInf = oFile.read(10000)
+                iTotal += len(sInf)
+                if sInf:
+                    oLogger.info('%d downloaded', iTotal)
+                    if oOutFile:
+                        oOutFile.write(sInf)
+                    else:
+                        aData.append(sInf)
                 else:
-                    aData.append(sInf)
+                    bCont = False
+            if oOutFile:
+                sData = None
             else:
-                bCont = False
-        if oOutFile:
+                sData = ''.join(aData)
+        else:
+            # Just try and download
+            if oOutFile:
+                oOutFile.write(oFile.read())
+                sData = None
+            else:
+                sData = oFile.read()
+    except urllib2.URLError, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
             sData = None
         else:
-            sData = ''.join(aData)
-    else:
-        # Just try and download
-        if oOutFile:
-            oOutFile.write(oFile.read())
+            raise
+    except socket.timeout, oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
             sData = None
         else:
-            sData = oFile.read()
+            raise
+
     if sHash is not None and sha256 is not None:
         if sData is not None:
             # Only check has if we have data

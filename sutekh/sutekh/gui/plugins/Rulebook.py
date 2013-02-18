@@ -5,9 +5,10 @@
 
 """Downloads rulebook HTML pages and makes them available via the Help menu."""
 
-from sutekh.io.DataPack import find_data_pack, DOC_URL
+from sutekh.io.DataPack import DOC_URL, urlopen_with_timeout, find_data_pack
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget, progress_fetch_data
+from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
+from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint
 from sutekh.gui.SutekhFileWidget import add_filter
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -15,7 +16,6 @@ from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 import gtk
 import os
 import StringIO
-import urllib2
 import webbrowser
 import zipfile
 from logging import Logger
@@ -63,9 +63,17 @@ class RulebookConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
-            sZipUrl, sHash = find_data_pack('rulebooks')
-            oFile = urllib2.urlopen(sZipUrl)
-            sData = progress_fetch_data(oFile, None, sHash)
+            sZipUrl, sHash = find_data_pack('rulebooks',
+                    fErrorHandler=gui_error_handler)
+            if not sZipUrl:
+                # failed to get datapack
+                return None
+            oFile = urlopen_with_timeout(sZipUrl,
+                    fErrorHandler=gui_error_handler)
+            if oFile:
+                sData = progress_fetch_data(oFile, None, sHash)
+            else:
+                sData = None
         elif sFile:
             sData = self.oFileWidget.get_binary_data()
         return sData
@@ -209,9 +217,13 @@ class RulebookPlugin(SutekhPlugin):
             # pylint: disable-msg=W0703
             # we want to catch all errors here
             try:
-                oRawFile = StringIO.StringIO(oConfigDialog.get_data())
-                oZipFile = zipfile.ZipFile(oRawFile, 'r')
-                self._unpack_zipfile_with_progress_bar(oZipFile)
+                sData = oConfigDialog.get_data()
+                if sData:
+                    oRawFile = StringIO.StringIO(sData)
+                    oZipFile = zipfile.ZipFile(oRawFile, 'r')
+                    self._unpack_zipfile_with_progress_bar(oZipFile)
+                # else is the error path, but we'll have already shown
+                # a complaint (timeout, etc), so just do nothing
             except Exception:
                 do_exception_complaint('Unable to successfully download or '
                                        'copy some or all of the rulebook '

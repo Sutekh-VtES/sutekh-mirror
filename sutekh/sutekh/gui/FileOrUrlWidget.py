@@ -6,24 +6,11 @@
 """Widget for loading a file either from a URL or a local file."""
 
 import gtk
-import urllib2
 import os.path
 from sutekh.io.WwFile import WwFile
-from sutekh.io.DataPack import fetch_data
+from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
-
-
-def progress_fetch_data(oFile, oOutFile=None, sHash=None):
-    """Wrap a Progress Dialog around fetch_data"""
-    oProgress = ProgressDialog()
-    oProgress.set_description('Download progress')
-    oLogHandler = SutekhCountLogHandler()
-    oLogHandler.set_dialog(oProgress)
-    try:
-        return fetch_data(oFile, oOutFile, sHash, oLogHandler)
-    finally:
-        oProgress.destroy()
+from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 
 
 class FileOrUrlWidget(gtk.VBox):
@@ -168,9 +155,13 @@ class FileOrUrlWidget(gtk.VBox):
         sUrl, bUrl = self.get_file_or_url()
 
         if bUrl:
-            oFile = urllib2.urlopen(sUrl)
+            oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler)
         else:
             oFile = file(sUrl, "rb")
+
+        if not oFile:
+            # Probable timeout in urlopen, so bail
+            return None
 
         return progress_fetch_data(oFile, oOutFile)
 

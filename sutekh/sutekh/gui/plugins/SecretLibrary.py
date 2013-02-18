@@ -16,10 +16,12 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     IKeyword, canonical_to_csv
 from sutekh.core.Filters import CryptCardFilter, FilterNot
 from sutekh.io.SLDeckParser import SLDeckParser
+from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.gui.GuiDataPack import gui_error_handler
 
 
 def canonical_to_sl(sName):
@@ -355,7 +357,11 @@ class SecretLibrary(SutekhPlugin):
         oParser = SLDeckParser()
 
         oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urllib2.urlopen(oReq)
+        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        if not fReq:
+            # Probably a timeout we've already complained about,
+            # so we just bail out of this
+            return
         try:
             fIn = StringIO.StringIO(fReq.read())
         finally:
@@ -373,7 +379,10 @@ class SecretLibrary(SutekhPlugin):
         oParser = SLInventoryParser()
 
         oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urllib2.urlopen(oReq)
+        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        if not fReq:
+            # Probable timeout
+            return
         try:
             fIn = StringIO.StringIO(fReq.read())
         finally:
@@ -397,7 +406,10 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
 
         oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urllib2.urlopen(oReq)
+        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        if not fReq:
+            # Probable timeout
+            return
         try:
             sResponse = fReq.read()
         finally:
@@ -413,7 +425,10 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
 
         oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urllib2.urlopen(oReq)
+        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        if not fReq:
+            # Probable timeout
+            return
         try:
             sResponse = fReq.read()
         finally:

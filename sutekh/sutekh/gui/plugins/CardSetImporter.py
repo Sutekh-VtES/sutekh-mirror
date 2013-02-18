@@ -7,7 +7,6 @@
 """Convert a ELDB or ARDB text or html file into an Card Set."""
 
 import gtk
-import urllib2
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.ARDBTextParser import ARDBTextParser
 from sutekh.io.ARDBXMLDeckParser import ARDBXMLDeckParser
@@ -17,11 +16,13 @@ from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
 from sutekh.io.GuessFileParser import GuessFileParser
+from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.SutekhFileWidget import SutekhFileWidget
+from sutekh.gui.GuiDataPack import gui_error_handler
 
 
 class ACSImporter(SutekhPlugin):
@@ -136,7 +137,11 @@ class ACSImporter(SutekhPlugin):
 
     def make_cs_from_uri(self, sUri, cParser):
         """From an URI, create an Card Set"""
-        fIn = urllib2.urlopen(sUri)
+        fIn = urlopen_with_timeout(sUri,
+                fErrorHandler=gui_error_handler)
+        if not fIn:
+            # probable timeout, so bail
+            return
         try:
             import_cs(fIn, cParser(), self.parent)
         finally:
