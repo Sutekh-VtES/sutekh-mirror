@@ -14,7 +14,7 @@ import re
 from logging import Logger
 try:
     # pylint: disable-msg=E0611
-    # E0611: hashlib is stange, and confuses pylint
+    # E0611: hashlib is strange, and confuses pylint
     from hashlib import sha256
     # pylint: enable-msg=E0611
 except ImportError:
@@ -161,7 +161,9 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None):
         else:
             sData = oFile.read()
     if sHash is not None and sha256 is not None:
-        sDataHash = sha256(sData).hexdigest()
-        if sDataHash != sHash:
-            raise HashError(sData)
+        if sData is not None:
+            # Only check has if we have data
+            sDataHash = sha256(sData).hexdigest()
+            if sDataHash != sHash:
+                raise HashError(sData)
     return sData
