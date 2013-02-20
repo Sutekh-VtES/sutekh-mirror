@@ -1,3 +1,17 @@
+20 Feb 2013
+ * Add support for downloading missing card images from the vtes.pl
+   infrastructure
+
+18 Feb 2013
+ * Add support for timeouts when fetching data
+ * Avoid trying to hash None when fetching data fails
+
+12 Feb 2013
+ * Fetch rulings from bitbucket, for improved robustness against vekn changes
+
+23 Jan 2013
+ * Add a helper to FileOrUrlWidget to help control the selection
+
 18 Jan 2013
  * Update CacheRelatedJoin to support multiple joins between the same models
    (courtesy of Adrianna Pinska)

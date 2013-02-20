@@ -7,7 +7,6 @@ Stuff that's fairly easy (we think)
 -----------------------------------
 
  * Use HTML help dialog for filter help
- * Fetch missing images for vtes.pl
  * pep8 cleanup
  * reduce the number of FIXME's and TODO's in the code base
  * TWD plugin
@@ -22,7 +21,6 @@ Stuff that's fairly easy (we think)
 Bugfixes
 --------
 
- * Add timeout to the url-reading stuff and appropriate error handling
  * Fix analyse plugin display with very long descriptions
 
 Needs planning
