@@ -14,6 +14,8 @@ import tempfile
 import logging
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
+from sutekh.io.DataPack import urlopen_with_timeout
+from sutekh.gui.GuiDataPack import progress_fetch_data, gui_error_handler
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
@@ -237,12 +239,34 @@ class CardImageFrame(BasicFrame):
         # If further events are pending, don't try and redraw
         if bPause and gtk.gdk.events_pending():
             return
-        sFullFilename = self.__convert_cardname()
+        sFullFilename = self.__convert_cardname_to_path()
         self.__load_image(sFullFilename)
 
-    def __convert_cardname(self):
-        """Convert sCardName to the form used by the card image list"""
+    def __make_vtes_pl_name(self):
+        """Return a url pointing to the vtes.pl scan of the image"""
         sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
+        sFilename = self.__norm_cardname()
+        if sCurExpansionPath == '' or sFilename == '':
+            # Error path, we don't know where to search for the image
+            return ''
+        # Remap paths to point to the vtes.pl equivilents
+        if sCurExpansionPath == 'nergal_storyline':
+            sCurExpansionPath = 'isl'
+        elif sCurExpansionPath == 'anarchs_and_alastors_storyline':
+            sCurExpansionPath = 'aa'
+        elif sCurExpansionPath == 'edens_legacy_storyline':
+            sCurExpansionPath = 'el'
+        elif sCurExpansionPath == 'cultist_storyline':
+            sCurExpansionPath = 'csl'
+        elif sCurExpansionPath == 'white_wolf_2003_demo':
+            sCurExpansionPath = 'dd'
+        elif sCurExpansionPath == 'third':
+            sCurExpansionPath = '3e'
+        return 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
+                sCurExpansionPath, sFilename)
+
+    def __norm_cardname(self):
+        """Normalise the card name"""
         sFilename = _unaccent(self.__sCardName)
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
@@ -253,11 +277,30 @@ class CardImageFrame(BasicFrame):
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
+        return sFilename
+
+    def __convert_cardname_to_path(self):
+        """Convert sCardName to the form used by the card image list"""
+        sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
+        sFilename = self.__norm_cardname()
         return os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)
 
     def __load_image(self, sFullFilename):
         """Load an image into the pane, show broken image if needed"""
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
+
+        if not _check_file(sFullFilename):
+            if self._oImagePlugin.get_config_item('download images'):
+                # Attempt to download the image from vtes.pl
+                sUrl = self.__make_vtes_pl_name()
+                oFile = urlopen_with_timeout(sUrl,
+                        fErrorHandler=gui_error_handler)
+                if oFile:
+                    oOutFile = file(sFullFilename, 'wb')
+                    # Attempt to fetch the data
+                    progress_fetch_data(oFile, oOutFile)
+                    oOutFile.close()
+                    oFile.close()
         try:
             if self.__bShowExpansions:
                 self.oExpansionLabel.set_markup('<i>Image from expansion :'
@@ -267,7 +310,7 @@ class CardImageFrame(BasicFrame):
                 # pylint doesn't pick up allocation methods correctly
                 iHeightOffset = self.oExpansionLabel.allocation.height + 2
             else:
-                self.oExpansionLabel.hide()  # config chanes can cause this
+                self.oExpansionLabel.hide()  # config changes can cause this
                 iHeightOffset = 0
             oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
             iWidth = oPixbuf.get_width()
@@ -294,7 +337,6 @@ class CardImageFrame(BasicFrame):
             else:
                 # Full size, so no scaling
                 self._oImage.set_from_pixbuf(oPixbuf)
-
         except gobject.GError:
             self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
                     gtk.ICON_SIZE_DIALOG)
@@ -341,7 +383,7 @@ class CardImageFrame(BasicFrame):
                         self.__iExpansionPos < len(self.__aExpansions):
                     self.__sCurExpansion = \
                             self.__aExpansions[self.__iExpansionPos]
-                    sFullFilename = self.__convert_cardname()
+                    sFullFilename = self.__convert_cardname_to_path()
                     if _check_file(sFullFilename):
                         bFound = True
                     else:
@@ -406,16 +448,21 @@ class ImageConfigDialog(SutekhDialog):
 
     sDefaultUrl = 'http://csillagmag.hu/upload/pictures.zip'
 
-    def __init__(self, oImagePlugin, bFirstTime=False):
+    def __init__(self, oImagePlugin, bFirstTime=False, bDownloadUpgrade=False):
         super(ImageConfigDialog, self).__init__('Configure Card Images Plugin',
                 oImagePlugin.parent,
                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
                 (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
                     gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
-        if not bFirstTime:
+        if not bFirstTime and not bDownloadUpgrade:
             oDescLabel.set_markup('<b>Choose how to configure the cardimages '
                     'plugin</b>')
+        elif bDownloadUpgrade:
+            oDescLabel.set_markup('<b>Choose how to configure the cardimages '
+                    'plugin</b>\nThe card images plugin can now download '
+                    'missing images from vtes.pl.\nDo you wish to enable '
+                    'this (you will not be prompted again)?')
         else:
             oDescLabel.set_markup('<b>Choose how to configure the cardimages '
                     'plugin</b>\nChoose cancel to skip configuring the '
@@ -429,23 +476,33 @@ class ImageConfigDialog(SutekhDialog):
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(self.oChoice, False, False)
+        if not bFirstTime:
+            # Set to the null choice
+            self.oChoice.select_by_name('Select directory ...')
+        if not bDownloadUpgrade:
+            # Don't prompt for the file if we just want to ask about
+            # downloading images
+            self.vbox.pack_start(self.oChoice, False, False)
+        self.oDownload = gtk.CheckButton(
+                'Download missing images from vtes.pl?')
+        self.oDownload.set_active(False)
+        self.vbox.pack_start(self.oDownload, False, False)
         self.set_size_request(400, 200)
 
         self.show_all()
 
     def get_data(self):
         """Get the results of the users choice."""
-
         sFile, _bUrl, bDir = self.oChoice.get_file_or_dir_or_url()
+        bDownload = self.oDownload.get_active()
         if bDir:
             # Just return the name the user chose
-            return sFile, True
+            return sFile, True, bDownload
         if sFile:
             oOutFile = tempfile.TemporaryFile()
             self.oChoice.get_binary_data(oOutFile)
-            return oOutFile, False
-        return None, None
+            return oOutFile, False, bDownload
+        return None, None, bDownload
 
 
 class CardImagePlugin(SutekhPlugin):
@@ -455,6 +512,7 @@ class CardImagePlugin(SutekhPlugin):
 
     dGlobalConfig = {
         'card image path': 'string(default=None)',
+        'download images': 'boolean(default=None)',
     }
 
     _sMenuFlag = CardImageFrame.sMenuFlag
@@ -515,16 +573,24 @@ class CardImagePlugin(SutekhPlugin):
         sPrefsPath = self.get_config_item('card image path')
         if not os.path.exists(sPrefsPath):
             # Looks like the first time
-            oDialog = ImageConfigDialog(self, True)
+            oDialog = ImageConfigDialog(self, True, False)
             self.handle_response(oDialog)
             # Path may have been changed, so we need to requery config file
             sPrefsPath = self.get_config_item('card image path')
             # Don't get called next time
             ensure_dir_exists(sPrefsPath)
+        else:
+            oDownloadImages = self.get_config_item('download images')
+            if oDownloadImages is None:
+                # Doesn't look like we've asked this question
+                oDialog = ImageConfigDialog(self, False, True)
+                # Default to false
+                self.set_config_item('download images', False)
+                self.handle_response(oDialog)
 
     def config_activate(self, _oMenuWidget):
         """Configure the plugin dialog."""
-        oDialog = ImageConfigDialog(self, False)
+        oDialog = ImageConfigDialog(self, False, False)
         self.handle_response(oDialog)
 
     def handle_response(self, oDialog):
@@ -532,7 +598,7 @@ class CardImagePlugin(SutekhPlugin):
         iResponse = oDialog.run()
         bActivateMenu = False
         if iResponse == gtk.RESPONSE_OK:
-            oFile, bDir = oDialog.get_data()
+            oFile, bDir, bDownload = oDialog.get_data()
             if bDir:
                 # New directory
                 if self._accept_path(oFile):
@@ -548,6 +614,8 @@ class CardImagePlugin(SutekhPlugin):
             else:
                 # Unable to get data
                 do_complaint_error('Unable to configure card images plugin')
+            # Update download option
+            self.set_config_item('download images', bDownload)
         if bActivateMenu:
             # Update the menu display if needed
             if not self.parent.is_open_by_menu_name(self._sMenuFlag):
