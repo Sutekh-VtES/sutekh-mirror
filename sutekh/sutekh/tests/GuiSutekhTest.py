@@ -41,6 +41,8 @@ class ConfigSutekhTest(SutekhTest):
         os.makedirs(os.path.join(self.sPluginDir, 'clans'))
         self.oConfig.set_plugin_key('CardImagePlugin', 'card image path',
                 self.sPluginDir)
+        self.oConfig.set_plugin_key('CardImagePlugin', 'download images',
+                False)
         self.oConfig.set_plugin_key('RulebookPlugin', 'rulebook path',
                 self.sPluginDir)
         # Touch index file for rulebook plugin
