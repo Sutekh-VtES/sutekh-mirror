@@ -293,8 +293,15 @@ class CardImageFrame(BasicFrame):
             if self._oImagePlugin.get_config_item('download images'):
                 # Attempt to download the image from vtes.pl
                 sUrl = self.__make_vtes_pl_name()
-                oFile = urlopen_with_timeout(sUrl,
-                        fErrorHandler=gui_error_handler)
+                if sUrl:
+                    oFile = urlopen_with_timeout(sUrl,
+                            fErrorHandler=gui_error_handler)
+                else:
+                    # No url, so fall back to the 'no image' case
+                    self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
+                            gtk.ICON_SIZE_DIALOG)
+                    self._oImage.queue_draw()
+                    return
                 if oFile:
                     oOutFile = file(sFullFilename, 'wb')
                     # Attempt to fetch the data
