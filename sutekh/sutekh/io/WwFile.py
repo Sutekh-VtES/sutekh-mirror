@@ -10,7 +10,9 @@ import codecs
 import urllib2
 import logging
 
-WW_CARDLIST_URL = "http://www.vekn.net/images/stories/downloads/cardlist.txt"
+#WW_CARDLIST_URL = "http://www.vekn.net/images/stories/downloads/cardlist.txt"
+WW_CARDLIST_URL = "http://bitbucket.org/hodgestar/sutekh-extras/" \
+        "raw/tip/CardList/cardlist-data/cardlist.txt"
 
 EXTRA_CARD_URL = "http://bitbucket.org/hodgestar/sutekh-extras/" \
         "raw/tip/extra_list.txt"
