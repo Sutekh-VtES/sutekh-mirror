@@ -43,7 +43,7 @@ class WWFilesDialog(SutekhDialog):
         self.oCardListFileButton.add_filter_with_pattern('TXT files',
                 ['*.txt'])
         self.oUseWwCardListButton = gtk.CheckButton(
-                label="Grab official card list from V:EKN website?")
+                label="Grab official V:EKN card list (from bitbucket.org)?")
 
         oExtraLabel = gtk.Label()
         oExtraLabel.set_markup("<b>Additional Card List (optional):</b>")
@@ -61,7 +61,7 @@ class WWFilesDialog(SutekhDialog):
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
                 ['*.html', '*htm'])
         self.oUseWwRulingsButton = gtk.CheckButton(
-                label="Grab official rulings from V:EKN website?")
+                label="Grab official rulings (from bitbucket.org)?")
 
         self.oBackupFileButton = gtk.CheckButton(
                 label="Backup database contents to File?")
