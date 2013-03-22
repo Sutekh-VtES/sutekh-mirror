@@ -152,6 +152,10 @@ class FilterNot(Filter):
 
     def __init__(self, oSubFilter):
         self.__oSubFilter = oSubFilter
+        if self.__oSubFilter is None:
+            # Can happen if we're given a filter without values set
+            # We use NotNull, so we end up matching everything
+            self.__oSubFilter = NotNullFilter()
 
     def _get_joins(self):
         """Joins for not is null, as they are used in the sub-select"""
@@ -222,6 +226,16 @@ class NullFilter(Filter):
 
     def _get_joins(self):
         return []
+
+
+# NotNullFilter
+class NotNullFilter(NullFilter):
+    """Return nothing"""
+
+    # pylint: disable-msg=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        return NOT(TRUE)  # See Null Filter
 
 
 # Base Classes for Common Filter Idioms
