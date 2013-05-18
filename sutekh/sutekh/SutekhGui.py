@@ -13,7 +13,8 @@ import os
 import traceback
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
-from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri
+from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists, sqlite_uri, \
+        get_database_url
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
@@ -61,12 +62,16 @@ def exception_handler(oType, oValue, oTraceback):
         "%s\n" % (str(oValue),)
     aTraceback = traceback.format_exception(oType, oValue, oTraceback)
 
-    logging.error("%s:\n%s", sMessage, "".join(aTraceback))
+    sSutekhInfo = "Sutekh version %s\nDatabase: %s\n\n" % (
+            SutekhInfo.VERSION_STR, get_database_url())
+    sDetails = "".join(aTraceback)
+
+    logging.error("%s:\n%s", sMessage, '\n'.join([sSutekhInfo, sDetails]))
     # Log before we show the dialog, otherwise, if there's an exception while
     # the progress bar update hack is ongoing, the error dialog won't work
     # correctly, and the exception may be lost
 
-    do_complaint_error_details(sMessage, "".join(aTraceback))
+    do_complaint_error_details(sMessage, sDetails)
 
 
 def setup_logging(oOpts):

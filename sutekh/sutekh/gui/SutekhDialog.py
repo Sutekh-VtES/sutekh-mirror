@@ -14,6 +14,9 @@ import sys
 import traceback
 from gobject import markup_escape_text
 
+from sutekh.SutekhUtility import get_database_url
+from sutekh.SutekhInfo import SutekhInfo
+
 
 class SutekhDialog(gtk.Dialog):
     # pylint: disable-msg=R0904
@@ -113,7 +116,9 @@ class DetailDialog(SutekhDialog):
 
 def do_complaint_error_details(sMessage, sDetails):
     """Popup an details dialog for an error"""
-    oComplaint = DetailDialog(sMessage, sDetails)
+    sSutekhInfo = "Sutekh version %s\nDatabase: %s\n\n" % (
+            SutekhInfo.VERSION_STR, get_database_url())
+    oComplaint = DetailDialog(sMessage, '\n'.join([sSutekhInfo, sDetails]))
     iResponse = oComplaint.run()
     oComplaint.destroy()
     return iResponse

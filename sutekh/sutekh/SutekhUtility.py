@@ -13,6 +13,8 @@ import os
 import sys
 import re
 from sqlobject import sqlhub
+import urlparse
+
 from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
         PhysicalCardSet, canonical_to_csv
 from sutekh.core.DatabaseVersion import DatabaseVersion
@@ -245,3 +247,20 @@ def norm_xml_quotes(sData):
     # Because of how ElementTree adds quotes internally, this should always
     # be safe
     return sData.replace('&apos;', "'")
+
+
+def get_database_url():
+    """Return the database url, with the password stripped out if
+       needed"""
+    sDBuri = sqlhub.processConnection.uri()
+    # pylint: disable-msg=E1103
+    # pylint doesn't like the SpiltResult named tuple
+    tParsed = urlparse.urlsplit(sDBuri)
+    if tParsed.password:
+        tCombined = (tParsed.scheme,
+                tParsed.netloc.replace(tParsed.password, '****'),
+                tParsed.path, tParsed.query, tParsed.fragment)
+        sUrl = urlparse.urlunsplit(tCombined)
+    else:
+        sUrl = sDBuri
+    return sUrl
