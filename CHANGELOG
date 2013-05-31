@@ -1,3 +1,9 @@
+31 May 2013
+ * Backport url location fixes (we now fetch everything from bitbucket)
+   (r3186, r3193, r3194)
+ * Backport fix for corner case around negated filters with no values set
+   (r3196)
+
 30 Sep 2012
  * Tag 0.8.2 final release
 
