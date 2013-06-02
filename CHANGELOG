@@ -1,3 +1,7 @@
+02 Jun 2013
+ * misc fixes to the ubuntu build system
+ * Tag 0.8.3 final release
+
 31 May 2013
  * Backport url location fixes (we now fetch everything from bitbucket)
    (r3186, r3193, r3194)
