@@ -2,7 +2,8 @@
 
 The Python modules required are:
 
-* SQLObject [ http://cheeseshop.python.org/pypi/SQLObject, version 0.9.0 ]
+* SQLObject [ http://cheeseshop.python.org/pypi/SQLObject, version 0.9.0
+  or later]
 * PyProtocols [ http://cheeseshop.python.org/pypi/PyProtocols ]
 * PLY (for parsing the query language) [ http://www.dabeaz.com/ply/ ]
 * sqlite (or the module for whatever database one plans to use)
@@ -10,17 +11,15 @@ The Python modules required are:
 * Python-xml for the xml writing support
 * Python-rsvg for the sutekh icon
 * configobj to manage the config file
+* keyring so the secret library plugin can store credentials in the system
+  keyring
 
-One will also need to download the official cardlist at:
+Sutekh can download the official cardlist and rulings. If you have limited
+connectivity, you will need to download the official cardlist from
 
 * http://www.vekn.net/images/stories/downloads/cardlist.txt
 
-to a local file.  Sutekh can also parse the official rulings
-file from:
-
-* http://www.white-wolf.com/vtes/index.php?line=rulings
-
-so that might be useful too.
+to a local file and use that.
 
 === Getting Started ===
 
@@ -35,7 +34,9 @@ either by using the help menu, or in sutekh/docs/html/
 To get started, run:
 
 sutekh-cli --help
-sutekh-cli -c -r vtes_card_file.txt
+sutekh-cli -c --fetch-files # download the cardlist and rulings
+  or
+sutekh-cli -c -r vtes_card_file.txt # local copy
 sutekh-cli --ruling-file vtes_ruling_file.html (optional)
 
 The card list and card sets can be manipulated and examined via the gui
@@ -87,6 +88,12 @@ will list and print details of all action modifiers containing with 'stealth'
 in their card text for the card set 'Tzimisce deck'
 
 === Windows Quickstart ===
+
+The easiest method is to use the provided installer. This bundles the
+required files from pygk, python and the required modules for running sutekh.
+The installer currently uses python 2.6.
+
+To use a different python version:
 
 Download:
  * Python
@@ -197,7 +204,7 @@ sutekh-cli -d <new_database_uti> --restore-zip=zipfile.zip
 ==== Disabling SQLObject caching ====
 
 When using the default sqlite database, Sutekh disables SQLObject's internal
-caching. As number of the items SQLObject caches aren't important to Sutekh,
+caching. As a number of the items SQLObject caches aren't important to Sutekh,
 and, on large card set loads, the overhead of maintaining the cache is
 significant, it can be beneficial to disable the cache with other database as
 well. Disabling the cache is recommended with SQLObject 0.12 and later, where
@@ -322,7 +329,7 @@ which test to run to save the state after a specific test.
 Importing/Exporting to/from other VTES card management programs
 ===============================================================
 
-Sutekh can read the inventory and deck files produced by both the "Anrach
+Sutekh can read the inventory and deck files produced by both the "Anarch
 Revolt Deck Builder" (http://code.google.com/ardb) and the "Fragment of the
 Elder Library Deck Builder" (http://csillagbolcselet.hu/feldb/). Files will
 be imported as card sets into Sutekh. Because of differences between the
@@ -331,3 +338,5 @@ programs, some concepts won't be transferred.
 Sutekh can also export card sets to these formats, but this will probably
 not work for all versions of ARDB or FELDB.
 
+Sutekh has support for importing and exporting inventories and decks to and
+from the Secret Library (http://www.secretlibrary.info/).
