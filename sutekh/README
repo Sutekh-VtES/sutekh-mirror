@@ -1,4 +1,8 @@
-=== Requirements ===
+Sutekh: A VTES card manager
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Requirements
+============
 
 The Python modules required are:
 
@@ -21,7 +25,8 @@ connectivity, you will need to download the official cardlist from
 
 to a local file and use that.
 
-=== Getting Started ===
+Getting Started
+===============
 
 These instructions assume you have run setup.py install or setup.py develop,
 which creates the correct name for the scripts.
@@ -33,44 +38,52 @@ either by using the help menu, or in sutekh/docs/html/
 
 To get started, run:
 
-sutekh-cli --help
-sutekh-cli -c --fetch-files # download the cardlist and rulings
-  or
-sutekh-cli -c -r vtes_card_file.txt # local copy
-sutekh-cli --ruling-file vtes_ruling_file.html (optional)
+::
+
+  sutekh-cli --help
+  sutekh-cli -c --fetch-files # download the cardlist and rulings
+
+or
+
+::
+
+  sutekh-cli -c -r vtes_card_file.txt # local copy
+  sutekh-cli --ruling-file vtes_ruling_file.html (optional)
 
 The card list and card sets can be manipulated and examined via the gui
 
-Its possible to query individual cards:
+Its possible to query individual cards:::
 
-sutekh-cli --print-card='Aching Beauty'
+ sutekh-cli --print-card='Aching Beauty'
 
-Likewise, it's also possible to export and read in card sets.
+Likewise, it's also possible to export and read in card sets.::
 
-sutekh-cli --save-cs "Toreador Deck" --cs-filename=deck.xml
-saves the card set called "Toreador Deck" to the file "deck.xml",
-while
-sutekh-cli --read-cs="vampires.xml"
+  sutekh-cli --save-cs "Toreador Deck" --cs-filename=deck.xml
+
+saves the card set called "Toreador Deck" to the file "deck.xml", while::
+
+  sutekh-cli --read-cs="vampires.xml"
+
 loads the Card Set saved as vampires.xml
 
-A card set can be printed to screen using:
+A card set can be printed to screen using:::
 
-sutekh-cli --print-cs='Toreador Deck'
+  sutekh-cli --print-cs='Toreador Deck'
 
-The list of card sets can be seen using:
+The list of card sets can be seen using:::
 
-sutekh-cli --list-cs
+  sutekh-cli --list-cs
 
 A --reload option exists for when re-importing the official cardlists and
 rulings.  This dumps and then reloads the card list and all the card sets.
 
-Typically used as:
-sutekh-cli -c --reload -r vtes_card_file.txt \
-      --ruling-file vtes_ruling_file.html
+Typically used as:::
 
-The command line tool can be used to run filters:
+  sutekh-cli -c --reload -r vtes_card_file.txt --ruling-file vtes_ruling_file.html
 
-sutekh-cli --filter='<Filter>'
+The command line tool can be used to run filters:::
+
+  sutekh-cli --filter='<Filter>'
 
 will filter the WW card list using the given filter
 
@@ -80,14 +93,16 @@ rather than just the names.
 The filters can also be run on a card set, by using the --filter-cs option
 
 So:
+::
 
-sutekh-cli --filter="CardText='stealth' and CardType='Action Modifier'" \
-    --filter-cs='Tzimisce deck' --filter-detailed
+  sutekh-cli --filter="CardText='stealth' and CardType='Action Modifier'" \
+  --filter-cs='Tzimisce deck' --filter-detailed
 
 will list and print details of all action modifiers containing with 'stealth'
 in their card text for the card set 'Tzimisce deck'
 
-=== Windows Quickstart ===
+Windows Quickstart
+==================
 
 The easiest method is to use the provided installer. This bundles the
 required files from pygk, python and the required modules for running sutekh.
@@ -116,51 +131,61 @@ Run easy_install <Sutekh Egg File>.
 
 Run <python install dir>/Scripts/sutekh
 
-=== Using Sutekh from the Python Interpreter ===
+Using Sutekh from the Python Interpreter
+========================================
 
 Sutekh also allows you to play around with the database from inside the Python
 interpreter:
 
-python
->>> from sutekh import *
->>> start()
+::
+
+  python
+  >>> from sutekh import *
+  >>> start()
 
 An example:
 
 Print all Malkavian cards:
->>> for oC in Clan.byName('Malkavian').cards:
-...           print oC.name
 
->>> oTony = AbstractCard.byName('Tony')
->>> print oTony
->>> for oP in oTony.discipline:
-...     print oP.level, oP.discipline
->>> print oTony.cardtype
->>> print oTony.capacity
->>> print oTony.clan
->>> print oTony.group
->>> print oTony.text
->>> oMariel = list(AbstractCard.select(AbstractCard.q.name.startswith('Mariel')))[0]
+::
+
+  >>> for oC in Clan.byName('Malkavian').cards:
+  ...           print oC.name
+
+  >>> oTony = AbstractCard.byName('Tony')
+  >>> print oTony
+  >>> for oP in oTony.discipline:
+  ...     print oP.level, oP.discipline
+  >>> print oTony.cardtype
+  >>> print oTony.capacity
+  >>> print oTony.clan
+  >>> print oTony.group
+  >>> print oTony.text
+  >>> oMariel = list(AbstractCard.select(AbstractCard.q.name.startswith('Mariel')))[0]
 
 Filtering:
 
->>> aC = AbstractCard.select(CardTextFilter('Laibon').getExpression())
->>> for oC in aC:
-...     print oC.name, oC.cardtype
+::
 
->>> oF1 = DisciplineFilter('Dementation')
->>> oF2 = CardTextFilter('bleed')
->>> oF3 = CardTypeFilter('Action')
->>> oF4 = CardTypeFilter('Action Modifier')
->>> oF5 = FilterOrBox([oF3,oF4])
->>> oF = FilterAndBox([oF1,oF2,oF5])
->>> for oC in AbstractCard.select(oF.getExpression()):
-...     print "---", oC.name, "---"
-...     print oC.text
+  >>> aC = AbstractCard.select(CardTextFilter('Laibon').getExpression())
+  >>> for oC in aC:
+  ...     print oC.name, oC.cardtype
 
-=== Database Notes ===
+  >>> oF1 = DisciplineFilter('Dementation')
+  >>> oF2 = CardTextFilter('bleed')
+  >>> oF3 = CardTypeFilter('Action')
+  >>> oF4 = CardTypeFilter('Action Modifier')
+  >>> oF5 = FilterOrBox([oF3,oF4])
+  >>> oF = FilterAndBox([oF1,oF2,oF5])
+  >>> for oC in AbstractCard.select(oF.getExpression()):
+  ...     print "---", oC.name, "---"
+  ...     print oC.text
 
-==== Using other database backends ====
+Database Notes
+==============
+
+Using other database backends
+-----------------------------
 
 Sutekh has been developed mainly with sqlite, but, since it uses SQLObject for
 to manage the databases, it is possible to try other database backends by
@@ -172,22 +197,26 @@ config file.
 
 Sutekh is frequently tested using MySQL and PostgresSQL.
 
-To use a PostgresSQL database with Sutekh, specify:
+To use a PostgresSQL database with Sutekh, specify:::
 
-sutekh -d postgres://username@host/database
+  sutekh -d postgres://username@host/database
 
 With SQLObject 0.9, the url syntax for MySQL is somewhat complex, due
 to the encoding issues involved. We have had good results using utf8 as the
 encoding, specified as:
 
-mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
+::
+
+  mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
 
 In our experience, utf8 is the most robust and portable choice.
 
 When using sqlobject 0.10 or later, the sqlobjct_encoding parameter is no
 longer needed, and the URI can be simplified to:
 
-mysql://username@host/database?charset=utf8
+::
+
+  mysql://username@host/database?charset=utf8
 
 MySQL 4 or earlier will definitely NOT work. This is unlikely to ever change.
 
@@ -195,13 +224,13 @@ Other databases are untested.
 
 To dump data between databases, you can use the zip file support. Something
 like (assuming that the new database has already had the cardlist & rulings
-imported):
+imported):::
 
-sutekh-cli -d <old_database_uri> --dump-zip=zipfile.zip
+  sutekh-cli -d <old_database_uri> --dump-zip=zipfile.zip
+  sutekh-cli -d <new_database_uti> --restore-zip=zipfile.zip
 
-sutekh-cli -d <new_database_uti> --restore-zip=zipfile.zip
-
-==== Disabling SQLObject caching ====
+Disabling SQLObject caching
+---------------------------
 
 When using the default sqlite database, Sutekh disables SQLObject's internal
 caching. As a number of the items SQLObject caches aren't important to Sutekh,
@@ -212,15 +241,16 @@ changes to the cache culling algorithm have a more noticeable impact on
 performance.
 
 To disable the cache for the other databases, append '?cache=False' to
-the database url:
+the database url:::
 
-sutekh -d postgres://username@host/database?cache=False
+  sutekh -d postgres://username@host/database?cache=False
 
-or
+or::
 
-sutekh -d mysql://username@host/database?cache=False&charset=utf8
+  sutekh -d mysql://username@host/database?cache=False&charset=utf8
 
-=== Clustering Plugin ===
+Clustering Plugin
+=================
 
 Sutekh has the ability to data mine card sets for related groups of
 cards using the Cluster 3.0 [1] data clustering package. You'll need to download
@@ -250,16 +280,19 @@ examples at:
 [3] http://www.dalkescientific.com/writings/NBN/clustering.html
 [4] http://b-src.cbrc.jp/markup/Pycluster-1.29/python/test/test_Cluster.py
 
-=== Philosophy ===
+Philosophy
+==========
 
 Conceptually Sutekh is organised around two datatypes, AbstractCard
 and PhysicalCard. AbstractCard models a conceptual card (e.g. ".44 Magnum")
 while PhysicalCard stores information about an actual rectangular piece of
 cardboard (e.g. My third copy of a .44 Magnum from the VTES expansion).
 
-=== Other Notes ===
+Other Notes
+===========
 
-==== Sutekh and gtk themes ====
+Sutekh and gtk themes
+---------------------
 
 It is possible to customise the look and feel of Sutekh quite extensively
 via gtk's theming mechanism. Sutekh uses "Sutekh" as the application name
@@ -269,9 +302,11 @@ Of specific note, the pane title's are named 'frame_title' when not selected
 and 'selected_title' when the pane is selected. This allows customising
 the look of panes when selected easily. For instance, by putting:
 
-style "title_selected" {
-   fg[NORMAL] = "red"
-}
+::
+
+   style "title_selected" {
+      fg[NORMAL] = "red"
+   }
 
 widget "Sutekh.*.selected_title" style "title_selected"
 
@@ -311,10 +346,10 @@ The test suite requires nose [1] to run.
 By default, the tests will use an sqlite memory database, as being the
 simplest, but, as it's often desirable to test against other databases,
 the SUTEKH_TEST_DB environment variable can be used to provide an URI
-to use instead. For example, to test against a postgres db:
+to use instead. For example, to test against a postgres db:::
 
-$ export SUTEKH_TEST_DB="postres://username@host/test_database"
-$ nosetests <test to run>
+  export SUTEKH_TEST_DB="postres://username@host/test_database"
+  nosetests <test to run>
 
 Note that the test suite creates and drops the tables several times, so it can
 be quite slow. Also, DO NOT run the tests against your personal card database,
