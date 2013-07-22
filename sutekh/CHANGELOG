@@ -1,3 +1,26 @@
+22 Jul 2013
+ * Restore database connection correctly if download fails
+
+03 Jun 2013
+ * Add build_requires to setup.cfg, so rpm can be build in mock chroot
+
+02 Jun 2013
+ * Update the list of build targets for the deb (drop oneiric, add raring)
+ * Fix ppa build by addining COPYRIGHT file to the manifest
+
+18 May 2013
+ * Add database url and version to the exception dialog and logging output
+
+22 Mar 2013
+ * Fix bug with negating a filter with no values selected
+
+20 Mar 2013
+ * Use bitbucket as the source for all card info
+ * Update download dialog to reflect this
+
+19 Mar 2013
+ * Don't open an empty url in the card images plugin
+
 20 Feb 2013
  * Add support for downloading missing card images from the vtes.pl
    infrastructure
