@@ -667,6 +667,20 @@ class FilterTests(SutekhTest):
                 (Filters.PhysicalCardSetFilter('Test 2'),
                     Filters.CardSetMultiCardCountFilter(('0', aPCSs[0].name)),
                     [u"Anson", u".44 Magnum", u"AK-47"]),
+                # Nothing with >30
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.CardSetMultiCardCountFilter((['>30'],
+                        aPCSs[0].name)),
+                    []),
+                # Check for syntax of combinations
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.CardSetMultiCardCountFilter((['0', '>30'],
+                        aPCSs[0].name)),
+                    [u"Anson", u".44 Magnum", u"AK-47"]),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    Filters.CardSetMultiCardCountFilter((['0', '30', '>30'],
+                        aPCSs[0].name)),
+                    [u"Anson", u".44 Magnum", u"AK-47"]),
                     ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSNumberTests:

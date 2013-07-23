@@ -377,6 +377,19 @@ class FilterParserTests(SutekhTest):
                         Filters.CardSetMultiCardCountFilter(('0',
                             aPCSs[0].name)),
                         Filters.CardTypeFilter('Vampire')])),
+                # Syntax checks
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount = >30 from "%s"' % aPCSs[0].name,
+                    Filters.CardSetMultiCardCountFilter((['>30'],
+                        aPCSs[0].name))),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount in 0, >30 from "%s"' % aPCSs[0].name,
+                    Filters.CardSetMultiCardCountFilter((['0', '>30'],
+                        aPCSs[0].name))),
+                (Filters.PhysicalCardSetFilter('Test 2'),
+                    'CardCount in 0, 30, >30 from "%s"' % aPCSs[0].name,
+                    Filters.CardSetMultiCardCountFilter((['0', '30', '>30'],
+                        aPCSs[0].name))),
                     ]
 
         for oPCSFilter, sFilter, oEquivFilter in aPCSNumberTests:
