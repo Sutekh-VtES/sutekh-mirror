@@ -1326,9 +1326,12 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aFinalFilters.append(NOT(IN(PhysicalCard.q.abstractCardID,
                 aNonZeroIds)))
         if self._oFilters:
-            oQuery = oConn.sqlrepr(OR(*self._oFilters))
-            aIds = oConn.queryAll(oQuery)
-            aFinalFilters.append(IN(PhysicalCard.q.abstractCardID, aIds))
+            for oFilter in self._oFilters:
+                # OR(*self._oFilters) doesn't do what I expected here, so
+                # we manually fiddle stuff to get the right result
+                oQuery = oConn.sqlrepr(oFilter)
+                aIds = oConn.queryAll(oQuery)
+                aFinalFilters.append(IN(PhysicalCard.q.abstractCardID, aIds))
         return OR(*aFinalFilters)
 
     def involves(self, oCardSet):
