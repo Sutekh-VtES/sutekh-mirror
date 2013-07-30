@@ -5,7 +5,7 @@
 
 """Utility functions for dealing with managing the CardSet Objects"""
 
-from sqlobject import SQLObjectNotFound
+from sqlobject import SQLObjectNotFound, sqlhub
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 
@@ -65,14 +65,19 @@ def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
     # pylint: disable-msg=E1101
     # SQLObject confuse pylint
+    def _delete_cards(oCS):
+        """Remove cards from the card set.
+
+           Intended to be wrapped in a transaction for speed."""
+        for oCard in oCS.cards:
+            oCS.removePhysicalCard(oCard)
     try:
         oCS = PhysicalCardSet.byName(sSetName)
         aChildren = find_children(oCS)
         for oChildCS in aChildren:
             oChildCS.parent = oCS.parent
             oChildCS.syncUpdate()
-        for oCard in oCS.cards:
-            oCS.removePhysicalCard(oCard)
+        sqlhub.doInTransaction(_delete_cards, oCS)
         PhysicalCardSet.delete(oCS.id)
         return True
     except SQLObjectNotFound:
