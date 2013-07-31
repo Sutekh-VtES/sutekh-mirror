@@ -1,3 +1,9 @@
+31 Jul 2013
+ * Use sqlobject transactions to speed up creating card sets from the plugins
+
+30 Jul 2013
+ * Use sqlobject transactions to speed up deleting card sets
+
 22 Jul 2013
  * Restore database connection correctly if download fails
 
