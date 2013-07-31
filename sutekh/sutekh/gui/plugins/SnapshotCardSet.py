@@ -51,12 +51,7 @@ class SnapshotCardSet(SutekhPlugin):
         oNewPCS.syncUpdate()
 
         # Copy the cards
-        for oCard in oMyCS.cards:
-            # pylint: disable-msg=E1101, E1103
-            # SQLObject confuses pylint
-            oNewPCS.addPhysicalCard(oCard)
-            oNewPCS.syncUpdate()
-
+        self._commit_cards(oNewPCS, oMyCS.cards)
         self.reload_pcs_list()
         sMesg = 'Snapshot <b>%s</b> created' % self.escape(oTempHolder.name)
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)

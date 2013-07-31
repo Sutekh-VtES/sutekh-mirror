@@ -14,6 +14,7 @@ import gtk
 import zipimport
 import zipfile
 import re
+from sqlobject import sqlhub
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.ConfigFile import CARDSET, WW_CARDLIST, CARDSET_LIST, FRAME
@@ -345,3 +346,13 @@ class SutekhPlugin(object):
             return markup_escape_text(sInput)
         else:
             return sInput  # pass None straight through
+
+    def _commit_cards(self, oCS, aCards):
+        """Add a list of physiccal cards to the given card set"""
+        def _in_transaction(oCS, aCards):
+            """The actual work happens here, so it can be wrapped in a
+               sqlobject transaction"""
+            for oCard in aCards:
+                oCS.addPhysicalCard(oCard)
+
+        sqlhub.doInTransaction(_in_transaction, oCS, aCards)

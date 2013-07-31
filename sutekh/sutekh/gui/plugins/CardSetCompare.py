@@ -192,6 +192,8 @@ class CardSetCompare(SutekhPlugin):
         if not sCSName:
             return  # User cancelled, so skip out
         oCardSet = IPhysicalCardSet(sCSName)
+        # Turn data into a list of cards to add
+        aCards = []
         for oCard in dCardData:
             _sCardName, sExpansionName, iCnt = dCardData[oCard]
             if sExpansionName == UNKNOWN_EXP:
@@ -200,10 +202,9 @@ class CardSetCompare(SutekhPlugin):
             else:
                 # Dealing with pysical cards in the list
                 oPhysCard = oCard
-            # pylint: disable-msg=E1101
-            # E1101 - sqlobject confuses pylint
             for _iNum in range(iCnt):
-                oCardSet.addPhysicalCard(oPhysCard)
+                aCards.append(oPhysCard)
+        self._commit_cards(oCardSet, aCards)
         self.open_cs(sCSName)
 
 

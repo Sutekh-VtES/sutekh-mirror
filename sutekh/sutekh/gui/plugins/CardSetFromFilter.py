@@ -42,10 +42,9 @@ class DeckFromFilter(SutekhPlugin):
         # pylint: disable-msg=E1101
         # pylint misses PhysicalCardSet methods
         oCS = IPhysicalCardSet(sCSName)
-        for oCard in self.model.get_card_iterator(
-                self.model.get_current_filter()):
-            oCS.addPhysicalCard(IPhysicalCard(oCard))
-
+        aCards = [IPhysicalCard(x) for x in
+                self.model.get_card_iterator(self.model.get_current_filter())]
+        self._commit_cards(oCS, aCards)
         return oCS
 
 

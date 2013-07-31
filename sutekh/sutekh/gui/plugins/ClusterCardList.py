@@ -453,10 +453,9 @@ class ClusterCardList(SutekhPlugin):
 
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
-        for iIndex in self._aClusters[iClusterId]:
-            oCard = IPhysicalCard(self._aCards[iIndex])
-            oDeck.addPhysicalCard(oCard)
-
+        aCards = [IPhysicalCard(self._aCards[x]) for x in
+            self._aClusters[iClusterId]]
+        self._commit_cards(oDeck, aCards)
         self.open_cs(sDeckName, True)
 
 
