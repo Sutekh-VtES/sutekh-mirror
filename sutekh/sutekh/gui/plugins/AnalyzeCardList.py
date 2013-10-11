@@ -23,6 +23,7 @@ from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
 try:
     THIRD_ED = IExpansion('Third Edition')
+    DANSE_MACABRE = IExpansion('Danse Macabre')
     JYHAD = IExpansion('Jyhad')
 except SQLObjectNotFound, oExcDetails:
     # log exception at same level as plugin errors (verbose)
@@ -30,6 +31,7 @@ except SQLObjectNotFound, oExcDetails:
     # Turn exception into a ImportError, so plugin is just disabled
     raise ImportError('Unable to load the required expansions')
 ODD_BACKS = (None, THIRD_ED, JYHAD)
+PDF_SETS = (DANSE_MACABRE, )
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
@@ -243,7 +245,9 @@ def _get_back_counts(aPhysCards):
     dCounts = {}
     for oCard in aPhysCards:
         oKey = oCard.expansion
-        if oKey not in ODD_BACKS:
+        if oKey in PDF_SETS:
+            oKey = 'PDF'
+        elif oKey not in ODD_BACKS:
             oKey = 'Other'
         dCounts.setdefault(oKey, 0)
         dCounts[oKey] += 1
@@ -274,13 +278,19 @@ def _check_same(aPhysCards):
     dLib = _get_back_counts(aLib)
     if len(dCrypt) > 1 or len(dLib) > 1:
         return False  # Differing backs
+    if 'PDF' in dCrypt or 'PDF' in dLib:
+        return False  # PDF set in use, so must be sleeved
     return True
 
 
 def _simple_back_checks(dCards, sType):
     """Simple checks on the card backs. Returns None if we need
        further investigation"""
-    if len(dCards) == 1 and None not in dCards:
+    if "PDF" in dCards:
+        sText = "%s has cards from a V:EKN pdf expansion.\n" % sType
+        sText += SLEEVED % sType
+        return sText
+    elif len(dCards) == 1 and None not in dCards:
         sText = "All %s cards have identical backs\n" % sType.lower() + \
                     UNSLEEVED % sType
         return sText
@@ -1122,19 +1132,24 @@ class AnalyzeCardList(SutekhPlugin):
         dCrypt = _get_back_counts(aCrypt)
         dLib = _get_back_counts(aLib)
         sText = "\t\t<b>Mixed Card Backs :</b>\n\n"
-        if None in dCrypt and None in dLib:
+        # PDF trumps none
+        if 'PDF' in dCrypt or 'PDF' in dLib:
+            sText += ("Cards from a V:EKN released pdf set in the deck. "
+                      "The V:EKN requires that these cards be sleeved in "
+                      "opaque sleeves with a existing VtES card\n")
+        elif None in dCrypt and None in dLib:
             sText += "Both library and crypt have cards with unspecified" \
                     " expansions.\nIgnoring the mixed backs.\n"
             return sText
-        # We know there are mixed cards, when we get here.
-        sText += "Mixed card backs in the deck. The V:EKN rules require " \
-                "that a mixed deck be of 'sufficiently mixed card types' " \
-                "if it's to be played without sleeves. This tests some " \
-                "obvious cases, but check with the event judge if playing " \
-                "without sleeves\n\n"
+        else:
+            # We know there are mixed cards, when we get here.
+            sText += ("Mixed card backs in the deck. The V:EKN rules require "
+                      "that a mixed deck be of 'sufficiently mixed card "
+                      "types' if it's to be played without sleeves. This "
+                      "tests some obvious cases, but check with the event "
+                      "judge if playing without sleeves\n\n")
         sText += self._check_crypt_backs(dCrypt, aCrypt)
         sText += self._check_lib_backs(dLib, aLib)
-
         return sText
 
     def happy_families_init(self, oHFVBox, oDlg):
