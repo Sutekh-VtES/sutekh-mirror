@@ -12,6 +12,7 @@ import os
 import zipfile
 import tempfile
 import logging
+import urllib2
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjects import IAbstractCard, IExpansion
 from sutekh.io.DataPack import urlopen_with_timeout
@@ -68,6 +69,14 @@ def _unaccent(sCardName):
             unicode(sCardName.encode('utf8'), encoding='utf-8'))
     # Drop non-ascii characters
     return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
+
+
+def image_gui_error_handler(oExp):
+    """We filter out 404 not found so we don't loop endlessly on
+       card images that aren't on vtes.pl"""
+    if isinstance(oExp, urllib2.HTTPError) and oExp.code == 404:
+        return
+    gui_error_handler(oExp)
 
 
 class CardImagePopupMenu(gtk.Menu):
@@ -295,7 +304,7 @@ class CardImageFrame(BasicFrame):
                 sUrl = self.__make_vtes_pl_name()
                 if sUrl:
                     oFile = urlopen_with_timeout(sUrl,
-                            fErrorHandler=gui_error_handler)
+                            fErrorHandler=image_gui_error_handler)
                 else:
                     # No url, so fall back to the 'no image' case
                     self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
