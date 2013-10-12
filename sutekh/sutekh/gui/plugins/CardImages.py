@@ -182,6 +182,7 @@ class CardImageFrame(BasicFrame):
         self.__sCardName = ''
         self.__iZoomMode = FIT
         self._tPaneSize = (0, 0)
+        self._dUrlCache = {}
 
         MessageBus.subscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
 
@@ -303,14 +304,18 @@ class CardImageFrame(BasicFrame):
                 # Attempt to download the image from vtes.pl
                 sUrl = self.__make_vtes_pl_name()
                 if sUrl:
-                    oFile = urlopen_with_timeout(sUrl,
-                            fErrorHandler=image_gui_error_handler)
+                    if sUrl not in self._dUrlCache:
+                        oFile = urlopen_with_timeout(sUrl,
+                                fErrorHandler=image_gui_error_handler)
+                    else:
+                        oFile = self._dUrlCache[sUrl]
                 else:
                     # No url, so fall back to the 'no image' case
                     self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
                             gtk.ICON_SIZE_DIALOG)
                     self._oImage.queue_draw()
                     return
+                self._dUrlCache[sUrl] = oFile
                 if oFile:
                     oOutFile = file(sFullFilename, 'wb')
                     # Attempt to fetch the data
