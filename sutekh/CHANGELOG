@@ -1,8 +1,17 @@
+11 Oct 2013
+ * Add Danse Macabre to list of expansions
+ * Ignore 404's from vtes.pl when trying to look up DM images
+ * Add basic support for PDF cards to the 'mixed card back' checks in
+   the Analyze card set plugin.
+
 31 Jul 2013
  * Use sqlobject transactions to speed up creating card sets from the plugins
 
 30 Jul 2013
  * Use sqlobject transactions to speed up deleting card sets
+
+23 Jul 2013
+ * Fix bug with the card count filter
 
 22 Jul 2013
  * Restore database connection correctly if download fails
