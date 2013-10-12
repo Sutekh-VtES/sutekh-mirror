@@ -183,6 +183,8 @@ def refresh_ww_card_list(oWin):
         do_exception_complaint("Failed to read cardlists.\n\n%s\n"
                     "Aborting import." % oErr)
         oProgressDialog.destroy()
+        # Restore connection
+        sqlhub.processConnection = oOldConn
         return False
     # Refresh abstract card view for card lookups
     oLogHandler = SutekhCountLogHandler()

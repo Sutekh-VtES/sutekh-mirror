@@ -185,6 +185,7 @@ class Expansions(AbbreviationLookup):
         'Bloodlines': ['BL'],
         'Blood Shadowed Court': ['BSC'],
         'Camarilla Edition': ['CE'],
+        'Danse Macabre': ['DM'],
         'Dark Sovereigns': ['DS'],
         'Ebony Kingdom': ['EK'],
         'Final Nights': ['FN'],

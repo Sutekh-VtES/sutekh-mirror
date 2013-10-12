@@ -1,3 +1,11 @@
+12 Oct 2013
+ * Backport card count filter syntax fixes (r3213, r3214)
+ * Backport restore database connection correctly if download fails
+   (r3211)
+ * Backport update to years in COPYRIGHT (r3218)
+ * Backport adding Danse Macabre to the list of expansions (r3129)
+ * Backport basic pdf set handling in mixed card backs (r3221)
+
 02 Jun 2013
  * misc fixes to the ubuntu build system
  * Tag 0.8.3 final release
