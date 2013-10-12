@@ -1,3 +1,9 @@
+12 Oct 2013
+ * Cache missed image lookups to avoid repeated calls to vtes.pl
+ * Refactor PDF set loading, to ease future maintainability and to
+   avoid disabling Analyze plugin entirely until DM card list is
+   imported.
+
 11 Oct 2013
  * Add Danse Macabre to list of expansions
  * Ignore 404's from vtes.pl when trying to look up DM images
