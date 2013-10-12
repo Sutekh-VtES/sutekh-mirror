@@ -24,7 +24,6 @@ from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
 
 try:
     THIRD_ED = IExpansion('Third Edition')
-    DANSE_MACABRE = IExpansion('Danse Macabre')
     JYHAD = IExpansion('Jyhad')
 except SQLObjectNotFound, oExcDetails:
     # log exception at same level as plugin errors (verbose)
@@ -32,7 +31,8 @@ except SQLObjectNotFound, oExcDetails:
     # Turn exception into a ImportError, so plugin is just disabled
     raise ImportError('Unable to load the required expansions')
 ODD_BACKS = (None, THIRD_ED, JYHAD)
-PDF_SETS = (DANSE_MACABRE, )
+
+PDF_SETS = set()
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
@@ -70,6 +70,17 @@ def _disc_sort_cmp(oTuple1, oTuple2):
     if iCmp != 0:
         return -iCmp
     return cmp(oTuple1[0].fullname, oTuple2[0].fullname)
+
+
+def _load_pdf_sets():
+    """Cache the sets from the VEKN pdf expansions"""
+    PDF_SETS.clear()
+    for sSet in ['Danse Macabre']:
+        try:
+            oSet = IExpansion(sSet)
+            PDF_SETS.add(oSet)
+        except SQLObjectNotFound:
+            pass
 
 
 def _format_card_line(sString, sTrailer, iNum, iLibSize):
@@ -400,6 +411,10 @@ class AnalyzeCardList(SutekhPlugin):
        """
     dTableVersions = {PhysicalCardSet: (6,)}
     aModelsSupported = (PhysicalCardSet,)
+
+    def __init__(self, *args, **kwargs):
+        super(AnalyzeCardList, self).__init__(*args, **kwargs)
+        _load_pdf_sets()
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""

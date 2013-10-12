@@ -4,7 +4,7 @@
    (r3211)
  * Backport update to years in COPYRIGHT (r3218)
  * Backport adding Danse Macabre to the list of expansions (r3129)
- * Backport basic pdf set handling in mixed card backs (r3221)
+ * Backport basic pdf set handling in mixed card backs (r3221, r3226)
 
 02 Jun 2013
  * misc fixes to the ubuntu build system
