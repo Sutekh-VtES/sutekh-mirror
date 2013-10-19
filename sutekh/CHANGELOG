@@ -1,3 +1,6 @@
+19 Oct 2013
+ * Tweak sqlobject dependancy for Fedora
+
 18 Oct 2013
  * Add new saucy release to the list of debs we build
 
