@@ -1,5 +1,6 @@
 19 Oct 2013
  * Tweak sqlobject dependancy for Fedora
+ * Fix debian patch for sqlobject tweak
  * Tag 0.8.4 final release
 
 18 Oct 2013
