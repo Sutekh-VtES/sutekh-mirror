@@ -214,6 +214,8 @@ def refresh_ww_card_list(oWin):
     oProgressDialog.destroy()
     dNewMap = get_cs_id_name_table()
     oWin.config_file.fix_profile_mapping(dOldMap, dNewMap)
+    # We defer to the main window to publish this event on the message bus
+    # to ensure we handle the caches correctly
     oWin.update_to_new_db()
     oWin.restore_editable_panes(aEditable)
     return True

@@ -11,7 +11,7 @@
 
 # Useful constants to avoid typoes
 
-CONFIG_MSG, CARD_TEXT_MSG = range(2)
+CONFIG_MSG, CARD_TEXT_MSG, DATABASE_MSG = range(3)
 
 
 class MessageBus(object):

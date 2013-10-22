@@ -36,6 +36,7 @@ from sutekh.gui.CardSetManagementFrame import CardSetManagementFrame
 from sutekh.gui.PluginManager import PluginManager
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.gui import SutekhIcon
+from sutekh.gui.MessageBus import MessageBus, DATABASE_MSG
 from sutekh.gui.HTMLTextView import HTMLViewDialog
 from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.SutekhDialog import do_complaint_error_details, \
@@ -361,9 +362,8 @@ class SutekhMainWindow(MultiPaneWindow):
         flush_cache()
         # Reset the lookup cache holder
         self.__oSutekhObjectCache = SutekhObjectCache()
-        # We may close frames here, so loop over copies of the list
-        for oPane in chain(self.aOpenFrames[:], self.aClosedFrames[:]):
-            oPane.update_to_new_db()
+        # We publish here, after we've cleared the caches
+        MessageBus.publish(DATABASE_MSG, "update_to_new_db")
 
     def clear_cache(self):
         """Remove the cached set of objects, for card list reloads, etc."""

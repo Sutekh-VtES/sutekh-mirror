@@ -9,6 +9,8 @@
 import gtk
 import gobject
 
+from sutekh.gui.MessageBus import MessageBus, DATABASE_MSG
+
 
 class BasicFrame(gtk.Frame):
     # pylint: disable-msg=R0904
@@ -59,6 +61,9 @@ class BasicFrame(gtk.Frame):
         self._oTitle.connect_after('drag_begin', self.make_drag_icon)
         self.set_drag_handler(self._oView)
         self.set_drop_handler(self._oView)
+
+        MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
+                             self.update_to_new_db)
 
         self.set_unique_id()
 
@@ -160,6 +165,8 @@ class BasicFrame(gtk.Frame):
     def cleanup(self):
         """Hook for cleanup actions when the frame is removed."""
         # do per-plugin cleanup
+        MessageBus.unsubscribe(DATABASE_MSG, "update_to_new_db",
+                               self.update_to_new_db)
         for oPlugin in self._aPlugins:
             oPlugin.cleanup()
         # Don't hold references to the plugins
