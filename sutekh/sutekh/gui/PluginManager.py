@@ -18,7 +18,7 @@ from sqlobject import sqlhub
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.core.SutekhObjects import PhysicalCardSet
 from sutekh.gui.ConfigFile import CARDSET, WW_CARDLIST, CARDSET_LIST, FRAME
-from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
+from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from sutekh.gui.SutekhDialog import do_complaint_warning
 
 
@@ -166,6 +166,8 @@ class SutekhPlugin(object):
         self._oListener = None
         if self._oModel is not None and hasattr(self._oModel, "frame_id"):
             self._oListener = PluginConfigFileListener(self)
+        MessageBus.subscribe(DATABASE_MSG, 'update_to_new_db',
+                self.update_to_new_db)
 
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
@@ -231,6 +233,8 @@ class SutekhPlugin(object):
            Used for things like database signal cleanup, etc."""
         if self._oListener:
             self._oListener.cleanup()
+        MessageBus.unsubscribe(DATABASE_MSG, 'update_to_new_db',
+                self.update_to_new_db)
         return None
 
     def get_toolbar_widget(self):
@@ -335,6 +339,10 @@ class SutekhPlugin(object):
 
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
+        pass
+
+    def update_to_new_db(self):
+        """Plugins should override this to be informed of database changes."""
         pass
 
     # pylint: disable-msg=R0201
