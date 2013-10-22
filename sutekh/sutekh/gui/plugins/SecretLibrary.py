@@ -11,6 +11,8 @@ import urllib
 import StringIO
 import re
 import keyring
+import logging
+from sqlobject import SQLObjectNotFound
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard, \
     IKeyword, canonical_to_csv
@@ -216,7 +218,11 @@ class SecretLibrary(SutekhPlugin):
 
     SL_API_URL = "http://www.secretlibrary.info/api.php"
 
-    ILLEGAL = IKeyword('not for legal play')
+    try:
+        ILLEGAL = IKeyword('not for legal play')
+    except SQLObjectNotFound, oExcDetails:
+        logging.warn("Illegal keyword missing (%s).", oExcDetails, exc_info=1)
+        ILLEGAL = None
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
