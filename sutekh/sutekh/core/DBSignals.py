@@ -46,7 +46,7 @@ def listen_row_update(fListener, cClass):
 
 
 def listen_row_created(fListener, cClass):
-    """listen for the row updated signal sent when a card set is modified."""
+    """listen for the row created signal sent when a new set is created."""
     listen(fListener, cClass, RowCreatedSignal)
 
 
@@ -61,7 +61,7 @@ def disconnect_row_destroy(fListener, cClass):
 
 
 def disconnect_row_created(fListener, cClass):
-    """Disconnect from the row destroyed signal."""
+    """Disconnect from the row created signal."""
     dispatcher.disconnect(fListener, signal=RowCreatedSignal, sender=cClass)
 
 
