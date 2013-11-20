@@ -12,7 +12,7 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import pretty_xml, monger_url, secret_library_url, \
         norm_xml_quotes
 # pylint: disable-msg=F0401, E0611
-# the allowe failures here makes pylint unhappy
+# the allowed failures here makes pylint unhappy
 try:
     from xml.etree.ElementTree import Element, SubElement, tostring
 except ImportError:
