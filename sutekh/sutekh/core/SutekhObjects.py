@@ -18,7 +18,7 @@ from sutekh.core.Abbreviations import CardTypes, Clans, Creeds, Disciplines, \
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
        EnumCol, MultipleJoin, BoolCol, DatabaseIndex, ForeignKey, \
-       SQLObjectNotFound
+       SQLObjectNotFound, DateCol
 # pylint: enable-msg=E0611
 from protocols import advise, Interface
 
@@ -208,9 +208,10 @@ class RarityPair(SQLObject):
 class Expansion(SQLObject):
     advise(instancesProvide=[IExpansion])
 
-    tableversion = 3
+    tableversion = 4
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     shortname = UnicodeCol(default=None)
+    releasedate = DateCol(default=None)
     pairs = MultipleJoin('RarityPair')
 
 

@@ -112,9 +112,35 @@ class PhysicalCard_ACv5(SQLObject):
 
     abstractCard = ForeignKey('AbstractCard_v5')
     # Explicitly allow None as expansion
-    expansion = ForeignKey('Expansion', notNull=False)
+    expansion = ForeignKey('Expansion_v3', notNull=False)
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
             createRelatedTable=False)
+
+
+class Expansion_v3(SQLObject):
+    """Table used to update Expansion from v3"""
+
+    class sqlmeta:
+        """meta cleass used to set the correct table"""
+        table = Expansion.sqlmeta.table
+        cacheValues = False
+
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(default=None)
+    pairs = MultipleJoin('RarityPair_Ev3')
+
+
+class RarityPair_Ev3(SQLObject):
+    """Table used to update Expansion from v3"""
+
+    class sqlmeta:
+        """meta cleass used to set the correct table"""
+        table = RarityPair.sqlmeta.table
+        cacheValues = False
+
+    expansion = ForeignKey('Expansion_v3')
+    rarity = ForeignKey('Rarity')
+
 
 # pylint: enable-msg=C0103, W0232
 
@@ -134,7 +160,8 @@ def check_can_read_old_database(oConn):
             oConn):
         raise UnknownVersion("Rarity")
     if not oVer.check_tables_and_versions([Expansion],
-            [Expansion.tableversion], oConn):
+            [Expansion.tableversion], oConn) \
+            and not oVer.check_tables_and_versions([Expansion], [3], oConn):
         raise UnknownVersion("Expansion")
     if not oVer.check_tables_and_versions([Discipline],
             [Discipline.tableversion], oConn):
@@ -223,17 +250,29 @@ def copy_expansion(oOrigConn, oTrans):
     """Copy expansion, assuming versions match"""
     for oObj in Expansion.select(connection=oOrigConn):
         _oCopy = Expansion(id=oObj.id, name=oObj.name,
-                shortname=oObj.shortname, connection=oTrans)
+                           shortname=oObj.shortname,
+                           releasedate=oObj.releasedate,
+                           connection=oTrans)
 
 
 def copy_old_expansion(oOrigConn, oTrans, oVer):
     """Copy Expansion, updating as needed"""
+    aMessages = []
     if oVer.check_tables_and_versions([Expansion], [Expansion.tableversion],
             oOrigConn):
         copy_expansion(oOrigConn, oTrans)
+    elif oVer.check_tables_and_versions([Expansion], [3], oOrigConn):
+        aMessages.append("Missing date information for expansions."
+                         " You will need to reimport the card list"
+                         " for these to be correct")
+        for oObj in Expansion_v3.select(connection=oOrigConn):
+            _oCopy = Expansion(id=oObj.id, name=oObj.name,
+                               shortname=oObj.shortname,
+                               releasedate=None,
+                               connection=oTrans)
     else:
         return (False, ["Unknown Expansion Version"])
-    return (True, [])
+    return (True, aMessages)
 
 
 def copy_discipline(oOrigConn, oTrans):
@@ -368,7 +407,18 @@ def copy_old_rarity_pair(oOrigConn, oTrans, oVer):
     """Copy RarityPair, upgrading as needed"""
     if oVer.check_tables_and_versions([RarityPair], [RarityPair.tableversion],
             oOrigConn):
-        copy_rarity_pair(oOrigConn, oTrans)
+        if oVer.check_tables_and_versions([Expansion],
+                                          [Expansion.tableversion],
+                                          oOrigConn):
+            copy_rarity_pair(oOrigConn, oTrans)
+        elif oVer.check_tables_and_versions([Expansion], [3], oOrigConn):
+            for oObj in RarityPair_Ev3.select(connection=oOrigConn):
+                oObj._connection = oOrigConn
+                _oCopy = RarityPair(id=oObj.id, expansionID=oObj.expansion.id,
+                                    rarityID=oObj.rarity.id, connection=oTrans)
+        else:
+            # This may result in a duplicate error message
+            return (False, ["Unknown Expansion version"])
     else:
         return (False, ["Unknown RarityPair version"])
     return (True, [])
