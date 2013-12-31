@@ -652,13 +652,13 @@ def _copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger):
                 oCopy.syncUpdate()
                 oLogger.info('Copied PCS %s', oCopy.name)
                 dDone[oSet.id] = oCopy
-                oTrans.commit()
             else:
                 aToDo.append(oSet)
         if not aToDo:
             bDone = True
         else:
             aSets = aToDo
+        oTrans.commit()
 
 
 def copy_physical_card_set(oOrigConn, oTrans, oLogger):
