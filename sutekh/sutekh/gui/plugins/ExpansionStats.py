@@ -9,7 +9,7 @@
 import gtk
 import pango
 import gobject
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
+from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, IExpansion
 from sutekh.core.Groupings import ExpansionRarityGrouping
 from sutekh.core.Filters import make_illegal_filter, NullFilter
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -89,7 +89,7 @@ class StatsView(gtk.TreeView):
 
     def __init__(self, cGrping, bHideIllegal):
         self._oModel = StatsModel(cGrping, bHideIllegal)
-        self._aLabels = ["Expansion", "Count"]
+        self._aLabels = ["Expansion", "Date", "Count"]
 
         super(StatsView, self).__init__(self._oModel)
 
@@ -113,6 +113,7 @@ class StatsModel(gtk.TreeStore):
         # pylint: disable-msg=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
+                gobject.TYPE_STRING,
                 gobject.TYPE_INT)
         self.oLegalFilter = NullFilter()
         if bHideIllegal:
@@ -131,33 +132,50 @@ class StatsModel(gtk.TreeStore):
         oExpIter = None
         iTotal = 0
         for sGroup, oGroupIter in sorted(oGrouping):
+            oExp = None
+            sDate = 'Unknown Date'
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
+                oExp = IExpansion(sExp.strip())
+                if oExp.releasedate:
+                    sDate = oExp.releasedate.strftime('%Y-%m-%d')
             else:
                 sExp, sRarity = 'Promo', None
+                sDate = ''
             if sExp not in aTopLevel:
                 oExpIter = self.append(None)
-                self.set(oExpIter, 0, sExp.strip())
+                self.set(oExpIter, 0, sExp.strip(), 1, sDate)
                 aTopLevel.append(sExp)
                 iTotal = 0
             aSubCards = list(oGroupIter)
             if sRarity:
                 oIter = self.append(oExpIter)
-                self.set(oIter, 0, sRarity.strip())
+                self.set(oIter, 0, sRarity.strip(), 1, sDate)
                 if sRarity.strip() != 'Precon Only':
                     iTotal += len(aSubCards)
-                    self.set(oExpIter, 1, iTotal)
+                    self.set(oExpIter, 2, iTotal)
             else:
                 oIter = oExpIter
-            self.set(oIter, 1, len(aSubCards))
+            self.set(oIter, 2, len(aSubCards))
             oSubGroup = cSubGrping(aSubCards)
             for sInfo, oSubGrpIter in sorted(oSubGroup):
                 oChildIter = self.append(oIter)
                 if not sInfo:
                     sInfo = "<< None >>"
-                self.set(oChildIter, 0, sInfo, 1, len(list(oSubGrpIter)))
-                for sCard in sorted([x.name for x in oSubGrpIter]):
+                self.set(oChildIter, 0, sInfo, 1, sDate,
+                         2, len(list(oSubGrpIter)))
+                for oCard in sorted(oSubGrpIter, key=lambda x: x.name):
                     oCardIter = self.append(oChildIter)
-                    self.set(oCardIter, 0, sCard, 1, 1)
+                    sCard = oCard.name
+                    self.set(oCardIter, 0, sCard, 1, sDate, 2, 1)
+                    if sGroup == 'Promo':
+                        for oPair in oCard.rarity:
+                            if not oPair.expansion.name.startswith('Promo-'):
+                                continue
+                            oExp = oPair.expansion
+                            if oExp.releasedate:
+                                self.set(oCardIter, 1,
+                                        oExp.releasedate.strftime('%Y-%m-%d'))
+
 
 plugin = ExpansionStats
