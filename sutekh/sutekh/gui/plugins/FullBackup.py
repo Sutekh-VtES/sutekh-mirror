@@ -120,6 +120,7 @@ class FullBackup(SutekhPlugin):
 
         if bContinue:
             dOldMap = get_cs_id_name_table()
+            self.parent.prepare_for_db_update()
             try:
                 aEditable = self.parent.get_editable_panes()
                 oLogHandler = SutekhCountLogHandler()
@@ -144,6 +145,8 @@ class FullBackup(SutekhPlugin):
             # pylint: disable-msg=W0703
             # we really do want all the exceptions
             except Exception, oException:
+                # Undo effects of prepare for
+                self.parent.update_to_new_db()
                 oProgressDialog.destroy()
                 sMsg = "Failed to restore backup.\n\n%s" % oException
                 do_exception_complaint(sMsg)

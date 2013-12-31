@@ -192,6 +192,9 @@ def refresh_ww_card_list(oWin):
             do_exception_complaint("Failed to write backup.\n\n%s\n"
                     "Not touching the database further." % oErr)
             return False
+    # This doesn't strictly need to be bounced via the main window
+    # (unlike the signal at the end), but we do this for consistency
+    oWin.prepare_for_db_update()
     oOldConn = sqlhub.processConnection
     oTempConn = connectionForURI("sqlite:///:memory:")
     sqlhub.processConnection = oTempConn
@@ -199,12 +202,14 @@ def refresh_ww_card_list(oWin):
         read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oExpDateFile,
             oProgressDialog)
     except IOError, oErr:
-        # Failed to read one of the card lists, so celan up and abort
+        # Failed to read one of the card lists, so clean up and abort
         do_exception_complaint("Failed to read cardlists.\n\n%s\n"
                     "Aborting import." % oErr)
         oProgressDialog.destroy()
         # Restore connection
         sqlhub.processConnection = oOldConn
+        # Undo effects of prepare_for_db_update
+        oWin.update_to_new_db()
         return False
     # Refresh abstract card view for card lookups
     oLogHandler = SutekhCountLogHandler()
@@ -213,6 +218,7 @@ def refresh_ww_card_list(oWin):
     if not copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog,
             oLogHandler):
         oProgressDialog.destroy()
+        oWin.update_to_new_db()
         return True  # Force refresh
     # OK, update complete, copy back from oTempConn
     sqlhub.processConnection = oOldConn
