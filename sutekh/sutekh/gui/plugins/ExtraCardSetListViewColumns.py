@@ -120,6 +120,31 @@ class ExtraCardSetListViewColumns(SutekhPlugin):
                     PhysicalCardSet)
         super(ExtraCardSetListViewColumns, self).cleanup()
 
+    # Manage database signals around upgrades
+
+    def update_to_new_db(self):
+        """Reconnect the database signal listeners and queue a refresh"""
+        if self.check_versions() and self.check_model_type():
+            # clear cache
+            self._dCache = {}
+            # reconnect signals
+            listen_row_update(self.card_set_changed, PhysicalCardSet)
+            listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
+            listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+            listen_changed(self.card_changed, PhysicalCardSet)
+            # queue a redraw
+            self.view.queue_draw()
+
+    def prepare_for_db_update(self):
+        """Disconnect the database signals during the upgrade"""
+        if self.check_versions() and self.check_model_type():
+            disconnect_changed(self.card_changed, PhysicalCardSet)
+            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+            disconnect_row_destroy(self.card_set_added_deleted,
+                    PhysicalCardSet)
+            disconnect_row_created(self.card_set_added_deleted,
+                    PhysicalCardSet)
+
     # Rendering Functions
 
     def _get_card_set(self, oIter):
