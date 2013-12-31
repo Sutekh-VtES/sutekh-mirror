@@ -24,7 +24,7 @@ from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox, \
 from sutekh.core.FilterParser import FilterParser
 from sutekh.SutekhUtility import refresh_tables, read_white_wolf_list, \
         read_rulings, gen_temp_dir, prefs_dir, ensure_dir_exists, sqlite_uri, \
-        is_crypt_card, format_text
+        is_crypt_card, format_text, read_exp_date_list
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.core.CardSetHolder import CardSetWrapper
 from sutekh.core.CardSetUtilities import format_cs_list
@@ -34,7 +34,7 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile, WW_CARDLIST_URL, WW_RULINGS_URL, \
-        EXTRA_CARD_URL
+        EXTRA_CARD_URL, EXP_DATE_URL
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -57,6 +57,9 @@ def parse_options(aArgs):
                   type="string", dest="ruling_file", default=None,
                   help="HTML file (probably from WW website) to read "
                           "rulings from.")
+    oOptParser.add_option("--date-file",
+                  type="string", dest="date_file", default=None,
+                  help="CSV file to read expansion release date info from.")
     oOptParser.add_option("-c", "--refresh-tables",
                   action="store_true", dest="refresh_tables", default=False,
                   help="Drop (if possible) and recreate database tables.")
@@ -304,6 +307,9 @@ def main_with_args(aTheArgs):
     if not oOpts.extra_file is None:
         read_white_wolf_list([WwFile(oOpts.extra_file)], oLogHandler)
 
+    if not oOpts.date_file is None:
+        read_exp_date_list([WwFile(oOpts.date_file)], oLogHandler)
+
     if not oOpts.ruling_file is None:
         read_rulings([WwFile(oOpts.ruling_file)], oLogHandler)
 
@@ -312,6 +318,7 @@ def main_with_args(aTheArgs):
         aRulings = [WwFile(sUrl, True) for sUrl in WW_RULINGS_URL]
         read_rulings(aRulings, oLogHandler)
         read_white_wolf_list([WwFile(EXTRA_CARD_URL, True)], oLogHandler)
+        read_exp_date_list([WwFile(EXP_DATE_URL, True)], oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)

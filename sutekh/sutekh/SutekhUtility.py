@@ -20,6 +20,7 @@ from sutekh.core.SutekhObjects import VersionTable, flush_cache, CRYPT_TYPES, \
 from sutekh.core.DatabaseVersion import DatabaseVersion
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
+from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
 
 
 def refresh_tables(aTables, oConn, bMakeCache=True):
@@ -75,6 +76,19 @@ def read_rulings(aRulings, oLogHandler=None):
         fIn = oFile.open()
         for sLine in fIn:
             oParser.feed(sLine)
+        fIn.close()
+    sqlhub.processConnection.commit(close=True)
+    sqlhub.processConnection = oOldConn
+
+
+def read_exp_date_list(aDateFiles, oLogHandler=None):
+    flush_cache()
+    oOldConn = sqlhub.processConnection
+    sqlhub.processConnection = oOldConn.transaction()
+    oParser = ExpDateCSVParser(oLogHandler)
+    for oFile in aDateFiles:
+        fIn = oFile.open()
+        oParser.parse(fIn)
         fIn.close()
     sqlhub.processConnection.commit(close=True)
     sqlhub.processConnection = oOldConn
