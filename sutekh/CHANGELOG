@@ -1,3 +1,20 @@
+31 Dec 2013
+ * Add releasedate to the Expansion table
+   - Support database upgrade to new Expansion table
+ * Parse expansion dates from csv file in bitbucket
+   - Hook up importing date info in cli and gui
+ * Display expansion release date in the ExpansionStats plugin
+ * Add prepare_for_db_update event to message bus
+ * Add prepare_for_db_update hook for plugins
+ * Disconnect and re-connect various database signals during upgrades
+ * Tweak transaction order to speed up importing new card lists
+ * Tweak zip file transaction handling to speed up restoring from backups
+ * Don't try nest transactions in CardSetHolder.create_pcs
+
+22 Oct 2013
+ * Make update_to_new_db a event on the message bus
+ * Add update_to_new_db hook for plugins
+
 19 Oct 2013
  * Tweak sqlobject dependancy for Fedora
  * Fix debian patch for sqlobject tweak

@@ -17,7 +17,6 @@ Stuff that's fairly easy (we think)
  * Add more keyboard shortcuts
  * Right-click context menus
  * Write a script for tagging releases from a branch and generating release notes.
- * Add an update_to_new_db hook for the gui plugins
 
 Bugfixes
 --------
