@@ -168,6 +168,8 @@ class SutekhPlugin(object):
             self._oListener = PluginConfigFileListener(self)
         MessageBus.subscribe(DATABASE_MSG, 'update_to_new_db',
                 self.update_to_new_db)
+        MessageBus.subscribe(DATABASE_MSG, 'prepare_for_db_update',
+                self.prepare_for_db_update)
 
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
@@ -235,6 +237,8 @@ class SutekhPlugin(object):
             self._oListener.cleanup()
         MessageBus.unsubscribe(DATABASE_MSG, 'update_to_new_db',
                 self.update_to_new_db)
+        MessageBus.unsubscribe(DATABASE_MSG, 'prepare_for_db_update',
+                self.prepare_for_db_update)
         return None
 
     def get_toolbar_widget(self):
@@ -343,6 +347,13 @@ class SutekhPlugin(object):
 
     def update_to_new_db(self):
         """Plugins should override this to be informed of database changes."""
+        pass
+
+    def prepare_for_db_update(self):
+        """Hook for any preparations needed before a database upgrade.
+
+           Mainly useful for disconnecting database signals and such
+           during a database upgrade"""
         pass
 
     # pylint: disable-msg=R0201

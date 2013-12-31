@@ -365,6 +365,10 @@ class SutekhMainWindow(MultiPaneWindow):
         # We publish here, after we've cleared the caches
         MessageBus.publish(DATABASE_MSG, "update_to_new_db")
 
+    def prepare_for_db_update(self):
+        """Handle any preparation for the database upgrade"""
+        MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
+
     def clear_cache(self):
         """Remove the cached set of objects, for card list reloads, etc."""
         del self.__oSutekhObjectCache
