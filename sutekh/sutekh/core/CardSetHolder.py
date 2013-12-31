@@ -132,7 +132,12 @@ class CardSetHolder(object):
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
                 dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
 
-        sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
+        if hasattr(sqlhub.processConnection, 'commit'):
+            # We're already in a transaction, so doInTransaction is
+            # pointless
+            self._commit_pcs(aPhysCards)
+        else:
+            sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
 
     def _sanitise_text(self, sText, sIdentifier, bIncludeFallback):
         """Helper function to handle wierd encodings in the input
@@ -295,4 +300,7 @@ class CachedCardSetHolder(CardSetHolder):
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                 dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
 
-        sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
+        if hasattr(sqlhub.processConnection, 'commit'):
+            self._commit_pcs(aPhysCards)
+        else:
+            sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
