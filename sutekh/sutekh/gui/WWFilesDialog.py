@@ -9,7 +9,8 @@
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
-from sutekh.io.WwFile import WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL
+from sutekh.io.WwFile import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
+                              EXP_DATE_URL)
 
 
 def make_alignment(oLabel, oFileButton, oUseButton):
@@ -63,6 +64,15 @@ class WWFilesDialog(SutekhDialog):
         self.oUseWwRulingsButton = gtk.CheckButton(
                 label="Grab official rulings (from bitbucket.org)?")
 
+        oExpDateLabel = gtk.Label()
+        oExpDateLabel.set_markup(
+                "<b>Expansion Release Date File (optional):</b>")
+        self.oExpDateFileButton = SutekhFileButton(oParent,
+                "Expasion Release Date File")
+        self.oExpDateFileButton.add_filter_with_pattern('CSV files', ['*csv'])
+        self.oUseExpDateButton = gtk.CheckButton(
+                label="Grab expansion date information (from bitbucket.org)?")
+
         self.oBackupFileButton = gtk.CheckButton(
                 label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
@@ -85,6 +95,9 @@ class WWFilesDialog(SutekhDialog):
         oExtraAlign = make_alignment(oExtraLabel, self.oExtraFileButton,
                 self.oUseExtraUrlButton)
         self.vbox.pack_start(oExtraAlign)
+        oExpDateAlign = make_alignment(oExpDateLabel, self.oExpDateFileButton,
+                self.oUseExpDateButton)
+        self.vbox.pack_start(oExpDateAlign)
         oRulingsAlign = make_alignment(oRulingsLabel, self.oRulingsFileButton,
                 self.oUseWwRulingsButton)
         self.vbox.pack_start(oRulingsAlign)
@@ -98,11 +111,14 @@ class WWFilesDialog(SutekhDialog):
                 self.use_extra_url_toggled)
         self.oUseWwRulingsButton.connect("toggled",
                 self.use_ww_rulings_toggled)
+        self.oUseExpDateButton.connect("toggled",
+                self.use_exp_date_toggled)
         self.connect("response", self.handle_response)
 
         self.oUseWwCardListButton.set_active(True)
         self.oUseExtraUrlButton.set_active(True)
         self.oUseWwRulingsButton.set_active(True)
+        self.oUseExpDateButton.set_active(True)
 
         self.show_all()
         self.sCLName = None
@@ -112,6 +128,8 @@ class WWFilesDialog(SutekhDialog):
         self.bRulingsIsUrl = None
         self.bExtraIsUrl = None
         self.sExtraName = None
+        self.bExpDateIsUrl = None
+        self.sExpDateName = None
 
     def handle_response(self, _oWidget, iResponse):
         """Extract the information from the dialog if the user presses OK"""
@@ -137,13 +155,22 @@ class WWFilesDialog(SutekhDialog):
                 self.bRulingsIsUrl = False
                 self.sRulingsName = self.oRulingsFileButton.get_filename()
 
+            if self.oUseExpDateButton.get_active():
+                self.bExpDateIsUrl = True
+                self.sExpDateName = EXP_DATE_URL
+            else:
+                self.bExpDateIsUrl = False
+                self.sExpDateName = self.oExpDateFileButton.get_filename()
+
             if self.oBackupFileButton.get_active():
                 self.sBackupFileName = self.oBackupFileDialog.get_filename()
 
     def get_names(self):
         """Pass the information back to the caller"""
         return (self.sCLName, self.bCLIsUrl, self.sExtraName, self.bExtraIsUrl,
-                self.sRulingsName, self.bRulingsIsUrl, self.sBackupFileName)
+                self.sRulingsName, self.bRulingsIsUrl,
+                self.sExpDateName, self.bExpDateIsUrl,
+                self.sBackupFileName)
 
     def backup_file_toggled(self, _oWidget):
         """Update status if user toggles the 'make backup' checkbox"""
@@ -172,6 +199,13 @@ class WWFilesDialog(SutekhDialog):
             self.oRulingsFileButton.set_sensitive(False)
         else:
             self.oRulingsFileButton.set_sensitive(True)
+
+    def use_exp_date_toggled(self, _oWidget):
+        """Update state if the user toggles the 'Use WW rulings' checkbox"""
+        if self.oUseExpDateButton.get_active():
+            self.oExpDateFileButton.set_sensitive(False)
+        else:
+            self.oExpDateFileButton.set_sensitive(True)
 
     def use_extra_url_toggled(self, _oWidget):
         """Update state if the user toggles the 'Use WW rulings' checkbox"""

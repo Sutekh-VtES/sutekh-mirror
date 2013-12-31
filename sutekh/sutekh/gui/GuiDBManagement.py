@@ -21,7 +21,7 @@ from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwFile import WwFile
 from sutekh.core.SutekhObjects import TABLE_LIST, PhysicalCardSet
 from sutekh.SutekhUtility import refresh_tables, read_rulings, \
-        read_white_wolf_list, get_cs_id_name_table
+        read_white_wolf_list, get_cs_id_name_table, read_exp_date_list
 
 
 def read_cardlist(oCardList, oProgressDialog, oLogHandler):
@@ -47,8 +47,15 @@ def read_ww_rulings(aRulingFiles, oProgressDialog, oLogHandler):
     read_rulings(aRulingFiles, oLogHandler)
     oProgressDialog.set_complete()
 
+def read_exp_date(oDateList, oProgressDialog, oLogHandler):
+    """Read the WW Card list into the database"""
+    oProgressDialog.set_description("Reading Exp Date Info List")
+    oProgressDialog.show()
+    read_exp_date_list(oDateList, oLogHandler)
+    oProgressDialog.set_complete()
 
-def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, oProgressDialog):
+def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles,
+                          oProgressDialog):
     """Read WW card list and possibly rulings into the given database"""
     refresh_tables(TABLE_LIST, sqlhub.processConnection)
     oProgressDialog.reset()
@@ -58,9 +65,12 @@ def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, oProgressDialog):
     read_cardlist(aCLFile, oProgressDialog, oLogHandler)
     if oExtraFile:
         read_extra([oExtraFile], oProgressDialog, oLogHandler)
+    if aExpDateFiles:
+        oCountLogHandler = SutekhCountLogHandler()
+        oCountLogHandler.set_dialog(oProgressDialog)
+        read_exp_date(aExpDateFiles, oProgressDialog, oCountLogHandler)
     if aRulingsFiles:
         read_ww_rulings(aRulingsFiles, oProgressDialog, oLogHandler)
-
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     """Copy card collection and card sets to a new abstract card db."""
@@ -91,13 +101,13 @@ def initialize_db(oParent):
     if iRes != 1:
         return False
     else:
-        aCLFile, oExtraFile, aRulingsFiles, _sIgnore = _get_names(oParent,
+        aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles, _sIgnore = _get_names(oParent,
                 True)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
             try:
                 read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles,
-                        oProgressDialog)
+                        aExpDateFiles, oProgressDialog)
                 oProgressDialog.destroy()
             except IOError, oErr:
                 do_exception_complaint("Failed to read cardlists.\n\n%s\n"
@@ -128,6 +138,7 @@ def _get_names(oWin, bDisableBackup):
     oWWFilesDialog.run()
     (sCLFileName, bCLIsUrl, sExtraFileName, bExtraIsUrl,
             sRulingsFileName, bRulingsIsUrl,
+            sExpDateFileName, bExpDateIsUrl,
             sBackupFile) = oWWFilesDialog.get_names()
     oWWFilesDialog.destroy()
     if sCLFileName is not None:
@@ -149,7 +160,16 @@ def _get_names(oWin, bDisableBackup):
             aRulingsFiles = [WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)]
     else:
         aRulingsFiles = None
-    return aCLFile, oExtraFile, aRulingsFiles, sBackupFile
+    if sExpDateFileName is not None:
+        if isinstance(sExpDateFileName, list):
+            aExpDateFiles = [WwFile(x, bUrl=bExpDateIsUrl) for x in
+                    sExpDateFileName]
+        else:
+            aExpDateFiles = [WwFile(sExpDateFileName, bUrl=bExpDateIsUrl)]
+    else:
+        aExpDateFiles = None
+
+    return aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles, sBackupFile
 
 
 def refresh_ww_card_list(oWin):
@@ -159,7 +179,7 @@ def refresh_ww_card_list(oWin):
     # of variables
     aEditable = oWin.get_editable_panes()
     dOldMap = get_cs_id_name_table()
-    aCLFile, oExtraFile, oRulingsFile, sBackupFile = _get_names(oWin, False)
+    aCLFile, oExtraFile, oRulingsFile, oExpDateFile, sBackupFile = _get_names(oWin, False)
     if not aCLFile:
         return False  # Nothing happened
     oProgressDialog = ProgressDialog()
@@ -176,7 +196,7 @@ def refresh_ww_card_list(oWin):
     oTempConn = connectionForURI("sqlite:///:memory:")
     sqlhub.processConnection = oTempConn
     try:
-        read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile,
+        read_ww_lists_into_db(aCLFile, oExtraFile, oRulingsFile, oExpDateFile,
             oProgressDialog)
     except IOError, oErr:
         # Failed to read one of the card lists, so celan up and abort
