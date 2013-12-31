@@ -139,6 +139,9 @@ class ZipFileWrapper(object):
            weren't read first"""
         aToRead = []
         oIdParser = IdentifyXMLFile()
+        oOldConn = sqlhub.processConnection
+        oTrans = oOldConn.transaction()
+        sqlhub.processConnection = oTrans
         for oItem in aList:
             bReparent = False
             oData = self.oZip.read(oItem.filename)
@@ -177,6 +180,8 @@ class ZipFileWrapper(object):
             oHolder.create_pcs(oCardLookup, dLookupCache)
             self._aWarnings.extend(oHolder.get_warnings())
             oLogger.info('%s %s read', oIdParser.type, oItem.filename)
+        oTrans.commit(close=True)
+        sqlhub.processConnection = oOldConn
         if len(aToRead) == len(aList):
             # We were unable to read any items this loop, so we fail
             raise IOError('Card sets with unstatisfiable parents %s' %
