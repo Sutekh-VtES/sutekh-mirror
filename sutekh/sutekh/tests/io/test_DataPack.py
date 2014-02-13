@@ -26,11 +26,11 @@ TEST_DATA = """
 A comment.
 }}}
 
-|| '''Description''' || '''Tag''' || '''File''' || SHA256 Checksum ||
-|| Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] || aaabb ||
-|| Zip file of userful rulings and rulebooks || rulebooks || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] || dddeee ||
-|| 2009 decks || twd || [attachment:TWDA_2009.zip:wiki:MiscWikiFiles TWDA_2009.zip] || a ||
-|| 2010 decks || twd || [attachment:TWDA_2010.zip:wiki:MiscWikiFiles TWDA_2010.zip] || b ||
+|| '''Description''' || '''Tag''' || '''Date Updated''' || '''File''' || SHA256 Checksum ||
+|| Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || 2010-03-03 || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] || aaabb ||
+|| Zip file of useful rulings and rulebooks || rulebooks || 2013-08-16 || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] || dddeee ||
+|| 2009 decks || twd || 2013-12-10 || [attachment:TWDA_2009.zip:wiki:MiscWikiFiles TWDA_2009.zip] || a ||
+|| 2010 decks || twd || 2013-12-20 || [attachment:TWDA_2010.zip:wiki:MiscWikiFiles TWDA_2010.zip] || b ||
 """
 
 
@@ -76,10 +76,14 @@ class DataPackTest(SutekhTest):
 
         self.assertEqual(sHash, 'dddeee')
 
-        aUrls, aHashes = find_all_data_packs('twd', sTempUrl)
+        aUrls, aDates, aHashes = find_all_data_packs('twd', sTempUrl)
 
         self.assertEqual(len(aUrls), 2)
+        self.assertEqual(len(aDates), 2)
         self.assertEqual(len(aHashes), 2)
+
+        self.assertEqual('2013-12-10', aDates[0])
+        self.assertEqual('2013-12-20', aDates[1])
 
         self.assertEqual(aUrls[0], "http://sourceforge.net/apps/trac/sutekh/"
                          "raw-attachment/wiki/MiscWikiFiles/"

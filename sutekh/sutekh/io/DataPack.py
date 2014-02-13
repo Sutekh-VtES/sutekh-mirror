@@ -88,6 +88,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
     iAttachField = None
     aZipUrls = []
     aHashes = []
+    aDates = []
 
     def fields(sLine):
         """Helper function to split table lines into the needed structure"""
@@ -118,6 +119,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
                     continue
                 iTagField = aFields.index('Tag')
                 iAttachField = aFields.index('File')
+                iDateField = aFields.index('Date Updated')
                 if 'SHA256 Checksum' in aFields:
                     iShaSumField = aFields.index('SHA256 Checksum')
                 else:
@@ -137,8 +139,9 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
                         sZipName)))
                     if iShaSumField is not None:
                         aHashes.append(aFields[iShaSumField])
+                    aDates.append(aFields[iDateField])
 
-    return aZipUrls, aHashes
+    return aZipUrls, aDates, aHashes
 
 
 def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
@@ -150,8 +153,8 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
     See find_all_data_packs for details for the wiki page format.
 
     If multiple datapack are found, return the last."""
-    aZipUrls, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase,
-            fErrorHandler)
+    aZipUrls, _aSkip, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase,
+                                                    fErrorHandler)
     if not aZipUrls:
         # No match
         return None, None
