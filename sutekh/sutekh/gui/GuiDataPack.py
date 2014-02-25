@@ -23,10 +23,13 @@ def gui_error_handler(oExp):
         do_exception_complaint('Connection Error')
 
 
-def progress_fetch_data(oFile, oOutFile=None, sHash=None):
+def progress_fetch_data(oFile, oOutFile=None, sHash=None, sDesc=None):
     """Wrap a Progress Dialog around fetch_data"""
     oProgress = ProgressDialog()
-    oProgress.set_description('Download progress')
+    if sDesc:
+        oProgress.set_description(sDesc)
+    else:
+        oProgress.set_description('Download progress')
     oLogHandler = SutekhCountLogHandler()
     oLogHandler.set_dialog(oProgress)
     try:
