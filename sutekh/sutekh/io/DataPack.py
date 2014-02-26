@@ -81,7 +81,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
     """
     oFile = urlopen_with_timeout(sDocUrl, fErrorHandler)
     if not oFile:
-        return None, None
+        return None, None, None
     oHeaderRe = re.compile(r'^\|\|.*Tag')
     oAttachmentRe = re.compile(r'\[attachment:(?P<path>[^ ]*) ')
     iTagField = None
