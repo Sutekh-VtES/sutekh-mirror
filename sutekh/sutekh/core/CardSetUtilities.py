@@ -77,7 +77,12 @@ def delete_physical_card_set(sSetName):
         for oChildCS in aChildren:
             oChildCS.parent = oCS.parent
             oChildCS.syncUpdate()
-        sqlhub.doInTransaction(_delete_cards, oCS)
+        if hasattr(sqlhub.processConnection, 'commit'):
+            # We're already in a transaction, so just delete
+            _delete_cards(oCS)
+        else:
+            # wrap this in a transaction for speed
+            sqlhub.doInTransaction(_delete_cards, oCS)
         PhysicalCardSet.delete(oCS.id)
         return True
     except SQLObjectNotFound:
