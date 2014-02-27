@@ -20,6 +20,7 @@ from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
+from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 
 try:
     THIRD_ED = IExpansion('Third Edition')
@@ -553,7 +554,11 @@ class AnalyzeCardList(SutekhPlugin):
                         sType)), gtk.Label(ILLEGAL_LOOKUP[sType]))
 
         # Setup the main notebook
-        oMainBox.pack_start(_wrap(self._prepare_main(bRapid)))
+        oTitle, oDesc, oDetails = self._prepare_main(bRapid)
+        oMainBox.pack_start(oTitle, False)
+        # Excess Space goes to the description
+        oMainBox.pack_start(oDesc, True)
+        oMainBox.pack_start(oDetails, False)
         if self.iLibSize > 0:
             oMainBox.pack_start(self._process_library())
         # pylint: disable-msg=E1101
@@ -650,16 +655,26 @@ class AnalyzeCardList(SutekhPlugin):
         """Setup the main notebook display"""
         oCS = self.get_card_set()
 
-        sMainText = "Analysis Results for :\n\t\t<b>%(name)s</b>\n" \
-                "\t\tby <i>%(author)s</i>\n\t\tDescription: <i>%(desc)s</i>" \
-                "\n\n" % {
+        sTitleText = "Analysis Results for :\n\t\t<b>%(name)s</b>\n" \
+                "\t\tby <i>%(author)s</i>\n" % {
                         'name': self.escape(self.view.sSetName),
                         'author': self.escape(oCS.author),
-                        'desc': self.escape(oCS.comment),
                         }
-        if bRapid:
-            sMainText += '<i>Rapid Thoughts Analysis</i>'
+        # We wrap the description in a scrollable widget, since it
+        # can be very, very long (Matt Morgan's TWDA entries, for
+        # example)
+        sDesc = self.escape(oCS.comment)
+        oDesc = _wrap(sDesc)
+        oScrolledBox = gtk.VBox(False, 1)
+        oDescTitle = gtk.Label()
+        oDescTitle.set_markup("<b>Description:</b>")
+        oScrolledBox.pack_start(oDescTitle, False)
+        oScrolledBox.pack_start(AutoScrolledWindow(oDesc, True), True)
 
+        if bRapid:
+            sMainText = '<i>Rapid Thoughts Analysis</i>\n'
+        else:
+            sMainText = '<i>V:EKN Constructed Analysis</i>\n'
         # Set main notebook text
         for sCardType in CRYPT_TYPES:
             if self.dTypeNumbers[sCardType] > 0:
@@ -725,7 +740,7 @@ class AnalyzeCardList(SutekhPlugin):
                     ' Cards - this deck is not legal for standard' \
                     ' constructed tournaments</span>\n'
 
-        return sMainText
+        return _wrap(sTitleText), oScrolledBox, _wrap(sMainText)
 
     def _process_library(self):
         """Create a notebook for the basic library card overview"""
