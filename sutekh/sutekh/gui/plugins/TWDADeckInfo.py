@@ -32,7 +32,7 @@ import gtk
 import datetime
 from logging import Logger
 from StringIO import StringIO
-from sqlobject import SQLObjectNotFound
+from sqlobject import sqlhub, SQLObjectNotFound
 
 
 class TWDAConfigDialog(SutekhDialog):
@@ -367,11 +367,16 @@ class TWDAInfoPlugin(SutekhPlugin):
         # Delete all TWDA entries in the holders we replace
         # We do this to handle card sets being removed from the TWDA
         # correctly
+        oOldConn = sqlhub.processConnection
+        oTrans = oOldConn.transaction()
+        sqlhub.processConnection = oTrans
         for oCS in list(PhysicalCardSet.select()):
             if not oCS.parent:
                 continue
             if oCS.parent.name in aToReplace:
                 delete_physical_card_set(oCS.name)
+        oTrans.commit(close=True)
+        sqlhub.processConnection = oOldConn
         for sUrl, sTWDA in aToUnzip:
             oFile = urlopen_with_timeout(sUrl,
                                          fErrorHandler=gui_error_handler)
@@ -455,6 +460,9 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def _unzip_list(self, oZipFile, dList, oLogger, dRemaining):
         """Extract the files left in the list."""
+        oOldConn = sqlhub.processConnection
+        oTrans = oOldConn.transaction()
+        sqlhub.processConnection = oTrans
         for sName, tInfo in dList.iteritems():
             sFilename, _bIgnore, sParentName = tInfo
             if sParentName is not None and sParentName in dList:
@@ -495,7 +503,11 @@ class TWDAInfoPlugin(SutekhPlugin):
                 sMsg = "Failed to import card set %s.\n\n%s" % (
                     sName, oException)
                 do_exception_complaint(sMsg)
+                oTrans.commit(close=True)
+                sqlhub.processConnection = oOldConn
                 return False
+        oTrans.commit(close=True)
+        sqlhub.processConnection = oOldConn
         return True
 
     # pylint: disable-msg=R0201
