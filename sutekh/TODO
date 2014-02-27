@@ -9,7 +9,6 @@ Stuff that's fairly easy (we think)
  * Use HTML help dialog for filter help
  * pep8 cleanup
  * reduce the number of FIXME's and TODO's in the code base
- * TWD plugin
  * More Error handling/reporting
    - Include version number and other such useful info in the exception dialog
  * Cluster Plugin Speed-up
@@ -17,11 +16,10 @@ Stuff that's fairly easy (we think)
  * Add more keyboard shortcuts
  * Right-click context menus
  * Write a script for tagging releases from a branch and generating release notes.
+ * TWD plugin (initial version down - functionality needs improvement)
 
 Bugfixes
 --------
-
- * Fix analyse plugin display with very long descriptions
 
 Needs planning
 --------------
