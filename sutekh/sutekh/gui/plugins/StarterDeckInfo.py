@@ -51,12 +51,13 @@ class StarterConfigDialog(SutekhDialog):
             oDescLabel.set_markup('<b>Choose how to configure the starter info'
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
-        self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
+        self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
                 "Starter decks", {'Sutekh Wiki': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
+        self.vbox.pack_start(gtk.HSeparator(), False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)
         # Add check boxes for the decmo and storyline deck questions
         self.oExcludeStoryDecks = gtk.CheckButton(
