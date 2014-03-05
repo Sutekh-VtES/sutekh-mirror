@@ -92,13 +92,13 @@ class ACSImporter(SutekhPlugin):
         self.oFileChooser.add_filter_with_pattern('XML files', ['*.xml'])
         self.oFileChooser.add_filter_with_pattern('CSV files', ['*.csv'])
         self.oFileChooser.default_filter()
-        self.oDlg.vbox.pack_start(self.oFileChooser)
+        self.oDlg.vbox.pack_start(self.oFileChooser, expand=True)
 
         self._oFirstBut = gtk.RadioButton(None, 'Guess file format', False)
         self._oFirstBut.set_active(True)
         self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
         oTable = gtk.Table(len(self._dParsers) // 2, 2)
-        self.oDlg.vbox.pack_start(oTable)
+        self.oDlg.vbox.pack_start(oTable, expand=False)
         oIter = self._dParsers.iterkeys()
         iXPos, iYPos = 0, 0
         for sName in oIter:
