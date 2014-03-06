@@ -20,19 +20,49 @@ from sutekh.core.CardSetUtilities import (delete_physical_card_set,
                                           find_children, has_children)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import (find_all_data_packs, DOC_URL,
-                                urlopen_with_timeout)
+                                urlopen_with_timeout, fetch_data)
 from sutekh.gui.GuiCardSetFunctions import (reparent_all_children,
                                             update_open_card_sets)
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.gui.SutekhFileWidget import add_filter
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
+from sutekh.gui.GuiDataPack import gui_error_handler
 import re
 import gtk
 import datetime
 from logging import Logger
 from StringIO import StringIO
 from sqlobject import sqlhub, SQLObjectNotFound
+
+
+class BinnedCountLogHandler(SutekhCountLogHandler):
+    """Wrapped around SutekhCountLogHandler to handle downloading
+       multiple files with a single progess dialog"""
+
+    def __init__(self):
+        super(BinnedCountLogHandler, self).__init__()
+        self.fTotBins = 0.0
+        self.fBinFrac = 0.0
+
+    def set_tot_bins(self, iBins):
+        """Set the total bins for the update steps"""
+        self.fTotBins = float(iBins)
+
+    def inc_cur_bin(self):
+        """Move to the next bin"""
+        self.fBinFrac += 1 / self.fTotBins
+        # We require a call to set_total to set these
+        self.iCount = 0
+        self.fTot = 0.0
+
+    def emit(self, _oRecord):
+        """Scale the progress bar to just be a fraction of the current bin"""
+        if self.oDialog is None:
+            return
+        self.iCount += 1
+        fBinPos = self.iCount / (self.fTot * self.fTotBins)
+        fBarPos = self.fBinFrac + fBinPos
+        self.oDialog.update_bar(fBarPos)
 
 
 class TWDAConfigDialog(SutekhDialog):
@@ -176,6 +206,8 @@ class TWDAInfoPlugin(SutekhPlugin):
         oMapFilter = MultiPhysicalCardSetMapFilter(aNames)
         oFullFilter = FilterAndBox([oCardFilter, oMapFilter])
 
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         dCardSets = {}
         for oMapCard in oFullFilter.select(MapPhysicalCardToPhysicalCardSet):
             oCS = oMapCard.physicalCardSet
@@ -326,6 +358,9 @@ class TWDAInfoPlugin(SutekhPlugin):
         aToReplace = []
         aZipHolders = []
         iZipCount = 0
+
+        # pylint: disable-msg=E1101
+        # Pyprotocols confuses pylint
         for sUrl, sDate in zip(aUrls, aDates):
             if not sUrl:
                 return False
@@ -378,14 +413,27 @@ class TWDAInfoPlugin(SutekhPlugin):
                 delete_physical_card_set(oCS.name)
         oTrans.commit(close=True)
         sqlhub.processConnection = oOldConn
+
+        oLogHandler = BinnedCountLogHandler()
+        oProgressDialog = ProgressDialog()
+        oProgressDialog.set_description("Downlaoding TWDA data")
+        oLogger = Logger('Download zip files')
+        oLogger.addHandler(oLogHandler)
+        oLogHandler.set_dialog(oProgressDialog)
+        oLogHandler.set_tot_bins(len(aToUnzip))
+        oProgressDialog.show()
         for sUrl, sTWDA in aToUnzip:
             oFile = urlopen_with_timeout(sUrl,
                                          fErrorHandler=gui_error_handler)
-            sData = progress_fetch_data(oFile,
-                                        sDesc="Downloading %s" % sTWDA)
+            oProgressDialog.set_description('Downloading %s' % sTWDA)
+            sData = fetch_data(oFile, oLogHandler=oLogHandler,
+                               fErrorHandler=gui_error_handler)
             oZipFile = ZipFileWrapper(StringIO(sData))
             aZipHolders.append(oZipFile)
             iZipCount += len(oZipFile.get_all_entries())
+            oLogHandler.inc_cur_bin()
+        oProgressDialog.destroy()
+
         oLogHandler = SutekhCountLogHandler()
         aExistingList = [x.name for x in PhysicalCardSet.select()]
         oProgressDialog = ProgressDialog()
