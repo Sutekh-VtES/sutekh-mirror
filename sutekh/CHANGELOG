@@ -1,17 +1,17 @@
-27 Feb 2013
+27 Feb 2014
  * Add basic TWDA plugin
  * Use transactions to speed up importing TWDA lists
  * Don't nest transactions when deleting card sets either
  * Use scrolled widget for deck comments in Analyse plugin to handle very long
    deck descriptions better.
 
-26 Feb 2013
+26 Feb 2014
  * Fix error path in find_all_data_packs
 
-25 Feb 2013
+25 Feb 2014
  * Add description option to progress_fetch_data function
 
-13 Feb 2013
+13 Feb 2014
  * Return date information from find_all_data_packs
 
 31 Dec 2013
