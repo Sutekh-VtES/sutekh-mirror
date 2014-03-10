@@ -135,6 +135,10 @@ class TWDAInfoPlugin(SutekhPlugin):
     # pattern for TWDA holders
     oTWDARegex = re.compile('^TWDA ([0-9]{4})$')
 
+    dGlobalConfig = {
+        'twda configured': 'option("Yes", "No", "Unasked", default="Unasked")',
+    }
+
     # pylint: disable-msg=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
@@ -323,10 +327,10 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def setup(self):
         """1st time setup tasks"""
-        sPrefsValue = self.get_config_item('show starters')
-        if sPrefsValue is None:
+        sPrefsValue = self.get_config_item('twda configured')
+        if sPrefsValue == 'Unasked':
             # First time
-            self.set_config_item('show starters', 'No')
+            self.set_config_item('twda configured', 'No')
             if not self.check_enabled():
                 oDialog = TWDAConfigDialog(self.parent, True)
                 self.handle_response(oDialog)
