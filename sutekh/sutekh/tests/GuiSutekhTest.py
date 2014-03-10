@@ -33,6 +33,7 @@ class ConfigSutekhTest(SutekhTest):
         # basic validation
         self.oConfig.add_plugin_specs('CardImagePlugin', {})
         self.oConfig.add_plugin_specs('StarterInfoPlugin', {})
+        self.oConfig.add_plugin_specs('TWDAInfoPlugin', {})
         self.oConfig.add_plugin_specs('RulebookPlugin', {})
         self.oConfig.validate()
         # Don't try and create a path in the user's home dir
@@ -48,6 +49,7 @@ class ConfigSutekhTest(SutekhTest):
         # Touch index file for rulebook plugin
         open(os.path.join(self.sPluginDir, 'index.txt'), 'w').close()
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
+        self.oConfig.set_plugin_key('TWDAInfoPlugin', 'twda configured', 'No')
         self.oConfig.set_icon_path(self.sPluginDir)
         # Needed so validate doesn't remove our settings later
         self.oConfig.check_writeable()  # Make sure we do write the config file
