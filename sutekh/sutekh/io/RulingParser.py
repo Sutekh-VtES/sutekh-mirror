@@ -23,6 +23,7 @@ class RuleDict(dict):
     _oCommaThe = re.compile(r'\s*\,\s*The$')
     _dOddTitles = {
         'Absilmilard\'s Army': 'Absimiliard\'s Army',
+        'Ankara Citadel': 'The Ankara Citadel, Turkey',
         'Carlotta': 'Carlotta Giovanni',
         'Donal O\'Connor': u'D\xf3nal O\'Connor',
         'Herald of Topeth': 'Herald of Topheth',
@@ -31,12 +32,14 @@ class RuleDict(dict):
         'Mehemet of the Ahl-i-Batin': 'Mehemet of the Ahl-i-Batin (Mage)',
         'Lazar Dobrescu': u'L\xe1z\xe1r Dobrescu',
         'Merill Molitor': 'Merrill Molitor',
+        'Peace Treaty:shado': 'Peace Treaty',
         'Rotschreck': u'R\xf6tschreck',
         'Seattle Committe': 'Seattle Committee',
         'Shackles of Enkindu': 'Shackles of Enkidu',
         'Shadow Court Satyr': 'Shadow Court Satyr (Changeling)',
         'Smiling Jack the Anarch': 'Smiling Jack, The Anarch',
         'Tereza Rotas': 'Tereza Rostas',
+        'The Eldest Command the Undeath': 'The Eldest Command Undeath',
         'Ur-Shulgi': 'Ur-Shulgi, The Shepherd',
     }
 
