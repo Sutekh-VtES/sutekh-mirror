@@ -184,16 +184,19 @@ class CardImageFrame(BasicFrame):
         self._tPaneSize = (0, 0)
         self._dUrlCache = {}
 
+    type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+
+    def frame_setup(self):
+        """Subscribe to the set_card_text signal"""
+        # Reset to stock image to force sane state
+        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
+                gtk.ICON_SIZE_DIALOG)
         MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
-
-    type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+        super(CardImageFrame, self).frame_setup()
 
     def cleanup(self):
         """Remove the listener"""
-        # Reset to stock image to for sane state
-        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                gtk.ICON_SIZE_DIALOG)
         MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
         super(CardImageFrame, self).cleanup()

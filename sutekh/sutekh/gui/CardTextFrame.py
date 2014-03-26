@@ -27,8 +27,6 @@ class CardTextFrame(BasicFrame):
         self._oView = CardTextView(oMainWindow, oIconManager)
         self.add_parts()
         self.set_name('card text')
-        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
-                             self.set_card_text)
 
     type = property(fget=lambda self: "Card Text", doc="Frame Type")
 
@@ -46,9 +44,15 @@ class CardTextFrame(BasicFrame):
         self.add(oBox)
         self.show_all()
 
+    def frame_setup(self):
+        """Subscribe to the set_card_text signal"""
+        self._oView.clear_text()
+        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
+                             self.set_card_text)
+        super(CardTextFrame, self).frame_setup()
+
     def cleanup(self):
         """Cleanup the listeners"""
-        self._oView.clear_text()
         MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
         super(CardTextFrame, self).cleanup()

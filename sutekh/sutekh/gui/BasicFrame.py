@@ -62,9 +62,6 @@ class BasicFrame(gtk.Frame):
         self.set_drag_handler(self._oView)
         self.set_drop_handler(self._oView)
 
-        MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
-                             self.update_to_new_db)
-
         self.set_unique_id()
 
     # pylint: disable-msg=W0212
@@ -159,6 +156,13 @@ class BasicFrame(gtk.Frame):
     def get_menu_name(self):
         """Return the key into the menu dictionary in the main window"""
         return None
+
+    def frame_setup(self):
+        """Hook called when the frame is added to the window.
+
+           Used for subscribing to signals and so forth."""
+        MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
+                             self.update_to_new_db)
 
     # pylint: enable-msg=R0201
 

@@ -297,6 +297,9 @@ class MultiPaneWindow(gtk.Window):
         self.aOpenFrames.append(oNewFrame)
         if oNewFrame in self.aClosedFrames:
             self.aClosedFrames.remove(oNewFrame)
+        else:
+            # Newly added frame, so call frame_setup
+            oNewFrame.frame_setup()
         if self._oFocussed == oOldFrame:
             self.win_focus(None, None, None)
         # kill any listeners, etc.
@@ -400,6 +403,7 @@ class MultiPaneWindow(gtk.Window):
         # it is non trivial
         oWidget = BasicFrame(self)
         oWidget.add_parts()
+        oWidget.frame_setup()
         oWidget.set_focus_handler(self.win_focus)
         self._iCount += 1
         sKey = 'Blank Pane:' + str(self._iCount)
