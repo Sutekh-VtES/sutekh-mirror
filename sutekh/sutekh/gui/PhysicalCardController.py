@@ -7,6 +7,7 @@
 """Controller for the Physical Card Collection"""
 
 from sutekh.gui.PhysicalCardView import PhysicalCardView
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 
 
 class PhysicalCardController(object):
@@ -38,9 +39,13 @@ class PhysicalCardController(object):
         """Remove the signal handlers."""
         self.model.cleanup()
 
+    # pylint: disable-msg=R0201
+    # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
-        self.__oMainWin.set_card_text(oCard)
+        MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
+
+    # pylint: enable-msg=R0201
 
     def toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""

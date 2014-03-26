@@ -365,9 +365,13 @@ class SutekhMainWindow(MultiPaneWindow):
         # We publish here, after we've cleared the caches
         MessageBus.publish(DATABASE_MSG, "update_to_new_db")
 
+    # pylint: disable-msg=R0201
+    # making this a function would not be convenient
     def prepare_for_db_update(self):
         """Handle any preparation for the database upgrade"""
         MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
+
+    # pylint: enable-msg=R0201
 
     def clear_cache(self):
         """Remove the cached set of objects, for card list reloads, etc."""
@@ -395,12 +399,6 @@ class SutekhMainWindow(MultiPaneWindow):
                     oPane.view.toggle_editable(True)
                 else:
                     oPane.view.toggle_editable(False)
-
-    def set_card_text(self, oCard):
-        """Update the card text frame to the currently selected card."""
-        if oCard:
-            # Skip if None
-            self._oCardTextPane.view.set_card_text(oCard)
 
     def reset_menu(self):
         """Ensure menu state is correct."""

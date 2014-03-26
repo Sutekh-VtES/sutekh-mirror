@@ -157,11 +157,13 @@ class StarterInfoPlugin(SutekhPlugin):
         self.oToggle = None
         self.oLastCard = None
         self.bShowInfo = False
-        MessageBus.subscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
+                             self.post_set_card_text)
 
     def cleanup(self):
         """Remove the listener"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                               self.post_set_card_text)
         super(StarterInfoPlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -367,7 +369,7 @@ class StarterInfoPlugin(SutekhPlugin):
         """Toggle the show info flag"""
         self.bShowInfo = oToggle.get_active()
         # Update the card text pane to reflect changes
-        self.parent.set_card_text(self.oLastCard)
+        MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', self.oLastCard)
         if self.bShowInfo:
             self.set_config_item('show starters', 'Yes')
         else:
@@ -403,7 +405,7 @@ class StarterInfoPlugin(SutekhPlugin):
                         })
         return dInfo
 
-    def set_card_text(self, oPhysCard):
+    def post_set_card_text(self, oPhysCard):
         """Update the card text pane with the starter info"""
         self.oLastCard = oPhysCard
         if not self.bShowInfo:

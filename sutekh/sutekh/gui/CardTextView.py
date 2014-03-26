@@ -222,10 +222,19 @@ class CardTextView(gtk.TextView):
 
     def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
+        self.clear_text()
+        self.print_card_to_buffer(oPhysCard.abstractCard)
+        # Signal plugins that want to do something after text has been
+        # updated
+        MessageBus.publish(CARD_TEXT_MSG, 'post_set_text', oPhysCard)
+
+    def clear_text(self):
+        """Clear the text buffer."""
+        # This is available as sometimes needed to ensure the state
+        # of the text frame is sane (adding / removing from main window,
+        # etc.)
         oStart, oEnd = self._oBuf.get_bounds()
         self._oBuf.delete(oStart, oEnd)
-        self.print_card_to_buffer(oPhysCard.abstractCard)
-        MessageBus.publish(CARD_TEXT_MSG, 'set_text', oPhysCard)
 
     # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches

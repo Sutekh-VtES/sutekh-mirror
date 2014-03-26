@@ -11,6 +11,7 @@ import gtk
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.CardTextView import CardTextView
 from sutekh.gui.BasicFrame import BasicFrame
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 
 
 class CardTextFrame(BasicFrame):
@@ -26,6 +27,8 @@ class CardTextFrame(BasicFrame):
         self._oView = CardTextView(oMainWindow, oIconManager)
         self.add_parts()
         self.set_name('card text')
+        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
+                             self.set_card_text)
 
     type = property(fget=lambda self: "Card Text", doc="Frame Type")
 
@@ -42,6 +45,19 @@ class CardTextFrame(BasicFrame):
 
         self.add(oBox)
         self.show_all()
+
+    def cleanup(self):
+        """Cleanup the listeners"""
+        self._oView.clear_text()
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
+                               self.set_card_text)
+        super(CardTextFrame, self).cleanup()
+
+    def set_card_text(self, oCard):
+        """Hand off card text update to the view"""
+        if oCard:
+            # Skip doing anything if None
+            self._oView.set_card_text(oCard)
 
     def update_to_new_db(self):
         """Ensure we update cached results so DB changes don't cause odd

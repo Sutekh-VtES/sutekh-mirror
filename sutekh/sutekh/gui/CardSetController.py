@@ -10,6 +10,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.GuiCardSetFunctions import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
+from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.core.DBSignals import send_changed_signal
 from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
         IAbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
@@ -44,9 +45,13 @@ class CardSetController(object):
         """Remove the signal handlers."""
         self.model.cleanup()
 
+    # pylint: disable-msg=R0201
+    # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
-        self._oMainWindow.set_card_text(oCard)
+        MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
+
+    # pylint: enable-msg=R0201
 
     def inc_card(self, oPhysCard, sCardSetName):
         """Returns True if a card was successfully added, False otherwise."""

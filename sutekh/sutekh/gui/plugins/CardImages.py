@@ -184,13 +184,18 @@ class CardImageFrame(BasicFrame):
         self._tPaneSize = (0, 0)
         self._dUrlCache = {}
 
-        MessageBus.subscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
+                             self.set_card_text)
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
     def cleanup(self):
         """Remove the listener"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_text', self.set_card_text)
+        # Reset to stock image to for sane state
+        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
+                gtk.ICON_SIZE_DIALOG)
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
+                               self.set_card_text)
         super(CardImageFrame, self).cleanup()
 
     def __have_expansions(self, sTestPath=''):
