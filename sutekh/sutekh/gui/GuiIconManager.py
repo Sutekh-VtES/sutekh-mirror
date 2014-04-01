@@ -48,6 +48,9 @@ def _crop_alpha(oPixbuf):
             # End of a line
             iYPos += 1
             iXPos = 0
+    if iMinX >= iMaxX or iMinY >= iMaxY:
+        # No transparency found
+        return oPixbuf
     return oPixbuf.subpixbuf(iMinX + 1, iMinY + 1, iMaxX - iMinX,
             iMaxY - iMinY)
 
