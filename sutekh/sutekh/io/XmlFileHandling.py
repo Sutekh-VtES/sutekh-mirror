@@ -12,7 +12,7 @@
 from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.core.CardSetHolder import CardSetHolder, CardSetWrapper
 from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.SutekhUtility import gen_temp_file, gen_temp_dir, safe_filename
+from sutekh.SutekhUtility import gen_temp_file, safe_filename
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
@@ -35,12 +35,7 @@ class PhysicalCardXmlFile(object):
     """Class for handling PhysicalCard XML Files"""
     def __init__(self, sFileName=None, sDir=None, oLookup=DEFAULT_LOOKUP):
         self.oCardLookup = oLookup
-        if sFileName is not None:
-            self.sXmlFile = sFileName
-        else:
-            if sDir is None:
-                sDir = gen_temp_dir()
-            self.sXmlFile = gen_temp_file('physical_cards_', sDir)
+        self.sXmlFile = sFileName
 
     def read(self, bIgnoreWarnings=True):
         """Read the card collection from the file"""
