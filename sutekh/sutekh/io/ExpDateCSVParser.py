@@ -42,5 +42,7 @@ class ExpDateCSVParser(object):
                 continue
             oDate = datetime.datetime.strptime(sDate, "%Y%m%d").date()
             oExp.releasedate = oDate
+            # pylint: disable-msg=E1101
+            # E1101 - avoid SQLObject method not detected problems
             oExp.syncUpdate()
             self.oLogger.info('Added Expansion: %s' % sExp)

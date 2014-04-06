@@ -47,12 +47,14 @@ def read_ww_rulings(aRulingFiles, oProgressDialog, oLogHandler):
     read_rulings(aRulingFiles, oLogHandler)
     oProgressDialog.set_complete()
 
+
 def read_exp_date(oDateList, oProgressDialog, oLogHandler):
     """Read the WW Card list into the database"""
     oProgressDialog.set_description("Reading Exp Date Info List")
     oProgressDialog.show()
     read_exp_date_list(oDateList, oLogHandler)
     oProgressDialog.set_complete()
+
 
 def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles,
                           oProgressDialog):
@@ -71,6 +73,7 @@ def read_ww_lists_into_db(aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles,
         read_exp_date(aExpDateFiles, oProgressDialog, oCountLogHandler)
     if aRulingsFiles:
         read_ww_rulings(aRulingsFiles, oProgressDialog, oLogHandler)
+
 
 def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     """Copy card collection and card sets to a new abstract card db."""
@@ -101,8 +104,8 @@ def initialize_db(oParent):
     if iRes != 1:
         return False
     else:
-        aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles, _sIgnore = _get_names(oParent,
-                True)
+        aCLFile, oExtraFile, aRulingsFiles, aExpDateFiles, _sIgnore = \
+                _get_names(oParent, True)
         if aCLFile is not None:
             oProgressDialog = ProgressDialog()
             try:
@@ -179,7 +182,8 @@ def refresh_ww_card_list(oWin):
     # of variables
     aEditable = oWin.get_editable_panes()
     dOldMap = get_cs_id_name_table()
-    aCLFile, oExtraFile, oRulingsFile, oExpDateFile, sBackupFile = _get_names(oWin, False)
+    aCLFile, oExtraFile, oRulingsFile, oExpDateFile, sBackupFile = \
+            _get_names(oWin, False)
     if not aCLFile:
         return False  # Nothing happened
     oProgressDialog = ProgressDialog()

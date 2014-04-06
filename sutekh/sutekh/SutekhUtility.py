@@ -65,7 +65,7 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
 def read_rulings(aRulings, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
-       oRulings is an object with a .open() method (e.g. a
+       aRulings is a list of objects with a .open() method (e.g. a
        sutekh.io.WwFile.WwFile)
        """
     flush_cache()
@@ -82,6 +82,11 @@ def read_rulings(aRulings, oLogHandler=None):
 
 
 def read_exp_date_list(aDateFiles, oLogHandler=None):
+    """Read the expansion date information from the given file.
+
+       aDateFiles is a list of objects with a .open() method (e.g. a
+       sutekh.io.WwFile.WwFile)
+       """
     flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
