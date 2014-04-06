@@ -502,6 +502,14 @@ class FilterTests(SutekhTest):
                     Filters.CreedFilter('Innocent')),
                 (Filters.MultiGroupFilter([4]), Filters.GroupFilter(4)),
                 (Filters.MultiCapacityFilter([2]), Filters.CapacityFilter(2)),
+                (Filters.MultiCapacityFilter([2, 3]),
+                    Filters.FilterOrBox([
+                        Filters.CapacityFilter(2),
+                        Filters.CapacityFilter(3)])),
+                (Filters.MultiCapacityFilter([2, 3]),
+                    Filters.FilterOrBox([
+                        Filters.MultiCapacityFilter([2]),
+                        Filters.MultiCapacityFilter([3])])),
                 (Filters.MultiCostFilter([0]), Filters.CostFilter(0)),
                 (Filters.MultiCostFilter([2]), Filters.CostFilter(2)),
                 (Filters.MultiLifeFilter([1]), Filters.LifeFilter(1)),
