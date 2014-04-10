@@ -598,6 +598,11 @@ class CardDict(dict):
         self._add_physical_cards(oCard)
 
         oCard.syncUpdate()
+        # This is a bit hack'ish, but we also need to force an update of
+        # the parent here.
+        # It's not clear to me if this is a bug in SQLObject or not, given
+        # the logic that requires us to force the update to oCard here anyway.
+        oCard._parent.syncUpdate()
         # FIXME: Pass back any error confitions? Missing text, etc.
 
 

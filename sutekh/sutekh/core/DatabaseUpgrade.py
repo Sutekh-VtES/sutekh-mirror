@@ -23,9 +23,10 @@ from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
 # pylint: enable-msg=E0611
 from logging import Logger
 from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
-        PhysicalCardSet, Expansion, Clan, Virtue, Discipline, Rarity, \
-        RarityPair, CardType, Ruling, TABLE_LIST, DisciplinePair, Creed, \
-        Sect, Title, Keyword, Artist, flush_cache, MAX_ID_LENGTH
+        SutekhAbstractCard, PhysicalCardSet, Expansion, Clan, Virtue, \
+        Discipline, Rarity, RarityPair, CardType, Ruling, Creed, \
+        DisciplinePair, Sect, Title, Keyword, Artist, \
+        flush_cache, TABLE_LIST, MAX_ID_LENGTH
 from sutekh.core.CardSetHolder import CachedCardSetHolder
 from sutekh.io.WhiteWolfTextParser import strip_braces
 from sutekh.SutekhUtility import refresh_tables
@@ -103,6 +104,57 @@ class AbstractCard_v5(SQLObject):
     physicalCards = MultipleJoin('PhysicalCard')
 
 
+class AbstractCard_v6(SQLObject):
+    """Table used to upgrade AbstractCard from v6"""
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = AbstractCard.sqlmeta.table
+        cacheValues = False
+
+    canonicalName = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    name = UnicodeCol()
+    text = UnicodeCol()
+    search_text = UnicodeCol(default="")
+    group = IntCol(default=None, dbName='grp')
+    capacity = IntCol(default=None)
+    cost = IntCol(default=None)
+    life = IntCol(default=None)
+    costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
+            default=None)
+    level = EnumCol(enumValues=['advanced', None], default=None)
+
+    # Most of these names are singular when they should be plural
+    # since they refer to lists. We've decided to live with the
+    # inconsistency for old columns but do the right thing for new
+    # ones.
+    discipline = RelatedJoin('DisciplinePair',
+            intermediateTable='abs_discipline_pair_map',
+            createRelatedTable=False)
+    rarity = RelatedJoin('RarityPair',
+            intermediateTable='abs_rarity_pair_map',
+            createRelatedTable=False)
+    clan = RelatedJoin('Clan',
+            intermediateTable='abs_clan_map', createRelatedTable=False)
+    cardtype = RelatedJoin('CardType', intermediateTable='abs_type_map',
+            createRelatedTable=False)
+    sect = RelatedJoin('Sect', intermediateTable='abs_sect_map',
+            createRelatedTable=False)
+    title = RelatedJoin('Title', intermediateTable='abs_title_map',
+            createRelatedTable=False)
+    creed = RelatedJoin('Creed', intermediateTable='abs_creed_map',
+            createRelatedTable=False)
+    virtue = RelatedJoin('Virtue', intermediateTable='abs_virtue_map',
+            createRelatedTable=False)
+    rulings = RelatedJoin('Ruling', intermediateTable='abs_ruling_map',
+            createRelatedTable=False)
+    artists = RelatedJoin('Artist', intermediateTable='abs_artist_map',
+            createRelatedTable=False)
+    keywords = RelatedJoin('Keyword',
+            intermediateTable='abs_keyword_map', createRelatedTable=False)
+
+    physicalCards = MultipleJoin('PhysicalCard')
+
+
 class PhysicalCard_ACv5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
     class sqlmeta:
@@ -113,6 +165,20 @@ class PhysicalCard_ACv5(SQLObject):
     abstractCard = ForeignKey('AbstractCard_v5')
     # Explicitly allow None as expansion
     expansion = ForeignKey('Expansion_v3', notNull=False)
+    sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
+            createRelatedTable=False)
+
+
+class PhysicalCard_ACv6(SQLObject):
+    """Table used to upgrade AbstractCard from v6"""
+    class sqlmeta:
+        """meta cleass used to set the correct table"""
+        table = PhysicalCard.sqlmeta.table
+        cacheValues = False
+
+    abstractCard = ForeignKey('AbstractCard_v6')
+    # Explicitly allow None as expansion
+    expansion = ForeignKey('Expansion', notNull=False)
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
             createRelatedTable=False)
 
@@ -200,7 +266,7 @@ def check_can_read_old_database(oConn):
         raise UnknownVersion("RarityPair")
     if not oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oConn) \
-            and not oVer.check_tables_and_versions([AbstractCard], [5], oConn):
+            and not oVer.check_table_in_versions(AbstractCard, [5, 6], oConn):
         raise UnknownVersion("AbstractCard")
     if not oVer.check_tables_and_versions([PhysicalCard],
             [PhysicalCard.tableversion], oConn):
@@ -493,10 +559,11 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
     # pylint: disable-msg=E1101, R0912
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
-    for oCard in AbstractCard.select(connection=oOrigConn):
+    for oCard in SutekhAbstractCard.select(connection=oOrigConn):
         # force issue for SQObject >= 0.11.4
         oCard._connection = oOrigConn
-        oCardCopy = AbstractCard(id=oCard.id,
+        oCard._parent._connection = oOrigConn
+        oCardCopy = SutekhAbstractCard(id=oCard.id,
                 canonicalName=oCard.canonicalName, name=oCard.name,
                 text=oCard.text, search_text=oCard.search_text,
                 connection=oTrans)
@@ -531,6 +598,7 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
         for oData in oCard.artists:
             oCardCopy.addArtist(oData)
         oCardCopy.syncUpdate()
+        oCardCopy._parent.syncUpdate()
         oLogger.info('copied AC %s', oCardCopy.name)
 
 
@@ -550,7 +618,7 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         for oCard in AbstractCard_v5.select(connection=oOrigConn):
             # force issue for SQObject >= 0.11.4
             oCard._connection = oOrigConn
-            oCardCopy = AbstractCard(id=oCard.id,
+            oCardCopy = SutekhAbstractCard(id=oCard.id,
                     canonicalName=oCard.canonicalName, name=oCard.name,
                     text=oCard.text, connection=oTrans)
             oCardCopy.group = oCard.group
@@ -583,6 +651,49 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             for oData in oCard.artists:
                 oCardCopy.addArtist(oData)
             oCardCopy.syncUpdate()
+            oCardCopy._parent.syncUpdate()
+            oLogger.info('copied AC %s', oCardCopy.name)
+    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
+        oTempConn = sqlhub.processConnection
+        sqlhub.processConnection = oTrans
+        sqlhub.processConnection = oTempConn
+        for oCard in AbstractCard_v6.select(connection=oOrigConn):
+            # force issue for SQObject >= 0.11.4
+            oCard._connection = oOrigConn
+            oCardCopy = SutekhAbstractCard(id=oCard.id,
+                    canonicalName=oCard.canonicalName, name=oCard.name,
+                    text=oCard.text, connection=oTrans)
+            oCardCopy.group = oCard.group
+            oCardCopy.capacity = oCard.capacity
+            oCardCopy.cost = oCard.cost
+            oCardCopy.costtype = oCard.costtype
+            oCardCopy.level = oCard.level
+            oCardCopy.life = oCard.life
+            oCardCopy.search_text = oCard.search_text
+            for oData in oCard.rarity:
+                oCardCopy.addRarityPair(oData)
+            for oData in oCard.discipline:
+                oCardCopy.addDisciplinePair(oData)
+            for oData in oCard.rulings:
+                oCardCopy.addRuling(oData)
+            for oData in oCard.clan:
+                oCardCopy.addClan(oData)
+            for oData in oCard.cardtype:
+                oCardCopy.addCardType(oData)
+            for oData in oCard.sect:
+                oCardCopy.addSect(oData)
+            for oData in oCard.title:
+                oCardCopy.addTitle(oData)
+            for oData in oCard.creed:
+                oCardCopy.addCreed(oData)
+            for oData in oCard.virtue:
+                oCardCopy.addVirtue(oData)
+            for oData in oCard.keywords:
+                oCardCopy.addKeyword(oData)
+            for oData in oCard.artists:
+                oCardCopy.addArtist(oData)
+            oCardCopy.syncUpdate()
+            oCardCopy._parent.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
     else:
         return (False, ["Unknown AbstractCard version"])
@@ -605,6 +716,13 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
     aMessages = []
     if oVer.check_tables_and_versions([AbstractCard], [5], oOrigConn):
         for oCard in PhysicalCard_ACv5.select(connection=oOrigConn):
+            oCardCopy = PhysicalCard(id=oCard.id,
+                    abstractCardID=oCard.abstractCardID,
+                    expansionID=oCard.expansionID, connection=oTrans)
+            oCardCopy.syncUpdate()
+            oLogger.info('copied PC %s', oCardCopy.id)
+    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
+        for oCard in PhysicalCard_ACv6.select(connection=oOrigConn):
             oCardCopy = PhysicalCard(id=oCard.id,
                     abstractCardID=oCard.abstractCardID,
                     expansionID=oCard.expansionID, connection=oTrans)

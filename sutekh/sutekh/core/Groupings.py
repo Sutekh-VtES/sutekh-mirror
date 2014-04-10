@@ -7,7 +7,7 @@
 
 # Base Grouping Class
 
-from sutekh.core.SutekhObjects import CRYPT_TYPES, AbstractCard
+from sutekh.core.SutekhObjects import CRYPT_TYPES, SutekhAbstractCard
 
 
 class IterGrouping(object):
@@ -219,7 +219,7 @@ class GroupPairGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # pylint: disable-msg=E1101
         # SQLObject methods not detected by pylint
-        iMax = AbstractCard.select().max(AbstractCard.q.group)
+        iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
 
         def get_values(oCardSrc):
             """Get the group pairs for this card"""
