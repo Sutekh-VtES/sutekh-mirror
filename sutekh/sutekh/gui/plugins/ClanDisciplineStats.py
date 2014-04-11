@@ -12,8 +12,8 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCard, Clan, ICardType, \
-        AbstractCard, IKeyword
+from sutekh.core.SutekhObjects import (PhysicalCard, Clan, ICardType,
+                                       SutekhAbstractCard, IKeyword)
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -53,7 +53,7 @@ class ClanDisciplineStats(SutekhPlugin):
     def make_dialog(self):
         """Create the dialog to display the statistics"""
         oDlg = SutekhDialog("Clan Vampire Statistics", self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT)
+                            gtk.DIALOG_DESTROY_WITH_PARENT)
 
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
@@ -113,7 +113,7 @@ class GroupStats(object):
     def top_n(self, iNum):
         """Return the iNum highest scoring stats"""
         aScores = [(oId, aStats[3]) for oId, aStats in
-                self.dDisciplines.items()]
+                   self.dDisciplines.items()]
         aScores.sort(key=lambda x: x[1])
         aScores.reverse()
         aScores = aScores[:iNum]
@@ -173,8 +173,10 @@ class StatsModel(gtk.TreeStore):
         # pylint: disable-msg=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
-                gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_INT,
-                *[gobject.TYPE_STRING] * 5)
+                                         gobject.TYPE_STRING,
+                                         gobject.TYPE_INT,
+                                         gobject.TYPE_INT,
+                                         *[gobject.TYPE_STRING] * 5)
         self.oExcludedKeyword = None
         if bHideIllegal:
             try:
@@ -214,27 +216,27 @@ class StatsModel(gtk.TreeStore):
         sSupInfCnts = " ".join(["%d/%d" % (x[1], x[2]) for x in aTopN])
         sScores = " ".join([str(x[3]) for x in aTopN])
         sScoresPerVamp = " ".join(["%.2f" % (float(x[3]) / oGrpStats.iVamps)
-            for x in aTopN])
+                                   for x in aTopN])
         sScoresPerCap = " ".join(["%.2f" % (float(x[3]) /
-            oGrpStats.iTotalCapacity) for x in aTopN])
+                                  oGrpStats.iTotalCapacity) for x in aTopN])
 
         self.set(oIter,
-            0, oClan.name,
-            1, sGrps,
-            2, oGrpStats.iVamps,
-            3, oGrpStats.iTotalCapacity,
-            4, sDisps,
-            5, sSupInfCnts,
-            6, sScores,
-            7, sScoresPerVamp,
-            8, sScoresPerCap,
-        )
+                 0, oClan.name,
+                 1, sGrps,
+                 2, oGrpStats.iVamps,
+                 3, oGrpStats.iTotalCapacity,
+                 4, sDisps,
+                 5, sSupInfCnts,
+                 6, sScores,
+                 7, sScoresPerVamp,
+                 8, sScoresPerCap,
+                 )
 
     def gather_stats(self):
         """Collect up information on vampires from all clans."""
         # pylint: disable-msg=E1101
         # E1101 - avoid SQLObject method not detected problems
-        iMaxGrp = AbstractCard.select().max(AbstractCard.q.group)
+        iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
 
         aClans = list(Clan.select())
         aClans.sort(key=lambda x: x.name)

@@ -9,10 +9,12 @@ import gtk
 import gobject
 import pango
 from sutekh.core.SutekhObjects import (PhysicalCardSet, PhysicalCard,
-        IAbstractCard, AbstractCard, IPhysicalCard, IPhysicalCardSet)
+                                       IAbstractCard, AbstractCard,
+                                       SutekhAbstractCard, IPhysicalCard,
+                                       IPhysicalCardSet)
 from sutekh.core.Filters import (MultiGroupFilter, CardTypeFilter,
-        MultiVirtueFilter, MultiDisciplineFilter, MultiDisciplineLevelFilter,
-        FilterAndBox)
+                                 MultiVirtueFilter, MultiDisciplineFilter,
+                                 MultiDisciplineLevelFilter, FilterAndBox)
 from sutekh.SutekhUtility import is_crypt_card, is_vampire
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
@@ -49,7 +51,7 @@ def _get_groups(oCard):
     # pylint: disable-msg=E1101
     # SQLObject confuses pylint
     iGrp = oCard.group
-    iMaxGrp = AbstractCard.select().max(AbstractCard.q.group)
+    iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
     iMax = min(iMaxGrp, iGrp + 1)
     iMin = max(1, iGrp - 1)
     return MultiGroupFilter(range(iMin, iMax + 1))
@@ -68,7 +70,7 @@ def _make_superset(oCard, bSuperior, bVampire):
     """Check if all elements of aSet match oCard"""
     if bSuperior:
         return set([oP.discipline for oP in oCard.discipline if
-            oP.level == 'superior'])
+                    oP.level == 'superior'])
     elif bVampire:
         return set([oP.discipline for oP in oCard.discipline])
     else:
@@ -131,7 +133,8 @@ class FindLikeVampires(SutekhPlugin):
         bVampire = is_vampire(self.oSelCard)
         if bUseCardSet:
             aCardSetCards = set([IAbstractCard(x) for x in
-                self.model.get_card_iterator(self.model.get_current_filter())])
+                                 self.model.get_card_iterator(
+                                     self.model.get_current_filter())])
         else:
             aCardSetCards = None
         for oCard in list(aDistinct):
@@ -147,7 +150,7 @@ class FindLikeVampires(SutekhPlugin):
                 # We only add the card if it has all elements of the set
                 if aSet.issubset(aFullSet):
                     dResults.setdefault(make_key(aSet, bSuperior),
-                            []).append(oCard)
+                                        []).append(oCard)
         return dResults
 
     def _get_selected_cards(self):
@@ -177,21 +180,22 @@ class FindLikeVampires(SutekhPlugin):
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Vampire'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Vampires like', self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
+                               gtk.DIALOG_MODAL |
+                               gtk.DIALOG_DESTROY_WITH_PARENT,
+                               (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDialog.vbox.pack_start(
-                gtk.Label('Find Vampires like %s' % self.oSelCard.name),
-                False, False)
+            gtk.Label('Find Vampires like %s' % self.oSelCard.name),
+            False, False)
         aDisciplines = [oP.discipline for oP in self.oSelCard.discipline]
         aSuperior = [oP.discipline for oP in self.oSelCard.discipline if
-                oP.level == 'superior']
+                     oP.level == 'superior']
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
         if len(aSuperior) > 0:
             oDisciplines = gtk.RadioButton(None, "Match Disciplines")
             oSuperior = gtk.RadioButton(oDisciplines,
-                    "Match Superior Disciplines")
+                                        "Match Superior Disciplines")
             oDisciplines.set_active(True)
         else:
             oDisciplines = gtk.Label("Match Disciplines")
@@ -201,7 +205,7 @@ class FindLikeVampires(SutekhPlugin):
         if oSuperior:
             oDialog.vbox.pack_start(oSuperior)
             oDisciplines.connect('toggled', self._update_combo_box,
-                    oComboBox, aDisciplines, aSuperior)
+                                 oComboBox, aDisciplines, aSuperior)
         for iNum in range(1, len(aDisciplines) + 1):
             oComboBox.append_text(str(iNum))
         if len(aDisciplines) > 1:
@@ -223,7 +227,7 @@ class FindLikeVampires(SutekhPlugin):
         bSuperior = oSuperior and oSuperior.get_active()
         if bSuperior:
             oDisciplineFilter = MultiDisciplineLevelFilter(
-                    [(x.fullname, 'superior') for x in aSuperior])
+                [(x.fullname, 'superior') for x in aSuperior])
             aSets = _gen_subsets(aSuperior, iNum)
         else:
             oDisciplineFilter = MultiDisciplineFilter([
@@ -234,7 +238,7 @@ class FindLikeVampires(SutekhPlugin):
         oDialog.destroy()
         aCandCards = list(oFullFilter.select(AbstractCard))
         return self._group_cards(aCandCards, iNum, aSets, bSuperior,
-                bUseCardSet)
+                                 bUseCardSet)
 
     def find_imbued_like(self):
         """Construct a imbued search from the card"""
@@ -242,12 +246,13 @@ class FindLikeVampires(SutekhPlugin):
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Imbued'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Imbued like', self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
+                               gtk.DIALOG_MODAL |
+                               gtk.DIALOG_DESTROY_WITH_PARENT,
+                               (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDialog.vbox.pack_start(
-                gtk.Label('Find Imbued like %s' % self.oSelCard.name),
-                False, False)
+            gtk.Label('Find Imbued like %s' % self.oSelCard.name),
+            False, False)
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
         oDialog.vbox.pack_start(gtk.Label("Match Virtues"))
@@ -273,17 +278,17 @@ class FindLikeVampires(SutekhPlugin):
             bUseCardSet = True
         iNum = int(oComboBox.get_active_text())
         oVirtueFilter = MultiVirtueFilter([x.fullname for x in
-            self.oSelCard.virtue])
+                                           self.oSelCard.virtue])
         aSets = _gen_subsets(self.oSelCard.virtue, iNum)
         aFilters.append(oVirtueFilter)
         oFullFilter = FilterAndBox(aFilters)
         oDialog.destroy()
         aCandCards = list(oFullFilter.select(AbstractCard))
         return self._group_cards(aCandCards, iNum, aSets, False,
-                bUseCardSet)
+                                 bUseCardSet)
 
     def _update_combo_box(self, oDiscipline, oComboBox, aDisciplines,
-            aSuperior):
+                          aSuperior):
         """Update the combo box as required"""
         iCurNum = int(oComboBox.get_active_text())
         if oDiscipline.get_active():
@@ -317,8 +322,9 @@ class FindLikeVampires(SutekhPlugin):
         else:
             sTitle = 'Imbued like %s' % self.oSelCard.name
         oResults = SutekhDialog(sTitle, self.parent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                gtk.DIALOG_MODAL |
+                                gtk.DIALOG_DESTROY_WITH_PARENT,
+                                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
         oResults.set_size_request(700, 600)
 
@@ -329,14 +335,14 @@ class FindLikeVampires(SutekhPlugin):
 
         oAllView = LikeCardsView(dGroups['all'], 'All Matches', bVampire)
         oNotebook.append_page(AutoScrolledWindow(oAllView),
-                gtk.Label('All Matches'))
+                              gtk.Label('All Matches'))
         for sSet in sorted(dGroups):
             if sSet == 'all':
                 # Already handled
                 continue
             oView = LikeCardsView(dGroups[sSet], sSet, bVampire)
             oNotebook.append_page(AutoScrolledWindow(oView),
-                    gtk.Label(sSet))
+                                  gtk.Label(sSet))
         oActions = gtk.HBox()
         oToggle = gtk.CheckButton('Include original card')
         oToggle.connect('toggled', self._update_notebook, oNotebook)
@@ -428,8 +434,10 @@ class LikeCardsModel(gtk.ListStore):
 
     def __init__(self, aCards, bVampire):
         super(LikeCardsModel, self).__init__(gobject.TYPE_STRING,
-                 gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_STRING,
-                 gobject.TYPE_STRING)
+                                             gobject.TYPE_INT,
+                                             gobject.TYPE_INT,
+                                             gobject.TYPE_STRING,
+                                             gobject.TYPE_STRING)
 
         self.bVampire = bVampire
         for oCard in aCards:
@@ -443,9 +451,9 @@ class LikeCardsModel(gtk.ListStore):
             self.set(oIter, 2, oCard.capacity)
             self.set(oIter, 3, oCard.clan[0].name)
             aDis = [oP.discipline.name.upper() for oP in oCard.discipline
-                if oP.level == 'superior']
+                    if oP.level == 'superior']
             aDis.extend([oP.discipline.name.lower() for oP
-                in oCard.discipline if oP.level != 'superior'])
+                         in oCard.discipline if oP.level != 'superior'])
             aDis.sort()
             self.set(oIter, 4, ' '.join(aDis))
         else:
