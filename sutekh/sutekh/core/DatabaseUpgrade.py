@@ -559,7 +559,7 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
     # pylint: disable-msg=E1101, R0912
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
-    for oCard in SutekhAbstractCard.select(connection=oOrigConn):
+    for oCard in SutekhAbstractCard.select(connection=oOrigConn).orderBy('id'):
         # force issue for SQObject >= 0.11.4
         oCard._connection = oOrigConn
         oCard._parent._connection = oOrigConn
@@ -607,6 +607,10 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
     # pylint: disable-msg=E1101, R0912
     # E1101 - SQLObject confuses pylint
     # R0912 - need the branches for this
+    # Postgres 9's default ordering may not be by id, which causes issues
+    # when doing the database upgrade when combined with postgres 9's
+    # auto-incrementing behaviour. We explictly sort by id to force
+    # the issue, which works, but may break again later.
     aMessages = []
     if oVer.check_tables_and_versions([AbstractCard],
             [AbstractCard.tableversion], oOrigConn):
@@ -615,7 +619,7 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         oTempConn = sqlhub.processConnection
         sqlhub.processConnection = oTrans
         sqlhub.processConnection = oTempConn
-        for oCard in AbstractCard_v5.select(connection=oOrigConn):
+        for oCard in AbstractCard_v5.select(connection=oOrigConn).orderBy('id'):
             # force issue for SQObject >= 0.11.4
             oCard._connection = oOrigConn
             oCardCopy = SutekhAbstractCard(id=oCard.id,
@@ -657,7 +661,7 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
         oTempConn = sqlhub.processConnection
         sqlhub.processConnection = oTrans
         sqlhub.processConnection = oTempConn
-        for oCard in AbstractCard_v6.select(connection=oOrigConn):
+        for oCard in AbstractCard_v6.select(connection=oOrigConn).orderBy('id'):
             # force issue for SQObject >= 0.11.4
             oCard._connection = oOrigConn
             oCardCopy = SutekhAbstractCard(id=oCard.id,
@@ -704,7 +708,7 @@ def copy_physical_card(oOrigConn, oTrans, oLogger):
     """Copy PhysicalCard, assuming version match"""
     # We copy abstractCardID rather than abstractCard, to avoid issues
     # with abstract card class changes
-    for oCard in PhysicalCard.select(connection=oOrigConn):
+    for oCard in PhysicalCard.select(connection=oOrigConn).orderBy('id'):
         oCardCopy = PhysicalCard(id=oCard.id,
                 abstractCardID=oCard.abstractCardID,
                 expansionID=oCard.expansionID, connection=oTrans)
@@ -715,13 +719,13 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
     """Copy PhysicalCards, upgrading if needed."""
     aMessages = []
     if oVer.check_tables_and_versions([AbstractCard], [5], oOrigConn):
-        for oCard in PhysicalCard_ACv5.select(connection=oOrigConn):
+        for oCard in PhysicalCard_ACv5.select(connection=oOrigConn).orderBy('id'):
             oCardCopy = PhysicalCard(id=oCard.id,
                     abstractCardID=oCard.abstractCardID,
                     expansionID=oCard.expansionID, connection=oTrans)
             oCardCopy.syncUpdate()
             oLogger.info('copied PC %s', oCardCopy.id)
-    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
+    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn).orderBy('id'):
         for oCard in PhysicalCard_ACv6.select(connection=oOrigConn):
             oCardCopy = PhysicalCard(id=oCard.id,
                     abstractCardID=oCard.abstractCardID,
