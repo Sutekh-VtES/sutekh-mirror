@@ -51,11 +51,11 @@ class CardTextFrame(BasicFrame):
                              self.set_card_text)
         super(CardTextFrame, self).frame_setup()
 
-    def cleanup(self):
+    def cleanup(self, bQuit=False):
         """Cleanup the listeners"""
         MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
-        super(CardTextFrame, self).cleanup()
+        super(CardTextFrame, self).cleanup(bQuit)
 
     def set_card_text(self, oCard):
         """Hand off card text update to the view"""

@@ -51,10 +51,12 @@ class CardSetFrame(CardListFrame):
             doc="Name of the card set for this frame")
     # pylint: enable-msg=W0212
 
-    def cleanup(self):
+    def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""
         super(CardSetFrame, self).cleanup()
-        self._oMainWindow.reload_pcs_list()
+        # skip reloading the pcs list when we're exiting
+        if not bQuit:
+            self._oMainWindow.reload_pcs_list()
         # Clean up the signal handlers, to avoid problems
         self._oController.cleanup()
 

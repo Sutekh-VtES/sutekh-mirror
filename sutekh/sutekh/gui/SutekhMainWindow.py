@@ -460,7 +460,7 @@ class SutekhMainWindow(MultiPaneWindow):
         """Exit the app"""
         # ensure we cleanup all signals (needed for tests)
         for oFrame in chain(self.aOpenFrames, self.aClosedFrames):
-            oFrame.cleanup()
+            oFrame.cleanup(True)
         for oPlugin in self._aPlugins:
             oPlugin.cleanup()
         # don't hold references to plugins here either

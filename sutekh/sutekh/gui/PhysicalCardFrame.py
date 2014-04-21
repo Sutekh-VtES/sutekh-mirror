@@ -39,7 +39,7 @@ class PhysicalCardFrame(CardListFrame):
         """Get the menu key"""
         return self._sName
 
-    def cleanup(self):
+    def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""
-        super(PhysicalCardFrame, self).cleanup()
+        super(PhysicalCardFrame, self).cleanup(bQuit)
         self._oController.cleanup()

@@ -195,11 +195,11 @@ class CardImageFrame(BasicFrame):
                              self.set_card_text)
         super(CardImageFrame, self).frame_setup()
 
-    def cleanup(self):
+    def cleanup(self, bQuit=False):
         """Remove the listener"""
         MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
-        super(CardImageFrame, self).cleanup()
+        super(CardImageFrame, self).cleanup(bQuit)
 
     def __have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""

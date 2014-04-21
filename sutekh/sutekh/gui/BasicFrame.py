@@ -166,7 +166,7 @@ class BasicFrame(gtk.Frame):
 
     # pylint: enable-msg=R0201
 
-    def cleanup(self):
+    def cleanup(self, _bQuit=False):
         """Hook for cleanup actions when the frame is removed."""
         # do per-plugin cleanup
         MessageBus.unsubscribe(DATABASE_MSG, "update_to_new_db",
