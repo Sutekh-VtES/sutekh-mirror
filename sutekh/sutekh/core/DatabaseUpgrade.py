@@ -725,8 +725,8 @@ def copy_old_physical_card(oOrigConn, oTrans, oLogger, oVer):
                     expansionID=oCard.expansionID, connection=oTrans)
             oCardCopy.syncUpdate()
             oLogger.info('copied PC %s', oCardCopy.id)
-    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn).orderBy('id'):
-        for oCard in PhysicalCard_ACv6.select(connection=oOrigConn):
+    elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
+        for oCard in PhysicalCard_ACv6.select(connection=oOrigConn).orderBy('id'):
             oCardCopy = PhysicalCard(id=oCard.id,
                     abstractCardID=oCard.abstractCardID,
                     expansionID=oCard.expansionID, connection=oTrans)
