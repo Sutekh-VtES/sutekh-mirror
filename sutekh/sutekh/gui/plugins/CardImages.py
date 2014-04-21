@@ -257,6 +257,9 @@ class CardImageFrame(BasicFrame):
         # If further events are pending, don't try and redraw
         if bPause and gtk.gdk.events_pending():
             return
+        if not self.__sCardName:
+            # Don't go down the rest of redraw path during startup
+            return
         sFullFilename = self.__convert_cardname_to_path()
         self.__load_image(sFullFilename)
 
