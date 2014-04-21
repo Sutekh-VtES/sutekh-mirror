@@ -272,6 +272,8 @@ class SutekhPlugin(object):
         oDBVer = DatabaseVersion()
         for oTable, aVersions in self.dTableVersions.iteritems():
             if not oDBVer.check_table_in_versions(oTable, aVersions):
+                logging.warn("Skipping plugin %s due to version error (%s)",
+                        self, oTable)
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True
