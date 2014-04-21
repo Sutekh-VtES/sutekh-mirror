@@ -9,6 +9,9 @@ from sutekh.core.SutekhObjects import PhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet, IRarityPair
 from sutekh.core.Filters import PhysicalCardSetFilter, \
         FilterAndBox, SpecificCardIdFilter
+from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
+        listen_row_created, disconnect_row_destroy, disconnect_row_update, \
+        disconnect_row_created
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -157,13 +160,18 @@ class StarterInfoPlugin(SutekhPlugin):
         self.oToggle = None
         self.oLastCard = None
         self.bShowInfo = False
-        MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
-                             self.post_set_card_text)
+        self._aStarters = []
 
     def cleanup(self):
         """Remove the listener"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
-                               self.post_set_card_text)
+        if self.check_versions() and self.check_model_type():
+            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+            disconnect_row_destroy(self.card_set_added_deleted,
+                                   PhysicalCardSet)
+            disconnect_row_created(self.card_set_added_deleted,
+                                   PhysicalCardSet)
+            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                                   self.post_set_card_text)
         super(StarterInfoPlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -173,6 +181,13 @@ class StarterInfoPlugin(SutekhPlugin):
            """
         if not self.check_versions() or not self.check_model_type():
             return None
+        MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
+                             self.post_set_card_text)
+        # Listen for card set changes to manage the cache
+        listen_row_update(self.card_set_changed, PhysicalCardSet)
+        listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
+        listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+
         # Make sure we add the tag we need
         oCardTextView = self.parent.card_text_pane.view
         oCardTextView.text_buffer.add_list_tag('starters')
@@ -241,6 +256,7 @@ class StarterInfoPlugin(SutekhPlugin):
         oZipFile = ZipFileWrapper(StringIO(sData))
         bResult = self._unzip_heart(oZipFile, bExcludeStoryDecks,
                 bExcludeDemoDecks)
+        self._aStarters = []
         return bResult
 
     def _unzip_heart(self, oFile, bExcludeStoryDecks, bExcludeDemoDecks):
@@ -375,10 +391,30 @@ class StarterInfoPlugin(SutekhPlugin):
         else:
             self.set_config_item('show starters', 'No')
 
+    def card_set_changed(self, _oCardSet, _dChanges):
+        """We listen for card set events, and invalidate the cache"""
+        self._aStarters = []
+
+    def card_set_added_deleted(self, _oCardSet, _dKW=None, _fPostFuncs=None):
+        """We listen for card set additions & deletions, and
+           invalidate the cache when that occurs"""
+        self._aStarters = []
+
+    def _cache_starters(self):
+        """Lookup the starter decks and cache them to avoid repeated queries"""
+        for oCS in PhysicalCardSet.select():
+            for sType, oRegex in (('Starters', self.oStarterRegex),
+                    ('Demos', self.oDemoRegex)):
+                oMatch = oRegex.match(oCS.name)
+                if oMatch:
+                    self._aStarters.append(oCS)
+
     def _get_card_set_info(self, oAbsCard):
         """Find preconstructed card sets that contain the card"""
+        if not self._aStarters:
+            self._cache_starters()
         dMatches = {'Starters': [], 'Demos': []}
-        for oCS in PhysicalCardSet.select():
+        for oCS in self._aStarters:
             for sType, oRegex in (('Starters', self.oStarterRegex),
                     ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
@@ -387,6 +423,7 @@ class StarterInfoPlugin(SutekhPlugin):
                     if _check_exp_name(sExpName, oAbsCard):
                         dMatches[sType].append((oCS, oMatch.groups()[0],
                             oMatch.groups()[1]))
+
         # Find the card in the starter decks
         dInfo = {'Starters': [], 'Demos': []}
         for sType, aResults in dMatches.iteritems():
