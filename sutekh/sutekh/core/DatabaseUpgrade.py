@@ -272,7 +272,8 @@ def check_can_read_old_database(oConn):
             [PhysicalCard.tableversion], oConn):
         raise UnknownVersion("PhysicalCard")
     if not oVer.check_tables_and_versions([PhysicalCardSet],
-            [PhysicalCardSet.tableversion], oConn):
+            [PhysicalCardSet.tableversion], oConn) \
+            and not oVer.check_table_in_versions(PhysicalCardSet, [6], oConn):
         raise UnknownVersion("PhysicalCardSet")
     return True
 
@@ -291,6 +292,8 @@ def old_database_count(oConn):
         iCount += PhysicalCard.select(connection=oConn).count()
     if oVer.check_tables_and_versions([PhysicalCardSet],
             [PhysicalCardSet.tableversion], oConn):
+        iCount += PhysicalCardSet.select(connection=oConn).count()
+    elif oVer.check_tables_and_versions([PhysicalCardSet], [6], oConn):
         iCount += PhysicalCardSet.select(connection=oConn).count()
     return iCount
 
@@ -798,6 +801,13 @@ def copy_old_physical_card_set(oOrigConn, oTrans, oLogger, oVer):
             [PhysicalCardSet.tableversion], oOrigConn) \
             and oVer.check_tables_and_versions([PhysicalCard],
                     [PhysicalCard.tableversion], oOrigConn):
+        copy_physical_card_set(oOrigConn, oTrans, oLogger)
+    elif oVer.check_tables_and_versions([PhysicalCardSet],
+            [6], oOrigConn) \
+            and oVer.check_tables_and_versions([PhysicalCard],
+                    [PhysicalCard.tableversion], oOrigConn):
+        # Version 7 just adds an extra index, so we don't need
+        # fancier copy logic
         copy_physical_card_set(oOrigConn, oTrans, oLogger)
     else:
         return (False, ["Unknown PhysicalCardSet version"])

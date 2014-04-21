@@ -198,7 +198,7 @@ class PhysicalCard(SQLObject):
 class PhysicalCardSet(SQLObject):
     advise(instancesProvide=[IPhysicalCardSet])
 
-    tableversion = 6
+    tableversion = 7
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     author = UnicodeCol(default='')
     comment = UnicodeCol(default='')
@@ -207,6 +207,7 @@ class PhysicalCardSet(SQLObject):
     parent = ForeignKey('PhysicalCardSet', default=None)
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
             createRelatedTable=False)
+    parentIndex = DatabaseIndex(parent)
 
 
 class RarityPair(SQLObject):
