@@ -17,7 +17,7 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExportCSV(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteCSV to produce the required output."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

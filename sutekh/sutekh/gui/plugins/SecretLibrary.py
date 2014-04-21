@@ -206,7 +206,7 @@ class SecretLibrary(SutekhPlugin):
        to and from the Secret Library.
        """
 
-    dTableVersions = {PhysicalCardSet: (5, 6)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, "MainWindow")
 
     dGlobalConfig = {

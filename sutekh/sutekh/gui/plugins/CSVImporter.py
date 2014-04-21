@@ -25,7 +25,7 @@ class CSVImporter(SutekhPlugin):
        currently selected file.
        """
     dTableVersions = {
-        PhysicalCardSet: (4, 5, 6),
+        PhysicalCardSet: (4, 5, 6, 7),
     }
     aModelsSupported = ("MainWindow",)
 

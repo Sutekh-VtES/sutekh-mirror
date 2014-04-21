@@ -119,7 +119,7 @@ class CardDrawSimPlugin(SutekhPlugin):
        selection."""
     # pylint: disable-msg=R0902
     # we use a lot of attributes to pass the data around
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

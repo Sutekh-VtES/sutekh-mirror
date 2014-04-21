@@ -42,7 +42,7 @@ class CardSetPrint(SutekhPlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {

@@ -22,7 +22,7 @@ class CardSetExportHTML(SutekhPlugin):
        and then dump that to file.
        This tries to match the HTML file produced by ARDB.
        """
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, "MainWindow")
 
     dGlobalConfig = {

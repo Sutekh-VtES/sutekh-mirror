@@ -20,7 +20,7 @@ class SnapshotCardSet(SutekhPlugin):
        date and time appended to the name, and it is a child of the card set.
        """
 
-    dTableVersions = {PhysicalCardSet: (6,)}
+    dTableVersions = {PhysicalCardSet: (6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

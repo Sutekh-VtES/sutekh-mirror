@@ -63,7 +63,7 @@ class CardSetCompare(SutekhPlugin):
        Display a gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

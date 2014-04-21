@@ -31,7 +31,7 @@ class ACSImporter(SutekhPlugin):
        Handles the most common formats, and allows the user to choose
        uri's, so decks published online can be easily imported.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = ("MainWindow",)
 
     # pylint: disable-msg=W0142

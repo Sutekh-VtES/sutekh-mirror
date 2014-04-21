@@ -20,7 +20,7 @@ class SetCardExpansions(SutekhPlugin):
        the user to choose which expansion to set all the cards too.
        """
 
-    dTableVersions = {PhysicalCardSet: (5, 6)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

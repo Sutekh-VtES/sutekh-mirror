@@ -92,7 +92,7 @@ class RandomPromoDialog(SutekhDialog):
 
 class RandomPromoSelector(SutekhPlugin):
     """Generate random groups of cards."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     # pylint: disable-msg=W0142

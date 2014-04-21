@@ -412,7 +412,7 @@ class AnalyzeCardList(SutekhPlugin):
       Displays various interesting stats, and does a Happy Family
       analysis of the deck
        """
-    dTableVersions = {PhysicalCardSet: (6,)}
+    dTableVersions = {PhysicalCardSet: (6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     def __init__(self, *args, **kwargs):

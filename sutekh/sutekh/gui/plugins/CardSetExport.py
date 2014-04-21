@@ -24,7 +24,7 @@ from sutekh.SutekhUtility import safe_filename
 class CardSetExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then calls on
        the appropriate writer to produce the required output."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
     _dExporters = {

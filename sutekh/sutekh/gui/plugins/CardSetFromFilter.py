@@ -15,7 +15,7 @@ from sutekh.gui.GuiCardSetFunctions import create_card_set
 class DeckFromFilter(SutekhPlugin):
     """Converts a filter into a Card Set."""
 
-    dTableVersions = {PhysicalCardSet: (4, 5, 6)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
     def get_menu_item(self):
