@@ -6,8 +6,8 @@
 """Test cases for the CardSetUtilities functions"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetUtilities import delete_physical_card_set, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set, \
         get_loop_names, detect_loop, find_children, break_loop, format_cs_list
 import unittest
 

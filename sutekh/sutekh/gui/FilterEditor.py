@@ -10,7 +10,7 @@
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.FilterModelPanes import FilterModelPanes, add_accel_to_button
-from sutekh.core.FilterParser import get_filters_for_type
+from sutekh.base.core.FilterParser import get_filters_for_type
 import gtk
 import pango
 

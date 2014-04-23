@@ -6,7 +6,8 @@
 """Utility functions for importing from & exporting to FELDB"""
 
 import unicodedata
-from sutekh.core.SutekhObjects import AbstractCard, canonical_to_csv
+from sutekh.base.core.BaseObjects import AbstractCard
+from sutekh.base.Utility import canonical_to_csv
 from sutekh.SutekhUtility import is_crypt_card
 
 SINGLE_QUOTE_NAMES = [

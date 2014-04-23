@@ -5,20 +5,23 @@
 
 """Adds info about the starter decks cards are found in"""
 
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet, IRarityPair
-from sutekh.core.Filters import PhysicalCardSetFilter, \
-        FilterAndBox, SpecificCardIdFilter
-from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
-        listen_row_created, disconnect_row_destroy, disconnect_row_update, \
-        disconnect_row_created
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, 
+                                          MapPhysicalCardToPhysicalCardSet,
+                                          IPhysicalCardSet, IRarityPair)
+from sutekh.base.core.BaseFilters import (PhysicalCardSetFilter,
+                                          FilterAndBox, SpecificCardIdFilter)
+from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
+                                        listen_row_created,
+                                        disconnect_row_destroy,
+                                        disconnect_row_update,
+                                        disconnect_row_created)
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint, \
         do_complaint_error
-from sutekh.core.CardSetUtilities import delete_physical_card_set, \
-        find_children, has_children
+from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
+                                               find_children, has_children)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import DOC_URL, urlopen_with_timeout, find_data_pack
 from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \

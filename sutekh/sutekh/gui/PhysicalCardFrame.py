@@ -7,7 +7,7 @@
 
 """Frame which holds the PhysicalCardView"""
 
-from sutekh.core.SutekhObjects import PhysicalCard
+from sutekh.base.core.BaseObjects import PhysicalCard
 from sutekh.gui.CardListFrame import CardListFrame
 from sutekh.gui.PhysicalCardController import PhysicalCardController
 from sutekh.gui.PhysicalCardMenu import PhysicalCardMenu

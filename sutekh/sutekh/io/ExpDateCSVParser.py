@@ -10,7 +10,7 @@ import datetime
 from logging import Logger
 from sqlobject import SQLObjectNotFound
 
-from sutekh.core.SutekhObjects import IExpansion
+from sutekh.base.core.BaseObjects import IExpansion
 
 
 class ExpDateCSVParser(object):

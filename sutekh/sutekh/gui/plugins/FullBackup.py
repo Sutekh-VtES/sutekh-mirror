@@ -10,7 +10,7 @@ from sutekh.gui.SutekhDialog import do_complaint_warning, \
 from sutekh.gui.SutekhFileWidget import ZipFileDialog
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.SutekhUtility import get_cs_id_name_table
+from sutekh.base.core.DBUtility import get_cs_id_name_table
 import gtk
 import os
 

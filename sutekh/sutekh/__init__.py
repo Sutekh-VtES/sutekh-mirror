@@ -8,25 +8,36 @@
 
 # Do importing
 
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, \
-                    PhysicalCardSet, RarityPair, \
-                    Expansion, Rarity, DisciplinePair, Discipline, \
-                    Clan, CardType, Ruling
+from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCard,
+                                          PhysicalCardSet, RarityPair,
+                                          Expansion, Rarity, CardType,
+                                          Ruling)
 
-from sutekh.core.Filters import FilterAndBox, FilterOrBox, ClanFilter, \
-                    DisciplineFilter, CardTypeFilter, CardTextFilter, \
-                    MultiCardTypeFilter, MultiDisciplineFilter, \
-                    MultiClanFilter, PhysicalCardSetFilter, \
-                    PhysicalCardFilter, GroupFilter, MultiGroupFilter, \
-                    ExpansionFilter, MultiExpansionFilter, \
-                    PhysicalExpansionFilter, CardNameFilter, \
-                    MultiPhysicalExpansionFilter, CardSetNameFilter, \
-                    CardSetDescriptionFilter, CardSetAuthorFilter, \
-                    CardSetAnnotationsFilter
+from sutekh.core.SutekhObjects import DisciplinePair, Discipline, Clan
 
-from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
-                    DisciplineGrouping, ExpansionGrouping, \
-                    RarityGrouping
+from sutekh.base.core.BaseFilters import (FilterAndBox, FilterOrBox,
+                                          CardTypeFilter,
+                                          MultiCardTypeFilter,
+                                          PhysicalCardSetFilter,
+                                          PhysicalCardFilter,
+                                          ExpansionFilter,
+                                          MultiExpansionFilter,
+                                          PhysicalExpansionFilter,
+                                          CardNameFilter,
+                                          MultiPhysicalExpansionFilter,
+                                          CardSetNameFilter,
+                                          CardSetDescriptionFilter,
+                                          CardSetAuthorFilter,
+                                          CardSetAnnotationsFilter)
+
+from sutekh.core.Filters import (ClanFilter, DisciplineFilter, CardTextFilter,
+                                 MultiDisciplineFilter, MultiClanFilter,
+                                 GroupFilter, MultiGroupFilter)
+
+from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
+                                            ExpansionGrouping,
+                                            RarityGrouping)
+from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
 
 from sutekh.core.CardListTabulator import CardListTabulator
 

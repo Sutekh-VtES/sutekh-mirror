@@ -6,7 +6,7 @@
 """Utility functions for dealing with managing the CardSet Objects"""
 
 from sqlobject import SQLObjectNotFound, sqlhub
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from .BaseObjects import PhysicalCardSet
 
 
 def get_loop(oCardSet):

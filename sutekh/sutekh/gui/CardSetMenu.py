@@ -8,7 +8,7 @@
 """Menu for the card set pane"""
 
 import gtk
-from sutekh.SutekhUtility import safe_filename
+from sutekh.base.Utility import safe_filename
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.gui.FilteredViewMenu import CardListMenu

@@ -6,8 +6,8 @@
 """Test cases for the CardSetHolder functions, and some CardLookup stuff"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
-from sutekh.core.SutekhObjects import IPhysicalCardSet, IExpansion, \
+from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, IExpansion, \
         MapPhysicalCardToPhysicalCardSet, IAbstractCard
 from sutekh.core import Filters
 import unittest

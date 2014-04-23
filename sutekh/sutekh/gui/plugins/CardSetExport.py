@@ -6,8 +6,8 @@
 """Plugin for exporting to standard writers"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
 from sutekh.io.WriteJOL import WriteJOL
@@ -18,7 +18,7 @@ from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
-from sutekh.SutekhUtility import safe_filename
+from sutekh.base.Utility import safe_filename
 
 
 class CardSetExport(SutekhPlugin):

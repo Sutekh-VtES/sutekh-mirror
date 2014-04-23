@@ -9,7 +9,7 @@
 # pylint: disable-msg=W0402
 # string.digits is OK
 import string
-from sutekh.core.SutekhObjects import AbstractCard
+from sutekh.base.core.BaseObjects import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
 from sutekh.io.IOBase import BaseLineParser
 

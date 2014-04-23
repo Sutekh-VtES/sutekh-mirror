@@ -11,11 +11,11 @@ from sutekh.gui.GuiCardSetFunctions import check_ok_to_delete, \
         update_card_set
 from sutekh.gui.CardSetView import CardSetView
 from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
-from sutekh.core.DBSignals import send_changed_signal
-from sutekh.core.SutekhObjects import IPhysicalCardSet, PhysicalCardSet, \
+from sutekh.base.core.DBSignals import send_changed_signal
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet, \
         IAbstractCard, PhysicalCard, MapPhysicalCardToPhysicalCardSet, \
         IExpansion, IPhysicalCard
-from sutekh.core.CardSetUtilities import delete_physical_card_set
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 
 
 class CardSetController(object):

@@ -6,9 +6,12 @@
 """Test the white wolf card reader"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
-        IPhysicalCard, IClan, IDisciplinePair, ICardType, ISect, ITitle, \
-        ICreed, IVirtue, IExpansion, IRarity, IRarityPair, IArtist, IKeyword
+from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
+                                       ICreed, IVirtue)
+from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
+                                          IPhysicalCard, ICardType,
+                                          IExpansion, IRarity, IRarityPair,
+                                          IArtist, IKeyword)
 from sqlobject import SQLObjectNotFound
 import unittest
 

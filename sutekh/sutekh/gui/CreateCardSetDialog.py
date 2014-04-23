@@ -11,7 +11,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CardSetsListView import CardSetsListView
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.core.SutekhObjects import IPhysicalCardSet, MAX_ID_LENGTH
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, MAX_ID_LENGTH
 
 
 def make_scrolled_text(oCardSet, sAttr):

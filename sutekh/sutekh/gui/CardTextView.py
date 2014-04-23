@@ -9,7 +9,7 @@
 import gtk
 import pango
 import logging
-from sutekh.core.SutekhObjects import IKeyword
+from sutekh.base.core.BaseObjects import IKeyword
 from sutekh.SutekhUtility import format_text
 from sutekh.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sqlobject import SQLObjectNotFound

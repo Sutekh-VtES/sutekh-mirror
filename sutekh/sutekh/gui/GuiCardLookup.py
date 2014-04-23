@@ -11,10 +11,11 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCard, IExpansion, \
+from sutekh.base.core.BaseObjects import AbstractCard, PhysicalCard, IExpansion, \
         Expansion, IPhysicalCard, IAbstractCard
-from sutekh.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
-        ExpansionLookup, LookupFailed, best_guess_filter
+from sutekh.base.core.CardLookup import AbstractCardLookup, PhysicalCardLookup, \
+        ExpansionLookup, LookupFailed
+from sutekh.core.Filters import best_guess_filter
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.gui.PhysicalCardView import PhysicalCardView

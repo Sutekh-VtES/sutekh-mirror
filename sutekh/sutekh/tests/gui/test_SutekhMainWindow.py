@@ -7,7 +7,7 @@
 
 import unittest
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 
 
 class TestSutekhMainWindow(GuiSutekhTest):

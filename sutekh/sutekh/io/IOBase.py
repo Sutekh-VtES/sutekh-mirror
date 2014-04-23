@@ -7,7 +7,7 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
-from sutekh.SutekhUtility import pretty_xml, norm_xml_quotes
+from sutekh.base.Utility import pretty_xml, norm_xml_quotes
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
@@ -58,12 +58,12 @@ class CardSetWriter(object):
            oWriter = cWriter()
            oWriter.write(fOut, oHolder)
 
-       The sutekh.core.CardSetHolder module provides a CardSetWrapper
+       The sutekh.base.core.CardSetHolder module provides a CardSetWrapper
        implementation of the CardSetHolder class for use when writing
        out an existing card set.
 
        Example:
-           from sutekh.core.CardSetHolder import CardSetWrapper
+           from sutekh.base.core.CardSetHolder import CardSetWrapper
            oWriter.write(fOut, CardSetWrapper(oCS))
        """
 

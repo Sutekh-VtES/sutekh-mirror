@@ -21,7 +21,8 @@
 
 import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
-from sutekh.core.SutekhObjects import canonical_to_csv, IAbstractCard
+from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.Utility import canonical_to_csv
 
 
 def lackey_name(oCard):

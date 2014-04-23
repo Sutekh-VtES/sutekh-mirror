@@ -9,13 +9,15 @@
 import gtk
 import gobject
 import logging
-from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
-        make_illegal_filter, CachedFilter
-from sutekh.core.Groupings import CardTypeGrouping
-from sutekh.core.SutekhObjects import PhysicalCardToAbstractCardAdapter, \
-        PhysicalCard, PhysicalCardAdapter, ExpansionNameAdapter, \
-        canonical_to_csv
-from sutekh.core.FilterParser import FilterParser
+from sutekh.base.core.BaseFilters import (FilterAndBox, NullFilter,
+                                          PhysicalCardFilter, CachedFilter)
+from sutekh.core.Filters import make_illegal_filter
+from sutekh.base.core.BaseGroupings import CardTypeGrouping
+from sutekh.base.core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
+                                          PhysicalCard, PhysicalCardAdapter,
+                                          ExpansionNameAdapter)
+from sutekh.base.Utility import canonical_to_csv
+from sutekh.base.core.FilterParser import FilterParser
 from sutekh.gui.ConfigFile import WW_CARDLIST
 from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 

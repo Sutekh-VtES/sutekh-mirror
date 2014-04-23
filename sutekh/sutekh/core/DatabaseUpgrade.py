@@ -22,15 +22,19 @@ from sqlobject import sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin, \
         EnumCol, MultipleJoin, connectionForURI, ForeignKey, SQLObjectNotFound
 # pylint: enable-msg=E0611
 from logging import Logger
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, \
-        SutekhAbstractCard, PhysicalCardSet, Expansion, Clan, Virtue, \
-        Discipline, Rarity, RarityPair, CardType, Ruling, Creed, \
-        DisciplinePair, Sect, Title, Keyword, Artist, \
-        flush_cache, TABLE_LIST, MAX_ID_LENGTH
-from sutekh.core.CardSetHolder import CachedCardSetHolder
+from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
+                                          PhysicalCardSet, Expansion,
+                                          Rarity, RarityPair, CardType,
+                                          Ruling, Keyword, Artist,
+                                          MAX_ID_LENGTH)
+from sutekh.core.SutekhObjects import (SutekhAbstractCard, Clan, Virtue,
+                                       Discipline, Creed, DisciplinePair,
+                                       Sect, Title,
+                                       TABLE_LIST)
+from sutekh.base.core.DBUtility import flush_cache, refresh_tables
+from sutekh.base.core.CardSetHolder import CachedCardSetHolder
 from sutekh.io.WhiteWolfTextParser import strip_braces
-from sutekh.SutekhUtility import refresh_tables
-from sutekh.core.DatabaseVersion import DatabaseVersion
+from sutekh.base.core.DatabaseVersion import DatabaseVersion
 
 # This file handles all the grunt work of the database upgrades. We have some
 # (arguablely overly) complex trickery to read old databases, and we create a

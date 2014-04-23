@@ -15,8 +15,8 @@ import zipimport
 import zipfile
 import re
 from sqlobject import sqlhub
-from sutekh.core.DatabaseVersion import DatabaseVersion
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.DatabaseVersion import DatabaseVersion
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.gui.ConfigFile import CARDSET, WW_CARDLIST, CARDSET_LIST, FRAME
 from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from sutekh.gui.SutekhDialog import do_complaint_warning

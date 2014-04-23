@@ -7,7 +7,7 @@
 
 import gtk
 from copy import copy
-from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \

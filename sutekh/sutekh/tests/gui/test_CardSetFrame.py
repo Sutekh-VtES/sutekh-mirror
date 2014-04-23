@@ -8,7 +8,7 @@
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCard, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCard, \
         IAbstractCard
 from sutekh.tests.core.test_Filters import make_card
 

@@ -7,7 +7,7 @@
 
 from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import get_database_url
+from sutekh.base.Utility import get_database_url
 import gtk
 
 

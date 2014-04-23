@@ -69,7 +69,7 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
     def __init__(self):
         """Create an SutekhBaseHTMLParser.
 
-           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object
+           oHolder is a sutekh.base.core.CardSetHolder.CardSetHolder object
            (or similar).
            """
         self._oState = BaseState()

@@ -7,8 +7,8 @@
 
 import gtk
 import gobject
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
-from sutekh.core.Filters import NullFilter
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.BaseFilters import NullFilter
 from sutekh.gui.ConfigFile import CARDSET_LIST
 
 

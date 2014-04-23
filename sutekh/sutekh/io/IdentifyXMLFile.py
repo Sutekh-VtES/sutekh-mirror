@@ -7,7 +7,7 @@
 """Attempts to identify a XML file as either PhysicalCardSet, PhysicalCard
    or AbstractCardSet (the last two to support legacy backups)."""
 
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 # pylint: disable-msg=E0611, F0401
 # pylint doesn't like the handling of the differences between 2.4 and 2.5

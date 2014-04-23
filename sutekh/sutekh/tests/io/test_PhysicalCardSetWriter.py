@@ -8,8 +8,8 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards, make_set_1
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from StringIO import StringIO

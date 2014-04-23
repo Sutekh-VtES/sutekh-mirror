@@ -6,8 +6,8 @@
 """Holder for card set (Abstract or Physical) data before it is committed
    to a database."""
 
-from sutekh.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from .CardLookup import DEFAULT_LOOKUP
+from .BaseObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound, sqlhub
 
 

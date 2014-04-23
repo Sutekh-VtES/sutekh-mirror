@@ -10,11 +10,11 @@ import gtk
 import pango
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
-from sutekh.core.Filters import PhysicalCardSetFilter, CryptCardFilter, \
-        FilterAndBox
-from sutekh.core.DBSignals import listen_row_destroy, listen_row_update, \
+from sutekh.base.core.BaseFilters import PhysicalCardSetFilter, FilterAndBox
+from sutekh.core.Filters import CryptCardFilter
+from sutekh.base.core.DBSignals import listen_row_destroy, listen_row_update, \
         listen_row_created, listen_changed, disconnect_changed, \
         disconnect_row_destroy, disconnect_row_update, disconnect_row_created
 from sqlobject import SQLObjectNotFound

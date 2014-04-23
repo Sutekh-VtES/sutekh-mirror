@@ -5,13 +5,16 @@
 
 """Allow the use to change how the cards are grouped in the CardListView"""
 
-from sutekh.core.SutekhObjects import PhysicalCard, PhysicalCardSet
-from sutekh.core.Groupings import CardTypeGrouping, ClanGrouping, \
-        DisciplineGrouping, ExpansionGrouping, RarityGrouping, \
-        CryptLibraryGrouping, NullGrouping, MultiTypeGrouping, \
-        SectGrouping, TitleGrouping, CostGrouping, GroupGrouping, \
-        ArtistGrouping, KeywordGrouping, GroupPairGrouping, \
-        DisciplineLevelGrouping
+from sutekh.base.core.BaseObjects import PhysicalCard, PhysicalCardSet
+from sutekh.base.core.BaseGroupings import (CardTypeGrouping, NullGrouping,
+                                            ExpansionGrouping, RarityGrouping,
+                                            MultiTypeGrouping, ArtistGrouping,
+                                            KeywordGrouping)
+from sutekh.core.Groupings import (ClanGrouping, DisciplineGrouping,
+                                   CryptLibraryGrouping, SectGrouping,
+                                   TitleGrouping, CostGrouping, GroupGrouping,
+                                   GroupPairGrouping, DisciplineLevelGrouping)
+
 from sutekh.gui.PluginManager import SutekhPlugin
 
 

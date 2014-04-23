@@ -9,9 +9,10 @@
 import gtk
 import pango
 import gobject
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard, IExpansion
-from sutekh.core.Groupings import ExpansionRarityGrouping
-from sutekh.core.Filters import make_illegal_filter, NullFilter
+from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard, IExpansion
+from sutekh.base.core.BaseGroupings import ExpansionRarityGrouping
+from sutekh.base.core.BaseFilters import NullFilter
+from sutekh.core.Filters import make_illegal_filter
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

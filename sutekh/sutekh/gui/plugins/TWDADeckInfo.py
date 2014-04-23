@@ -5,19 +5,19 @@
 
 """Adds info about the TWDA decks cards are found in"""
 
-from sutekh.core.SutekhObjects import (PhysicalCardSet,
-                                       MapPhysicalCardToPhysicalCardSet,
-                                       IPhysicalCardSet, PhysicalCard,
-                                       IAbstractCard)
-from sutekh.core.Filters import (FilterOrBox, FilterAndBox,
-                                 SpecificCardFilter,
-                                 MultiPhysicalCardSetMapFilter)
+from sutekh.base.core.BaseObjects import (PhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet,
+                                          IPhysicalCardSet, PhysicalCard,
+                                          IAbstractCard)
+from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
+                                          SpecificCardFilter,
+                                          MultiPhysicalCardSetMapFilter)
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import (SutekhDialog, do_exception_complaint,
                                      do_complaint_error)
-from sutekh.core.CardSetUtilities import (delete_physical_card_set,
-                                          find_children, has_children)
+from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
+                                               find_children, has_children)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import (find_all_data_packs, DOC_URL,
                                 urlopen_with_timeout, fetch_data)

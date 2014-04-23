@@ -18,7 +18,7 @@ try:
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
 # pylint: enable-msg=E0611, F0401
-from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.base.Utility import csv_to_canonical
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
 

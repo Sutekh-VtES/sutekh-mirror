@@ -8,13 +8,14 @@
 import gtk
 import gobject
 import pango
-from sutekh.core.SutekhObjects import (PhysicalCardSet, PhysicalCard,
-                                       IAbstractCard, AbstractCard,
-                                       SutekhAbstractCard, IPhysicalCard,
-                                       IPhysicalCardSet)
-from sutekh.core.Filters import (MultiGroupFilter, CardTypeFilter,
-                                 MultiVirtueFilter, MultiDisciplineFilter,
-                                 MultiDisciplineLevelFilter, FilterAndBox)
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, PhysicalCard,
+                                          IAbstractCard, AbstractCard,
+                                          IPhysicalCard, IPhysicalCardSet)
+from sutekh.core.SutekhObjects import SutekhAbstractCard
+from sutekh.base.core.BaseFilters import CardTypeFilter, FilterAndBox
+from sutekh.core.Filters import (MultiGroupFilter, MultiVirtueFilter,
+                                 MultiDisciplineFilter,
+                                 MultiDisciplineLevelFilter)
 from sutekh.SutekhUtility import is_crypt_card, is_vampire
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error

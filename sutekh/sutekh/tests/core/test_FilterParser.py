@@ -9,10 +9,11 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.tests.core.test_Filters import make_physical_card_sets
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+from sutekh.base.core.BaseObjects import AbstractCard, PhysicalCardSet, \
         PhysicalCard, MapPhysicalCardToPhysicalCardSet, IAbstractCard
-from sutekh.core import FilterParser, Filters, FilterBox
-from sutekh.core.FilterParser import escape, unescape
+from sutekh.base.core import FilterParser, FilterBox
+from sutekh.core import Filters
+from sutekh.base.core.FilterParser import escape, unescape
 import unittest
 
 

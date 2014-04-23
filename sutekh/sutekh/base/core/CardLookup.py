@@ -7,13 +7,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-# pylint: disable-msg=W0402
-# we need string.punctuation
-import string
-# pylint: enable-msg=W0402
-from sutekh.core.SutekhObjects import IPhysicalCard, IExpansion, IAbstractCard
-from sutekh.core.Filters import CardNameFilter, FilterAndBox, \
-        make_illegal_filter
+from .BaseObjects import IPhysicalCard, IExpansion, IAbstractCard
 
 
 # pylint: disable-msg=R0922
@@ -137,35 +131,6 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             else:
                 aExps.append(None)
         return aExps
-
-
-def best_guess_filter(sName):
-    """Create a filter for selecting close matches to a card name."""
-    # Set the filter on the Card List to one the does a
-    # Best guess search
-    sFilterString = ' ' + sName.lower() + ' '
-    # Kill the's in the string
-    sFilterString = sFilterString.replace(' the ', ' ')
-    # Kill commas, as possible issues
-    sFilterString = sFilterString.replace(',', ' ')
-    # Free style punctuation
-    for sPunc in string.punctuation:
-        sFilterString = sFilterString.replace(sPunc, '_')
-    # Stolen semi-concept from soundex - replace vowels with wildcards
-    # Should these be %'s ??
-    # (Should at least handle the Rotscheck variation as it stands)
-    sFilterString = sFilterString.replace('a', '_')
-    sFilterString = sFilterString.replace('e', '_')
-    sFilterString = sFilterString.replace('i', '_')
-    sFilterString = sFilterString.replace('o', '_')
-    sFilterString = sFilterString.replace('u', '_')
-    # Normalise spaces and Wildcard spaces
-    sFilterString = ' '.join(sFilterString.split())
-    sFilterString = sFilterString.replace(' ', '%')
-    # Add % on outside
-    sFilterString = '%' + sFilterString + '%'
-    oLegalFilter = make_illegal_filter()
-    return FilterAndBox([CardNameFilter(sFilterString), oLegalFilter])
 
 
 DEFAULT_LOOKUP = SimpleLookup()

@@ -10,8 +10,8 @@ from sutekh.tests.TestCore import SutekhTest, make_null_handler
 from sutekh.tests import create_db
 from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy
-from sutekh.core.CardLookup import SimpleLookup
-from sutekh.core.SutekhObjects import AbstractCard, PhysicalCardSet, \
+from sutekh.base.core.CardLookup import SimpleLookup
+from sutekh.base.core.BaseObjects import AbstractCard, PhysicalCardSet, \
     AbstractCardAdapter, PhysicalCardAdapter, ExpansionAdapter, \
     IPhysicalCardSet
 from sqlobject import sqlhub, connectionForURI

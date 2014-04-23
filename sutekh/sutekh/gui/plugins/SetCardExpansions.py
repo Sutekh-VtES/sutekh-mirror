@@ -5,9 +5,9 @@
 """Force all cards which can only belong to 1 expansion to that expansion"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IExpansion, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IExpansion, \
         IPhysicalCard, IAbstractCard, MapPhysicalCardToPhysicalCardSet
-from sutekh.core.DBSignals import send_changed_signal
+from sutekh.base.core.DBSignals import send_changed_signal
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.gui.ScrolledList import ScrolledList

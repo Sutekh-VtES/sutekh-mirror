@@ -9,22 +9,31 @@
 
 """The gtk.TreeModel for the card set lists."""
 
-from sutekh.core.Filters import FilterAndBox, NullFilter, PhysicalCardFilter, \
-        PhysicalCardSetFilter, SpecificCardIdFilter, \
-        MultiPhysicalCardSetMapFilter, SpecificPhysCardIdFilter, \
-        MultiSpecificCardIdFilter, CachedFilter
+from sutekh.base.core.BaseFilters import (FilterAndBox, NullFilter,
+                                          PhysicalCardFilter,
+                                          PhysicalCardSetFilter,
+                                          SpecificCardIdFilter,
+                                          MultiPhysicalCardSetMapFilter,
+                                          SpecificPhysCardIdFilter,
+                                          MultiSpecificCardIdFilter,
+                                          CachedFilter)
 # We use the adapters directly, rather than going through PyProtocols
 # because we know the types explicitly, and thus don't need the overhead
 # of PyPrortocols dispatch logic.
-from sutekh.core.SutekhObjects import PhysicalCard, IAbstractCard, \
-        MapPhysicalCardToPhysicalCardSet, PhysicalCardAdapter, \
-        PhysicalCardSetAdapter, PhysicalCardSet, ExpansionNameAdapter, \
-        canonical_to_csv, PhysicalCardToAbstractCardAdapter, \
-        PhysicalCardMappingToPhysicalCardAdapter
+from sutekh.base.core.BaseObjects import (PhysicalCard, IAbstractCard,
+                                          MapPhysicalCardToPhysicalCardSet,
+                                          PhysicalCardAdapter,
+                                          PhysicalCardSetAdapter,
+                                          PhysicalCardSet,
+                                          ExpansionNameAdapter,
+                                          PhysicalCardToAbstractCardAdapter,
+                                          PhysicalCardMappingToPhysicalCardAdapter)
+from sutekh.base.Utility import canonical_to_csv
 from sutekh.gui.CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
-from sutekh.core.DBSignals import listen_changed, disconnect_changed, \
-        listen_row_destroy, listen_row_update, disconnect_row_destroy, \
-        disconnect_row_update
+from sutekh.base.core.DBSignals import (listen_changed, disconnect_changed,
+                                        listen_row_destroy, listen_row_update,
+                                        disconnect_row_destroy,
+                                        disconnect_row_update)
 from sutekh.gui.ConfigFile import CARDSET, FRAME
 from sutekh.gui.MessageBus import MessageBus
 import gtk

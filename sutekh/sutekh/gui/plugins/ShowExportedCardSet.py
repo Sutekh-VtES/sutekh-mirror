@@ -8,8 +8,8 @@
 
 import gtk
 import StringIO
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.SutekhDialog import SutekhDialog

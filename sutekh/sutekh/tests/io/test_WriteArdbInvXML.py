@@ -7,7 +7,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.SutekhInfo import SutekhInfo
 import unittest

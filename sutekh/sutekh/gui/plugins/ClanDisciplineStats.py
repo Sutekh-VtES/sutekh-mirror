@@ -12,8 +12,8 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import (PhysicalCard, Clan, ICardType,
-                                       SutekhAbstractCard, IKeyword)
+from sutekh.base.core.BaseObjects import (PhysicalCard, ICardType, IKeyword)
+from sutekh.core.SutekhObjects import Clan, SutekhAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

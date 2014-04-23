@@ -17,7 +17,7 @@ from sutekh.io.JOLDeckParser import JOLDeckParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
 from sutekh.io.GuessFileParser import GuessFileParser
 from sutekh.io.DataPack import urlopen_with_timeout
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.GuiCardSetFunctions import import_cs

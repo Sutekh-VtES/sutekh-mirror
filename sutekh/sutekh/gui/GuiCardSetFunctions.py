@@ -8,14 +8,14 @@
 import gtk
 import datetime
 import logging
-from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.gui.SutekhDialog import do_complaint_warning, do_complaint, \
         do_complaint_error, do_exception_complaint
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet
-from sutekh.core.CardLookup import LookupFailed
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.CardLookup import LookupFailed
 from sutekh.gui.CreateCardSetDialog import CreateCardSetDialog
 from sutekh.gui.RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
-from sutekh.core.CardSetUtilities import delete_physical_card_set, \
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set, \
         find_children, has_children, detect_loop, get_loop_names, break_loop
 
 

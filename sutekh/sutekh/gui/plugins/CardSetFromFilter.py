@@ -6,7 +6,7 @@
 """Converts a filter into a card set"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, PhysicalCard, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, PhysicalCard, \
         IPhysicalCard, IPhysicalCardSet
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.GuiCardSetFunctions import create_card_set

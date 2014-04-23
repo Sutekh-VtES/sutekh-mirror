@@ -10,9 +10,9 @@ from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.gui.ScrolledList import ScrolledList
 from sutekh.gui.CustomDragIconView import CustomDragIconView
 from sutekh.gui.CardSetsListView import CardSetsListView
-from sutekh.core.FilterParser import get_filters_for_type
-from sutekh.core.FilterBox import FilterBoxItem, FilterBoxModel, BOXTYPE, \
-        BOXTYPE_ORDER
+from sutekh.base.core.FilterParser import get_filters_for_type
+from sutekh.base.core.FilterBox import (FilterBoxItem, FilterBoxModel,
+                                        BOXTYPE, BOXTYPE_ORDER)
 import gobject
 import gtk
 import pango

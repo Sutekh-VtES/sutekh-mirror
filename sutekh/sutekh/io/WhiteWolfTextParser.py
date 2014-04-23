@@ -10,7 +10,8 @@
 import re
 from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
-from sutekh.core.SutekhObjects import SutekhObjectMaker, csv_to_canonical
+from sutekh.core.SutekhObjects import SutekhObjectMaker
+from sutekh.base.Utility import csv_to_canonical
 
 
 def strip_braces(sText):

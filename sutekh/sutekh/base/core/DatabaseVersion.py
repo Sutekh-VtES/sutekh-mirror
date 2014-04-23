@@ -8,7 +8,7 @@
 """Versioning support for Sutekh"""
 
 from sqlobject import sqlhub
-from sutekh.core.SutekhObjects import VersionTable
+from .BaseObjects import VersionTable
 
 
 def _get_connection(oConn):

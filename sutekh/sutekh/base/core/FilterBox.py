@@ -7,8 +7,8 @@
 
 """FilterBox model of the filters. Mainly used in filter editor"""
 
-from sutekh.core.FilterParser import FilterNode, BinOpNode, NotOpNode, \
-        FilterPartNode, escape
+from .FilterParser import (FilterNode, BinOpNode, NotOpNode, FilterPartNode,
+                           escape)
 
 
 class FilterBoxModel(list):

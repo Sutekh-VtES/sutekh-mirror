@@ -7,7 +7,7 @@
 """Parser for JOL deck format"""
 
 import re
-from sutekh.core.SutekhObjects import csv_to_canonical
+from sutekh.base.Utility import csv_to_canonical
 from sutekh.io.IOBase import BaseLineParser
 
 

@@ -136,7 +136,7 @@ class ARDBTextParser(object):
     def __init__(self):
         """Create an ARDBTextParser.
 
-           oHolder is a sutekh.core.CardSetHolder.CardSetHolder object
+           oHolder is a sutekh.base.core.CardSetHolder.CardSetHolder object
            (or similar).
            """
         self._oState = None

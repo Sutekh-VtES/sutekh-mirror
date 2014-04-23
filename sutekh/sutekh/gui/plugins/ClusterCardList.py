@@ -8,9 +8,9 @@
 import gtk
 import random
 import math
-from sutekh.core.SutekhObjects import PhysicalCard, \
-                                      PhysicalCardSet, \
-                                      IPhysicalCard
+from sutekh.base.core.BaseObjects import PhysicalCard, \
+                                         PhysicalCardSet, \
+                                         IPhysicalCard
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow

@@ -7,7 +7,7 @@
 """Display a running total of the cards in a card set"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet, IAbstractCard
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.MessageBus import MessageBus
 from sutekh.SutekhUtility import is_crypt_card

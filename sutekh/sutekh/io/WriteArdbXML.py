@@ -8,7 +8,7 @@
 """Given a list of Abstract Cards in a set, write a XML file compatable with
    the Anarch Revolt Deck Builder."""
 
-from sutekh.core.SutekhObjects import canonical_to_csv
+from sutekh.base.Utility import canonical_to_csv
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.io.IOBase import BaseXMLWriter
 import time

@@ -8,10 +8,13 @@
 import os
 from logging import Logger
 from urllib2 import urlopen, HTTPError
-from sutekh.core.SutekhObjects import Clan, Creed, CardType, DisciplinePair, \
-        Virtue, ICardType, IDisciplinePair, IVirtue, ICreed, IClan
-from sutekh.core import Groupings
-from sutekh.SutekhUtility import ensure_dir_exists
+from sutekh.core.SutekhObjects import (Clan, Creed, DisciplinePair,
+                                       Virtue, IDisciplinePair, IVirtue,
+                                       ICreed, IClan)
+from sutekh.base.core.BaseObjects import CardType, ICardType
+from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
+from sutekh.base.core.BaseGroupings import CardTypeGrouping, MultiTypeGrouping
+from sutekh.base.Utility import ensure_dir_exists
 
 
 # Utilty functions - convert object to a filename
@@ -174,18 +177,18 @@ class IconManager(object):
             return [], []
         aText = []
         aIcons = []
-        if cGrouping is Groupings.CardTypeGrouping:
+        if cGrouping is CardTypeGrouping:
             aText = [sText]
             dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
             # Only 1 icon
             aIcons = dIcons.values()
-        elif cGrouping is Groupings.MultiTypeGrouping:
+        elif cGrouping is MultiTypeGrouping:
             aText = sText.split(' / ')
             dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
             # Do this since we need to have the same order as aText
             aIcons = [dIcons[x] for x in aText]
             aText = " /|".join(aText).split("|")
-        elif cGrouping is Groupings.DisciplineGrouping:
+        elif cGrouping is DisciplineGrouping:
             aText = [sText]
             try:
                 oDisVirt = IDisciplinePair((sText, 'superior'))
@@ -199,7 +202,7 @@ class IconManager(object):
                     aIcons = dIcons.values()
                 except KeyError:
                     aIcons = [None]
-        elif cGrouping is Groupings.ClanGrouping:
+        elif cGrouping is ClanGrouping:
             aText = [sText]
             try:
                 oClanCreed = IClan(sText)

@@ -6,12 +6,12 @@
 """Plugin for exporting to CSV format"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetWrapper
+from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteCSV import WriteCSV
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhFileWidget import ExportDialog
-from sutekh.SutekhUtility import safe_filename
+from sutekh.base.Utility import safe_filename
 
 
 class CardSetExportCSV(SutekhPlugin):

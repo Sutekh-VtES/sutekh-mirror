@@ -6,7 +6,7 @@
 """Tests the Card Set Management Model"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.core import Filters
 from sutekh.gui.CardSetManagementModel import CardSetManagementModel
 

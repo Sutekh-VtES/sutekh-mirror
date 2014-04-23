@@ -12,7 +12,7 @@ from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.gui.SutekhDialog import SutekhDialog, do_exception_complaint
 from sutekh.gui.SutekhFileWidget import add_filter
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
-from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
+from sutekh.base.Utility import prefs_dir, ensure_dir_exists
 import gtk
 import os
 import StringIO

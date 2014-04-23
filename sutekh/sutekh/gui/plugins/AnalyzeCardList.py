@@ -13,9 +13,10 @@
 import gtk
 import logging
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        IAbstractCard, IPhysicalCard, IExpansion, CRYPT_TYPES, IKeyword
-from sutekh.core.Filters import CardTypeFilter, FilterNot, KeywordFilter
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
+                                          IPhysicalCard, IExpansion, IKeyword)
+from sutekh.core.SutekhObjects import CRYPT_TYPES
+from sutekh.base.core.BaseFilters import CardTypeFilter, FilterNot, KeywordFilter
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog

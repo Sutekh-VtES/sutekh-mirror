@@ -8,9 +8,9 @@
 import gtk
 import gobject
 import os
-from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
-from sutekh.core.SutekhObjects import Creed, DisciplinePair, Virtue, Clan, \
-        CardType
+from sutekh.base.Utility import prefs_dir, ensure_dir_exists
+from sutekh.base.core.BaseObjects import CardType
+from sutekh.core.SutekhObjects import Creed, DisciplinePair, Virtue, Clan
 from sutekh.io.IconManager import IconManager
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import do_complaint

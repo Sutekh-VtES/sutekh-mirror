@@ -6,11 +6,11 @@
 """Export a card set to HTML."""
 
 import time
-from sutekh.core.SutekhObjects import IAbstractCard
+from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import pretty_xml, monger_url, secret_library_url, \
-        norm_xml_quotes
+from sutekh.SutekhUtility import monger_url, secret_library_url
+from sutekh.base.Utility import pretty_xml, norm_xml_quotes
 # pylint: disable-msg=F0401, E0611
 # the allowed failures here makes pylint unhappy
 try:

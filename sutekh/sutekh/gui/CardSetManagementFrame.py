@@ -7,7 +7,7 @@
 """Pane for a list of card sets"""
 
 import gtk
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.CardSetManagementController import CardSetManagementController
 from sutekh.gui.CardSetManagementMenu import CardSetManagementMenu

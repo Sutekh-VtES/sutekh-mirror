@@ -16,13 +16,18 @@ from sutekh.gui.CardSetListModel import CardSetCardListModel, \
         NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
         CARD_SETS_AND_EXP, ALL_CARDS, PARENT_CARDS, MINUS_SETS_IN_USE, \
         CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, THIS_SET_ONLY
-from sutekh.core import Filters, Groupings
-from sutekh.core.SutekhObjects import PhysicalCardSet, \
+from sutekh.core import Filters
+from sutekh.core.Groupings import (CryptLibraryGrouping,
+                                   DisciplineGrouping, ClanGrouping)
+from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
+                                            ExpansionGrouping,
+                                            RarityGrouping, NullGrouping)
+from sutekh.base.core.BaseObjects import PhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
 from sutekh.tests.core.test_Filters import make_card
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.core.DBSignals import send_changed_signal
+from sutekh.base.core.DBSignals import send_changed_signal
 from sutekh.gui.MessageBus import MessageBus
 import unittest
 
@@ -402,7 +407,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oListener.iCnt, 2)
         # Only Vampires added
         self.assertEqual(oModel.iter_n_children(None), 1)
-        oModel.groupby = Groupings.NullGrouping
+        oModel.groupby = NullGrouping
         self.assertEqual(self._count_all_cards(oModel), 2)
         self.assertEqual(self._count_second_level(oModel), 2)
         # These tests need the model to be sorted
@@ -524,7 +529,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         """Return a model for the named card set, with the null grouping"""
         oModel = CardSetCardListModel(sName, self.oConfig)
         oModel.hideillegal = False
-        oModel.groupby = Groupings.NullGrouping
+        oModel.groupby = NullGrouping
         return oModel
 
     def _setup_simple(self):
@@ -555,10 +560,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
-        for cGrouping in (Groupings.CryptLibraryGrouping,
-                Groupings.DisciplineGrouping, Groupings.ClanGrouping,
-                Groupings.CardTypeGrouping, Groupings.ExpansionGrouping,
-                Groupings.RarityGrouping):
+        for cGrouping in (CryptLibraryGrouping, DisciplineGrouping,
+                          ClanGrouping, CardTypeGrouping, ExpansionGrouping,
+                          RarityGrouping):
             oModel = self._get_model(self.aNames[0])
             oModel.groupby = cGrouping
             aModels.append(oModel)
@@ -893,8 +897,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        for cGrouping in (Groupings.DisciplineGrouping,
-                Groupings.CardTypeGrouping):
+        for cGrouping in (DisciplineGrouping, CardTypeGrouping):
             for sName in self.aNames[:4]:
                 oModel = self._get_model(sName)
                 oModel.groupby = cGrouping
@@ -1002,7 +1005,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tExpected = (1, 4, 0)
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
-        oModel.groupby = Groupings.DisciplineGrouping
+        oModel.groupby = DisciplineGrouping
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
@@ -1028,7 +1031,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(tTotals, tExpected, 'Wrong results from filter : '
                 '%s vs %s' % (tTotals, tExpected))
         # Add a child card set, and test filtering results
-        oModel.groupby = Groupings.NullGrouping
+        oModel.groupby = NullGrouping
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         # Do this to match how gui code works - this ensures that the
         # caches are cleared properly

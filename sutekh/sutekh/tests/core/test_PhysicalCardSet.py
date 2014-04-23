@@ -6,10 +6,10 @@
 """Test the PhysicalCardSet object handling"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import PhysicalCardSet, IPhysicalCardSet, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
 from sutekh.tests.core.test_Filters import make_card
-from sutekh.core.CardSetUtilities import delete_physical_card_set
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 

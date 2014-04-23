@@ -8,9 +8,9 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
         get_phys_cards
-from sutekh.core.SutekhObjects import IPhysicalCardSet, \
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
-from sutekh.core.CardSetHolder import CardSetHolder
+from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 import unittest

@@ -22,8 +22,9 @@ from itertools import chain
 # pylint: enable-msg=E0611
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.core.SutekhObjects import PhysicalCardSet, flush_cache, \
+from sutekh.base.core.BaseObjects import PhysicalCardSet, \
         PhysicalCard, IAbstractCard
+from sutekh.base.core.DBUtility import flush_cache
 from sutekh.gui.MultiPaneWindow import MultiPaneWindow
 from sutekh.gui.PhysicalCardFrame import PhysicalCardFrame
 from sutekh.gui.CardTextFrame import CardTextFrame

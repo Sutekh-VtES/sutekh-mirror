@@ -6,8 +6,10 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
-from sutekh.core.SutekhObjects import PhysicalCard, AbstractCard
-from sutekh.core import Filters, Groupings
+from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard
+from sutekh.core import Filters
+from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
+from sutekh.core.Groupings import CryptLibraryGrouping
 from sutekh.gui.CardListModel import CardListModel
 from sutekh.gui.MessageBus import MessageBus
 import unittest
@@ -94,7 +96,7 @@ class CardListModelTests(ConfigSutekhTest):
         # The model as an entry for every AbstractCard and entries
         # below that for every PhysicalCard
         # Set grouping to None for these tests
-        oModel.groupby = Groupings.NullGrouping
+        oModel.groupby = NullGrouping
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
                 AbstractCard.select().count())
@@ -107,7 +109,7 @@ class CardListModelTests(ConfigSutekhTest):
                 AbstractCard.select().count())
         self.assertEqual(self._count_expansions(oModel), 0)
         oModel.bExpansions = True
-        oModel.groupby = Groupings.CryptLibraryGrouping
+        oModel.groupby = CryptLibraryGrouping
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
                 AbstractCard.select().count())
@@ -135,7 +137,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(self._count_top_level(oModel), 1)
         self.assertEqual(self._count_expansions(oModel),
                 oModel.get_card_iterator(oModel.selectfilter).count())
-        oModel.groupby = Groupings.CardTypeGrouping
+        oModel.groupby = CardTypeGrouping
         oModel.load()
         self.assertEqual(self._count_top_level(oModel), 1)
         self.assertEqual(self._count_expansions(oModel),

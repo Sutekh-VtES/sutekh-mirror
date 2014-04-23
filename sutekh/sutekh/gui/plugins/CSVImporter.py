@@ -8,7 +8,7 @@
 import gtk
 import csv
 import gobject
-from sutekh.core.SutekhObjects import PhysicalCardSet
+from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.io.CSVParser import CSVParser
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error

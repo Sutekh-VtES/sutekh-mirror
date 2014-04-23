@@ -9,7 +9,7 @@
 
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
                                     do_complaint_buttons
-from sutekh.core import FilterParser
+from sutekh.base.core import FilterParser
 from sutekh.gui.ConfigFile import WW_CARDLIST, CARDSET, DEF_PROFILE_FILTER
 from sutekh.gui.MessageBus import MessageBus, CONFIG_MSG
 from sutekh.gui.FilterEditor import FilterEditor

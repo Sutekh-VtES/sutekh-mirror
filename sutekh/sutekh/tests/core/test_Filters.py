@@ -7,13 +7,12 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.core.SutekhObjects import AbstractCard, IAbstractCard, \
+from sutekh.base.core.BaseObjects import AbstractCard, IAbstractCard, \
         AbstractCardAdapter, PhysicalCard, PhysicalCardAdapter, \
         Expansion, ExpansionAdapter, PhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard
 from sutekh.core import Filters
 from sqlobject import SQLObjectNotFound
-from sutekh.core.CardLookup import best_guess_filter
 import unittest
 
 
@@ -716,7 +715,7 @@ class FilterTests(SutekhTest):
                 ('Path of Blood, The', [u'The Path of Blood']),
                 ]
         for sGuess, aExpectedNames in aTests:
-            oFilter = best_guess_filter(sGuess)
+            oFilter = Filters.best_guess_filter(sGuess)
             aNames = sorted([x.name for x in oFilter.select(AbstractCard)])
             self.assertEqual(aNames, aExpectedNames,
                     '%s != expected %s for guess %s' % (aNames, aExpectedNames,

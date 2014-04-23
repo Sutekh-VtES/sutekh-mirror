@@ -10,7 +10,8 @@ import re
 from logging import Logger
 from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
         LogState, LogStateWithInfo
-from sutekh.core.SutekhObjects import IAbstractCard, SutekhObjectMaker
+from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.core.SutekhObjects import SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
 
 
