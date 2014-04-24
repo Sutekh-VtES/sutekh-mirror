@@ -9,7 +9,7 @@
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
 
-from sutekh.base.core.BaseAbbrevations import AbbreviationLookup
+from sutekh.base.core.BaseAbbreviations import AbbreviationLookup
 
 # Abbreviation Lookups
 
