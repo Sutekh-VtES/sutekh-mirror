@@ -11,7 +11,7 @@ from sutekh.SutekhUtility import read_white_wolf_list, read_rulings
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
 from sutekh.tests.TestCore import SutekhTest, make_null_handler
-from sutekh.io.WwFile import WwFile
+from sutekh.base.io.EncodedFile import EncodedFile
 from sqlobject import sqlhub, connectionForURI
 import tempfile
 import os
@@ -38,8 +38,8 @@ def create_db():
     sRulings = _create_pkg_tmp_file(TEST_RULINGS)
 
     oLogHandler = make_null_handler()
-    read_white_wolf_list([WwFile(sCardList)], oLogHandler)
-    read_rulings([WwFile(sRulings)], oLogHandler)
+    read_white_wolf_list([EncodedFile(sCardList)], oLogHandler)
+    read_rulings([EncodedFile(sRulings)], oLogHandler)
 
     os.remove(sRulings)
     os.remove(sCardList)

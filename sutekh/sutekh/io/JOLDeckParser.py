@@ -8,7 +8,7 @@
 
 import re
 from sutekh.base.Utility import csv_to_canonical
-from sutekh.io.IOBase import BaseLineParser
+from sutekh.base.io.IOBase import BaseLineParser
 
 
 class JOLDeckParser(BaseLineParser):

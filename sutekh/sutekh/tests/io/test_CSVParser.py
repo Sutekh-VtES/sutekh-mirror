@@ -7,7 +7,7 @@
 
 import unittest
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.io.CSVParser import CSVParser
+from sutekh.base.io.CSVParser import CSVParser
 from sutekh.tests.io.test_WriteCSV import EXPECTED_1, EXPECTED_2, EXPECTED_3, \
         EXPECTED_4
 

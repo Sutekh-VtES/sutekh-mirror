@@ -9,7 +9,7 @@
 import gtk
 from sutekh.gui.SutekhDialog import SutekhDialog
 from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
-from sutekh.io.WwFile import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
+from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
                               EXP_DATE_URL)
 
 

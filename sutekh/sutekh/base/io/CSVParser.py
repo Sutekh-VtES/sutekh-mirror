@@ -20,7 +20,7 @@ class CSVParser(object):
     # pylint: disable-msg=R0913
     # we may need all these arguments for some files
     def __init__(self, iCardNameColumn, iCountColumn, iExpansionColumn=None,
-            bHasHeader=True):
+                 bHasHeader=True):
         self.iCardNameColumn = iCardNameColumn
         self.oCS = None
         self.iCountColumn = iCountColumn
@@ -40,7 +40,7 @@ class CSVParser(object):
         except ValueError:
             iCount = 1
             self.oCS.add_warning("Count for '%s' could not be determined and"
-                                    " was set to one." % (sName,))
+                                 " was set to one." % (sName,))
 
         if self.iExpansionColumn is not None:
             sExpansionName = aRow[self.iExpansionColumn].strip()
@@ -63,4 +63,4 @@ class CSVParser(object):
                 self._process_row(aRow)
             except ValueError, oExp:
                 raise ValueError("Line %d in CSV file could not be parsed"
-                        " (%s)" % (oCsvFile.line_num, oExp))
+                                 " (%s)" % (oCsvFile.line_num, oExp))

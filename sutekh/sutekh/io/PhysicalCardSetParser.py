@@ -24,7 +24,7 @@
    into a PhysicalCardSet.
    """
 
-from sutekh.io.IOBase import BaseSutekhXMLParser
+from sutekh.io.BaseSutekhXMLParser import BaseSutekhXMLParser
 from sutekh.base.core.BaseObjects import MAX_ID_LENGTH
 
 

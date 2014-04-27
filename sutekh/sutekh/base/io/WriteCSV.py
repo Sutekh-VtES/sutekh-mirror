@@ -5,7 +5,7 @@
 
 """Writer for the CSV format.
 
-   Example:
+   Example (for VtES):
 
    "Card Name", "Expansion", "Number"
    "Aabbt Kindred","Final Nights", 2

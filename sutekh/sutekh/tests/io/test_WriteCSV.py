@@ -7,7 +7,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.io.WriteCSV import WriteCSV
+from sutekh.base.io.WriteCSV import WriteCSV
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 import unittest
 

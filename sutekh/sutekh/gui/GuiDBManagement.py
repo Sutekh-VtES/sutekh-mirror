@@ -18,7 +18,7 @@ from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint, \
         do_complaint_warning, do_exception_complaint, \
         do_complaint_error_details
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.io.WwFile import WwFile
+from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.core.SutekhObjects import TABLE_LIST
 from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
@@ -148,29 +148,29 @@ def _get_names(oWin, bDisableBackup):
     oWWFilesDialog.destroy()
     if sCLFileName is not None:
         if isinstance(sCLFileName, list):
-            aCLFile = [WwFile(x, bUrl=bCLIsUrl) for x in sCLFileName]
+            aCLFile = [EncodedFile(x, bUrl=bCLIsUrl) for x in sCLFileName]
         else:
-            aCLFile = [WwFile(sCLFileName, bUrl=bCLIsUrl)]
+            aCLFile = [EncodedFile(sCLFileName, bUrl=bCLIsUrl)]
     else:
         aCLFile = None
     if sExtraFileName is not None:
-        oExtraFile = WwFile(sExtraFileName, bUrl=bExtraIsUrl)
+        oExtraFile = EncodedFile(sExtraFileName, bUrl=bExtraIsUrl)
     else:
         oExtraFile = None
     if sRulingsFileName is not None:
         if isinstance(sRulingsFileName, list):
-            aRulingsFiles = [WwFile(x, bUrl=bRulingsIsUrl) for x in
+            aRulingsFiles = [EncodedFile(x, bUrl=bRulingsIsUrl) for x in
                     sRulingsFileName]
         else:
-            aRulingsFiles = [WwFile(sRulingsFileName, bUrl=bRulingsIsUrl)]
+            aRulingsFiles = [EncodedFile(sRulingsFileName, bUrl=bRulingsIsUrl)]
     else:
         aRulingsFiles = None
     if sExpDateFileName is not None:
         if isinstance(sExpDateFileName, list):
-            aExpDateFiles = [WwFile(x, bUrl=bExpDateIsUrl) for x in
+            aExpDateFiles = [EncodedFile(x, bUrl=bExpDateIsUrl) for x in
                     sExpDateFileName]
         else:
-            aExpDateFiles = [WwFile(sExpDateFileName, bUrl=bExpDateIsUrl)]
+            aExpDateFiles = [EncodedFile(sExpDateFileName, bUrl=bExpDateIsUrl)]
     else:
         aExpDateFiles = None
 

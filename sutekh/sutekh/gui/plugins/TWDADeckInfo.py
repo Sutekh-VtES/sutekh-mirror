@@ -19,8 +19,8 @@ from sutekh.gui.SutekhDialog import (SutekhDialog, do_exception_complaint,
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                find_children, has_children)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.io.DataPack import (find_all_data_packs, DOC_URL,
-                                urlopen_with_timeout, fetch_data)
+from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data
+from sutekh.io.DataPack import find_all_data_packs, DOC_URL
 from sutekh.gui.GuiCardSetFunctions import (reparent_all_children,
                                             update_open_card_sets)
 from sutekh.gui.FileOrUrlWidget import FileOrUrlWidget

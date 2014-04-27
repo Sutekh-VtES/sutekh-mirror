@@ -7,7 +7,7 @@
 
 import gtk
 import os.path
-from sutekh.io.WwFile import WwFile
+from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.gui.SutekhFileWidget import SutekhFileButton
 from sutekh.gui.GuiDataPack import gui_error_handler, progress_fetch_data
@@ -137,13 +137,13 @@ class FileOrUrlWidget(gtk.VBox):
             return None, False
 
     def get_wwfile_data(self):
-        """Open the selected file as a WwFile and retrieve the data.
+        """Open the selected file as a EncodedFile and retrieve the data.
 
            Will attempt to display a progress dialog if the file is a URL.
            """
         sUrl, bUrl = self.get_file_or_url()
 
-        oFile = WwFile(sUrl, bUrl=bUrl).open()
+        oFile = EncodedFile(sUrl, bUrl=bUrl).open()
 
         return progress_fetch_data(oFile)
 

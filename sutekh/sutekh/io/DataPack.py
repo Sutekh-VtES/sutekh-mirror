@@ -12,53 +12,13 @@
 import urllib2
 import socket
 import re
-from logging import Logger
-try:
-    # pylint: disable-msg=E0611
-    # E0611: hashlib is strange, and confuses pylint
-    from hashlib import sha256
-    # pylint: enable-msg=E0611
-except ImportError:
-    # Python2.4 doesn't have hashlib, so we just skip the checks
-    # pylint: disable-msg=C0103
-    # C0103: Using the module name here
-    sha256 = None
-    # pylint: enable-msg=C0103
 
+from sutekh.base.io.UrlOps import urlopen_with_timeout
 
 DOC_URL = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
           'UserDocumentation?format=txt'
 
 ZIP_URL_BASE = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
-
-
-class HashError(Exception):
-    """Thrown when a checksum check fails"""
-
-    def __init__(self, sData):
-        super(HashError, self).__init__("Checksum comparison failed")
-        # This is a bit ugly.  We shove the data here so it's easy to
-        # add ignore choices without retrying the download in the gui
-        self.sData = sData
-
-
-def urlopen_with_timeout(sUrl, fErrorHandler=None):
-    """Wrap urllib2.urlopen to handle timeouts nicely"""
-    # Note: The global timeout is currently set to the
-    # config value at startup
-    try:
-        return urllib2.urlopen(sUrl)
-    except urllib2.URLError, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-        else:
-            raise
-    except socket.timeout, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-        else:
-            raise
-    return None
 
 
 def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
@@ -162,68 +122,3 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
         # No hash
         return aZipUrls[-1], None
     return aZipUrls[-1], aHashes[-1]
-
-
-def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
-        fErrorHandler=None):
-    """Fetch data from a file'ish object (WwFile, urlopen or file)"""
-    try:
-        if hasattr(oFile, 'info') and callable(oFile.info):
-            sLength = oFile.info().getheader('Content-Length')
-        else:
-            sLength = None
-
-        if sLength:
-            oLogger = Logger('Sutekh data fetcher')
-            if oLogHandler is not None:
-                oLogger.addHandler(oLogHandler)
-            aData = []
-            iLength = int(sLength)
-            if hasattr(oLogHandler, 'set_total'):
-                # We promote to next integer, as we emit a signal
-                # for any left over bits
-                oLogHandler.set_total((iLength + 9999) // 10000)
-            iTotal = 0
-            bCont = True
-            while bCont:
-                sInf = oFile.read(10000)
-                iTotal += len(sInf)
-                if sInf:
-                    oLogger.info('%d downloaded', iTotal)
-                    if oOutFile:
-                        oOutFile.write(sInf)
-                    else:
-                        aData.append(sInf)
-                else:
-                    bCont = False
-            if oOutFile:
-                sData = None
-            else:
-                sData = ''.join(aData)
-        else:
-            # Just try and download
-            if oOutFile:
-                oOutFile.write(oFile.read())
-                sData = None
-            else:
-                sData = oFile.read()
-    except urllib2.URLError, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-            sData = None
-        else:
-            raise
-    except socket.timeout, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-            sData = None
-        else:
-            raise
-
-    if sHash is not None and sha256 is not None:
-        if sData is not None:
-            # Only check has if we have data
-            sDataHash = sha256(sData).hexdigest()
-            if sDataHash != sHash:
-                raise HashError(sData)
-    return sData

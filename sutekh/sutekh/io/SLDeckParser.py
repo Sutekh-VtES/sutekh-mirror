@@ -33,7 +33,7 @@
 
 import re
 from sutekh.base.Utility import csv_to_canonical
-from sutekh.io.IOBase import CardSetParser
+from sutekh.base.io.IOBase import CardSetParser
 
 
 class SLDeckParser(CardSetParser):

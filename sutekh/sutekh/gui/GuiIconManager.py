@@ -9,8 +9,6 @@ import gtk
 import gobject
 import os
 from sutekh.base.Utility import prefs_dir, ensure_dir_exists
-from sutekh.base.core.BaseObjects import CardType
-from sutekh.core.SutekhObjects import Creed, DisciplinePair, Virtue, Clan
 from sutekh.io.IconManager import IconManager
 from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from sutekh.gui.SutekhDialog import do_complaint
@@ -52,7 +50,7 @@ def _crop_alpha(oPixbuf):
         # No transparency found
         return oPixbuf
     return oPixbuf.subpixbuf(iMinX + 1, iMinY + 1, iMaxX - iMinX,
-            iMaxY - iMinY)
+                             iMaxY - iMinY)
 
 
 class GuiIconManager(IconManager):
@@ -90,7 +88,7 @@ class GuiIconManager(IconManager):
             elif iPixHeight > iPixWidth:
                 iWidth = int(iSize / fAspect)
             oPixbuf = oPixbuf.scale_simple(iWidth, iHeight,
-                    gtk.gdk.INTERP_TILES)
+                                           gtk.gdk.INTERP_TILES)
         except gobject.GError:
             oPixbuf = None
         self._dIconCache[sFileName] = oPixbuf
@@ -142,8 +140,6 @@ class GuiIconManager(IconManager):
         oProgressDialog.set_description("Downloading icons")
         oLogHandler.set_dialog(oProgressDialog)
         oProgressDialog.show()
-        oLogHandler.set_total(Creed.select().count() +
-                DisciplinePair.select().count() + Clan.select().count() +
-                Virtue.select().count() + CardType.select().count() + 2)
+        oLogHandler.set_total(self.get_icon_total)
         self.download_icons(oLogHandler)
         oProgressDialog.destroy()

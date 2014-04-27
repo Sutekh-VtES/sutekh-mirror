@@ -10,7 +10,8 @@ import unittest
 import urllib2
 import socket
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.io.DataPack import find_data_pack, find_all_data_packs, fetch_data
+from sutekh.io.DataPack import find_data_pack, find_all_data_packs
+from sutekh.base.io.UrlOps import fetch_data
 
 TEST_DATA = """
 = User Documentation =

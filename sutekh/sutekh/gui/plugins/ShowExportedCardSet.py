@@ -19,7 +19,7 @@ from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.WritePmwiki import WritePmwiki
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
-from sutekh.io.WriteCSV import WriteCSV
+from sutekh.base.io.WriteCSV import WriteCSV
 
 
 class ShowExported(SutekhPlugin):

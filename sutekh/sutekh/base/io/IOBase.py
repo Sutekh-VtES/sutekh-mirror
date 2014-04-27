@@ -7,7 +7,7 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
-from sutekh.base.Utility import pretty_xml, norm_xml_quotes
+from ..Utility import pretty_xml, norm_xml_quotes
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:
@@ -96,25 +96,26 @@ class BaseXMLParser(object):
         self._convert_tree(oHolder)
 
 
-class BaseSutekhXMLParser(BaseXMLParser):
+class BaseCardXMLParser(BaseXMLParser):
     # pylint: disable-msg=W0223
-    # Doesn't matter that we don't overrider _convert_tree - subclasses will
+    # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
-    """Base class for Sutekh XML files.
+    """Base class for cardset XML files.
 
        Adds version checking helper functions and such"""
 
     # Sub-classes override these
     aSupportedVersions = []
     sTypeTag = "none"
-    sTypeName = "Sutekh XML"
+    sTypeName = "cardset XML"
+    sVersionTag = "none"
 
     def _check_tree(self):
         """Check if the tree is valid"""
         oRoot = self._oTree.getroot()
         if oRoot.tag != self.sTypeTag:
             raise IOError("Not a %s XML File" % self.sTypeName)
-        if oRoot.attrib['sutekh_xml_version'] not in self.aSupportedVersions:
+        if oRoot.attrib[self.sVersionTag] not in self.aSupportedVersions:
             raise IOError("Unrecognised %s File version" % self.sTypeName)
 
     # pylint: disable-msg=R0201

@@ -11,7 +11,7 @@
 import string
 from sutekh.base.core.BaseObjects import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
-from sutekh.io.IOBase import BaseLineParser
+from sutekh.base.io.IOBase import BaseLineParser
 
 
 def gen_name_lookups():

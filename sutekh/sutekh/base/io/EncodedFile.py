@@ -10,19 +10,6 @@ import codecs
 import urllib2
 import logging
 
-#WW_CARDLIST_URL = "http://www.vekn.net/images/stories/downloads/cardlist.txt"
-WW_CARDLIST_URL = "http://bitbucket.org/hodgestar/sutekh-extras/" \
-        "raw/tip/CardList/cardlist-data/cardlist.txt"
-
-EXTRA_CARD_URL = "http://bitbucket.org/hodgestar/sutekh-extras/" \
-        "raw/tip/extra_list.txt"
-
-WW_RULINGS_URL = ["http://bitbucket.org/hodgestar/sutekh-extras/"
-        "raw/tip/Rulebooks/rulebook-data/rulings.html"]
-
-EXP_DATE_URL = "http://bitbucket.org/hodgestar/sutekh-extras/" \
-        "raw/tip/ExpansionDates/expansion-data/expansiondates.csv"
-
 
 def guess_encoding(sData, sFile):
     """Try to determine the correct encoding from the data"""
@@ -43,8 +30,8 @@ def guess_encoding(sData, sFile):
     raise RuntimeError('Unable to indentify correct encoding for %s' % sFile)
 
 
-class WwFile(object):
-    """WwFile is a convenience class which has an .open(..) method which
+class EncodedFile(object):
+    """EncodedFile is a convenience class which has an .open(..) method which
        returns a file-like object with the encoding set correctly.
        """
 
@@ -56,7 +43,8 @@ class WwFile(object):
         self.bFileObj = bFileObj
 
         if bUrl and bFileObj:
-            raise ValueError("WwFile cannot be both a URL and a fileobject")
+            raise ValueError(
+                "EncodedFile cannot be both a URL and a fileobject")
 
     # pylint: enable-msg=C0103
 
@@ -73,11 +61,11 @@ class WwFile(object):
             sFileEnc = guess_encoding(sData, self.sfFile)
             oFile.close()
             return codecs.EncodedFile(urllib2.urlopen(self.sfFile), 'utf8',
-                    sFileEnc)
+                                      sFileEnc)
         else:
             oFile = open(self.sfFile, 'rU')
             sData = oFile.read(1000)
             sFileEnc = guess_encoding(sData, self.sfFile)
             oFile.close()
             return codecs.EncodedFile(open(self.sfFile, 'rU'), 'utf8',
-                    sFileEnc)
+                                      sFileEnc)

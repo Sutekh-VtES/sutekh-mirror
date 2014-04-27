@@ -9,7 +9,7 @@
 
 import re
 from sutekh.core.ELDBUtilities import gen_name_lookups
-from sutekh.io.IOBase import BaseLineParser
+from sutekh.base.io.IOBase import BaseLineParser
 
 
 class ELDBInventoryParser(BaseLineParser):

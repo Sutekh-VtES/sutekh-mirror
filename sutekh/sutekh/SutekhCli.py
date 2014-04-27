@@ -37,8 +37,9 @@ from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         write_all_pcs
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.io.WwFile import WwFile, WW_CARDLIST_URL, WW_RULINGS_URL, \
-        EXTRA_CARD_URL, EXP_DATE_URL
+from sutekh.base.io.EncodedFile import EncodedFile
+from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
+                              EXTRA_CARD_URL, EXP_DATE_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -306,23 +307,23 @@ def main_with_args(aTheArgs):
             return 1
 
     if not oOpts.ww_file is None:
-        read_white_wolf_list([WwFile(oOpts.ww_file)], oLogHandler)
+        read_white_wolf_list([EncodedFile(oOpts.ww_file)], oLogHandler)
 
     if not oOpts.extra_file is None:
-        read_white_wolf_list([WwFile(oOpts.extra_file)], oLogHandler)
+        read_white_wolf_list([EncodedFile(oOpts.extra_file)], oLogHandler)
 
     if not oOpts.date_file is None:
-        read_exp_date_list([WwFile(oOpts.date_file)], oLogHandler)
+        read_exp_date_list([EncodedFile(oOpts.date_file)], oLogHandler)
 
     if not oOpts.ruling_file is None:
-        read_rulings([WwFile(oOpts.ruling_file)], oLogHandler)
+        read_rulings([EncodedFile(oOpts.ruling_file)], oLogHandler)
 
     if oOpts.fetch:
-        read_white_wolf_list([WwFile(WW_CARDLIST_URL, True)], oLogHandler)
-        aRulings = [WwFile(sUrl, True) for sUrl in WW_RULINGS_URL]
+        read_white_wolf_list([EncodedFile(WW_CARDLIST_URL, True)], oLogHandler)
+        aRulings = [EncodedFile(sUrl, True) for sUrl in WW_RULINGS_URL]
         read_rulings(aRulings, oLogHandler)
-        read_white_wolf_list([WwFile(EXTRA_CARD_URL, True)], oLogHandler)
-        read_exp_date_list([WwFile(EXP_DATE_URL, True)], oLogHandler)
+        read_white_wolf_list([EncodedFile(EXTRA_CARD_URL, True)], oLogHandler)
+        read_exp_date_list([EncodedFile(EXP_DATE_URL, True)], oLogHandler)
 
     if not oOpts.read_physical_cards_from is None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)

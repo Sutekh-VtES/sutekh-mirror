@@ -5,16 +5,13 @@
 
 """Manage the icons from the WW site"""
 
-import os
-from logging import Logger
-from urllib2 import urlopen, HTTPError
 from sutekh.core.SutekhObjects import (Clan, Creed, DisciplinePair,
                                        Virtue, IDisciplinePair, IVirtue,
                                        ICreed, IClan)
 from sutekh.base.core.BaseObjects import CardType, ICardType
 from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
 from sutekh.base.core.BaseGroupings import CardTypeGrouping, MultiTypeGrouping
-from sutekh.base.Utility import ensure_dir_exists
+from sutekh.base.io.BaseIconManager import BaseIconManager
 
 
 # Utilty functions - convert object to a filename
@@ -93,7 +90,7 @@ def _get_virtue_filename(oVirtue):
     return sFileName
 
 
-class IconManager(object):
+class IconManager(BaseIconManager):
     """Manager for the VTES Icons.
 
        Given the text and the tag name, look up the suitable matching icon
@@ -105,18 +102,7 @@ class IconManager(object):
     sBaseUrl = "http://www.vekn.net/images/stories/icons/"
 
     def __init__(self, sPath):
-        self._sPrefsDir = sPath
-
-    # pylint: disable-msg=R0201
-    # R0201: This exists to be overridden
-    def _get_icon(self, sFileName, _iSize=12):
-        """Return the icon.
-
-           This is so subclasses can override it to return the
-           appropriate thing rather than a filename."""
-        return sFileName
-
-    # pylint: enable-msg=R0201
+        super(IconManager, self).__init__(sPath)
 
     def _get_clan_icons(self, aValues):
         """Get the icons for the clans"""
@@ -236,43 +222,28 @@ class IconManager(object):
             dIcons = self._get_creed_icons(aValues)
         return dIcons
 
+    def get_icon_total(self):
+        """Total number of icons we must download"""
+        return (Creed.select().count() + DisciplinePair.select().count() +
+                Clan.select().count() + Virtue.select().count() +
+                CardType.select().count() + 2)
+
     def download_icons(self, oLogHandler=None):
         """Download the icons from the WW site"""
-        def download(sFileName, oLogger):
-            """Download the icon and save it in the icons directory"""
-            if not sFileName:
-                oLogger.info('Processed non-icon')
-                return
-            sFullFilename = os.path.join(self._sPrefsDir, sFileName)
-            sBaseDir = os.path.dirname(sFullFilename)
-            sUrl = self.sBaseUrl + sFileName
-            try:
-                oUrl = urlopen(sUrl)
-                # copy url to file
-                ensure_dir_exists(sBaseDir)
-                fOut = file(sFullFilename, 'wb')
-                fOut.write(oUrl.read())
-                fOut.close()
-            except HTTPError, oErr:
-                print 'Unable to download %s: Error %s' % (sUrl, oErr)
-            oLogger.info('Processed %s' % sFileName)
         # We use the names as from the WW site - this is not
         # ideal, but simpler than maintaining multiple names for each
         # icon.
-        ensure_dir_exists(self._sPrefsDir)
-        oLogger = Logger('Download Icons')
-        if oLogHandler is not None:
-            oLogger.addHandler(oLogHandler)
+        oLogger = self._make_logger(oLogHandler)
         for oCreed in Creed.select():
-            download(_get_creed_filename(oCreed), oLogger)
+            self._download(_get_creed_filename(oCreed), oLogger)
         for oDiscipline in DisciplinePair.select():
-            download(_get_discipline_filename(oDiscipline), oLogger)
+            self._download(_get_discipline_filename(oDiscipline), oLogger)
         for oClan in Clan.select():
-            download(_get_clan_filename(oClan), oLogger)
+            self._download(_get_clan_filename(oClan), oLogger)
         for oVirtue in Virtue.select():
-            download(_get_virtue_filename(oVirtue), oLogger)
+            self._download(_get_virtue_filename(oVirtue), oLogger)
         for oType in CardType.select():
-            download(_get_card_type_filename(oType), oLogger)
+            self._download(_get_card_type_filename(oType), oLogger)
         # download the special cases
-        download('misc/iconmiscburnoption.gif', oLogger)
-        download('misc/iconmiscadvanced.gif', oLogger)
+        self._download('misc/iconmiscburnoption.gif', oLogger)
+        self._download('misc/iconmiscadvanced.gif', oLogger)

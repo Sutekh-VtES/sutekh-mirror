@@ -20,7 +20,7 @@
    </physicalcardset>
    """
 
-from sutekh.io.IOBase import BaseXMLWriter
+from sutekh.base.io.IOBase import BaseXMLWriter
 # pylint: disable-msg=E0611, F0401
 # xml.etree is a python2.5 thing
 try:

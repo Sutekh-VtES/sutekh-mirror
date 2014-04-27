@@ -16,7 +16,7 @@
    into the default PhysicalCardSet 'My Collection'.
    """
 
-from sutekh.io.IOBase import BaseSutekhXMLParser
+from sutekh.io.BaseSutekhXMLParser import BaseSutekhXMLParser
 
 
 class PhysicalCardParser(BaseSutekhXMLParser):
