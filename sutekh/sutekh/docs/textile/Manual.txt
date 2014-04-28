@@ -563,7 +563,7 @@ If the card set is editable, you can delete the current selection using
 *&lt;Ctrl&gt;-V*.
 
 In an editable card set, you can set the count for all the cards in a selection
-to a number from one to ten by typing the number directly. You can increment
+to a number from one to nine by typing the number directly. You can increment
 and decrement the count for all the cards in a selection using *+* and *-*. If
 the card set is not editable, these keys have no effect.
 
