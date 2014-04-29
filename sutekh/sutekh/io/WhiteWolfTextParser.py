@@ -603,6 +603,8 @@ class CardDict(dict):
         # the parent here.
         # It's not clear to me if this is a bug in SQLObject or not, given
         # the logic that requires us to force the update to oCard here anyway.
+        # pylint: disable-msg=W0212
+        # Need to access _parent here
         oCard._parent.syncUpdate()
         # FIXME: Pass back any error confitions? Missing text, etc.
 
