@@ -9,13 +9,23 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
-from sutekh.gui.ConfigFile import CARDSET, FRAME
-from sutekh.gui.CardSetListModel import CardSetCardListModel, \
-        EXTRA_LEVEL_OPTION, EXTRA_LEVEL_LOOKUP, SHOW_CARD_OPTION, \
-        SHOW_CARD_LOOKUP, PARENT_COUNT_MODE, PARENT_COUNT_LOOKUP, \
-        NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
-        CARD_SETS_AND_EXP, ALL_CARDS, PARENT_CARDS, MINUS_SETS_IN_USE, \
-        CHILD_CARDS, IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, THIS_SET_ONLY
+from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
+from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
+                                              EXTRA_LEVEL_OPTION,
+                                              EXTRA_LEVEL_LOOKUP,
+                                              SHOW_CARD_OPTION,
+                                              SHOW_CARD_LOOKUP,
+                                              PARENT_COUNT_MODE,
+                                              PARENT_COUNT_LOOKUP,
+                                              NO_SECOND_LEVEL,
+                                              SHOW_EXPANSIONS,
+                                              SHOW_CARD_SETS,
+                                              EXP_AND_CARD_SETS,
+                                              CARD_SETS_AND_EXP, ALL_CARDS,
+                                              PARENT_CARDS,
+                                              MINUS_SETS_IN_USE, CHILD_CARDS,
+                                              IGNORE_PARENT, PARENT_COUNT,
+                                              MINUS_THIS_SET, THIS_SET_ONLY)
 from sutekh.core import Filters
 from sutekh.core.Groupings import (CryptLibraryGrouping,
                                    DisciplineGrouping, ClanGrouping)
@@ -28,7 +38,7 @@ from sutekh.tests.core.test_Filters import make_card
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.base.core.DBSignals import send_changed_signal
-from sutekh.gui.MessageBus import MessageBus
+from sutekh.base.gui.MessageBus import MessageBus
 import unittest
 
 

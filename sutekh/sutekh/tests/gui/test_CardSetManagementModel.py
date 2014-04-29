@@ -8,7 +8,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.core import Filters
-from sutekh.gui.CardSetManagementModel import CardSetManagementModel
+from sutekh.base.gui.CardSetManagementModel import CardSetManagementModel
 
 
 class DummyWindow(object):

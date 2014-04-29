@@ -16,12 +16,13 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
                                           IPhysicalCard, IExpansion, IKeyword)
 from sutekh.core.SutekhObjects import CRYPT_TYPES
-from sutekh.base.core.BaseFilters import CardTypeFilter, FilterNot, KeywordFilter
+from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
+                                          KeywordFilter)
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog
-from sutekh.gui.MultiSelectComboBox import MultiSelectComboBox
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.base.gui.SutekhDialog import SutekhDialog
+from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
+from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
 try:
     THIRD_ED = IExpansion('Third Edition')

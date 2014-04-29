@@ -9,7 +9,7 @@
 import gtk
 from sutekh.base.core.BaseObjects import PhysicalCard, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.MessageBus import MessageBus
+from sutekh.base.gui.MessageBus import MessageBus
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.plugins.CountCardSetCards import TOT_FORMAT, TOT_TOOLTIP, \
         TOTAL, CRYPT, LIB

@@ -11,8 +11,8 @@ from copy import copy
 from random import choice
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.core.BaseFilters import (MultiCardTypeFilter,
                                          CardTypeFilter, FilterNot)
 from sutekh.core.Filters import CryptCardFilter, CardFunctionFilter

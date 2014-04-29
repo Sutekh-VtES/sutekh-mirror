@@ -6,8 +6,10 @@
 
 import gtk
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY, \
-        SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT
+from sutekh.base.gui.CellRendererIcons import (CellRendererIcons,
+                                               SHOW_TEXT_ONLY,
+                                               SHOW_ICONS_ONLY,
+                                               SHOW_ICONS_AND_TEXT)
 from sutekh.base.core.BaseObjects import PhysicalCard, PhysicalCardSet
 from sqlobject import SQLObjectNotFound
 

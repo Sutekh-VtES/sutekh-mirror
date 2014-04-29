@@ -10,8 +10,8 @@ from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard
 from sutekh.core import Filters
 from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
 from sutekh.core.Groupings import CryptLibraryGrouping
-from sutekh.gui.CardListModel import CardListModel
-from sutekh.gui.MessageBus import MessageBus
+from sutekh.base.gui.CardListModel import CardListModel
+from sutekh.base.gui.MessageBus import MessageBus
 import unittest
 
 

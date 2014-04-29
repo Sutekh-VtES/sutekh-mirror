@@ -9,8 +9,8 @@ from sutekh.base.core.BaseObjects import PhysicalCardSet, IExpansion, \
         IPhysicalCard, IAbstractCard, MapPhysicalCardToPhysicalCardSet
 from sutekh.base.core.DBSignals import send_changed_signal
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.ScrolledList import ScrolledList
 
 
 class SetCardExpansions(SutekhPlugin):

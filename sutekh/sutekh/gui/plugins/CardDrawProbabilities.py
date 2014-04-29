@@ -10,9 +10,9 @@ from copy import copy
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
-        do_complaint_warning
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.base.gui.SutekhDialog import (SutekhDialog, do_complaint_error,
+                                          do_complaint_warning)
+from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
 
 def _choose(iChoices, iTotal):

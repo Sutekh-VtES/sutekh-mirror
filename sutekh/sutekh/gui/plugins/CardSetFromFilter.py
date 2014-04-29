@@ -9,7 +9,7 @@ import gtk
 from sutekh.base.core.BaseObjects import PhysicalCardSet, PhysicalCard, \
         IPhysicalCard, IPhysicalCardSet
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.GuiCardSetFunctions import create_card_set
+from sutekh.base.gui.GuiCardSetFunctions import create_card_set
 
 
 class DeckFromFilter(SutekhPlugin):

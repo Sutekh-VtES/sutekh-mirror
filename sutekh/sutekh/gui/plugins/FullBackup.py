@@ -5,10 +5,11 @@
 """Plugin to wrap zipfile backup and restore methods"""
 
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import do_complaint_warning, \
-        do_exception_complaint
-from sutekh.gui.SutekhFileWidget import ZipFileDialog
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
+from sutekh.base.gui.SutekhDialog import (do_complaint_warning,
+                                          do_exception_complaint)
+from sutekh.base.gui.SutekhFileWidget import ZipFileDialog
+from sutekh.base.gui.ProgressDialog import (ProgressDialog,
+                                            SutekhCountLogHandler)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.core.DBUtility import get_cs_id_name_table
 import gtk

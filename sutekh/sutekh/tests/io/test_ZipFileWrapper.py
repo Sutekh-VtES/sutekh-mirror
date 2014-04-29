@@ -14,7 +14,7 @@ from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
 from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.ProgressDialog import SutekhCountLogHandler
+from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 import unittest
 import zipfile

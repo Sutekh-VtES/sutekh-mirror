@@ -9,13 +9,14 @@ import gobject
 import os
 from logging import Logger
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error, \
-        do_exception_complaint
-from sutekh.gui.SutekhFileWidget import ZipFileDialog
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
-from sutekh.gui.ScrolledList import ScrolledList
+from sutekh.base.gui.SutekhDialog import (SutekhDialog, do_complaint_error,
+                                          do_exception_complaint)
+from sutekh.base.gui.SutekhFileWidget import ZipFileDialog
+from sutekh.base.gui.ProgressDialog import (ProgressDialog,
+                                            SutekhCountLogHandler)
+from sutekh.base.gui.ScrolledList import ScrolledList
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.gui.GuiCardSetFunctions import reparent_all_children, \
+from sutekh.base.gui.GuiCardSetFunctions import reparent_all_children, \
         update_open_card_sets, get_import_name, PROMPT, RENAME, REPLACE
 
 

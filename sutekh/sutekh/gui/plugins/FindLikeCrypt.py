@@ -18,9 +18,9 @@ from sutekh.core.Filters import (MultiGroupFilter, MultiVirtueFilter,
                                  MultiDisciplineLevelFilter)
 from sutekh.SutekhUtility import is_crypt_card, is_vampire
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.gui.GuiCardSetFunctions import create_card_set
+from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
+from sutekh.base.gui.GuiCardSetFunctions import create_card_set
 
 
 def _gen_subsets(aData, iSetSize, iDepth=1):

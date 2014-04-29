@@ -9,7 +9,7 @@
 import gtk
 import pango
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
+from sutekh.base.gui.CellRendererIcons import CellRendererIcons, SHOW_TEXT_ONLY
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet
 from sutekh.base.core.BaseFilters import PhysicalCardSetFilter, FilterAndBox

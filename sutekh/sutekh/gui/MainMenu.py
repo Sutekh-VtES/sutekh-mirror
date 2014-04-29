@@ -8,16 +8,16 @@
 
 import gtk
 from sqlobject import sqlhub
-from sutekh.gui.SutekhDialog import do_complaint_error
-from sutekh.gui.SutekhFileWidget import ImportDialog
+from sutekh.base.gui.SutekhDialog import do_complaint_error
+from sutekh.base.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
-from sutekh.gui.GuiCardSetFunctions import import_cs
-from sutekh.gui.ProfileManagement import ProfileMngDlg
+from sutekh.base.gui.GuiCardSetFunctions import import_cs
+from sutekh.base.gui.ProfileManagement import ProfileMngDlg
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
-from sutekh.gui.SutekhMenu import SutekhMenu
+from sutekh.base.gui.SutekhMenu import SutekhMenu
 
 
 class MainMenu(SutekhMenu):
@@ -335,4 +335,4 @@ class MainMenu(SutekhMenu):
 
     def download_icons(self, _oWidget):
         """Call on the icon manager to download the icons."""
-        self._oMainWindow.icon_manager.download_icons()
+        self._oMainWindow.icon_manager.download_with_progress()

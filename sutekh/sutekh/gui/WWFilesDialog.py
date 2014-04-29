@@ -7,8 +7,8 @@
 """File selection dialog for choosing cardlist and rulings files"""
 
 import gtk
-from sutekh.gui.SutekhDialog import SutekhDialog
-from sutekh.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
+from sutekh.base.gui.SutekhDialog import SutekhDialog
+from sutekh.base.gui.SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
                               EXP_DATE_URL)
 

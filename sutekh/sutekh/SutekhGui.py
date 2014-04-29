@@ -20,8 +20,10 @@ from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-from sutekh.gui.SutekhDialog import do_complaint_error, do_complaint_warning, \
-        do_exception_complaint, do_complaint_error_details
+from sutekh.base.gui.SutekhDialog import (do_complaint_error,
+                                          do_complaint_warning,
+                                          do_exception_complaint,
+                                          do_complaint_error_details)
 from sutekh.SutekhInfo import SutekhInfo
 
 

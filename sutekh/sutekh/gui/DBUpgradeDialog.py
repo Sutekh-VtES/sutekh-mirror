@@ -7,7 +7,7 @@
 """Database to prompt for database upgrades"""
 
 import gtk
-from sutekh.gui.SutekhDialog import SutekhDialog
+from sutekh.base.gui.SutekhDialog import SutekhDialog
 
 
 class DBUpgradeDialog(SutekhDialog):

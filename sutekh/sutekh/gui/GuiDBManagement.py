@@ -9,14 +9,16 @@ import logging
 from sqlobject import sqlhub, connectionForURI
 from sutekh.gui.DBUpgradeDialog import DBUpgradeDialog
 from sutekh.gui.WWFilesDialog import WWFilesDialog
-from sutekh.gui.ProgressDialog import ProgressDialog, SutekhHTMLLogHandler, \
-        SutekhCountLogHandler
+from sutekh.base.gui.ProgressDialog import (ProgressDialog,
+                                            SutekhHTMLLogHandler,
+                                            SutekhCountLogHandler)
 from sutekh.core.DatabaseUpgrade import create_memory_copy, \
         create_final_copy, UnknownVersion, copy_to_new_abstract_card_db
 from sutekh.base.core.DBUtility import flush_cache
-from sutekh.gui.SutekhDialog import do_complaint_buttons, do_complaint, \
-        do_complaint_warning, do_exception_complaint, \
-        do_complaint_error_details
+from sutekh.base.gui.SutekhDialog import (do_complaint_buttons, do_complaint,
+                                          do_complaint_warning,
+                                          do_exception_complaint,
+                                          do_complaint_error_details)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.base.core.BaseObjects import PhysicalCardSet

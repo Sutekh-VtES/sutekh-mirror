@@ -10,7 +10,7 @@ from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.base.io.WriteCSV import WriteCSV
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhFileWidget import ExportDialog
+from sutekh.base.gui.SutekhFileWidget import ExportDialog
 from sutekh.base.Utility import safe_filename
 
 

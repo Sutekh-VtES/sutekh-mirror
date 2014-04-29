@@ -10,7 +10,7 @@ import pango
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard, \
         IPhysicalCard
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.gui.SutekhDialog import do_complaint_error
+from sutekh.base.gui.SutekhDialog import do_complaint_error
 
 try:
     # pylint: disable-msg=W0104
