@@ -56,7 +56,10 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
 
 from sqlobject.sqlbuilder import LEFTJOINOn
 from sqlobject import SQLObjectNotFound, OR, LIKE, func
+# pylint: disable-msg=W0402
+# We need string.punctation for best_guess_filter
 import string
+# pylint: enable-msg=W0402
 
 
 class SutekhCardFilter(Filter):

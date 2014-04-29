@@ -170,6 +170,8 @@ class Expansions(AbbreviationLookup):
            Unknown expansions are also allowed in order to make it
            possible to update to a card list that includes expansions
            not in the list known to the Expansion class."""
+        # pylint: disable-msg=E1101
+        # pylint get's confused here
         if sName in cls._dLook:
             return cls._dLook[sName]
         if sName.startswith('Promo-'):
@@ -207,6 +209,8 @@ class Rarities(AbbreviationLookup):
     @classmethod
     def canonical(cls, sName):
         """Return the canonical name of the rarity."""
+        # pylint: disable-msg=E1101
+        # pylint get's confused here
         if sName.startswith('P'):
             return 'Precon'
         if sName in cls._dLook:

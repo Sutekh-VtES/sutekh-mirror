@@ -569,7 +569,10 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
     for oCard in SutekhAbstractCard.select(connection=oOrigConn).orderBy('id'):
         # force issue for SQObject >= 0.11.4
         oCard._connection = oOrigConn
+        # pylint: disable-msg=W0212
+        # Need to access _parent here
         oCard._parent._connection = oOrigConn
+        # pylint: enable-msg=W0212
         oCardCopy = SutekhAbstractCard(id=oCard.id,
                 canonicalName=oCard.canonicalName, name=oCard.name,
                 text=oCard.text, search_text=oCard.search_text,
@@ -605,6 +608,8 @@ def copy_abstract_card(oOrigConn, oTrans, oLogger):
         for oData in oCard.artists:
             oCardCopy.addArtist(oData)
         oCardCopy.syncUpdate()
+        # pylint: disable-msg=W0212
+        # Need to access _parent here
         oCardCopy._parent.syncUpdate()
         oLogger.info('copied AC %s', oCardCopy.name)
 
@@ -662,6 +667,8 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             for oData in oCard.artists:
                 oCardCopy.addArtist(oData)
             oCardCopy.syncUpdate()
+            # pylint: disable-msg=W0212
+            # Need to access _parent here
             oCardCopy._parent.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
     elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
@@ -704,6 +711,8 @@ def copy_old_abstract_card(oOrigConn, oTrans, oLogger, oVer):
             for oData in oCard.artists:
                 oCardCopy.addArtist(oData)
             oCardCopy.syncUpdate()
+            # pylint: disable-msg=W0212
+            # Need to access _parent here
             oCardCopy._parent.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
     else:
