@@ -52,7 +52,7 @@ class CardSetFrame(CardListFrame):
 
     def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""
-        super(CardSetFrame, self).cleanup()
+        super(CardSetFrame, self).cleanup(bQuit)
         # skip reloading the pcs list when we're exiting
         if not bQuit:
             self._oMainWindow.reload_pcs_list()
