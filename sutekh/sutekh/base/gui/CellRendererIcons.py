@@ -4,7 +4,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Render a list VTES icons and text in a TreeView"""
+"""Render a list of icons and text in a TreeView"""
 
 import gtk
 import pango

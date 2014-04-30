@@ -3,8 +3,7 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""A catalog of common abbreviations for VtES terms.
-   """
+"""Base classes for handling the abbrevations."""
 
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
