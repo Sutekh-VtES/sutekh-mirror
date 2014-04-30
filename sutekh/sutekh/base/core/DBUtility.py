@@ -45,7 +45,6 @@ def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if type(oJoin) is SOCachedRelatedJoin:
             oJoin.init_cache()
-
     # pylint: disable-msg=E1101
     # AbstractCard confuses pylint
     for oChild in AbstractCard.__subclasses__():

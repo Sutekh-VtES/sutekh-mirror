@@ -167,7 +167,7 @@ class BaseCardTextView(gtk.TextView):
     # pylint: enable-msg=W0212
 
     def update_to_new_db(self):
-        """Cached lookup of the burn option keyword"""
+        """Handle any database changes as required"""
         # The default is to do nothing.
         # Subclasses will implement logic as needed
         pass
