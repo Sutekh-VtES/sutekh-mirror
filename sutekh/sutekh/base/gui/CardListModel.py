@@ -10,12 +10,12 @@ import gtk
 import gobject
 import logging
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
-                                          PhysicalCardFilter, CachedFilter)
+                                PhysicalCardFilter, CachedFilter)
 from sutekh.core.Filters import make_illegal_filter
 from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
-                                          PhysicalCard, PhysicalCardAdapter,
-                                          ExpansionNameAdapter)
+                                PhysicalCard, PhysicalCardAdapter,
+                                ExpansionNameAdapter)
 from ..Utility import canonical_to_csv
 from ..core.FilterParser import FilterParser
 from .BaseConfigFile import FULL_CARDLIST

@@ -73,7 +73,7 @@ class BasePluginManager(object):
                                      None, None, [aPlugins])
             except ImportError, oExp:
                 logging.warn("Failed to load plugin %s (%s).",
-                        sPluginName, oExp, exc_info=1)
+                             sPluginName, oExp, exc_info=1)
                 continue
 
             # find plugin class
@@ -81,7 +81,7 @@ class BasePluginManager(object):
                 cPlugin = mPlugin.plugin
             except AttributeError, oExp:
                 logging.warn("Plugin module %s appears not to contain a"
-                        " plugin (%s).", sPluginName, oExp, exc_info=1)
+                             " plugin (%s).", sPluginName, oExp, exc_info=1)
                 continue
 
             # add to appropriate plugin lists
@@ -114,9 +114,9 @@ class PluginConfigFileListener(object):
     def cleanup(self):
         """Unhook from the message bus"""
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                               self.profile_option_changed)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
-                self.profile_changed)
+                               self.profile_changed)
 
     def profile_option_changed(self, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
@@ -182,17 +182,17 @@ class BasePlugin(object):
     # pylint: disable-msg=W0212
     # we allow access to the members via these properties
     parent = property(fget=lambda self: self._oView.mainwindow,
-            doc="Parent window to use when creating dialogs.")
+                      doc="Parent window to use when creating dialogs.")
     view = property(fget=lambda self: self._oView,
-            doc="Associated CardListView object.")
+                    doc="Associated CardListView object.")
     model = property(fget=lambda self: self._oModel,
-            doc="Associated CardModel object.")
+                     doc="Associated CardModel object.")
     cardlookup = property(fget=lambda self: self.parent.cardLookup,
-            doc="GUI CardLookup.")
+                          doc="GUI CardLookup.")
     icon_manager = property(fget=lambda self: self.parent.icon_manager,
-            doc="Icon manager.")
+                            doc="Icon manager.")
     config = property(fget=lambda self: self._oView.mainwindow.config_file,
-            doc="Configuration object.")
+                      doc="Configuration object.")
     # pylint: enable-msg=W0212
 
     @classmethod
@@ -281,7 +281,7 @@ class BasePlugin(object):
         for oTable, aVersions in self.dTableVersions.iteritems():
             if not oDBVer.check_table_in_versions(oTable, aVersions):
                 logging.warn("Skipping plugin %s due to version error (%s)",
-                        self, oTable)
+                             self, oTable)
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True
@@ -345,11 +345,11 @@ class BasePlugin(object):
         if oModel.cardset_id == FULL_CARDLIST or \
                 oModel.cardset_id == CARDSET_LIST:
             sProfile = self.config.get_profile(oModel.cardset_id,
-                    oModel.cardset_id)
+                                               oModel.cardset_id)
             return self.config.get_profile_option(oModel.cardset_id,
-                    sProfile, sKey)
+                                                  sProfile, sKey)
         return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
-            sKey)
+                                           sKey)
 
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
