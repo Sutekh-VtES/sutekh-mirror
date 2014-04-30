@@ -37,7 +37,7 @@ class MainMenu(SutekhMenu):
         self.__create_rulebook_menu()
         self.add_plugins_to_menus(oWindow)
         self.__create_help_menu()
-        oWindow.add_to_menu_list("White Wolf Card List",
+        oWindow.add_to_menu_list("Full Card List",
                 self.physical_cl_set_sensitive)
         oWindow.add_to_menu_list("Card Set List",
                 self.pcs_list_pane_set_sensitive)
@@ -164,7 +164,7 @@ class MainMenu(SutekhMenu):
         self.create_menu_item("Add New Blank Pane", oAddMenu,
                 self._oMainWindow.add_pane_end)
 
-        self.__oAddPCLPane = self.create_menu_item("Add White Wolf Card List",
+        self.__oAddPCLPane = self.create_menu_item("Add Full Card List",
                 oAddMenu, self._oMainWindow.add_new_physical_card_list)
         self.__oAddPCLPane.set_sensitive(True)
 
@@ -181,7 +181,7 @@ class MainMenu(SutekhMenu):
         self.__oReplaceMenu = self.create_submenu(oMenuWidget, 'Replace Pane')
 
         self.__oReplacePCLPane = self.create_menu_item("Replace current pane"
-                " with White Wolf Card List", self.__oReplaceMenu,
+                " with Full Card List", self.__oReplaceMenu,
                 self._oMainWindow.replace_with_physical_card_list)
         self.__oReplacePCLPane.set_sensitive(True)
 

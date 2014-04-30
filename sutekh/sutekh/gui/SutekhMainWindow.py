@@ -320,7 +320,7 @@ class SutekhMainWindow(MultiPaneWindow):
     def replace_with_physical_card_list(self, _oWidget, oOldFrame=None):
         """Replace the currently focussed or given pane with the physical
            card list."""
-        if self.is_open_by_menu_name("White Wolf Card List"):
+        if self.is_open_by_menu_name("Full Card List"):
             return None
         if oOldFrame is None:
             oOldFrame = self._oFocussed

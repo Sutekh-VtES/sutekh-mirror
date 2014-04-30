@@ -21,7 +21,7 @@ class PhysicalCardFrame(CardListFrame):
        Set the title, and menus as needed for the card collection.
        """
     _cModelType = PhysicalCard
-    _sName = "White Wolf Card List"
+    _sName = "Full Card List"
 
     def __init__(self, oMainWindow):
         super(PhysicalCardFrame, self).__init__(oMainWindow)

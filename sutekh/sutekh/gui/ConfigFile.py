@@ -54,7 +54,7 @@ class ConfigFile(BaseConfigFile):
            """
         if not self._oConfig['open_frames']:
             # No panes information, so we set 'sensible' defaults
-            self.add_frame(1, 'physical_card', 'White Wolf Card List', False,
+            self.add_frame(1, 'physical_card', 'Full Card List', False,
                            False, -1, None)
             self.add_frame(2, 'Card Text', 'Card Text', False, False, -1, None)
             self.add_frame(3, 'Card Set List', 'Card Set List', False, False,

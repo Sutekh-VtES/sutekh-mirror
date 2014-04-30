@@ -6,7 +6,7 @@
 # Copyright 2010 Simon Cross <hodgestar+sutekh@gmail.com>
 # License: GPL - See COPYRIGHT file for details
 
-"""Configuration handling for the Sutekh GUI."""
+"""Base classes and constants for configuation management."""
 
 from configobj import ConfigObj, flatten_errors
 from validate import Validator, is_option, is_list
@@ -672,7 +672,7 @@ class BaseConfigFile(object):
         elif sType == FULL_CARDLIST:
             sCurProfile = self._oConfig[sType].get('current profile')
             if sCurProfile == sProfile:
-                return ['White Wolf Card List']
+                return ['Full Card List']
         elif sType == CARDSET:
             aUsers = []
             for dProfiles in (

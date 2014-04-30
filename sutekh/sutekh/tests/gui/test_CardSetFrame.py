@@ -94,7 +94,7 @@ class TestCardSetFrame(GuiSutekhTest):
         for oPane in self.oWin.aOpenFrames[:]:
             if oPane.title in ('Card Text', 'Card Set List'):
                 self.oWin.remove_frame(oPane)
-            if oPane.title == 'White Wolf Card List':
+            if oPane.title == 'Full Card List':
                 oWWList = oPane
             if oPane.title == 'My Collection':
                 oMyColl = oPane

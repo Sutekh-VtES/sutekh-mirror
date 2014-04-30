@@ -26,7 +26,7 @@ class TestSutekhMainWindow(GuiSutekhTest):
         self.oWin.setup(self.oConfig)
         # Check we have the correct panes in place
         self.assertTrue(
-                self.oWin.is_open_by_menu_name('White Wolf Card List'))
+                self.oWin.is_open_by_menu_name('Full Card List'))
         self.assertTrue(self.oWin.is_open_by_menu_name('Card Set List'))
         self.assertTrue(self.oWin.is_open_by_menu_name('Card Text'))
         self.assertNotEqual(
