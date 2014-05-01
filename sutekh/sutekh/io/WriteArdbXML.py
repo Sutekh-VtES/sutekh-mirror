@@ -8,7 +8,7 @@
 """Given a list of Abstract Cards in a set, write a XML file compatable with
    the Anarch Revolt Deck Builder."""
 
-from sutekh.base.Utility import canonical_to_csv
+from sutekh.base.Utility import move_articles_to_back
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.base.io.IOBase import BaseXMLWriter
 import time
@@ -40,7 +40,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         """Fill in name, set and advanced elements for a crypt card"""
         oAdvElem = SubElement(oCardElem, 'adv')
         oNameElem = SubElement(oCardElem, 'name')
-        sName = canonical_to_csv(oAbsCard.name)
+        sName = move_articles_to_back(oAbsCard.name)
         if oAbsCard.level is not None:
             oAdvElem.text = 'Advanced'
             # This is a bit hackish
@@ -53,7 +53,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
     def _ardb_lib_card(self, oCardElem, oAbsCard, sSet):
         """Fill in name and set for a library card"""
         oNameElem = SubElement(oCardElem, 'name')
-        oNameElem.text = canonical_to_csv(oAbsCard.name)
+        oNameElem.text = move_articles_to_back(oAbsCard.name)
         oSetElem = SubElement(oCardElem, 'set')
         oSetElem.text = sSet
 

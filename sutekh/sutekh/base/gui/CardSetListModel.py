@@ -28,7 +28,7 @@ from ..core.BaseObjects import (PhysicalCard, IAbstractCard,
                                 ExpansionNameAdapter,
                                 PhysicalCardToAbstractCardAdapter,
                                 PhysicalCardMappingToPhysicalCardAdapter)
-from ..Utility import canonical_to_csv
+from ..Utility import move_articles_to_back
 from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from ..core.DBSignals import (listen_changed, disconnect_changed,
                               listen_row_destroy, listen_row_update,
@@ -318,7 +318,7 @@ class CardSetCardListModel(CardListModel):
                 # We skip name here, as that gets reset in _set_display_name
                 sName = oCard.name
                 if bPostfix:
-                    sName = canonical_to_csv(sName)
+                    sName = move_articles_to_back(sName)
                 self.set(oChildIter,
                     0, sName,
                     1, iCnt, 2, iParCnt,
@@ -1182,7 +1182,7 @@ class CardSetCardListModel(CardListModel):
                 # We don't do the full _set_display_name for speed here.
                 sName = oCard.name
                 if bPostfix:
-                    sName = canonical_to_csv(sName)
+                    sName = move_articles_to_back(sName)
                 self.set(oChildIter, 0, sName,
                         1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
                         8, oCard, 9, oRow.oPhysCard,

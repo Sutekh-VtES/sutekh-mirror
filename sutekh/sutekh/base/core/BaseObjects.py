@@ -12,7 +12,7 @@
 
 from .CachedRelatedJoin import CachedRelatedJoin
 from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
-from ..Utility import csv_to_canonical
+from ..Utility import move_articles_to_front
 # pylint: disable-msg=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
@@ -494,7 +494,7 @@ class AbstractCardAdapter(object):
             oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
         except SQLObjectNotFound:
             # Correct for common variations
-            sNewName = csv_to_canonical(sName)
+            sNewName = move_articles_to_front(sName)
             if sNewName != sName:
                 oCard = AbstractCard.byCanonicalName(
                     sNewName.encode('utf8').lower())

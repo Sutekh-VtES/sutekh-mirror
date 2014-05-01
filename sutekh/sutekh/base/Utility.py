@@ -130,8 +130,12 @@ def get_database_url():
 
 
 # helper conversion functions
-def canonical_to_csv(sName):
-    """Moves articles to the end of the name"""
+def move_articles_to_back(sName):
+    """Moves articles to the end of the name.
+
+       Reverse of move_articles_to_front.
+       Used when exporting to various formats and when selected
+       as a display option."""
     if sName.startswith('The '):
         sName = sName[4:] + ", The"
     elif sName.startswith('An '):
@@ -141,9 +145,12 @@ def canonical_to_csv(sName):
     return sName
 
 
-def csv_to_canonical(sName):
-    """Moves articles from the end back to the start - reverses
-       cannonical_to_csv"""
+def move_articles_to_front(sName):
+    """Moves articles from the end back to the start as is expected
+       in the database.
+
+       Reverses move_articles_to_back.
+       Used when importing from various formats."""
     # handle case variations as well
     if sName.lower().endswith(', the'):
         sName = "The " + sName[:-5]

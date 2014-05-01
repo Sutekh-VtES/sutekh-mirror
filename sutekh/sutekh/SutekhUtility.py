@@ -15,7 +15,7 @@ from sutekh.core.SutekhObjects import CRYPT_TYPES
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
-from sutekh.base.Utility import canonical_to_csv, gen_app_temp_dir
+from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
 from sutekh.base.core.DBUtility import flush_cache
 
 
@@ -103,7 +103,7 @@ def is_vampire(oAbsCard):
 # Helper functions for the io routines
 def monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""
-    sName = canonical_to_csv(oCard.name)
+    sName = move_articles_to_back(oCard.name)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
@@ -120,7 +120,7 @@ def monger_url(oCard, bVamp):
 
 def secret_library_url(oCard, bVamp):
     """Return a Secret Library url for the given AbstractCard"""
-    sName = canonical_to_csv(oCard.name)
+    sName = move_articles_to_back(oCard.name)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')

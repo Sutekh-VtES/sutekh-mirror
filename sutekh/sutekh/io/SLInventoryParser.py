@@ -25,7 +25,7 @@
    """
 
 import re
-from sutekh.base.Utility import csv_to_canonical
+from sutekh.base.Utility import move_articles_to_front
 from sutekh.base.io.IOBase import CardSetParser
 
 
@@ -78,7 +78,7 @@ class SLInventoryParser(CardSetParser):
             sName = sName.replace('(Adv)', '(Advanced)')
 
         # Avoid going down the exception path in IAbstractCard if we can
-        sName = csv_to_canonical(sName)
+        sName = move_articles_to_front(sName)
 
         # Secret Library has no expansion info
         oHolder.add(iNum, sName, None)
@@ -93,7 +93,7 @@ class SLInventoryParser(CardSetParser):
         sName = oMatch.group('name')
 
         # Avoid going down the exception path in IAbstractCard if we can
-        sName = csv_to_canonical(sName)
+        sName = move_articles_to_front(sName)
 
         # Secret Library has no expansion info
         oHolder.add(iNum, sName, None)

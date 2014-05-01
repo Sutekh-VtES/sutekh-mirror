@@ -16,7 +16,7 @@ from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
                                 PhysicalCard, PhysicalCardAdapter,
                                 ExpansionNameAdapter)
-from ..Utility import canonical_to_csv
+from ..Utility import move_articles_to_back
 from ..core.FilterParser import FilterParser
 from .BaseConfigFile import FULL_CARDLIST
 from .MessageBus import MessageBus, CONFIG_MSG
@@ -202,7 +202,7 @@ class CardListModel(gtk.TreeStore):
             while oChildIter:
                 sName = self.get_card_name_from_iter(oChildIter)
                 if bPostfix:
-                    sName = canonical_to_csv(sName)
+                    sName = move_articles_to_back(sName)
                 self.set(oChildIter, 0, sName)
                 self.row_changed(self.get_path(oChildIter), oChildIter)
                 oChildIter = self.iter_next(oChildIter)
@@ -257,7 +257,7 @@ class CardListModel(gtk.TreeStore):
                 # Names will be set by _set_display_name
                 sName = oCard.name
                 if bPostfix:
-                    sName = canonical_to_csv(sName)
+                    sName = move_articles_to_back(sName)
                 self.set(oChildIter,
                     0, sName,
                     8, oCard,

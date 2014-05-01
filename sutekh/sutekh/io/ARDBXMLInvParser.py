@@ -18,7 +18,7 @@ try:
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
 # pylint: enable-msg=E0611, F0401
-from sutekh.base.Utility import csv_to_canonical
+from sutekh.base.Utility import move_articles_to_front
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
 
@@ -82,7 +82,7 @@ class ARDBInvXMLState(object):
                             self._sCardSet)
                 if self._sAdvanced == '(Advanced)':
                     self._sCardName = self._sCardName + ' (Advanced)'
-                self._sCardName = csv_to_canonical(self._sCardName)
+                self._sCardName = move_articles_to_front(self._sCardName)
                 self._oHolder.add(self._iCount, self._sCardName,
                         self._sCardSet)
                 self._sCardName = None
