@@ -59,17 +59,21 @@ class BasePluginManager(object):
        module contains.
        """
 
+    # Base classes will specify these
+    cAppPlugin = None
+    sPluginDir = ''
+
     def __init__(self):
         self._aPlugins = []
 
-    def _do_load_plugins(self, aPlugins, sPluginDir, cAppPluginClass):
+    def _do_load_plugins(self, aPlugins):
         """Load list of Plugin Classes from plugin dir."""
         for sPluginName in submodules(aPlugins):
             # load module
             # pylint: disable-msg=C0103
             # mPlugin is legal name here
             try:
-                mPlugin = __import__("%s.%s" % (sPluginDir, sPluginName),
+                mPlugin = __import__("%s.%s" % (self.sPluginDir, sPluginName),
                                      None, None, [aPlugins])
             except ImportError, oExp:
                 logging.warn("Failed to load plugin %s (%s).",
@@ -85,7 +89,7 @@ class BasePluginManager(object):
                 continue
 
             # add to appropriate plugin lists
-            if issubclass(cPlugin, cAppPluginClass):
+            if issubclass(cPlugin, self.cAppPlugin):
                 self._aPlugins.append(cPlugin)
 
     def load_plugins(self):

@@ -9,17 +9,20 @@ import sutekh.gui.plugins as plugins
 from sutekh.base.gui.BasePluginManager import BasePluginManager, BasePlugin
 
 
+class SutekhPlugin(BasePlugin):
+    """Class for Sutekh plugins."""
+    pass
+
+
 class PluginManager(BasePluginManager):
     """Manages plugins for Sutekh."""
+
+    cAppPlugin = SutekhPlugin
+    sPluginDir = "sutekh.gui.plugins"
 
     def __init__(self):
         super(PluginManager, self).__init__()
 
     def load_plugins(self):
         """Load list of Plugin Classes from plugin dir."""
-        self._do_load_plugins(plugins, "sutekh.gui.plugins", SutekhPlugin)
-
-
-class SutekhPlugin(BasePlugin):
-    """Class for Sutekh plugins."""
-    pass
+        self._do_load_plugins(plugins)
