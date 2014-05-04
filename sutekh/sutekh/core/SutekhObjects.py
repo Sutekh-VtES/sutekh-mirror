@@ -361,7 +361,7 @@ class DisciplineAdapter(object):
         return cls.fetch(Disciplines.canonical(sName), Discipline)
 
 
-class SectAdaptor(object):
+class SectAdapter(object):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -420,7 +420,7 @@ class DisciplinePairAdapter(object):
 
 
 CACHED_ADAPTERS = [ExpansionAdapter, RarityAdapter, DisciplineAdapter,
-                   ClanAdapter, CardTypeAdapter, SectAdaptor, TitleAdapter,
+                   ClanAdapter, CardTypeAdapter, SectAdapter, TitleAdapter,
                    VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
                    RarityPairAdapter, PhysicalCardAdapter,
                    PhysicalCardMappingToPhysicalCardAdapter,
