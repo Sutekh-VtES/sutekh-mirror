@@ -15,7 +15,7 @@ from ..core.BaseObjects import (AbstractCard, PhysicalCard, IExpansion,
                                 Expansion, IPhysicalCard, IAbstractCard)
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
                                ExpansionLookup, LookupFailed)
-from sutekh.core.Filters import best_guess_filter
+from ..core.BaseFilters import best_guess_filter
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from .CellRendererSutekhButton import CellRendererSutekhButton
 from .PhysicalCardView import PhysicalCardView

@@ -12,6 +12,7 @@ from sutekh.base.core.BaseObjects import AbstractCard, IAbstractCard, \
         Expansion, ExpansionAdapter, PhysicalCardSet, \
         MapPhysicalCardToPhysicalCardSet, IPhysicalCard
 from sutekh.core import Filters
+from sutekh.base.core import BaseFilters
 from sqlobject import SQLObjectNotFound
 import unittest
 
@@ -715,7 +716,7 @@ class FilterTests(SutekhTest):
                 ('Path of Blood, The', [u'The Path of Blood']),
                 ]
         for sGuess, aExpectedNames in aTests:
-            oFilter = Filters.best_guess_filter(sGuess)
+            oFilter = BaseFilters.best_guess_filter(sGuess)
             aNames = sorted([x.name for x in oFilter.select(AbstractCard)])
             self.assertEqual(aNames, aExpectedNames,
                     '%s != expected %s for guess %s' % (aNames, aExpectedNames,

@@ -56,10 +56,6 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
 
 from sqlobject.sqlbuilder import LEFTJOINOn
 from sqlobject import SQLObjectNotFound, OR, LIKE, func
-# pylint: disable-msg=W0402
-# We need string.punctation for best_guess_filter
-import string
-# pylint: enable-msg=W0402
 
 
 class SutekhCardFilter(Filter):
@@ -719,35 +715,6 @@ def make_illegal_filter():
         oLegalFilter = FilterNot(CardTextFilter(
             'Added to the V:EKN banned list'))
     return oLegalFilter
-
-
-def best_guess_filter(sName):
-    """Create a filter for selecting close matches to a card name."""
-    # Set the filter on the Card List to one the does a
-    # Best guess search
-    sFilterString = ' ' + sName.lower() + ' '
-    # Kill the's in the string
-    sFilterString = sFilterString.replace(' the ', ' ')
-    # Kill commas, as possible issues
-    sFilterString = sFilterString.replace(',', ' ')
-    # Free style punctuation
-    for sPunc in string.punctuation:
-        sFilterString = sFilterString.replace(sPunc, '_')
-    # Stolen semi-concept from soundex - replace vowels with wildcards
-    # Should these be %'s ??
-    # (Should at least handle the Rotscheck variation as it stands)
-    sFilterString = sFilterString.replace('a', '_')
-    sFilterString = sFilterString.replace('e', '_')
-    sFilterString = sFilterString.replace('i', '_')
-    sFilterString = sFilterString.replace('o', '_')
-    sFilterString = sFilterString.replace('u', '_')
-    # Normalise spaces and Wildcard spaces
-    sFilterString = ' '.join(sFilterString.split())
-    sFilterString = sFilterString.replace(' ', '%')
-    # Add % on outside
-    sFilterString = '%' + sFilterString + '%'
-    oLegalFilter = make_illegal_filter()
-    return FilterAndBox([CardNameFilter(sFilterString), oLegalFilter])
 
 
 # The List of filters exposed to the Filter Parser - new filters should just
