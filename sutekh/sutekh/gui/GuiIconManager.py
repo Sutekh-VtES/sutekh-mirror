@@ -19,6 +19,9 @@ class GuiIconManager(CachedIconManager, IconManager):
        Also provides gui interface for setup
        """
 
+    # pylint: disable-msg=W0223
+    # W0223 - pylint doesn't follow the mro correctly here, so doesn't
+    # see that IconManager provides the required methods.
     def __init__(self, sPath):
         if not sPath:
             sPath = os.path.join(prefs_dir('Sutekh'), 'icons')
