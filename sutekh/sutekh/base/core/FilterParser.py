@@ -6,7 +6,10 @@
 """Provides filter parsing functionality.
 
    Use PLY to convert a string into a Abstract Syntax Tree, from which the
-   final Filter Object is constructed
+   final Filter Object is constructed.
+
+   Note that all the filters should be imported before FilterParser, since it
+   uses intospection to find the filters to add to the grammar.
    """
 
 # pylint: disable-msg=E0611
@@ -14,9 +17,11 @@
 import ply.lex as lex
 import ply.yacc as yacc
 # pylint: enable-msg=E0611
-from .BaseFilters import FilterNot, FilterAndBox, FilterOrBox
-# FIXME: Can we get these via introspection?
-from sutekh.core.Filters import PARSER_FILTERS
+from .BaseFilters import Filter, FilterNot, FilterAndBox, FilterOrBox
+from ..Utility import find_subclasses
+
+
+PARSER_FILTERS = [x for x in find_subclasses(Filter) if hasattr(x, 'keyword')]
 
 
 ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS

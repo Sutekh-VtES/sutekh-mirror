@@ -712,20 +712,3 @@ def make_illegal_filter():
         oLegalFilter = FilterNot(CardTextFilter(
             'Added to the V:EKN banned list'))
     return oLegalFilter
-
-
-# The List of filters exposed to the Filter Parser - new filters should just
-# be tacked on here
-PARSER_FILTERS = (
-        MultiCardTypeFilter, MultiCostTypeFilter, MultiClanFilter,
-        MultiDisciplineFilter, MultiGroupFilter, MultiCapacityFilter,
-        MultiCostFilter, MultiLifeFilter, MultiCreedFilter, MultiVirtueFilter,
-        CardTextFilter, CardNameFilter, MultiSectFilter, MultiTitleFilter,
-        MultiExpansionRarityFilter, MultiDisciplineLevelFilter,
-        MultiPhysicalExpansionFilter, CardSetNameFilter, CardSetAuthorFilter,
-        CardSetDescriptionFilter, CardSetAnnotationsFilter,
-        MultiPhysicalCardSetFilter, PhysicalCardSetInUseFilter,
-        CardSetMultiCardCountFilter, CSPhysicalCardSetInUseFilter,
-        CardFunctionFilter, ParentCardSetFilter, MultiArtistFilter,
-        MultiKeywordFilter,
-        )

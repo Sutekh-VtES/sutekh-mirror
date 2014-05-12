@@ -161,3 +161,25 @@ def move_articles_to_front(sName):
     # The result might be mixed case, but, as we will feed this into
     # IAbstractCard in most cases, that won't matter
     return sName
+
+
+def find_subclasses(cClass):
+    """Utility method to find the subclasses of a specific class.
+
+       Used for introspection magic to lookup various stuff without importing
+       it directly from the main application.
+
+       Because we expect liberal use of overloading, this only returns
+       classes which have no subclasses themselves, so overloading a base
+       Filter to tweak behaviour will only return the overloaded filter,
+       rather than both.
+
+       To avoid issues with diamond inheritance, we return an unordered set
+       of the subclasses."""
+    aSubClasses = set()
+    for oChild in cClass.__subclasses__():
+        aSubClasses.update(find_subclasses(oChild))
+    if not cClass.__subclasses__():
+        # No children, so append
+        aSubClasses.add(cClass)
+    return aSubClasses
