@@ -1,3 +1,49 @@
+12 May 2014
+ * Use introspection to find Filters for FilterParser
+ * Add base class for Adapters
+ * Use introspection to find Adapters to catch
+
+04 May 2014
+ * Move best_guess_filter into sutekh.base.core
+ * Tweak BasePluginManager
+ * Cleanup some unused imports
+
+01 May 2014
+ * Rename csv_to_canonical and canonical_to_csv to more descriptive names
+
+30 Apr 2014
+ * Update docstrings and other minor cleanups after refactoring
+ * Drop references to 'White Wolf' in sutekh.base.gui
+ * Refactor main menu to move common code into sutekh.base.gui
+ * Refactor SutekhMainWindow to move common code into sutekh.base.gui
+
+29 Apr 2014
+ * Factor out some common into sutekh.base.gui
+
+28 Apr 2014
+ * Fix error in docs
+
+27 Apr 2014
+ * Factor out common code into sutekh.base.io
+
+23 Apr 2014
+ * Factor out some common core code into sutekh.base.core
+ 
+21 Apr 2014
+ * Skip some unneeded cleanup work on application exit
+ * Cache starter decks to avoid walking through the entire list repeatedly
+   in StarterDeckInfo
+ * Fix bug in DatabaseUpgrade introduced when adding orderBy
+ * Log plugin database table version errors in verbose mode
+ * Update plugin requirements
+ * Avoid calling load_image with no card name in the CardImagesPlugin during
+   window resizes
+
+11 Apr 2014
+ * Fix plugins broken by SutekhAbstractCard rework
+ * Work around upgrade issues with latest postgres by adding explicit
+   orderBy clauses
+
 10 Apr 2014
  * Separate generic AbstractCard and SutekhAbstractCard using SQLObject's
    inhertance. This is intended to help split sutekh into generic and
