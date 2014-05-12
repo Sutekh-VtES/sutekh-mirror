@@ -8,7 +8,7 @@
 # C0111 - No point in docstrings for these classes, really
 # C0302 - lots of lines as we want all these related definitions in one file
 
-"""The database definitions and pyprotocols adaptors for Sutekh"""
+"""The database definitions and pyprotocols adapters for Sutekh"""
 
 from sutekh.base.core.CachedRelatedJoin import CachedRelatedJoin
 from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
@@ -397,7 +397,7 @@ class DisciplinePairAdapter(Adapter):
 
     def __new__(cls, tData):
         # pylint: disable-msg=E1101
-        # adaptors confuses pylint
+        # adapters confuses pylint
         oDis = IDiscipline(tData[0])
         sLevel = str(tData[1])
 

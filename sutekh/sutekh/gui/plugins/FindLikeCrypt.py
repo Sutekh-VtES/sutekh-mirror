@@ -164,7 +164,7 @@ class FindLikeVampires(SutekhPlugin):
         # (discipline grouping, etc).
         for oPath in aSelection:
             # pylint: disable-msg=E1101
-            # pylint doesn't pick up adaptor's methods correctly
+            # pylint doesn't pick up adapter's methods correctly
             oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
             if not is_crypt_card(oCard):
                 # Only want crypt cards

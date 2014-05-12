@@ -292,7 +292,7 @@ def do_db_upgrade(aLowerTables, aHigherTables):
             elif iRes == 1:
                 # Try running with the upgraded database
                 sqlhub.processConnection = oTempConn
-                # Ensure adaptors are correctly updated
+                # Ensure adapters are correctly updated
                 flush_cache()
                 return True
         else:
