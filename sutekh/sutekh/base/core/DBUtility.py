@@ -9,17 +9,21 @@
 """Misc functions that influence the database in various ways."""
 
 
-from .BaseObjects import VersionTable, PhysicalCardSet, AbstractCard
+from .BaseObjects import VersionTable, PhysicalCardSet, AbstractCard, Adapter
 from .DatabaseVersion import DatabaseVersion
 from .CachedRelatedJoin import SOCachedRelatedJoin
-
-# FIXME: Can we get these from introspection?
-from sutekh.core.SutekhObjects import CACHED_ADAPTERS
+from ..Utility import find_subclasses
 
 
-def make_adaptor_caches():
-    """Flush all adaptor caches."""
-    for cAdapter in CACHED_ADAPTERS:
+def make_adapter_caches():
+    """Flush all adapter caches.
+
+       This assumes that everything that needs to be cached has already
+       been imported before make_adapter_caches is called, since this
+       uses introspection to find the adapters to cache."""
+    aCachedAdapters = [x for x in find_subclasses(Adapter)
+                       if hasattr(x, 'make_object_cache')]
+    for cAdapter in aCachedAdapters:
 
         cAdapter.make_object_cache()
 
@@ -37,7 +41,7 @@ def flush_cache(bMakeCache=True):
             if type(oJoin) is SOCachedRelatedJoin:
                 oJoin.flush_cache()
     if bMakeCache:
-        make_adaptor_caches()
+        make_adapter_caches()
 
 
 def init_cache():
@@ -51,7 +55,7 @@ def init_cache():
         for oJoin in oChild.sqlmeta.joins:
             if type(oJoin) is SOCachedRelatedJoin:
                 oJoin.init_cache()
-    make_adaptor_caches()
+    make_adapter_caches()
 
 
 def refresh_tables(aTables, oConn, bMakeCache=True):

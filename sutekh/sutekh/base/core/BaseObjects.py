@@ -405,7 +405,7 @@ class BaseObjectMaker(object):
 
 # Abbreviation lookup based adapters
 class StrAdaptMeta(type):
-    """Metaclass for the string adaptors."""
+    """Metaclass for the string adapters."""
     # pylint: disable-msg=W0231, C0203
     # W0231 - no point in calling type's init
     # C0203 - pylint's buggy here, see
@@ -426,8 +426,13 @@ class StrAdaptMeta(type):
 
         return oObj
 
+class Adapter(object):
+    """Base class for adapter objects.
+       Makes introspection less messy,"""
+    pass
 
-class CardTypeAdapter(object):
+
+class CardTypeAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -437,7 +442,7 @@ class CardTypeAdapter(object):
         return cls.fetch(CardTypes.canonical(sName), CardType)
 
 
-class ExpansionAdapter(object):
+class ExpansionAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -447,7 +452,7 @@ class ExpansionAdapter(object):
         return cls.fetch(Expansions.canonical(sName), Expansion)
 
 
-class RarityAdapter(object):
+class RarityAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -460,7 +465,7 @@ class RarityAdapter(object):
 # Other Adapters
 
 
-class RarityPairAdapter(object):
+class RarityPairAdapter(Adapter):
     advise(instancesProvide=[IRarityPair], asAdapterForTypes=[tuple])
 
     __dCache = {}
@@ -471,7 +476,7 @@ class RarityPairAdapter(object):
 
     def __new__(cls, tData):
         # pylint: disable-msg=E1101
-        # adaptors confuses pylint
+        # adapters confuses pylint
         oExp = IExpansion(tData[0])
         oRarity = IRarity(tData[1])
 
@@ -484,7 +489,7 @@ class RarityPairAdapter(object):
         return oPair
 
 
-class AbstractCardAdapter(object):
+class AbstractCardAdapter(Adapter):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
@@ -503,7 +508,7 @@ class AbstractCardAdapter(object):
         return oCard
 
 
-class RulingAdapter(object):
+class RulingAdapter(Adapter):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
     def __new__(cls, tData):
@@ -513,7 +518,7 @@ class RulingAdapter(object):
         return Ruling.byText(sText.encode('utf8'))
 
 
-class KeywordAdapter(object):
+class KeywordAdapter(Adapter):
     advise(instancesProvide=[IKeyword], asAdapterForTypes=[basestring])
 
     def __new__(cls, sKeyword):
@@ -522,7 +527,7 @@ class KeywordAdapter(object):
         return Keyword.byKeyword(sKeyword.encode('utf8'))
 
 
-class ArtistAdapter(object):
+class ArtistAdapter(Adapter):
     advise(instancesProvide=[IArtist], asAdapterForTypes=[basestring])
 
     def __new__(cls, sArtistName):
@@ -531,7 +536,7 @@ class ArtistAdapter(object):
         return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
 
-class PhysicalCardSetAdapter(object):
+class PhysicalCardSetAdapter(Adapter):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
@@ -540,7 +545,7 @@ class PhysicalCardSetAdapter(object):
         return PhysicalCardSet.byName(sName.encode('utf8'))
 
 
-class PhysicalCardToAbstractCardAdapter(object):
+class PhysicalCardToAbstractCardAdapter(Adapter):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
 
     __dCache = {}
@@ -557,7 +562,7 @@ class PhysicalCardToAbstractCardAdapter(object):
         return oCard
 
 
-class PhysicalCardMappingToPhysicalCardAdapter(object):
+class PhysicalCardMappingToPhysicalCardAdapter(Adapter):
     advise(instancesProvide=[IPhysicalCard],
            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
@@ -575,7 +580,7 @@ class PhysicalCardMappingToPhysicalCardAdapter(object):
         return oCard
 
 
-class PhysicalCardMappingToCardSetAdapter(object):
+class PhysicalCardMappingToCardSetAdapter(Adapter):
     advise(instancesProvide=[IPhysicalCardSet],
            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
@@ -583,7 +588,7 @@ class PhysicalCardMappingToCardSetAdapter(object):
         return oMapPhysCard.physicalCardSet
 
 
-class ExpansionNameAdapter(object):
+class ExpansionNameAdapter(Adapter):
     """Converts PhysicalCard expansionID to name, used a lot in the gui"""
     advise(instancesProvide=[IExpansionName], asAdapterForTypes=[PhysicalCard])
 
@@ -605,7 +610,7 @@ class ExpansionNameAdapter(object):
         return sExpName
 
 
-class PhysicalCardMappingToAbstractCardAdapter(object):
+class PhysicalCardMappingToAbstractCardAdapter(Adapter):
     advise(instancesProvide=[IAbstractCard],
            asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
@@ -623,7 +628,7 @@ class PhysicalCardMappingToAbstractCardAdapter(object):
         return oCard
 
 
-class PhysicalCardAdapter(object):
+class PhysicalCardAdapter(Adapter):
     advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
 
     __dCache = {}

@@ -14,16 +14,9 @@ from sutekh.base.core.CachedRelatedJoin import CachedRelatedJoin
 from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
                                        Titles, Virtues)
 from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
-                                          IAbstractCard,
+                                          IAbstractCard, Adapter,
                                           BASE_TABLE_LIST, MAX_ID_LENGTH,
-                                          StrAdaptMeta, CardTypeAdapter,
-                                          ExpansionAdapter, RarityAdapter,
-                                          RarityPairAdapter,
-                                          PhysicalCardToAbstractCardAdapter,
-                                          PhysicalCardMappingToPhysicalCardAdapter,
-                                          ExpansionNameAdapter,
-                                          PhysicalCardMappingToAbstractCardAdapter,
-                                          PhysicalCardAdapter)
+                                          StrAdaptMeta)
 
 # pylint: disable-msg=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
@@ -331,7 +324,7 @@ class SutekhObjectMaker(BaseObjectMaker):
 
 
 # Abbreviation lookup based adapters
-class ClanAdapter(object):
+class ClanAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -341,7 +334,7 @@ class ClanAdapter(object):
         return cls.fetch(Clans.canonical(sName), Clan)
 
 
-class CreedAdapter(object):
+class CreedAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -351,7 +344,7 @@ class CreedAdapter(object):
         return cls.fetch(Creeds.canonical(sName), Creed)
 
 
-class DisciplineAdapter(object):
+class DisciplineAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -361,7 +354,7 @@ class DisciplineAdapter(object):
         return cls.fetch(Disciplines.canonical(sName), Discipline)
 
 
-class SectAdapter(object):
+class SectAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -371,7 +364,7 @@ class SectAdapter(object):
         return cls.fetch(Sects.canonical(sName), Sect)
 
 
-class TitleAdapter(object):
+class TitleAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -381,7 +374,7 @@ class TitleAdapter(object):
         return cls.fetch(Titles.canonical(sName), Title)
 
 
-class VirtueAdapter(object):
+class VirtueAdapter(Adapter):
     # pylint: disable-msg=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
@@ -393,7 +386,7 @@ class VirtueAdapter(object):
 # Other Adapters
 
 
-class DisciplinePairAdapter(object):
+class DisciplinePairAdapter(Adapter):
     advise(instancesProvide=[IDisciplinePair], asAdapterForTypes=[tuple])
 
     __dCache = {}
@@ -415,16 +408,3 @@ class DisciplinePairAdapter(object):
             cls.__dCache[(oDis.id, sLevel)] = oPair
 
         return oPair
-
-# pylint: enable-msg=C0111
-
-
-CACHED_ADAPTERS = [ExpansionAdapter, RarityAdapter, DisciplineAdapter,
-                   ClanAdapter, CardTypeAdapter, SectAdapter, TitleAdapter,
-                   VirtueAdapter, CreedAdapter, DisciplinePairAdapter,
-                   RarityPairAdapter, PhysicalCardAdapter,
-                   PhysicalCardMappingToPhysicalCardAdapter,
-                   PhysicalCardToAbstractCardAdapter,
-                   PhysicalCardMappingToAbstractCardAdapter,
-                   ExpansionNameAdapter,
-                   ]
