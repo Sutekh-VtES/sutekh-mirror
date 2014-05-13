@@ -1201,3 +1201,18 @@ def best_guess_filter(sName):
     # Add % on outside
     sFilterString = '%' + sFilterString + '%'
     return CardNameFilter(sFilterString)
+
+
+def make_illegal_filter():
+    """Creates a filter that excludes not legal for tournament play cards.
+
+       Function to handle the case that the keyword isn't in the database."""
+    try:
+        # We use MultiKeywordFilter to work around a performance
+        # oddity of sqlite, where IN(a, b) outperforms a == b
+        # for large sets
+        oLegalFilter = FilterNot(MultiKeywordFilter(['not for legal play']))
+    except SQLObjectNotFound:
+        # Fallback to no filter
+        oLegalFilter = NullFilter()
+    return oLegalFilter

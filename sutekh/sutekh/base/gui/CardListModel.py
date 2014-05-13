@@ -10,8 +10,8 @@ import gtk
 import gobject
 import logging
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
-                                PhysicalCardFilter, CachedFilter)
-from sutekh.core.Filters import make_illegal_filter
+                                PhysicalCardFilter, CachedFilter,
+                                make_illegal_filter)
 from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
                                 PhysicalCard, PhysicalCardAdapter,

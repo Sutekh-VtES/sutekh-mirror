@@ -696,19 +696,3 @@ class CardFunctionFilter(DirectFilter):
     def _get_expression(self):
         """Expression for the constructed filter"""
         return self._oFilter._get_expression()
-
-
-def make_illegal_filter():
-    """Creates a filter that excludes not legal for tournament play cards.
-
-       Handles the case that the keyword hasn't been updated yet correctly."""
-    oLegalFilter = NullFilter()
-    try:
-        # We use MultiKeywordFilter to work around a performance
-        # oddity of sqlite, where IN(a, b) outperforms a == b
-        # for large sets
-        oLegalFilter = FilterNot(MultiKeywordFilter(['not for legal play']))
-    except SQLObjectNotFound:
-        oLegalFilter = FilterNot(CardTextFilter(
-            'Added to the V:EKN banned list'))
-    return oLegalFilter
