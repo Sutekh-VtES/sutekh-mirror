@@ -5,82 +5,31 @@
 
 """Allow the use to change how the cards are grouped in the CardListView"""
 
-from sutekh.base.core.BaseObjects import PhysicalCard, PhysicalCardSet
-from sutekh.base.core.BaseGroupings import (CardTypeGrouping, NullGrouping,
-                                            ExpansionGrouping, RarityGrouping,
-                                            MultiTypeGrouping, ArtistGrouping,
-                                            KeywordGrouping)
 from sutekh.core.Groupings import (ClanGrouping, DisciplineGrouping,
                                    CryptLibraryGrouping, SectGrouping,
                                    TitleGrouping, CostGrouping, GroupGrouping,
                                    GroupPairGrouping, DisciplineLevelGrouping)
 
 from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.base.gui.plugins.BaseChangeGroupBy import BaseGroupBy
 
 
-class GroupCardList(SutekhPlugin):
-    """Plugin to allow the user to change how cards are grouped.
+class GroupCardList(SutekhPlugin, BaseGroupBy):
+    """Plugin to allow the user to change how cards are grouped."""
 
-       Show a dialog which allows the user to select from the avail
-       groupings of the cards, and changes the setting in the CardListView.
-       """
-
-    GROUPINGS = {
-        'Card Type': CardTypeGrouping,
-        'Multi Card Type': MultiTypeGrouping,
+    # This feels a bit hack'ish - is there a better approach
+    GROUPINGS = BaseGroupBy.GROUPINGS.copy()  # Should this be a copy?
+    GROUPINGS.update({
         'Crypt or Library': CryptLibraryGrouping,
         'Clans and Creeds': ClanGrouping,
         'Disciplines and Virtues': DisciplineGrouping,
         'Disciplines (by level) and Virtues': DisciplineLevelGrouping,
-        'Expansion': ExpansionGrouping,
-        'Rarity': RarityGrouping,
         'Sect': SectGrouping,
         'Title': TitleGrouping,
         'Cost': CostGrouping,
         'Group': GroupGrouping,
         'Group pairs': GroupPairGrouping,
-        'Artist': ArtistGrouping,
-        'Keyword': KeywordGrouping,
-        'No Grouping': NullGrouping,
-    }
+    })
 
-    OPTION_STR = ", ".join('"%s"' % sKey for sKey in GROUPINGS.keys())
-    GROUP_BY = "group by"
-
-    dTableVersions = {}
-    aModelsSupported = (PhysicalCard, PhysicalCardSet)
-    dPerPaneConfig = {
-        GROUP_BY: 'option(%s, default="Card Type")' % OPTION_STR,
-    }
-
-    dCardListConfig = dPerPaneConfig
-
-    # pylint: disable-msg=W0142
-    # ** magic OK here
-    def __init__(self, *aArgs, **kwargs):
-        super(GroupCardList, self).__init__(*aArgs, **kwargs)
-        self._oFirstBut = None  # placeholder for the radio group
-        # We don't reload on init, to avoid double loads.
-        self.perpane_config_updated(False)
-
-    # Config Update
-
-    def perpane_config_updated(self, bDoReload=True):
-        """Called by base class on config updates."""
-        # bReload flag so we can call this during __init__
-        sGrping = self.get_perpane_item(self.GROUP_BY)
-        cGrping = self.GROUPINGS.get(sGrping)
-        if cGrping is not None:
-            self.set_grouping(cGrping, bDoReload)
-
-    # Actions
-
-    def set_grouping(self, cGrping, bReload=True):
-        """Set the grouping to that specified by cGrping."""
-        if self.model.groupby != cGrping:
-            self.model.groupby = cGrping
-            if bReload:
-                # Use view.load so we get busy cursor, etc.
-                self.view.frame.queue_reload()
 
 plugin = GroupCardList
