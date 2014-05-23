@@ -5,47 +5,12 @@
 
 """Converts a filter into a card set"""
 
-import gtk
-from sutekh.base.core.BaseObjects import PhysicalCardSet, PhysicalCard, \
-        IPhysicalCard, IPhysicalCardSet
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.GuiCardSetFunctions import create_card_set
+from sutekh.base.gui.plugins.BaseFromFilter import BaseFromFilter
 
 
-class DeckFromFilter(SutekhPlugin):
+class CardSetFromFilter(SutekhPlugin, BaseFromFilter):
     """Converts a filter into a Card Set."""
 
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
-    aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
-    def get_menu_item(self):
-        """Register on the 'Filter' Menu"""
-        if not self.check_versions() or not self.check_model_type():
-            return None
-        oGenPCS = gtk.MenuItem("Card Set From Filter")
-        oGenPCS.connect("activate", self.activate)
-        return ('Filter', oGenPCS)
-
-    def activate(self, _oWidget):
-        """Create the dialog.
-
-           Prompt the user for Card Set Properties, and so forth.
-           """
-        sCSName = create_card_set(self.parent)
-        if sCSName:
-            oCardSet = self.make_cs_from_filter(sCSName)
-            if oCardSet:
-                self.open_cs(sCSName, True)
-
-    def make_cs_from_filter(self, sCSName):
-        """Create the actual PCS."""
-        # pylint: disable-msg=E1101
-        # pylint misses PhysicalCardSet methods
-        oCS = IPhysicalCardSet(sCSName)
-        aCards = [IPhysicalCard(x) for x in
-                self.model.get_card_iterator(self.model.get_current_filter())]
-        self._commit_cards(oCS, aCards)
-        return oCS
-
-
-plugin = DeckFromFilter
+plugin = CardSetFromFilter
