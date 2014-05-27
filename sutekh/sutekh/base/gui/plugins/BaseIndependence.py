@@ -173,7 +173,8 @@ class BaseIndependence(BasePlugin):
         oNotebook.popup_enable()
         dFormatted = {}
         aParentList = []
-        for oCard, oInfo in dMissing.iteritems():
+        for oCard, oInfo in sorted(dMissing.iteritems(),
+                                   key=lambda x: IAbstractCard(x[0]).name):
             sCardName = self.escape(IAbstractCard(oCard).name)
             if not hasattr(oCard, 'expansion'):
                 sExpansion = ""
