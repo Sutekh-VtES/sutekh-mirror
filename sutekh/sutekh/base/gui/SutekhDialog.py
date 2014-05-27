@@ -35,11 +35,11 @@ def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
        """
     if bMarkup:
         oComplaint = gtk.MessageDialog(None, 0, oDialogType,
-                oButtonType, None)
+                                       oButtonType, None)
         oComplaint.set_markup(sMessage)
     else:
         oComplaint = gtk.MessageDialog(None, 0, oDialogType,
-                oButtonType, sMessage)
+                                       oButtonType, sMessage)
     oComplaint.set_name("Sutekh.dialog")
     iResponse = oComplaint.run()
     oComplaint.destroy()
@@ -55,11 +55,11 @@ def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
        """
     if bMarkup:
         oComplaint = gtk.MessageDialog(None, 0, oType,
-                gtk.BUTTONS_NONE, None)
+                                       gtk.BUTTONS_NONE, None)
         oComplaint.set_markup(sMessage)
     else:
         oComplaint = gtk.MessageDialog(None, 0, oType,
-                gtk.BUTTONS_NONE, sMessage)
+                                       gtk.BUTTONS_NONE, sMessage)
     for oItem, oResponse in zip(aButtonInfo[0::2], aButtonInfo[1::2]):
         oComplaint.add_button(oItem, oResponse)
     oComplaint.set_name("Sutekh.dialog")
@@ -76,7 +76,7 @@ def do_complaint_error(sMessage):
 def do_complaint_warning(sMessage):
     """Warning dialog with OK and CANCEL buttons"""
     return do_complaint(sMessage, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL,
-            False)
+                        False)
 
 
 class DetailDialog(SutekhDialog):
@@ -86,7 +86,8 @@ class DetailDialog(SutekhDialog):
 
     def __init__(self, sMessage, sDetails):
         super(DetailDialog, self).__init__('Sutekh has encounterd an error',
-                oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                           oButtons=(gtk.STOCK_CLOSE,
+                                                     gtk.RESPONSE_CLOSE))
         oHBox = gtk.HBox(False, 2)
         oMessageBox = gtk.VBox(False, 2)
         oImage = gtk.Image()
@@ -114,12 +115,16 @@ class DetailDialog(SutekhDialog):
         self.set_name("Sutekh.dialog")
 
 
+def format_app_info():
+    return "%s version %s\nDatabase: %s\n\n" % (AppInfo.NAME,
+                                                AppInfo.VERSION_STR,
+                                                get_database_url())
+
+
 def do_complaint_error_details(sMessage, sDetails):
     """Popup an details dialog for an error"""
-    sAppInfo = "%s version %s\nDatabase: %s\n\n" % (AppInfo.NAME,
-                                                    AppInfo.VERSION_STR,
-                                                    get_database_url())
-    oComplaint = DetailDialog(sMessage, '\n'.join([sAppInfo, sDetails]))
+    oComplaint = DetailDialog(sMessage, '\n'.join([format_app_info(),
+                                                   sDetails]))
     iResponse = oComplaint.run()
     oComplaint.destroy()
     return iResponse
@@ -130,6 +135,26 @@ def do_exception_complaint(sMessage):
        a detailed dialog with the info."""
     oType, oValue, oTraceback = sys.exc_info()
     aTraceback = traceback.format_exception(oType, oValue, oTraceback,
-            limit=30)
+                                            limit=30)
     logging.error("%s:\n%s", sMessage, "".join(aTraceback))
     do_complaint_error_details(sMessage, "".join(aTraceback))
+
+
+def exception_handler(oType, oValue, oTraceback):
+    """sys.excepthook wrapper around do_complaint_error_details."""
+    if oType == KeyboardInterrupt:
+        # don't complain about KeyboardInterrupts
+        return
+
+    sMessage = "%s reported an unhandled exception:\n%s\n" % (AppInfo.NAME,
+                                                              str(oValue))
+    aTraceback = traceback.format_exception(oType, oValue, oTraceback)
+    sDetails = "".join(aTraceback)
+
+    logging.error("%s:\n%s", sMessage, '\n'.join([format_app_info(),
+                                                  sDetails]))
+    # We log before we show the dialog, otherwise, if there's an exception
+    # while the progress bar update hack is ongoing, the error dialog won't
+    # work correctly, and the exception may be lost
+
+    do_complaint_error_details(sMessage, sDetails)

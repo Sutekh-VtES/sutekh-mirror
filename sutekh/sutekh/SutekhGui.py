@@ -5,25 +5,21 @@
 """SutekhGui.py: start the GUI"""
 
 
-import gtk
 import logging
 import sys
 import optparse
 import os
-import traceback
 from sqlobject import sqlhub, connectionForURI
 from sutekh.base.core.BaseObjects import VersionTable
 from sutekh.core.SutekhObjects import TABLE_LIST
-from sutekh.base.Utility import prefs_dir, ensure_dir_exists, sqlite_uri, \
-        get_database_url
+from sutekh.base.Utility import prefs_dir, ensure_dir_exists, sqlite_uri
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
-from sutekh.base.gui.SutekhDialog import (do_complaint_error,
-                                          do_complaint_warning,
-                                          do_exception_complaint,
-                                          do_complaint_error_details)
+from sutekh.base.gui.SutekhDialog import exception_handler
+from sutekh.base.gui.GuiUtils import (setup_logging, prepare_gui, load_config,
+                                      save_config)
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -55,58 +51,6 @@ def parse_options(aArgs):
     return oOptParser, oOptParser.parse_args(aArgs)
 
 
-def exception_handler(oType, oValue, oTraceback):
-    """sys.excepthook exception handler."""
-    if oType == KeyboardInterrupt:
-        # don't complain about KeyboardInterrupts
-        return
-
-    sMessage = "Sutekh reported an unhandled exception:\n" \
-        "%s\n" % (str(oValue),)
-    aTraceback = traceback.format_exception(oType, oValue, oTraceback)
-
-    sSutekhInfo = "Sutekh version %s\nDatabase: %s\n\n" % (
-            SutekhInfo.VERSION_STR, get_database_url())
-    sDetails = "".join(aTraceback)
-
-    logging.error("%s:\n%s", sMessage, '\n'.join([sSutekhInfo, sDetails]))
-    # Log before we show the dialog, otherwise, if there's an exception while
-    # the progress bar update hack is ongoing, the error dialog won't work
-    # correctly, and the exception may be lost
-
-    do_complaint_error_details(sMessage, sDetails)
-
-
-def setup_logging(oOpts):
-    """Setup the log handling for this run"""
-    # Only log critical messages by default
-    oRootLogger = logging.getLogger()
-    oRootLogger.setLevel(level=logging.CRITICAL)
-    if oOpts.verbose or oOpts.sErrFile:
-        # Change logging level to debug
-        oRootLogger.setLevel(logging.DEBUG)
-        bSkipVerbose = False
-        if oOpts.sErrFile:
-            try:
-                oLogHandler = logging.FileHandler(oOpts.sErrFile)
-                oRootLogger.addHandler(oLogHandler)
-            except IOError:
-                oLogHandler = logging.StreamHandler(sys.stderr)
-                oRootLogger.addHandler(oLogHandler)
-                bSkipVerbose = True  # Avoid doubled logging to stderr
-                logging.error('Unable to open log file, logging to stderr',
-                        exc_info=1)
-        if oOpts.verbose and not bSkipVerbose:
-            # Add logging to stderr
-            oLogHandler = logging.StreamHandler(sys.stderr)
-            oRootLogger.addHandler(oLogHandler)
-    else:
-        # Setup fallback logger for critical messages
-        oLogHandler = logging.StreamHandler(sys.stderr)
-        oRootLogger.addHandler(oLogHandler)
-    return oRootLogger
-
-
 def main():
     # pylint: disable-msg=R0912, R0914, R0915
     # lots of different cases to consider, so long and has lots of variables
@@ -117,18 +61,11 @@ def main():
        pass control off to SutekhMainWindow
        Save preferences on exit if needed
        """
-    # Print nice complaint if not under a windowing system
-    if gtk.gdk.screen_get_default() is None:
-        print "Unable to find windowing system. Aborting"
+    if not prepare_gui('Sutekh'):
         return 1
+
     # handle exceptions with a GUI dialog
     sys.excepthook = exception_handler
-
-    # Disable Unity's moving of menubars to the appmenu at
-    # the top of the screen since this moves the panel menus
-    # into limbo.
-    # TODO: we should only disable this on the panel menus
-    os.environ["UBUNTU_MENUPROXY"] = "0"
 
     oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
     sPrefsDir = prefs_dir("Sutekh")
@@ -141,18 +78,9 @@ def main():
         ensure_dir_exists(sPrefsDir)
         oOpts.sRCFile = os.path.join(sPrefsDir, "sutekh.ini")
 
-    oConfig = ConfigFile(oOpts.sRCFile)
-    # initial config validation to set sane defaults
-    # (re-validated later after plugins are loaded)
-    oConfig.validate()
-
-    if not oConfig.check_writeable():
-        # Warn the user
-        iRes = do_complaint_warning('Unable to write to the config file %s.\n'
-                'Config changes will NOT be saved.\n'
-                'Do you wish to continue?' % oOpts.sRCFile)
-        if iRes == gtk.RESPONSE_CANCEL:
-            return 1
+    oConfig = load_config(ConfigFile, oOpts.sRCFile)
+    if not oConfig:
+        return 1
 
     if oOpts.db is None:
         oOpts.db = oConfig.get_database_uri()
@@ -168,13 +96,6 @@ def main():
 
     if oOpts.sql_debug:
         oConn.debug = True
-
-    # Check we have the correct gtk version
-    sMessage = gtk.check_version(2, 16, 0)
-    if sMessage is not None:
-        do_complaint_error('Incorrect gtk version. Sutekh requires at least'
-                ' gtk 2.16.0.\nError reported %s' % sMessage)
-        return 1
 
     # construct Window
     oMainWindow = SutekhMainWindow()
@@ -199,18 +120,13 @@ def main():
         if not do_db_upgrade(aLowerTables, aHigherTables):
             return 1
 
-    _oRootLogger = setup_logging(oOpts)
+    _oRootLogger = setup_logging(oOpts.verbose, oOpts.sErrFile)
 
     oMainWindow.setup(oConfig)
     oMainWindow.run()
 
     # Save Config Changes
-    try:
-        oConfig.write()
-    except IOError, oExp:
-        sMesg = 'Unable to write the configuration file\n' \
-                'Error was: %s' % oExp
-        do_exception_complaint(sMesg)
+    save_config(oConfig)
 
     logging.shutdown()
 
