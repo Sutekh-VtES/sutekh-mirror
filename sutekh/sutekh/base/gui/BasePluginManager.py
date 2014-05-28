@@ -304,12 +304,11 @@ class BasePlugin(object):
 
     def get_card_set(self):
         """Get the Card Set for this view."""
-        oCardSet = None
         if self._cModelType is PhysicalCardSet:
             # pylint: disable-msg=E1101
             # sqlobject confuses pylint
-            oCardSet = PhysicalCardSet.byName(self.view.sSetName)
-        return oCardSet
+            return self.model.cardset
+        return None
 
     def get_all_cards(self):
         """Get the cards from the card set."""

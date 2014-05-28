@@ -205,12 +205,18 @@ class CardSetCardListModel(CardListModel):
     # We allow access via these properties
 
     frame_id = property(fget=__get_frame_id,
-            doc="Frame ID of associated card set (for selecting profiles)")
+                        doc="Frame ID of associated card set "
+                            "(for selecting profiles)")
 
     # Use the id for referencing the profile, as it's unique to each card set,
     # and only changes on major database changes (unlike the name)
     cardset_id = property(fget=lambda self: "cs%s" % (self._oCardSet.id,),
-            doc="Cardset ID of associated card set (for selecting profiles)")
+                          doc="Cardset ID of associated card set "
+                              "(for selecting profiles)")
+
+    # The actual card set, to avoid some trips through IPhysicalCardSet
+    cardset = property(fget=lambda self: self._oCardSet,
+                       doc="Associated card set")
 
     #pylint: enable-msg=W0212
 
