@@ -47,6 +47,9 @@ class BaseConfigFile(object):
         'option_list': is_option_list,
     }
 
+    # Subclasses should specify the correct thing here
+    DEFAULT_FILTERS = {}
+
     def __init__(self, sFileName):
         self._sFileName = sFileName
         self._bWriteable = False
@@ -340,6 +343,11 @@ class BaseConfigFile(object):
            """
         return [(oF['query'], oF['vars']) for oF in
             self._oConfig['filters'].values()]
+
+    def get_default_filters(self):
+        """Return the default filter list."""
+        # Subclasses should override DEFAULT_FILTERS as required
+        return self.DEFAULT_FILTERS
 
     def get_filter_keys(self):
         """Return all the keys for all the filters in the config file."""

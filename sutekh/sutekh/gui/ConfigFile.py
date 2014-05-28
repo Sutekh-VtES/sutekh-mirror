@@ -12,20 +12,6 @@ from sutekh.base.gui.BaseConfigFile import BaseConfigFile
 import pkg_resources
 
 
-APP_DEFAULT_FILTERS = {
-    "Default Filter Template": "(Clan in $var0) or (Discipline in $var1)"
-                               " or (CardType in $var2) or "
-                               "(CardFunction in $var3)",
-    "Clan": "Clan in $var0",
-    "Discipline": "Discipline in $var0",
-    "Card Type": "CardType in $var0",
-    "Card Text": "CardText in $var0",
-    "Card Name": "CardName in $var0",
-    "Card Set Name": "CardSetName in $var0",
-    "Physical Expansion": "PhysicalExpansion in $var0",
-}
-
-
 class ConfigFile(BaseConfigFile):
     """Application overrides for the ConfigFile
 
@@ -35,6 +21,19 @@ class ConfigFile(BaseConfigFile):
     # pylint: disable-msg=R0904
     # R0904 - Extends ConfigFile, which needs a lot of methods to manage
     # all the state
+
+    DEFAULT_FILTERS = {
+        "Default Filter Template": "(Clan in $var0) or (Discipline in $var1)"
+                                   " or (CardType in $var2) or "
+                                   "(CardFunction in $var3)",
+        "Clan": "Clan in $var0",
+        "Discipline": "Discipline in $var0",
+        "Card Type": "CardType in $var0",
+        "Card Text": "CardText in $var0",
+        "Card Name": "CardName in $var0",
+        "Card Set Name": "CardSetName in $var0",
+        "Physical Expansion": "PhysicalExpansion in $var0",
+    }
 
     def __init__(self, sFileName):
         super(ConfigFile, self).__init__(sFileName)

@@ -13,7 +13,6 @@ from ..core import FilterParser
 from .BaseConfigFile import FULL_CARDLIST, CARDSET, DEF_PROFILE_FILTER
 from .MessageBus import MessageBus, CONFIG_MSG
 from .FilterEditor import FilterEditor
-from sutekh.gui.ConfigFile import APP_DEFAULT_FILTERS
 import gtk
 import gobject
 
@@ -37,8 +36,6 @@ class FilterDialog(SutekhDialog):
     RESPONSE_LOAD = 3
     RESPONSE_SAVE = 4
     RESPONSE_DELETE = 5
-
-    DEFAULT_FILTERS = APP_DEFAULT_FILTERS
 
     INITIAL_FILTER = "Default Filter Template"
 
@@ -64,6 +61,8 @@ class FilterDialog(SutekhDialog):
 
         self.set_default_size(700, 550)
         self.connect("response", self.__button_response)
+
+        self._aDefaultFilters = oConfig.get_default_filters()
 
         # Dialog Buttons
         self.add_button("Clear Filter", self.RESPONSE_CLEAR)
@@ -221,7 +220,7 @@ class FilterDialog(SutekhDialog):
            """
         if bDefault:
             sSrc = "default filter list"
-            oFilterIter = list(self.DEFAULT_FILTERS.items())
+            oFilterIter = list(self._aDefaultFilters.items())
         else:
             sSrc = "config file"
             oFilterIter = list(self.__oConfig.get_filter_keys())
@@ -246,7 +245,7 @@ class FilterDialog(SutekhDialog):
                 if not bDefault:
                     self.__oConfig.remove_filter(sFilter, sName)
                 else:
-                    del self.DEFAULT_FILTERS[sName]
+                    del self._aDefaultFilters[sName]
 
         if aErrMsgs:
             do_complaint_error("The following invalid filters have been"
