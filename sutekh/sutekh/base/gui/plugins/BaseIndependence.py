@@ -90,7 +90,7 @@ class BaseIndependence(BasePlugin):
         # E1101: PyProtocols confuses pylint
         # W0201: No need to define oThisCardSet, oCSView & oInUseButton in
         # __init__
-        self.oThisCardSet = IPhysicalCardSet(self.view.sSetName)
+        self.oThisCardSet = self.get_card_set()
         if not self.oThisCardSet.parent:
             do_complaint_error("Card Set has no parent, so nothing to test.")
             return None
