@@ -432,8 +432,8 @@ class BaseConfigFile(object):
         if sKey in self._oConfig['filters'] and \
                 sOldFilter == self._oConfig['filters'][sKey]['query']:
             self._oConfig['filters'][sKey]['query'] = sNewFilter
-            MessageBus.publish(CONFIG_MSG, 'replace_filter', sOldFilter,
-                    sNewFilter)
+            MessageBus.publish(CONFIG_MSG, 'replace_filter', sKey,
+                               sOldFilter, sNewFilter)
 
     #
     # Per-Deck Options
