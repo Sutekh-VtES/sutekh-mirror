@@ -40,20 +40,22 @@ class CardSetMenu(CardListMenu):
         self.sort_menu(self._dMenus['Analyze'])
         MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                             self.profile_option_changed)
         MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
-                self.profile_changed)
+                             self.profile_changed)
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
     name = property(fget=lambda self: self._oController.view.sSetName,
-            doc="Associated Card Set Name")
+                    doc="Associated Card Set Name")
 
     frame_id = property(fget=lambda self: self._oController.model.frame_id,
-            doc="Frame ID of associated card set (for selecting profiles)")
+                        doc="Frame ID of associated card set "
+                            "(for selecting profiles)")
 
     cardset_id = property(fget=lambda self: self._oController.model.cardset_id,
-            doc="Cardset ID of associated card set (for selecting profiles)")
+                          doc="Cardset ID of associated card set "
+                              "(for selecting profiles)")
 
     #pylint: enable-msg=W0212
 
@@ -63,9 +65,9 @@ class CardSetMenu(CardListMenu):
         """Create the Actions menu for Card Sets."""
         oMenu = self.create_submenu(self, '_Actions')
         self.create_menu_item("Edit Card Set _Properties", oMenu,
-                self._edit_properties)
+                              self._edit_properties)
         self.create_menu_item("_Save Card Set to File", oMenu,
-                self._do_export)
+                              self._do_export)
         # Submenu for plugins
         self.create_submenu(oMenu, "_Export Card Set")
 
@@ -79,31 +81,35 @@ class CardSetMenu(CardListMenu):
         """Create the 'Edit' menu, and populate it."""
         oMenu = self.create_submenu(self, "_Edit")
         self._oEditable = self.create_check_menu_item('Card Set is Editable',
-                oMenu, self.toggle_editable, False, '<Ctrl>e')
+                                                      oMenu,
+                                                      self.toggle_editable,
+                                                      False, '<Ctrl>e')
         self._oController.view.set_menu(self)
         self.create_menu_item('Copy selection', oMenu, self.copy_selection,
-                '<Ctrl>c')
+                              '<Ctrl>c')
         self._oPaste = self.create_menu_item('Paste', oMenu,
-                self._paste_selection, '<Ctrl>v')
+                                             self._paste_selection,
+                                             '<Ctrl>v')
         self._oDel = self.create_menu_item('Delete selection', oMenu,
-                self._del_selection, 'Delete')
+                                           self._del_selection, 'Delete')
         self._oPaste.set_sensitive(False)
         self._oDel.set_sensitive(False)
 
         self.create_menu_item('Edit _Local Profile', oMenu,
-            self._edit_local_profile)
+                              self._edit_local_profile)
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
-        sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
-            self.cardset_id)
-        self._oCardsetProfileMenu = self._create_profile_menu(oMenu,
-            "Cardset Profile", CARDSET, self._select_cardset_profile,
+        sCardsetProfile = self._oMainWindow.config_file.get_profile(
+            CARDSET, self.cardset_id)
+        self._oCardsetProfileMenu = self._create_profile_menu(
+            oMenu, "Cardset Profile", CARDSET, self._select_cardset_profile,
             sCardsetProfile)
 
-        sFrameProfiles = self._oMainWindow.config_file.get_profile(FRAME,
-            self.frame_id)
-        self._oFrameProfileMenu = self._create_profile_menu(oMenu,
-            "Pane Profile", FRAME, self._select_frame_profile, sFrameProfiles)
+        sFrameProfiles = self._oMainWindow.config_file.get_profile(
+            FRAME, self.frame_id)
+        self._oFrameProfileMenu = self._create_profile_menu(
+            oMenu, "Pane Profile", FRAME, self._select_frame_profile,
+            sFrameProfiles)
 
         self.add_edit_menu_actions(oMenu)
 
@@ -112,11 +118,11 @@ class CardSetMenu(CardListMenu):
     def cleanup(self):
         """Remove the menu listener"""
         MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
-                self.remove_profile)
+                               self.remove_profile)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                               self.profile_option_changed)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
-                self.profile_changed)
+                               self.profile_changed)
 
     def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
@@ -133,7 +139,7 @@ class CardSetMenu(CardListMenu):
     def _do_export(self, _oWidget):
         """Export the card set to the chosen filename."""
         oFileChooser = ExportDialog("Save Card Set As ", self._oMainWindow,
-                '%s.xml' % safe_filename(self.name))
+                                    '%s.xml' % safe_filename(self.name))
         oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
@@ -170,33 +176,34 @@ class CardSetMenu(CardListMenu):
     def _edit_local_profile(self, _oWidget):
         """Open an editor for the local cardset profile."""
         oDlg = LocalProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file, self.frame_id, self.cardset_id)
+                                  self._oMainWindow.config_file,
+                                  self.frame_id, self.cardset_id)
         oDlg.run()
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file, CARDSET)
-        sCurProfile = self._oMainWindow.config_file.get_profile(FRAME,
-            self.frame_id)
+                                  self._oMainWindow.config_file, CARDSET)
+        sCurProfile = self._oMainWindow.config_file.get_profile(
+            FRAME, self.frame_id)
         if not sCurProfile:
             # We're using the card set profile instead
-            sCurProfile = self._oMainWindow.config_file.get_profile(CARDSET,
-                    self.cardset_id)
+            sCurProfile = self._oMainWindow.config_file.get_profile(
+                CARDSET, self.cardset_id)
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
     def _fix_profile_menu(self):
         """Update the profile menu properly"""
-        sCardsetProfile = self._oMainWindow.config_file.get_profile(CARDSET,
-            self.cardset_id)
+        sCardsetProfile = self._oMainWindow.config_file.get_profile(
+            CARDSET, self.cardset_id)
         self._update_profile_group(self._oCardsetProfileMenu, CARDSET,
-            self._select_cardset_profile, sCardsetProfile)
-
-        sFrameProfile = self._oMainWindow.config_file.get_profile(FRAME,
-            self.frame_id)
+                                   self._select_cardset_profile,
+                                   sCardsetProfile)
+        sFrameProfile = self._oMainWindow.config_file.get_profile(
+            FRAME, self.frame_id)
         self._update_profile_group(self._oFrameProfileMenu, FRAME,
-            self._select_frame_profile, sFrameProfile)
+                                   self._select_frame_profile, sFrameProfile)
 
     def _select_cardset_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current card set."""
