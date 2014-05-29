@@ -12,14 +12,14 @@ import os
 from sqlobject import sqlhub, connectionForURI
 from sutekh.base.core.BaseObjects import VersionTable
 from sutekh.core.SutekhObjects import TABLE_LIST
-from sutekh.base.Utility import prefs_dir, ensure_dir_exists, sqlite_uri
+from sutekh.base.Utility import (prefs_dir, ensure_dir_exists, sqlite_uri,
+                                 setup_logging)
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
 from sutekh.gui.ConfigFile import ConfigFile
 from sutekh.gui.GuiDBManagement import do_db_upgrade, initialize_db
 from sutekh.base.gui.SutekhDialog import exception_handler
-from sutekh.base.gui.GuiUtils import (setup_logging, prepare_gui, load_config,
-                                      save_config)
+from sutekh.base.gui.GuiUtils import prepare_gui, load_config, save_config
 from sutekh.SutekhInfo import SutekhInfo
 
 

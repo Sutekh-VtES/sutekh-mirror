@@ -13,7 +13,6 @@ import optparse
 import os
 import tempfile
 import StringIO
-import logging
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
@@ -21,14 +20,15 @@ from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
                                           PhysicalCard,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.core.SutekhObjects import TABLE_LIST
-from sutekh.core.Filters import PhysicalCardSetFilter, FilterAndBox, \
-        PhysicalCardFilter
+from sutekh.core.Filters import (PhysicalCardSetFilter, FilterAndBox,
+                                 PhysicalCardFilter)
 from sutekh.base.core.FilterParser import FilterParser
-from sutekh.SutekhUtility import read_white_wolf_list, \
-        read_rulings, gen_temp_dir, is_crypt_card, format_text, \
-        read_exp_date_list
+from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
+                                  gen_temp_dir, is_crypt_card,
+                                  format_text, read_exp_date_list)
 from sutekh.base.core.DBUtility import refresh_tables
-from sutekh.base.Utility import ensure_dir_exists, prefs_dir, sqlite_uri
+from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
+                                 setup_logging)
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.base.core.CardSetUtilities import format_cs_list
@@ -264,18 +264,7 @@ def main_with_args(aTheArgs):
         oConn.debug = True
 
     # Only log critical messages by default
-    oRootLogger = logging.getLogger()
-    oRootLogger.setLevel(level=logging.CRITICAL)
-    if oOpts.verbose:
-        # Change logging level to debug
-        oRootLogger.setLevel(logging.DEBUG)
-        # Add logging to stderr
-        oLogHandler = logging.StreamHandler(sys.stderr)
-        oRootLogger.addHandler(oLogHandler)
-    else:
-        # Setup fallback logger for critical messages
-        oLogHandler = logging.StreamHandler(sys.stderr)
-        oRootLogger.addHandler(oLogHandler)
+    setup_logging(oOpts.verbose)
 
     if oOpts.reload:
         if not oOpts.refresh_tables:

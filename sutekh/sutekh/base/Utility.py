@@ -11,6 +11,7 @@
 import tempfile
 import os
 import sys
+import logging
 from sqlobject import sqlhub
 import urlparse
 
@@ -183,3 +184,33 @@ def find_subclasses(cClass):
         # No children, so append
         aSubClasses.add(cClass)
     return aSubClasses
+
+
+def setup_logging(bVerbose, sErrFile=None):
+    """Setup the log handling for this run"""
+    # Only log critical messages by default
+    oRootLogger = logging.getLogger()
+    oRootLogger.setLevel(level=logging.CRITICAL)
+    if bVerbose or sErrFile:
+        # Change logging level to debug
+        oRootLogger.setLevel(logging.DEBUG)
+        bSkipVerbose = False
+        if sErrFile:
+            try:
+                oLogHandler = logging.FileHandler(sErrFile)
+                oRootLogger.addHandler(oLogHandler)
+            except IOError:
+                oLogHandler = logging.StreamHandler(sys.stderr)
+                oRootLogger.addHandler(oLogHandler)
+                bSkipVerbose = True  # Avoid doubled logging to stderr
+                logging.error('Unable to open log file, logging to stderr',
+                              exc_info=1)
+        if bVerbose and not bSkipVerbose:
+            # Add logging to stderr
+            oLogHandler = logging.StreamHandler(sys.stderr)
+            oRootLogger.addHandler(oLogHandler)
+    else:
+        # Setup fallback logger for critical messages
+        oLogHandler = logging.StreamHandler(sys.stderr)
+        oRootLogger.addHandler(oLogHandler)
+    return oRootLogger
