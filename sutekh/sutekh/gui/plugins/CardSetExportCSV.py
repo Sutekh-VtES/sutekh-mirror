@@ -5,59 +5,12 @@
 
 """Plugin for exporting to CSV format"""
 
-import gtk
-from sutekh.base.core.BaseObjects import PhysicalCardSet
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.base.io.WriteCSV import WriteCSV
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.SutekhFileWidget import ExportDialog
-from sutekh.base.Utility import safe_filename
-from sutekh.base.gui.GuiCardSetFunctions import write_cs_to_file
+from sutekh.base.gui.plugins.BaseExportCSV import BaseExportCSV
 
 
-class CardSetExportCSV(SutekhPlugin):
-    """Provides a dialog for selecting a filename, then calls on
-       WriteCSV to produce the required output."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
-    aModelsSupported = (PhysicalCardSet,)
-
-    def get_menu_item(self):
-        """Register on the 'Export Card Set' Menu"""
-        if not self.check_versions() or not self.check_model_type():
-            return None
-        oExport = gtk.MenuItem("Export to CSV")
-        oExport.connect("activate", self.make_dialog)
-        return ('Export Card Set', oExport)
-
-    def make_dialog(self, _oWidget):
-        """Create the dialog"""
-        # pylint: disable-msg=E1101
-        # vbox confuses pylint
-        oDlg = ExportDialog("Choose FileName for Exported CardSet",
-                self.parent, '%s.csv' % safe_filename(self.view.sSetName))
-        oDlg.add_filter_with_pattern('CSV Files', ['*.xml'])
-        oIncHeader = gtk.CheckButton("Include Column Headers")
-        oIncHeader.set_active(True)
-        oDlg.vbox.pack_start(oIncHeader, expand=False)
-        oIncExpansion = gtk.CheckButton("Include Expansions")
-        oIncExpansion.set_active(True)
-        oDlg.vbox.pack_start(oIncExpansion, expand=False)
-        oDlg.show_all()
-        oDlg.run()
-
-        self.handle_response(oDlg.get_name(), oIncHeader.get_active(),
-                oIncExpansion.get_active())
-
-    def handle_response(self, sFileName, bIncHeader, bIncExpansion):
-        """Handle the users response. Write the CSV output to file."""
-        # pylint: disable-msg=E1101
-        # SQLObject methods confuse pylint
-        if sFileName is not None:
-            oCardSet = self.get_card_set()
-            if not oCardSet:
-                return
-            oWriter = WriteCSV(bIncHeader, bIncExpansion)
-            write_cs_to_file(oCardSet, oWriter, sFileName)
+class CardSetExportCSV(SutekhPlugin, BaseExportCSV):
+    """Sutekh wrapper for CSV Export plugin."""
 
 
 plugin = CardSetExportCSV
