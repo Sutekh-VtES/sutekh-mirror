@@ -12,6 +12,7 @@ from sutekh.base.io.WriteCSV import WriteCSV
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhFileWidget import ExportDialog
 from sutekh.base.Utility import safe_filename
+from sutekh.base.gui.GuiCardSetFunctions import write_cs_to_file
 
 
 class CardSetExportCSV(SutekhPlugin):
@@ -55,10 +56,8 @@ class CardSetExportCSV(SutekhPlugin):
             oCardSet = self.get_card_set()
             if not oCardSet:
                 return
-            fOut = file(sFileName, "w")
             oWriter = WriteCSV(bIncHeader, bIncExpansion)
-            oWriter.write(fOut, CardSetWrapper(oCardSet))
-            fOut.close()
+            write_cs_to_file(oCardSet, oWriter, sFileName)
 
 
 plugin = CardSetExportCSV

@@ -8,14 +8,13 @@
 """Menu for the card set pane"""
 
 import gtk
-from ..Utility import safe_filename
-from .SutekhFileWidget import ExportDialog
-from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from .FilteredViewMenu import CardListMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .LocalProfileEditor import LocalProfileEditor
 from .BaseConfigFile import CARDSET, FRAME
 from .MessageBus import MessageBus, CONFIG_MSG
+from .GuiCardSetFunctions import export_cs
 
 
 class CardSetMenu(CardListMenu):
@@ -138,15 +137,8 @@ class CardSetMenu(CardListMenu):
 
     def _do_export(self, _oWidget):
         """Export the card set to the chosen filename."""
-        oFileChooser = ExportDialog("Save Card Set As ", self._oMainWindow,
-                                    '%s.xml' % safe_filename(self.name))
-        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
-        oFileChooser.run()
-        sFileName = oFileChooser.get_name()
-        if sFileName is not None:
-            # User has OK'd us overwriting anything
-            oWriter = PhysicalCardSetXmlFile(sFileName)
-            oWriter.write(self.name)
+        export_cs(self._oController.model.cardset, PhysicalCardSetWriter,
+                  self._oMainWindow, 'xml', [('XML Files', ['*.xml'])])
 
     def _card_set_delete(self, _oWidget):
         """Delete the card set."""

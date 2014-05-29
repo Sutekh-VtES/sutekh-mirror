@@ -8,16 +8,18 @@
 import gtk
 import datetime
 import logging
-from ..core.CardSetHolder import CardSetHolder
+from ..core.CardSetHolder import CardSetHolder, CardSetWrapper
 from .SutekhDialog import (do_complaint_warning, do_complaint,
                            do_complaint_error, do_exception_complaint)
 from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
 from ..core.CardLookup import LookupFailed
 from .CreateCardSetDialog import CreateCardSetDialog
+from .SutekhFileWidget import ExportDialog
 from .RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
 from ..core.CardSetUtilities import (delete_physical_card_set, find_children,
                                      has_children, detect_loop,
                                      get_loop_names, break_loop)
+from ..Utility import safe_filename
 
 
 def reparent_card_set(oCardSet, oNewParent):
@@ -183,6 +185,48 @@ def update_card_set(oCardSet, oMainWindow):
         oFrame.menu.update_card_set_menu(oCardSet)
         # update_card_set_menu does the needed magic for us
     oMainWindow.reload_pcs_list()
+
+
+# Common GUI export card set code
+def write_cs_to_file(oCardSet, oWriter, sFileName):
+    """Core of the writing logic.
+
+       Split out as a separate function so the plugins which tweak the
+       Export Dialog can still use the same logic."""
+    # pylint: disable-msg=W0703
+    # we really do want all the exceptions
+    fOut = None
+    try:
+        # The user has OK'd us overwriting everything
+        fOut = open(sFileName, 'w')
+        oWriter.write(fOut, CardSetWrapper(oCardSet))
+    except Exception, oExp:
+        sMsg = ("Writing the card set failed with the following error:\n"
+                "%s\nAborting" % oExp)
+        do_exception_complaint(sMsg)
+    finally:
+        if fOut:
+            fOut.close()
+
+
+def export_cs(oCardSet, cWriter, oParWin, sExt, aPatterns=None):
+    """Query the user for a file name and 
+       export the card using the given writer."""
+    sSuggestedFileName = '%s.%s' % (safe_filename(oCardSet.name), sExt)
+    oDlg = ExportDialog("Save CardSet As ", oParWin,
+                        sSuggestedFileName)
+    if aPatterns:
+        for sName, aFiltPat in aPatterns:
+            oDlg.add_filter_with_pattern(sName, aFiltPat)
+    else:
+        oDlg.add_filter_with_pattern('Text Files', ['*.txt'])
+    oDlg.run()
+    sFileName = oDlg.get_name()
+    if sFileName is None:
+        # bail
+        return
+    oWriter = cWriter()
+    write_cs_to_file(oCardSet, oWriter, sFileName)
 
 
 # Common to MainMenu import code and plugins

@@ -14,6 +14,7 @@ from sutekh.base.gui.SutekhDialog import (do_complaint_error,
                                           do_exception_complaint)
 from sutekh.base.gui.SutekhFileWidget import ExportDialog
 from sutekh.base.Utility import safe_filename
+from sutekh.base.gui.GuiCardSetFunctions import write_cs_to_file
 
 
 class CardSetExportHTML(SutekhPlugin):
@@ -109,14 +110,8 @@ class CardSetExportHTML(SutekhPlugin):
             if self.oTextButton.get_active():
                 bDoText = True
             sLinkMode = self.get_config_item('HTML export mode')
-            try:
-                oWriter = WriteArdbHTML(sLinkMode, bDoText)
-                fOut = file(sFileName, 'w')
-                oWriter.write(fOut, CardSetWrapper(oCardSet))
-                fOut.close()
-            except Exception, oExp:
-                sMsg = "Failed to open output file.\n\n%s" % oExp
-                do_exception_complaint(sMsg)
+            oWriter = WriteArdbHTML(sLinkMode, bDoText)
+            write_cs_to_file(oCardSet, oWriter, sFileName)
 
 
 plugin = CardSetExportHTML
