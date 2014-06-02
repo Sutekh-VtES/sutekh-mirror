@@ -1,3 +1,26 @@
+29 May 2014
+ * Add export_cs and write_cs_to_file helpers to unify card set writing
+   logic
+ * Move CardSetExportCSV to base/gui/plugins
+
+28 May 2014
+ * Fix bug when replacing saved filters in the filter dialog
+ * Change how default filters are specified
+ * Add cardset property to CardSetListModel for ease of use in plugins
+
+27 May 2014
+ * Sort names in the Card Set Independence plugin
+ * Move some generic code out of SutekhGui into base.gui.GuiUtils
+
+23 May 2014
+ * Move several generic plugins into base.gui.plugins
+   - Moved plugins: FullBackup, ChangeGroupBy, CardSetCompare, CSVImporter,
+     ExpansionStats, CardSetFromFilter, CardSetIndependence, CardSetPrint,
+     SetToExpansion, SnapshotCardSet & ImportFromZipFile
+
+13 May 2014
+ * Move make_illegal_filter into base.core
+
 12 May 2014
  * Use introspection to find Filters for FilterParser
  * Add base class for Adapters
