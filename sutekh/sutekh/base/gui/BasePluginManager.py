@@ -137,14 +137,13 @@ class PluginConfigFileListener(object):
             if sType == CARDSET or sType == FRAME:
                 # Handle the cardset_profile, frame_profile case
                 tProfiles = (
-                        oConfig.get_profile(FRAME,
-                            self._oPlugin.model.frame_id),
-                        oConfig.get_profile(CARDSET,
-                            self._oPlugin.model.cardset_id),
-                        )
+                    oConfig.get_profile(FRAME, self._oPlugin.model.frame_id),
+                    oConfig.get_profile(CARDSET,
+                                        self._oPlugin.model.cardset_id),
+                )
             else:
-                tProfiles = (oConfig.get_profile(sType,
-                    self._oPlugin.model.cardset_id),)
+                tProfiles = (oConfig.get_profile(
+                    sType, self._oPlugin.model.cardset_id),)
             if sProfile in tProfiles:
                 self._oPlugin.perpane_config_updated()
 
@@ -198,6 +197,13 @@ class BasePlugin(object):
     config = property(fget=lambda self: self._oView.mainwindow.config_file,
                       doc="Configuration object.")
     # pylint: enable-msg=W0212
+
+    @classmethod
+    def update_config(cls):
+        """Handle any tweaks to the config that need to happen before
+           register_config, but that can't be specified statically."""
+        # Default is to do nothing here
+        pass
 
     @classmethod
     def register_with_config(cls, oConfig):
@@ -324,10 +330,11 @@ class BasePlugin(object):
         if aCards:
             iCards = aCards.count()
         if iCards > iLimit:
-            iRes = do_complaint_warning("This card set is very large"
-                    " (%d cards), and so using the %s plugin doesn't seem"
-                    " sensible.\nAre you sure you want to continue?" %
-                    (iCards, sName))
+            iRes = do_complaint_warning("This card set is very large "
+                                        "(%d cards), and so using the %s "
+                                        "plugin doesn't seem sensible.\n"
+                                        "Are you sure you want to continue?" %
+                                        (iCards, sName))
             if iRes == gtk.RESPONSE_CANCEL:
                 return False  # fail
         return True  # A-OK

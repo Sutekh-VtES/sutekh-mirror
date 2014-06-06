@@ -86,6 +86,8 @@ class AppMainWindow(MultiPaneWindow):
             # Find plugins that will work on the Main Window
             self._aPlugins.append(cPlugin(self, None,
                                           "MainWindow"))
+            # Fixup config to accomodate the plugins
+            cPlugin.update_config()
             cPlugin.register_with_config(oConfig)
 
         # Re-validate config after adding plugin specs

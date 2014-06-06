@@ -38,13 +38,12 @@ class BaseGroupBy(BasePlugin):
         'No Grouping': NullGrouping,
     }
 
-    # We abuse register_with_config to update things correctly
     @classmethod
-    def register_with_config(cls, oConfig):
+    def update_config(cls):
+        """Add the correct list of options to the config"""
         OPTION_STR = ", ".join('"%s"' % sKey for sKey in cls.GROUPINGS.keys())
         cls.dPerPaneConfig[cls.GROUP_BY] = ('option(%s, default="Card Type")' %
                                             OPTION_STR)
-        super(BaseGroupBy, cls).register_with_config(oConfig)
 
     # pylint: disable-msg=W0142
     # ** magic OK here
