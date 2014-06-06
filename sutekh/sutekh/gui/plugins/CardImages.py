@@ -126,6 +126,8 @@ class ImageConfigDialog(BaseImageConfigDialog):
         # here, rather than cluttering up the generic ConfigDialog with
         # this entirely Sutekh specific logic
         if bDownloadUpgrade:
+            # pylint: disable-msg=E1101
+            # pylint doesn't pick up vbox methods correctly
             # Clear the dialog vbox and start again
             self.vbox.remove(self.oDescLabel)
             self.vbox.remove(self.oChoice)

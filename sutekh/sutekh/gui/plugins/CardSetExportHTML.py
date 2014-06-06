@@ -7,11 +7,9 @@
 
 import gtk
 from sutekh.base.core.BaseObjects import PhysicalCardSet
-from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.SutekhDialog import (do_complaint_error,
-                                          do_exception_complaint)
+from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.SutekhFileWidget import ExportDialog
 from sutekh.base.Utility import safe_filename
 from sutekh.base.gui.GuiCardSetFunctions import write_cs_to_file

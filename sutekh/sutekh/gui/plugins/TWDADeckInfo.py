@@ -13,7 +13,8 @@ from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
                                           SpecificCardFilter,
                                           MultiPhysicalCardSetMapFilter)
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.ProgressDialog import ProgressDialog, SutekhCountLogHandler
+from sutekh.base.gui.ProgressDialog import (ProgressDialog,
+                                            SutekhCountLogHandler)
 from sutekh.base.gui.SutekhDialog import (SutekhDialog, do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
