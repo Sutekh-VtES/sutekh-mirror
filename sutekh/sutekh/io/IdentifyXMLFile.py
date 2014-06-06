@@ -9,12 +9,8 @@
 
 from sutekh.base.core.BaseObjects import PhysicalCardSet
 from sqlobject import SQLObjectNotFound
+from xml.etree.ElementTree import parse
 # pylint: disable-msg=E0611, F0401
-# pylint doesn't like the handling of the differences between 2.4 and 2.5
-try:
-    from xml.etree.ElementTree import parse
-except ImportError:
-    from elementtree.ElementTree import parse
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError

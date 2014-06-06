@@ -9,13 +9,7 @@
    the Anarch Revolt Deck Builder's XML inventory format."""
 
 from sutekh.io.WriteArdbXML import WriteArdbXML
-# pylint: disable-msg=E0611, F0401
-# xml.etree is a python2.5 thing
-try:
-    from xml.etree.ElementTree import Element, SubElement
-except ImportError:
-    from elementtree.ElementTree import Element, SubElement
-# pylint: enable-msg=E0611, F0401
+from xml.etree.ElementTree import Element, SubElement
 
 
 class WriteArdbInvXML(WriteArdbXML):

@@ -8,12 +8,8 @@
    """
 
 from ..Utility import pretty_xml, norm_xml_quotes
+from xml.etree.ElementTree import parse, tostring
 # pylint: disable-msg=E0611, F0401
-# xml.etree is a python2.5 thing
-try:
-    from xml.etree.ElementTree import parse, tostring
-except ImportError:
-    from elementtree.ElementTree import parse, tostring
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError

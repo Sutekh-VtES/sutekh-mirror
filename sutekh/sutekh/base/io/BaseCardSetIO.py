@@ -83,7 +83,7 @@ class BaseCardXMLWriter(BaseXMLWriter):
         for oCard in oHolder.cards:
             # ElementTree 1.2 doesn't support searching for attributes,
             # so this is easier than using the tree directly. For
-            # elementtree 1.3, this should be reworked
+            # ElementTree 1.3, this should be reworked
             oAbs = oCard.abstractCard
             if oCard.expansion:
                 sExpName = oCard.expansion.name

@@ -6,12 +6,8 @@
 
 """Parser for ARDB XML inventory format."""
 
+from xml.etree.ElementTree import XMLParser
 # pylint: disable-msg=E0611, F0401
-# pylint doesn't like the handling of the differences between 2.4 and 2.5
-try:
-    from xml.etree.ElementTree import XMLParser
-except ImportError:
-    from elementtree.ElementTree import XMLTreeBuilder as XMLParser
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError

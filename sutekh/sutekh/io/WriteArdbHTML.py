@@ -11,13 +11,7 @@ from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import monger_url, secret_library_url
 from sutekh.base.Utility import pretty_xml, norm_xml_quotes
-# pylint: disable-msg=F0401, E0611
-# the allowed failures here makes pylint unhappy
-try:
-    from xml.etree.ElementTree import Element, SubElement, tostring
-except ImportError:
-    from elementtree.ElementTree import Element, SubElement, tostring
-# pylint: enable-msg=F0401, E0611
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 # Style used by the HTML file
 HTML_STYLE = """

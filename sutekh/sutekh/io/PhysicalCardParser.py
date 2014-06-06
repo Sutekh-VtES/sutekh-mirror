@@ -32,7 +32,7 @@ class PhysicalCardParser(BaseSutekhXMLParser):
     # pylint: disable-msg=R0201
 
     def _convert_tree(self, oHolder):
-        """parse the elementtree into a card set holder"""
+        """parse the Element Tree into a card set holder"""
         self._check_tree()
         oHolder.name = "My Collection"
         oRoot = self._oTree.getroot()
