@@ -96,44 +96,6 @@ class BaseXMLParser(object):
         self._convert_tree(oHolder)
 
 
-class BaseCardXMLParser(BaseXMLParser):
-    # pylint: disable-msg=W0223
-    # Doesn't matter that we don't override _convert_tree - subclasses will
-    # do that for us
-    """Base class for cardset XML files.
-
-       Adds version checking helper functions and such"""
-
-    # Sub-classes override these
-    aSupportedVersions = []
-    sTypeTag = "none"
-    sTypeName = "cardset XML"
-    sVersionTag = "none"
-
-    def _check_tree(self):
-        """Check if the tree is valid"""
-        oRoot = self._oTree.getroot()
-        if oRoot.tag != self.sTypeTag:
-            raise IOError("Not a %s XML File" % self.sTypeName)
-        if oRoot.attrib[self.sVersionTag] not in self.aSupportedVersions:
-            raise IOError("Unrecognised %s File version" % self.sTypeName)
-
-    # pylint: disable-msg=R0201
-    # method so subclasses can use it
-
-    def _parse_card(self, oElem, oHolder):
-        """Extract the expansion information from a card node"""
-        iCount = int(oElem.attrib['count'], 10)
-        sName = oElem.attrib['name']
-        try:
-            sExpansionName = oElem.attrib['expansion']
-            if sExpansionName == "None Specified":
-                sExpansionName = None
-        except KeyError:
-            sExpansionName = None
-        oHolder.add(iCount, sName, sExpansionName)
-
-
 class BaseLineParser(CardSetParser):
     """Base class for simple line-by-line parsers.
 

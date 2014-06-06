@@ -8,7 +8,7 @@
    """
 
 
-from sutekh.base.io.IOBase import BaseCardXMLParser
+from sutekh.base.io.BaseCardSetIO import BaseCardXMLParser
 
 
 class BaseSutekhXMLParser(BaseCardXMLParser):
