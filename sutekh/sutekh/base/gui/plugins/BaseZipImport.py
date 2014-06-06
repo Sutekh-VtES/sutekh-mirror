@@ -182,7 +182,10 @@ class BaseZipImport(BasePlugin):
                                % sFilename)
             return
 
+        # pylint: disable-msg=E1102
+        # subclasses will provide a callable cZipWrapper
         oFile = self.cZipWrapper(sFilename)
+        # pylint: enable-msg=E1102
         dList = oFile.get_all_entries()
         dEscapedList = {}
         for sName, tInfo in dList.iteritems():

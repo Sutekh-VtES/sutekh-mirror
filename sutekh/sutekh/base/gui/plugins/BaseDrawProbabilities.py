@@ -142,6 +142,7 @@ class BaseDrawProbPlugin(BasePlugin):
         self.iTotal = 0
         self.dSelectedCounts = {}
         self.iSelectedCount = 0
+        self.iOpeningDraw = 0
 
         # Get currently selected cards
         aSelectedCards = self._get_selected_cards()

@@ -116,6 +116,7 @@ class DetailDialog(SutekhDialog):
 
 
 def format_app_info():
+    """Format the application details nicely for the error dialogs."""
     return "%s version %s\nDatabase: %s\n\n" % (AppInfo.NAME,
                                                 AppInfo.VERSION_STR,
                                                 get_database_url())

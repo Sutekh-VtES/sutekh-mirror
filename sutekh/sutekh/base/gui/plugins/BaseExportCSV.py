@@ -7,7 +7,6 @@
 
 import gtk
 from ...core.BaseObjects import PhysicalCardSet
-from ...core.CardSetHolder import CardSetWrapper
 from ...io.WriteCSV import WriteCSV
 from ...Utility import safe_filename
 from ..BasePluginManager import BasePlugin

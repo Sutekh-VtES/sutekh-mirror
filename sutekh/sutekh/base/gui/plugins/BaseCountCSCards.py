@@ -33,6 +33,7 @@ class BaseCountCSCards(BasePlugin):
 
         self.dInfo = {TOTAL: 0}
         self._add_dict_keys()
+        self._oTextLabel = None
 
         # We only add listeners to windows we're going to display the toolbar
         # on

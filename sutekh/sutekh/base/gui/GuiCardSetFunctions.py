@@ -210,7 +210,7 @@ def write_cs_to_file(oCardSet, oWriter, sFileName):
 
 
 def export_cs(oCardSet, cWriter, oParWin, sExt, aPatterns=None):
-    """Query the user for a file name and 
+    """Query the user for a file name and
        export the card using the given writer."""
     sSuggestedFileName = '%s.%s' % (safe_filename(oCardSet.name), sExt)
     oDlg = ExportDialog("Save CardSet As ", oParWin,
