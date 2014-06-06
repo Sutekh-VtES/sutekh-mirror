@@ -245,7 +245,7 @@ def main_with_args(aTheArgs):
     # Turn off some pylint refactoring warnings
     # pylint: disable-msg=R0915, R0912, R0911, R0914
     oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
-    sPrefsDir = prefs_dir("Sutekh")
+    sPrefsDir = prefs_dir(SutekhInfo.NAME)
 
     oLogHandler = StreamHandler(sys.stdout)
 

@@ -61,14 +61,14 @@ def main():
        pass control off to SutekhMainWindow
        Save preferences on exit if needed
        """
-    if not prepare_gui('Sutekh'):
+    if not prepare_gui(SutekhInfo.NAME):
         return 1
 
     # handle exceptions with a GUI dialog
     sys.excepthook = exception_handler
 
     oOptParser, (oOpts, aArgs) = parse_options(sys.argv)
-    sPrefsDir = prefs_dir("Sutekh")
+    sPrefsDir = prefs_dir(SutekhInfo.NAME)
 
     if len(aArgs) != 1:
         oOptParser.print_help()

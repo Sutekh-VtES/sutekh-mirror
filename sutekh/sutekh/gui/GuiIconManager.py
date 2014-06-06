@@ -9,6 +9,7 @@ import gtk
 import os
 from sutekh.base.Utility import prefs_dir, ensure_dir_exists
 from sutekh.io.IconManager import IconManager
+from sutekh.SutekhInfo import SutekhInfo
 from sutekh.base.gui.SutekhDialog import do_complaint
 from sutekh.base.gui.CachedIconManager import CachedIconManager
 
@@ -24,7 +25,7 @@ class GuiIconManager(CachedIconManager, IconManager):
     # see that IconManager provides the required methods.
     def __init__(self, sPath):
         if not sPath:
-            sPath = os.path.join(prefs_dir('Sutekh'), 'icons')
+            sPath = os.path.join(prefs_dir(SutekhInfo.NAME), 'icons')
         super(GuiIconManager, self).__init__(sPath)
 
     def setup(self):
