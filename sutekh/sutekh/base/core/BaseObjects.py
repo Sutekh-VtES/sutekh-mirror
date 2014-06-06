@@ -426,6 +426,7 @@ class StrAdaptMeta(type):
 
         return oObj
 
+
 class Adapter(object):
     """Base class for adapter objects.
        Makes introspection less messy,"""
