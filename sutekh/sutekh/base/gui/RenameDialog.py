@@ -63,9 +63,10 @@ class RenameDialog(SutekhDialog):
                         "Please choose a suitable name")
                 return self.run()  # Reprompt
             elif PhysicalCardSet.selectBy(name=sNewName).count() != 0:
-                # FIXME: do we want to allow the user to force a replace here?
                 do_complaint_error("The name %s is in use.\n"
                         "Please choose a different name" % sNewName)
-                return self.run()  # Reprompt
+                # We reprompt the user, allowing them to fix things as
+                # required
+                return self.run()
             else:
                 self.sNewName = sNewName
