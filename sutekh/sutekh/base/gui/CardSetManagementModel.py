@@ -103,6 +103,16 @@ class CardSetManagementModel(gtk.TreeStore):
         # sort on card set name by default, for consistency elsewhere
         self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
+    def sort_equal_iters(self, oIter1, oIter2):
+        """Default sort on names (card names, expansion names, etc.)"""
+        # The default sorting behaviour for equal rows can be changed by
+        # hooking into this
+        oVal1 = self.get_value(oIter1, 0)
+        oVal2 = self.get_value(oIter2, 0)
+        # Col 0 is the name column, and we require unique card set names,
+        # so this should be safe
+        return cmp(oVal1, oVal2)
+
     def load(self):
         """Load the card sets into the card view"""
         self.clear()
