@@ -83,6 +83,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraColumns):
 
     @classmethod
     def update_config(cls):
+        """Fix the config to use the right keys."""
         cls.fix_config(cls.dCardSetListConfig)
 
     # Manage database signals around upgrades

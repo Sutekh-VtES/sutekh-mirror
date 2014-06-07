@@ -41,9 +41,9 @@ class BaseGroupBy(BasePlugin):
     @classmethod
     def update_config(cls):
         """Add the correct list of options to the config"""
-        OPTION_STR = ", ".join('"%s"' % sKey for sKey in cls.GROUPINGS.keys())
+        sOptions = ", ".join('"%s"' % sKey for sKey in cls.GROUPINGS.keys())
         cls.dPerPaneConfig[cls.GROUP_BY] = ('option(%s, default="Card Type")' %
-                                            OPTION_STR)
+                                            sOptions)
 
     # pylint: disable-msg=W0142
     # ** magic OK here

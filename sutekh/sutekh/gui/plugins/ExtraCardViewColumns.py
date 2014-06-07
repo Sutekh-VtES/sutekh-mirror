@@ -42,6 +42,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraColumns):
 
     @classmethod
     def update_config(cls):
+        """Fix the config to use the right keys."""
         cls.fix_config(cls.dPerPaneConfig)
         cls.dCardListConfig = cls.dPerPaneConfig
 
