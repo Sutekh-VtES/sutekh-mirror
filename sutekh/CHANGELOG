@@ -1,3 +1,23 @@
+08 Jun 2014
+ * Factor out common code of the ShowExported plugin
+ * Factor out common code from the CardSetImport plugin
+
+07 Jun 2014
+ * Factor out common code from the ExtraColumns plugins
+ * Factor out generic code from the CardSetExport plugin
+
+06 Jun 2014
+ * Add update_config hook for plugins doing more dynamic config generation
+ * Split CardImages plugin into generic and non-generic section
+ * Move most of the card set writer logic into base.io
+ * Drop python2.4 compatability elementtree imports
+
+05 Jun 2014
+ * Split card count plugins into generic and non-generic section
+
+03 Jun 2014
+ * Split CardDrawProbablities plugin into generic and non-generic sections
+ 
 29 May 2014
  * Add export_cs and write_cs_to_file helpers to unify card set writing
    logic
