@@ -24,20 +24,21 @@ class CardSetFrame(CardListFrame):
        """
     _cModelType = PhysicalCardSet
 
-    def __init__(self, oMainWindow, sName, bStartEditable):
+    def __init__(self, oMainWindow, sName, bStartEditable, cPCSWriter):
         super(CardSetFrame, self).__init__(oMainWindow)
         try:
             _oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,
-                oMainWindow, self, bStartEditable)
-
+                                              oMainWindow, self,
+                                              bStartEditable)
         self._sName = sName
 
         self.init_plugins()
 
-        self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow)
+        self._oMenu = CardSetMenu(self, self._oController, self._oMainWindow,
+                                  cPCSWriter)
         self.set_name("physical card set card list")
         self.add_parts()
 
@@ -47,7 +48,7 @@ class CardSetFrame(CardListFrame):
     # We allow access via these properties
     name = property(fget=lambda self: self._sName, doc="Frame Name")
     cardset_name = property(fget=lambda self: self._oController.view.sSetName,
-            doc="Name of the card set for this frame")
+                            doc="Name of the card set for this frame")
     # pylint: enable-msg=W0212
 
     def cleanup(self, bQuit=False):
@@ -65,8 +66,8 @@ class CardSetFrame(CardListFrame):
         iCount = 0
         sFinalName = sNewName
         aOtherOpenSets = [x.title for x in
-                self._oMainWindow.find_cs_pane_by_set_name(sNewName)
-                if x is not self]
+                          self._oMainWindow.find_cs_pane_by_set_name(sNewName)
+                          if x is not self]
         while sFinalName in aOtherOpenSets:
             iCount += 1
             sFinalName = "%s (%d)" % (sNewName, iCount)

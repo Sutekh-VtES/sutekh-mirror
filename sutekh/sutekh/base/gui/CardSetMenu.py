@@ -8,7 +8,6 @@
 """Menu for the card set pane"""
 
 import gtk
-from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from .FilteredViewMenu import CardListMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .LocalProfileEditor import LocalProfileEditor
@@ -28,9 +27,11 @@ class CardSetMenu(CardListMenu):
        """
     # pylint: disable-msg=R0902
     # R0902 - we are keeping a lot of state, so many instance variables
-    def __init__(self, oFrame, oController, oWindow):
+    def __init__(self, oFrame, oController, oWindow, cPCSWriter):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
-        self.__create_card_set_menu()
+        # Reference to the card set writer
+        self._cPCSWriter = cPCSWriter
+        self._create_card_set_menu()
         self.create_edit_menu()
         self.create_filter_menu()
         self.create_analyze_menu()
@@ -60,7 +61,7 @@ class CardSetMenu(CardListMenu):
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK
-    def __create_card_set_menu(self):
+    def _create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
         oMenu = self.create_submenu(self, '_Actions')
         self.create_menu_item("Edit Card Set _Properties", oMenu,
@@ -137,8 +138,9 @@ class CardSetMenu(CardListMenu):
 
     def _do_export(self, _oWidget):
         """Export the card set to the chosen filename."""
-        export_cs(self._oController.model.cardset, PhysicalCardSetWriter,
-                  self._oMainWindow, 'xml', [('XML Files', ['*.xml'])])
+        export_cs(self._oController.model.cardset,
+                  self._cPCSWriter, self._oMainWindow,
+                  'xml', [('XML Files', ['*.xml'])])
 
     def _card_set_delete(self, _oWidget):
         """Delete the card set."""

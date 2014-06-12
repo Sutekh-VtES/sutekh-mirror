@@ -14,6 +14,7 @@ from pkg_resources import resource_stream, resource_exists
 # pylint: enable-msg=E0611
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.gui.AboutDialog import SutekhAboutDialog
@@ -34,6 +35,7 @@ class SutekhMainWindow(AppMainWindow):
     # R0902 - we need to keep a lot of state, so many instance attributes
     def __init__(self):
         super(SutekhMainWindow, self).__init__()
+        self._cPCSWriter = PhysicalCardSetWriter
         # We can shrink the window quite small
         self.set_size_request(100, 100)
         # But we start at a reasonable size

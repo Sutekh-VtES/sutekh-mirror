@@ -52,6 +52,8 @@ class AppMainWindow(MultiPaneWindow):
         self._oIconManager = None
         self._oPluginManager = None
         self._oCardTextPane = None  # So we can call get_pane_ids
+        # Class for the card set writer - should be set by subclasses
+        self._cPCSWriter = None
 
     def _verify_database(self):
         """Verify that the database is correctly populated"""
@@ -260,7 +262,8 @@ class AppMainWindow(MultiPaneWindow):
             # pylint: disable-msg=W0704
             # not doing anything for errors right now
             try:
-                oPane = CardSetFrame(self, sName, bStartEditable)
+                oPane = CardSetFrame(self, sName, bStartEditable,
+                                     self._cPCSWriter)
                 self.replace_frame(oFrame, oPane)
                 # Open card lists may have changed because of the frame we've
                 # kicked out
