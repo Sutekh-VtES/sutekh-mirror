@@ -10,32 +10,19 @@ from sutekh.base.core.BaseObjects import VersionTable
 from sutekh.SutekhUtility import read_white_wolf_list, read_rulings
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
-from sutekh.tests.TestCore import SutekhTest, make_null_handler
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
 from sutekh.base.io.EncodedFile import EncodedFile
 from sqlobject import sqlhub, connectionForURI
-import tempfile
 import os
-
-
-def _create_pkg_tmp_file(sData):
-    """Create a temporary file for use in create_db"""
-    (fTemp, sFilename) = tempfile.mkstemp()
-    os.close(fTemp)
-
-    if sData:
-        fTmp = file(sFilename, "wb")
-        fTmp.write(sData)
-        fTmp.close()
-
-    return sFilename
 
 
 def create_db():
     """Create the database"""
     assert refresh_tables(TABLE_LIST, sqlhub.processConnection)
 
-    sCardList = _create_pkg_tmp_file(TEST_CARD_LIST)
-    sRulings = _create_pkg_tmp_file(TEST_RULINGS)
+    sCardList = create_pkg_tmp_file(TEST_CARD_LIST)
+    sRulings = create_pkg_tmp_file(TEST_RULINGS)
 
     oLogHandler = make_null_handler()
     read_white_wolf_list([EncodedFile(sCardList)], oLogHandler)

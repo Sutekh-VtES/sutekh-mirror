@@ -6,7 +6,8 @@
 """Test database upgrading"""
 
 import sys
-from sutekh.tests.TestCore import SutekhTest, make_null_handler
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import make_null_handler
 from sutekh.tests import create_db
 from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
                                         create_final_copy

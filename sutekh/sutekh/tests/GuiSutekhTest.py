@@ -5,9 +5,8 @@
 
 """Base for Sutekh test cases that use gtk windows"""
 
+from sutekh.base.tests.TestUtils import GuiBaseTest
 from sutekh.tests.TestCore import SutekhTest
-from nose import SkipTest
-import gtk
 import tempfile
 import os
 import gc
@@ -41,11 +40,11 @@ class ConfigSutekhTest(SutekhTest):
         # For new icon check
         os.makedirs(os.path.join(self.sPluginDir, 'clans'))
         self.oConfig.set_plugin_key('CardImagePlugin', 'card image path',
-                self.sPluginDir)
+                                    self.sPluginDir)
         self.oConfig.set_plugin_key('CardImagePlugin', 'download images',
-                False)
+                                    False)
         self.oConfig.set_plugin_key('RulebookPlugin', 'rulebook path',
-                self.sPluginDir)
+                                    self.sPluginDir)
         # Touch index file for rulebook plugin
         open(os.path.join(self.sPluginDir, 'index.txt'), 'w').close()
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
@@ -66,7 +65,7 @@ class ConfigSutekhTest(SutekhTest):
         gc.collect()
 
 
-class GuiSutekhTest(ConfigSutekhTest):
+class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
     """Base class for Sutekh tests that use the main window.
 
        Define common setup and teardown routines common to gui test cases.
@@ -78,13 +77,6 @@ class GuiSutekhTest(ConfigSutekhTest):
 
     def setUp(self):
         """Setup gtk window for the tests"""
-        # Skip if we're not under a windowing system
-        # We need to do this before trying to run SutekhMainWindow's __init__,
-        # which will fail if not under a windowing system
-        if gtk.gdk.screen_get_default() is None:
-            raise SkipTest
-        # avoid menu proxy stuff on Ubuntu
-        os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiSutekhTest, self).setUp()
         # Carry on with the test
         self.oWin = SutekhMainWindow()
@@ -92,7 +84,4 @@ class GuiSutekhTest(ConfigSutekhTest):
     def tearDown(self):
         """Tear down gtk framework after test run"""
         self.oWin.destroy()
-        # Process pending gtk events so cleanup completes
-        while gtk.events_pending():
-            gtk.main_iteration()
         super(GuiSutekhTest, self).tearDown()
