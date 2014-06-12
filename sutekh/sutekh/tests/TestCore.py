@@ -12,8 +12,6 @@ from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.core.BaseObjects import PHYSICAL_SET_LIST
 from sutekh.base.tests.TestUtils import BaseTestCase
 from sqlobject import sqlhub
-import tempfile
-import os
 
 
 class SutekhTest(BaseTestCase):
@@ -21,6 +19,8 @@ class SutekhTest(BaseTestCase):
 
        Define common setup and teardown routines common to test cases.
        """
+
+    PREFIX = 'sutekhtests'
     # pylint: disable-msg=R0904
     # R0904 - unittest.TestCase, so many public methods
 
@@ -29,21 +29,6 @@ class SutekhTest(BaseTestCase):
     # pylint: disable-msg=W0201
     # setUp is always called by the tests, so it doesn't matter that
     # declarations aren't in __init__
-    def _setUpTemps(self):
-        """Create a directory to hold the temporary files."""
-        self._sTempDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
-        self._aTempFiles = []
-
-    def _tearDownTemps(self):
-        """Clean up the temporary files."""
-        for sFile in self._aTempFiles:
-            if os.path.exists(sFile):
-                # Tests may clean up their own temp files
-                os.remove(sFile)
-        os.rmdir(self._sTempDir)
-        self._sTempDir = None
-        self._aTempFiles = None
-
     # pylint: disable-msg=R0201
     # This is a method for convience
     def _setUpDb(self):

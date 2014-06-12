@@ -7,7 +7,8 @@
 
 import unittest
 import StringIO
-from sutekh.tests.TestCore import SutekhTest, DummyHolder
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import DummyHolder
 from sutekh.io.SLDeckParser import SLDeckParser
 
 

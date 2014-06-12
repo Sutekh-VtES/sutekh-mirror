@@ -45,6 +45,7 @@ class BaseTestCase(unittest.TestCase):
     # R0904 - unittest.TestCase, so many public methods
 
     TEST_CONN = None
+    PREFIX = 'testcase'
 
     @classmethod
     def set_db_conn(cls, oConn):
@@ -58,6 +59,23 @@ class BaseTestCase(unittest.TestCase):
         self._aTempFiles.append(sFilename)
 
         return sFilename
+
+    # pylint: disable-msg=C0103
+    # setUp + tearDown names are needed by unittest - use their convention
+    def _setUpTemps(self):
+        """Create a directory to hold the temporary files."""
+        self._sTempDir = tempfile.mkdtemp(suffix='dir', prefix=self.PREFIX)
+        self._aTempFiles = []
+
+    def _tearDownTemps(self):
+        """Clean up the temporary files."""
+        for sFile in self._aTempFiles:
+            if os.path.exists(sFile):
+                # Tests may clean up their own temp files
+                os.remove(sFile)
+        os.rmdir(self._sTempDir)
+        self._sTempDir = None
+        self._aTempFiles = None
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
