@@ -27,8 +27,8 @@ from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.io.DataPack import DOC_URL, find_data_pack
-from sutekh.base.gui.GuiCardSetFunctions import reparent_all_children, \
-        update_open_card_sets
+from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
+                                                 update_open_card_sets)
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhFileWidget import add_filter
@@ -48,20 +48,22 @@ class StarterConfigDialog(SutekhDialog):
 
     def __init__(self, oParent, bFirstTime=False):
         super(StarterConfigDialog, self).__init__(
-                'Configure Starter Info Plugin', oParent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
+            'Configure Starter Info Plugin', oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
+             gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the starter info'
-                    ' plugin</b>')
+                                  ' plugin</b>')
         else:
-            oDescLabel.set_markup('<b>Choose how to configure the starter info'
-                    ' plugin</b>\nChoose cancel to skip configuring the '
-                    ' plugin\nYou will not be prompted again')
+            oDescLabel.set_markup('<b>Choose how to configure the starter '
+                                  'info plugin</b>\nChoose cancel to skip '
+                                  'configuring the plugin\nYou will not be '
+                                  'prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
-                "Starter decks", {'Sutekh Wiki': self.sDocUrl})
+                                           "Starter decks",
+                                           {'Sutekh Wiki': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -70,9 +72,8 @@ class StarterConfigDialog(SutekhDialog):
         self.vbox.pack_start(self.oFileWidget, False, False)
         # Add check boxes for the decmo and storyline deck questions
         self.oExcludeStoryDecks = gtk.CheckButton(
-                'Exclude the Storyline Decks')
-        self.oExcludeDemoDecks = gtk.CheckButton(
-                'Exclude the WW Demo Decks')
+            'Exclude the Storyline Decks')
+        self.oExcludeDemoDecks = gtk.CheckButton('Exclude the WW Demo Decks')
 
         # Check to see if cards are available
         try:
@@ -96,8 +97,8 @@ class StarterConfigDialog(SutekhDialog):
 
     def get_excluded_decks(self):
         """Return selections for excluded decks"""
-        return self.oExcludeStoryDecks.get_active(), \
-                self.oExcludeDemoDecks.get_active()
+        return (self.oExcludeStoryDecks.get_active(),
+                self.oExcludeDemoDecks.get_active())
 
     def get_data(self):
         """Return the zip file data containing the decks"""
@@ -106,12 +107,12 @@ class StarterConfigDialog(SutekhDialog):
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
             sZipUrl, sHash = find_data_pack('starters',
-                    fErrorHandler=gui_error_handler)
+                                            fErrorHandler=gui_error_handler)
             if not sZipUrl:
                 # Error getting the data pack, so we fail
                 return None
             oFile = urlopen_with_timeout(sZipUrl,
-                    fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler)
             if oFile:
                 sData = progress_fetch_data(oFile, None, sHash)
             else:
@@ -202,8 +203,7 @@ class StarterInfoPlugin(SutekhPlugin):
         self.oToggle.connect('toggled', self._toggle_starter)
         self.oToggle.set_active(False)
         if self.check_enabled():
-            sPrefsValue = \
-                    self.get_config_item('show starters')
+            sPrefsValue = self.get_config_item('show starters')
             if sPrefsValue == 'Yes':
                 self.oToggle.set_active(True)
         else:
@@ -243,11 +243,11 @@ class StarterInfoPlugin(SutekhPlugin):
         if iResponse == gtk.RESPONSE_OK:
             sData = oDialog.get_data()
             (bExcludeStoryDecks, bExcludeDemoDecks) = \
-                    oDialog.get_excluded_decks()
+                oDialog.get_excluded_decks()
             if not sData:
                 do_complaint_error('Unable to access zipfile data')
             elif not self._unzip_file(sData, bExcludeStoryDecks,
-                    bExcludeDemoDecks):
+                                      bExcludeDemoDecks):
                 do_complaint_error('Unable to successfully unzip zipfile')
         if self.check_enabled():
             self.oToggle.set_sensitive(True)
@@ -261,7 +261,7 @@ class StarterInfoPlugin(SutekhPlugin):
         bResult = False
         oZipFile = ZipFileWrapper(StringIO(sData))
         bResult = self._unzip_heart(oZipFile, bExcludeStoryDecks,
-                bExcludeDemoDecks)
+                                    bExcludeDemoDecks)
         self._aStarters = []
         return bResult
 
@@ -292,7 +292,7 @@ class StarterInfoPlugin(SutekhPlugin):
         while not bDone:
             dRemaining = {}
             if self._unzip_list(oFile, dList, oLogger, dRemaining,
-                    bExcludeStoryDecks, bExcludeDemoDecks):
+                                bExcludeStoryDecks, bExcludeDemoDecks):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
@@ -306,7 +306,7 @@ class StarterInfoPlugin(SutekhPlugin):
         return True
 
     def _unzip_list(self, oZipFile, dList, oLogger, dRemaining,
-            bExcludeStoryDecks, bExcludeDemoDecks):
+                    bExcludeStoryDecks, bExcludeDemoDecks):
         """Extract the files left in the list."""
         if bExcludeStoryDecks and bExcludeDemoDecks:
             aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
@@ -359,7 +359,7 @@ class StarterInfoPlugin(SutekhPlugin):
                     update_open_card_sets(self.parent, oHolder.name)
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
-                        oException)
+                                                                oException)
                 do_exception_complaint(sMsg)
                 return False
         return True
@@ -410,7 +410,7 @@ class StarterInfoPlugin(SutekhPlugin):
         """Lookup the starter decks and cache them to avoid repeated queries"""
         for oCS in PhysicalCardSet.select():
             for _sType, oRegex in (('Starters', self.oStarterRegex),
-                    ('Demos', self.oDemoRegex)):
+                                   ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
                     self._aStarters.append(oCS)
@@ -422,24 +422,24 @@ class StarterInfoPlugin(SutekhPlugin):
         dMatches = {'Starters': [], 'Demos': []}
         for oCS in self._aStarters:
             for sType, oRegex in (('Starters', self.oStarterRegex),
-                    ('Demos', self.oDemoRegex)):
+                                  ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
                     sExpName = oMatch.groups()[0]
                     if _check_exp_name(sExpName, oAbsCard):
                         dMatches[sType].append((oCS, oMatch.groups()[0],
-                            oMatch.groups()[1]))
+                                                oMatch.groups()[1]))
 
         # Find the card in the starter decks
         dInfo = {'Starters': [], 'Demos': []}
         for sType, aResults in dMatches.iteritems():
             for oCS, sExpName, sDeckName in sorted(aResults,
-                    key=lambda x: (x[1], x[2])):
+                                                   key=lambda x: (x[1], x[2])):
                 # Sort by exp, name
                 oFilter = FilterAndBox([SpecificCardIdFilter(oAbsCard.id),
-                        PhysicalCardSetFilter(oCS.name)])
+                                        PhysicalCardSetFilter(oCS.name)])
                 iCount = oFilter.select(
-                        MapPhysicalCardToPhysicalCardSet).count()
+                    MapPhysicalCardToPhysicalCardSet).count()
                 if iCount > 0:
                     dInfo[sType].append("x %(count)d %(exp)s (%(cardset)s)" % {
                         'count': iCount,
@@ -467,12 +467,12 @@ class StarterInfoPlugin(SutekhPlugin):
             oCardTextBuf.set_cur_iter_to_mark('expansion')
             oCardTextBuf.tag_text("\n")
             oCardTextBuf.labelled_list('Demonstration Decks', dInfo['Demos'],
-                    'starters')
+                                       'starters')
         if dInfo['Starters']:
             oCardTextBuf.set_cur_iter_to_mark('expansion')
             oCardTextBuf.tag_text("\n")
             oCardTextBuf.labelled_list('Preconstructed Decks',
-                    dInfo['Starters'], 'starters')
+                                       dInfo['Starters'], 'starters')
         oCardTextBuf.set_cur_iter(oTempIter)
 
 plugin = StarterInfoPlugin

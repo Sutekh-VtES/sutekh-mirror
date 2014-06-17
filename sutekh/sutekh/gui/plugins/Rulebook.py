@@ -32,20 +32,22 @@ class RulebookConfigDialog(SutekhDialog):
 
     def __init__(self, oParent, bFirstTime=False):
         super(RulebookConfigDialog, self).__init__(
-                'Configure Rulebook Info Plugin', oParent,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL))
+            'Configure Rulebook Info Plugin', oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDescLabel = gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the rulebook'
-                    ' plugin</b>')
+                                  ' plugin</b>')
         else:
             oDescLabel.set_markup('<b>Choose how to configure the rulebook'
-                    ' plugin</b>\nChoose cancel to skip configuring the '
-                    ' plugin\nYou will not be prompted again')
+                                  ' plugin</b>\nChoose cancel to skip '
+                                  'configuring the plugin\nYou will not be '
+                                  'prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
-                "rulebook zip file", {'Sutekh Wiki': self.sDocUrl})
+                                           "rulebook zip file",
+                                           {'Sutekh Wiki': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -66,12 +68,12 @@ class RulebookConfigDialog(SutekhDialog):
         if sFile == self.sDocUrl:
             # Downloading from sutekh wiki, so need magic to get right file
             sZipUrl, sHash = find_data_pack('rulebooks',
-                    fErrorHandler=gui_error_handler)
+                                            fErrorHandler=gui_error_handler)
             if not sZipUrl:
                 # failed to get datapack
                 return None
             oFile = urlopen_with_timeout(sZipUrl,
-                    fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler)
             if oFile:
                 sData = progress_fetch_data(oFile, None, sHash)
             else:

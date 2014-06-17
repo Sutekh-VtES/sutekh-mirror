@@ -33,7 +33,8 @@ class BaseExportCSV(BasePlugin):
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
-                self.parent, '%s.csv' % safe_filename(self.view.sSetName))
+                            self.parent,
+                            '%s.csv' % safe_filename(self.view.sSetName))
         oDlg.add_filter_with_pattern('CSV Files', ['*.xml'])
         oIncHeader = gtk.CheckButton("Include Column Headers")
         oIncHeader.set_active(True)
@@ -45,7 +46,7 @@ class BaseExportCSV(BasePlugin):
         oDlg.run()
 
         self.handle_response(oDlg.get_name(), oIncHeader.get_active(),
-                oIncExpansion.get_active())
+                             oIncExpansion.get_active())
 
     def handle_response(self, sFileName, bIncHeader, bIncExpansion):
         """Handle the users response. Write the CSV output to file."""
