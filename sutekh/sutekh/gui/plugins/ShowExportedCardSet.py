@@ -14,6 +14,7 @@ from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.WritePmwiki import WritePmwiki
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
+from sutekh.io.WriteSLDeck import WriteSLDeck
 
 
 class ShowExported(SutekhPlugin, BaseShowExported):
@@ -27,6 +28,7 @@ class ShowExported(SutekhPlugin, BaseShowExported):
         'BBcode output for the V:EKN Forums': WriteVEKNForum,
         'Export to ELDB ELD Deck File': WriteELDBDeckFile,
         'Export to pmwiki': WritePmwiki,
+        'Export for SL import form': WriteSLDeck,
     })
 
 
