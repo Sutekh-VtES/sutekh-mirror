@@ -7,54 +7,21 @@
 """Attempts to identify a XML file as either PhysicalCardSet, PhysicalCard
    or AbstractCardSet (the last two to support legacy backups)."""
 
-from sutekh.base.core.BaseObjects import PhysicalCardSet
-from sqlobject import SQLObjectNotFound
-from xml.etree.ElementTree import parse
-# pylint: disable-msg=E0611, F0401
-# For compatability with ElementTree 1.3
-try:
-    from xml.etree.ElementTree import ParseError
-except ImportError:
-    from xml.parsers.expat import ExpatError as ParseError
+from sutekh.base.core.CardSetUtilities import check_cs_exists
+from sutekh.base.io.BaseIdXMLFile import BaseIdXMLFile
+from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
+from sutekh.io.PhysicalCardParser import PhysicalCardParser
+from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 # pylint: enable-msg=E0611, F0401
 
 
-class IdentifyXMLFile(object):
+class IdentifyXMLFile(BaseIdXMLFile):
     """Tries to identify the XML file type.
 
        Parse the file into an ElementTree, and then tests the Root element
        to see which xml file it matches.
        """
-    def __init__(self):
-        self._bSetExists = self._bParentExists = False
-        self._sType = self._sName = self._sParent = None
-
-        self._clear_id_results()
-
-    def _clear_id_results(self):
-        """Reset identifier state."""
-        self._bSetExists = False
-        self._bParentExists = False
-        self._sType = 'Unknown'
-        self._sName = None
-        self._sParent = None
-
-    # pylint: disable-msg=W0212
-    # We allow access via these properties
-    name = property(fget=lambda self: self._sName, doc='The name from the'
-            ' XML file')
-    parent_exists = property(fget=lambda self: self._bParentExists,
-            doc='True if the parent card set already exists in the database')
-    parent = property(fget=lambda self: self._sParent,
-            doc='Name of the parent card set for this set, None if there'
-            ' is no parent')
-    exists = property(fget=lambda self: self._bSetExists, doc='True if the'
-            ' card set already exists in the database')
-    type = property(fget=lambda self: self._sType, doc='The type of the XML '
-            'data')
-    # pylint: enable-msg=W0212
-
-    def identify_tree(self, oTree):
+    def _identify_tree(self, oTree):
         """Process the ElementTree to identify the XML file type."""
         self._clear_id_results()
         oRoot = oTree.getroot()
@@ -65,27 +32,16 @@ class IdentifyXMLFile(object):
             self._sType = 'AbstractCardSet'
             # Same reasoning as on database upgrades
             self._sName = '(ACS) ' + oRoot.attrib['name']
-            try:
-                PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bSetExists = True
-            except SQLObjectNotFound:
-                self._bSetExists = False
+            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
             self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'physicalcardset':
             self._sType = 'PhysicalCardSet'
             self._sName = oRoot.attrib['name']
-            try:
-                PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bSetExists = True
-            except SQLObjectNotFound:
-                self._bSetExists = False
+            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
             if 'parent' in oRoot.attrib:
                 self._sParent = oRoot.attrib['parent']
-                try:
-                    PhysicalCardSet.byName(self._sParent.encode('utf8'))
-                    self._bParentExists = True
-                except SQLObjectNotFound:
-                    self._bParentExists = False
+                self._bParentExists = check_cs_exists(
+                    self._sParent.encode('utf8'))
             else:
                 self._bParentExists = True  # Top level card set
         elif oRoot.tag == 'cards':
@@ -93,11 +49,7 @@ class IdentifyXMLFile(object):
             # Old Physical Card Collection XML file - it exists if a card
             # set called 'My Collection' exists
             self._sName = 'My Collection'
-            try:
-                PhysicalCardSet.byName(self._sName.encode('utf8'))
-                self._bSetExists = True
-            except SQLObjectNotFound:
-                self._bSetExists = False
+            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
             self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'cardmapping':
             # This is ignored now
@@ -106,19 +58,19 @@ class IdentifyXMLFile(object):
             self._bSetExists = False
             self._bParentExists = False
 
-    def parse(self, fIn, _oDummyHolder=None):
-        """Parse the file fIn into the ElementTree."""
-        try:
-            oTree = parse(fIn)
-        except ParseError:
-            self._clear_id_results()  # Not an XML file
-            return
-        self.identify_tree(oTree)
+    def can_parse(self):
+        """True if we can parse the card set."""
+        if (self._sType == 'PhysicalCard' or self._sType == 'PhysicalCardSet'
+                or self._sType == 'AbstractCardSet'):
+            return True
+        return False
 
-    def id_file(self, sFileName):
-        """Load the file sFileName, and try to identify it."""
-        fIn = file(sFileName, 'rU')
-        try:
-            self.parse(fIn, None)
-        finally:
-            fIn.close()
+    def get_parser(self):
+        """Return the correct parser."""
+        if self._sType == 'PhysicalCard':
+            return PhysicalCardParser()
+        if self._sType == 'PhysicalCardSet':
+            return PhysicalCardSetParser()
+        if self._sType == 'AbstractCardSet':
+            return AbstractCardSetParser()
+        return None

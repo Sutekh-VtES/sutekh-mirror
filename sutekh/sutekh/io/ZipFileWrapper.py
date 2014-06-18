@@ -108,7 +108,7 @@ class ZipFileWrapper(object):
         # PhysicalCard list
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
-            _parse_string(oIdParser, oData, None)
+            oIdParser.parse_string(oData)
             if ((oIdParser.type == 'PhysicalCard' or
                     oIdParser.type == 'PhysicalCardSet') and not
                     bTablesRefreshed):
@@ -145,7 +145,10 @@ class ZipFileWrapper(object):
         for oItem in aList:
             bReparent = False
             oData = self.oZip.read(oItem.filename)
-            _parse_string(oIdParser, oData, None)
+            oIdParser.parse_string(oData)
+            if not oIdParser.can_parse():
+                # Unreadable item, so skip it
+                continue
             if oIdParser.type == 'PhysicalCardSet':
                 # We check whether the parent has been read already
                 if bOldStyle:
@@ -155,22 +158,14 @@ class ZipFileWrapper(object):
                         PhysicalCardSet.selectBy(
                                 name='My Collection').getOne()
                         bReparent = True
-                        oParser = PhysicalCardSetParser()
                     except SQLObjectNotFound:
                         # Card Collection not there yet, so delay
                         aToRead.append(oItem)
                         continue
-                elif oIdParser.parent_exists:
-                    oParser = PhysicalCardSetParser()
-                else:
+                elif not oIdParser.parent_exists:
                     aToRead.append(oItem)
                     continue
-            elif oIdParser.type == 'AbstractCardSet':
-                oParser = AbstractCardSetParser()
-            elif oIdParser.type == 'PhysicalCard':
-                oParser = PhysicalCardParser()
-            else:
-                continue
+            oParser = oIdParser.get_parser()
             oHolder = CachedCardSetHolder()
             _parse_string(oParser, oData, oHolder)
             if bReparent:
@@ -219,10 +214,11 @@ class ZipFileWrapper(object):
         oIdParser = IdentifyXMLFile()
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
-            _parse_string(oIdParser, oData, None)
+            oIdParser.parse_string(oData)
             if oIdParser.type == 'PhysicalCardSet':
                 dCardSets[oIdParser.name] = (oItem.filename,
-                        oIdParser.parent_exists, oIdParser.parent)
+                                             oIdParser.parent_exists,
+                                             oIdParser.parent)
         self.__close_zip()
         return dCardSets
 
@@ -231,10 +227,10 @@ class ZipFileWrapper(object):
         self.__open_zip_for_read()
         oIdParser = IdentifyXMLFile()
         oData = self.oZip.read(sFilename)
-        _parse_string(oIdParser, oData, None)
+        oIdParser.parse_string(oData)
         oHolder = None
         if oIdParser.type == 'PhysicalCardSet':
-            oParser = PhysicalCardSetParser()
+            oParser = oIdParser.get_parser()
             oHolder = CachedCardSetHolder()
             _parse_string(oParser, oData, oHolder)
         self.__close_zip()
