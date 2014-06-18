@@ -8,9 +8,10 @@
 import gtk
 import random
 import math
-from sutekh.base.core.BaseObjects import PhysicalCard, \
-                                         PhysicalCardSet, \
-                                         IPhysicalCard
+from sutekh.base.core.BaseObjects import (PhysicalCard,
+                                          PhysicalCardSet,
+                                          IPhysicalCard)
+from sutekh.base.core.CardSetUtilities import check_cs_exists
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -443,9 +444,9 @@ class ClusterCardList(SutekhPlugin):
         sDeckName = '_cluster_deck_%d' % (iClusterId,)
 
         # Check Deck Doesn't Exist
-        if PhysicalCardSet.selectBy(name=sDeckName).count() != 0:
+        if check_cs_exists(sDeckName):
             do_complaint_error("Card Set %s already exists." %
-                    sDeckName)
+                               sDeckName)
             return
 
         # Create Deck

@@ -18,7 +18,8 @@ from sutekh.base.gui.ProgressDialog import (ProgressDialog,
 from sutekh.base.gui.SutekhDialog import (SutekhDialog, do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, has_children)
+                                               find_children, has_children,
+                                               check_cs_exists)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data
 from sutekh.io.DataPack import find_all_data_packs, DOC_URL
@@ -524,7 +525,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 dRemaining[sName] = tInfo
                 continue
             elif sParentName is not None:
-                if PhysicalCardSet.selectBy(name=sParentName).count() == 0:
+                if not check_cs_exists(sParentName):
                     # Missing parent, so it the file is invalid
                     return False
             # pylint: disable-msg=W0703
@@ -538,7 +539,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 # We unconditionally delete the card set if it already
                 # exists, as being the most sensible default
                 aChildren = []
-                if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
+                if check_cs_exists(oHolder.name):
                     # pylint: disable-msg=E1101, E1103
                     # pyprotocols confuses pylint
                     oCS = IPhysicalCardSet(oHolder.name)

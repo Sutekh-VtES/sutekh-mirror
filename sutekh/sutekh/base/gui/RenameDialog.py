@@ -10,7 +10,8 @@
 
 import gtk
 from .SutekhDialog import SutekhDialog, do_complaint_error
-from ..core.BaseObjects import PhysicalCardSet, MAX_ID_LENGTH
+from ..core.CardSetUtilities import check_cs_exists
+from ..core.BaseObjects import MAX_ID_LENGTH
 
 RENAME, REPLACE, PROMPT = 1, 2, 3
 
@@ -24,22 +25,24 @@ class RenameDialog(SutekhDialog):
         # Do this first, so we get the buttons right
         self.oEntry = gtk.Entry(MAX_ID_LENGTH)
         if sOldName:
-            sMsg = "Card Set %s already exists.\n" \
-                    "Please choose a new name or choose to replace the" \
-                    " card set.\n" \
-                    "Choose cancel to abort this import." % sOldName
+            sMsg = ("Card Set %s already exists.\n"
+                    "Please choose a new name or choose to replace the"
+                    " card set.\n"
+                    "Choose cancel to abort this import." % sOldName)
             tButtons = ('Rename card set', RENAME, 'Replace Existing Card Set',
-                    REPLACE, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+                        REPLACE, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
             self.oEntry.set_text(sOldName)
         else:
-            sMsg = "No name given for the card set\n" \
-                    "Please specify a name.\n" \
-                    "Choose cancel to abort this import."
+            sMsg = ("No name given for the card set\n"
+                    "Please specify a name.\n"
+                    "Choose cancel to abort this import.")
             tButtons = ('Name card set', RENAME, gtk.STOCK_CANCEL,
-                    gtk.RESPONSE_CANCEL)
+                        gtk.RESPONSE_CANCEL)
         super(RenameDialog, self).__init__("Choose New Card Set Name",
-                None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                tButtons)
+                                           None,
+                                           gtk.DIALOG_MODAL |
+                                           gtk.DIALOG_DESTROY_WITH_PARENT,
+                                           tButtons)
         oLabel = gtk.Label(sMsg)
         self.sNewName = ""
 
@@ -60,11 +63,11 @@ class RenameDialog(SutekhDialog):
             sNewName = self.oEntry.get_text().strip()
             if not sNewName:
                 do_complaint_error("No name specified.\n"
-                        "Please choose a suitable name")
+                                   "Please choose a suitable name")
                 return self.run()  # Reprompt
-            elif PhysicalCardSet.selectBy(name=sNewName).count() != 0:
+            elif check_cs_exists(sNewName):
                 do_complaint_error("The name %s is in use.\n"
-                        "Please choose a different name" % sNewName)
+                                   "Please choose a different name" % sNewName)
                 # We reprompt the user, allowing them to fix things as
                 # required
                 return self.run()

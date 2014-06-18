@@ -18,7 +18,8 @@ from .SutekhFileWidget import ExportDialog
 from .RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
 from ..core.CardSetUtilities import (delete_physical_card_set, find_children,
                                      has_children, detect_loop,
-                                     get_loop_names, break_loop)
+                                     get_loop_names, break_loop,
+                                     check_cs_exists)
 from ..Utility import safe_filename
 
 
@@ -77,7 +78,7 @@ def create_card_set(oMainWindow):
     oDialog.run()
     sName = oDialog.get_name()
     if sName:
-        if PhysicalCardSet.selectBy(name=sName).count() != 0:
+        if check_cs_exists(sName):
             do_complaint_error("Card Set %s already exists." % sName)
             return None
         sAuthor = oDialog.get_author()
@@ -85,7 +86,8 @@ def create_card_set(oMainWindow):
         oParent = oDialog.get_parent()
         bInUse = oDialog.get_in_use()
         _oCS = PhysicalCardSet(name=sName, author=sAuthor,
-                comment=sComment, parent=oParent, inuse=bInUse)
+                               comment=sComment, parent=oParent,
+                               inuse=bInUse)
     return sName
 
 
@@ -109,7 +111,7 @@ def get_import_name(oHolder, iClashMode=PROMPT):
     bRename = False
     if oHolder.name:
         # Check if we need to prompt for rename
-        if PhysicalCardSet.selectBy(name=oHolder.name).count() != 0:
+        if check_cs_exists(oHolder.name):
             bRename = True
     else:
         # No name, need to prompt
@@ -136,7 +138,7 @@ def get_import_name(oHolder, iClashMode=PROMPT):
             sBaseName = '%s (imported %s)' % (oHolder.name, sTime)
             sNewName = sBaseName
             iCount = 0
-            while PhysicalCardSet.selectBy(name=sNewName).count() != 0:
+            while check_cs_exists(sNewName):
                 iCount += 1
                 sNewName = '%s (%d)' % (sBaseName, iCount)
             oHolder.name = sNewName

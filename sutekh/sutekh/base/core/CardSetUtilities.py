@@ -9,6 +9,12 @@ from sqlobject import SQLObjectNotFound, sqlhub
 from .BaseObjects import PhysicalCardSet
 
 
+def check_cs_exists(sName):
+    """Return True if a card set with the given name exists in the
+       database."""
+    return PhysicalCardSet.selectBy(name=sName).count() != 0
+
+
 def get_loop(oCardSet):
     """Return a list names of the card sets in the loop."""
     aLoop = [oCardSet]
