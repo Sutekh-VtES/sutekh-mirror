@@ -5,12 +5,10 @@
 """Display extra columns in the tree view"""
 
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.core.BaseObjects import PhysicalCard, PhysicalCardSet
 from sutekh.base.gui.CellRendererIcons import SHOW_TEXT_ONLY
 from sutekh.base.gui.plugins.BaseExtraColumns import format_number
 from sutekh.base.gui.plugins.BaseExtraCardViewColumns import (
     BaseExtraCardViewColumns)
-from sqlobject import SQLObjectNotFound
 
 
 class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
