@@ -95,7 +95,7 @@ def hypergeometric_mean(iItems, iDraws, iTotal):
 
 
 def fill_store(oStore, dProbs, dGroupedProbs):
-    """Fill oStore with the stats about the opening hand"""
+    """Fill oStore with the grouped stats about the opening hand"""
     for sName, dEntry in dGroupedProbs.iteritems():
         fMean = dEntry['avg']
         sVal = '%2.2f' % fMean
@@ -121,6 +121,7 @@ def draw_cards(aCards, iDraw, bCopy=False):
 
 
 def make_flat_view(dProbs, iDraw, sHeading, iWidth):
+    """Setup a tree store with a flat probablity list."""
     oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                            gobject.TYPE_FLOAT)
 
@@ -132,7 +133,7 @@ def make_flat_view(dProbs, iDraw, sHeading, iWidth):
 
 
 def make_grouped_view(dProbs, dGroupedProbs, sHeading, iWidth):
-    """Setup the TreeStore for the results"""
+    """Setup the TreeStore for a dictionary of grouped probablities."""
     oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                            gobject.TYPE_FLOAT)
     fill_store(oStore, dProbs, dGroupedProbs)
@@ -247,12 +248,13 @@ class BaseOpeningDraw(BasePlugin):
         self.bShowDetails = False
 
     def _setup_flat_view(self, aCards, iDraw, sTitle):
+        """Create a flat store of card draw probablities."""
         dProbs = get_flat_probs(aCards, iDraw)
 
         return make_flat_view(dProbs, iDraw, sTitle, self.COLUMN_WIDTH)
 
     def _setup_grouped_view(self, dFlatProbs, dGroups, iDraw, sTitle):
-        """Create a grouped store"""
+        """Create a grouped store of card draw probablilities."""
         dGroupedProbs = {}
         get_grouped_probs(dFlatProbs, dGroups, dGroupedProbs)
         return make_grouped_view(dFlatProbs, dGroupedProbs, sTitle,
@@ -363,3 +365,7 @@ class BaseOpeningDraw(BasePlugin):
     def _do_draw_hand(self):
         """Draw the current hand."""
         raise NotImplementedError("implement _do_draw_hand")
+
+    def _redraw_detail_box(self):
+        """Fill in detailed breakdown of the current drawn hand."""
+        raise NotImplementedError("implement _redraw_detail_box")
