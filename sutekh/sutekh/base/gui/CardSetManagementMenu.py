@@ -21,7 +21,7 @@ class CardSetManagementMenu(FilteredViewMenu):
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
         super(CardSetManagementMenu, self).__init__(oFrame, oWindow,
-                oController)
+                                                    oController)
         self.__sName = 'Card Set List'
         self.__sSetTypeName = 'Card Set'
         self._oController = oController
@@ -32,7 +32,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.add_plugins_to_menus(self._oFrame)
         MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                             self.profile_option_changed)
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK
@@ -40,13 +40,13 @@ class CardSetManagementMenu(FilteredViewMenu):
         """Add the Actions Menu"""
         oMenu = self.create_submenu(self, "_Actions")
         self.create_menu_item('Create New Card Set', oMenu,
-                self._oController.create_new_card_set)
+                              self._oController.create_new_card_set)
         self.create_menu_item('Edit Card Set Properties', oMenu,
-                self._oController.edit_card_set_properties)
+                              self._oController.edit_card_set_properties)
         self.create_menu_item('Mark/UnMark Card Set as in use', oMenu,
-                    self._oController.toggle_in_use_flag)
+                              self._oController.toggle_in_use_flag)
         self.create_menu_item('Delete selected Card Set', oMenu,
-                self._oController.delete_card_set, 'Delete')
+                              self._oController.delete_card_set, 'Delete')
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
@@ -59,9 +59,9 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
-                CARDSET_LIST)
-        self._oCardSetProfileMenu = self._create_profile_menu(oMenu,
-            "CardSet List Profile", CARDSET_LIST,
+                                                             CARDSET_LIST)
+        self._oCardSetProfileMenu = self._create_profile_menu(
+            oMenu, "CardSet List Profile", CARDSET_LIST,
             self._select_cardset_list_profile, sProfile)
 
         self.add_edit_menu_actions(oMenu)
@@ -69,16 +69,17 @@ class CardSetManagementMenu(FilteredViewMenu):
     def cleanup(self):
         """Remove the menu listener"""
         MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
-                self.remove_profile)
+                               self.remove_profile)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                               self.profile_option_changed)
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file, CARDSET_LIST)
+                                  self._oMainWindow.config_file,
+                                  CARDSET_LIST)
         sCurProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
-            CARDSET_LIST)
+                                                                CARDSET_LIST)
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
@@ -87,9 +88,10 @@ class CardSetManagementMenu(FilteredViewMenu):
     def _fix_profile_menu(self):
         """Set the profile menu correctly"""
         sProfile = self._oMainWindow.config_file.get_profile(CARDSET_LIST,
-                CARDSET_LIST)
+                                                             CARDSET_LIST)
         self._update_profile_group(self._oCardSetProfileMenu, CARDSET_LIST,
-            self._select_cardset_list_profile, sProfile)
+                                   self._select_cardset_list_profile,
+                                   sProfile)
 
     def _select_cardset_list_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current card set."""

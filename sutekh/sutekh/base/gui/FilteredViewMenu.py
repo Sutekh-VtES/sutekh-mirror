@@ -34,9 +34,10 @@ class FilteredViewMenu(SutekhMenu):
         """Create the Filter Menu."""
         oMenu = self.create_submenu(self, "F_ilter")
         self.create_menu_item("_Specify Filter", oMenu, self.set_active_filter,
-                '<Ctrl>s')
+                              '<Ctrl>s')
         self.oApply = self.create_check_menu_item("_Apply Filter", oMenu,
-                self.toggle_apply_filter, False, "<Ctrl>t")
+                                                  self.toggle_apply_filter,
+                                                  False, "<Ctrl>t")
         self.oApply.set_inconsistent(False)
 
     def create_edit_menu(self):
@@ -63,14 +64,14 @@ class FilteredViewMenu(SutekhMenu):
     def add_common_actions(self, oMenu):
         """Actions common to all card lists"""
         self.create_menu_item("Expand All", oMenu, self.expand_all,
-                '<Ctrl>plus')
+                              '<Ctrl>plus')
         self.create_menu_item("Collapse All", oMenu, self.collapse_all,
-                '<Ctrl>minus')
+                              '<Ctrl>minus')
 
     def add_edit_menu_actions(self, oMenu):
         """Add the search item to the Edit Menu."""
         self.create_menu_item('_Search', oMenu, self.show_search_dialog,
-                '<Ctrl>f')
+                              '<Ctrl>f')
 
     def expand_all(self, _oWidget):
         """Expand all the rows in the card set."""
@@ -89,13 +90,14 @@ class FilteredViewMenu(SutekhMenu):
     # pylint: disable-msg=R0913
     # We need all these arguments
     def _create_profile_menu(self, oParentMenu, sTitle, sType, fCallback,
-            sProfile):
+                             sProfile):
         """Create a radio group sub-menu for selecting a profile."""
         oMenu = self.create_submenu(oParentMenu, sTitle)
         oConfig = self._oMainWindow.config_file
 
         oGroup = gtk.RadioMenuItem(None,
-            oConfig.get_profile_option(sType, None, "name"))
+                                   oConfig.get_profile_option(sType,
+                                                              None, "name"))
         oGroup.connect("toggled", fCallback, None)
         oMenu.append(oGroup)
 
@@ -111,7 +113,7 @@ class FilteredViewMenu(SutekhMenu):
         oGroup = oMenu.get_children()[0]
 
         aProfiles = [(sKey, oConfig.get_profile_option(sType, sKey, "name"))
-            for sKey in oConfig.profiles(sType)]
+                     for sKey in oConfig.profiles(sType)]
         aProfiles.sort(key=lambda tProfile: tProfile[1])
 
         if sProfile is None or sProfile == 'Default':

@@ -49,7 +49,7 @@ class SutekhMenu(gtk.MenuBar):
         (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
         if iKeyVal != 0:
             oMenuItem.add_accelerator('activate', self._oAccelGroup,
-                iKeyVal, iMod, gtk.ACCEL_VISIBLE)
+                                      iKeyVal, iMod, gtk.ACCEL_VISIBLE)
 
     def create_menu_item(self, sName, oMenu, fAction, sAccelKey=None):
         """Utiltiy function for creatng menu items.
@@ -68,7 +68,7 @@ class SutekhMenu(gtk.MenuBar):
     # pylint: disable-msg=R0913
     # We need all the arguments here
     def create_check_menu_item(self, sName, oMenu, fAction, bState=False,
-            sAccelKey=None):
+                               sAccelKey=None):
         """Utiltiy function for creatng check menu items.
 
            Create a check menu item, connect it to fAction (if not None), and

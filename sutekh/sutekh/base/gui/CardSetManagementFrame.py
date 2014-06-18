@@ -36,7 +36,7 @@ class CardSetManagementFrame(BasicFrame):
 
         self.init_plugins()
         self._oMenu = CardSetManagementMenu(self, self._oMainWindow,
-                self._oController)
+                                            self._oController)
 
         self.add_parts()
 
@@ -45,7 +45,7 @@ class CardSetManagementFrame(BasicFrame):
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     view = property(fget=lambda self: self._oController.view,
-                        doc="Associated View Object")
+                    doc="Associated View Object")
     # pylint: enable-msg=W0212
 
     def add_parts(self):

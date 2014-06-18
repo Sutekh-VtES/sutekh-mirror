@@ -38,7 +38,7 @@ class CardSetController(object):
     model = property(fget=lambda self: self._oView._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
-            doc="Associated Type")
+                          doc="Associated Type")
     # pylint: enable-msg=W0212
 
     def cleanup(self):
@@ -74,8 +74,8 @@ class CardSetController(object):
             # they are present.
             if not oPhysCard.expansion and \
                     MapPhysicalCardToPhysicalCardSet.selectBy(
-                            physicalCardID=oPhysCard.id,
-                            physicalCardSetID=oThePCS.id).count() == 0:
+                        physicalCardID=oPhysCard.id,
+                        physicalCardSetID=oThePCS.id).count() == 0:
                 # Given card is not in the card set, so consider all
                 # cards with the same name.
                 aPhysCards = list(PhysicalCard.selectBy(
@@ -90,8 +90,7 @@ class CardSetController(object):
             # Need to remove a single physical card from the mapping table
             # Can't use PhysicalCardSet.remove, as that removes all the cards
             aCandCards = list(MapPhysicalCardToPhysicalCardSet.selectBy(
-                    physicalCardID=oCard.id,
-                    physicalCardSetID=oThePCS.id))
+                physicalCardID=oCard.id, physicalCardSetID=oThePCS.id))
             if len(aCandCards) > 0:
                 # Found candidates, so remove last one
                 MapPhysicalCardToPhysicalCardSet.delete(aCandCards[-1].id)
@@ -143,7 +142,7 @@ class CardSetController(object):
         # sqlobject confuses pylint
         if check_ok_to_delete(self.__oPhysCardSet):
             self._oMainWindow.config_file.clear_cardset_profile(
-                    self.model.cardset_id)  # Remove profile entry
+                self.model.cardset_id)  # Remove profile entry
             # Card Set is being deleted, so close pane
             self._oFrame.close_frame()
             # Close any other open copies as well

@@ -30,13 +30,13 @@ class PhysicalCardView(CardListView):
         oModel = CardListModel(oConfig)
         oModel.enable_sorting()
         super(PhysicalCardView, self).__init__(oController, oWindow,
-                oModel, oConfig)
+                                               oModel, oConfig)
 
         # Setup columns for default view
         self.oNameCell = CellRendererIcons(5)
 
         oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
-                textlist=5, icons=6)
+                                     textlist=5, icons=6)
         oColumn.set_expand(True)
         oColumn.set_resizable(True)
         oColumn.set_sort_column_id(0)

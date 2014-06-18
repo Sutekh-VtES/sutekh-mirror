@@ -25,7 +25,7 @@ class CardSetsListView(FilteredView):
         else:
             oConfig = None
         super(CardSetsListView, self).__init__(oController, oMainWindow,
-                oModel, oConfig)
+                                               oModel, oConfig)
 
         self.set_name('card set list view')
 

@@ -165,7 +165,8 @@ class FilterDialog(SutekhDialog):
     def __run_load_dialog(self):
         """Display a dialog for loading a filter."""
         oLoadDialog = SutekhDialog("Load Filter", self.__oParent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+                                   gtk.DIALOG_MODAL |
+                                   gtk.DIALOG_DESTROY_WITH_PARENT)
 
         oLoadDialog.set_keep_above(True)
 
@@ -236,8 +237,8 @@ class FilterDialog(SutekhDialog):
                 if sName.lower() == DEF_PROFILE_FILTER.lower():
                     # jump into the error path
                     raise RuntimeError('Reserved name used for filter name')
-                if oAST.get_filter_expression() is None or \
-                    self.__sFilterType in oAST.get_type():
+                if (oAST.get_filter_expression() is None or
+                        self.__sFilterType in oAST.get_type()):
                     aFilters.append((sName, sFilter))
             except Exception:
                 # remove broken filter
@@ -301,10 +302,10 @@ class FilterDialog(SutekhDialog):
 
         if sConfigFilter is not None:
             iResponse = do_complaint_buttons(
-                            "Replace existing filter '%s'?" % (sName,),
-                            gtk.MESSAGE_QUESTION,
-                            (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                             gtk.STOCK_NO, gtk.RESPONSE_NO))
+                "Replace existing filter '%s'?" % (sName,),
+                gtk.MESSAGE_QUESTION,
+                (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                 gtk.STOCK_NO, gtk.RESPONSE_NO))
             if iResponse == gtk.RESPONSE_YES:
                 self.__oConfig.replace_filter(sName, sConfigFilter, sFilter)
                 bSaved = True
@@ -329,10 +330,12 @@ class FilterDialog(SutekhDialog):
         if sConfigFilter is not None:
             if dProfiles[FULL_CARDLIST] or dProfiles[CARDSET]:
                 # Filter is in use as a config filter, so prompt
-                sCardlist = '\n'.join(['Cardlist profile : %s' %
+                sCardlist = '\n'.join([
+                    'Cardlist profile : %s' %
                     self.__oConfig.get_profile_option(FULL_CARDLIST, x, 'name')
                     for x in dProfiles[FULL_CARDLIST]])
-                sCardset = '\n'.join(['Cardset profile : %s' %
+                sCardset = '\n'.join([
+                    'Cardset profile : %s' %
                     self.__oConfig.get_profile_option(CARDSET, x, 'name')
                     for x in dProfiles[CARDSET]])
                 sProfiles = '\n'.join([sCardlist, sCardset])

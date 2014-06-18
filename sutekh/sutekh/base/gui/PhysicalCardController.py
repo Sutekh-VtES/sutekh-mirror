@@ -20,7 +20,7 @@ class PhysicalCardController(object):
         self.__oMainWin = oMainWindow
         self.__oFrame = oFrame
         self.__oView = PhysicalCardView(self, oMainWindow,
-                oMainWindow.config_file)
+                                        oMainWindow.config_file)
         self.__oModel = self.__oView.get_model()
         self._sFilterType = 'PhysicalCard'
         self.model.set_controller(self)
@@ -29,10 +29,10 @@ class PhysicalCardController(object):
     # We provide read access to these items via these properties
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     model = property(fget=lambda self: self.__oModel,
-            doc="View's Model")
+                     doc="View's Model")
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
-            doc="Associated Type")
+                          doc="Associated Type")
     # pylint: enable-msg=W0212
 
     def cleanup(self):

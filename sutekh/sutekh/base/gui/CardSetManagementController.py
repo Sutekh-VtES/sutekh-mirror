@@ -33,7 +33,7 @@ class CardSetManagementController(object):
     model = property(fget=lambda self: self._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
-            doc="Associated Type")
+                          doc="Associated Type")
     # pylint: enable-msg=W0212
 
     def create_new_card_set(self, _oWidget):
@@ -66,7 +66,7 @@ class CardSetManagementController(object):
             for oFrame in self._oMainWindow.find_cs_pane_by_set_name(sSetName):
                 oFrame.close_frame()
             self._oMainWindow.config_file.clear_cardset_profile(
-                    'cs%d' % oCS.id)
+                'cs%d' % oCS.id)
             delete_physical_card_set(sSetName)
             self.view.reload_keep_expanded(False)
 

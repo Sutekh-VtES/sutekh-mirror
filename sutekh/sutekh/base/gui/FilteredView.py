@@ -44,13 +44,13 @@ class FilteredView(CustomDragIconView):
     # pylint: disable-msg=W0212
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
-            doc="The parent window used for dialogs, etc.")
+                          doc="The parent window used for dialogs, etc.")
     controller = property(fget=lambda self: self._oController,
-            doc="The controller used by the view.")
+                          doc="The controller used by the view.")
     frame = property(fget=lambda self: self._oController.frame,
-            doc="The frame used by the view.")
+                     doc="The frame used by the view.")
     filterdialog = property(fget=lambda self: self._oFilterDialog,
-            doc="The filter dialog.")
+                            doc="The filter dialog.")
     # pylint: enable-msg=W0212
 
     def load(self):
@@ -79,8 +79,7 @@ class FilteredView(CustomDragIconView):
             aSelectedRows = self._get_selected_rows()
         oCurPath, _oCol = self.get_cursor()
         if oCurPath:
-            sCurId = self.get_iter_identifier(
-                    self._oModel.get_iter(oCurPath))
+            sCurId = self.get_iter_identifier(self._oModel.get_iter(oCurPath))
         # Reload, but use cached info
         self.load()
         # Re-expand stuff
@@ -218,8 +217,8 @@ class FilteredView(CustomDragIconView):
             while oChildIter:
                 sChildName = oModel.get_name_from_iter(oChildIter)
                 sChildName = sChildName[:iLenKey].lower()
-                if self.to_ascii(sChildName).startswith(sKey) or\
-                    sChildName.startswith(sKey):
+                if (self.to_ascii(sChildName).startswith(sKey) or
+                        sChildName.startswith(sKey)):
                     oPath = oModel.get_path(oChildIter)
                     # Expand the row
                     self.expand_to_path(oPath)

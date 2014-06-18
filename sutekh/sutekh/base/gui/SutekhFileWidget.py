@@ -53,9 +53,9 @@ class SutekhFileDialog(gtk.FileChooserDialog):
        working dir of Sutekh."""
 
     def __init__(self, oParent, sTitle, oAction=gtk.FILE_CHOOSER_ACTION_OPEN,
-            oButtons=None):
+                 oButtons=None):
         super(SutekhFileDialog, self).__init__(sTitle, oParent, oAction,
-                oButtons)
+                                               oButtons)
         self.set_name('Sutekh.dialog')
         # We don't set the working directory here, since that
         # doesn't always work as expected and instead we rely
@@ -105,9 +105,9 @@ class SutekhFileButton(gtk.FileChooserButton):
        working directory."""
 
     def __init__(self, oParent, sTitle):
-        self.oDialog = SutekhFileDialog(oParent, sTitle,
-                oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.oDialog = SutekhFileDialog(
+            oParent, sTitle, oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                       gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         super(SutekhFileButton, self).__init__(self.oDialog)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
@@ -128,9 +128,10 @@ class SimpleFileDialog(SutekhFileDialog):
     # gtk.Widget, so many public methods
     """A simple file dialog, which just returns the file name"""
     def __init__(self, oParent, sTitle, oAction):
-        super(SimpleFileDialog, self).__init__(oParent, sTitle,
-                oAction, (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                        gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        super(SimpleFileDialog, self).__init__(
+            oParent, sTitle, oAction,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.connect("response", self.button_response)
         self.set_local_only(True)
         self.set_select_multiple(False)
@@ -153,7 +154,7 @@ class ImportDialog(SimpleFileDialog):
     """Prompt the user for a file name to import"""
     def __init__(self, sTitle, oParent):
         super(ImportDialog, self).__init__(oParent, sTitle,
-                gtk.FILE_CHOOSER_ACTION_OPEN)
+                                           gtk.FILE_CHOOSER_ACTION_OPEN)
 
 
 class ExportDialog(SimpleFileDialog):
@@ -162,7 +163,7 @@ class ExportDialog(SimpleFileDialog):
     """Prompt the user for a filename to export to"""
     def __init__(self, sTitle, oParent, sDefaultFileName=None):
         super(ExportDialog, self).__init__(oParent, sTitle,
-                gtk.FILE_CHOOSER_ACTION_SAVE)
+                                           gtk.FILE_CHOOSER_ACTION_SAVE)
         self.set_do_overwrite_confirmation(True)
         if sDefaultFileName:
             self.set_current_name(sDefaultFileName)

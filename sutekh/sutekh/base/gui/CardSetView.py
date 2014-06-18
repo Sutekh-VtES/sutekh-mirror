@@ -14,34 +14,34 @@ from .CardSetListModel import CardSetCardListModel
 from ..core.BaseObjects import PhysicalCardSet
 
 NUM_KEYS = {
-        gtk.gdk.keyval_from_name('1'): 1,
-        gtk.gdk.keyval_from_name('KP_1'): 1,
-        gtk.gdk.keyval_from_name('2'): 2,
-        gtk.gdk.keyval_from_name('KP_2'): 2,
-        gtk.gdk.keyval_from_name('3'): 3,
-        gtk.gdk.keyval_from_name('KP_3'): 3,
-        gtk.gdk.keyval_from_name('4'): 4,
-        gtk.gdk.keyval_from_name('KP_4'): 4,
-        gtk.gdk.keyval_from_name('5'): 5,
-        gtk.gdk.keyval_from_name('KP_5'): 5,
-        gtk.gdk.keyval_from_name('6'): 6,
-        gtk.gdk.keyval_from_name('KP_6'): 6,
-        gtk.gdk.keyval_from_name('7'): 7,
-        gtk.gdk.keyval_from_name('KP_7'): 7,
-        gtk.gdk.keyval_from_name('8'): 8,
-        gtk.gdk.keyval_from_name('KP_8'): 8,
-        gtk.gdk.keyval_from_name('9'): 9,
-        gtk.gdk.keyval_from_name('KP_9'): 9,
-        }
+    gtk.gdk.keyval_from_name('1'): 1,
+    gtk.gdk.keyval_from_name('KP_1'): 1,
+    gtk.gdk.keyval_from_name('2'): 2,
+    gtk.gdk.keyval_from_name('KP_2'): 2,
+    gtk.gdk.keyval_from_name('3'): 3,
+    gtk.gdk.keyval_from_name('KP_3'): 3,
+    gtk.gdk.keyval_from_name('4'): 4,
+    gtk.gdk.keyval_from_name('KP_4'): 4,
+    gtk.gdk.keyval_from_name('5'): 5,
+    gtk.gdk.keyval_from_name('KP_5'): 5,
+    gtk.gdk.keyval_from_name('6'): 6,
+    gtk.gdk.keyval_from_name('KP_6'): 6,
+    gtk.gdk.keyval_from_name('7'): 7,
+    gtk.gdk.keyval_from_name('KP_7'): 7,
+    gtk.gdk.keyval_from_name('8'): 8,
+    gtk.gdk.keyval_from_name('KP_8'): 8,
+    gtk.gdk.keyval_from_name('9'): 9,
+    gtk.gdk.keyval_from_name('KP_9'): 9,
+}
 
 PLUS_KEYS = set([
-        gtk.gdk.keyval_from_name('plus'),
-        gtk.gdk.keyval_from_name('KP_Add'),
-        ])
+    gtk.gdk.keyval_from_name('plus'),
+    gtk.gdk.keyval_from_name('KP_Add'),
+])
 MINUS_KEYS = set([
-        gtk.gdk.keyval_from_name('minus'),
-        gtk.gdk.keyval_from_name('KP_Subtract'),
-        ])
+    gtk.gdk.keyval_from_name('minus'),
+    gtk.gdk.keyval_from_name('KP_Subtract'),
+])
 
 
 class CardSetView(CardListView):
@@ -68,7 +68,7 @@ class CardSetView(CardListView):
             oModel.bEditable = True
         # The only path here is via the main window, so config_file exists
         super(CardSetView, self).__init__(oController, oMainWindow,
-                oModel, oMainWindow.config_file)
+                                          oModel, oMainWindow.config_file)
 
         self.sSetName = sName
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
@@ -86,7 +86,7 @@ class CardSetView(CardListView):
 
         oParentCell = gtk.CellRendererText()
         self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell, text=2,
-                foreground_gdk=7)
+                                             foreground_gdk=7)
         self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
@@ -95,7 +95,7 @@ class CardSetView(CardListView):
         self.oParentCol.set_resizable(True)
 
         oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
-                textlist=5, icons=6)
+                                      textlist=5, icons=6)
         oColumn2.set_min_width(100)
         oColumn2.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
         oColumn2.set_sort_column_id(0)
@@ -148,7 +148,7 @@ class CardSetView(CardListView):
         dSelectedData = {}
         for oPath in oPathList:
             sCardName, sExpansion, iCount, iDepth = \
-                    oModel.get_drag_info_from_path(oPath)
+                oModel.get_drag_info_from_path(oPath)
             if not sCardName:
                 # Not a card in this card set, so we skip
                 continue
@@ -212,7 +212,7 @@ class CardSetView(CardListView):
             elif iSetNewCount:
                 iNewCount = iSetNewCount
             _sCardName, _sExpansion, sCardSet = \
-                        oModel.get_all_names_from_iter(oIter)
+                oModel.get_all_names_from_iter(oIter)
             dSelectedData.setdefault(oPhysCard, {})
             iDepth = oModel.iter_depth(oIter)
             if iDepth == 1:
@@ -226,8 +226,7 @@ class CardSetView(CardListView):
                     # We already have this info (for selections via multiple
                     # groups, etc.)
                     continue
-                dSelectedData[oPhysCard][sCardSet] = [iCount,
-                        iNewCount]
+                dSelectedData[oPhysCard][sCardSet] = [iCount, iNewCount]
         return dSelectedData
 
     # pylint: disable-msg=R0913
@@ -243,7 +242,8 @@ class CardSetView(CardListView):
             bSkip = False
             if sSource == "Basic Pane:" or sSource == "Card Set:":
                 self._oController.frame.drag_drop_handler(oWidget, oContext,
-                        iXPos, iYPos, oData, oInfo, oTime)
+                                                          iXPos, iYPos, oData,
+                                                          oInfo, oTime)
                 return
             elif not self._oModel.bEditable:
                 # Don't accept cards when not editable
@@ -252,7 +252,7 @@ class CardSetView(CardListView):
                 # Can't drag to oneself
                 bSkip = True
             if bSkip or not self._oController.add_paste_data(sSource,
-                    aCardInfo):
+                                                             aCardInfo):
                 bDragRes = False  # paste failed
             # else paste succeeds
         oContext.finish(bDragRes, False, oTime)
@@ -268,7 +268,7 @@ class CardSetView(CardListView):
             if bInc:
                 oPhysCard = self._oModel.get_physical_card_from_path(oPath)
                 _sCardName, _sExpansion, sCardSetName = \
-                        self._oModel.get_all_names_from_path(oPath)
+                    self._oModel.get_all_names_from_path(oPath)
                 self._oController.inc_card(oPhysCard, sCardSetName)
 
     def dec_card(self, _oCell, oPath):
@@ -279,7 +279,7 @@ class CardSetView(CardListView):
             if bDec:
                 oPhysCard = self._oModel.get_physical_card_from_path(oPath)
                 _sCardName, _sExpansion, sCardSetName = \
-                        self._oModel.get_all_names_from_path(oPath)
+                    self._oModel.get_all_names_from_path(oPath)
                 self._oController.dec_card(oPhysCard, sCardSetName)
 
     def key_press(self, _oWidget, oEvent):
@@ -364,7 +364,7 @@ class CardSetView(CardListView):
         self._oModel.load()
         self.set_model(self._oModel)
         self.oNumCell.set_property('foreground-gdk',
-                self._oModel.get_count_colour())
+                                   self._oModel.get_count_colour())
         self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
             self._oMainWin.restore_cursor()
@@ -390,15 +390,16 @@ class CardSetView(CardListView):
         oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
         self.set_name('editable_view')
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
-                '', self.class_path(), self)
+                                                        '', self.class_path(),
+                                                        self)
         # We want the class style for this widget, ignoring set_name effects
         oSpecificStyle = self.rc_get_style()
-        if oSpecificStyle == oDefaultSutekhStyle or \
-                oDefaultSutekhStyle is None:
+        if (oSpecificStyle == oDefaultSutekhStyle or
+                oDefaultSutekhStyle is None):
             # No specific style set
             sColour = 'red'
             if _compare_colors(gtk.gdk.color_parse(sColour),
-                    oCurStyle.fg[gtk.STATE_NORMAL]):
+                               oCurStyle.fg[gtk.STATE_NORMAL]):
                 sColour = 'green'
             # FIXME: rc_parse_string doesn't play nicely with
             # theme changes, which cause a rcfile reparse.

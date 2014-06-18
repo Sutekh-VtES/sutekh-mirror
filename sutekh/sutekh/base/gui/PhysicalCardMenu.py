@@ -32,7 +32,7 @@ class PhysicalCardMenu(CardListMenu):
         self.sort_menu(self._dMenus['Analyze'])
         MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                             self.profile_option_changed)
 
     # pylint: disable-msg=W0201
     # called from __init__, so OK
@@ -43,10 +43,11 @@ class PhysicalCardMenu(CardListMenu):
 
         # items
         self.create_check_menu_item('Show Card Expansions', oMenu,
-                self._oController.toggle_expansion, True)
+                                    self._oController.toggle_expansion, True)
 
         self.create_check_menu_item('Show icons for the grouping',
-                oMenu, self._oController.toggle_icons, True)
+                                    oMenu, self._oController.toggle_icons,
+                                    True)
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
@@ -55,31 +56,32 @@ class PhysicalCardMenu(CardListMenu):
         """Create the edit menu and populate it"""
         oMenu = self.create_submenu(self, "_Edit")
         self.create_menu_item('Copy selection', oMenu, self.copy_selection,
-                '<Ctrl>c')
+                              '<Ctrl>c')
 
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 
         sProfile = self._oMainWindow.config_file.get_profile(FULL_CARDLIST,
-                FULL_CARDLIST)
-        self._oCardlistProfileMenu = self._create_profile_menu(oMenu,
-            "Cardlist Profile", FULL_CARDLIST, self._select_cardlist_profile,
-            sProfile)
+                                                             FULL_CARDLIST)
+        self._oCardlistProfileMenu = self._create_profile_menu(
+            oMenu, "Cardlist Profile", FULL_CARDLIST,
+            self._select_cardlist_profile, sProfile)
 
         self.add_edit_menu_actions(oMenu)
 
     def cleanup(self):
         """Remove the menu listener"""
         MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
-                self.remove_profile)
+                               self.remove_profile)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                               self.profile_option_changed)
 
     def _edit_profiles(self, _oWidget):
         """Open an options profiles editing dialog."""
         oDlg = FrameProfileEditor(self._oMainWindow,
-            self._oMainWindow.config_file, FULL_CARDLIST)
+                                  self._oMainWindow.config_file,
+                                  FULL_CARDLIST)
         sCurProfile = self._oMainWindow.config_file.get_profile(FULL_CARDLIST,
-            FULL_CARDLIST)
+                                                                FULL_CARDLIST)
         oDlg.set_selected_profile(sCurProfile)
         oDlg.run()
 
@@ -88,9 +90,9 @@ class PhysicalCardMenu(CardListMenu):
     def _fix_profile_menu(self):
         """Set the profile menu correctly"""
         sProfile = self._oMainWindow.config_file.get_profile(FULL_CARDLIST,
-                FULL_CARDLIST)
+                                                             FULL_CARDLIST)
         self._update_profile_group(self._oCardlistProfileMenu, FULL_CARDLIST,
-            self._select_cardlist_profile, sProfile)
+                                   self._select_cardlist_profile, sProfile)
 
     def _select_cardlist_profile(self, oRadio, sProfileKey):
         """Callback to change the profile of the current card set."""

@@ -31,10 +31,10 @@ class CardListFrame(BasicFrame):
     # pylint: disable-msg=W0212
     # We allow access via these properties
     view = property(fget=lambda self: self._oController.view,
-            doc="Associated View Object")
+                    doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table,
-            doc="Frame Type")
+                    doc="Frame Type")
     # pylint: enable-msg=W0212
 
     def reload(self):
@@ -75,7 +75,7 @@ class CardListFrame(BasicFrame):
         oMbox.pack_start(self._oMenu, False, False)
 
         oMbox.pack_end(AutoScrolledWindow(self._oController.view),
-                expand=True)
+                       expand=True)
 
         self.add(oMbox)
         self.show_all()

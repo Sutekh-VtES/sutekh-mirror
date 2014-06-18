@@ -37,17 +37,21 @@ class CardSetManagementModel(gtk.TreeStore):
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
     applyfilter = property(fget=lambda self: self._bApplyFilter,
-            fset=lambda self, x: setattr(self, '_bApplyFilter', x))
+                           fset=lambda self, x: setattr(self,
+                                                        '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
-            fset=lambda self, x: setattr(self, '_oSelectFilter', x))
+                            fset=lambda self, x: setattr(self,
+                                                         '_oSelectFilter', x))
 
     frame_id = property(fget=lambda self: CARDSET_LIST,
-            doc="Frame ID of the card set list (for selecting profiles)")
+                        doc="Frame ID of the card set list "
+                            "(for selecting profiles)")
 
     # This isn't a card set id, but it's here to support profiles
     # (see CardListModel)
     cardset_id = property(fget=lambda self: CARDSET_LIST,
-            doc="Cardset ID of card set list (for selecting profiles)")
+                          doc="Cardset ID of card set list "
+                              "(for selecting profiles)")
 
     # pylint: enable-msg=W0212, C0103
 

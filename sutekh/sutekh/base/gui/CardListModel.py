@@ -44,9 +44,11 @@ class CardListModel(gtk.TreeStore):
     def __init__(self, oConfig):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(str, int, int, bool, bool,
-                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,
-                gtk.gdk.Color,
-                gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
+                                            gobject.TYPE_PYOBJECT,
+                                            gobject.TYPE_PYOBJECT,
+                                            gtk.gdk.Color,
+                                            gobject.TYPE_PYOBJECT,
+                                            gobject.TYPE_PYOBJECT)
         # name, count, parent count, showInc, showDec, text_list, icons,
         #       parent_color, AbstractCard, PhysicalCard
 
@@ -73,38 +75,44 @@ class CardListModel(gtk.TreeStore):
         self._oFilterParser = FilterParser()
         MessageBus.subscribe(CONFIG_MSG, 'replace_filter', self.replace_filter)
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                             self.profile_option_changed)
         MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
-                self.profile_changed)
+                             self.profile_changed)
         MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
-                self.set_postfix_the_display)
+                             self.set_postfix_the_display)
 
     # pylint: disable-msg=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
     cardclass = property(fget=lambda self: self._cCardClass,
-            fset=lambda self, x: setattr(self, '_cCardClass', x))
+                         fset=lambda self, x: setattr(self, '_cCardClass', x))
     groupby = property(fget=lambda self: self._cGroupBy,
-            fset=lambda self, x: setattr(self, '_cGroupBy', x))
+                       fset=lambda self, x: setattr(self, '_cGroupBy', x))
     basefilter = property(fget=lambda self: self._oBaseFilter,
-            fset=lambda self, x: setattr(self, '_oBaseFilter', x))
+                          fset=lambda self, x: setattr(self,
+                                                       '_oBaseFilter', x))
     hideillegal = property(fget=lambda self: self._bHideIllegal,
-            fset=lambda self, x: setattr(self, '_bHideIllegal', x))
+                           fset=lambda self, x: setattr(self,
+                                                        '_bHideIllegal', x))
     applyfilter = property(fget=lambda self: self._bApplyFilter,
-            fset=lambda self, x: setattr(self, '_bApplyFilter', x))
+                           fset=lambda self, x: setattr(self,
+                                                        '_bApplyFilter', x))
     selectfilter = property(fget=lambda self: self._oSelectFilter,
-            fset=lambda self, x: setattr(self, '_oSelectFilter', x))
+                            fset=lambda self, x: setattr(self,
+                                                         '_oSelectFilter', x))
     # configfilter is read only, since it's only changed via the
     # profile management stuff
     configfilter = property(fget=lambda self: self._oConfigFilter,
-            doc="Filter from the current profile.")
+                            doc="Filter from the current profile.")
 
     frame_id = property(fget=lambda self: FULL_CARDLIST,
-            doc="Frame ID of the card list (for selecting profiles)")
+                        doc="Frame ID of the card list "
+                            "(for selecting profiles)")
 
     # This isn't a card set id, but it's here to support profiles
     cardset_id = property(fget=lambda self: FULL_CARDLIST,
-            doc="Cardset ID of card list (for selecting profiles)")
+                          doc="Cardset ID of card list "
+                              "(for selecting profiles)")
 
     # pylint: enable-msg=W0212, C0103
 
@@ -112,11 +120,11 @@ class CardListModel(gtk.TreeStore):
         """Remove the config file listener if needed"""
         self._oController = None
         MessageBus.unsubscribe(CONFIG_MSG, 'replace_filter',
-                self.replace_filter)
+                               self.replace_filter)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
-                self.profile_option_changed)
+                               self.profile_option_changed)
         MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
-                self.profile_changed)
+                               self.profile_changed)
         # Ensure we clean up all subscribers
         MessageBus.clear(self)
 
@@ -175,7 +183,7 @@ class CardListModel(gtk.TreeStore):
            several places in CardSetListModel"""
         if self.oIconManager and self.bUseIcons:
             aTexts, aIcons = self.oIconManager.get_info(sGroup,
-                    self.groupby)
+                                                        self.groupby)
         else:
             aTexts = aIcons = []
         return aTexts, aIcons
@@ -229,7 +237,7 @@ class CardListModel(gtk.TreeStore):
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
         fGetCard, _fGetCount, fGetExpanInfo, oGroupedIter, aCards = \
-                self.grouped_card_iter(oCardIter)
+            self.grouped_card_iter(oCardIter)
 
         self.oEmptyIter = None
 
@@ -259,26 +267,26 @@ class CardListModel(gtk.TreeStore):
                 if bPostfix:
                     sName = move_articles_to_back(sName)
                 self.set(oChildIter,
-                    0, sName,
-                    8, oCard,
-                    9, PhysicalCardAdapter((oCard, None)),
-                )
+                         0, sName,
+                         8, oCard,
+                         9, PhysicalCardAdapter((oCard, None)),
+                         )
                 aExpansionInfo = self.get_expansion_info(oCard,
-                        fGetExpanInfo(oItem))
+                                                         fGetExpanInfo(oItem))
                 for oPhysCard, sExpansion in aExpansionInfo:
                     oExpansionIter = self.append(oChildIter)
                     self.set(oExpansionIter,
-                            0, sExpansion,
-                            9, oPhysCard,
-                            )
+                             0, sExpansion,
+                             9, oPhysCard,
+                             )
                 bEmpty = False
 
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
                 self.set(oSectionIter, 0, sGroup,
-                    5, aTexts, 6, aIcons,
-                )
+                         5, aTexts, 6, aIcons,
+                         )
             else:
                 self.set(oSectionIter, 0, sGroup)
 
@@ -358,7 +366,7 @@ class CardListModel(gtk.TreeStore):
         if self.configfilter:
             if self.applyfilter and self._bHideIllegal and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter,
-                    self.oLegalFilter])
+                                     self.oLegalFilter])
             elif self._bHideIllegal:
                 # either not self.apply, or self.selectfilter is None
                 return FilterAndBox([self.configfilter, self.oLegalFilter])
@@ -419,7 +427,7 @@ class CardListModel(gtk.TreeStore):
             # Something bad has happened, and we have an invalid path
             # log this and return None
             logging.warn('Invalid path (%s) in get_physical_card_from_path',
-                    oPath)
+                         oPath)
             return None
 
     def check_card_visible(self, oPhysCard):

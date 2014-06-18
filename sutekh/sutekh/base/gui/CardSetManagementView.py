@@ -23,14 +23,14 @@ class CardSetManagementView(CardSetsListView):
 
     def __init__(self, oController, oMainWindow):
         super(CardSetManagementView, self).__init__(oController,
-                oMainWindow)
+                                                    oMainWindow)
 
         # Selecting rows
         self.set_select_single()
 
         # Drag and Drop
-        aTargets = [('STRING', 0, 0),       # second 0 means TARGET_STRING
-                     ('text/plain', 0, 0)]  # and here
+        aTargets = [('STRING', 0, 0),      # second 0 means TARGET_STRING
+                    ('text/plain', 0, 0)]  # and here
 
         # Need this so we can drag the pane in the same way as the card list
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
@@ -38,7 +38,7 @@ class CardSetManagementView(CardSetsListView):
                              gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.enable_model_drag_dest(aTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                                    gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self.connect('drag_data_get', self.drag_card_set)
         self.connect('row_activated', self.row_clicked)
@@ -52,7 +52,7 @@ class CardSetManagementView(CardSetsListView):
         if sSetName:
             # defer to CustomDragIcon
             super(CardSetManagementView, self).make_drag_icon(oWidget,
-                    oDragContext)
+                                                              oDragContext)
         else:
             # use pane icon
             self.frame.make_drag_icon(self, oDragContext)
@@ -65,20 +65,22 @@ class CardSetManagementView(CardSetsListView):
         if not sSetName:
             # Pass over to the frame handler
             self._oController.frame.create_drag_data(oBtn, oDragContext,
-                    oSelectionData, oInfo, oTime)
+                                                     oSelectionData, oInfo,
+                                                     oTime)
             return
         sData = "\n".join(['Card Set:', sSetName])
         oSelectionData.set(oSelectionData.target, 8, sData)
 
     def card_set_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo,
-            oTime):
+                      oTime):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
         sSource, aData = self.split_selection_data(oData.data)
         bDragRes = False
         if sSource == "Basic Pane:":
             self._oController.frame.drag_drop_handler(oWidget, oContext,
-                    iXPos, iYPos, oData, oInfo, oTime)
+                                                      iXPos, iYPos, oData,
+                                                      oInfo, oTime)
             return
         elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
@@ -91,7 +93,7 @@ class CardSetManagementView(CardSetsListView):
                 try:
                     oDraggedCS = IPhysicalCardSet(sThisName)
                     oParentCS = IPhysicalCardSet(
-                            self._oModel.get_name_from_path(oPath))
+                        self._oModel.get_name_from_path(oPath))
                     if reparent_card_set(oDraggedCS, oParentCS):
                         # Use frame reload to keep scroll position
                         self.frame.reload()
@@ -127,5 +129,6 @@ class CardSetManagementView(CardSetsListView):
     def _get_filter_dialog(self, sDefaultFilter):
         """Create the filter dialog for this view."""
         self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig,
-                self._oController.filtertype, sDefaultFilter)
+                                           self._oController.filtertype,
+                                           sDefaultFilter)
         return True

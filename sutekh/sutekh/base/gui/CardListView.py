@@ -21,7 +21,7 @@ class CardListView(FilteredView):
 
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         super(CardListView, self).__init__(oController, oMainWindow,
-                oModel, oConfig)
+                                           oModel, oConfig)
 
         self.set_select_multiple()
 
@@ -36,7 +36,7 @@ class CardListView(FilteredView):
         tGtkVersion = gtk.gtk_version
         if tGtkVersion[0] == 2 and \
                 ((tGtkVersion[1] > 6 and tGtkVersion[1] < 12) or
-                (tGtkVersion[1] == 12 and tGtkVersion[2] == 0)):
+                 (tGtkVersion[1] == 12 and tGtkVersion[2] == 0)):
             # gtk versions from 2.8 to 2.12.0 have a bug with handling
             # cursor movements, excluded selects and multiple select mode
             # ( http://bugzilla.gnome.org/show_bug.cgi?id=483730 )
@@ -75,7 +75,7 @@ class CardListView(FilteredView):
             return True
         # In general, we don't allow the top level nodes to be selected
         return self._oModel.iter_parent(self._oModel.get_iter(oPath)) is \
-                not None
+            not None
 
     def card_selected(self, oSelection):
         """Change the selection behaviour.
@@ -104,7 +104,7 @@ class CardListView(FilteredView):
         dSelectedData = {}
         for oPath in aPathList:
             sCardName, sExpansion, iCount, iDepth = \
-                    oModel.get_all_from_path(oPath)
+                oModel.get_all_from_path(oPath)
             if iDepth == 0:
                 # Skip top level items, since they're meaningless for the
                 # selection
@@ -171,12 +171,12 @@ class CardListView(FilteredView):
                 return sExpand
 
         sSource, aLines = \
-                super(CardListView, self).split_selection_data(sSelectionData)
+            super(CardListView, self).split_selection_data(sSelectionData)
         if sSource in ("None", "Basic Pane:", "Card Set:"):
             # Not cards that were dragged, so just return
             return sSource, aLines
         aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
-                [true_expansion(x) for x in aLines[3::3]])
+                        [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
     # pylint: disable-msg=R0913
@@ -188,7 +188,8 @@ class CardListView(FilteredView):
         if sSelectData == '':
             # Pass over to the frame handler
             self._oController.frame.create_drag_data(oBtn, oContext,
-                    oSelectionData, oInfo, oTime)
+                                                     oSelectionData, oInfo,
+                                                     oTime)
             return
         oSelectionData.set(oSelectionData.target, 8, sSelectData)
 
@@ -200,7 +201,7 @@ class CardListView(FilteredView):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
         self._oController.frame.drag_drop_handler(oWdgt, oContext, iXPos,
-                iYPos, oData, oInfo, oTime)
+                                                  iYPos, oData, oInfo, oTime)
 
     def copy_selection(self):
         """Copy the current selection to the application clipboard"""
@@ -229,8 +230,8 @@ class CardListView(FilteredView):
                 while oChildIter:
                     sChildName = self._oModel.get_name_from_iter(oChildIter)
                     sChildName = sChildName[:iLenKey].lower()
-                    if self.to_ascii(sChildName).startswith(sKey) or\
-                        sChildName.startswith(sKey):
+                    if (self.to_ascii(sChildName).startswith(sKey) or
+                            sChildName.startswith(sKey)):
                         # Expand the row
                         self.expand_to_path(oPath)
                         # Bail out, as compare will find the match for us
@@ -239,8 +240,8 @@ class CardListView(FilteredView):
                 return True  # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if self.to_ascii(sCardName).startswith(sKey) or \
-                sCardName.startswith(sKey):
+        if (self.to_ascii(sCardName).startswith(sKey) or
+                sCardName.startswith(sKey)):
             return False
 
         return True
@@ -279,7 +280,8 @@ class CardListView(FilteredView):
     def _get_filter_dialog(self, sDefaultFilter):
         """Create the filter dialog for this view."""
         self._oFilterDialog = FilterDialog(self._oMainWin, self._oConfig,
-                self._oController.filtertype, sDefaultFilter)
+                                           self._oController.filtertype,
+                                           sDefaultFilter)
         return True
 
     def make_drag_icon(self, _oWidget, oDragContext):
