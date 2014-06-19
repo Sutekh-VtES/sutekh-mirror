@@ -12,17 +12,10 @@
 import urllib2
 import socket
 from logging import Logger
-try:
-    # pylint: disable-msg=E0611
-    # E0611: hashlib is strange, and confuses pylint
-    from hashlib import sha256
-    # pylint: enable-msg=E0611
-except ImportError:
-    # Python2.4 doesn't have hashlib, so we just skip the checks
-    # pylint: disable-msg=C0103
-    # C0103: Using the module name here
-    sha256 = None
-    # pylint: enable-msg=C0103
+# pylint: disable-msg=E0611
+# E0611: hashlib is strange, and confuses pylint
+from hashlib import sha256
+# pylint: enable-msg=E0611
 
 
 class HashError(Exception):
@@ -110,7 +103,7 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
         else:
             raise
 
-    if sHash is not None and sha256 is not None:
+    if sHash is not None:
         if sData is not None:
             # Only check has if we have data
             sDataHash = sha256(sData).hexdigest()
