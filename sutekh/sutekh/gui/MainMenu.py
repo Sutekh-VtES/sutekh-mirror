@@ -6,14 +6,8 @@
 
 """Menu for the Main Application Window"""
 
-from sutekh.base.gui.SutekhDialog import do_complaint_error
-from sutekh.base.gui.SutekhFileWidget import ImportDialog
 from sutekh.gui.GuiDBManagement import refresh_ww_card_list
-from sutekh.base.gui.GuiCardSetFunctions import import_cs
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
-from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
-from sutekh.io.PhysicalCardParser import PhysicalCardParser
-from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.base.gui.AppMenu import AppMenu
 
 
@@ -27,6 +21,7 @@ class MainMenu(AppMenu):
     # R0902 - We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__(oWindow, oConfig)
+        self.cIdentifyFile = IdentifyXMLFile
 
     def _add_download_menu(self, oDownloadMenu):
         """Extend the File Download menu"""
@@ -54,31 +49,6 @@ class MainMenu(AppMenu):
     def show_manual(self, oMenuWidget):
         """Show the Sutekh Tutorial"""
         self._oMainWindow.show_manual(oMenuWidget, self.oHelpLast)
-
-    def do_import_card_set(self, _oWidget):
-        """Import a card set from a XML File."""
-        oFileChooser = ImportDialog("Select Card Set(s) to Import",
-                                    self._oMainWindow)
-        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
-        oFileChooser.run()
-        sFileName = oFileChooser.get_name()
-        if sFileName is not None:
-            oIdParser = IdentifyXMLFile()
-            oIdParser.id_file(sFileName)
-            if oIdParser.type == 'PhysicalCardSet' or \
-                    oIdParser.type == 'AbstractCardSet' or \
-                    oIdParser.type == 'PhysicalCard':
-                fIn = file(sFileName, 'rU')
-                if oIdParser.type == "AbstractCardSet":
-                    oParser = AbstractCardSetParser()
-                elif oIdParser.type == 'PhysicalCardSet':
-                    oParser = PhysicalCardSetParser()
-                else:
-                    # Old style PhysicalCard list
-                    oParser = PhysicalCardParser()
-                import_cs(fIn, oParser, self._oMainWindow)
-            else:
-                do_complaint_error("File is not a CardSet XML File.")
 
     def do_import_new_card_list(self, _oWidget):
         """Refresh the WW card list and rulings files."""

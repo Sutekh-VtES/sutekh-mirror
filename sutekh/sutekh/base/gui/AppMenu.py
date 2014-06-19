@@ -10,6 +10,9 @@ import gtk
 from sqlobject import sqlhub
 from .ProfileManagement import ProfileMngDlg
 from .SutekhMenu import SutekhMenu
+from .SutekhFileWidget import ImportDialog
+from .GuiCardSetFunctions import import_cs
+from .SutekhDialog import do_complaint_error
 
 
 class AppMenu(SutekhMenu):
@@ -37,6 +40,9 @@ class AppMenu(SutekhMenu):
                                  self.add_card_text_set_sensitive)
         # enable mnemonics + accelerators for the main menu
         self.activate_accels()
+
+        # subclasses need to provide this
+        self.cIdentifyFile = None
 
     # pylint: disable-msg=W0201
     # these are called from __init__
@@ -257,8 +263,20 @@ class AppMenu(SutekhMenu):
 
     def do_import_card_set(self, _oWidget):
         """Import a card set from a XML File."""
-        # Subclasses should provide this
-        raise NotImplementedError
+        oFileChooser = ImportDialog("Select Card Set(s) to Import",
+                                    self._oMainWindow)
+        oFileChooser.add_filter_with_pattern('XML Files', ['*.xml'])
+        oFileChooser.run()
+        sFileName = oFileChooser.get_name()
+        if sFileName is not None:
+            oIdParser = self.cIdentifyFile()
+            oIdParser.id_file(sFileName)
+            if oIdParser.can_parse():
+                fIn = file(sFileName, 'rU')
+                oParser = oIdParser.get_parser()
+                import_cs(fIn, oParser, self._oMainWindow)
+            else:
+                do_complaint_error("File is not a CardSet XML File.")
 
     def do_import_new_card_list(self, _oWidget):
         """Refresh the full card list and rulings files."""
