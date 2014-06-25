@@ -54,16 +54,15 @@ class BaseZipFileWrapper(object):
         self._cWriter = None
         self._cIdentifyFile = None
 
-
-    def __open_zip_for_write(self):
+    def _open_zip_for_write(self):
         """Open zip file to be written"""
         self.oZip = zipfile.ZipFile(self.sZipFileName, 'w')
 
-    def __open_zip_for_read(self):
+    def _open_zip_for_read(self):
         """Open zip file to be read"""
         self.oZip = zipfile.ZipFile(self.sZipFileName, 'r')
 
-    def __close_zip(self):
+    def _close_zip(self):
         """Close the zip file and clean up"""
         self.oZip.close()
         self.oZip = None
@@ -73,7 +72,7 @@ class BaseZipFileWrapper(object):
         bClose = False
         tTime = datetime.datetime.now().timetuple()
         if self.oZip is None:
-            self.__open_zip_for_write()
+            self._open_zip_for_write()
             bClose = True
         aList = []
         for oPCSet in aPCSList:
@@ -94,7 +93,7 @@ class BaseZipFileWrapper(object):
             self.oZip.writestr(oInfoObj, oString)
             oLogger.info('PCS: %s written', oPCSet.name)
         if bClose:
-            self.__close_zip()
+            self._close_zip()
         return aList
 
     def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
@@ -103,7 +102,7 @@ class BaseZipFileWrapper(object):
         self._aWarnings = []
         bTablesRefreshed = False
         self._bForceReparent = False
-        self.__open_zip_for_read()
+        self._open_zip_for_read()
         oLogger = Logger('Restore zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
@@ -134,7 +133,7 @@ class BaseZipFileWrapper(object):
         while len(aToRead) > 0:
             aToRead = self.read_items(aToRead, oCardLookup, oLogger,
                                       dLookupCache)
-        self.__close_zip()
+        self._close_zip()
 
     def read_items(self, aList, oCardLookup, oLogger, dLookupCache):
         """Read a list of CardSet items from the card list, reaturning
@@ -183,26 +182,20 @@ class BaseZipFileWrapper(object):
         return aToRead
 
     # Helper methods for influencing how the zip files are handled
+    # subclasses should override these
 
     def _check_forced_reparent(self, oIdParser):
         """Do we need to force the parent of this to be 'My Collection'?"""
-        if self._bForceReparent and oIdParser.type == 'PhysicalCardSet':
-            return True
-        return False
+        raise NotImplementedError("implement _check_forced_reparent")
 
     def _should_force_reparent(self, oIdParser):
         """Check if we may need to force reparenting of card sets to
            'My Collection'"""
-        if oIdParser.type == 'PhysicalCard':
-            return True
-        return False
+        raise NotImplementedError("implement _should_force_reparent")
 
     def _check_refresh(self, oIdParser):
         """Does this require we refresh the card set list?"""
-        if (oIdParser.type == 'PhysicalCard' or
-                oIdParser.type == 'PhysicalCardSet'):
-            return True
-        return False
+        raise NotImplementedError("implement _check_refresh")
 
     def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""
@@ -211,7 +204,7 @@ class BaseZipFileWrapper(object):
 
     def do_dump_list_to_zip(self, aCSList, oLogHandler=None):
         """Handle dumping a list of cards to the zip file with log fiddling"""
-        self.__open_zip_for_write()
+        self._open_zip_for_write()
         oLogger = Logger('Write zip file')
         if oLogHandler is not None:
             oLogger.addHandler(oLogHandler)
@@ -223,12 +216,12 @@ class BaseZipFileWrapper(object):
                 else:
                     oLogHandler.set_total(len(aCSList))
         aPCSList = self.write_pcs_list_to_zip(aCSList, oLogger)
-        self.__close_zip()
+        self._close_zip()
         return aPCSList
 
     def get_all_entries(self):
         """Return the list of card sets in the zip file"""
-        self.__open_zip_for_read()
+        self._open_zip_for_read()
         dCardSets = {}
         oIdParser = self._cIdentifyFile()
         for oItem in self.oZip.infolist():
@@ -238,12 +231,12 @@ class BaseZipFileWrapper(object):
                 dCardSets[oIdParser.name] = (oItem.filename,
                                              oIdParser.parent_exists,
                                              oIdParser.parent)
-        self.__close_zip()
+        self._close_zip()
         return dCardSets
 
     def read_single_card_set(self, sFilename):
         """Read a single card set into a card set holder."""
-        self.__open_zip_for_read()
+        self._open_zip_for_read()
         oIdParser = self._cIdentifyFile()
         oData = self.oZip.read(sFilename)
         oIdParser.parse_string(oData)
@@ -252,7 +245,7 @@ class BaseZipFileWrapper(object):
             oHolder = CachedCardSetHolder()
             oParser = oIdParser.get_parser()
             parse_string(oParser, oData, oHolder)
-        self.__close_zip()
+        self._close_zip()
         return oHolder
 
     def get_warnings(self):
