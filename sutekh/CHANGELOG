@@ -1,3 +1,7 @@
+25 Jun 2014
+ * Move bits of the zip file handling into base.io
+ * Move bits of the file format guessing code into base.io
+
 19 Jun 2014
  * Rework menu card set import code to move more of it into base.gui
  * Clean out some non longer relevant python 2.4 compatibility code
