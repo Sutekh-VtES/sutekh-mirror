@@ -4,11 +4,9 @@
 # Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Attempt to guess the file format from the first few lines, and then
-   chain to the correct Parser"""
+"""Attempt to gues the correct format from Sutekh's available parsers."""
 
-import StringIO
-from sutekh.base.core.CardSetHolder import CardSetHolder
+from sutekh.base.io.BaseGuessFileParser import BaseGuessFileParser
 
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
@@ -25,54 +23,22 @@ from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.SLInventoryParser import SLInventoryParser
 
 
-class GuessFileParser(object):
+class GuessFileParser(BaseGuessFileParser):
     """Parser which guesses the file type"""
 
     PARSERS = [
-            PhysicalCardSetParser,
-            AbstractCardSetParser,
-            PhysicalCardParser,
-            ARDBXMLDeckParser,
-            ARDBXMLInvParser,
-            ARDBTextParser,
-            ELDBInventoryParser,
-            ELDBDeckFileParser,
-            ELDBHTMLParser,
-            SLDeckParser,
-            SLInventoryParser,
-            LackeyDeckParser,
-            # JOL is the most permissive, so must be last
-            JOLDeckParser,
-            ]
-
-    def __init__(self):
-        self.oChosenParser = None
-
-    def guess_format(self, oFile):
-        """Handle the guessing"""
-        for cParser in self.PARSERS:
-            oHolder = CardSetHolder()
-            oFile.seek(0)
-            oParser = cParser()
-            try:
-                oParser.parse(oFile, oHolder)
-            except IOError:
-                # error from the parser, so probably not right
-                continue
-            if oHolder.num_entries == 0:
-                # No cards, so we don't trust this result
-                continue
-            return oParser
-        return None
-
-    def parse(self, fIn, oHolder):
-        """attempt arse a file into the given holder"""
-        # Cache file, (for network cases, etc.)
-        # Is this completely safe?
-        oCopy = StringIO.StringIO(fIn.read())
-        # Save choice, so it can be reported to the user if need be
-        self.oChosenParser = self.guess_format(oCopy)
-        if not self.oChosenParser:
-            raise IOError('Unable to identify the file format')
-        oCopy.seek(0)
-        self.oChosenParser.parse(oCopy, oHolder)
+        PhysicalCardSetParser,
+        AbstractCardSetParser,
+        PhysicalCardParser,
+        ARDBXMLDeckParser,
+        ARDBXMLInvParser,
+        ARDBTextParser,
+        ELDBInventoryParser,
+        ELDBDeckFileParser,
+        ELDBHTMLParser,
+        SLDeckParser,
+        SLInventoryParser,
+        LackeyDeckParser,
+        # JOL is the most permissive, so must be last
+        JOLDeckParser,
+    ]
