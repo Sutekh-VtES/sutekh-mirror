@@ -8,10 +8,6 @@
 
 import gtk
 import logging
-# pylint: disable-msg=E0611
-# pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream, resource_exists
-# pylint: enable-msg=E0611
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
@@ -36,6 +32,7 @@ class SutekhMainWindow(AppMainWindow):
     def __init__(self):
         super(SutekhMainWindow, self).__init__()
         self._cPCSWriter = PhysicalCardSetWriter
+        self._sResourceName = 'sutekh'
         # We can shrink the window quite small
         self.set_size_request(100, 100)
         # But we start at a reasonable size
@@ -107,14 +104,6 @@ class SutekhMainWindow(AppMainWindow):
         oDlg.destroy()
 
     # pylint: enable-msg=R0201
-
-    def _link_resource(self, sLocalUrl):
-        """Return a file-like object which sLocalUrl can be read from."""
-        sResource = '/docs/html/%s' % sLocalUrl
-        if resource_exists('sutekh', sResource):
-            return resource_stream('sutekh', sResource)
-        else:
-            raise ValueError("Unknown resource %s" % sLocalUrl)
 
     def show_tutorial(self, _oMenuWidget):
         """Show the HTML Tutorial"""

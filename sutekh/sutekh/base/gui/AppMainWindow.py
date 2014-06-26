@@ -12,6 +12,10 @@ import gtk
 import logging
 import socket
 from itertools import chain
+# pylint: disable-msg=E0611
+# pylint doesn't see resource_stream here, for some reason
+from pkg_resources import resource_stream, resource_exists
+# pylint: enable-msg=E0611
 from ..core.BaseObjects import PhysicalCardSet, PhysicalCard
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
@@ -54,6 +58,8 @@ class AppMainWindow(MultiPaneWindow):
         self._oCardTextPane = None  # So we can call get_pane_ids
         # Class for the card set writer - should be set by subclasses
         self._cPCSWriter = None
+        # Name to use for resource lookups
+        self._sResourceName = None
 
     def _verify_database(self):
         """Verify that the database is correctly populated"""
@@ -442,8 +448,12 @@ class AppMainWindow(MultiPaneWindow):
 
     def _link_resource(self, sLocalUrl):
         """Return a file-like object which sLocalUrl can be read from."""
-        # Subclasses will need to implement this
-        raise NotImplementedError
+        # Subclasses need to provide self._sResourceName
+        sResource = '/docs/html/%s' % sLocalUrl
+        if resource_exists(self._sResourceName, sResource):
+            return resource_stream(self._sResourceName, sResource)
+        else:
+            raise ValueError("Unknown resource %s" % sLocalUrl)
 
     # pylint: enable-msg=R0201
 
