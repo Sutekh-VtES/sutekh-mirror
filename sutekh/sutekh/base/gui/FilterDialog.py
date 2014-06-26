@@ -42,7 +42,6 @@ class FilterDialog(SutekhDialog):
     def __init__(self, oParent, oConfig, sFilterType, sDefaultFilter=None):
         super(FilterDialog, self).__init__("Specify Filter",
                                            oParent,
-                                           gtk.DIALOG_MODAL |
                                            gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self._oAccelGroup = gtk.AccelGroup()
@@ -127,12 +126,10 @@ class FilterDialog(SutekhDialog):
         """Handle the button choices from the user.
 
            If the operation doesn't close the dialog, such as the
-           filter manipulation options, we rerun the main dialog loop,
-           waiting for another user button press.
+           filter manipulation options, we short circuit the signal
+           handling, and prevent anything propogating to the
+           window waiting for the dialog.
            """
-        # calls to self.run() are recursive
-        # not sure if that's such a good thing
-
         if iResponse == gtk.RESPONSE_OK:
             # construct the final filter (may be None)
             self.__bWasCancelled = False
@@ -140,27 +137,29 @@ class FilterDialog(SutekhDialog):
         elif iResponse == self.RESPONSE_CLEAR:
             # clear the  filter editor
             self.__clear_filter()
-            return self.run()
+            return True
         elif iResponse == self.RESPONSE_REVERT:
             # revert the filter editor AST to the saved version
             self.__revert_filter()
-            return self.run()
+            return True
         elif iResponse == self.RESPONSE_LOAD:
             # present the load filter dialog and handle result
             self.__run_load_dialog()
-            return self.run()
+            return True
         elif iResponse == self.RESPONSE_SAVE:
             # save the filter editor ast to the config file
             self.__save_filter()
-            return self.run()
+            return True
         elif iResponse == self.RESPONSE_DELETE:
             # delete the copy of the filter in the config file
             # and clear the filter editor
             self.__delete_filter()
-            return self.run()
+            return True
         else:
             self.__bWasCancelled = True
         self.hide()
+        # propogate signal
+        return False
 
     def __run_load_dialog(self):
         """Display a dialog for loading a filter."""

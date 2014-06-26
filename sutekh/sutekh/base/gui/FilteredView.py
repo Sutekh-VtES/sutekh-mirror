@@ -114,9 +114,13 @@ class FilteredView(CustomDragIconView):
         if self._oFilterDialog is None:
             if not self._get_filter_dialog(sDefaultFilter):
                 return
+            self._oFilterDialog.connect('response',
+                                        self._dialog_response, oMenu)
 
-        self._oFilterDialog.run()
+        self._oFilterDialog.show()
 
+    def _dialog_response(self, _oWidget, _iId, oMenu):
+        """Handle the dialog response."""
         if self._oFilterDialog.was_cancelled():
             return  # Change nothing
 
