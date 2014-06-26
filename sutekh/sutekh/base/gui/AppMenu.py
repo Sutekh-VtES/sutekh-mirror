@@ -273,7 +273,10 @@ class AppMenu(SutekhMenu):
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
+            # pylint: disable-msg=E1102
+            # subclasses will provide a callable cIdentifyFile
             oIdParser = self.cIdentifyFile()
+            # pylint: enable-msg=E1102
             oIdParser.id_file(sFileName)
             if oIdParser.can_parse():
                 fIn = file(sFileName, 'rU')
