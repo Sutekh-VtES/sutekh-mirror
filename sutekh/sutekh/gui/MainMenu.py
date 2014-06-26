@@ -44,11 +44,11 @@ class MainMenu(AppMenu):
 
     def show_tutorial(self, oMenuWidget):
         """Show the Sutekh Tutorial"""
-        self._oMainWindow.show_tutorial(oMenuWidget, self.oHelpLast)
+        self._oMainWindow.show_tutorial(oMenuWidget)
 
     def show_manual(self, oMenuWidget):
         """Show the Sutekh Tutorial"""
-        self._oMainWindow.show_manual(oMenuWidget, self.oHelpLast)
+        self._oMainWindow.show_manual(oMenuWidget)
 
     def do_import_new_card_list(self, _oWidget):
         """Refresh the WW card list and rulings files."""

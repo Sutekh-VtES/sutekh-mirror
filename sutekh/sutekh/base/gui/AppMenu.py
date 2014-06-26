@@ -228,6 +228,10 @@ class AppMenu(SutekhMenu):
         # Subclasses should provide this
         raise NotImplementedError
 
+    def set_show_last_help(self):
+        """Make the 'Last shown help page' option active"""
+        self.oHelpLast.set_sensitive(True)
+
     # pylint: enable-msg=W0201
 
     def del_pane_set_sensitive(self, bValue):

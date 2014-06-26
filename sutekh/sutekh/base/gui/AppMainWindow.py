@@ -467,10 +467,10 @@ class AppMainWindow(MultiPaneWindow):
         self._oConfig.clear_frame_profile(self._oFocussed.config_frame_id)
         self.remove_frame(self._oFocussed)
 
-    def _do_html_dialog(self, sPage, oHelpLast):
+    def _do_html_dialog(self, sPage):
         """Popup and run HTML Dialog widget with the given page"""
         fPage = self._link_resource(sPage)
-        oHelpLast.set_sensitive(True)
+        self._oMenu.set_show_last_help()
         if self._oHelpDlg is None:
             self._oHelpDlg = HTMLViewDialog(self, fPage, self._link_resource)
         else:

@@ -116,10 +116,10 @@ class SutekhMainWindow(AppMainWindow):
         else:
             raise ValueError("Unknown resource %s" % sLocalUrl)
 
-    def show_tutorial(self, _oMenuWidget, oHelpLast):
+    def show_tutorial(self, _oMenuWidget):
         """Show the HTML Tutorial"""
-        self._do_html_dialog("Tutorial.html", oHelpLast)
+        self._do_html_dialog("Tutorial.html")
 
-    def show_manual(self, _oMenuWidget, oHelpLast):
+    def show_manual(self, _oMenuWidget):
         """Show the HTML Manual"""
-        self._do_html_dialog("Manual.html", oHelpLast)
+        self._do_html_dialog("Manual.html")
