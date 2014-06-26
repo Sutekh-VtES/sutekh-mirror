@@ -105,10 +105,10 @@ class SutekhMainWindow(AppMainWindow):
 
     # pylint: enable-msg=R0201
 
-    def show_tutorial(self, _oMenuWidget):
+    def show_tutorial(self):
         """Show the HTML Tutorial"""
         self._do_html_dialog("Tutorial.html")
 
-    def show_manual(self, _oMenuWidget):
+    def show_manual(self):
         """Show the HTML Manual"""
         self._do_html_dialog("Manual.html")

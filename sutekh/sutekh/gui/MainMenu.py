@@ -42,13 +42,13 @@ class MainMenu(AppMenu):
         self.create_menu_item("About Sutekh", oHelpMenu,
                               self._oMainWindow.show_about_dialog)
 
-    def show_tutorial(self, oMenuWidget):
+    def show_tutorial(self, _oMenuWidget):
         """Show the Sutekh Tutorial"""
-        self._oMainWindow.show_tutorial(oMenuWidget)
+        self._oMainWindow.show_tutorial()
 
-    def show_manual(self, oMenuWidget):
+    def show_manual(self, _oMenuWidget):
         """Show the Sutekh Tutorial"""
-        self._oMainWindow.show_manual(oMenuWidget)
+        self._oMainWindow.show_manual()
 
     def do_import_new_card_list(self, _oWidget):
         """Refresh the WW card list and rulings files."""
