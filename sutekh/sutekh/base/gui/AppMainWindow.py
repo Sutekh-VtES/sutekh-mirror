@@ -487,6 +487,14 @@ class AppMainWindow(MultiPaneWindow):
             self._oHelpDlg.show_page(fPage)
         self._oHelpDlg.show()
 
+    def show_card_filter_help(self):
+        """Popup a help entry for the card filters."""
+        self._do_html_dialog("Card_Filters.html")
+
+    def show_card_set_filter_help(self):
+        """Popup a help entry for the card set filters."""
+        self._do_html_dialog("Card_Set_Filters.html")
+
     # window setup saving functions
 
     def save_window_size(self):

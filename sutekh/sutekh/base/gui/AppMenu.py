@@ -212,6 +212,11 @@ class AppMenu(SutekhMenu):
         oMenu = oMenuItem.get_submenu()
         oMenuItem.set_right_justified(True)
         self._add_help_items(oMenu)
+        # Add filter help menu items
+        self.create_menu_item("Card Filter Help", oMenu,
+                              self.show_card_filter_help)
+        self.create_menu_item("Card Set Filter Help", oMenu,
+                              self.show_card_set_filter_help)
         self.oHelpLast = self.create_menu_item(
             "Last shown help page", oMenu, self._oMainWindow.show_last_help)
         self.oHelpLast.set_sensitive(False)
@@ -336,3 +341,11 @@ class AppMenu(SutekhMenu):
     def do_restore(self, _oWidget):
         """Restore the pane layout from the config file."""
         self._oMainWindow.restore_from_config()
+
+    def show_card_filter_help(self, _oMenuWidget):
+        """Show the card filter help"""
+        self._oMainWindow.show_card_filter_help()
+
+    def show_card_set_filter_help(self, _oMenuWidget):
+        """Show the card set filter help"""
+        self._oMainWindow.show_card_set_filter_help()
