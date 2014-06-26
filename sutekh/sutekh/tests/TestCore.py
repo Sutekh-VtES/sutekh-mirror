@@ -19,10 +19,10 @@ class SutekhTest(BaseTestCase):
 
        Define common setup and teardown routines common to test cases.
        """
-
-    PREFIX = 'sutekhtests'
     # pylint: disable-msg=R0904
     # R0904 - unittest.TestCase, so many public methods
+
+    PREFIX = 'sutekhtests'
 
     # pylint: disable-msg=C0103
     # setUp + tearDown names are needed by unittest - use their convention
