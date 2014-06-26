@@ -94,11 +94,10 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oHBox)
         dLibProbs = self._get_lib_props()
-        oHBox.pack_start(self._setup_grouped_view(dLibProbs,
-                                                  self.dCardTypes, 7,
+        oHBox.pack_start(self._setup_grouped_view(dLibProbs, self.dCardTypes,
                                                   'Card Types'))
         oHBox.pack_start(self._setup_grouped_view(dLibProbs,
-                                                  self.dCardProperties, 7,
+                                                  self.dCardProperties,
                                                   'Card Properties'))
         oHBox.pack_start(self._setup_flat_view(self.aCrypt, 4, 'Crypt Cards'))
         oHBox.show_all()

@@ -253,7 +253,7 @@ class BaseOpeningDraw(BasePlugin):
 
         return make_flat_view(dProbs, iDraw, sTitle, self.COLUMN_WIDTH)
 
-    def _setup_grouped_view(self, dFlatProbs, dGroups, iDraw, sTitle):
+    def _setup_grouped_view(self, dFlatProbs, dGroups, sTitle):
         """Create a grouped store of card draw probablilities."""
         dGroupedProbs = {}
         get_grouped_probs(dFlatProbs, dGroups, dGroupedProbs)
