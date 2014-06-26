@@ -1,3 +1,12 @@
+26 Jun 2014
+ * Rework generating html from filter help to remove some repeated
+   documentation.
+ * Use html dialog to display filter help.
+   - Add filter help to main help menu.
+   - Make filter dialog non-modal so we can interact with html dialog.
+ * Move _link_resource into base.gui.AppMainWindow
+ * Simplify 'last help shown' juggling
+
 25 Jun 2014
  * Move bits of the zip file handling into base.io
  * Move bits of the file format guessing code into base.io

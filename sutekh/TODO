@@ -6,7 +6,6 @@ For 1.0.0
 Stuff that's fairly easy (we think)
 -----------------------------------
 
- * Use HTML help dialog for filter help
  * pep8 cleanup
  * reduce the number of FIXME's and TODO's in the code base
  * More Error handling/reporting
