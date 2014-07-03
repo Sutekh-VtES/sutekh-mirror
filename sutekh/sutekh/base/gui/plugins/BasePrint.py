@@ -12,13 +12,6 @@ from ...core.BaseObjects import (PhysicalCardSet, IAbstractCard,
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_error
 
-try:
-    # pylint: disable-msg=W0104
-    # This is an existance check, so it does do nothing
-    gtk.PrintOperation
-except AttributeError:
-    raise ImportError("GTK version does not contain PrintOperation."
-                      " Try PyGTK >= 2.10.")
 
 NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
