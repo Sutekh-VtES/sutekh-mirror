@@ -100,7 +100,7 @@ class BaseZipFileWrapper(object):
         return aList
 
     def do_restore_from_zip(self, oCardLookup=DEFAULT_LOOKUP,
-            oLogHandler=None):
+                            oLogHandler=None):
         """Recover data from the zip file"""
         self._aWarnings = []
         bTablesRefreshed = False
@@ -187,7 +187,7 @@ class BaseZipFileWrapper(object):
         if len(aToRead) == len(aList):
             # We were unable to read any items this loop, so we fail
             raise IOError('Card sets with unstatisfiable parents %s' %
-                    ','.join([x.filename for x in aToRead]))
+                          ','.join([x.filename for x in aToRead]))
         return aToRead
 
     # Helper methods for influencing how the zip files are handled
@@ -262,6 +262,21 @@ class BaseZipFileWrapper(object):
             parse_string(oParser, oData, oHolder)
         self._close_zip()
         return oHolder
+
+    def get_info_file(self, sFileName):
+        """Try to find a non-deck file in the zipfile.
+
+           Return None if it's not present, otherwise return
+           the contents."""
+        self._open_zip_for_read()
+        sData = None
+        for oItem in self.oZip.infolist():
+            if oItem.filename == sFileName:
+                # First match found wins
+                sData = self.oZip.read(oItem.filename)
+                break
+        self._close_zip()
+        return sData
 
     def get_warnings(self):
         """Get any warnings from the process"""
