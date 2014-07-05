@@ -70,13 +70,18 @@ class DataPackTest(SutekhTest):
 
     bCalled = False  # Used for error handler tests
 
+    def create_index(self, sData):
+        """Create a test index and return a URL for it."""
+        sTempFileName = self._create_tmp_file()
+        fFile = open(sTempFileName, 'w')
+        fFile.write(sData)
+        fFile.close()
+        sTempUrl = 'file://%s' % urllib.pathname2url(sTempFileName)
+        return sTempUrl
+
     def test_find_data_pack(self):
         """Test finding data pack in sane documentation page"""
-        sTempFileName = self._create_tmp_file()
-        sTempUrl = 'file://%s' % urllib.pathname2url(sTempFileName)
-        fFile = open(sTempFileName, 'w')
-        fFile.write(TEST_DATA)
-        fFile.close()
+        sTempUrl = self.create_index(TEST_DATA)
 
         sUrl, sHash = find_data_pack('starters', sTempUrl)
 
@@ -113,6 +118,17 @@ class DataPackTest(SutekhTest):
         self.assertEqual(sUrl, urlparse.urljoin(
             sTempUrl, "TWD/TWDA_2010.zip"))
         self.assertEqual(sHash, 'b')
+
+    def test_error_handler_bad_index(self):
+        """Test error handling for badly formatted index files."""
+        sTempUrl = self.create_index("""Not JSON""")
+        aErrors = []
+
+        sUrl, sHash = find_data_pack('starters', sTempUrl,
+                                     fErrorHandler=aErrors.append)
+        [oExp] = aErrors
+        self.assertTrue(isinstance(oExp, ValueError))
+        self.assertEqual(str(oExp), "No JSON object could be decoded")
 
     def test_error_handler(self):
         """Test triggering the error handler"""
