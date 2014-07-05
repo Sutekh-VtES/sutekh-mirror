@@ -8,12 +8,9 @@
 import json
 import urllib
 import unittest
-import urllib2
 import urlparse
-import socket
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
-from sutekh.base.io.UrlOps import fetch_data
 
 TEST_DATA = json.dumps({
     "datapacks": [
@@ -67,8 +64,6 @@ class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
     # pylint: disable-msg=R0904
     # R0904 - unittest.TestCase, so many public methods
-
-    bCalled = False  # Used for error handler tests
 
     def create_index(self, sData):
         """Create a test index and return a URL for it."""
@@ -130,20 +125,6 @@ class DataPackTest(SutekhTest):
         self.assertTrue(isinstance(oExp, ValueError))
         self.assertEqual(str(oExp), "No JSON object could be decoded")
 
-    def test_error_handler(self):
-        """Test triggering the error handler"""
-
-        def error_handler(_oExp):
-            """Dummy error handler"""
-            self.bCalled = True
-
-        oFile = FailFile(socket.timeout)
-        fetch_data(oFile, fErrorHandler=error_handler)
-        self.assertEqual(self.bCalled, True)
-        self.bCalled = False
-        oFile = FailFile(urllib2.URLError('aaa'))
-        fetch_data(oFile, fErrorHandler=error_handler)
-        self.assertEqual(self.bCalled, True)
 
 if __name__ == "__main__":
     unittest.main()
