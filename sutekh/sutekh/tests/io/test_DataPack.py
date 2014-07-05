@@ -5,34 +5,51 @@
 
 """Test the Data Pack utilities"""
 
+import json
 import urllib
 import unittest
 import urllib2
+import urlparse
 import socket
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
 from sutekh.base.io.UrlOps import fetch_data
 
-TEST_DATA = """
-= User Documentation =
-
-== A Heading ==
-
-  * [GettingStarted Starting out with Sutekh]
-
-== Data Packs ==
-
-{{{
-#!comment
-A comment.
-}}}
-
-|| '''Description''' || '''Tag''' || '''Date Updated''' || '''File''' || SHA256 Checksum ||
-|| Zip file of starter decks from Sabbat War to Heirs to the Blood || starters || 2010-03-03 || [attachment:Starters_SW_to_HttB.zip:wiki:MiscWikiFiles Starters_SW_to_HttB.zip] || aaabb ||
-|| Zip file of useful rulings and rulebooks || rulebooks || 2013-08-16 || [attachment:Rulebooks.zip:wiki:MiscWikiFiles Rulebooks.zip] || dddeee ||
-|| 2009 decks || twd || 2013-12-10 || [attachment:TWDA_2009.zip:wiki:MiscWikiFiles TWDA_2009.zip] || a ||
-|| 2010 decks || twd || 2013-12-20 || [attachment:TWDA_2010.zip:wiki:MiscWikiFiles TWDA_2010.zip] || b ||
-"""
+TEST_DATA = json.dumps({
+    "datapacks": [
+        {
+            "description": ("Zip file of starter decks from Sabbat War to"
+                            " Heirs to the Blood"),
+            "file": "Starters/Starters_SW_to_HttB.zip",
+            "sha256": "aaabb",
+            "tag": "starters",
+            "updated_at": "2010-03-03T18:54:31.802636",
+        },
+        {
+            "description": "Zip file of useful rulings and rulebooks",
+            "file": "Rulebooks/Rulebooks.zip",
+            "sha256": "dddeee",
+            "tag": "rulebooks",
+            "updated_at": "2010-08-16T18:54:31.802636",
+        },
+        {
+            "description": "2009 decks",
+            "file": "TWD/TWDA_2009.zip",
+            "sha256": "a",
+            "tag": "twd",
+            "updated_at": "2013-12-10T18:54:31.802636",
+        },
+        {
+            "description": "2010 decks",
+            "file": "TWD/TWDA_2010.zip",
+            "sha256": "b",
+            "tag": "twd",
+            "updated_at": "2013-12-20T18:54:31.802636",
+        },
+    ],
+    "format": "sutekh-datapack",
+    "format-version": "1.0",
+})
 
 
 class FailFile(object):
@@ -63,17 +80,15 @@ class DataPackTest(SutekhTest):
 
         sUrl, sHash = find_data_pack('starters', sTempUrl)
 
-        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
-                         "raw-attachment/wiki/MiscWikiFiles/"
-                         "Starters_SW_to_HttB.zip")
+        self.assertEqual(sUrl, urlparse.urljoin(
+            sTempUrl, "Starters/Starters_SW_to_HttB.zip"))
 
         self.assertEqual(sHash, 'aaabb')
 
         sUrl, sHash = find_data_pack('rulebooks', sTempUrl)
 
-        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
-                         "raw-attachment/wiki/MiscWikiFiles/"
-                         "Rulebooks.zip")
+        self.assertEqual(sUrl, urlparse.urljoin(
+            sTempUrl, "Rulebooks/Rulebooks.zip"))
 
         self.assertEqual(sHash, 'dddeee')
 
@@ -86,20 +101,17 @@ class DataPackTest(SutekhTest):
         self.assertEqual('2013-12-10', aDates[0])
         self.assertEqual('2013-12-20', aDates[1])
 
-        self.assertEqual(aUrls[0], "http://sourceforge.net/apps/trac/sutekh/"
-                         "raw-attachment/wiki/MiscWikiFiles/"
-                         "TWDA_2009.zip")
-        self.assertEqual(aUrls[1], "http://sourceforge.net/apps/trac/sutekh/"
-                         "raw-attachment/wiki/MiscWikiFiles/"
-                         "TWDA_2010.zip")
+        self.assertEqual(aUrls[0], urlparse.urljoin(
+            sTempUrl, "TWD/TWDA_2009.zip"))
+        self.assertEqual(aUrls[1], urlparse.urljoin(
+            sTempUrl, "TWD/TWDA_2010.zip"))
         self.assertEqual(aHashes[0], 'a')
         self.assertEqual(aHashes[1], 'b')
 
         sUrl, sHash = find_data_pack('twd', sTempUrl)
         # We return the last one in this case
-        self.assertEqual(sUrl, "http://sourceforge.net/apps/trac/sutekh/"
-                         "raw-attachment/wiki/MiscWikiFiles/"
-                         "TWDA_2010.zip")
+        self.assertEqual(sUrl, urlparse.urljoin(
+            sTempUrl, "TWD/TWDA_2010.zip"))
         self.assertEqual(sHash, 'b')
 
     def test_error_handler(self):

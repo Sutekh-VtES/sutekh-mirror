@@ -9,112 +9,81 @@
 
 """Provide tools for locating and extracting data pack ZIP files."""
 
+import datetime
+import json
 import urllib2
+import urlparse
 import socket
-import re
 
 from sutekh.base.io.UrlOps import urlopen_with_timeout
 
-DOC_URL = 'http://sourceforge.net/apps/trac/sutekh/wiki/' \
-          'UserDocumentation?format=txt'
-
-ZIP_URL_BASE = 'http://sourceforge.net/apps/trac/sutekh/raw-attachment'
+DOC_URL = ('https://bitbucket.org/hodgestar/sutekh-datapack/raw/master/'
+           'index.json')
 
 
-def find_all_data_packs(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
-        fErrorHandler=None):
-    """Read a documentation page and find all the data pack URLs and hashes
-    for the given tag.
+def parse_datapack_date(sDate):
+    """Parse a datapack's ISO format date entry into a datetime object."""
+    return datetime.datetime.strptime(sDate, "%Y-%m-%dT%H:%M:%S.%f")
+
+
+def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
+    """Read the data pack index and return all datapacks listed for the
+    given tag.
 
     Returns empty lists if no file could be found for the given tag.
 
-    The section looked for looks something like:
+    The index is a JSON file with the following structure:
 
-    || '''Description''' || '''Tag''' || '''Date Updated''' || '''File''' || SHA256 Checksum ||
-    || Some text || starters || date || [attachment:Foo.zip:wiki:FilePage Foo.zip] || sha256sum ||
-    || Other text || rulebooks || date || [attachment:Bar.zip:wiki:FilePage Bar.zip] || sha256sum ||
-    || Other text || twd || date || [attachment:Bas.zip:wiki:FilePage Bas.zip] || sha256sum ||
-    || Other text || twd || date || [attachment:Bas2.zip:wiki:FilePage Bas2.zip] || sha256sum ||
-
-    dates are expected to be formated YYYY-MM-DD (strftime('%Y-%m-%d'))
-    to avoid ambiguity.
+    {
+    "datapacks": [
+        {
+            "description": "Zip file of starter decks ...",
+            "file": "Starters/Starters_SW_to_HttB_and_Others.zip",
+            "sha256": "4f1867568127b12276efbe9bafa261f4ad86741ff09549a48f6...",
+            "tag": "starters",
+            "updated_at": "2014-07-04T18:54:31.802636"
+        },
+        ...
+    ],
+    "format": "sutekh-datapack",
+    "format-version": "1.0"
+    }
     """
     oFile = urlopen_with_timeout(sDocUrl, fErrorHandler)
     if not oFile:
         return None, None, None
-    oHeaderRe = re.compile(r'^\|\|.*Tag')
-    oAttachmentRe = re.compile(r'\[attachment:(?P<path>[^ ]*) ')
-    iTagField = None
-    iAttachField = None
+    try:
+        dIndex = json.load(oFile)
+    except (urllib2.URLError, socket.timeout, ValueError), oExp:
+        if fErrorHandler:
+            fErrorHandler(oExp)
+            return None, None, None
+        else:
+            raise
     aZipUrls = []
     aHashes = []
     aDates = []
-
-    def fields(sLine):
-        """Helper function to split table lines into the needed structure"""
-        sLine = sLine.strip()
-        return [sField.strip(" '") for sField in sLine.split('||')]
-
-    try:
-        aData = oFile.readlines()
-    except urllib2.URLError, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-            aData = []
-        else:
-            raise
-    except socket.timeout, oExp:
-        if fErrorHandler:
-            fErrorHandler(oExp)
-            aData = []
-        else:
-            raise
-
-    for sLine in aData:
-        if iTagField is None:
-            oMatch = oHeaderRe.match(sLine)
-            if oMatch:
-                aFields = fields(sLine)
-                if 'Tag' not in aFields or 'File' not in aFields:
-                    continue
-                iTagField = aFields.index('Tag')
-                iAttachField = aFields.index('File')
-                iDateField = aFields.index('Date Updated')
-                if 'SHA256 Checksum' in aFields:
-                    iShaSumField = aFields.index('SHA256 Checksum')
-                else:
-                    iShaSumField = None
-        else:
-            aFields = fields(sLine)
-            if len(aFields) > iTagField and sTag == aFields[iTagField] \
-                   and len(aFields) > iAttachField:
-                oMatch = oAttachmentRe.search(aFields[iAttachField])
-                if oMatch:
-                    sPath = oMatch.group('path')
-                    # We need to split off the zip file name and the path
-                    # bits
-                    sZipName, sPath = sPath.split(':', 1)
-                    sPath = sPath.replace(':', '/')
-                    aZipUrls.append('/'.join((sZipUrlBase, sPath,
-                        sZipName)))
-                    if iShaSumField is not None:
-                        aHashes.append(aFields[iShaSumField])
-                    aDates.append(aFields[iDateField])
+    for dPack in dIndex["datapacks"]:
+        if dPack.get("tag") != sTag:
+            continue
+        aZipUrls.append(urlparse.urljoin(sDocUrl, dPack["file"]))
+        aHashes.append(dPack["sha256"])
+        oDate = parse_datapack_date(dPack["updated_at"])
+        aDates.append(oDate.strftime("%Y-%m-%d"))
 
     return aZipUrls, aDates, aHashes
 
 
-def find_data_pack(sTag, sDocUrl=DOC_URL, sZipUrlBase=ZIP_URL_BASE,
-        fErrorHandler=None):
+def find_data_pack(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
     """Find a single data pack for a tag. Return url and hash, if appropriate.
 
     Return None if no match is found.
 
-    See find_all_data_packs for details for the wiki page format.
+    See find_all_data_packs for details on the sutekh datapack format.
 
     If multiple datapack are found, return the last."""
-    aZipUrls, _aSkip, aHashes = find_all_data_packs(sTag, sDocUrl, sZipUrlBase,
-                                                    fErrorHandler)
+    aZipUrls, _aSkip, aHashes = find_all_data_packs(
+        sTag, sDocUrl=sDocUrl, fErrorHandler=fErrorHandler)
     if not aZipUrls:
         # No match
         return None, None

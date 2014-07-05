@@ -94,7 +94,7 @@ class TWDAConfigDialog(SutekhDialog):
                                   ' prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
                                            "TWDA decks",
-                                           {'Sutekh Wiki': self.sDocUrl})
+                                           {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -125,7 +125,7 @@ class TWDAConfigDialog(SutekhDialog):
         _sFile, bUrl = self.oFileWidget.get_file_or_url()
         if not bUrl:
             return None, None, None
-        # Get data from sutekh wiki
+        # Get data from sutekh datapacks
         return find_all_data_packs('twd', fErrorHandler=gui_error_handler)
 
 
