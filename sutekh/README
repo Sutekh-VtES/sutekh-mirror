@@ -12,7 +12,7 @@ The Python modules required are:
 * PLY (for parsing the query language) [ http://www.dabeaz.com/ply/ ]
 * sqlite (or the module for whatever database one plans to use)
 * PyGtk (for the GUI) [ http://cheeseshop.python.org/pypi/PyGTK ]
-* Python-rsvg for the sutekh icon
+* librsvg2 for the sutekh icon
 * configobj to manage the config file
 * keyring so the secret library plugin can store credentials in the system
   keyring
