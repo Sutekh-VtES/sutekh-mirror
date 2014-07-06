@@ -45,7 +45,7 @@ class RulebookConfigDialog(SutekhDialog):
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose location for "
-                "rulebook zip file", {'Sutekh Wiki': self.sDocUrl})
+                "rulebook zip file", {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -64,7 +64,7 @@ class RulebookConfigDialog(SutekhDialog):
         sFile, _bUrl = self.oFileWidget.get_file_or_url()
         sData = None
         if sFile == self.sDocUrl:
-            # Downloading from sutekh wiki, so need magic to get right file
+            # Downloading from sutekh datapack, so need magic to get right file
             sZipUrl = find_data_pack('rulebooks')
             oFile = urllib2.urlopen(sZipUrl)
             sData = fetch_data(oFile)

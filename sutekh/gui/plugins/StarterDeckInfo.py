@@ -53,7 +53,7 @@ class StarterConfigDialog(SutekhDialog):
                     ' plugin</b>\nChoose cancel to skip configuring the '
                     ' plugin\nYou will not be prompted again')
         self.oFileWidget = FileOrUrlWidget(oParent, "Choose localtion for "
-                "Starter decks", {'Sutekh Wiki': self.sDocUrl})
+                "Starter decks", {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
@@ -95,7 +95,7 @@ class StarterConfigDialog(SutekhDialog):
         sFile, _bUrl = self.oFileWidget.get_file_or_url()
         sData = None
         if sFile == self.sDocUrl:
-            # Downloading from sutekh wiki, so need magic to get right file
+            # Downloading from sutekh datapack, so need magic to get right file
             sZipUrl = find_data_pack('starters')
             oFile = urllib2.urlopen(sZipUrl)
             sData = fetch_data(oFile)
