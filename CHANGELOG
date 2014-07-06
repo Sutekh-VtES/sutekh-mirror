@@ -1,3 +1,11 @@
+06 Jul 2013
+ * Backport reworking of io/DataPack to work with sutekh-datapack repo from trunk
+   - Change DataPack to use simplejson to keep python 2.5 compatability
+ * Merge some various bugfixes from trunk
+   - Add more corner cases from the rulings page (r3279)
+   - Fix off-by-one error in the docs (r3301)
+   - Increase SQLObject upper limit in setup.py dependancies (r3388)
+
 19 Oct 2013
  * Tweak sqlobject dependancy for Fedora
  * Fix debian patch for sqlobject tweak
