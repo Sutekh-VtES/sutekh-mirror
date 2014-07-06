@@ -4,6 +4,17 @@
 #
 # Usage: sutekh-wine-py2exe
 
+# Setup notes
+#
+# Sutekh dependencies need to be installed under the windows python
+#
+# Note that, as documented in http://www.py2exe.org/index.cgi/ExeWithEggs ,
+# py2exe struggles to pick up dependencies installed purely as eggs.
+# This tends to show up with ply and pkg_resources from setuptools
+# being missed.
+# As noted in http://www.py2exe.org/index.cgi/WorkingWithVariousPackagesAndModules,
+# configobj works best if installed from source
+
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 BUILD_NAME="sutekh-${SUTEKH_VERSION}"
 BUILD_FOLDER="build/${BUILD_NAME}-py2exe"
