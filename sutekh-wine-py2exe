@@ -29,6 +29,7 @@ WINE_WIN_GTK="C:/GTK"
 WINE_PYTHON=`winepath "${WINE_WIN_PYTHON}"`
 WINE_SYS32=`winepath "${WINE_WIN_SYS32}"`
 WINE_GTK=`winepath "${WINE_WIN_GTK}"`
+PY_DLL=`wine python -u -c "import sys; print 'python%d%d.dll' % (sys.version_info[0], sys.version_info[1])"`
 
 # Sanitize build environment
 
@@ -91,13 +92,24 @@ mkdir -p "${BUILD_FOLDER}/share"
 cp -R "${WINE_GTK}/share/themes" "${BUILD_FOLDER}/share"
 
 echo "Fixing gdk-pixbuf.loaders (this fix is rather hacky) ..."
-sed -i -e 's/^"C:\/GTK\//"/' "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders"
-rm "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders.orig"
+sed -i -e 's#^"C:/GTK/#"#' "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders"
+rm -f "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders.orig"
+echo "Fixing loaders.cache (also very fragile)"
+sed -i -e 's#^"C:/Python2./Lib/site-packages/gtk-2.0/runtime/#"#' "${BUILD_FOLDER}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+
 
 echo "'${WINE_GTK}/bin/*.dll' -> '${BUILD_FOLDER}'"
 cp "${WINE_GTK}/bin/"*.dll "${BUILD_FOLDER}"
 
-cp -v "${WINE_PYTHON}/python26.dll" "${BUILD_FOLDER}"
+if [ -f "${WINE_PYTHON}/${PY_DLL}" ]; then
+   cp -v "${WINE_PYTHON}/${PY_DLL}" "${BUILD_FOLDER}"
+elif [ -f "${WINE_SYS32}/${PY_DLL}" ]; then
+   cp -v "${WINE_SYS32}/${PY_DLL}" "${BUILD_FOLDER}"
+else
+   echo "Unable to find python dll - ${PY_DLL}"
+   echo "Aborting"
+   exit
+fi
 cp -v "${WINE_PYTHON}/DLLs/sqlite3.dll" "${BUILD_FOLDER}"
 
 echo ""

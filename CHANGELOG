@@ -5,6 +5,8 @@
    - Add more corner cases from the rulings page (r3279)
    - Fix off-by-one error in the docs (r3301)
    - Increase SQLObject upper limit in setup.py dependancies (r3388)
+   - Tweaks to the windows build script (r3408)
+   - Workaround later ubuntu version's changed menu moving code (r3415)
 
 19 Oct 2013
  * Tweak sqlobject dependancy for Fedora

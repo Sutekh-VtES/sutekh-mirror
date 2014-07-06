@@ -11,6 +11,10 @@ import logging
 import sys
 import optparse
 import os
+# This is annoying, but needs to be set to before gtk is imported to
+# work with Ubuntu's later unity-gtk2-module approach to moving
+# menus around
+os.environ["UBUNTU_MENUPROXY"] = "0"
 import traceback
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
