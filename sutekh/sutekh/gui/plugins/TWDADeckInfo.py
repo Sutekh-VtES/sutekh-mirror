@@ -409,16 +409,32 @@ class TWDAInfoPlugin(SutekhPlugin):
         # Delete all TWDA entries in the holders we replace
         # We do this to handle card sets being removed from the TWDA
         # correctly
-        oOldConn = sqlhub.processConnection
-        oTrans = oOldConn.transaction()
-        sqlhub.processConnection = oTrans
+        aToRemove = []
         for oCS in list(PhysicalCardSet.select()):
             if not oCS.parent:
                 continue
             if oCS.parent.name in aToReplace:
-                delete_physical_card_set(oCS.name)
-        oTrans.commit(close=True)
-        sqlhub.processConnection = oOldConn
+                aToRemove.append(oCS.name)
+        if aToRemove:
+            oOldConn = sqlhub.processConnection
+            oTrans = oOldConn.transaction()
+            sqlhub.processConnection = oTrans
+
+            oLogHandler = SutekhCountLogHandler()
+            oLogHandler.set_total(len(aToRemove))
+            oProgressDialog = ProgressDialog()
+            oProgressDialog.set_description("Preparing database for TWDA data")
+            oLogger = Logger('Deleting decks')
+            oLogger.addHandler(oLogHandler)
+            oLogHandler.set_dialog(oProgressDialog)
+            oProgressDialog.show()
+            for sName in aToRemove:
+                delete_physical_card_set(sName)
+                oLogger.info('deleted %s', sName)
+            oProgressDialog.destroy()
+
+            oTrans.commit(close=True)
+            sqlhub.processConnection = oOldConn
 
         oLogHandler = BinnedCountLogHandler()
         oProgressDialog = ProgressDialog()
