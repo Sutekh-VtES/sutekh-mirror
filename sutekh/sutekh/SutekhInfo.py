@@ -67,7 +67,6 @@ class SutekhInfo(object):
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Games/Entertainment',
