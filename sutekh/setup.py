@@ -102,6 +102,8 @@ setup   (   # Metadata
                 #   catch-all empty package ''.
                 # Include SVG and INI files from sutekh.gui package
                 'sutekh.gui': ['*.svg', '*.ini'],
+                # need baseconfigspec.ini from sutekh.base.gui
+                'sutekh.base.gui': ['*.ini'],
                 # Include LICENSE information for sutekh package
                 # Include everything under the docs directory
                 'sutekh': ['COPYING'],
