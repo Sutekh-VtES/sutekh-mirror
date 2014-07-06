@@ -21,7 +21,8 @@ DOC_URL = ('https://bitbucket.org/hodgestar/sutekh-datapack/raw/master/'
 
 def parse_datapack_date(sDate):
     """Parse a datapack's ISO format date entry into a datetime object."""
-    return datetime.datetime.strptime(sDate, "%Y-%m-%dT%H:%M:%S.%f")
+    sDate, _sSep, _sMicro = sDate.partition('.')
+    return datetime.datetime.strptime(sDate, "%Y-%m-%dT%H:%M:%S")
 
 
 def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
