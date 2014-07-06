@@ -5,14 +5,14 @@
 
 """Test the Data Pack utilities"""
 
-import json
+import simplejson
 import urllib
 import unittest
 import urlparse
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
 
-TEST_DATA = json.dumps({
+TEST_DATA = simplejson.dumps({
     "datapacks": [
         {
             "description": ("Zip file of starter decks from Sabbat War to"
@@ -123,7 +123,8 @@ class DataPackTest(SutekhTest):
                                      fErrorHandler=aErrors.append)
         [oExp] = aErrors
         self.assertTrue(isinstance(oExp, ValueError))
-        self.assertEqual(str(oExp), "No JSON object could be decoded")
+        self.assertEqual(str(oExp),
+                         "Expecting value: line 1 column 1 (char 0)")
 
 
 if __name__ == "__main__":

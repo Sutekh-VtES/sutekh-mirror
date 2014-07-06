@@ -87,6 +87,7 @@ class SutekhInfo(object):
         'PyProtocols',
         'ply',
         'configobj',
+        'simplejson',
     ]
 
     # Install these manually

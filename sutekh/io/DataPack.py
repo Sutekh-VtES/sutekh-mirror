@@ -10,7 +10,7 @@
 """Provide tools for locating and extracting data pack ZIP files."""
 
 import datetime
-import json
+import simplejson
 import urllib2
 import urlparse
 import socket
@@ -59,7 +59,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
     if not oFile:
         return None, None, None
     try:
-        dIndex = json.load(oFile)
+        dIndex = simplejson.load(oFile)
     except (urllib2.URLError, socket.timeout, ValueError), oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
