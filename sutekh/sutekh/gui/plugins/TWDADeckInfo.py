@@ -422,13 +422,14 @@ class TWDAInfoPlugin(SutekhPlugin):
 
         oLogHandler = BinnedCountLogHandler()
         oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Downlaoding TWDA data")
+        oProgressDialog.set_description("Downloading TWDA data")
         oLogger = Logger('Download zip files')
         oLogger.addHandler(oLogHandler)
         oLogHandler.set_dialog(oProgressDialog)
         oLogHandler.set_tot_bins(len(aToUnzip))
         oProgressDialog.show()
-        for sUrl, sTWDA in aToUnzip:
+        # We sort the list of urls to download for cosmetic reasons
+        for sUrl, sTWDA in sorted(aToUnzip, key=lambda x: x[1]):
             oFile = urlopen_with_timeout(sUrl,
                                          fErrorHandler=gui_error_handler)
             oProgressDialog.set_description('Downloading %s' % sTWDA)
