@@ -123,8 +123,6 @@ class DataPackTest(SutekhTest):
                                      fErrorHandler=aErrors.append)
         [oExp] = aErrors
         self.assertTrue(isinstance(oExp, ValueError))
-        self.assertEqual(str(oExp),
-                         "Expecting value: line 1 column 1 (char 0)")
 
 
 if __name__ == "__main__":
