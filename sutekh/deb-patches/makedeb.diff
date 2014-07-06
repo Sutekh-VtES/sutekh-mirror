@@ -1,15 +1,17 @@
 Index: stdeb.cfg
 ===================================================================
---- stdeb.cfg	(revision 2923)
+--- stdeb.cfg	(revision 3412)
 +++ stdeb.cfg	(working copy)
-@@ -1,3 +1,3 @@
+@@ -1,5 +1,5 @@
  [Sutekh]
--Depends: python-gtk2, python-rsvg, python-configobj, python-ply, python-protocols, python-keyring
-+Depends: python-gtk2, python-rsvg, python-sqlobject, python-configobj, python-ply, python-protocols, python-keyring
+ # The librsvg2-common dependency is to ensure that the gdk-pixbuf loader for
+ # SVG images is installed
+-Depends: librsvg2-common, python-gtk2, python-configobj, python-ply, python-protocols, python-keyring
++Depends: librsvg2-common, python-gtk2, python-sqlobject, python-configobj, python-ply, python-protocols, python-keyring
  Copyright-File: COPYRIGHT
 Index: sutekh/SutekhInfo.py
 ===================================================================
---- sutekh/SutekhInfo.py	(revision 2923)
+--- sutekh/SutekhInfo.py	(revision 3411)
 +++ sutekh/SutekhInfo.py	(working copy)
 @@ -79,8 +79,6 @@
      ]
