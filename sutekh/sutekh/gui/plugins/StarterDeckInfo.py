@@ -368,6 +368,8 @@ class StarterInfoPlugin(SutekhPlugin):
         return True
 
     def _clean_removed(self, sRemovedInfo):
+        """Handle card sets that are marked as removed in the starter
+           info file."""
         if not sRemovedInfo:
             # No removed info, so skip
             return
