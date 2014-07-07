@@ -96,7 +96,7 @@ class StarterConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh datapack, so need magic to get right file
-            sZipUrl = find_data_pack('starters')
+            sZipUrl, _ = find_data_pack('starters')
             oFile = urllib2.urlopen(sZipUrl)
             sData = fetch_data(oFile)
         elif sFile:
