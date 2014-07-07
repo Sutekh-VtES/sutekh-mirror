@@ -33,6 +33,10 @@ if ! echo ${WINE_VER} | grep -q ^wine-1.2; then
 fi
 
 # Calculate paths.
+#
+# We assume gtk can be found under GTK. This is true for the gtk installer, but the
+# pygtk all in one installer places GTK under PythonX/Lib/site-packages/gtk-2.0/runtime/
+# so a symlink is required in that case.
 
 WINE_WIN_PYTHON=`wine python -u -c "import os, sys; print os.path.dirname(sys.executable)"`
 WINE_WIN_SYS32="C:/windows/system32"
