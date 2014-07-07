@@ -247,6 +247,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         if not bOK:
             oProgressDialog.destroy()
             return False  # No starters in zip file
+        sRemovedInfo = oFile.get_info_file('removed_decks.txt')
         oLogger.addHandler(oLogHandler)
         oLogHandler.set_dialog(oProgressDialog)
         oLogHandler.set_total(len(dList))
@@ -264,6 +265,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 return False  # Error
         # Cleanup
         self._clean_empty(oFile.get_all_entries(), aExistingList)
+        self._clean_removed(sRemovedInfo)
         self.reload_pcs_list()
         oProgressDialog.destroy()
         return True
@@ -326,6 +328,25 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 do_exception_complaint(sMsg)
                 return False
         return True
+
+    def _clean_removed(self, sRemovedInfo):
+        """Handle card sets that are marked as removed in the starter
+           info file."""
+        if not sRemovedInfo:
+            # No removed info, so skip
+            return
+        for sLine in sRemovedInfo.splitlines():
+            if sLine.startswith('#'):
+                # Ignore comment
+                continue
+            sName = sLine.strip()
+            if check_cs_exists(sName):
+                # Removed deck still present in the database, so delete it
+                oCS = IPhysicalCardSet(sName)
+                if has_children(oCS):
+                    # FIXME: Prompt in this case
+                    continue
+                delete_physical_card_set(sName)
 
     # pylint: disable-msg=R0201
     # Method for consistency with _unzip methods

@@ -1,4 +1,8 @@
-06 Jul 2013
+07 Jul 2014
+ * Backport handling of removed/renamed decks in the Starter deck plugin
+   (r3391, r3392, r3418)
+
+06 Jul 2014
  * Backport reworking of io/DataPack to work with sutekh-datapack repo from trunk
    - Change DataPack to use simplejson to keep python 2.5 compatability
  * Merge some various bugfixes from trunk
