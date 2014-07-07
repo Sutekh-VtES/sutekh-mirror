@@ -241,14 +241,14 @@ class ZipFileWrapper(object):
 
            Return None if it's not present, otherwise return
            the contents."""
-        self._open_zip_for_read()
+        self.__open_zip_for_read()
         sData = None
         for oItem in self.oZip.infolist():
             if oItem.filename == sFileName:
                 # First match found wins
                 sData = self.oZip.read(oItem.filename)
                 break
-        self._close_zip()
+        self.__close_zip()
         return sData
 
     def get_warnings(self):

@@ -340,13 +340,15 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                 # Ignore comment
                 continue
             sName = sLine.strip()
-            if check_cs_exists(sName):
+            try:
                 # Removed deck still present in the database, so delete it
                 oCS = IPhysicalCardSet(sName)
                 if has_children(oCS):
                     # FIXME: Prompt in this case
                     continue
                 delete_physical_card_set(sName)
+            except SQLObjectNotFound:
+                pass
 
     # pylint: disable-msg=R0201
     # Method for consistency with _unzip methods
