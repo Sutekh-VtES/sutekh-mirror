@@ -10,6 +10,7 @@
 """Provide tools for locating and extracting data pack ZIP files."""
 
 import datetime
+import time
 import simplejson
 import urllib2
 import urlparse
@@ -21,8 +22,9 @@ DOC_URL = ('https://bitbucket.org/hodgestar/sutekh-datapack/raw/master/'
 
 def parse_datapack_date(sDate):
     """Parse a datapack's ISO format date entry into a datetime object."""
-    sDate, _sSep, _sMicro = sDate.partition('.')
-    return datetime.datetime.strptime(sDate, "%Y-%m-%dT%H:%M:%S")
+    sDate, _sMicro = sDate.split('.', 1)
+    # work around python 2.4 shortcomings
+    return datetime.datetime(*(time.strptime(sDate, "%Y-%m-%dT%H:%M:%S")[0:6]))
 
 
 def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
