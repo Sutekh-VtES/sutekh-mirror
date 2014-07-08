@@ -6,7 +6,6 @@
 """SutekhGui.py: start the GUI"""
 
 
-import gtk
 import logging
 import sys
 import optparse
@@ -15,6 +14,7 @@ import os
 # work with Ubuntu's later unity-gtk2-module approach to moving
 # menus around
 os.environ["UBUNTU_MENUPROXY"] = "0"
+import gtk
 import traceback
 from sqlobject import sqlhub, connectionForURI
 from sutekh.core.SutekhObjects import VersionTable, TABLE_LIST
