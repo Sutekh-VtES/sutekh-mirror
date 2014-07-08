@@ -128,6 +128,10 @@ class SutekhInfo(object):
             'License :: OSI Approved :: BSD License',
             'http://www.voidspace.org.uk/python/configobj.html#license',
             'New-BSD license'),
+        'simplejson': (
+            'License :: OSI Approved :: MIT License',
+            'https://raw.githubusercontent.com/simplejson/simplejson/master/LICENSE.txt',
+            'MIT license'),
         'setuptools': (
             'License :: OSI Approved :: Python Software Foundation License',
             'http://www.python.org/psf/license/',
