@@ -1,3 +1,25 @@
+09 Jul 2014
+ * Fix bug in SL plugin's import deck / inventory path
+
+06 Jul 2014
+ * Add progress bar to TWDA when deleting decks to provide UI feedback
+ * Download TWDA datapacks in cronological order for UI claritya
+ * Various build fixes
+   - Ensure baseconfigspec.ini is included by setup.py
+   - Weaken rsvg requirements
+   - Fix sutekh-wine-py2exe to work with python2.7 and the
+     pygtk 'all in one' installer
+   - Update ubuntu build script and patch
+   - Update rpm build info
+ * Work around changed menu moving system in recent ubuntu versions
+
+05 Jul 2014
+ * Switch to fetching datapacks from sutekh-datapacks repository on bitbucket
+
+04 Jul 2014
+ * Add get_info_file to extract extra info files from datapack zip files
+ * Add simple handling of decks removed from the starter deck datapack
+
 26 Jun 2014
  * Rework generating html from filter help to remove some repeated
    documentation.
