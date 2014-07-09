@@ -1,3 +1,13 @@
+09 Jul 2014
+ * Backport a update to the Secret Library plugin which prevented imports from
+   the Secret Library working correctly (r3433)
+
+08 Jul 2014
+ * Fix datapack handling to still support python 2.4
+ * Update dependancies for the package builds
+ * Fix error in the ubuntu menu workaround backport
+ * Update list of ubuntu versions we build packages for
+
 07 Jul 2014
  * Backport handling of removed/renamed decks in the Starter deck plugin
    (r3391, r3392, r3418)
