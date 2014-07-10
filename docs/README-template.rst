@@ -7,7 +7,7 @@ Sutekh <version> is <one sentence summary of purpose of release>.
 
 Instructions for installing Sutekh can be found at:
 
-* http://sourceforge.net/apps/trac/sutekh/wiki/InstallInstructions
+* https://sourceforge.net/p/sutekh/wiki/InstallInstructions/ 
 
 Sutekh can be downloaded from Sourceforge at:
 

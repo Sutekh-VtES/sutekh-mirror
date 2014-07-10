@@ -11,7 +11,7 @@ Fedora and a PPA for Ubuntu).
 
 Instructions for installing Sutekh can be found at:
 
-* http://sourceforge.net/apps/trac/sutekh/wiki/InstallInstructions
+* https://sourceforge.net/p/sutekh/wiki/InstallInstructions/ 
 
 Sutekh can be downloaded from Sourceforge at:
 
@@ -26,7 +26,7 @@ Issues may be reported by emailing sutekh-users@lists.sourceforge.net.
 If you're new to Sutekh or want to read about what Sutekh can do, you
 might want to start with the online manual at:
 
-* http://sourceforge.net/apps/trac/sutekh/wiki/SutekhManual_0_8
+* https://sourceforge.net/p/sutekh/wiki/SutekhManual_0.8/
 
 Sutekh aims to be the swiss army knife of VTES card management
 applications -- we hope you'll give the release a try.
