@@ -125,6 +125,10 @@ class SutekhInfo(object):
             'License :: OSI Approved :: BSD License',
             'http://www.voidspace.org.uk/python/configobj.html#license',
             'New-BSD license'),
+        'keyring': (
+            'License :: OSI Approved :: MIT License',
+            'https://bitbucket.org/kang/python-keyring-lib/raw/tip/README.rst',
+            'MIT license'),
         'setuptools': (
             'License :: OSI Approved :: Python Software Foundation License',
             'http://www.python.org/psf/license/',

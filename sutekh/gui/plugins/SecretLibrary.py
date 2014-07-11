@@ -284,6 +284,7 @@ class SecretLibrary(SutekhPlugin):
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
                     'username': sUsername,
+                    'password': sPassword,
                     'deck_id': oImportDialog.get_deck_id(),
                 }
                 sUrl = oImportDialog.get_api_url()
@@ -294,6 +295,7 @@ class SecretLibrary(SutekhPlugin):
                     'sl_user_agent': self.SL_USER_AGENT,
                     'sl_agent_version': self.SL_AGENT_VERSION,
                     'username': sUsername,
+                    'password': sPassword,
                 }
                 sUrl = oImportDialog.get_api_url()
                 self._import_inventory(sUrl, dData)

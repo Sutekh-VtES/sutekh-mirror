@@ -26,8 +26,8 @@ WINE_VER=`wine --version`
 # py2exe scripts produced by wine-1.4 don't work on Windows 7 for
 # some reason, while wine-1.2 works fine in our testing, so we
 # check for this
-if ! echo ${WINE_VER} | grep -q ^wine-1.2; then
-   echo "Wine version ${WINE_VER} is not wine 1.2"
+if echo ${WINE_VER} | grep -q ^wine-1.[3-4]; then
+   echo "Wine version ${WINE_VER} is wine 1.3 or 1.4"
    echo "This may cause problems on some versions of windows"
    read -p "Break to abort, Enter to continue : " JUNK
 fi
