@@ -878,7 +878,8 @@ class CardSetCardListModel(CardListModel):
                 aCards.append(oPhysCard)
                 if self._bPhysicalFilter:
                     # We need to be able to give the correct list of physical
-                    # cards to the listeners if we remove these via _clear_iter
+                    # cards to the listeners if we remove these via
+                    # _clear_card_iter
                     # We can't get this from the card set, since that's already
                     # changed, and we may not be able to extract it from the
                     # model (depending on mode), so we just cache this
