@@ -473,12 +473,16 @@ class CardSetView(CardListView):
         dStates.setdefault('expanded', set())
         dStates.setdefault('selected', set())
         for oIter in aIters:
+            oParIter = self._oModel.iter_parent(oIter)
+            sParKey = self.get_iter_identifier(oParIter)
             sKey = self.get_iter_identifier(oIter)
             if self._oSelection.iter_is_selected(oIter):
                 dStates['selected'].add(sKey)
-            oPath = self._oModel.get_path(oIter)
+            # We want to know if the current row is visible, which requires
+            # that the parent is expanded.
+            oPath = self._oModel.get_path(oParIter)
             if self.row_expanded(oPath):
-                dStates['expanded'].add(sKey)
+                dStates['expanded'].add(sParKey)
             aChildIters = self._oModel.get_all_iter_children(oIter)
             self.save_iter_state(aChildIters, dStates)
 
@@ -487,10 +491,13 @@ class CardSetView(CardListView):
         if not dStates or 'selected' not in dStates:
             return  # Don't do anything if dStates is empty
         for oIter in aIters:
+            oParIter = self._oModel.iter_parent(oIter)
+            sParKey = self.get_iter_identifier(oParIter)
             sKey = self.get_iter_identifier(oIter)
-            if sKey in dStates['selected']:
-                self._oSelection.select_iter(oIter)
-            if sKey in dStates['expanded']:
-                self.expand_to_path(self._oModel.get_path(oIter))
+            if sParKey in dStates['expanded']:
+                self.expand_to_path(self._oModel.get_path(oParIter))
             aChildIters = self._oModel.get_all_iter_children(oIter)
             self.restore_iter_state(aChildIters, dStates)
+            # selection needs to happen after all the expansions
+            if sKey in dStates['selected']:
+                self._oSelection.select_iter(oIter)
