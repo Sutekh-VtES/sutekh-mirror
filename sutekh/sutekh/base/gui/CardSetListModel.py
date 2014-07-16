@@ -1350,6 +1350,12 @@ class CardSetCardListModel(CardListModel):
                 # Parent count is shown, or not shown because parent is
                 # changing to None, so this affects the shown cards.
                 self._try_queue_reload()
+            elif oCardSet.parentID is None and (
+                    self._iParentCountMode != IGNORE_PARENT or
+                    self._iShowCardMode == PARENT_CARDS):
+                # We've newly gained a parent, and the mode needs parent
+                # info, so we need to reload
+                self._try_queue_reload()
         elif oCardSet.parentID and oCardSet.parentID == self._oCardSet.id:
             # This is a child card set, and this can require a reload
             if 'inuse' in dChanges or ('parentID' in dChanges
