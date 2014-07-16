@@ -367,6 +367,82 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             self._reset_modes(oModel)
 
+
+    def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
+        """Loop over all the possible modes of the models,
+           reparenting the oChildPCS inbetween."""
+        # pylint: disable-msg=W0212
+        # we need to access protected methods
+        aController = []
+        for oModel in aModels:
+            # Ensure we start with a clean cache
+            oController = DummyController()
+            oModel.set_controller(oController)
+            oModel._dCache = {}
+        for bEditFlag in (False, True):
+            for oModel in aModels:
+                oModel.bEditable = bEditFlag
+            for iShowMode in (ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
+                    THIS_SET_ONLY):
+                for oModel in aModels:
+                    oModel._change_count_mode(iShowMode)
+                for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
+                        SHOW_CARD_SETS, EXP_AND_CARD_SETS, CARD_SETS_AND_EXP):
+                    for oModel in aModels:
+                        oModel._change_level_mode(iLevelMode)
+                    for iParentMode in (PARENT_COUNT, MINUS_THIS_SET,
+                            MINUS_SETS_IN_USE, IGNORE_PARENT):
+                        for oModel in aModels:
+                            oModel._change_parent_count_mode(iParentMode)
+                        for oModel in aModels:
+                            oModel.load()
+                        # reparent
+                        oOldParPCS = oChildPCS.parent
+                        oChildPCS.parent = oPCS
+                        oChildPCS.syncUpdate()
+                        # Handle any queued reloads
+                        # This is to mimic the way we use gtk event queuing
+                        # to ensure reloads happen after database changes
+                        # have been committed
+                        for oModel in aModels:
+                            if oModel._oController.bReload:
+                                oModel.load()
+                                oModel._oController.bReload = False
+                        # get post-reparent counts
+                        dModelInfo = {}
+                        for oModel in aModels:
+                            tStartTotals = (
+                                oModel.iter_n_children(None),
+                                self._count_all_cards(oModel),
+                                self._count_second_level(oModel))
+                            aStartList = self._get_all_counts(oModel)
+                            dModelInfo[oModel] = [tStartTotals, aStartList]
+                        # get post-reload counts
+                        for oModel in aModels:
+                            oModel.load()
+                            tLoadTotals = (
+                                oModel.iter_n_children(None),
+                                self._count_all_cards(oModel),
+                                self._count_second_level(oModel))
+                            aLoadList = self._get_all_counts(oModel)
+                            tStartTotals, aStartList = dModelInfo[oModel]
+                            self.assertEqual(aLoadList, aStartList,
+                                    self._format_error(
+                                        "Card lists for reparent and load differ",
+                                        aStartList, aLoadList, oModel,
+                                        oChildPCS))
+                            self.assertEqual(tLoadTotals, tStartTotals,
+                                self._format_error(
+                                    "Totals for reparent and load differ",
+                                    tStartTotals, tLoadTotals, oModel,
+                                    oChildPCS))
+                        # reset parent
+                        oChildPCS.parent = oOldParPCS
+                        oChildPCS.syncUpdate()
+        for oModel in aModels:
+            self._reset_modes(oModel)
+
+
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
            a zero result filters to test the model."""
@@ -1116,6 +1192,80 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oGrandChildPCS.addPhysicalCard(oCard.id)
         self._loop_modes(oChildPCS, [oChildModel])
         self._cleanup_models([oChildModel])
+
+    def test_reparenting_from_none(self):
+        """Test corner cases around reparenting card sets.
+        
+           This tests reparenting a card set with no parent to
+           having a parent"""
+        _oCache = SutekhObjectCache()
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        # These will be reparented in the tests
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], inuse=True)
+        oChild2PCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS,
+                                     inuse=True)
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        oChild2Model = self._get_model(self.aNames[3])
+        # Add some cards to parent + child card sets
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', None), ('Bronwen', 'Sabbat'),
+                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+                ('Yvette, The Hopeless', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = make_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            if sName != 'Sha-Ennu':
+                oPCS.addPhysicalCard(oCard.id)
+            if sName != 'Yvette, The Hopeless':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChild2PCS.addPhysicalCard(oCard.id)
+            if sName == '.44 Magnum':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChildPCS.addPhysicalCard(oCard.id)
+        self._loop_modes_reparent(oPCS, oChildPCS,
+                                  [oModel, oChildModel, oChild2Model])
+        self._cleanup_models([oModel, oChildModel, oChild2Model])
+
+
+    def test_reparenting_within_tree(self):
+        """Test corner cases around reparenting card sets.
+        
+           This tests reparenting to a different point in the tree"""
+        _oCache = SutekhObjectCache()
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        # These will be reparented in the tests
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
+                                    inuse=True)
+        oChild2PCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS,
+                                     inuse=True)
+        oModel = self._get_model(self.aNames[0])
+        oChildModel = self._get_model(self.aNames[1])
+        oChild2Model = self._get_model(self.aNames[3])
+        # Add some cards to parent + child card sets
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                ('Alexandra', None), ('Bronwen', 'Sabbat'),
+                ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+                ('Yvette, The Hopeless', 'CE'),
+                ('Yvette, The Hopeless', 'BSC')]
+        for sName, sExp in aCards:
+            oCard = make_card(sName, sExp)
+            # pylint: disable-msg=E1101
+            # PyProtocols confuses pylint
+            if sName != 'Sha-Ennu':
+                oPCS.addPhysicalCard(oCard.id)
+            if sName != 'Yvette, The Hopeless':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChild2PCS.addPhysicalCard(oCard.id)
+            if sName == '.44 Magnum':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChildPCS.addPhysicalCard(oCard.id)
+        self._loop_modes_reparent(oChildPCS, oChild2PCS,
+                                  [oModel, oChildModel, oChild2Model])
+        self._cleanup_models([oModel, oChildModel, oChild2Model])
+
 
 if __name__ == "__main__":
     unittest.main()
