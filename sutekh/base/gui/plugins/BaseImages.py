@@ -288,6 +288,11 @@ class BaseImageFrame(BasicFrame):
                     return
                 self._dUrlCache[sUrl] = oFile
                 if oFile:
+                    # Ensure the directory exists, for expansions we
+                    # haven't encountered before
+                    sBaseDir = os.path.dirname(sFullFilename)
+                    ensure_dir_exists(sBaseDir)
+                    # Create file
                     oOutFile = file(sFullFilename, 'wb')
                     # Attempt to fetch the data
                     progress_fetch_data(oFile, oOutFile)
