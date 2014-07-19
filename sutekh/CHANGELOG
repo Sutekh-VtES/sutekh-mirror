@@ -1,3 +1,6 @@
+19 Jul 2014
+ * Ensure expansion directory exists when downloading card images.
+
 16 Jul 2014
  * Add some test coverage for reparenting card sets
  * Fix a big in the logic when reparenting a card set with no
