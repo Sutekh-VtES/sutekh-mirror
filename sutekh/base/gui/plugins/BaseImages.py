@@ -479,7 +479,7 @@ class BaseImageConfigDialog(SutekhDialog):
         if not bFirstTime:
             # Set to the null choice
             self.oChoice.select_by_name('Select directory ...')
-            self.vbox.pack_start(self.oChoice, False, False)
+        self.vbox.pack_start(self.oChoice, False, False)
         if oImagePlugin.DOWNLOAD_SUPPORTED:
             self.oDownload = gtk.CheckButton(
                 'Download missing images from %s?' % self.sImgDownloadSite)
