@@ -1,3 +1,7 @@
+21 Jul 2014
+ * Move generic card set parser _convert_tree from
+   PhysicalCardSetParser into base.io
+
 19 Jul 2014
  * Ensure expansion directory exists when downloading card images.
  * Fix a bug in the image plugin that hid the configuration choices
