@@ -85,9 +85,9 @@ class DetailDialog(SutekhDialog):
     # gtk widget, so has many public methods
 
     def __init__(self, sMessage, sDetails):
-        super(DetailDialog, self).__init__('Sutekh has encounterd an error',
-                                           oButtons=(gtk.STOCK_CLOSE,
-                                                     gtk.RESPONSE_CLOSE))
+        super(DetailDialog, self).__init__(
+            '%s has encounterd an error' % AppInfo.NAME,
+            oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oHBox = gtk.HBox(False, 2)
         oMessageBox = gtk.VBox(False, 2)
         oImage = gtk.Image()
