@@ -370,9 +370,10 @@ class CardListModel(gtk.TreeStore):
             elif self._bHideIllegal:
                 # either not self.apply, or self.selectfilter is None
                 return FilterAndBox([self.configfilter, self.oLegalFilter])
-            elif self.applyfilter:
+            elif self.applyfilter and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter])
             else:
+                # either not self.apply, or self.selectfilter is None
                 return self.configfilter
         else:
             if self.applyfilter and self._bHideIllegal and self.selectfilter:
