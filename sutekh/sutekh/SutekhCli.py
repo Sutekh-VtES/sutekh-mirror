@@ -20,9 +20,8 @@ from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
                                           PhysicalCard,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.core.SutekhObjects import TABLE_LIST
-from sutekh.core.Filters import (PhysicalCardSetFilter, FilterAndBox,
-                                 PhysicalCardFilter)
-from sutekh.base.core.FilterParser import FilterParser
+# Ensure we have all the filters imported
+import sutekh.core.Filters
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_date_list)
@@ -31,7 +30,8 @@ from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
 from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
 from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.base.core.CardSetUtilities import format_cs_list
+from sutekh.base.CliUtils import (run_filter, print_card_filter_list,
+                                    print_card_list, do_print_card)
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile, \
         PhysicalCardSetXmlFile, AbstractCardSetXmlFile, \
         write_all_pcs
@@ -204,39 +204,6 @@ def print_card_details(oCard, sEncoding):
     print format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace'))
 
 
-def run_filter(oFilter, oCardSet, bDetailed, sEncoding):
-    """Run the given filter, printing the results as required"""
-    if oCardSet:
-        # Filter the given card set
-        oBaseFilter = PhysicalCardSetFilter(oCardSet.name)
-        oJointFilter = FilterAndBox([oBaseFilter, oFilter])
-        aResults = oJointFilter.select(MapPhysicalCardToPhysicalCardSet)
-        dResults = {}
-        for oCard in aResults:
-            oAbsCard = IAbstractCard(oCard)
-            dResults.setdefault(oAbsCard, 0)
-            dResults[oAbsCard] += 1
-    else:
-        # Filter WW cardlist
-        oBaseFilter = PhysicalCardFilter()
-        oJointFilter = FilterAndBox([oBaseFilter, oFilter])
-        aResults = oJointFilter.select(PhysicalCard)
-        dResults = {}
-        for oCard in aResults:
-            oAbsCard = IAbstractCard(oCard)
-            dResults.setdefault(oAbsCard, 1)
-
-    for oCard in sorted(dResults, key=lambda x: x.name):
-        if oCardSet:
-            iCnt = dResults[oCard]
-            print '%3d x %s' % (iCnt,
-                    oCard.name.encode(sEncoding, 'xmlcharrefreplace'))
-        else:
-            print oCard.name.encode(sEncoding, 'xmlcharrefreplace')
-        if bDetailed:
-            print_card_details(oCard, sEncoding)
-
-
 def main_with_args(aTheArgs):
     """
     Main function: Loop through the options and process the database
@@ -350,53 +317,20 @@ def main_with_args(aTheArgs):
             return 1
 
     if oOpts.list_cs:
-        if oOpts.limit_list is not None:
-            try:
-               # pylint: disable-msg=E1101
-               # SQLObject confuse pylint
-                oCS = IPhysicalCardSet(oOpts.limit_list)
-                print ' %s' % oCS.name.encode(oOpts.print_encoding,
-                        'xmlcharrefreplace')
-                print format_cs_list(oCS, '    ').encode(oOpts.print_encoding,
-                        'xmlcharrefreplace')
-            except SQLObjectNotFound:
-                print 'Unable to load card set', oOpts.limit_list
-                return 1
-        else:
-            print format_cs_list().encode(oOpts.print_encoding,
-                    'xmlcharrefreplace')
+        if not print_card_list(oOpts.limit_list, oOpts.print_encoding):
+            return 1
     elif oOpts.limit_list is not None:
         print "Can't use limit-list-to without list-cs"
         return 1
 
     if not oOpts.filter_string is None:
-        oParser = FilterParser()
-        oFilter = oParser.apply(oOpts.filter_string).get_filter()
-        oCS = None
-        if oOpts.filter_cs:
-            oCS = IPhysicalCardSet(oOpts.filter_cs)
-        run_filter(oFilter, oCS, oOpts.filter_detailed, oOpts.print_encoding)
+        dResults = run_filter(oOpts.filter_string, oOpts.filter_cs)
+        print_card_filter_list(dResults, print_card_details,
+                               oOpts.filter_detailed, oOpts.print_encoding)
 
     if not oOpts.print_card is None:
-        try:
-            try:
-                oCard = IAbstractCard(oOpts.print_card)
-            except UnicodeDecodeError, oErr:
-                if oOpts.print_encoding != 'ascii':
-                    # Are there better choices than --print-encoding?
-                    oCard = IAbstractCard(
-                            oOpts.print_card.decode(oOpts.print_encoding))
-                else:
-                    print 'Unable to interpret card name:'
-                    print oErr
-                    print 'Please specify a suitable --print-encoding'
-                    return 1
-            # pylint: disable-msg=E1101, E1103
-            # SQLObject confuse pylint
-            print oCard.name.encode(oOpts.print_encoding, 'xmlcharrefreplace')
-            print_card_details(oCard, oOpts.print_encoding)
-        except SQLObjectNotFound:
-            print 'Unable to find card %s' % oOpts.print_card
+        if not do_print_card(oOpts.print_card, print_card_details,
+                             oOpts.print_encoding):
             return 1
 
     if not oOpts.read_cs is None:
