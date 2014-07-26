@@ -21,9 +21,13 @@ import os
 # Possible copyright notice (email + possible date), but not in
 # right form
 COPYRIGHT = re.compile('^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
-    ' \S+?.* <.*@.*>')
+                       ' \S+?.* <.*@.*>')
+# Standardise for other sutekh-derived card set managers
+PORTED_LINE = re.compile('^# ( )*(Imported into|Modified for)'
+                         ' [A-Z][a-z]+ [0-9]{4,}'
+                         '(, [0-9]{4,})* \S+?.* <.*@.*>')
 WRONG_COPYRIGHT = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
-    '|^# Copyright.*')
+                             '|^# Copyright.*')
 # encoding lines
 VIM_MODELINE = re.compile('^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
 EMACS_CODING = re.compile('^# -\*- coding: ')
@@ -33,10 +37,10 @@ PYCODING = re.compile('^# -\*- coding: |^# vim:fileencoding=')
 def parse_options(aArgs):
     """Parse aArgs for the options to the script"""
     oParser = optparse.OptionParser(usage="usage %prog [options]",
-            version="%prog 0.1")
+                                    version="%prog 0.1")
     oParser.add_option('-f', '--file',
-            type="string", dest="sFileName", default=None,
-            help="File to check")
+                       type="string", dest="sFileName", default=None,
+                       help="File to check")
     return oParser, oParser.parse_args(aArgs)
 
 
@@ -71,6 +75,11 @@ def search_file(oFile, dScores, aWrongCopyrights, sFileName):
 
         if COPYRIGHT.search(sLine) is not None:
             dScores['copyright'] += 1
+        elif PORTED_LINE.search(sLine) is not None:
+            # We don't treat this as a copyright line, but
+            # we don't want to flag it as an incorrect copyright
+            # notice
+            dScores['ignored'] += 1
         elif WRONG_COPYRIGHT.search(sLine) is not None:
             aWrongCopyrights.append(sLine)
             dScores['wrong copyright'] += 1
@@ -115,19 +124,18 @@ def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
         print '%s is missing a copyright statement' % sFileName
 
     if dScores['wrong copyright'] > 0:
-        print '%s has possible copyright notices in the incorrect form ' \
-                % sFileName
+        print ('%s has possible copyright notices in the incorrect form '
+               % sFileName)
         print '(not "Copyright Years Name <email>")'
         print 'Possibly incorrect line(s) : ', aWrongCopyrights
 
     if dScores['emacs coding'] < 1:
         print '%s is is missing a -*- emacs coding line' % sFileName
     elif bScript and not bValidEmacs:
-        print 'emacs coding line not 2nd line for python script: %s' \
-                % sFileName
+        print ('emacs coding line not 2nd line for python script: %s'
+               % sFileName)
     elif not bValidEmacs:
-        print 'emacs coding line not 1st line for python file: %s' \
-                % sFileName
+        print 'emacs coding line not 1st line for python file: %s' % sFileName
 
     if dScores['python encoding'] < 2:
         print '%s is missing an encoding line' % sFileName
@@ -135,8 +143,7 @@ def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
         print '%s is has too many encoding lines' % sFileName
 
     if bWrongUTF8:
-        print 'Encoding line uses "utf8" instead of "utf-8" in %s' \
-                % sFileName
+        print 'Encoding line uses "utf8" instead of "utf-8" in %s' % sFileName
 
     if not bValidCoding and dScores['python encoding'] > 1:
         print '%s: One of the emacs coding must be in " \
@@ -160,14 +167,16 @@ def file_check(sFileName):
         return False
 
     dScores = {
-            'copyright': 0,
-            'license': 0,
-            'modeline': 0,
-            'emacs coding': 0,
-            'python encoding': 0,
-            'filename': 0,
-            'wrong copyright': 0,
-            }
+        'copyright': 0,
+        'license': 0,
+        'modeline': 0,
+        'emacs coding': 0,
+        'python encoding': 0,
+        'filename': 0,
+        'wrong copyright': 0,
+        # catchall bucket for lines we note, but skip
+        'ignored': 0,
+    }
     aWrongCopyrights = []
 
     tFlags = search_file(oFile, dScores, aWrongCopyrights, sFileName)
