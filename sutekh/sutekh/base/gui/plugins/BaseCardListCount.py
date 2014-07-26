@@ -53,7 +53,7 @@ class BaseCardListCount(BasePlugin):
         super(BaseCardListCount, self).__init__(*args, **kwargs)
 
         self._oTextLabel = None
-        self._iMode = self.NO_COUNT_OPT
+        self._iMode = self.NO_COUNT
         self._dExpCounts = {}
         self._dAbsCounts = {}
         self._dCardTotals = {TOTAL: 0}
@@ -64,6 +64,7 @@ class BaseCardListCount(BasePlugin):
         # on
         if self.check_versions() and self.check_model_type():
             MessageBus.subscribe(self.model, 'load', self.load)
+        self.perpane_config_updated()
     # pylint: enable-msg=W0142
 
     def cleanup(self):
