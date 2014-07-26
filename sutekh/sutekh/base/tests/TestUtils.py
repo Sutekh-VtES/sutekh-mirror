@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
-# Copyright 2008,2014 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2008, 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
 # _iterdump():
 #   Copyright 2008 Python Software Foundation; All Rights Reserved
 # GPL - see COPYING for details

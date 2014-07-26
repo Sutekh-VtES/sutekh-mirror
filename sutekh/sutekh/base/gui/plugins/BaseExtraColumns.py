@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
-# Copyright 2009,2014 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2009, 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Modified from ExtraCardSetListViewColumns.py
 # GPL - see COPYING for details
 """Display extra columns in the tree view"""
