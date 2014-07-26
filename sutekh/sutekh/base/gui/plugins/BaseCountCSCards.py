@@ -81,33 +81,36 @@ class BaseCountCSCards(BasePlugin):
         self.dInfo = {TOTAL: len(aCards)}
         self._add_dict_keys()
         for oCard in aCards:
-            sKey = dCache.get(oCard.id, None)
-            if sKey is None:
+            aKeys = dCache.get(oCard.id, None)
+            if aKeys is None:
                 oAbsCard = IAbstractCard(oCard)
-                sKey = self._get_card_key(oAbsCard)
-                dCache[oCard.id] = sKey
-            self.dInfo[sKey] += 1
+                aKeys = self._get_card_keys(oAbsCard)
+                dCache[oCard.id] = aKeys
+            for sKey in aKeys:
+                self.dInfo[sKey] += 1
         self.update_numbers()
 
     def alter_card_count(self, oCard, iChg):
         """respond to alter_card_count events"""
         self.dInfo[TOTAL] += iChg
         oAbsCard = IAbstractCard(oCard)
-        sKey = self._get_card_key(oAbsCard)
-        self.dInfo[sKey] += iChg
+        aKeys = self._get_card_keys(oAbsCard)
+        for sKey in aKeys:
+            self.dInfo[sKey] += iChg
         self.update_numbers()
 
     def add_new_card(self, oCard, iCnt):
         """response to add_new_card events"""
         self.dInfo[TOTAL] += iCnt
         oAbsCard = IAbstractCard(oCard)
-        sKey = self._get_card_key(oAbsCard)
-        self.dInfo[sKey] += iCnt
+        aKey = self._get_card_keys(oAbsCard)
+        for sKey in aKeys:
+            self.dInfo[sKey] += iCnt
         self.update_numbers()
 
-    def _get_card_key(self, oAbsCard):
-        """Get the dictionary key for this card."""
-        raise NotImplementedError('Subclasses must implement _get_card_key')
+    def _get_card_keys(self, oAbsCard):
+        """Get the list of applicable dictionary keys for this card."""
+        raise NotImplementedError('Subclasses must implement _get_card_keys')
 
     def _add_dict_keys(self):
         """Ensure the totals dictionary has all the required keys."""
