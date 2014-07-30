@@ -9,12 +9,13 @@ import sys
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_null_handler
 from sutekh.tests import create_db
-from sutekh.core.DatabaseUpgrade import copy_to_new_abstract_card_db, \
-                                        create_final_copy
+from sutekh.core.DatabaseUpgrade import create_final_copy
+from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
-from sutekh.base.core.BaseObjects import AbstractCard, PhysicalCardSet, \
-    AbstractCardAdapter, PhysicalCardAdapter, ExpansionAdapter, \
-    IPhysicalCardSet
+from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
+                                          AbstractCardAdapter,
+                                          PhysicalCardAdapter,
+                                          ExpansionAdapter, IPhysicalCardSet)
 from sqlobject import sqlhub, connectionForURI
 
 

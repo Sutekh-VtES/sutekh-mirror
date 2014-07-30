@@ -304,3 +304,21 @@ class CachedCardSetHolder(CardSetHolder):
             self._commit_pcs(aPhysCards)
         else:
             sqlhub.doInTransaction(self._commit_pcs, aPhysCards)
+
+
+def make_card_set_holder(oCardSet):
+    """Given a CardSet, create a Cached Card Set Holder for it."""
+    oCS = CachedCardSetHolder()
+    oCS.name = oCardSet.name
+    oCS.author = oCardSet.author
+    oCS.comment = oCardSet.comment
+    oCS.annotations = oCardSet.annotations
+    oCS.inuse = oCardSet.inuse
+    if oCardSet.parent:
+        oCS.parent = oCardSet.parent.name
+    for oCard in oCardSet.cards:
+        if oCard.expansion is None:
+            oCS.add(1, oCard.abstractCard.canonicalName, None)
+        else:
+            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
+    return oCS

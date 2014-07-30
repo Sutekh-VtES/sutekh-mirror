@@ -12,8 +12,10 @@ from sutekh.gui.WWFilesDialog import WWFilesDialog
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhHTMLLogHandler,
                                             SutekhCountLogHandler)
-from sutekh.core.DatabaseUpgrade import create_memory_copy, \
-        create_final_copy, UnknownVersion, copy_to_new_abstract_card_db
+from sutekh.core.DatabaseUpgrade import (create_memory_copy,
+                                         create_final_copy)
+from sutekh.base.core.BaseDBManagement import (UnknownVersion,
+                                               copy_to_new_abstract_card_db)
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.base.gui.SutekhDialog import (do_complaint_buttons, do_complaint,
                                           do_complaint_warning,
@@ -84,7 +86,7 @@ def copy_to_new_db(oOldConn, oTempConn, oWin, oProgressDialog, oLogHandler):
     oProgressDialog.set_description("Reloading card collection and card sets")
     oProgressDialog.reset()
     (bOK, aErrors) = copy_to_new_abstract_card_db(oOldConn, oTempConn,
-            oWin.cardLookup, oLogHandler)
+                                                  oWin.cardLookup, oLogHandler)
     oProgressDialog.set_complete()
     if not bOK:
         sMesg = "\n".join(["There was a problem copying your collection"

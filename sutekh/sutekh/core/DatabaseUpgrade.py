@@ -32,24 +32,13 @@ from sutekh.core.SutekhObjects import (SutekhAbstractCard, Clan, Virtue,
                                        Sect, Title,
                                        TABLE_LIST)
 from sutekh.base.core.DBUtility import flush_cache, refresh_tables
-from sutekh.base.core.CardSetHolder import CachedCardSetHolder
 from sutekh.io.WhiteWolfTextParser import strip_braces
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
+from sutekh.base.core.BaseDBManagement import UnknownVersion
 
 # This file handles all the grunt work of the database upgrades. We have some
 # (arguablely overly) complex trickery to read old databases, and we create a
 # copy in sqlite memory database first, before commiting to the actual DB
-
-
-# Utility Exception
-class UnknownVersion(Exception):
-    """Exception for versions we cannot handle"""
-    def __init__(self, sTableName):
-        Exception.__init__(self)
-        self.sTableName = sTableName
-
-    def __str__(self):
-        return "Unrecognised version for %s" % self.sTableName
 
 # We Need to clone the SQLObject classes in SutekhObjects so we can read
 # old versions
@@ -953,78 +942,6 @@ def copy_database(oOrigConn, oDestConnn, oLogHandler=None):
     oTrans.commit(close=True)
     # Clear out cache related joins and such
     return bRes, aMessages
-
-
-def make_card_set_holder(oCardSet, oOrigConn):
-    """Given a CardSet, create a Cached Card Set Holder for it."""
-    oCurConn = sqlhub.processConnection
-    sqlhub.processConnection = oOrigConn
-    oCS = CachedCardSetHolder()
-    oCS.name = oCardSet.name
-    oCS.author = oCardSet.author
-    oCS.comment = oCardSet.comment
-    oCS.annotations = oCardSet.annotations
-    oCS.inuse = oCardSet.inuse
-    if oCardSet.parent:
-        oCS.parent = oCardSet.parent.name
-    for oCard in oCardSet.cards:
-        if oCard.expansion is None:
-            oCS.add(1, oCard.abstractCard.canonicalName, None)
-        else:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
-    sqlhub.processConnection = oCurConn
-    return oCS
-
-
-def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
-        oLogHandler=None):
-    """Copy the card sets to a new Physical Card and Abstract Card List.
-
-      Given an existing database, and a new database created from
-      a new cardlist, copy the CardSets, going via CardSetHolders, so we
-      can adapt to changed names, etc.
-      """
-    # pylint: disable-msg=R0914
-    # we need a lot of variables here
-    aPhysCardSets = []
-    oOldConn = sqlhub.processConnection
-    sqlhub.processConnection = oOrigConn
-    # Copy Physical card sets
-    oLogger = Logger('copy to new abstract card DB')
-    if oLogHandler:
-        oLogger.addHandler(oLogHandler)
-        if hasattr(oLogHandler, 'set_total'):
-            iTotal = 1 + PhysicalCardSet.select(connection=oOrigConn).count()
-            oLogHandler.set_total(iTotal)
-    aSets = list(PhysicalCardSet.select(connection=oOrigConn))
-    bDone = False
-    aDone = []
-    # Ensre we only process a set after it's parent
-    while not bDone:
-        aToDo = []
-        for oSet in aSets:
-            if oSet.parent is None or oSet.parent in aDone:
-                oCS = make_card_set_holder(oSet, oOrigConn)
-                aPhysCardSets.append(oCS)
-                aDone.append(oSet)
-            else:
-                aToDo.append(oSet)
-        if not aToDo:
-            bDone = True
-        else:
-            aSets = aToDo
-    # Save the current mapping
-    oLogger.info('Memory copies made')
-    # Create the cardsets from the holders
-    dLookupCache = {}
-    sqlhub.processConnection = oNewConn
-    for oSet in aPhysCardSets:
-        # create_pcs will manage transactions for us
-        oSet.create_pcs(oCardLookup, dLookupCache)
-        oLogger.info('Physical Card Set: %s', oSet.name)
-        sqlhub.processConnection.cache.clear()
-    sqlhub.processConnection = oOldConn
-    return (True, [])
 
 
 def create_memory_copy(oTempConn, oLogHandler=None):
