@@ -103,7 +103,7 @@ class BaseCountCSCards(BasePlugin):
         """response to add_new_card events"""
         self.dInfo[TOTAL] += iCnt
         oAbsCard = IAbstractCard(oCard)
-        aKey = self._get_card_keys(oAbsCard)
+        aKeys = self._get_card_keys(oAbsCard)
         for sKey in aKeys:
             self.dInfo[sKey] += iCnt
         self.update_numbers()
