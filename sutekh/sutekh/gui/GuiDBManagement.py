@@ -197,6 +197,7 @@ def refresh_ww_card_list(oWin):
         try:
             save_backup(sBackupFile, oProgressDialog)
         except Exception, oErr:
+            oProgressDialog.destroy()
             do_exception_complaint("Failed to write backup.\n\n%s\n"
                     "Not touching the database further." % oErr)
             return False
