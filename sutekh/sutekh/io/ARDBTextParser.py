@@ -30,31 +30,12 @@
 
 import re
 
-
-# State Base Classes
-class StateError(Exception):
-    """Error in the state transitions."""
-    pass
+from sutekh.base.io.SutekhBaseHTMLParser import HolderState
 
 
-class State(object):
-    """Base class for the State Objects."""
-    def __init__(self, oHolder):
-        self._sData = ""
-        self._oHolder = oHolder
-
-    def transition(self, sLine):
-        """Transition to next state"""
-        raise NotImplementedError
-
-    def data(self, sData):
-        """Add data to the state object."""
-        self._sData += sData
-
-
-# State Classes
-class NameAndAuthor(State):
-    """State for extracting Name and Author."""
+# HolderState Classes
+class NameAndAuthor(HolderState):
+    """HolderState for extracting Name and Author."""
     def transition(self, sLine):
         """Process the line for Name and Author - trnaisiotn to Description
            if needed."""
@@ -86,8 +67,8 @@ class NameAndAuthor(State):
         return self
 
 
-class Description(State):
-    """State for extracting description"""
+class Description(HolderState):
+    """HolderState for extracting description"""
     def transition(self, sLine):
         """Process the line for the description and transition to Cards
            state if needed."""
@@ -105,10 +86,10 @@ class Description(State):
             return self
 
 
-class Cards(State):
-    """State for extracting the cards"""
+class Cards(HolderState):
+    """HolderState for extracting the cards"""
     _oCardRe = re.compile(
-            r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
+        r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
     _oAdvRe = re.compile('\sAdv\s')
 
     def transition(self, sLine):
@@ -124,7 +105,7 @@ class Cards(State):
             # We see mixed spaces and tabs in the wild, so we need this
             sName = sName.strip()
             # Check for the advacned string and append advanced if needed
-            if self._oAdvRe.search(sLine) and not 'Adv' in sName:
+            if self._oAdvRe.search(sLine) and 'Adv' not in sName:
                 sName += ' (Advanced)'
             self._oHolder.add(iCnt, sName, None)
         return self
