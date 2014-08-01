@@ -8,8 +8,9 @@
 
 import re
 from logging import Logger
-from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, StateError, \
-        LogState, LogStateWithInfo
+from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
+                                                 HTMLStateError, LogState,
+                                                 LogStateWithInfo)
 from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 from sqlobject import SQLObjectNotFound
@@ -45,7 +46,7 @@ class RuleDict(dict):
     }
 
     def __init__(self, oLogger):
-        self.oLogger = oLogger
+        self._oLogger = oLogger
         super(RuleDict, self).__init__()
         self._oMaker = SutekhObjectMaker()
 
@@ -97,7 +98,7 @@ class RuleDict(dict):
         if self['card'] is None:
             return
 
-        self.oLogger.info('Card: %s', self['card'].name)
+        self._oLogger.info('Card: %s', self['card'].name)
 
         oRuling = self._oMaker.make_ruling(self['text'], self['code'])
 
@@ -115,7 +116,7 @@ class NoSection(LogState):
     def transition(self, sTag, _dAttr):
         """Transition to InSection if needed."""
         if sTag == 'p':
-            return InSection(RuleDict(self.oLogger), self.oLogger)
+            return InSection(RuleDict(self._oLogger), self._oLogger)
         else:
             return self
 
@@ -126,12 +127,12 @@ class InSection(LogStateWithInfo):
     def transition(self, sTag, _dAttr):
         """Transition to SectionTitle or NoSection as needed."""
         if sTag == 'b':
-            return SectionTitle(self._dInfo, self.oLogger)
+            return SectionTitle(self._dInfo, self._oLogger)
         elif sTag == 'p':
             # skip to next section
-            return InSection(RuleDict(self.oLogger), self.oLogger)
+            return InSection(RuleDict(self._oLogger), self._oLogger)
         else:
-            return NoSection(self.oLogger)
+            return NoSection(self._oLogger)
 
 
 class SectionTitle(LogStateWithInfo):
@@ -140,10 +141,11 @@ class SectionTitle(LogStateWithInfo):
     def transition(self, sTag, _dAttr):
         """Transition to SectionWithTitle if needed."""
         if sTag == 'b':
-            raise StateError()
+            raise HTMLStateError('Unexpected tag in SectionTitle',
+                                 sTag, self._sData)
         elif sTag == '/b':
             self._dInfo['title'] = self._sData.strip().strip(':')
-            return SectionWithTitle(self._dInfo, self.oLogger)
+            return SectionWithTitle(self._dInfo, self._oLogger)
         else:
             return self
 
@@ -154,12 +156,12 @@ class SectionWithTitle(LogStateWithInfo):
     def transition(self, sTag, _dAttr):
         """Transition to SectionRule, InSection or NoSection if needed."""
         if sTag == 'ul':
-            return SectionRule(self._dInfo, self.oLogger)
+            return SectionRule(self._dInfo, self._oLogger)
         elif sTag == 'p':
             # skip to next section
-            return InSection(RuleDict(self.oLogger), self.oLogger)
+            return InSection(RuleDict(self._oLogger), self._oLogger)
         elif sTag == '/ul':
-            return NoSection(self.oLogger)
+            return NoSection(self._oLogger)
         else:
             return self
 
@@ -170,9 +172,9 @@ class SectionRule(LogStateWithInfo):
     def transition(self, sTag, _dAttr):
         """Transition to the appropriate InRule State."""
         if sTag == 'li':
-            return InRuleText(self._dInfo, self.oLogger)
+            return InRuleText(self._dInfo, self._oLogger)
         elif sTag == '/ul':
-            return NoSection(self.oLogger)
+            return NoSection(self._oLogger)
         else:
             return self
 
@@ -188,7 +190,7 @@ class InRuleText(LogStateWithInfo):
             if 'text' not in self._dInfo:
                 self._dInfo['text'] = self._sData.strip()
             self._dInfo['url'] = dAttr['href']
-            return InRuleUrl(self._dInfo, self.oLogger)
+            return InRuleUrl(self._dInfo, self._oLogger)
         elif sTag == '/li':
             if 'code' not in self._dInfo:
                 # Rule without an url, so extract the last section in []'s
@@ -201,7 +203,7 @@ class InRuleText(LogStateWithInfo):
                             self.oCodePattern.sub('', self._sData).strip()
             self._dInfo.save()
             self._dInfo.clear_rule()
-            return SectionRule(self._dInfo, self.oLogger)
+            return SectionRule(self._dInfo, self._oLogger)
         return self
 
 
@@ -211,12 +213,13 @@ class InRuleUrl(LogStateWithInfo):
     def transition(self, sTag, _dAttr):
         """Transition to SectionRule if needed."""
         if sTag == 'a':
-            raise StateError()
+            raise HTMLStateError('Unexpected tag in InRuleUrl',
+                                 sTag, self._sData)
         elif sTag == '/a':
             # Some rulings have multiple codes, but we only take the last one
             # since that matches the url we keep
             self._dInfo['code'] = self._sData.strip()
-            return InRuleText(self._dInfo, self.oLogger)
+            return InRuleText(self._dInfo, self._oLogger)
         else:
             return self
 
@@ -227,13 +230,13 @@ class RulingParser(SutekhBaseHTMLParser):
 
     def __init__(self, oLogHandler):
         # super().__init__ calls reset, so we need this first
-        self.oLogger = Logger('WW Rulings parser')
+        self._oLogger = Logger('WW Rulings parser')
         if oLogHandler is not None:
-            self.oLogger.addHandler(oLogHandler)
+            self._oLogger.addHandler(oLogHandler)
         super(RulingParser, self).__init__()
         # No need to touch self._oState, reset will do that for us
 
     def reset(self):
         """Reset the parser"""
         super(RulingParser, self).reset()
-        self._oState = NoSection(self.oLogger)
+        self._oState = NoSection(self._oLogger)

@@ -8,7 +8,7 @@
 """Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
-from sutekh.io.SutekhBaseHTMLParser import LogStateWithInfo
+from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
@@ -217,7 +217,7 @@ class CardDict(dict):
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
-        self.oLogger = oLogger
+        self._oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
 
     def _find_crypt_keywords(self, oCard):
@@ -534,7 +534,7 @@ class CardDict(dict):
 
         oCard = self._make_card(self['name'])
 
-        self.oLogger.info('Card: %s', self['name'])
+        self._oLogger.info('Card: %s', self['name'])
 
         if 'text' in self:
             self._parse_text(oCard)
@@ -631,12 +631,12 @@ class WaitingForCardName(LogStateWithInfo):
             # CSV style names sometimes creep into the cardlist.txt,
             # so ensure we normalise them consistently
             self._dInfo['name'] = move_articles_to_front(sData.strip())
-            return InExpansion(self._dInfo, self.oLogger)
+            return InExpansion(self._dInfo, self._oLogger)
         elif sLine.strip():
             if 'name' in self._dInfo and 'text' not in self._dInfo:
                 # We've it a blank line in the middle of a card, so bounce
                 # back to InCard stuff
-                oCard = InCard(self._dInfo, self.oLogger)
+                oCard = InCard(self._dInfo, self._oLogger)
                 return oCard.transition(sLine, None)
         return self
 
@@ -645,7 +645,7 @@ class WaitingForCardName(LogStateWithInfo):
         if 'name' in self._dInfo:
             # Ensure we've saved existing card
             self._dInfo.save()
-        self._dInfo = CardDict(self.oLogger)
+        self._dInfo = CardDict(self._oLogger)
 
 
 class InCard(LogStateWithInfo):
@@ -669,7 +669,7 @@ class InCard(LogStateWithInfo):
         if ':' in sLine:
             sTag = fix_clarification_markers(sLine.split(':', 1)[0].lower())
             if sTag in self.aTextTags or ' ' in sTag or '{' in sTag:
-                oCardText = InCardText(self._dInfo, self.oLogger)
+                oCardText = InCardText(self._dInfo, self._oLogger)
             else:
                 sData = fix_clarification_markers(sLine.split(':', 1)[1])
                 # We don't want clarification markers here
@@ -677,13 +677,13 @@ class InCard(LogStateWithInfo):
                 self._dInfo[sTag] = sData.strip()
         elif not sLine.strip():
             # Empty line, so probably end of the card
-            return WaitingForCardName(self._dInfo, self.oLogger)
+            return WaitingForCardName(self._dInfo, self._oLogger)
         else:
             if sLine.strip().lower() == 'burn option':
                 # Annoying special case
                 self._dInfo['burn option'] = None
             else:
-                oCardText = InCardText(self._dInfo, self.oLogger)
+                oCardText = InCardText(self._dInfo, self._oLogger)
         if oCardText:
             # Hand over the line to the card text parser
             return oCardText.transition(sLine, None)
@@ -698,7 +698,7 @@ class InExpansion(LogStateWithInfo):
         """Transition back to InCard if needed."""
         if sLine.startswith('[') and sLine.strip().endswith(']'):
             self._dInfo['expansion'] = sLine.strip()
-            return InCard(self._dInfo, self.oLogger)
+            return InCard(self._dInfo, self._oLogger)
         else:
             return self
 
@@ -711,7 +711,7 @@ class InCardText(LogStateWithInfo):
         if sLine.startswith('Artist:') or not sLine.strip():
             self._dInfo['text'] = fix_clarification_markers(
                     self._dInfo['text'].strip())
-            oInCard = InCard(self._dInfo, self.oLogger)
+            oInCard = InCard(self._dInfo, self._oLogger)
             return oInCard.transition(sLine, None)
         else:
             if 'text' not in self._dInfo:
@@ -737,15 +737,15 @@ class WhiteWolfTextParser(object):
     """Actual Parser for the WW cardlist text file(s)."""
 
     def __init__(self, oLogHandler):
-        self.oLogger = Logger('White wolf card parser')
+        self._oLogger = Logger('White wolf card parser')
         if oLogHandler is not None:
-            self.oLogger.addHandler(oLogHandler)
+            self._oLogger.addHandler(oLogHandler)
         self._oState = None
         self.reset()
 
     def reset(self):
         """Reset the parser"""
-        self._oState = WaitingForCardName({}, self.oLogger)
+        self._oState = WaitingForCardName({}, self._oLogger)
 
     def parse(self, fIn):
         """Feed lines to the state machine"""

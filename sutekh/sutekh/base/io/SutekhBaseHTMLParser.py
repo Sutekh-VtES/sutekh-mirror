@@ -7,12 +7,26 @@
 """Common base classes for the different HTML Parsers"""
 
 import HTMLParser
+from logging import Logger
 
 
 # State Base Classes
 class StateError(Exception):
-    """Error case in the state true"""
+    """Error case in the state"""
     pass
+
+
+class HTMLStateError(StateError):
+    """Exception with more info for HTML State transition errors"""
+    def __init__(self, sInfo, sData, sTag):
+        Exception.__init__(self)
+        self._sInfo = sInfo
+        self._sData = sData
+        self._sTag = sTag
+
+    def __str__(self):
+        return "HTML Parser State Error : %s\nsData : %s\nTag : %s" % (
+                self._sInfo, self._sData, self._sTag)
 
 
 class BaseState(object):
@@ -38,7 +52,7 @@ class LogState(BaseState):
     # descendants will override transition, so still abstract here.
     def __init__(self, oLogger):
         super(LogState, self).__init__()
-        self.oLogger = oLogger
+        self._oLogger = oLogger
 
 
 class LogStateWithInfo(LogState):
@@ -67,11 +81,7 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
 
     # We explicitly inherit from object, since HTMLParser is a classic class
     def __init__(self):
-        """Create an SutekhBaseHTMLParser.
-
-           oHolder is a sutekh.base.core.CardSetHolder.CardSetHolder object
-           (or similar).
-           """
+        """Create an SutekhBaseHTMLParser."""
         self._oState = BaseState()
         super(SutekhBaseHTMLParser, self).__init__()
 
@@ -96,3 +106,16 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
 
     def handle_entityref(self, sName):
         pass
+
+
+# Parser with loggin
+class LoggingHTMLParser(SutekhBaseHTMLParser):
+    """HTML Parser that sets up appropriate logging logic."""
+
+    sLogName = 'Base html parser'
+
+    def __init__(self, oLogHandler):
+        self._oLogger = Logger(self.sLogName)
+        if oLogHandler is not None:
+            self._oLogger.addHandler(oLogHandler)
+        super(LoggingHTMLParser, self).__init__()
