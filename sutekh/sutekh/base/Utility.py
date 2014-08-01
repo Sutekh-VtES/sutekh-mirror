@@ -10,6 +10,7 @@
 
 import tempfile
 import os
+import re
 import sys
 import logging
 from sqlobject import sqlhub
@@ -162,6 +163,12 @@ def move_articles_to_front(sName):
     # The result might be mixed case, but, as we will feed this into
     # IAbstractCard in most cases, that won't matter
     return sName
+
+
+def normalise_whitespace(sText):
+    """Return a copy of sText with all whitespace normalised to single
+       spaces."""
+    return re.sub('\s+', ' ', sText, flags=re.MULTILINE).strip()
 
 
 def find_subclasses(cClass):
