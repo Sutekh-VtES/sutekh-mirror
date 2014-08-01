@@ -28,6 +28,8 @@ def run_filter(sFilter, sCardSet):
     dResults = {}
     if oCardSet:
         # Filter the given card set
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
         oBaseFilter = PhysicalCardSetFilter(oCardSet.name)
         oJointFilter = FilterAndBox([oBaseFilter, oFilter])
         aResults = oJointFilter.select(MapPhysicalCardToPhysicalCardSet)
@@ -37,6 +39,8 @@ def run_filter(sFilter, sCardSet):
             dResults[oAbsCard] += 1
     else:
         # Filter cardlist
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
         oBaseFilter = PhysicalCardFilter()
         oJointFilter = FilterAndBox([oBaseFilter, oFilter])
         aResults = oJointFilter.select(PhysicalCard)
@@ -84,6 +88,8 @@ def print_card_list(sTreeRoot, sEncoding):
 def do_print_card(sCardName, fPrintCard, sEncoding):
     """Print a card, handling possible encoding issues."""
     try:
+        # pylint: disable-msg=E1103
+        # E1103: PyProtocols magic confuses pylint
         try:
             oCard = IAbstractCard(sCardName)
         except UnicodeDecodeError, oErr:

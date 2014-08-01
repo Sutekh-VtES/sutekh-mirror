@@ -19,7 +19,7 @@ class StateError(Exception):
 class HTMLStateError(StateError):
     """Exception with more info for HTML State transition errors"""
     def __init__(self, sInfo, sData, sTag):
-        Exception.__init__(self)
+        super(HTMLStateError, self).__init__()
         self._sInfo = sInfo
         self._sData = sData
         self._sTag = sTag

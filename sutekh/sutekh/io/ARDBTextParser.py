@@ -36,7 +36,7 @@ from sutekh.base.io.SutekhBaseHTMLParser import HolderState
 # HolderState Classes
 class NameAndAuthor(HolderState):
     """HolderState for extracting Name and Author."""
-    def transition(self, sLine):
+    def transition(self, sLine, _dAttr):
         """Process the line for Name and Author - trnaisiotn to Description
            if needed."""
         # Check for crypt line, as description isn't always present
@@ -69,7 +69,7 @@ class NameAndAuthor(HolderState):
 
 class Description(HolderState):
     """HolderState for extracting description"""
-    def transition(self, sLine):
+    def transition(self, sLine, _dAttr):
         """Process the line for the description and transition to Cards
            state if needed."""
         if sLine.strip().startswith('Crypt ['):
@@ -92,7 +92,7 @@ class Cards(HolderState):
         r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
     _oAdvRe = re.compile('\sAdv\s')
 
-    def transition(self, sLine):
+    def transition(self, sLine, _dAttr):
         """Extract the cards from the data.
 
            This is the terminating state, so we always return Cards from
@@ -135,4 +135,4 @@ class ARDBTextParser(object):
     def _feed(self, sLine):
         """Feed the next line to the current state object, and transition if
            required."""
-        self._oState = self._oState.transition(sLine)
+        self._oState = self._oState.transition(sLine, {})

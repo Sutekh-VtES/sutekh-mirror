@@ -95,7 +95,7 @@ def textile2html(sText, dContext, fProcessText):
     return sHtml
 
 
-def convert(sTextileDir, sHtmlDir, AppInfo, fProcessText):
+def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
@@ -103,7 +103,7 @@ def convert(sTextileDir, sHtmlDir, AppInfo, fProcessText):
         sHtmlPath = os.path.join(sHtmlDir, sFilename + ".html")
 
         dContext = {
-            'title': "%s %s" % (AppInfo.NAME, sFilename.replace('_', ' ')),
+            'title': "%s %s" % (cAppInfo.NAME, sFilename.replace('_', ' ')),
         }
 
         fTextile = file(sTextilePath, "rb")

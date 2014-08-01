@@ -367,13 +367,11 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             self._reset_modes(oModel)
 
-
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
         # pylint: disable-msg=W0212
         # we need to access protected methods
-        aController = []
         for oModel in aModels:
             # Ensure we start with a clean cache
             oController = DummyController()
@@ -427,10 +425,10 @@ class CardSetListModelTests(ConfigSutekhTest):
                             aLoadList = self._get_all_counts(oModel)
                             tStartTotals, aStartList = dModelInfo[oModel]
                             self.assertEqual(aLoadList, aStartList,
-                                    self._format_error(
-                                        "Card lists for reparent and load differ",
-                                        aStartList, aLoadList, oModel,
-                                        oChildPCS))
+                                self._format_error(
+                                    "Card lists for reparent and load differ",
+                                    aStartList, aLoadList, oModel,
+                                    oChildPCS))
                             self.assertEqual(tLoadTotals, tStartTotals,
                                 self._format_error(
                                     "Totals for reparent and load differ",
@@ -441,7 +439,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oChildPCS.syncUpdate()
         for oModel in aModels:
             self._reset_modes(oModel)
-
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
@@ -1195,7 +1192,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_reparenting_from_none(self):
         """Test corner cases around reparenting card sets.
-        
+
            This tests reparenting a card set with no parent to
            having a parent"""
         _oCache = SutekhObjectCache()
@@ -1229,10 +1226,9 @@ class CardSetListModelTests(ConfigSutekhTest):
                                   [oModel, oChildModel, oChild2Model])
         self._cleanup_models([oModel, oChildModel, oChild2Model])
 
-
     def test_reparenting_within_tree(self):
         """Test corner cases around reparenting card sets.
-        
+
            This tests reparenting to a different point in the tree"""
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
