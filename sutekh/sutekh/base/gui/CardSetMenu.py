@@ -57,7 +57,7 @@ class CardSetMenu(CardListMenu):
                           doc="Cardset ID of associated card set "
                               "(for selecting profiles)")
 
-    #pylint: enable-msg=W0212
+    # pylint: enable-msg=W0212
 
     # pylint: disable-msg=W0201
     # these methods are called from __init__, so it's OK

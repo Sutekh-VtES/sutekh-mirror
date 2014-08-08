@@ -353,7 +353,7 @@ class CardSetView(CardListView):
 
     def load(self):
         """Called when the model needs to be reloaded."""
-        if not self.__iMapID is None:
+        if self.__iMapID is not None:
             # skip loading until we're mapped, to save double loads in
             # some cases
             return

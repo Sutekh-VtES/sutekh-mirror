@@ -55,7 +55,7 @@ class CustomDragIconView(gtk.TreeView):
     # pylint: disable-msg=R0201
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
-            _oTimestamp):
+                    _oTimestamp):
         """Set appropriate context during drag + drop."""
         if 'STRING' in oDrag_context.targets:
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
@@ -85,7 +85,7 @@ class CustomDragIconView(gtk.TreeView):
         # Implement the non default selection behaviour.
         tCursorPos = self.get_cursor()
         if len(aList) == 1 and len(self._aOldSelection) > 1 and \
-            tCursorPos[0] == aList[0] and aList[0] in self._aOldSelection:
+                tCursorPos[0] == aList[0] and aList[0] in self._aOldSelection:
             # reset the list to it's previous state, but set
             # displayed card to this one
             try:

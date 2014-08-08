@@ -17,10 +17,10 @@ from .FrameProfileEditor import FrameProfileEditor
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST
 
 LABELS = {
-        CARDSET: 'Card Set Profiles',
-        FULL_CARDLIST: 'Full Cardlist Profiles',
-        CARDSET_LIST: 'Card Set List Profiles',
-        }
+    CARDSET: 'Card Set Profiles',
+    FULL_CARDLIST: 'Full Cardlist Profiles',
+    CARDSET_LIST: 'Card Set List Profiles',
+}
 
 
 class ProfileListStore(gtk.ListStore):
@@ -194,11 +194,11 @@ class ProfileMngDlg(SutekhDialog):
         if sProfile:
             sOldName = sName
             oEditDlg = FrameProfileEditor(self.__oParent, self.__oConfig,
-                    sType)
+                                          sType)
             oEditDlg.set_selected_profile(sProfile)
             oEditDlg.run()
             sNewName = self.__oConfig.get_profile_option(sType, sProfile,
-                    'name')
+                                                         'name')
             if sNewName != sOldName:
                 oList = self._get_cur_list()
                 oList.store.fix_entry(sProfile, sNewName)
@@ -235,12 +235,12 @@ class ProfileMngDlg(SutekhDialog):
                     aOpenPanes.append(oCSFrame.title)
             sMesg = "This profile is in use. Really delete?\n"
             if aOpenPanes:
-                sMesg += '\nThe following open panes reference this ' \
-                        ' profile\n' + '\n'.join(aOpenPanes)
+                sMesg += ('\nThe following open panes reference this '
+                          ' profile\n' + '\n'.join(aOpenPanes))
             if aClosedPanes:
-                sMesg += '\nThe following card closed card sets ' \
-                        'reference this profile\n' + \
-                        '\n'.join(aClosedPanes)
+                sMesg += ('\nThe following card closed card sets '
+                          'reference this profile\n' + 
+                          '\n'.join(aClosedPanes))
             return sMesg
 
     def _delete_profile(self):

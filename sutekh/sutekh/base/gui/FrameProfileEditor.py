@@ -27,8 +27,9 @@ class FrameProfileEditor(SutekhDialog):
     RESPONSE_CANCEL = 2
 
     def __init__(self, oParent, oConfig, sType):
-        super(FrameProfileEditor, self).__init__("Edit Per-Deck Profiles",
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        super(FrameProfileEditor, self).__init__(
+            "Edit Per-Deck Profiles", oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -45,7 +46,7 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.set_wrap_width(1)
         self.__oSelectorCombo.connect("changed", self._selector_changed)
         self.__oSelectorCombo.connect("notify::popup-shown",
-                self._selector_opened)
+                                      self._selector_opened)
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
@@ -53,13 +54,14 @@ class FrameProfileEditor(SutekhDialog):
         aOptions = []
         for sKey in self.__oConfig.profile_options(self._sType):
             bInherit = sKey != "name"
-            aOptions.append((sKey,
-                self.__oConfig.get_option_spec(self._sType, sKey), bInherit))
+            aOptions.append(
+                (sKey, self.__oConfig.get_option_spec(self._sType, sKey),
+                 bInherit))
 
         self.__oOptionsTable = PreferenceTable(aOptions,
-                oConfig.get_validator())
+                                               oConfig.get_validator())
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
-            bUseViewport=True))
+                                                bUseViewport=True))
 
         self.set_default_size(600, 550)
         self.connect("response", self._button_response)
@@ -117,10 +119,11 @@ class FrameProfileEditor(SutekhDialog):
                 sProfile = None
             for sKey in self.__oConfig.profile_options(self._sType):
                 dValues[sKey] = self.__oConfig.get_profile_option(self._sType,
-                    sProfile, sKey)
+                                                                  sProfile,
+                                                                  sKey)
         else:
             dValues = dict.fromkeys(
-                    self.__oConfig.profile_options(self._sType), None)
+                self.__oConfig.profile_options(self._sType), None)
             dValues["name"] = "New Profile (%s)" % sProfile
         return dValues
 
@@ -225,4 +228,4 @@ class FrameProfileEditor(SutekhDialog):
                 sProfile = None
             for sKey, sValue in dValues.items():
                 self.__oConfig.set_profile_option(self._sType, sProfile,
-                        sKey, sValue)
+                                                  sKey, sValue)

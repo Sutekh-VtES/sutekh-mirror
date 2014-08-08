@@ -30,9 +30,9 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # Register a showicon property - used to control wether the icon
     # is visible or not
     __gproperties__ = {
-            'showicon': (gobject.TYPE_BOOLEAN, 'showicon property',
-                'whether to show the icon', 0, gobject.PARAM_READWRITE),
-            }
+        'showicon': (gobject.TYPE_BOOLEAN, 'showicon property',
+                     'whether to show the icon', 0, gobject.PARAM_READWRITE),
+    }
 
     def __init__(self, bShowIcon=False):
         super(CellRendererSutekhButton, self).__init__()
@@ -82,7 +82,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
     def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
-            _oCellArea, _iFlags):
+                    _oCellArea, _iFlags):
         """Activate signal received from the TreeView"""
         # Note that we need to offset button
         self.bClicked = True
@@ -94,7 +94,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, oBackgroundArea,
-            oCellArea, oExposeArea, _iFlags):
+                  oCellArea, oExposeArea, _iFlags):
         """Render the icon for the button"""
         bDrawOffset = False
         # Need to ensure that self.bClicked is unset before any early return
@@ -126,15 +126,17 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             oPixRect.y += 1
             # We add a timeout to force a redraw to unbump the button
             gobject.timeout_add(200, self.restore_offset, oWindow,
-                    oBackgroundArea)
+                                oBackgroundArea)
 
         oDrawRect = oCellArea.intersect(oPixRect)
         oDrawRect = oExposeArea.intersect(oDrawRect)
 
         oWindow.draw_pixbuf(oWidget.style.black_gc, self.oPixbuf,
-            oDrawRect.x - oPixRect.x, oDrawRect.y - oPixRect.y, oDrawRect.x,
-            oDrawRect.y, oDrawRect.width, oDrawRect.height,
-            gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            oDrawRect.x - oPixRect.x,
+                            oDrawRect.y - oPixRect.y,
+                            oDrawRect.x, oDrawRect.y,
+                            oDrawRect.width, oDrawRect.height,
+                            gtk.gdk.RGB_DITHER_NONE, 0, 0)
         return None
 
     def restore_offset(self, oWindow, oArea):
@@ -157,7 +159,7 @@ gobject.type_register(CellRendererSutekhButton)
 # dict in the class, but I couldn't find good documentation for
 # that approach.
 gobject.signal_new("clicked", CellRendererSutekhButton,
-    gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_ACTION,
-    gobject.TYPE_NONE,
-    (gobject.TYPE_STRING,))
+                   gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_ACTION,
+                   gobject.TYPE_NONE,
+                   (gobject.TYPE_STRING,))
 # the callback is called as callback (self, oPath)

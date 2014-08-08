@@ -48,12 +48,12 @@ class BasicFrame(gtk.Frame):
         self._bNeedReload = False
 
         self._oTitle.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
+            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oTitle.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                self.aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                                   self.aDragTargets,
+                                   gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
@@ -67,19 +67,19 @@ class BasicFrame(gtk.Frame):
     # pylint: disable-msg=W0212
     # explicitly allow access to these values via thesep properties
     title = property(fget=lambda self: self._oTitleLabel.get_text(),
-            doc="Frame Title")
+                     doc="Frame Title")
     name = property(fget=lambda self: self._oTitleLabel.get_text(),
-            doc="Frame Name")
+                    doc="Frame Name")
     type = property(fget=lambda self: "Blank Frame", doc="Frame Type")
     view = property(fget=lambda self: self._oView,
-            doc="Associated View Object")
+                    doc="Associated View Object")
     menu = property(fget=lambda self: None, doc="Frame's menu")
     plugins = property(fget=lambda self: self._aPlugins,
-            doc="Plugins enabled for this frame.")
+                       doc="Plugins enabled for this frame.")
     pane_id = property(fget=lambda self: self._iId,
-            doc="ID number for this pane (should be unique)")
+                       doc="ID number for this pane (should be unique)")
     config_frame_id = property(fget=lambda self: "pane%s" % (self._iId,),
-            doc="Config frame id for this pane")
+                               doc="Config frame id for this pane")
     # pylint: enable-msg=W0212
 
     def set_unique_id(self):
@@ -93,7 +93,8 @@ class BasicFrame(gtk.Frame):
         for cPlugin in \
                 self._oMainWindow.plugin_manager.get_card_list_plugins():
             self._aPlugins.append(cPlugin(self._oController.view,
-                self._oController.view.get_model(), self._cModelType))
+                                  self._oController.view.get_model(),
+                                  self._cModelType))
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
@@ -106,17 +107,17 @@ class BasicFrame(gtk.Frame):
     def set_drop_handler(self, oWidget):
         """Setup the frame drop handler on the widget"""
         oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                self.aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                              self.aDragTargets,
+                              gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oWidget.connect('drag-data-received', self.drag_drop_handler)
         oWidget.connect('drag-motion', self.drag_motion)
 
     def set_drag_handler(self, oWidget):
         """Enable dragging of the frame via given widget"""
         oWidget.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                self.aDragTargets,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+            self.aDragTargets,
+            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oWidget.connect('drag-data-get', self.create_drag_data)
         oWidget.connect_after('drag_begin', self.make_drag_icon)
 
@@ -231,8 +232,8 @@ class BasicFrame(gtk.Frame):
         # here, which is not what we want.
 
         oDefaultSutekhStyle = gtk.rc_get_style_by_paths(
-                self._oTitleLabel.get_settings(), self.path() + '.',
-                self.class_path(), self._oTitleLabel)
+            self._oTitleLabel.get_settings(), self.path() + '.',
+            self.class_path(), self._oTitleLabel)
         # Bit of a hack, but get's matches to before the title specific bits
         # of the path
 
@@ -279,7 +280,7 @@ class BasicFrame(gtk.Frame):
     # pylint: disable-msg=R0913
     # function signature requires all these arguments
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
-            oSelectionData, _oInfo, oTime):
+                          oSelectionData, _oInfo, oTime):
         """Handle panes being dragged onto this one.
 
            Allows panes to be sapped by dragging 'n dropping."""
@@ -299,7 +300,7 @@ class BasicFrame(gtk.Frame):
         oDragContext.finish(bDragRes, False, oTime)
 
     def create_drag_data(self, _oBtn, _oContext, oSelectionData, _oInfo,
-            _oTime):
+                         _oTime):
         """Fill in the needed data for drag-n-drop code"""
         sData = 'Basic Pane:\n%s' % self.pane_id
         oSelectionData.set(oSelectionData.target, 8, sData)
@@ -307,7 +308,7 @@ class BasicFrame(gtk.Frame):
     # pylint: disable-msg=R0201
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
-            _oTimestamp):
+                    _oTimestamp):
         """Show proper icon during drag-n-drop actions."""
         if 'STRING' in oDrag_context.targets:
             oDrag_context.drag_status(gtk.gdk.ACTION_COPY)

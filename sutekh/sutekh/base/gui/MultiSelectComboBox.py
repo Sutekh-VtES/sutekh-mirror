@@ -37,9 +37,9 @@ class MultiSelectComboBox(gtk.HBox):
         oScrolled = AutoScrolledWindow(self._oTreeView)
         self._aOldSelection = []
 
-        self._oDialog = gtk.Dialog("Select ...", None,
-                gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
-                gtk.DIALOG_DESTROY_WITH_PARENT)
+        self._oDialog = gtk.Dialog(
+            "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
+            gtk.DIALOG_DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
         # pylint: disable-msg=E1101
         # action_area, vbox confuses pylint
