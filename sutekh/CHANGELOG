@@ -1,3 +1,31 @@
+13 Aug 2014
+ * Add support for multiple possible urls for card images
+
+06 Aug 2014
+ * Tweak dialog so edit card set properties doesn't start with the card set
+   name selected.
+
+01 Aug 2014
+ * Move BaseHTMLParser into base.io, with the associated state machinery
+ * Remove code duplication in ARDBTextParser
+ * Strip down ExtraCardSetListViewColumns to use the base plugin
+
+30 Jul 2014
+ * Fix typo in Base count card set cards plugin
+ * Add missing cleanup of progress dialog on upgrade errors
+ * Factor out some common code around database upgrades
+
+26 Jul 2014
+ * Factor out some command helper code for the command line utility
+ * Allow cards to trigger multiple keys in the count plugins, for
+   flexibility.
+
+25 Jul 2014
+ * Fix a bug where selectfilter was used even if not defined
+
+22 Jul 2014
+ * Don't hardcode the application name in dialog title
+
 21 Jul 2014
  * Move generic card set parser _convert_tree from
    PhysicalCardSetParser into base.io
