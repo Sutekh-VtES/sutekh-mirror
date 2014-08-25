@@ -293,11 +293,16 @@ class BaseImageFrame(BasicFrame):
                         sBaseDir = os.path.dirname(sFullFilename)
                         ensure_dir_exists(sBaseDir)
                         # Create file
-                        oOutFile = file(sFullFilename, 'wb')
                         # Attempt to fetch the data
-                        progress_fetch_data(oFile, oOutFile)
-                        oOutFile.close()
+                        sImgData = progress_fetch_data(oFile)
                         oFile.close()
+                        if sImgData:
+                            oOutFile = file(sFullFilename, 'wb')
+                            oOutFile.write(sData)
+                            oOutFile.close()
+                        else:
+                            # Got bogus data, so skip this in future
+                            self._dUrlCache[sUrl] = None
                         # Don't attempt to follow other urls
                         break
         try:
