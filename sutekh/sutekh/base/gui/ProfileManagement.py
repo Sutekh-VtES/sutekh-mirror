@@ -239,7 +239,7 @@ class ProfileMngDlg(SutekhDialog):
                           ' profile\n' + '\n'.join(aOpenPanes))
             if aClosedPanes:
                 sMesg += ('\nThe following card closed card sets '
-                          'reference this profile\n' + 
+                          'reference this profile\n' +
                           '\n'.join(aClosedPanes))
             return sMesg
 
