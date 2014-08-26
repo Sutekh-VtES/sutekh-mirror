@@ -298,7 +298,7 @@ class BaseImageFrame(BasicFrame):
                         oFile.close()
                         if sImgData:
                             oOutFile = file(sFullFilename, 'wb')
-                            oOutFile.write(sData)
+                            oOutFile.write(sImgData)
                             oOutFile.close()
                         else:
                             # Got bogus data, so skip this in future
