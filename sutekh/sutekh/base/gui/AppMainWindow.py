@@ -58,6 +58,8 @@ class AppMainWindow(MultiPaneWindow):
         self._oCardTextPane = None  # So we can call get_pane_ids
         # Class for the card set writer - should be set by subclasses
         self._cPCSWriter = None
+        # Class for the database manager (for upgrades, etc)
+        self._cDBManager = None
         # Name to use for resource lookups
         self._sResourceName = None
 
@@ -65,6 +67,13 @@ class AppMainWindow(MultiPaneWindow):
         """Verify that the database is correctly populated"""
         # Subclasses will implement this
         raise NotImplementedError
+
+    def do_refresh_card_list(self):
+        """Handle reloading the card list via the database manager object."""
+        # pylint: disable-msg=E1102
+        # subclasses will provide a callable cDBManager
+        oDBManager = self._cDBManager(self)
+        oDBManager.refresh_card_list()
 
     # pylint: disable-msg=W0201
     # We define attributes here, since this is called after database checks

@@ -6,7 +6,6 @@
 
 """Menu for the Main Application Window"""
 
-from sutekh.gui.GuiDBManagement import refresh_ww_card_list
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.base.gui.AppMenu import AppMenu
 
@@ -49,11 +48,6 @@ class MainMenu(AppMenu):
     def show_manual(self, _oMenuWidget):
         """Show the Sutekh Tutorial"""
         self._oMainWindow.show_manual()
-
-    def do_import_new_card_list(self, _oWidget):
-        """Refresh the WW card list and rulings files."""
-        if refresh_ww_card_list(self._oMainWindow):
-            self._oMainWindow.reload_all()
 
     def download_icons(self, _oWidget):
         """Call on the icon manager to download the icons."""

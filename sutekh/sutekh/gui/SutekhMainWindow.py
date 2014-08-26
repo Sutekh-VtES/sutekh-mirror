@@ -16,7 +16,7 @@ from sutekh.base.core.DBUtility import flush_cache
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.PluginManager import PluginManager
-from sutekh.gui.GuiDBManagement import refresh_ww_card_list
+from sutekh.gui.GuiDBManagement import GuiDBManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.CardTextFrame import CardTextFrame
@@ -38,6 +38,8 @@ class SutekhMainWindow(AppMainWindow):
         # But we start at a reasonable size
         self.set_default_size(800, 600)
 
+        self._cDBManager = GuiDBManager
+
         # Set Default Window Icon for all Windows
         gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
 
@@ -56,7 +58,7 @@ class SutekhMainWindow(AppMainWindow):
                 'Database is missing cards. Try import the cardlist now?',
                 gtk.MESSAGE_ERROR, gtk.BUTTONS_YES_NO, False)
             if iResponse == gtk.RESPONSE_YES:
-                refresh_ww_card_list(self)
+                self.do_refresh_card_list()
 
         # Create object cache
         self.__oSutekhObjectCache = SutekhObjectCache()

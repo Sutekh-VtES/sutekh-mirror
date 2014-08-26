@@ -9,7 +9,7 @@ import sys
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_null_handler
 from sutekh.tests import create_db
-from sutekh.core.DatabaseUpgrade import create_final_copy
+from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
 from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
@@ -43,6 +43,9 @@ class DatabaseUpgradeTests(SutekhTest):
 
         assert list(PhysicalCardSet.select())
 
+        iPCSCount = PhysicalCardSet.select().count()
+        iACCount = AbstractCard.select().count()
+
         # Attempt upgrade
 
         oOrigConn = sqlhub.processConnection
@@ -68,14 +71,21 @@ class DatabaseUpgradeTests(SutekhTest):
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())
 
+        self.assertEqual(AbstractCard.select().count(), iACCount)
+        self.assertEqual(PhysicalCardSet.select().count(), iPCSCount)
+
         sqlhub.processConnection = oOrigConn
-        bResult, _aMsgs = create_final_copy(oNewConn, oLogHandler)
+        oDBUpgrade = DBUpgradeManager()
+        bResult, _aMsgs = oDBUpgrade.create_final_copy(oNewConn, oLogHandler)
 
         # Check
         self.failUnless(bResult)
 
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())
+
+        self.assertEqual(AbstractCard.select().count(), iACCount)
+        self.assertEqual(PhysicalCardSet.select().count(), iPCSCount)
 
         oMagnum = AbstractCardAdapter('.44 magnum')
         assert oMagnum

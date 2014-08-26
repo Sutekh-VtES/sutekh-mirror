@@ -26,7 +26,7 @@ from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
-from sutekh.core.DatabaseUpgrade import attempt_database_upgrade
+from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.base.CliUtils import (run_filter, print_card_filter_list,
                                     print_card_list, do_print_card)
@@ -350,7 +350,8 @@ def main_with_args(aTheArgs):
         return 1
 
     if oOpts.upgrade_db:
-        attempt_database_upgrade(oLogHandler)
+        oDBUpgrade = DBUpgradeManager()
+        oDBUpgrade.attempt_database_upgrade(oLogHandler)
 
     return 0
 
