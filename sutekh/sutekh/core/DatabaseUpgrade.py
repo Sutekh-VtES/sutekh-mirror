@@ -201,6 +201,10 @@ class RarityPair_Ev3(SQLObject):
 class DBUpgradeManager(BaseDBUpgradeManager):
     """Class to handle database upgrades,"""
 
+    # pylint: disable-msg=R0201
+    # R0201: Several _copy methods are very simple, but methods for
+    # consistency.
+
     # Sutekh 0.9.x and 1.0.x can upgrade from the versions in Sutekh 0.8.x,
     # but no earlier
     SUPPORTED_TABLES = BaseDBUpgradeManager.SUPPORTED_TABLES
@@ -455,9 +459,10 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
-        # pylint: disable-msg=E1101, R0912
+        # pylint: disable-msg=E1101, R0912, R0915
         # E1101 - SQLObject confuses pylint
         # R0912 - need the branches for this
+        # R0915 - This is long, but needs to be to handle all the cases
         # Postgres 9's default ordering may not be by id, which causes issues
         # when doing the database upgrade when combined with postgres 9's
         # auto-incrementing behaviour. We explictly sort by id to force

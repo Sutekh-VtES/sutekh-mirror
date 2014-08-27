@@ -97,6 +97,8 @@ def textile2html(sText, dContext, fProcessText):
 
 def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
+    # pylint: disable-msg=R0914
+    # R0914: Reducing the number of variables won't help clarity
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
         sFilename, _sExt = os.path.splitext(sBasename)
@@ -145,6 +147,11 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
 
 def make_filter_txt(sDir, aFilters):
     """Convert base filters into the approriate textile files"""
+    # pylint: disable-msg=R0914, R0915, R0912
+    # R0914: Reducing the number of variables won't help clarity
+    # R0912, R0915: We choose not to split this into subfuctions to
+    # reduce line count and branches since the logic isn't reused
+    # elsewhere and it's simpler to keep it all in one place.
 
     dSections = {
         'Usage': FILTER_USAGE,

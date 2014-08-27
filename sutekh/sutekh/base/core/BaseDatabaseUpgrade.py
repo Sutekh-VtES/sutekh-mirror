@@ -423,9 +423,11 @@ class BaseDBUpgradeManager(object):
     def read_old_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Read the old database into new database, filling in
            blanks when needed"""
+        # pylint: disable-msg=R0914
+        # R0914: Reducing the number of variables won't help clarity
         try:
             if not self.check_can_read_old_database(oOrigConn):
-                return False
+                return (False, ["Unable to read database"])
         except UnknownVersion, oExp:
             raise oExp
         oLogger = Logger('read Old DB')
@@ -504,7 +506,7 @@ class BaseDBUpgradeManager(object):
         flush_cache()
         oTrans.commit(close=True)
         # Clear out cache related joins and such
-        return bRes, aMessages
+        return (bRes, aMessages)
 
     def create_memory_copy(self, oTempConn, oLogHandler=None):
         """Create a temporary copy of the database in memory.

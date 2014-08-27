@@ -308,6 +308,8 @@ class CachedCardSetHolder(CardSetHolder):
 
 def make_card_set_holder(oCardSet):
     """Given a CardSet, create a Cached Card Set Holder for it."""
+    # pylint: disable-msg=C0103
+    # C0103: we use the column naming conventions
     oCS = CachedCardSetHolder()
     oCS.name = oCardSet.name
     oCS.author = oCardSet.author
