@@ -1,3 +1,14 @@
+26 Aug 2014
+ * Massively refactor database upgrade code to move a lot of common
+   functionality into base.
+   - This makes implementing the 'import new card list' function
+     a lot simpler for deratives
+ * Move DBUpgradeDialog into base/gui
+
+25 Aug 2014
+ * Don't create empty image files when the download returns no
+   data
+
 13 Aug 2014
  * Add support for multiple possible urls for card images
 
