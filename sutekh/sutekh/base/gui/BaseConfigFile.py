@@ -162,21 +162,19 @@ class BaseConfigFile(object):
         # override the existing value whenever the filter list changes
         for sType in ['per_deck', FULL_CARDLIST]:
             self._oConfigSpec[sType]['defaults']['filter'] = \
-                    "option(%s, default=%s)" % (
-                            ", ".join(aValidProfileFilters),
-                            DEF_PROFILE_FILTER)
+                "option(%s, default=%s)" % (", ".join(aValidProfileFilters),
+                                            DEF_PROFILE_FILTER)
             # Also add to the __many__ section
             self._oConfigSpec[sType]['profiles']['__many__']['filter'] = \
-                    "option(%s, default=%s)" % (
-                            ", ".join(aValidProfileFilters),
-                            DEF_PROFILE_FILTER)
+                "option(%s, default=%s)" % (", ".join(aValidProfileFilters),
+                                            DEF_PROFILE_FILTER)
 
     def _fix_filter_defaults(self):
         """Ensure we are set in the default profile if needed"""
         for sType in ['per_deck', FULL_CARDLIST]:
             if 'filter' not in self._oConfig[sType]['defaults']:
                 self._oConfig[sType]['defaults']['filter'] = \
-                        DEF_PROFILE_FILTER
+                    DEF_PROFILE_FILTER
 
     def validation_errors(self, oValidationResults):
         """Return a list of string describing any validation errors.
@@ -190,10 +188,10 @@ class BaseConfigFile(object):
             return aErrors
 
         for (aSections, sKey, _oIgnore) in flatten_errors(self._oConfig,
-            oValidationResults):
+                                                          oValidationResults):
             if sKey is not None:
                 aErrors.append('Key %r in section %r failed validation.' %
-                        (sKey, aSections))
+                               (sKey, aSections))
             else:
                 aErrors.append('Section %r was missing.' % (aSections,))
 
@@ -283,7 +281,7 @@ class BaseConfigFile(object):
     # pylint: disable-msg=R0913
     # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos,
-            sPaneId):
+                  sPaneId):
         """Add a frame with the given position info to the config file"""
         oPanes = self._oConfig['open_frames']
         sKey = 'pane %d' % iFrameNumber
@@ -342,7 +340,7 @@ class BaseConfigFile(object):
            Filters are return as a list of (sQuery, dVars) tuples.
            """
         return [(oF['query'], oF['vars']) for oF in
-            self._oConfig['filters'].values()]
+                self._oConfig['filters'].values()]
 
     def get_default_filters(self):
         """Return the default filter list."""
@@ -352,7 +350,7 @@ class BaseConfigFile(object):
     def get_filter_keys(self):
         """Return all the keys for all the filters in the config file."""
         return [(sKey, dFilter['query']) for sKey, dFilter in
-            self._oConfig['filters'].items()]
+                self._oConfig['filters'].items()]
 
     def get_profiles_for_filter(self, sMatchFilter):
         """Return a dictionary of profiles currently using the given filter"""
@@ -368,7 +366,7 @@ class BaseConfigFile(object):
                 dProfileFilters[sType].append('defaults')
             for sProfile in dConfig['profiles']:
                 sFilter = dConfig['profiles'][sProfile].get('filter',
-                        DEF_PROFILE_FILTER)
+                                                            DEF_PROFILE_FILTER)
                 if sFilter == sMatchFilter:
                     dProfileFilters[sType].append(sProfile)
         return dProfileFilters
@@ -429,10 +427,10 @@ class BaseConfigFile(object):
                     # is the desired behaviour
                     if sProfile == 'defaults':
                         self.set_profile_option(sType, None, 'filter',
-                                DEF_PROFILE_FILTER)
+                                                DEF_PROFILE_FILTER)
                     else:
                         self.set_profile_option(sType, sProfile, 'filter',
-                                DEF_PROFILE_FILTER)
+                                                DEF_PROFILE_FILTER)
 
     def replace_filter(self, sKey, sOldFilter, sNewFilter):
         """Replace a filter in the file with new filter"""
@@ -526,7 +524,7 @@ class BaseConfigFile(object):
 
         if bChanged:
             MessageBus.publish(CONFIG_MSG, 'profile_option_changed',
-                    sType, sProfile, sKey)
+                               sType, sProfile, sKey)
 
     def set_local_frame_option(self, sFrame, sKey, sValue):
         """Set the value of an option in the local frame option dictionary.

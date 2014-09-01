@@ -34,9 +34,9 @@ HTML_HEADING_TAGS = set(('h1', 'h2', 'h3', 'h4', 'h5', 'h6'))
 if gtk.gdk.screen_get_default() is None:
     SCREEN_RESOLUTION = 0
 else:
-    ## pixels = points * SCREEN_RESOLUTION
+    #  pixels = points * SCREEN_RESOLUTION
     SCREEN_RESOLUTION = 0.3514598 * (gtk.gdk.screen_height() /
-            float(gtk.gdk.screen_height_mm()))
+                                     float(gtk.gdk.screen_height_mm()))
 
 
 def _parse_css_color(sColor):
@@ -61,8 +61,9 @@ class HtmlHandler(HTMLParser.HTMLParser):
         self._oIter = oStartIter
         self._sText = ''
         self._aStyles = []  # a gtk.TextTag or None, for each span level
-        self._aListCounters = []  # stack (top at head) of list
-                                # counters, or None for unordered list
+
+        # stack (top at head) of list counters, or None for unordered list
+        self._aListCounters = []
         self._bInTitle = False
         self._dTargets = {}
         self._fLinkLoader = fLinkLoader
@@ -101,16 +102,16 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 fFontSize = oAttrs.font.get_size() / pango.SCALE
                 fCallback(fFrac * SCREEN_RESOLUTION * fFontSize, *args)
             else:
-                ## CSS says "Percentage values: refer to width of the closest
-                ##           block-level ancestor"
-                ## This is difficult/impossible to implement, so we use
-                ## textview width instead; a reasonable approximation..
+                # CSS says "Percentage values: refer to width of the closest
+                #           block-level ancestor"
+                # This is difficult/impossible to implement, so we use
+                # textview width instead; a reasonable approximation..
                 oAlloc = self._oTextView.get_allocation()
                 self.__parse_length_frac_cb(self._oTextView, oAlloc,
-                        fFrac, fCallback, args)
+                                            fFrac, fCallback, args)
                 self._oTextView.connect("size-allocate",
-                        self.__parse_length_frac_cb, fFrac,
-                        fCallback, args)
+                                        self.__parse_length_frac_cb, fFrac,
+                                        fCallback, args)
 
         elif sValue.endswith('pt'):  # points
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION, *args)
@@ -118,14 +119,14 @@ class HtmlHandler(HTMLParser.HTMLParser):
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
-                    *args)
+                      *args)
         elif sValue.endswith('ex'):  # x-height, ~ the height of the letter 'x'
-            ## FIXME: figure out how to calculate this correctly
-            ##        for now 'em' size is used as approximation
+            # FIXME: figure out how to calculate this correctly
+            #        for now 'em' size is used as approximation
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
-                    *args)
+                      *args)
         elif sValue.endswith('px'):  # pixels
             fCallback(int(sValue[:-2]), *args)
         else:
@@ -184,16 +185,16 @@ class HtmlHandler(HTMLParser.HTMLParser):
     def _parse_style_margin_left(self, oTag, sValue):
         """Handle the margin left style attribute."""
         self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
-                "left-margin")
+                           "left-margin")
 
     def _parse_style_margin_right(self, oTag, sValue):
         """Handle the margin right style attribute."""
         self._parse_length(sValue, False, self.__frac_length_tag_cb, oTag,
-                "right-margin")
+                           "right-margin")
 
     def _parse_style_font_weight(self, oTag, sValue):
         """Adjust the font to match the font weight specification."""
-        ## missing 'bolder' and 'lighter', but that's not important for us
+        # missing 'bolder' and 'lighter', but that's not important for us
         try:
             iWeight = {
                 '100': pango.WEIGHT_ULTRALIGHT,
@@ -252,11 +253,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
         else:
             warnings.warn("text-decoration:%s not implemented" % sValue)
 
-    ## build a dictionary mapping styles to methods, for greater speed
+    # build a dictionary mapping styles to methods, for greater speed
     __style_methods = dict()
     for sStyle in ("background-color", "color", "font-family", "font-size",
-                  "font-style", "font-weight", "margin-left", "margin-right",
-                  "text-align", "text-decoration"):
+                   "font-style", "font-weight", "margin-left", "margin-right",
+                   "text-align", "text-decoration"):
         try:
             fMethod = locals()["_parse_style_%s" % sStyle.replace('-', '_')]
         except KeyError:
@@ -322,7 +323,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     # Arguments needed so this can be called via 'size-allocate' event
     def __parse_length_frac_cb(self, oTextView, oAllocation,
-            fFrac, fCallback, args):
+                               fFrac, fCallback, args):
         """call the required callback function when the size allocation
            changes."""
         # pylint: disable-msg=W0142
@@ -383,7 +384,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 oType_ = None
             if 'href' in oAttrs:
                 oTag.connect('event', self._anchor_event, oAttrs['href'],
-                        oType_)
+                             oType_)
                 oTag.is_anchor = True
             if 'name' in oAttrs:
                 # Add it to the list of valid targets
@@ -426,7 +427,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             fFontSize = oTextAttrs.font.get_size() / pango.SCALE
             iDepth = len(self._aListCounters)
             oTag.set_property('left-margin', 2.0 * iDepth * SCREEN_RESOLUTION
-                    * fFontSize)
+                              * fFontSize)
 
         self._begin_span(oStyle, oTag)
 
@@ -479,7 +480,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 aTags = self._get_style_tags()
                 if aTags:
                     oTmpMark = self._oTextBuf.create_mark(None, self._oIter,
-                            True)
+                                                          True)
 
                 self._oTextBuf.insert_pixbuf(self._oIter, oPixbuf)
 
@@ -600,7 +601,7 @@ class HTMLTextView(gtk.TextView):
         """Change the cursor if the pointer is over a link"""
         iXPos, iYPos, _oIgnore = oWidget.window.get_pointer()
         iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
-                iXPos, iYPos)
+                                                       iXPos, iYPos)
         aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
         for oTag in aTags:
             if getattr(oTag, 'is_anchor', False):
@@ -666,7 +667,8 @@ class HTMLViewDialog(SutekhDialog):
            fLinkLoader: function to load links with (passed to HTMLTextView)
            """
         super(HTMLViewDialog, self).__init__('Help', oParent,
-                oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                             oButtons=(gtk.STOCK_CLOSE,
+                                                       gtk.RESPONSE_CLOSE))
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         oDirButtons = gtk.HButtonBox()
@@ -688,7 +690,7 @@ class HTMLViewDialog(SutekhDialog):
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)
         self.vbox.pack_start(self._oView, True,
-                True)
+                             True)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self.connect('response', lambda x, but: self.hide())
         # ignore the delete event (response handler will hide)

@@ -15,8 +15,8 @@ def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
     (iXPos, iYPos) = oButton.get_pointer()  # mouse pos relative to button
     oButtonGeom = oButton.allocation
-    return (iXPos >= 0) and (iYPos >= 0) and \
-            (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height)
+    return ((iXPos >= 0) and (iYPos >= 0) and
+            (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height))
 
 
 class MultiSelectComboBox(gtk.HBox):
@@ -101,7 +101,7 @@ class MultiSelectComboBox(gtk.HBox):
         tShift = (5, self._oButton.allocation.height)
 
         tDialogPos = (tWinPos[0] + tButtonPos[0] + tShift[0],
-                tWinPos[1] + tButtonPos[1] + tShift[1])
+                      tWinPos[1] + tButtonPos[1] + tShift[1])
 
         self._oDialog.set_keep_above(True)  # Keep this above the dialog
         self._oDialog.set_transient_for(self._oParentWin)
