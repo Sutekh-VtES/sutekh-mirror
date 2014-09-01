@@ -34,10 +34,11 @@ def reparent_card_set(oCardSet, oNewParent):
         if detect_loop(oCardSet):
             oCardSet.parent = oOldParent
             oCardSet.syncUpdate()
-            do_complaint('Changing parent of %s to %s introduces a'
-                    ' loop. Leaving the parent unchanged.' % (
-                        oCardSet.name, oNewParent.name),
-                    gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+            do_complaint(
+                'Changing parent of %s to %s introduces a'
+                ' loop. Leaving the parent unchanged.' %
+                (oCardSet.name, oNewParent.name),
+                gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
         else:
             return True
     else:
@@ -61,14 +62,15 @@ def check_ok_to_delete(oCardSet):
     bCards = len(oCardSet.cards) > 0
     iResponse = gtk.RESPONSE_OK
     if bCards and bChildren:
-        iResponse = do_complaint_warning("Card Set %s Not Empty and"
-                " Has Children. Really Delete?" % oCardSet.name)
+        iResponse = do_complaint_warning(
+            "Card Set %s Not Empty and Has Children."
+            " Really Delete?" % oCardSet.name)
     elif bCards:
-        iResponse = do_complaint_warning("Card Set %s Not Empty."
-                " Really Delete?" % oCardSet.name)
+        iResponse = do_complaint_warning(
+            "Card Set %s Not Empty. Really Delete?" % oCardSet.name)
     elif bChildren:
-        iResponse = do_complaint_warning("Card Set %s"
-                " Has Children. Really Delete?" % oCardSet.name)
+        iResponse = do_complaint_warning(
+            "Card Set %s Has Children. Really Delete?" % oCardSet.name)
     return iResponse == gtk.RESPONSE_OK
 
 
@@ -133,7 +135,7 @@ def get_import_name(oHolder, iClashMode=PROMPT):
         elif iClashMode == REPLACE:
             aChildren = setup_for_replace()
         elif iClashMode == RENAME:
-             # Create a unique name based on our current name
+            # Create a unique name based on our current name
             sTime = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
             sBaseName = '%s (imported %s)' % (oHolder.name, sTime)
             sNewName = sBaseName
@@ -241,28 +243,29 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     try:
         oParser.parse(fIn, oHolder)
     except Exception, oExp:
-        sMsg = "Reading the card set failed with the following error:\n" \
-               "%s\n The file is probably not in the format the Parser" \
-               " expects.\nAborting" % oExp
+        sMsg = ("Reading the card set failed with the following error:\n"
+                "%s\n The file is probably not in the format the Parser"
+                " expects.\nAborting" % oExp)
         do_exception_complaint(sMsg)
         # Fail out
         return
 
     if oHolder.num_entries < 1:
         # No cards seen, so abort
-        do_complaint_error("No cards found in the card set.\n"
-                "The file may not be in the format the Parser expects.\n"
-                "Aborting")
+        do_complaint_error(
+            "No cards found in the card set.\n"
+            "The file may not be in the format the Parser expects.\n"
+            "Aborting")
         return
 
     # Display any warnings
     aWarnings = oHolder.get_warnings()
     if aWarnings:
         sMsg = "The following warnings were reported:\n%s" % \
-                "\n".join(aWarnings)
+               "\n".join(aWarnings)
         logging.warn(sMsg)
         iResponse = do_complaint_warning("%s\nContinue with the import?"
-                % sMsg)
+                                         % sMsg)
         if iResponse != gtk.RESPONSE_OK:
             return  # bail out
         oHolder.clear_warnings()
@@ -280,14 +283,14 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
         reparent_all_children(oHolder.name, aChildren)
         aWarnings = oHolder.get_warnings()
         if aWarnings:
-            sMsg = "Card Set Created.\n" \
-                    "The following warnings were reported during the final" \
-                    " import:\n%s" % "\n".join(aWarnings)
+            sMsg = ("Card Set Created.\n"
+                    "The following warnings were reported during the final"
+                    " import:\n%s" % "\n".join(aWarnings))
             logging.warn(sMsg)
             do_complaint(sMsg, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
     except RuntimeError, oExp:
-        sMsg = "Creating the card set failed with the following error:\n" \
-               "%s\nAborting" % oExp
+        sMsg = ("Creating the card set failed with the following error:\n"
+                "%s\nAborting" % oExp)
         do_exception_complaint(sMsg)
         return
     except LookupFailed, oExp:
@@ -308,8 +311,8 @@ def break_existing_loops():
             sLoop = "->".join(get_loop_names(oCS))
             sBreakName = break_loop(oCS)
             do_complaint(
-                    'Loop %s in the card sets relationships.\n'
-                    'Breaking at %s' % (sLoop, sBreakName),
-                    gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+                'Loop %s in the card sets relationships.\n'
+                'Breaking at %s' % (sLoop, sBreakName),
+                gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
             # We break the loop, and let the user fix things,
             # rather than try and be too clever

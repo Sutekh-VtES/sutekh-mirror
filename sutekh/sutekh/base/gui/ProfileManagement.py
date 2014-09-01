@@ -29,7 +29,7 @@ class ProfileListStore(gtk.ListStore):
     """Simple list store for profiles widget"""
     def __init__(self):
         super(ProfileListStore, self).__init__(gobject.TYPE_STRING,
-                gobject.TYPE_STRING)
+                                               gobject.TYPE_STRING)
 
     def fill_list(self, aVals):
         """Fill the list"""
@@ -113,8 +113,9 @@ class ProfileMngDlg(SutekhDialog):
     RESPONSE_DELETE = 2
 
     def __init__(self, oParent, oConfig):
-        super(ProfileMngDlg, self).__init__("Manage Profiles",
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        super(ProfileMngDlg, self).__init__(
+            "Manage Profiles", oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -223,7 +224,7 @@ class ProfileMngDlg(SutekhDialog):
                         self.__oConfig. clear_cardset_profile(sId)
                         continue
                     aCSPanes = self.__oParent.find_cs_pane_by_set_name(
-                            oCS.name)
+                        oCS.name)
                     if aCSPanes:
                         for oPane in aCSPanes:
                             aOpenPanes.append(oPane.title)
