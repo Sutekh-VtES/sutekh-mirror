@@ -95,6 +95,13 @@ class CardSetMenu(CardListMenu):
         self._oPaste.set_sensitive(False)
         self._oDel.set_sensitive(False)
 
+        self._oUndo = self.create_menu_item('Undo', oMenu,
+                                            self._undo_edit, '<Ctrl>z')
+        self._oRedo = self.create_menu_item('Redo', oMenu,
+                                            self._redo_edit, '<Ctrl>y')
+        self.set_redo_sensitive(False)
+        self.set_undo_sensitive(False)
+
         self.create_menu_item('Edit _Local Profile', oMenu,
                               self._edit_local_profile)
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
@@ -162,6 +169,20 @@ class CardSetMenu(CardListMenu):
     def _del_selection(self, _oWidget):
         """Delete the current selection"""
         self._oController.view.del_selection()
+
+    def _undo_edit(self, _oWidget):
+        """Undo last edit"""
+        self._oController.undo_edit()
+
+    def _redo_edit(self, _oWidget):
+        """Redo the last edit"""
+        self._oController.redo_edit()
+
+    def set_undo_sensitive(self, bValue):
+        self._oUndo.set_sensitive(bValue)
+
+    def set_redo_sensitive(self, bValue):
+        self._oRedo.set_sensitive(bValue)
 
     def _paste_selection(self, _oWidget):
         """Try to paste the current clipboard contents"""
