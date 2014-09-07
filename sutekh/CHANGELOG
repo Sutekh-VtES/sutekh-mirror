@@ -1,3 +1,6 @@
+07 Sep 2014
+ * Add undo stack for card set editing operations
+
 26 Aug 2014
  * Massively refactor database upgrade code to move a lot of common
    functionality into base.
