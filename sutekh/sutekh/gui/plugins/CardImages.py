@@ -22,6 +22,10 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 DOWNLOAD_IMAGES)
 
 
+# We try lackeyccg for images from these sets
+LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned',)
+
+
 class CardImageFrame(BaseImageFrame):
     # pylint: disable-msg=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
@@ -95,6 +99,11 @@ class CardImageFrame(BaseImageFrame):
             sCurExpansionPath = '3e'
         sUrl = 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
             sCurExpansionPath, sFilename)
+        if sCurExpansionPath in LACKEY_IMAGES:
+            # Try get the card from lackey first
+            sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
+                sFilename)
+            return (sLackeyUrl, sUrl)
         return (sUrl, )
 
     def _norm_cardname(self):
