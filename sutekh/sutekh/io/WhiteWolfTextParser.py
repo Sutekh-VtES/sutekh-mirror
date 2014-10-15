@@ -135,6 +135,8 @@ class CardDict(dict):
     # Defaults
     oCryptInfoRgx = re.compile(
             '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?:(?=\.)|$)')
+    # We avoid running these searches on the merged text of advanced
+    # vampires to avoid confusion.
     dCryptProperties = {
             'black hand': re.compile('Sabbat\. Black Hand'),
             # Seraph has a special case
@@ -146,6 +148,11 @@ class CardDict(dict):
             'sterile': re.compile('[.:] Sterile.'),
             # Need the } to handle some of the errata'd cards
             'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
+            }
+
+    # Searches for these keywords must include the full text, including
+    # any merge text
+    dCryptFullTextProperties = {
             'not for legal play': re.compile(
                 'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
             }
@@ -264,6 +271,11 @@ class CardDict(dict):
         # Imbued are also mortals, so add the keyword
         if self['cardtype'] == 'Imbued':
             self._add_keyword(oCard, 'mortal')
+        # Check for full text keywords
+        for sKeyword, oRegexp in self.dCryptFullTextProperties.iteritems():
+            oMatch = oRegexp.search(self['text'])
+            if oMatch:
+                self._add_keyword(oCard, sKeyword)
 
     def _find_lib_life_and_keywords(self, oCard):
         """Extract ally and retainer life and strength & bleed keywords from
