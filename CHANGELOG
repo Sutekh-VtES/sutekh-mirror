@@ -1,3 +1,11 @@
+15 Oct 2014
+ * Backport fixes to handle new "The Unanligned" expansion
+   - Add expansion abbreviation.
+   - Fix parsing of independent titles.
+   - Fix parsing of Baron title.
+   - Fix error with parsing the "not for legal play" keyword in some cases
+   - Add "Anarch" keyword for all anarch vampires, including Barons.
+
 09 Jul 2014
  * Backport a update to the Secret Library plugin which prevented imports from
    the Secret Library working correctly (r3433)
