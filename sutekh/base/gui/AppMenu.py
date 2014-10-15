@@ -292,8 +292,8 @@ class AppMenu(SutekhMenu):
 
     def do_import_new_card_list(self, _oWidget):
         """Refresh the full card list and rulings files."""
-        # Subclasses should provide this
-        raise NotImplementedError
+        if self._oMainWindow.do_refresh_card_list():
+            self._oMainWindow.reload_all()
 
     def do_postfix_the_display(self, _oWidget):
         """Save the current pane layout"""

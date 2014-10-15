@@ -53,7 +53,7 @@ class BaseCardListCount(BasePlugin):
         super(BaseCardListCount, self).__init__(*args, **kwargs)
 
         self._oTextLabel = None
-        self._iMode = self.NO_COUNT_OPT
+        self._iMode = self.NO_COUNT
         self._dExpCounts = {}
         self._dAbsCounts = {}
         self._dCardTotals = {TOTAL: 0}
@@ -64,6 +64,7 @@ class BaseCardListCount(BasePlugin):
         # on
         if self.check_versions() and self.check_model_type():
             MessageBus.subscribe(self.model, 'load', self.load)
+        self.perpane_config_updated()
     # pylint: enable-msg=W0142
 
     def cleanup(self):
@@ -143,9 +144,10 @@ class BaseCardListCount(BasePlugin):
                     self._dExpCounts[oAbsCard] += 1
             else:
                 iExpCount = 0
-            sKey = self._get_card_key(oAbsCard)
-            self._dExpTotals[sKey] += iExpCount
-            self._dCardTotals[sKey] += iAbsCount
+            aKeys = self._get_card_keys(oAbsCard)
+            for sKey in aKeys:
+                self._dCardTotals[sKey] += iAbsCount
+                self._dExpTotals[sKey] += iExpCount
             self._dCardTotals[TOTAL] += iAbsCount
             self._dExpTotals[TOTAL] += iExpCount
         self.update_numbers()
@@ -226,9 +228,9 @@ class BaseCardListCount(BasePlugin):
             # Values agree, so do fall back sort
             return self.model.sort_equal_iters(oIter1, oIter2)
 
-    def _get_card_key(self, oAbsCard):
-        """Get the dictionary key for this card."""
-        raise NotImplementedError('Subclasses must implement _get_card_key')
+    def _get_card_keys(self, oAbsCard):
+        """Get the list of applicable dictionary keys for this card."""
+        raise NotImplementedError('Subclasses must implement _get_card_keys')
 
     def _add_dict_keys(self):
         """Ensure the totals dictionary has all the required keys."""

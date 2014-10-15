@@ -25,8 +25,9 @@ class LocalProfileEditor(SutekhDialog):
     RESPONSE_CANCEL = 2
 
     def __init__(self, oParent, oConfig, sFrame, sCardSet):
-        super(LocalProfileEditor, self).__init__("Edit Local Profile",
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        super(LocalProfileEditor, self).__init__(
+            "Edit Local Profile", oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -39,14 +40,14 @@ class LocalProfileEditor(SutekhDialog):
             if sKey == "name":
                 continue
             aOptions.append((sKey, self.__oConfig.get_option_spec(FRAME, sKey),
-                True))
+                             True))
 
         self.__oOptionsTable = PreferenceTable(aOptions,
-                oConfig.get_validator())
+                                               oConfig.get_validator())
         # pylint: disable-msg=E1101
         # vbox confuses pylint
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
-            bUseViewport=True))
+                                                bUseViewport=True))
 
         self.set_default_size(600, 550)
         self.connect("response", self._button_response)
@@ -81,7 +82,8 @@ class LocalProfileEditor(SutekhDialog):
             dNewValues[sKey] = \
                 self.__oConfig.get_local_frame_option(sFrame, sKey)
             dInherited[sKey] = self.__oConfig.get_deck_option(sFrame, sCardSet,
-                                                         sKey, bUseLocal=False)
+                                                              sKey,
+                                                              bUseLocal=False)
         self.__oOptionsTable.update_values(dNewValues, {}, {}, dInherited)
 
     def _check_unsaved_changes(self):

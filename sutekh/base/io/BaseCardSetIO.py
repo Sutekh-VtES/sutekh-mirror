@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# Copyright 2014␛Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Base classes for the app specific XML card set parsers and writers.
    """
 
 from .IOBase import BaseXMLParser, BaseXMLWriter
+from ..core.BaseObjects import MAX_ID_LENGTH
 from xml.etree.ElementTree import Element, SubElement
 
 
@@ -33,7 +34,7 @@ class BaseCardXMLParser(BaseXMLParser):
             raise IOError("Unrecognised %s File version" % self.sTypeName)
 
     # pylint: disable-msg=R0201
-    # method so subclasses can use it
+    # method so subclasses can use it if needed
 
     def _parse_card(self, oElem, oHolder):
         """Extract the expansion information from a card node"""
@@ -46,6 +47,57 @@ class BaseCardXMLParser(BaseXMLParser):
         except KeyError:
             sExpansionName = None
         oHolder.add(iCount, sName, sExpansionName)
+
+
+class BaseCardSetParser(BaseCardXMLParser):
+    # pylint: disable-msg=W0223
+    # Doesn't matter that we don't override _convert_tree - subclasses will
+    # do that for us
+    """Base class for physical cardset XML files.
+
+       Adds generic _convert_tree method"""
+
+    def _convert_tree(self, oHolder):
+        """Convert the ElementTree into a CardSetHolder"""
+        self._check_tree()
+        oRoot = self._oTree.getroot()
+        oHolder.name = oRoot.attrib['name'][:MAX_ID_LENGTH]
+        oHolder.inuse = False
+        # pylint: disable-msg=W0704
+        # exceptions does enough for us
+        try:
+            oHolder.author = oRoot.attrib['author']
+        except KeyError:
+            pass
+        try:
+            oHolder.comment = oRoot.attrib['comment']
+        except KeyError:
+            # Default value for comment is the right thing here
+            pass
+        try:
+            if oRoot.attrib['inuse'] == 'Yes':
+                oHolder.inuse = True
+        except KeyError:
+            pass
+        # pylint: enable-msg=W0704
+
+        if 'parent' in oRoot.attrib:
+            oHolder.parent = oRoot.attrib['parent']
+
+        for oElem in oRoot:
+            if oElem.tag == 'comment':
+                if oHolder.comment:
+                    # We already encontered a comment, so error out
+                    raise IOError("Format error. Multiple"
+                            " comment values encountered.")
+                oHolder.comment = oElem.text
+            if oElem.tag == 'annotations':
+                if oHolder.annotations:
+                    raise IOError("Format error. Multiple"
+                            " annotation values encountered.")
+                oHolder.annotations = oElem.text
+            elif oElem.tag == 'card':
+                self._parse_card(oElem, oHolder)
 
 
 class BaseCardXMLWriter(BaseXMLWriter):

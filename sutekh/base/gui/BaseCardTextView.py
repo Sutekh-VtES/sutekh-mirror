@@ -52,7 +52,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
     def add_list_tag(self, sTag):
         """Add a tag with the list style indents"""
         self.create_tag(sTag, style=pango.STYLE_ITALIC, left_margin=15,
-                tabs=self._oIconTabs)
+                        tabs=self._oIconTabs)
         self.create_mark(sTag, self.get_start_iter(), True)
 
     # Methods for adding data
@@ -156,13 +156,13 @@ class BaseCardTextView(gtk.TextView):
         oContext = self.get_pango_context()
         logging.info('Pango Language : %s', oContext.get_language())
         logging.info('Pango Font Description : %s',
-                oContext.get_font_description())
+                     oContext.get_font_description())
 
     # pylint: disable-msg=W0212
     # We allow access via these properties
 
     text_buffer = property(fget=lambda self: self._oBuf,
-            doc="Return reference to text buffer")
+                           doc="Return reference to text buffer")
 
     # pylint: enable-msg=W0212
 

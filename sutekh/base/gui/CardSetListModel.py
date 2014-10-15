@@ -121,7 +121,7 @@ class CardSetModelRow(object):
         else:
             for sChildSet in self.dChildCardSets:
                 dCardExpansions[sChildSet] = {}
-                if not sChildSet in self.dExpansions:
+                if sChildSet not in self.dExpansions:
                     continue
                 for tKey, iCnt in \
                         self.dExpansions[sChildSet].iteritems():
@@ -147,7 +147,7 @@ class CardSetModelRow(object):
             for sExpName, oPhysCard in self.dExpansions:
                 iParCnt = self.dParentExpansions.get(sExpName, 0)
                 dChildren[sExpName] = {}
-                if not sExpName in self.dChildCardSets:
+                if sExpName not in self.dChildCardSets:
                     # No children for this expansion
                     continue
                 for sCardSet, iCnt in self.dChildCardSets[
@@ -220,7 +220,7 @@ class CardSetCardListModel(CardListModel):
     cardset = property(fget=lambda self: self._oCardSet,
                        doc="Associated card set")
 
-    #pylint: enable-msg=W0212
+    # pylint: enable-msg=W0212
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
@@ -1006,7 +1006,7 @@ class CardSetCardListModel(CardListModel):
             # need to get this from the database
             for dInfo in oSetInfo.dExpansions.itervalues():
                 for sExpansion, oPhysCard in dInfo:
-                    if not sExpansion in dParentExp:
+                    if sExpansion not in dParentExp:
                         # Query the database
                         if oPhysCard in dPhysCards:
                             dParentExp[sExpansion] = -dPhysCards[oPhysCard]
@@ -1017,7 +1017,7 @@ class CardSetCardListModel(CardListModel):
         # Pyprotocols confuses pylint
         if (self._iParentCountMode == IGNORE_PARENT and
                 self._iShowCardMode != PARENT_CARDS) or \
-                        not self._oCardSet.parentID:
+                    not self._oCardSet.parentID:
             return  # No point in doing anything at all
         if self._iParentCountMode == MINUS_SETS_IN_USE:
             dSiblingCards = self._get_sibling_cards(oCurFilter)
@@ -1049,7 +1049,7 @@ class CardSetCardListModel(CardListModel):
 
     def _remove_sub_iters(self, oAbsId):
         """Remove the children rows for the card entry sCardName"""
-        if not oAbsId in self._dAbsSecondLevel2Iter:
+        if oAbsId not in self._dAbsSecondLevel2Iter:
             # Nothing to clean up (not showing second level, etc.)
             return
         aSecondLevelKeys = self._dAbsSecondLevel2Iter[oAbsId].keys()
@@ -1059,8 +1059,8 @@ class CardSetCardListModel(CardListModel):
 
     def _remove_second_level(self, oAbsId, sValue):
         """Remove a second level entry and everything below it"""
-        if not oAbsId in self._dAbsSecondLevel2Iter or \
-                not sValue in self._dAbsSecondLevel2Iter[oAbsId]:
+        if oAbsId not in self._dAbsSecondLevel2Iter or \
+                sValue not in self._dAbsSecondLevel2Iter[oAbsId]:
             return  # Nothing to do
         tSLKey = (oAbsId, sValue)
         if tSLKey in self._dAbs2nd3rdLevel2Iter:
@@ -1845,8 +1845,8 @@ class CardSetCardListModel(CardListModel):
         iParCnt = None
         for sCardSetName in self._dAbsSecondLevel2Iter[oAbsId]:
             tCSKey = (oAbsId, sCardSetName)
-            if not tCSKey in self._dAbs2nd3rdLevel2Iter or not \
-                    sExpName in self._dAbs2nd3rdLevel2Iter[tCSKey] and \
+            if tCSKey not in self._dAbs2nd3rdLevel2Iter or \
+                    sExpName not in self._dAbs2nd3rdLevel2Iter[tCSKey] and \
                     oPhysCard in self._dCache['child cards']:
                 # check if we need to add a entry
                 if sCardSetName in self._dCache['child card sets'] and \
@@ -2149,8 +2149,8 @@ class CardSetCardListModel(CardListModel):
         tExpKey = (oAbsId, sExpName)
         # Check if we need to add or remove an expansion entry
         if iChg > 0:
-            if (not oAbsId in self._dAbsSecondLevel2Iter or not
-                    sExpName in self._dAbsSecondLevel2Iter[oAbsId]) \
+            if (oAbsId not in self._dAbsSecondLevel2Iter or
+                    sExpName not in self._dAbsSecondLevel2Iter[oAbsId]) \
                         and self._iShowCardMode == CHILD_CARDS:
                 iCnt = 0  # 2nd level is expansions, so count is 0
                 iParCnt = self._get_parent_count(oPhysCard, iCnt)

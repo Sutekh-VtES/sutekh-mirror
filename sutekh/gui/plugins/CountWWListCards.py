@@ -32,11 +32,11 @@ class CountWWListCards(SutekhPlugin, BaseCardListCount):
             BaseCardListCount.OPTION_STR, BaseCardListCount.NO_COUNT_OPT),
     }
 
-    def _get_card_key(self, oAbsCard):
+    def _get_card_keys(self, oAbsCard):
         """Listen on load events & update counts"""
         if is_crypt_card(oAbsCard):
-            return CRYPT
-        return LIB
+            return [CRYPT]
+        return [LIB]
 
     def _add_dict_keys(self):
         """Add 'crypt' and 'library' to the correct dicts"""

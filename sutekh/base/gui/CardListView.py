@@ -148,10 +148,10 @@ class CardListView(FilteredView):
         for sCardName in dSelectedData:
             for sExpansion, iCount in dSelectedData[sCardName].iteritems():
                 sSelectData += '\n%(count)d\n%(name)s\n%(expansion)s' % {
-                        'count': iCount,
-                        'name': sCardName,
-                        'expansion': sExpansion,
-                        }
+                    'count': iCount,
+                    'name': sCardName,
+                    'expansion': sExpansion,
+                }
         return sSelectData
 
     # Drag and Drop

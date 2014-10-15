@@ -59,7 +59,7 @@ Gui (Functionality):
    API
  * Improved card set sorting
    - Allow specifying order of columns to use, etc.
- * Add an undo stack for card set and filter editing operations
+ * Add an undo stack for filter editing operations
  * Allow colouring options for the cards
    (use-case for this?)
 

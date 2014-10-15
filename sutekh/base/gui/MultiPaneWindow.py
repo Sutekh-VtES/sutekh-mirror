@@ -60,9 +60,9 @@ class MultiPaneWindow(gtk.Window):
     # We allow access via these properties
     # Needed for Backup plugin
     focussed_pane = property(fget=lambda self: self._oFocussed,
-            doc="The currently focussed pane.")
+                             doc="The currently focussed pane.")
     mainwindow = property(fget=lambda self: self,
-            doc="Return reference to the main window")
+                          doc="Return reference to the main window")
 
     # pylint: enable-msg=W0212
 
@@ -90,7 +90,7 @@ class MultiPaneWindow(gtk.Window):
            the toolbar and menu.
            """
         return [x for x in self._oVBox.get_children() if
-                    x not in (self._oMenu, self._oToolbar)]
+                x not in (self._oMenu, self._oToolbar)]
 
     def find_pane_by_id(self, iId):
         """Return the gtk widget corresponding to the given pane name"""
@@ -188,8 +188,8 @@ class MultiPaneWindow(gtk.Window):
                 oChild = oFrame
             # Need to move to the 'neighbouring' HPane
             oParent = oChild.get_parent()
-            while isinstance(oParent, gtk.HPaned) and \
-                        oChild == oParent.get_child1():
+            while (isinstance(oParent, gtk.HPaned) and
+                   oChild == oParent.get_child1()):
                 # As long as we're the left-most branch, we ascend
                 oChild = oParent
                 oParent = oChild.get_parent()
@@ -225,8 +225,8 @@ class MultiPaneWindow(gtk.Window):
                 oChild = oFrame
             # Need to move to the 'neighbouring' HPane
             oParent = oChild.get_parent()
-            while isinstance(oParent, gtk.HPaned) and \
-                        oChild == oParent.get_child2():
+            while (isinstance(oParent, gtk.HPaned) and
+                   oChild == oParent.get_child2()):
                 # As long as we're the right-most branch, we ascend
                 oChild = oParent
                 oParent = oChild.get_parent()
@@ -427,7 +427,7 @@ class MultiPaneWindow(gtk.Window):
                 # part
                 oPart1, oParent = self._get_pane_to_replace()
                 iTPos = self._do_replace_pane(oParent, oPart1, oNewPane,
-                        iConfigPos)
+                                              iConfigPos)
                 if not bVertical:
                     iPos = iTPos
             else:
@@ -499,9 +499,9 @@ class MultiPaneWindow(gtk.Window):
                 self._oVBox.pack_start(oKept)
             else:
                 oFocussedPane = [x for x in self._aHPanes if oFrame in
-                        x.get_children()][0]
+                                 x.get_children()][0]
                 oKept = [x for x in oFocussedPane.get_children() if
-                        x != oFrame][0]
+                         x != oFrame][0]
                 oParent = oFocussedPane.get_parent()
                 oParent.remove(oFocussedPane)
                 oFocussedPane.remove(oKept)

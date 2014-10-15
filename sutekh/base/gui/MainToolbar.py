@@ -61,7 +61,7 @@ class MainToolbar(gtk.Toolbar):
             self.frame_from_toolbar(oFrame)
 
         oToolButton = self.create_tool_button(sTitle, oIcon=None,
-            fAction=unminimize)
+                                              fAction=unminimize)
 
         self.add(oToolButton)
         self.refresh()

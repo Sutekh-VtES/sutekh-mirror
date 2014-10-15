@@ -31,15 +31,12 @@ NEW_FILTER = 'NewFilter: '
 
 # Key constants
 ENTER_KEYS = set([gtk.gdk.keyval_from_name('Return'),
-    gtk.gdk.keyval_from_name('KP_Enter')])
-LEFT_RIGHT = set([gtk.gdk.keyval_from_name('KP_Left'),
-    gtk.gdk.keyval_from_name('KP_Right'),
-    gtk.gdk.keyval_from_name('Left'),
-    gtk.gdk.keyval_from_name('Right')])
+                  gtk.gdk.keyval_from_name('KP_Enter')])
 LEFT = set([gtk.gdk.keyval_from_name('KP_Left'),
-    gtk.gdk.keyval_from_name('Left')])
+            gtk.gdk.keyval_from_name('Left')])
 RIGHT = set([gtk.gdk.keyval_from_name('KP_Right'),
-    gtk.gdk.keyval_from_name('Right')])
+             gtk.gdk.keyval_from_name('Right')])
+LEFT_RIGHT = LEFT.union(RIGHT)
 
 
 def unescape_markup(sMarkup):
@@ -53,7 +50,7 @@ def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
     (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
     if iKeyVal != 0:
         oButton.add_accelerator('clicked', oAccelGroup, iKeyVal, iMod,
-                gtk.ACCEL_VISIBLE)
+                                gtk.ACCEL_VISIBLE)
     if sToolTip:
         oButton.set_tooltip_markup(sToolTip)
 
@@ -100,7 +97,7 @@ class FilterEditorToolbar(CustomDragIconView):
 
     def __init__(self, sFilterType):
         self._oListStore = gtk.ListStore(gobject.TYPE_STRING,
-                gobject.TYPE_STRING)
+                                         gobject.TYPE_STRING)
         super(FilterEditorToolbar, self).__init__(self._oListStore)
         oTextCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Filter Element", oTextCell, text=0)
@@ -110,11 +107,11 @@ class FilterEditorToolbar(CustomDragIconView):
         # Get supported filters
         aFilters = [('Filter Group ..', 'Filter Group')]
         for oFilterType in sorted(get_filters_for_type(self._sFilterType),
-                key=lambda x: x.description):
+                                  key=lambda x: x.description):
             aFilters.append((oFilterType.description, oFilterType.keyword))
         self.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+            DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         # Create entries for each of the filters we support
         for tInfo in aFilters:
             self._oListStore.append(tInfo)
@@ -133,7 +130,7 @@ class FilterEditorToolbar(CustomDragIconView):
         _oModel, oIter = self.get_selection().get_selected()
         if oIter:
             sSelect = '%s%s' % (NEW_FILTER,
-                    self._oListStore.get_value(oIter, 1))
+                                self._oListStore.get_value(oIter, 1))
             return sSelect
         return None
 
@@ -150,10 +147,10 @@ class FilterValuesBox(gtk.VBox):
         self._oNoneWidget = gtk.VBox()
         self._oParent = oDialog
         self._sFilterType = sFilterType
-        self._oEmptyWidget.pack_start(gtk.Label(
-            'Select an active\nfilter element'), expand=False)
-        self._oNoneWidget.pack_start(gtk.Label(
-            'No values for this filter'), expand=False)
+        self._oEmptyWidget.pack_start(
+            gtk.Label('Select an active\nfilter element'), expand=False)
+        self._oNoneWidget.pack_start(
+            gtk.Label('No values for this filter'), expand=False)
         # Handle removing none file elements
         self._set_drop_for_widget(self._oNoneWidget)
         self._oFilter = None
@@ -190,7 +187,7 @@ class FilterValuesBox(gtk.VBox):
         """Set the correct drop dest behaviour for the given widget"""
         oViewWidget = self._get_view_widget(oWidget)
         oViewWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                                  gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oViewWidget.connect('drag_data_received', self.drag_drop_handler)
 
     # pylint: disable-msg=R0201
@@ -200,8 +197,8 @@ class FilterValuesBox(gtk.VBox):
         """Set the correct drag source behaviour for the widget"""
         oViewWidget = self._get_view_widget(oWidget)
         oViewWidget.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, DRAG_TARGETS,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, DRAG_TARGETS,
+            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oViewWidget.connect('drag_data_get', fCallback, oFilter, oWidget)
 
     def _get_view_widget(self, oWidget):
@@ -220,19 +217,19 @@ class FilterValuesBox(gtk.VBox):
         oFilterTypes.set_select_single()
         oFilterTypes.fill_list(BOXTYPE_ORDER)
         self.set_box_model_value(oFilter, oFilterTypes)
-        oFilterTypes.get_selection_object().connect('changed',
-                self.update_box_model, oFilter, oFilterTypes)
+        oFilterTypes.get_selection_object().connect(
+            'changed', self.update_box_model, oFilter, oFilterTypes)
         oFilterTypes.set_size_request(100, 150)
         oFilterTypes.view.connect('key-press-event', self.key_press, oFilter,
-                'Filter Type')
+                                  'Filter Type')
         self._oWidget.pack_start(oFilterTypes, expand=False)
         self._oWidget.pack_start(gtk.Label('Or Drag Filter Element'),
-                expand=False)
+                                 expand=False)
         oSubFilterList = FilterEditorToolbar(self._sFilterType)
         oSubFilterList.connect('key-press-event', self.key_press, oFilter,
-                'Filter')
+                               'Filter')
         self._oWidget.pack_start(AutoScrolledWindow(oSubFilterList),
-                    expand=True)
+                                 expand=True)
 
     def _make_list_from(self, oFilter):
         """Create the widget for the 'X form Y' filters"""
@@ -253,7 +250,7 @@ class FilterValuesBox(gtk.VBox):
         oLabel.set_markup('<b>From</b>')
         self._oWidget.pack_start(oLabel, expand=False)
         self._oWidget.pack_start(AutoScrolledWindow(oSetList, False),
-                expand=True)
+                                 expand=True)
 
     def _make_card_set_list(self, oFilter):
         """Create a card set list widget"""
@@ -267,13 +264,13 @@ class FilterValuesBox(gtk.VBox):
     def _make_filter_values_list(self, oFilter):
         """Create a filter values list widget"""
         self._oWidget = ScrolledList('Select Filter Values',
-                bSpecialSelect=True)
+                                     bSpecialSelect=True)
         self._oWidget.set_select_multiple()
         self._oWidget.fill_list(oFilter.aValues)
         self._oWidget.view.connect('key-press-event', self.key_press, oFilter,
-                'Value')
+                                   'Value')
         self._set_drag_for_widget(self._oWidget, self.update_filter_list,
-                oFilter)
+                                  oFilter)
         self._set_drop_for_widget(self._oWidget)
 
     def _make_filter_entry(self, oFilter):
@@ -326,7 +323,7 @@ class FilterValuesBox(gtk.VBox):
                 # None filter, so no selection widget, but we have buttons
                 self._oWidget = self._oNoneWidget
                 self._oWidget.connect('key-press-event', self.key_press, None,
-                        'None')
+                                      'None')
         else:
             # No selected widget, so clear everything
             self._oWidget = self._oEmptyWidget
@@ -360,7 +357,7 @@ class FilterValuesBox(gtk.VBox):
     # function signature requires all these arguments
 
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
-            oSelectionData, _oInfo, oTime):
+                          oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
         bDragRes = True
         if not oSelectionData and oSelectionData.format != 8:
@@ -400,28 +397,28 @@ class FilterValuesBox(gtk.VBox):
             self._aLastSelection = aSelection
 
     def update_filter_list(self, _oBtn, _oContext, oSelectionData,
-            _oInfo, _oTime, oFilter, _oWidget):
+                           _oInfo, _oTime, oFilter, _oWidget):
         """Update the box model with the new values"""
         sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
         self._format_selection(sSelect, self._oWidget.get_selection())
         oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def update_count_list(self, _oBtn, _oContext, oSelectionData,
-            _oInfo, _oTime, oFilter, oCountList):
+                          _oInfo, _oTime, oFilter, oCountList):
         """Update the box model with the new values"""
         sSelect = '%s%s: Count' % (NEW_VALUE, oFilter.sFilterName)
         self._format_selection(sSelect, oCountList.get_selection())
         oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def update_set_list(self, _oBtn, _oContext, oSelectionData,
-            _oInfo, _oTime, oFilter, oSetList):
+                        _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
         sSelect = '%s%s' % (NEW_VALUE, oFilter.sFilterName)
         self._format_selection(sSelect, oSetList.get_all_selected_sets())
         oSelectionData.set(oSelectionData.target, 8, sSelect)
 
     def update_count_set(self, _oBtn, _oContext, oSelectionData,
-            _oInfo, _oTime, oFilter, oSetList):
+                         _oInfo, _oTime, oFilter, oSetList):
         """Update the box model to the current selection"""
         sSelect = '%s%s: Set' % (NEW_VALUE, oFilter.sFilterName)
         self._format_selection(sSelect, oSetList.get_all_selected_sets())
@@ -610,8 +607,8 @@ class FilterBoxModelStore(gtk.TreeStore):
     NONE_VALUE = '<b>No Values for this filter</b>'
 
     def __init__(self):
-        super(FilterBoxModelStore, self).__init__(gobject.TYPE_STRING,
-                gobject.TYPE_PYOBJECT, gtk.gdk.Color)
+        super(FilterBoxModelStore, self).__init__(
+            gobject.TYPE_STRING, gobject.TYPE_PYOBJECT, gtk.gdk.Color)
 
     def _fill_values(self, oFilterIter, oModel, oColour):
         """Fill in the values for this filter"""
@@ -621,26 +618,27 @@ class FilterBoxModelStore(gtk.TreeStore):
             if aValues:
                 for sValue in aValues:
                     self.append(oFilterIter,
-                            (gobject.markup_escape_text(sValue), None,
-                                oColour))
+                                (gobject.markup_escape_text(sValue), None,
+                                 oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
             self.append(oFilterIter, ('<b>From</b>', None, oColour))
             if aFrom:
                 for sValue in aFrom:
                     self.append(oFilterIter,
-                            (gobject.markup_escape_text(sValue), None,
-                                oColour))
+                                (gobject.markup_escape_text(sValue), None,
+                                 oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
         elif oModel.aCurValues and oModel.aValues:
             for sValue in oModel.aCurValues:
                 self.append(oFilterIter,
-                        (gobject.markup_escape_text(sValue), None, oColour))
+                            (gobject.markup_escape_text(sValue),
+                             None, oColour))
         elif oModel.aCurValues:
             self.append(oFilterIter,
-                    (gobject.markup_escape_text(oModel.aCurValues[0]), None,
-                        oColour))
+                        (gobject.markup_escape_text(oModel.aCurValues[0]),
+                         None, oColour))
         elif oModel.iValueType == oModel.NONE:
             self.append(oFilterIter, (self.NONE_VALUE, None, oColour))
         else:
@@ -725,10 +723,10 @@ class FilterBoxModelStore(gtk.TreeStore):
             iPos = 0
             for sValue in aValues:
                 oChild = self._add_list_iter(iPos, iIndex, oSelectIter,
-                        oCurIter)
+                                             oCurIter)
                 if sValue is not None:
                     self.set(oChild, 0, gobject.markup_escape_text(sValue),
-                            1, None, 2, self.BLACK)
+                             1, None, 2, self.BLACK)
                 else:
                     self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
                 iPos += 1
@@ -745,7 +743,7 @@ class FilterBoxModelStore(gtk.TreeStore):
             oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
             if sValue is not None:
                 self.set(oChild, 0, gobject.markup_escape_text(sValue),
-                        1, None, 2, self.BLACK)
+                         1, None, 2, self.BLACK)
             else:
                 self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
             iPos += 1
@@ -756,7 +754,7 @@ class FilterBoxModelStore(gtk.TreeStore):
             oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
             if sValue is not None:
                 self.set(oChild, 0, gobject.markup_escape_text(sValue),
-                        1, None, 2, self.BLACK)
+                         1, None, 2, self.BLACK)
             else:
                 self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
             iPos += 1
@@ -840,14 +838,14 @@ class FilterBoxModelEditView(CustomDragIconView):
         self._oBoxModel = oBoxModel
         oTextCell = gtk.CellRendererText()
         oColumn = gtk.TreeViewColumn("Filter", oTextCell, markup=0,
-                foreground_gdk=2)
+                                     foreground_gdk=2)
         self.append_column(oColumn)
 
         self.drag_dest_set(gtk.DEST_DEFAULT_ALL, DRAG_TARGETS,
-                gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-        self.drag_source_set(
-                gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                DRAG_TARGETS, gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+                           gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
+                             DRAG_TARGETS,
+                             gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
 
         oSelection = self.get_selection()
         oSelection.set_mode(gtk.SELECTION_SINGLE)
@@ -970,23 +968,22 @@ class FilterBoxModelEditView(CustomDragIconView):
     def update_entry(self, oFilterItem):
         """Update the filter with the current text"""
         oChildPath = self._oStore.update_entry(oFilterItem,
-                self.oCurSelectIter)
+                                               self.oCurSelectIter)
         self.expand_to_path(oChildPath)
         self.expand_row(oChildPath, True)
 
     def _update_iter_with_list(self, oIter, aValues):
         """Fill in the list values"""
         oPath, _oCol = self.get_cursor()
-        oCurPath = self._oStore.update_iter_with_values(aValues,
-                oIter, oPath)
+        oCurPath = self._oStore.update_iter_with_values(aValues, oIter, oPath)
         self.expand_to_path(oCurPath)
         self.expand_row(oCurPath, True)
 
     def _update_iter_with_from_list(self, oIter, aCounts, aNames):
         """Fill in with a from list"""
         oPath, _oCol = self.get_cursor()
-        oCurPath = self._oStore.update_iter_with_from_list(aCounts,
-                aNames, oIter, oPath)
+        oCurPath = self._oStore.update_iter_with_from_list(aCounts, aNames,
+                                                           oIter, oPath)
         self.expand_to_path(oCurPath)
         self.expand_row(oCurPath, True)
 
@@ -1013,7 +1010,7 @@ class FilterBoxModelEditView(CustomDragIconView):
     # function signature requires all these arguments
 
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
-            oSelectionData, _oInfo, oTime):
+                          oSelectionData, _oInfo, oTime):
         """Handle drops from the filter toolbar"""
         bDragRes = True
         if not oSelectionData and oSelectionData.format != 8:
@@ -1044,7 +1041,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             self._update_values(oFilterObj, self.oCurSelectIter, sData)
 
     def _check_drag_value(self, oIter, oFilter, tCurTarget, oAction,
-            oDragContext):
+                          oDragContext):
         """Check if the current target is an acceptable drop location
            for a filter value"""
         if not tCurTarget:
@@ -1052,7 +1049,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             return False
         if oFilter is None:
             oFilter = self._oStore.get_value(
-                    self._oStore.iter_parent(oIter), 1)
+                self._oStore.iter_parent(oIter), 1)
         # Check that destination is valid for this value
         oDropObj, _oIter = self._oStore.get_drop_filter(tCurTarget)
         if hasattr(oDropObj, 'sFilterName') and \
@@ -1096,7 +1093,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             if oFilter is None:
                 # Dragging a value
                 if self._check_drag_value(oIter, oFilter, tCurTarget,
-                        gtk.gdk.ACTION_MOVE, oDragContext):
+                                          gtk.gdk.ACTION_MOVE, oDragContext):
                     self._fix_highlight(tCurTarget)
                     bSetRow = True
                     bFixHighlight = True
@@ -1109,7 +1106,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             if oFilter is None or not hasattr(oFilter, 'sBoxType'):
                 # Dragging values into the filter (since filter is selected)
                 if self._check_drag_value(oIter, oFilter, tCurTarget,
-                        gtk.gdk.ACTION_COPY, oDragContext):
+                                          gtk.gdk.ACTION_COPY, oDragContext):
                     bSetRow = True
                     bFixHighlight = True
             else:
@@ -1210,7 +1207,7 @@ class FilterBoxModelEditView(CustomDragIconView):
         oFilterObj, _oDropIter = self._oStore.get_drop_filter(tRowInfo)
         oIter = self._oStore.get_iter_from_string(sIter)
         oSourceFilter = self._oStore.get_value(
-                self._oStore.iter_parent(oIter), 1)
+            self._oStore.iter_parent(oIter), 1)
         sValue = unescape_markup(self._oStore.get_value(oIter, 0))
         if not target_ok(oFilterObj, oSourceFilter):
             return False
@@ -1269,7 +1266,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             oSourceIter = self._oStore.get_iter_from_string(sIter)
             oFilterObj = self._oStore.get_value(oSourceIter, 1)
             oParent = self._oStore.get_value(
-                    self._oStore.iter_parent(oSourceIter), 1)
+                self._oStore.iter_parent(oSourceIter), 1)
             # Check move is legal
             bDoInsert = False
             if oInsertObj is not oFilterObj:
@@ -1379,11 +1376,11 @@ class FilterBoxModelEditView(CustomDragIconView):
             if oFilter is None:
                 # Dragging a value
                 sSelect = '%s%s' % (MOVE_VALUE,
-                        self._oStore.get_string_from_iter(oIter))
+                                    self._oStore.get_string_from_iter(oIter))
             else:
                 # Dragging a filter
                 sSelect = '%s%s' % (MOVE_FILTER,
-                        self._oStore.get_string_from_iter(oIter))
+                                    self._oStore.get_string_from_iter(oIter))
             oSelectionData.set(oSelectionData.target, 8, sSelect)
 
 
@@ -1397,7 +1394,7 @@ class FilterBoxModelEditBox(gtk.VBox):
         self._oValuesWidget = oValuesWidget
         oTreeStore = FilterBoxModelStore()
         self._oTreeView = FilterBoxModelEditView(oTreeStore, oValuesWidget,
-                None)
+                                                 None)
         self.pack_start(self._oTreeView, expand=True)
 
     def set_box_model(self, oBoxModel):

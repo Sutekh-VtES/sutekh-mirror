@@ -21,7 +21,8 @@
    """
 # pylint: enable-msg=C0301
 
-from sutekh.io.SutekhBaseHTMLParser import SutekhBaseHTMLParser, HolderState
+from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
+                                                 HolderState)
 import re
 
 

@@ -38,11 +38,12 @@ class CreateCardSetDialog(SutekhDialog):
        Optionally, get Author + Description.
        """
     def __init__(self, oParent, sName=None, oCardSet=None,
-            oCardSetParent=None):
-        super(CreateCardSetDialog, self).__init__("Card Set Details",
-            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                 oCardSetParent=None):
+        super(CreateCardSetDialog, self).__init__(
+            "Card Set Details", oParent,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oNameLabel = gtk.Label("Card Set Name : ")
         self.oName = gtk.Entry(MAX_ID_LENGTH)
@@ -50,13 +51,13 @@ class CreateCardSetDialog(SutekhDialog):
         self.oAuthor = gtk.Entry()
         oCommentriptionLabel = gtk.Label("Description : ")
         self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
-                'comment')
+                                                              'comment')
         oParentLabel = gtk.Label("This card set is a subset of : ")
         self.oParentList = CardSetsListView(None, self)
         self.oParentList.set_size_request(100, 200)
         oAnnotateLabel = gtk.Label("Annotations : ")
         self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
-                'annotations')
+                                                                'annotations')
 
         self.oInUse = gtk.CheckButton('Mark card Set as In Use')
 
@@ -77,6 +78,10 @@ class CreateCardSetDialog(SutekhDialog):
 
         self.connect("response", self.button_response)
 
+        # We show the items before we fill in options to avoid the
+        # "card set name is always completely selected" effect.
+        self.show_all()
+
         self.sOrigName = sName
         if sName is not None:
             self.oName.set_text(sName)
@@ -96,8 +101,6 @@ class CreateCardSetDialog(SutekhDialog):
         self.sAuthor = None
         self.oParent = oCardSetParent
 
-        self.show_all()
-
     def get_name(self):
         """Get the name entered by the user"""
         return self.sName
@@ -109,15 +112,15 @@ class CreateCardSetDialog(SutekhDialog):
     def get_comment(self):
         """Get the comment value"""
         sComment = self.oCommentBuffer.get_text(
-                self.oCommentBuffer.get_start_iter(),
-                self.oCommentBuffer.get_end_iter())
+            self.oCommentBuffer.get_start_iter(),
+            self.oCommentBuffer.get_end_iter())
         return sComment
 
     def get_annotations(self):
         """Get the comment value"""
         sAnnotations = self.oAnnotateBuffer.get_text(
-                self.oAnnotateBuffer.get_start_iter(),
-                self.oAnnotateBuffer.get_end_iter())
+            self.oAnnotateBuffer.get_start_iter(),
+            self.oAnnotateBuffer.get_end_iter())
         return sAnnotations
 
     def get_parent(self):
@@ -145,7 +148,7 @@ class CreateCardSetDialog(SutekhDialog):
                     try:
                         IPhysicalCardSet(self.sName)
                         do_complaint_error('Chosen Card Set Name is'
-                                ' already in use')
+                                           ' already in use')
                         self.sName = None
                         self.destroy()
                         return
@@ -162,5 +165,5 @@ class CreateCardSetDialog(SutekhDialog):
                 # We don't allow empty names
                 self.sName = None
                 do_complaint_error("You did not specify a name for the"
-                        " Card Set.")
+                                   " Card Set.")
         self.destroy()

@@ -34,7 +34,7 @@ def progress_fetch_data(oFile, oOutFile=None, sHash=None, sDesc=None):
     oLogHandler.set_dialog(oProgress)
     try:
         return fetch_data(oFile, oOutFile, sHash, oLogHandler,
-                gui_error_handler)
+                          gui_error_handler)
     finally:
         oProgress.destroy()
     return None

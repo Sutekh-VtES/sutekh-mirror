@@ -1,3 +1,65 @@
+15 Oct 2014
+ * Update to handle latest "The Unaligned" expansion
+   - Add "The Unaligned" to expansion list
+   - Fix parsing of independent titles with the new templating.
+   - Fix parsing of Baron title
+   - Fix error with parsing the "not for legal play" keyword in some cases
+   - Add "Anarch" keyword for all anarch vampires, including Barons.
+ * Download new expansion images from lackeyccg.
+
+13 Oct 2014
+ * Download VEKN pdf expansion images from lackeyccg.com.
+
+08 Oct 2014
+ * Log download urls and image name in card images plugin when --verbose is
+   selected.
+
+07 Sep 2014
+ * Add undo stack for card set editing operations
+
+26 Aug 2014
+ * Massively refactor database upgrade code to move a lot of common
+   functionality into base.
+   - This makes implementing the 'import new card list' function
+     a lot simpler for deratives
+ * Move DBUpgradeDialog into base/gui
+
+25 Aug 2014
+ * Don't create empty image files when the download returns no
+   data
+
+13 Aug 2014
+ * Add support for multiple possible urls for card images
+
+06 Aug 2014
+ * Tweak dialog so edit card set properties doesn't start with the card set
+   name selected.
+
+01 Aug 2014
+ * Move BaseHTMLParser into base.io, with the associated state machinery
+ * Remove code duplication in ARDBTextParser
+ * Strip down ExtraCardSetListViewColumns to use the base plugin
+
+30 Jul 2014
+ * Fix typo in Base count card set cards plugin
+ * Add missing cleanup of progress dialog on upgrade errors
+ * Factor out some common code around database upgrades
+
+26 Jul 2014
+ * Factor out some command helper code for the command line utility
+ * Allow cards to trigger multiple keys in the count plugins, for
+   flexibility.
+
+25 Jul 2014
+ * Fix a bug where selectfilter was used even if not defined
+
+22 Jul 2014
+ * Don't hardcode the application name in dialog title
+
+21 Jul 2014
+ * Move generic card set parser _convert_tree from
+   PhysicalCardSetParser into base.io
+
 19 Jul 2014
  * Ensure expansion directory exists when downloading card images.
  * Fix a bug in the image plugin that hid the configuration choices

@@ -12,6 +12,7 @@ import os
 import zipfile
 import tempfile
 import urllib2
+import logging
 from sqlobject import SQLObjectNotFound
 from ...core.BaseObjects import IAbstractCard
 from ...io.UrlOps import urlopen_with_timeout
@@ -251,9 +252,9 @@ class BaseImageFrame(BasicFrame):
         sFullFilename = self._convert_cardname_to_path()
         self._load_image(sFullFilename)
 
-    def _make_card_url(self):
-        """Return a url pointing to a scan of the image"""
-        raise NotImplementedError("implement _make_card_url")
+    def _make_card_urls(self):
+        """Return a list of possible urls pointing to a scan of the image"""
+        raise NotImplementedError("implement _make_card_urls")
 
     def _norm_cardname(self):
         """Normalise the card name"""
@@ -273,31 +274,42 @@ class BaseImageFrame(BasicFrame):
             if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
                     self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)):
                 # Attempt to download the image from the url
-                sUrl = self._make_card_url()
-                if sUrl:
-                    if sUrl not in self._dUrlCache:
-                        oFile = urlopen_with_timeout(
-                            sUrl, fErrorHandler=image_gui_error_handler)
-                    else:
-                        oFile = self._dUrlCache[sUrl]
-                else:
+                aUrls = self._make_card_urls()
+                if not aUrls:
                     # No url, so fall back to the 'no image' case
                     self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
                                                 gtk.ICON_SIZE_DIALOG)
                     self._oImage.queue_draw()
                     return
-                self._dUrlCache[sUrl] = oFile
-                if oFile:
-                    # Ensure the directory exists, for expansions we
-                    # haven't encountered before
-                    sBaseDir = os.path.dirname(sFullFilename)
-                    ensure_dir_exists(sBaseDir)
-                    # Create file
-                    oOutFile = file(sFullFilename, 'wb')
-                    # Attempt to fetch the data
-                    progress_fetch_data(oFile, oOutFile)
-                    oOutFile.close()
-                    oFile.close()
+                for sUrl in aUrls:
+                    if sUrl not in self._dUrlCache:
+                        logging.info('Trying %s as source for %s' %
+                                     (sUrl, sFullFilename))
+                        oFile = urlopen_with_timeout(
+                            sUrl, fErrorHandler=image_gui_error_handler)
+                    else:
+                        oFile = self._dUrlCache[sUrl]
+                    self._dUrlCache[sUrl] = oFile
+                    if oFile:
+                        # Ensure the directory exists, for expansions we
+                        # haven't encountered before
+                        sBaseDir = os.path.dirname(sFullFilename)
+                        ensure_dir_exists(sBaseDir)
+                        # Create file
+                        # Attempt to fetch the data
+                        sImgData = progress_fetch_data(oFile)
+                        oFile.close()
+                        if sImgData:
+                            oOutFile = file(sFullFilename, 'wb')
+                            oOutFile.write(sImgData)
+                            oOutFile.close()
+                            logging.info('Using image data from %s' % sUrl)
+                        else:
+                            logging.info('Invalid image data from %s' % sUrl)
+                            # Got bogus data, so skip this in future
+                            self._dUrlCache[sUrl] = None
+                        # Don't attempt to follow other urls
+                        break
         try:
             if self._bShowExpansions:
                 self.oExpansionLabel.set_markup(

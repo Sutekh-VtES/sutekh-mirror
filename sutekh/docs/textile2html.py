@@ -10,19 +10,24 @@ Convert Sutekh textile documentation into HTML pages.
 import imp
 import os
 
-infopath = os.path.join(os.path.dirname(__file__), '..', 'SutekhInfo.py')
-SutekhInfoMod = imp.load_source("SutekhInfo", infopath)
-SutekhInfo = SutekhInfoMod.SutekhInfo
+# pylint: disable-msg=C0103
+# We ignore our usual conventions for all the import fiddling, since
+# we want to end up with global module names for consistency elsewhere in the
+# code base
+sInfoPath = os.path.join(os.path.dirname(__file__), '..', 'SutekhInfo.py')
+SutekhInfo = imp.load_source("SutekhInfo", sInfoPath).SutekhInfo
 
 # Import filter info
-modpath = os.path.join(os.path.dirname(__file__), '..', '..')
-oFile, sModname, oDescription = imp.find_module('sutekh', [modpath])
+sModPath = os.path.join(os.path.dirname(__file__), '..', '..')
+oFile, sModname, oDescription = imp.find_module('sutekh', [sModPath])
 sutekh_package = imp.load_module('sutekh', oFile, sModname, oDescription)
 Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
-docpath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
+sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
                        'DocUtils.py')
-DocUtils = imp.load_source('DocUtils', docpath)
+DocUtils = imp.load_source('DocUtils', sDocPath)
+
+# pylint: enable-msg=C0103
 
 
 def replace_version(sText):

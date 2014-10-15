@@ -31,13 +31,14 @@ class CellRendererIcons(gtk.GenericCellRenderer):
     iTextPad = 4
 
     __gproperties__ = {
-            'text': (gobject.TYPE_STRING, 'text property',
-                'text to render', '', gobject.PARAM_READWRITE),
-            'textlist': (gobject.TYPE_PYOBJECT, 'textlist property',
-                'list of text strings to render', gobject.PARAM_READWRITE),
-            'icons': (gobject.TYPE_PYOBJECT, 'icons property',
-                'icons to render', gobject.PARAM_READWRITE),
-            }
+        'text': (gobject.TYPE_STRING, 'text property',
+                 'text to render', '', gobject.PARAM_READWRITE),
+        'textlist': (gobject.TYPE_PYOBJECT, 'textlist property',
+                     'list of text strings to render',
+                     gobject.PARAM_READWRITE),
+        'icons': (gobject.TYPE_PYOBJECT, 'icons property',
+                  'icons to render', gobject.PARAM_READWRITE),
+    }
 
     def __init__(self, iIconPad=2):
         super(CellRendererIcons, self).__init__()
@@ -146,7 +147,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
     # pylint: disable-msg=R0913
     # R0913 - number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, _oBackgroundArea,
-            oCellArea, oExposeArea, _iFlags):
+                  oCellArea, oExposeArea, _iFlags):
         """Render the icons & text for the tree view"""
         oLayout = oWidget.create_pango_layout("")
         oPixRect = gtk.gdk.Rectangle()
@@ -173,25 +174,26 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                     oIconDrawRect = oCellArea.intersect(oDrawRect)
                     oIconDrawRect = oExposeArea.intersect(oIconDrawRect)
                     oWindow.draw_pixbuf(oWidget.style.black_gc, oIcon,
-                            oIconDrawRect.x - oDrawRect.x,
-                            oIconDrawRect.y - oDrawRect.y, oIconDrawRect.x,
-                            oIconDrawRect.y, -1, oIconDrawRect.height,
-                            gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                        oIconDrawRect.x - oDrawRect.x,
+                                        oIconDrawRect.y - oDrawRect.y,
+                                        oIconDrawRect.x, oIconDrawRect.y,
+                                        -1, oIconDrawRect.height,
+                                        gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     oDrawRect.x += oIcon.get_width() + self.iIconPad
                 if sText and (self.iMode != SHOW_ICONS_ONLY or oIcon is None):
                     # Render text
                     _layout_text(oLayout, sText)
                     oDrawRect.width, oDrawRect.height = \
-                            oLayout.get_pixel_size()
+                        oLayout.get_pixel_size()
                     oWindow.draw_layout(oWidget.style.black_gc, oDrawRect.x,
-                            oDrawRect.y, oLayout)
+                                        oDrawRect.y, oLayout)
                     oDrawRect.x += oDrawRect.width + self.iTextPad
         elif self.sText:
             # Render text
             _layout_text(oLayout, self.sText)
             oDrawRect.width, oDrawRect.height = oLayout.get_pixel_size()
             oWindow.draw_layout(oWidget.style.black_gc, oDrawRect.x,
-                    oDrawRect.y, oLayout)
+                                oDrawRect.y, oLayout)
             oDrawRect.x += oDrawRect.width + self.iTextPad
         return None
 

@@ -25,7 +25,7 @@ class FileOrUrlWidget(gtk.VBox):
     # R0913: Need this many arguments
     # C0103: Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
-                homogeneous=False, spacing=0):
+                 homogeneous=False, spacing=0):
         """Create a FileOrUrlWidget.
 
            dUrls is used a dictionary of URLs to suggest to the user.
@@ -34,7 +34,7 @@ class FileOrUrlWidget(gtk.VBox):
            a key in dUrls.
            """
         super(FileOrUrlWidget, self).__init__(homogeneous=homogeneous,
-                spacing=spacing)
+                                              spacing=spacing)
         if dUrls is None:
             dUrls = {}
         self._dUrls = dUrls
@@ -187,11 +187,12 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
     # R0913: Need this many arguments
     # C0103: Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, sDirTitle=None,
-            sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
+                 sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
         """Create a FileOrDirOrUrlWidget.
            """
         super(FileOrDirOrUrlWidget, self).__init__(oParent, sTitle, dUrls,
-                homogeneous=homogeneous, spacing=spacing)
+                                                   homogeneous=homogeneous,
+                                                   spacing=spacing)
 
         if not sDirTitle:
             sDirTitle = 'Select directory ...'

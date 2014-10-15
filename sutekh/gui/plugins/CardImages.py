@@ -22,6 +22,10 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 DOWNLOAD_IMAGES)
 
 
+# We try lackeyccg for images from these sets
+LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu')
+
+
 class CardImageFrame(BaseImageFrame):
     # pylint: disable-msg=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
@@ -73,7 +77,7 @@ class CardImageFrame(BaseImageFrame):
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
 
-    def _make_card_url(self):
+    def _make_card_urls(self):
         """Return a url pointing to the vtes.pl scan of the image"""
         sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
         sFilename = self._norm_cardname()
@@ -93,8 +97,14 @@ class CardImageFrame(BaseImageFrame):
             sCurExpansionPath = 'dd'
         elif sCurExpansionPath == 'third':
             sCurExpansionPath = '3e'
-        return 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
+        sUrl = 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
             sCurExpansionPath, sFilename)
+        if sCurExpansionPath in LACKEY_IMAGES:
+            # Try get the card from lackey first
+            sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
+                sFilename)
+            return (sLackeyUrl, sUrl)
+        return (sUrl, )
 
     def _norm_cardname(self):
         """Normalise the card name"""

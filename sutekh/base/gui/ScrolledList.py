@@ -96,7 +96,7 @@ class ScrolledList(gtk.Frame):
     # pylint: disable-msg=W0212
     # allow access via these properties
     view = property(fget=lambda self: self._oTreeView,
-            doc="Associated View Object")
+                    doc="Associated View Object")
     # disable-msg=W0212
 
     def set_select_single(self):

@@ -25,11 +25,11 @@ class CountCardSetCards(SutekhPlugin, BaseCountCSCards):
     TOT_FORMAT = FORMAT
     TOT_TOOLTIP = TOOLTIP
 
-    def _get_card_key(self, oAbsCard):
+    def _get_card_keys(self, oAbsCard):
         """Return 'crypt' or 'lib' as approriate"""
         if is_crypt_card(oAbsCard):
-            return CRYPT
-        return LIB
+            return [CRYPT]
+        return [LIB]
 
     def _add_dict_keys(self):
         """Add 'crypt' and 'lib' to the totals dict"""

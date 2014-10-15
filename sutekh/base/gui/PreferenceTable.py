@@ -41,11 +41,11 @@ class PreferenceTable(gtk.Table):
             # pylint: disable-msg=W0142
             # *args magic OK here
             self.attach(oOpt.oLabel, self.KEY_COL, self.KEY_COL + 1,
-                iRow, iRow + 1, **dAttachOpts)
+                        iRow, iRow + 1, **dAttachOpts)
             self.attach(oOpt.oEntry, self.ENTRY_COL, self.ENTRY_COL + 1,
-                iRow, iRow + 1, **dAttachOpts)
+                        iRow, iRow + 1, **dAttachOpts)
             self.attach(oOpt.oInherit, self.INHERIT_COL, self.INHERIT_COL + 1,
-                iRow, iRow + 1, **dAttachOpts)
+                        iRow, iRow + 1, **dAttachOpts)
 
     def update_values(self, dNewValues, dInherit, dEditable, dInheritedValues):
         """Update the option values.
@@ -258,7 +258,7 @@ class OptionListParsedSpec(BaseParsedSpec):
     def get_value(self):
         """Get the current list of selected items"""
         return [oButton.get_label() for oButton in self.oEntry.get_children()
-            if oButton.get_active()]
+                if oButton.get_active()]
 
 
 class IntegerParsedSpec(BaseParsedSpec):
