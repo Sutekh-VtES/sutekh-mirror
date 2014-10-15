@@ -1,3 +1,17 @@
+15 Oct 2014
+ * Update to handle latest "The Unaligned" expansion
+   - Add "The Unaligned" to expansion list
+   - Fix parsing of independent titles with the new templating.
+   - Fix parsing of Baron title
+ * Download new expansion images from lackeyccg.
+
+13 Oct 2014
+ * Download VEKN pdf expansion images from lackeyccg.com.
+
+08 Oct 2014
+ * Log download urls and image name in card images plugin when --verbose is
+   selected.
+
 07 Sep 2014
  * Add undo stack for card set editing operations
 
