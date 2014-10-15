@@ -3,6 +3,8 @@
    - Add "The Unaligned" to expansion list
    - Fix parsing of independent titles with the new templating.
    - Fix parsing of Baron title
+   - Fix error with parsing the "not for legal play" keyword in some cases
+   - Add "Anarch" keyword for all anarch vampires, including Barons.
  * Download new expansion images from lackeyccg.
 
 13 Oct 2014
