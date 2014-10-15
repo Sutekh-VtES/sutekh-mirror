@@ -151,6 +151,7 @@ class Expansions(AbbreviationLookup):
         'Sabbat Wars': ['SW'],
         'Sword of Caine': ['SoC'],
         'Tenth Anniversary': ['Tenth'],
+        'The Unaligned': ['TU'],
         'Third Edition': ['Third'],
         'Twilight Rebellion': ['TR'],
         'VTES': [],
@@ -250,6 +251,8 @@ class Titles(AbbreviationLookup):
         'Independent with 3 votes': [],
         # Laibon Titles
         'Magaji': [],
+        # Anarch Titles
+        'Baron': [],
     }
 
     dVoteValues = {
@@ -265,6 +268,8 @@ class Titles(AbbreviationLookup):
             'Independent with 3 votes': 3,
             # Laibon Titles
             'Magaji': 2,
+            # Anarch Titles
+            'Baron': 2,
             }
 
     @classmethod
