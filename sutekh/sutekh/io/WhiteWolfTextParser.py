@@ -74,6 +74,7 @@ def _find_sect_and_title(aLines):
         sSect = 'Independent'
         # Independent titles are on the next line. Of the form
         # 'Name has X vote(s)'
+        # Templating change with the Unaligned. Now Independent. X vote(s).
         # pylint: disable-msg=W0704
         # error isn't fatal, so ignoring it is fine
         try:
@@ -81,18 +82,36 @@ def _find_sect_and_title(aLines):
             # anchor the regexp
             oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
             oMatch = oIndTitle.search(aLines[1])
+            oIndTitle_new = re.compile('Independent. ([0-9]) vote')
+            oMatch_new = oIndTitle_new.search(aLines[0])
+            sVotes = ''
             if oMatch is not None and not aLines[1].startswith('[MERGED]'):
                 oMergedTitle = re.compile('MERGED.*has ([0-9]) vote')
                 oMergedMatch = oMergedTitle.search(aLines[1])
                 if oMergedMatch is not None and oMergedMatch.groups()[0] == \
                         oMatch.groups()[0]:
                     pass
-                elif oMatch.groups()[0] == '1':
+                else:
+                    sVotes = oMatch.groups()[0]
+            elif oMatch_new is not None:
+                sVotes = oMatch_new.groups()[0]
+            if sVotes:
+                if sVotes == '1':
                     sTitle = 'Independent with 1 vote'
-                elif oMatch.groups()[0] == '2':
+                elif sVotes == '2':
                     sTitle = 'Independent with 2 votes'
-                elif oMatch.groups()[0] == '3':
+                elif sVotes == '3':
                     sTitle = 'Independent with 3 votes'
+        except IndexError:
+            pass
+        # also check for Baron title
+        # pylint: disable-msg=W0704
+        # error isn't fatal, so ignoring it is fine
+        try:
+            oBaronTitle = re.compile('Anarch Baron of')
+            oMatch = oBaronTitle.search(aLines[0])
+            if oMatch is not None:
+                sTitle = 'Baron'
         except IndexError:
             pass
     elif aLines[0].find('Laibon') != -1:
