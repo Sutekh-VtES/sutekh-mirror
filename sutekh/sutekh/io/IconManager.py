@@ -66,17 +66,17 @@ def _get_discipline_filename(oDiscipline):
         if oDiscipline.discipline.fullname == 'Flight':
             sFileName = 'misc/iconmiscflight.gif'
         elif oDiscipline.level == 'inferior':
-            sFileName = 'misc/iconmisc%s.gif' \
-                    % oDiscipline.discipline.fullname.lower()
+            sFileName = ('misc/iconmisc%s.gif' %
+                         oDiscipline.discipline.fullname.lower())
         else:
-            sFileName = 'misc/iconmisc%ssup.gif' \
-                    % oDiscipline.discipline.fullname.lower()
+            sFileName = ('misc/iconmisc%ssup.gif' %
+                         oDiscipline.discipline.fullname.lower())
     elif oDiscipline.level == 'inferior':
-        sFileName = 'disciplines/icondis%s.gif' \
-                % oDiscipline.discipline.fullname.lower()
+        sFileName = ('disciplines/icondis%s.gif' %
+                     oDiscipline.discipline.fullname.lower())
     else:
-        sFileName = 'disciplines/icondis%ssup.gif' \
-                % oDiscipline.discipline.fullname.lower()
+        sFileName = ('disciplines/icondis%ssup.gif' %
+                     oDiscipline.discipline.fullname.lower())
     return sFileName
 
 
