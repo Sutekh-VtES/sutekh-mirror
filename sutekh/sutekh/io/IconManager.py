@@ -154,6 +154,10 @@ class IconManager(BaseIconManager):
             sFileName = 'misc/iconmiscburnoption.gif'
         elif sName == 'advanced':
             sFileName = 'misc/iconmiscadvanced.gif'
+        elif sName == 'merged':
+            sFileName = 'misc/iconmiscmerged.gif'
+        else:
+            return None
         return self._get_icon(sFileName)
 
     def get_info(self, sText, cGrouping):
@@ -247,3 +251,4 @@ class IconManager(BaseIconManager):
         # download the special cases
         self._download('misc/iconmiscburnoption.gif', oLogger)
         self._download('misc/iconmiscadvanced.gif', oLogger)
+        self._download('misc/iconmiscmerged.gif', oLogger)
