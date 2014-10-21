@@ -6,12 +6,9 @@
 
 """Widget for displaying the card text for the given card."""
 
-import logging
-from sutekh.base.core.BaseObjects import IKeyword
 from sutekh.SutekhUtility import format_text
 from sutekh.base.gui.BaseCardTextView import (BaseCardTextBuffer,
                                               BaseCardTextView)
-from sqlobject import SQLObjectNotFound
 
 
 class CardTextBuffer(BaseCardTextBuffer):
@@ -63,31 +60,6 @@ class CardTextView(BaseCardTextView):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager)
 
-        self._oBurnOption = None
-        self._oAdvanced = None
-        self.update_to_new_db()  # lookup burn option
-
-    def update_to_new_db(self):
-        """Cached lookup of the burn option keyword"""
-        # Burn option is a special case because of the icon, so we test for it
-        # a lot, so we cache the result
-        # Likewise, we cache advanced
-        # we can't do this during import, because we're not assured that the
-        # database exists yet
-        try:
-            self._oBurnOption = IKeyword('burn option')
-        except SQLObjectNotFound:
-            # protect against burn option being missing from the database
-            self._oBurnOption = None
-            logging.warn("Keyword 'burn option' not present in database.")
-
-        try:
-            self._oAdvanced = IKeyword('advanced')
-        except SQLObjectNotFound:
-            # protect against advanced being missing
-            self._oAdvanced = None
-            logging.warn("Keyword 'advanced' not present in database.")
-
     # pylint: disable-msg=R0912, R0915
     # We need to consider all cases for oCard, so need the branches
     # and statements
@@ -95,31 +67,31 @@ class CardTextView(BaseCardTextView):
         """Format the text for the card and add it to the buffer."""
         super(CardTextView, self).print_card_to_buffer(oCard)
 
-        if not oCard.cost is None:
+        if oCard.cost is not None:
             if oCard.cost == -1:
                 sCost = "X " + str(oCard.costtype)
             else:
                 sCost = str(oCard.cost) + " " + str(oCard.costtype)
             self._oBuf.labelled_value("Cost", sCost, "cost")
 
-        if not oCard.capacity is None:
+        if oCard.capacity is not None:
             self._oBuf.labelled_value("Capacity", str(oCard.capacity),
-                    "capacity")
+                                      "capacity")
 
-        if not oCard.life is None:
+        if oCard.life is not None:
             self._oBuf.labelled_value("Life", str(oCard.life), "life")
 
-        if not oCard.group is None:
+        if oCard.group is not None:
             if oCard.group == -1:
                 sGroup = 'Any'
             else:
                 sGroup = str(oCard.group)
             self._oBuf.labelled_value("Group", sGroup, "group")
 
-        if not oCard.level is None:
+        if oCard.level is not None:
             oIcon = self._oIconManager.get_icon_by_name('advanced')
             self._oBuf.labelled_value("Level", str(oCard.level), "level",
-                    oIcon)
+                                      oIcon)
 
         if len(oCard.cardtype) == 0:
             aInfo = ["Unknown"]
@@ -132,58 +104,58 @@ class CardTextView(BaseCardTextView):
             dIcons = {}
             aInfo = []
             for oItem in oCard.keywords:
-                if self._oBurnOption == oItem:
-                    oIcon = self._oIconManager.get_icon_by_name('burn option')
-                elif self._oAdvanced == oItem:
-                    oIcon = self._oIconManager.get_icon_by_name('advanced')
-                else:
-                    oIcon = None
+                oIcon = self._oIconManager.get_icon_by_name(oItem.keyword)
                 dIcons[oItem.keyword] = oIcon
                 aInfo.append(oItem.keyword)
             self._oBuf.labelled_list("Keywords:", aInfo,
-                    "keywords", dIcons)
+                                     "keywords", dIcons)
 
         if not len(oCard.clan) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.clan)
             self._oBuf.labelled_list("Clan",
-                    [oC.name for oC in oCard.clan], "clan", dIcons)
+                                     [oC.name for oC in oCard.clan],
+                                     "clan", dIcons)
 
         if not len(oCard.creed) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.creed)
             self._oBuf.labelled_list("Creed",
-                    [oC.name for oC in oCard.creed], "creed", dIcons)
+                                     [oC.name for oC in oCard.creed],
+                                     "creed", dIcons)
 
         if not len(oCard.sect) == 0:
             self._oBuf.labelled_compact_list("Sect",
-                    [oC.name for oC in oCard.sect], "sect")
+                                             [oC.name for oC in oCard.sect],
+                                             "sect")
 
         if not len(oCard.title) == 0:
             self._oBuf.labelled_compact_list("Title",
-                    [oC.name for oC in oCard.title], "title")
+                                             [oC.name for oC in oCard.title],
+                                             "title")
 
         if not len(oCard.discipline) == 0:
             aInfo = []
             aInfo.extend(sorted([oP.discipline.name for oP in oCard.discipline
-                if oP.level != 'superior']))
+                                 if oP.level != 'superior']))
             aInfo.extend(sorted([oP.discipline.name.upper() for oP in
-                oCard.discipline if oP.level == 'superior']))
+                                 oCard.discipline if oP.level == 'superior']))
             dIcons = self._oIconManager.get_icon_list(oCard.discipline)
             self._oBuf.labelled_list("Disciplines", aInfo, "discipline",
-                    dIcons)
+                                     dIcons)
 
         if not len(oCard.virtue) == 0:
             dIcons = self._oIconManager.get_icon_list(oCard.virtue)
             self._oBuf.labelled_list("Virtue",
-                    [oC.name for oC in oCard.virtue], "virtue", dIcons)
+                                     [oC.name for oC in oCard.virtue],
+                                     "virtue", dIcons)
 
         self._oBuf.tag_text("\n\n")
         self._oBuf.tag_text(format_text(oCard.text),
-                "card_text")
+                            "card_text")
 
         if not len(oCard.rulings) == 0:
             self._oBuf.tag_text("\n")
             aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
-                    in oCard.rulings]
+                     in oCard.rulings]
             self._oBuf.labelled_list("Rulings", aInfo, "ruling")
 
         if not len(oCard.rarity) == 0:
@@ -197,4 +169,5 @@ class CardTextView(BaseCardTextView):
         if len(oCard.artists) > 0:
             self._oBuf.tag_text("\n")
             self._oBuf.labelled_list("Artists",
-                    [oA.name for oA in oCard.artists], "artist")
+                                     [oA.name for oA in oCard.artists],
+                                     "artist")
