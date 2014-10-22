@@ -112,7 +112,13 @@ def textile2markdown(aLines, fProcessText):
     aOutput = []
     for sLine in aLines:
         sLine = fProcessText(sLine).strip()
-        if sLine.startswith('h1.'):
+        # We need to remove single line breaks in paragraphs, because
+        # sf turns those into <br> elements, but we need to keep
+        # \n\n sequences to create paragraph breaks
+        # This differs from traditional markdown, which is annoying
+        if not sLine:
+            sLine = '\n\n'
+        elif sLine.startswith('h1.'):
             sLine = sLine.replace('h1.', '#')
         elif sLine.startswith('h2.'):
             sLine = sLine.replace('h2.', '##')
@@ -127,10 +133,11 @@ def textile2markdown(aLines, fProcessText):
                 sLine = '%s <a name="%s"></a> %s' % ('#' * int(sDepth),
                                                      sLabel, sHeader)
             oMatch = NUM_LINK.search(sLine)
+            # List items need to end with a line break
             if oMatch:
                 sHash, sText, sLink = oMatch.groups()
                 sIndent = '  ' * len(sHash)
-                sLine = '%s 1. [%s](%s)' % (sIndent, sText, sLink)
+                sLine = '%s 1. [%s](%s)\n' % (sIndent, sText, sLink)
             # fix links
             sLine = re.sub(LINK_TEXT, r'[\1](\2)', sLine)
             oMatch = LIST_ITEM.search(sLine)
@@ -141,9 +148,12 @@ def textile2markdown(aLines, fProcessText):
                 # match easier
                 sIndent = '    ' * (len(oMatch.groups()[0]) - 1) + '-\\2'
                 sLine = re.sub(LIST_ITEM, sIndent, sLine)
+                sLine += '\n'
             sLine = re.sub(EMP_ITEM, r'**\1**', sLine)
+        if not sLine.endswith('\n'):
+            sLine += ' '
         aOutput.append(sLine)
-    return '\n'.join(aOutput)
+    return ''.join(aOutput)
 
 
 def _load_textile(sTextilePath):
