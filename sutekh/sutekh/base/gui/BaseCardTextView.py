@@ -147,6 +147,7 @@ class BaseCardTextView(gtk.TextView):
         super(BaseCardTextView, self).__init__()
         # Can be styled as frame_name.view
         self._oBuf = oBuffer
+        self._oNameOffset = None
 
         self.set_buffer(self._oBuf)
         self.set_editable(False)
@@ -180,11 +181,24 @@ class BaseCardTextView(gtk.TextView):
         # updated
         MessageBus.publish(CARD_TEXT_MSG, 'post_set_text', oPhysCard)
 
+    def add_button_to_text(self, oButton, sPrefix='\n'):
+        """Adds a button to the text view."""
+        if oButton in self.get_children():
+            return
+        # We insert buttons after the card name
+        oPos = self._oBuf.get_iter_at_line_offset(0, self._oNameOffset)
+        self._oBuf.insert(oPos, sPrefix)
+        oAnchor = self._oBuf.create_child_anchor(oPos)
+        self.add_child_at_anchor(oButton, oAnchor)
+        oButton.show()
+
     def clear_text(self):
         """Clear the text buffer."""
         # This is available as sometimes needed to ensure the state
         # of the text frame is sane (adding / removing from main window,
         # etc.)
+        for oChild in self.get_children():
+            self.remove(oChild)
         oStart, oEnd = self._oBuf.get_bounds()
         self._oBuf.delete(oStart, oEnd)
 
@@ -193,5 +207,7 @@ class BaseCardTextView(gtk.TextView):
         self._oBuf.reset_iter()
 
         self._oBuf.tag_text(oCard.name, "card_name")
+
+        self._oNameOffset = self._oBuf.get_end_iter().get_offset()
 
         # subclasses will do the rest
