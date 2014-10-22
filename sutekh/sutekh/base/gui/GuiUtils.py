@@ -62,3 +62,13 @@ def save_config(oConfig):
         sMesg = ('Unable to write the configuration file\n'
                  'Error was: %s' % oExp)
         do_exception_complaint(sMesg)
+
+
+def make_markup_button(sMarkup):
+    """Create a gtk.Button using the given markup string for the label."""
+    oBut = gtk.Button()
+    oLabel = gtk.Label()
+    oLabel.set_markup(sMarkup)
+    oBut.add(oLabel)
+    oBut.show_all()
+    return oBut
