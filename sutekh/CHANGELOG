@@ -1,3 +1,12 @@
+22 Oct 2014
+ * Add textile2md.py to convert the documentation into a format
+   the Sourceforge wiki understands.
+ * Fix incorrect title in the Card Set Filters help file.
+
+21 Oct 2014
+ * Add support for the "merged" icon to the icon manager
+ * Simplify handling of keywords with icons
+
 15 Oct 2014
  * Update to handle latest "The Unaligned" expansion
    - Add "The Unaligned" to expansion list

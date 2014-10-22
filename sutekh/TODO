@@ -11,7 +11,6 @@ Stuff that's fairly easy (we think)
  * More Error handling/reporting
    - Include version number and other such useful info in the exception dialog
  * Cluster Plugin Speed-up
- * Automate mirroring help to the wiki
  * Add more keyboard shortcuts
  * Right-click context menus
  * Write a script for tagging releases from a branch and generating release notes.
