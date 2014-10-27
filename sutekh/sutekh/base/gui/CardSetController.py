@@ -139,18 +139,21 @@ class CardSetController(object):
         update_card_set(self.__oPhysCardSet, self._oMainWindow)
 
     def _clear_undo_lists(self):
+        """Clear the list of undo / redo operations to avoid
+           inconsistencies."""
         self._aUndoList.clear()
         self._aRedoList.clear()
 
     def _fix_undo_status(self):
+        """Fix the state of the undo menu items."""
         if self._aUndoList:
-            self._oFrame._oMenu.set_undo_sensitive(True)
+            self._oFrame.menu.set_undo_sensitive(True)
         else:
-            self._oFrame._oMenu.set_undo_sensitive(False)
+            self._oFrame.menu.set_undo_sensitive(False)
         if self._aRedoList:
-            self._oFrame._oMenu.set_redo_sensitive(True)
+            self._oFrame.menu.set_redo_sensitive(True)
         else:
-            self._oFrame._oMenu.set_redo_sensitive(False)
+            self._oFrame.menu.set_redo_sensitive(False)
 
     def update_to_new_db(self):
         """Update the internal card set to the new DB."""

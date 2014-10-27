@@ -179,9 +179,11 @@ class CardSetMenu(CardListMenu):
         self._oController.redo_edit()
 
     def set_undo_sensitive(self, bValue):
+        """Toggle the undo menu item state."""
         self._oUndo.set_sensitive(bValue)
 
     def set_redo_sensitive(self, bValue):
+        """Toggle the redo menu item state."""
         self._oRedo.set_sensitive(bValue)
 
     def _paste_selection(self, _oWidget):
