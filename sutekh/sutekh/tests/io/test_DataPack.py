@@ -119,7 +119,7 @@ class DataPackTest(SutekhTest):
         sTempUrl = self.create_index("""Not JSON""")
         aErrors = []
 
-        sUrl, sHash = find_data_pack('starters', sTempUrl,
+        _sUrl, _sHash = find_data_pack('starters', sTempUrl,
                                      fErrorHandler=aErrors.append)
         [oExp] = aErrors
         self.assertTrue(isinstance(oExp, ValueError))
