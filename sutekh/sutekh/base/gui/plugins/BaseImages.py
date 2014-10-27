@@ -268,6 +268,9 @@ class BaseImageFrame(BasicFrame):
 
     def _load_image(self, sFullFilename):
         """Load an image into the pane, show broken image if needed"""
+        # pylint: disable-msg=R0912, R0914, R0915
+        # This is has to handle a number of special cases
+        # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
 
         if not check_file(sFullFilename):
@@ -283,8 +286,8 @@ class BaseImageFrame(BasicFrame):
                     return
                 for sUrl in aUrls:
                     if sUrl not in self._dUrlCache:
-                        logging.info('Trying %s as source for %s' %
-                                     (sUrl, sFullFilename))
+                        logging.info('Trying %s as source for %s',
+                                     sUrl, sFullFilename)
                         oFile = urlopen_with_timeout(
                             sUrl, fErrorHandler=image_gui_error_handler)
                     else:
@@ -303,9 +306,9 @@ class BaseImageFrame(BasicFrame):
                             oOutFile = file(sFullFilename, 'wb')
                             oOutFile.write(sImgData)
                             oOutFile.close()
-                            logging.info('Using image data from %s' % sUrl)
+                            logging.info('Using image data from %s', sUrl)
                         else:
-                            logging.info('Invalid image data from %s' % sUrl)
+                            logging.info('Invalid image data from %s', sUrl)
                             # Got bogus data, so skip this in future
                             self._dUrlCache[sUrl] = None
                         # Don't attempt to follow other urls
