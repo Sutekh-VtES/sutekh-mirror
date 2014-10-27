@@ -121,7 +121,8 @@ class StatsModel(gtk.TreeStore):
             self.oLegalFilter = make_illegal_filter()
         self.load(cGrping)
 
-    # pylint: disable-msg=R0914
+    # pylint: disable-msg=R0914, R0912
+    # R0912: Lots of different cases and loops, so a lot of branches
     # R0914: We use lots of local variables for clarity
     def load(self, cSubGrping):
         """Populate the contents of the TreeStore"""
@@ -137,6 +138,8 @@ class StatsModel(gtk.TreeStore):
             sDate = 'Unknown Date'
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
+                # pylint: disable-msg=E1101
+                # pyprotocols confuses pylint
                 oExp = IExpansion(sExp.strip())
                 if oExp.releasedate:
                     sDate = oExp.releasedate.strftime('%Y-%m-%d')
@@ -174,6 +177,8 @@ class StatsModel(gtk.TreeStore):
                             if not oPair.expansion.name.startswith('Promo-'):
                                 continue
                             oExp = oPair.expansion
+                            # pylint: disable-msg=E1103
+                            # pyprotocols confuses pylint
                             if oExp.releasedate:
                                 self.set(oCardIter, 1,
                                          oExp.releasedate.strftime('%Y-%m-%d'))
