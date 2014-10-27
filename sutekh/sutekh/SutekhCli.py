@@ -18,8 +18,11 @@ from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
                                           IPhysicalCardSet)
 from sutekh.core.SutekhObjects import TABLE_LIST
-# Ensure we have all the filters imported
+# pylint: disable-msg=W0611
+# We need this import to ensure we have all the filters imported
+# correctly, even though we don't use it directly
 import sutekh.core.Filters
+# pylint: enable-msg=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_date_list)
