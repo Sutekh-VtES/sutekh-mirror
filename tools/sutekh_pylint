@@ -28,4 +28,4 @@ max-line-length=79
 
 [VARIABLES]
 # We use the convention _oName to indicate dummy variables (i.e. unused vars) 
-dummy-variables=_[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+dummy-variables-rgx=_[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
