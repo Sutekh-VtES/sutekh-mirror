@@ -98,11 +98,11 @@ def textile2html(sText, dContext, fProcessText):
 
 def textile2markdown(aLines, fProcessText):
     """Convert textile content to markdown.
-    
+
        This is rule-based, and doesn't cover the full textile syntax.
        We aim to convert to the markdown variant supported by the
        sourceforge wiki."""
-    # pylint: disable-msg==R0914
+    # pylint: disable-msg=R0914
     # We use a bunch of local variables as psuedo-constants to
     # keep this self-contained
 
