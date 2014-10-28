@@ -87,6 +87,9 @@ class PEP8Checker(Base):
                   ['E271', 'E272', 'E273', 'E274']),
         'C5721': ('Incorrect whitespace around comma',
                   ['E241', 'E242']),
+        'C5722': ('continuation line under-indented', ['E128']),
+        'C5723': ('continuation line over-indented', ['E126']),
+        'C5724': ("test for membership should be 'not in'", ['E713']),
     }
     options = ()
 
