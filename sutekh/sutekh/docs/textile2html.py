@@ -24,7 +24,7 @@ sutekh_package = imp.load_module('sutekh', oFile, sModname, oDescription)
 Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
 sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
-                       'DocUtils.py')
+                        'DocUtils.py')
 DocUtils = imp.load_source('DocUtils', sDocPath)
 
 # pylint: enable-msg=C0103
