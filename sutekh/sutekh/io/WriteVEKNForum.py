@@ -41,12 +41,12 @@ from sutekh.SutekhInfo import SutekhInfo
 def add_clan_symbol(dLine):
     """Fix the clan symbol to account for special cases"""
     dSpecialClanMap = {
-            'True Brujah': ':trub:',
-            'Daughter of Cacophony': ':doca:',
-            'Follower of Set': ':fose:',
-            'Harbinger of Skulls': ':hosk:',
-            'Blood Brother': ':bbro:',
-            }
+        'True Brujah': ':trub:',
+        'Daughter of Cacophony': ':doca:',
+        'Follower of Set': ':fose:',
+        'Harbinger of Skulls': ':hosk:',
+        'Blood Brother': ':bbro:',
+    }
     if dLine['clan'] in dSpecialClanMap:
         sSymbol = dSpecialClanMap[dLine['clan']]
     elif 'antitribu' in dLine['clan']:
@@ -67,7 +67,8 @@ class WriteVEKNForum(ArdbInfo):
         return "[size=18][b]Deck Name : %s[/b][/size]\n" \
                "[b][u]Author :[/u][/b] %s\n" \
                "[b][u]Description :[/u][/b]\n%s\n" % (oHolder.name,
-                       oHolder.author, oHolder.comment)
+                                                      oHolder.author,
+                                                      oHolder.comment)
     # pylint: enable-msg=R0201
 
     def _gen_crypt(self, dCards):
@@ -87,7 +88,7 @@ class WriteVEKNForum(ArdbInfo):
         # so we need to keep track and format later
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                 key=lambda x: (-x[1][0], self._get_cap_key(x[0]),
-                    x[0].name)):
+                               x[0].name)):
             # We sort inversely on count, then capacity and then normally by
             # name
             dLine = {'count': iCount}
@@ -120,7 +121,7 @@ class WriteVEKNForum(ArdbInfo):
             if len(oCard.title):
                 dLine['title'] = [oC.name for oC in oCard.title][0]
                 dLine['title'] = dLine['title'].replace('Independent with ',
-                        '')[:12]
+                                                        '')[:12]
             dLine['group'] = int(oCard.group)
             aCryptLines.append(dLine)
 
@@ -155,7 +156,7 @@ class WriteVEKNForum(ArdbInfo):
             sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
 
             for oCard, iCount in sorted(dCards.iteritems(),
-                    key=lambda x: x[0].name):
+                                        key=lambda x: x[0].name):
                 sUrl = secret_library_url(oCard, False)
                 sLib += " %dx [url=%s]%s[/url]\n" % (iCount, sUrl, oCard.name)
 
@@ -177,5 +178,5 @@ class WriteVEKNForum(ArdbInfo):
         fOut.write(self._gen_library(dCards))
         fOut.write("\n")
         fOut.write("Recorded with : Sutekh %s [ %s ]\n" %
-                (SutekhInfo.VERSION_STR,
+                   (SutekhInfo.VERSION_STR,
                     time.strftime('%Y-%m-%d', time.localtime())))

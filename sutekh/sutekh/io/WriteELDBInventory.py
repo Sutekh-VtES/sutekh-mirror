@@ -38,7 +38,7 @@ class WriteELDBInventory(object):
             dCards[oAbsCard] += 1
         for oCard, iNum in dCards.iteritems():
             sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
-                    type_of_card(oCard))
+                                                type_of_card(oCard))
         return sResult
 
     # pylint: enable-msg=R0201
