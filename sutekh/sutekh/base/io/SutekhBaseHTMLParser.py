@@ -26,7 +26,7 @@ class HTMLStateError(StateError):
 
     def __str__(self):
         return "HTML Parser State Error : %s\nsData : %s\nTag : %s" % (
-                self._sInfo, self._sData, self._sTag)
+            self._sInfo, self._sData, self._sTag)
 
 
 class BaseState(object):

@@ -86,7 +86,7 @@ class BaseIdXMLFile(object):
 
     def id_file(self, sFileName):
         """Load the file sFileName, and try to identify it."""
-        fIn = file(sFileName, 'rU')
+        fIn = open(sFileName, 'rU')
         try:
             self.parse(fIn, None)
         finally:

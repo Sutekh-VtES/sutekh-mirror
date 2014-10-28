@@ -51,7 +51,7 @@ class BaseIconManager(object):
             oUrl = urlopen(sUrl)
             # copy url to file
             ensure_dir_exists(sBaseDir)
-            fOut = file(sFullFilename, 'wb')
+            fOut = open(sFullFilename, 'wb')
             fOut.write(oUrl.read())
             fOut.close()
         except HTTPError, oErr:

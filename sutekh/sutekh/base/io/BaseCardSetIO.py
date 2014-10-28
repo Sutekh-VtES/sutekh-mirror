@@ -89,12 +89,12 @@ class BaseCardSetParser(BaseCardXMLParser):
                 if oHolder.comment:
                     # We already encontered a comment, so error out
                     raise IOError("Format error. Multiple"
-                            " comment values encountered.")
+                                  " comment values encountered.")
                 oHolder.comment = oElem.text
             if oElem.tag == 'annotations':
                 if oHolder.annotations:
                     raise IOError("Format error. Multiple"
-                            " annotation values encountered.")
+                                  " annotation values encountered.")
                 oHolder.annotations = oElem.text
             elif oElem.tag == 'card':
                 self._parse_card(oElem, oHolder)
