@@ -20,18 +20,18 @@ import os
 
 # Possible copyright notice (email + possible date), but not in
 # right form
-COPYRIGHT = re.compile('^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
-                       ' \S+?.* <.*@.*>')
+COPYRIGHT = re.compile(r'^# ( )*Copyright [0-9]{4,}(, [0-9]{4,})*'
+                       r' \S+?.* <.*@.*>')
 # Standardise for other sutekh-derived card set managers
-PORTED_LINE = re.compile('^# ( )*(Imported into|Modified for)'
-                         ' [A-Z][a-z]+ [0-9]{4,}'
-                         '(, [0-9]{4,})* \S+?.* <.*@.*>')
-WRONG_COPYRIGHT = re.compile('.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
-                             '|^# Copyright.*')
+PORTED_LINE = re.compile(r'^# ( )*(Imported into|Modified for)'
+                         r' [A-Z][a-z]+ [0-9]{4,}'
+                         r'(, [0-9]{4,})* \S+?.* <.*@.*>')
+WRONG_COPYRIGHT = re.compile(r'.*<.*@.*> .*[0-9]*|.*[0-9]*.*<.*@.*>'
+                             r'|^# Copyright.*')
 # encoding lines
-VIM_MODELINE = re.compile('^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
-EMACS_CODING = re.compile('^# -\*- coding: ')
-PYCODING = re.compile('^# -\*- coding: |^# vim:fileencoding=')
+VIM_MODELINE = re.compile(r'^# vim:fileencoding=.* ai ts=4 sts=4 et sw=4')
+EMACS_CODING = re.compile(r'^# -\*- coding: ')
+PYCODING = re.compile(r'^# -\*- coding: |^# vim:fileencoding=')
 
 
 def parse_options(aArgs):
@@ -46,7 +46,7 @@ def parse_options(aArgs):
 
 def search_file(oFile, dScores, aWrongCopyrights, sFileName):
     """Loop through the comments header and assign the scores."""
-    # pylint: disable-msg=R0912
+    # pylint: disable=R0912
     # Lot's of cases to consider, so many branches
     sName = sFileName.split(os.path.sep)[-1]
     sCommentHeader = '# %s\n' % sName
@@ -92,7 +92,7 @@ def search_file(oFile, dScores, aWrongCopyrights, sFileName):
 
         if PYCODING.search(sLine) is not None:
             dScores['python encoding'] += 1
-            if (iLineCount < 2):
+            if iLineCount < 2:
                 bValidCoding = True
             if 'utf8' in sLine:
                 bWrongUTF8 = True
@@ -102,7 +102,7 @@ def search_file(oFile, dScores, aWrongCopyrights, sFileName):
 
 def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
     """Display any errors found in the file"""
-    # pylint: disable-msg=R0912
+    # pylint: disable=R0912
     # Lot's of cases to consider, so many branches
     bValidCoding, bValidEmacs, bWrongUTF8, bScript = tFlags
     if dScores['filename'] == 1:
@@ -152,16 +152,16 @@ def print_search_results(dScores, aWrongCopyrights, tFlags, sFileName):
 
 def score_failed(dScores):
     """Test if the file fails the test criteria"""
-    return (dScores['emacs coding'] == 1 | dScores['copyright'] == 1 |
-            dScores['modeline'] == 1 | dScores['license'] == 1 |
-            dScores['filename'] == 0 | dScores['python encoding'] == 2 |
+    return (dScores['emacs coding'] == 1 or dScores['copyright'] == 1 or
+            dScores['modeline'] == 1 or dScores['license'] == 1 or
+            dScores['filename'] == 0 or dScores['python encoding'] == 2 or
             dScores['wrong copyright'] == 0)
 
 
 def file_check(sFileName):
     """Actully do the checks. sFileName is the file to check."""
     try:
-        oFile = file(sFileName, 'r')
+        oFile = open(sFileName, 'r')
     except IOError:
         print 'Unable to open file %s ' % sFileName
         return False
@@ -185,7 +185,7 @@ def file_check(sFileName):
 
     print_search_results(dScores, aWrongCopyrights, tFlags, sFileName)
 
-    return not (score_failed(dScores) | tFlags[0])
+    return not (score_failed(dScores) or tFlags[0])
 
 
 def main(aArgs):
