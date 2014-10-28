@@ -25,7 +25,7 @@ class SutekhInfo(object):
 
     PEOPLE = {
         'Simon': ('Simon Cross', 'hodgestar+sutekh@gmail.com'),
-        'Neil': ('Neil Muller', 'drnmuller+sutekh@gmail.com'),
+        'Neil': ('Neil Muller', 'drnlmuller+sutekh@gmail.com'),
         'Adrianna': ('Adrianna Pinska', 'adrianna.pinska+sutekh@gmail.com'),
     }
 
