@@ -14,11 +14,8 @@
 # The path to this file needs to be in PYTHONPATH as pylint must be able
 # to import this
 
+from compat_helper import Base, compat_register
 from pylint.interfaces import IRawChecker
-try:
-    from pylint.checkers import BaseRawChecker as Base
-except ImportError:
-    from pylint.checkers import BaseChecker as Base
 import pep8
 
 
@@ -26,7 +23,7 @@ class DummyOptions(object):
     """Mockup object so we can use pep8 without having it stomp over pylint's
        argument passing"""
 
-    # pylint: disable-msg=C0103, R0902
+    # pylint: disable=C0103, R0902
     # Need these names and attributes to monkey-patch pep8
     def __init__(self):
         self.counters = {}
@@ -49,6 +46,8 @@ class DummyOptions(object):
 
     def fix_checks(self):
         """Setup the check list correctly, after monkey-patching options"""
+        # pylint: disable=E1101
+        # We only call this code on versions of pep8 which have find_checks
         self.physical_checks = pep8.find_checks('physical_line')
         self.logical_checks = pep8.find_checks('logical_line')
 
@@ -62,47 +61,60 @@ class PEP8Checker(Base):
     # We construct msgs from this later - this allows us to maintain the
     # mapping between pep8 and pylint easily
     mapping = {
-            # pylint requires that all messages start with the same first 2
-            # digits, so our numbers aren't related to the pep8 numbers
-            'C5701': ("Whitespace before ',',':' or ';'", ['E203']),
-            'C5702': ('Extra whitespace around operator',
-                ['E221', 'E222', 'E223', 'E224']),
-            'C5703': ('Missing whitespace around operator', ['E225']),
-            'C5704': ('Too few blank lines', ['E301', 'E302']),
-            'C5705': ('Too many blank lines', ['E303']),
-            'C5706': ('Blank line after decorator', ['E304']),
-            'C5707': ('Too few spaces before inline comment', ['E261']),
-            'C5708': ('Too many spaces after # in inline comment', ['E262']),
-            'C5709': ("Missing whitespace after ',',':' or ';'", ['E231']),
-            'C5710': ("Whitespace after '{', '[' or '('", ['E201']),
-            'C5711': ("Whitespace before '}', ']' or ')'", ['E202']),
-            'C5712': ("Blank line at end of file", ['W391']),
-            'C5713': ("No newline at end of file", ['W292']),
-            'C5714': ("Whitespace before '{', '[' or '('", ['E211']),
-            'C5715': ("Spaces around keyword / parameter =", ['E251']),
-            'C5716': ("Multiple imports on one line", ['E401']),
-            'C5717': ("Trailing whitespace", ['W291', 'W293']),
-            'C5718': ("Unneeded backslash", ['E502']),
-            'C5719': ("Deprecated raise expression", ['W602']),
-            'C5719': ("Extra whitespace around keyword",
-                ['E271', 'E272', 'E273', 'E274']),
-            'C5720': ('Incorrect whitespace around comma',
-                ['E241', 'E242']),
-            }
+        # pylint requires that all messages start with the same first 2
+        # digits, so our numbers aren't related to the pep8 numbers
+        'C5701': ("Whitespace before ',',':' or ';'", ['E203']),
+        'C5702': ('Extra whitespace around operator',
+                  ['E221', 'E222', 'E223', 'E224']),
+        'C5703': ('Missing whitespace around operator', ['E225']),
+        'C5704': ('Too few blank lines', ['E301', 'E302']),
+        'C5705': ('Too many blank lines', ['E303']),
+        'C5706': ('Blank line after decorator', ['E304']),
+        'C5707': ('Too few spaces before inline comment', ['E261']),
+        'C5708': ('Too many spaces after # in inline comment', ['E262']),
+        'C5709': ("Missing whitespace after ',',':' or ';'", ['E231']),
+        'C5710': ("Whitespace after '{', '[' or '('", ['E201']),
+        'C5711': ("Whitespace before '}', ']' or ')'", ['E202']),
+        'C5712': ("Blank line at end of file", ['W391']),
+        'C5713': ("No newline at end of file", ['W292']),
+        'C5714': ("Whitespace before '{', '[' or '('", ['E211']),
+        'C5715': ("Spaces around keyword / parameter =", ['E251']),
+        'C5716': ("Multiple imports on one line", ['E401']),
+        'C5717': ("Trailing whitespace", ['W291', 'W293']),
+        'C5718': ("Unneeded backslash", ['E502']),
+        'C5719': ("Deprecated raise expression", ['W602']),
+        'C5720': ("Extra whitespace around keyword",
+                  ['E271', 'E272', 'E273', 'E274']),
+        'C5721': ('Incorrect whitespace around comma',
+                  ['E241', 'E242']),
+    }
     options = ()
 
     def __init__(self, oLinter):
         # Constuct the pylint msgs dict from mapping
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # msgs is the pylint required name
         self.msgs = {}
         for sPylint, tData in self.mapping.iteritems():
             sMsg = 'pep8 %s: %s : (position %%d)%%s' % (','.join(tData[1]),
-                    tData[0])
-            self.msgs[sPylint] = (sMsg, sMsg)
+                                                        tData[0])
+            sSymbol = 'pep8-%s' % ','.join(tData[1])
+            self.msgs[sPylint] = (sMsg, sSymbol, sMsg)
         super(PEP8Checker, self).__init__(oLinter)
-        pep8.options = DummyOptions()
-        pep8.options.fix_checks()
+        # pylint: disable=E1101
+        # We guard access to StyleGuide with hasattr
+        if not hasattr(pep8, 'StyleGuide'):
+            # support older pep8 versions
+            pep8.options = DummyOptions()
+            pep8.options.fix_checks()
+        else:
+            # Use pep8 StyleGuide object
+            oGuide = pep8.StyleGuide(parse_argv=False, config_file=False,
+                                     quiet=0, verbose=0, repeat=True,
+                                     doctest=False, testsuite=False,
+                                     show_pep8=False, show_source=False,
+                                     max_line_length=79)
+            pep8.options = oGuide.options
         self.oChecker = None
 
     def _transform_error(self, iLineNo, iOffset, sMessage, _oCheck):
@@ -122,7 +134,7 @@ class PEP8Checker(Base):
                     # We rely on the newline at the end of sLine here
                     sUnderline = '\n%s%s' % (sLine, sCaret)
                     self.add_message(sPylint, line=iLineNo,
-                            args=(iOffset, sUnderline))
+                                     args=(iOffset, sUnderline))
                 else:
                     self.add_message(sPylint, line=iLineNo, args=(1, ''))
 
@@ -145,4 +157,4 @@ class PEP8Checker(Base):
 
 def register(oLinter):
     """required method to auto register this checker."""
-    oLinter.register_checker(PEP8Checker(oLinter))
+    compat_register(PEP8Checker, oLinter)

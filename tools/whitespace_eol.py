@@ -11,10 +11,7 @@
 # to import this
 
 from pylint.interfaces import IRawChecker
-try:
-    from pylint.checkers import BaseRawChecker as Base
-except ImportError:
-    from pylint.checkers import BaseChecker as Base
+from compat_helper import Base, compat_register
 
 
 class WhitespaceEOLChecker(Base):
@@ -24,9 +21,10 @@ class WhitespaceEOLChecker(Base):
 
     name = 'whitespace eol'
     msgs = {'C9968': ('whitespace at the end of a line',
+                      'eol-whitespace',
                       ('Line ends with whitespace, rather than immediately'
                        ' after the text')),
-            }
+           }
     options = ()
 
     def process_module(self, aStream):
@@ -48,4 +46,4 @@ class WhitespaceEOLChecker(Base):
 
 def register(oLinter):
     """required method to auto register this checker."""
-    oLinter.register_checker(WhitespaceEOLChecker(oLinter))
+    compat_register(WhitespaceEOLChecker, oLinter)

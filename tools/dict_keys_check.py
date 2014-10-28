@@ -10,31 +10,38 @@
 # The path to this file needs to be in PYTHONPATH as pylint must be able
 # to import this
 
-from pylint.interfaces import IASTNGChecker
-from pylint.checkers import BaseChecker
-from logilab import astng
+from compat_helper import IAstroidChecker, Base, astroid, compat_register
 
 
-# pylint: disable-msg=R0904
-# Handling three cases, so we exceed the 20 method pylint limit
-class MyDictKeyChecker(BaseChecker):
+# pylint: disable=R0904, F0220
+# R0904: Handling three cases, so we exceed the 20 method pylint limit
+# F0220: Our compat import dance confuses pylint's interface checker
+class MyDictKeyChecker(Base):
     """Check for "for a in Dict.keys()" usage"""
 
-    __implements__ = IASTNGChecker
+    __implements__ = IAstroidChecker
 
     name = 'custom_dict_keys'
-    msgs = {'W9967': ('Used x in Dict.keys()',
+    msgs = {'W9967': ('Used x in Dict.keys()', 'x_in_dict',
                       ('Used when "x in Dict.keys()" is used rather than'
-                          ' "x in Dict"')),
-            }
+                       ' "x in Dict"')),
+           }
     options = ()
+
+    def process_tokens(self, _aTokens):
+        """Dummy method to make pylint happy"""
+        pass
+
+    def open(self):
+        """Dummy function."""
+        pass
 
     def __internal_test(self, oNode):
         """Grunt work of the test"""
         if not hasattr(oNode, 'list'):
             # Later pylint is different. Bother
             oForObject = list(oNode.get_children())[1]  # part we want
-            if type(oForObject) is astng.CallFunc:
+            if type(oForObject) is astroid.CallFunc:
                 # Check if name is keys
                 oChild = list(oForObject.get_children())[0]
                 if hasattr(oChild, 'attrname') and oChild.attrname == 'keys':
@@ -81,4 +88,4 @@ class MyDictKeyChecker(BaseChecker):
 
 def register(oLinter):
     """required method to auto register this checker"""
-    oLinter.register_checker(MyDictKeyChecker(oLinter))
+    compat_register(MyDictKeyChecker, oLinter)

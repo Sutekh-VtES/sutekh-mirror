@@ -11,9 +11,7 @@
 # The path to this file needs to be in PYTHONPATH as pylint must be able
 # to import this
 
-from pylint.interfaces import IASTNGChecker
-from pylint.checkers import BaseChecker
-from logilab import astng
+from compat_helper import Base, IAstroidChecker, astroid, compat_register
 
 
 def _get_child_nodes(oNode):
@@ -27,14 +25,17 @@ def _get_child_nodes(oNode):
         return []
 
 
-class MyPyProtocolsChecker(BaseChecker):
+# pylint: disable=F0220
+# F0220: Our compat import dance confuses pylint's interface checker
+class MyPyProtocolsChecker(Base):
+
     """Check for PyProtocols advises syntax
 
        This is a bit clumsy, as it does a fair amount of AST walking on
        all the classes encountered, and monkey-patches the AST pylint
        uses."""
 
-    __implements__ = IASTNGChecker
+    __implements__ = IAstroidChecker
 
     name = 'custom_pyprotocols_interface'
     # Since we just add addtional info to the AST, we have no messages
@@ -44,8 +45,9 @@ class MyPyProtocolsChecker(BaseChecker):
     # We need to have a msgid or reportid, otherwise newer pylints don't
     # add this to the enable checker list
     msgs = {'C6789': ('PyProtocols Interface checker dummy message',
-        ('Dummy message to prevent pylint optimising us out')),
-        }
+                      'pyprotocols_dummy',
+                      'Dummy message to prevent pylint optimising us out')
+           }
 
     def __init__(self, oLinter=None):
         """Constructor"""
@@ -56,17 +58,21 @@ class MyPyProtocolsChecker(BaseChecker):
         """initialize visit variables"""
         self._dInterfaces = {}
 
+    def process_tokens(self, _aTokens):
+        """Dummy method to make pylint happy"""
+        pass
+
     def find_poss_advise_call(self, oNode, aClasses):
         """Check to see if we have a 'advise' function call"""
         # Ugly check here
         for oSubNode in _get_child_nodes(oNode):
-            if isinstance(oSubNode, astng.CallFunc):
+            if isinstance(oSubNode, astroid.CallFunc):
                 if self.check_poss_advise_call(oSubNode, aClasses):
                     return True
-            elif not isinstance(oSubNode, astng.Discard):
+            elif not isinstance(oSubNode, astroid.Discard):
                 continue
             for oPossAdvise in _get_child_nodes(oSubNode):
-                if not isinstance(oPossAdvise, astng.CallFunc):
+                if not isinstance(oPossAdvise, astroid.CallFunc):
                     continue
                 if self.check_poss_advise_call(oPossAdvise, aClasses):
                     return True
@@ -77,10 +83,10 @@ class MyPyProtocolsChecker(BaseChecker):
         bNamedAdvise = False
         bProvides = False
         for oInfoNode in _get_child_nodes(oNode):
-            if isinstance(oInfoNode, astng.Name) and \
+            if isinstance(oInfoNode, astroid.Name) and \
                     oInfoNode.name == 'advise':
                 bNamedAdvise = True
-            elif isinstance(oInfoNode, astng.Keyword):
+            elif isinstance(oInfoNode, astroid.Keyword):
                 sName = ''
                 if hasattr(oInfoNode, 'name'):
                     sName = oInfoNode.name
@@ -96,7 +102,7 @@ class MyPyProtocolsChecker(BaseChecker):
     def extract_classes(self, oNode, aClasses):
         """Extract the inferface provided from the keyword node"""
         for oSubNode in _get_child_nodes(oNode):
-            if not isinstance(oSubNode, astng.List):
+            if not isinstance(oSubNode, astroid.List):
                 return False
             for oName in _get_child_nodes(oSubNode):
                 if oName.name in self._dInterfaces:
@@ -120,7 +126,7 @@ class MyPyProtocolsChecker(BaseChecker):
                     # much messing with the AST, so we just monkey patch.
                     # Given that the logilab.astng moknkey patches compiler.ast
                     # extensively, this isn't that bad an option
-                    # pylint: disable-msg=C0322
+                    # pylint: disable=C0322
                     # C0322: pylint get's this wrong
                     oNode.interfaces = lambda herited=True, \
                             handler_func=None: aClasses
@@ -148,4 +154,4 @@ class MyPyProtocolsChecker(BaseChecker):
 
 def register(oLinter):
     """required method to auto register this checker"""
-    oLinter.register_checker(MyPyProtocolsChecker(oLinter))
+    compat_register(MyPyProtocolsChecker, oLinter)
