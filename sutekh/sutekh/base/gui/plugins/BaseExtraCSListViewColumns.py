@@ -55,7 +55,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     dCardSetListConfig = {}
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExtraCSListViewColumns, self).__init__(*args, **kwargs)
@@ -65,7 +65,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
             listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
             listen_changed(self.card_changed, PhysicalCardSet)
-    # pylint: enable-msg=W0142
+    # pylint: enable=W0142
 
     def cleanup(self):
         """Disconnect the database listeners"""
@@ -119,7 +119,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             # Cache lookups, so we don't hit the database so hard when
             # sorting
             if sCardSetName not in self._dCache:
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # pylint + AbstractCard method wierdness
                 self._dCache[sCardSetName] = {}
                 self._dCache[sCardSetName]['Card Set'] = \
@@ -131,7 +131,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             self._dCache[sCardSetName]['Card Set'] = None
             return None
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when
@@ -253,7 +253,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
         aText, aIcons = self._get_data_description(sCardSet, True)
         oCell.set_data(aText, aIcons, self._iShowMode)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     # SQLObject event listeners
     # While we can try to be clever and update the cache, there are enough

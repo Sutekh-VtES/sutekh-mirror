@@ -30,7 +30,7 @@ class CardInfo(object):
 
 def _get_cards(oCardSet, dCards, bIgnoreExpansions):
     """Extract the abstract cards from the card set oCardSet"""
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # SQLObject + pyprotocol methods confuse pylint
     if bIgnoreExpansions:
         fCard = lambda oCard: oCard.abstractCard
@@ -86,7 +86,7 @@ class BaseIndependence(BasePlugin):
 
     def make_dialog(self):
         """Create the list of card sets to select"""
-        # pylint: disable-msg=W0201, E1101
+        # pylint: disable=W0201, E1101
         # E1101: PyProtocols confuses pylint
         # W0201: No need to define oThisCardSet, oCSView & oInUseButton in
         # __init__
@@ -102,7 +102,7 @@ class BaseIndependence(BasePlugin):
                             (gtk.STOCK_OK, gtk.RESPONSE_OK,
                              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oCSView = CardSetsListView(None, oDlg)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), expand=True)
         self.oCSView.set_select_multiple()
@@ -139,7 +139,7 @@ class BaseIndependence(BasePlugin):
 
     def handle_response(self, oDlg, oResponse):
         """Handle the response from the dialog."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # Pyprotocols confuses pylint
         if oResponse == gtk.RESPONSE_OK:
             bIgnoreExpansions = self.oIgnoreExpansions.get_active()
@@ -162,7 +162,7 @@ class BaseIndependence(BasePlugin):
 
     def _display_results(self, dMissing, oParentCS):
         """Display the list of missing cards"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: PyProtocols confuses pylint
         oResultDlg = SutekhDialog("Missing Cards", None,
                                   gtk.DIALOG_MODAL |
@@ -207,7 +207,7 @@ class BaseIndependence(BasePlugin):
             oHeading.set_markup('Missing in %s' % self.escape(sCardSet))
             oNotebook.append_page(AutoScrolledWindow(
                 _make_align_list(aMsgs), True), oHeading)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint misses vbox methods
         oResultDlg.vbox.pack_start(oNotebook)
         oResultDlg.set_size_request(600, 600)

@@ -187,7 +187,7 @@ class BaseOpeningDraw(BasePlugin):
     MAXSIZE = 500
     COLUMN_WIDTH = 450
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseOpeningDraw, self).__init__(*args, **kwargs)
@@ -223,7 +223,7 @@ class BaseOpeningDraw(BasePlugin):
         oShowButton = gtk.Button('draw sample hands')
         oShowButton.connect('clicked', self._fill_dialog)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oShowButton, False, False)
 
@@ -270,7 +270,7 @@ class BaseOpeningDraw(BasePlugin):
                                gtk.DIALOG_MODAL |
                                gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't see vbox + action_area methods
         oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
         oDialog.action_area.pack_start(gtk.VSeparator(), expand=True)
@@ -292,7 +292,7 @@ class BaseOpeningDraw(BasePlugin):
         oDialog.show_all()
         oDialog.run()
 
-    # pylint: disable-msg=R0912
+    # pylint: disable=R0912
     # We need to handle all the responses, so the number of branches is large
     def _next_hand(self, oDialog, iResponse, oBackButton, oShowButton):
         """Change the shown hand in the dialog."""

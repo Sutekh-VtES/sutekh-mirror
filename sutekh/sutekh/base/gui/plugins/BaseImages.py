@@ -57,7 +57,7 @@ def check_file(sFileName):
     """Check if file exists and is readable"""
     bRes = True
     try:
-        fTest = file(sFileName, 'rb')
+        fTest = open(sFileName, 'rb')
         fTest.close()
     except IOError:
         bRes = False
@@ -84,7 +84,7 @@ def image_gui_error_handler(oExp):
 
 
 class CardImagePopupMenu(gtk.Menu):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - can't not trigger these warning with pygtk
     """Popup menu for the Card Image Frame"""
 
@@ -142,7 +142,7 @@ class CardImagePopupMenu(gtk.Menu):
 
 
 class BaseImageFrame(BasicFrame):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
     """Frame which displays the image.
@@ -224,7 +224,7 @@ class BaseImageFrame(BasicFrame):
 
     def _set_expansion_info(self, sCardName):
         """Set the expansion info."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up IAbstractCard methods correctly
         try:
             oAbsCard = IAbstractCard(sCardName)
@@ -268,7 +268,7 @@ class BaseImageFrame(BasicFrame):
 
     def _load_image(self, sFullFilename):
         """Load an image into the pane, show broken image if needed"""
-        # pylint: disable-msg=R0912, R0914, R0915
+        # pylint: disable=R0912, R0914, R0915
         # This is has to handle a number of special cases
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
@@ -303,7 +303,7 @@ class BaseImageFrame(BasicFrame):
                         sImgData = progress_fetch_data(oFile)
                         oFile.close()
                         if sImgData:
-                            oOutFile = file(sFullFilename, 'wb')
+                            oOutFile = open(sFullFilename, 'wb')
                             oOutFile.write(sImgData)
                             oOutFile.close()
                             logging.info('Using image data from %s', sUrl)
@@ -318,7 +318,7 @@ class BaseImageFrame(BasicFrame):
                 self.oExpansionLabel.set_markup(
                     '<i>Image from expansion : </i> %s' % self._sCurExpansion)
                 self.oExpansionLabel.show()
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # pylint doesn't pick up allocation methods correctly
                 iHeightOffset = self.oExpansionLabel.allocation.height + 2
             else:
@@ -452,7 +452,7 @@ class BaseImageFrame(BasicFrame):
 
 
 class BaseImageConfigDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Base Dialog for configuring the Image plugin."""
 
@@ -488,7 +488,7 @@ class BaseImageConfigDialog(SutekhDialog):
             "Choose location for images file", "Choose image directory",
             sDefaultDir, dUrls)
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(self.oDescLabel, False, False)
         if not bFirstTime:
@@ -541,7 +541,7 @@ class BaseImagePlugin(BasePlugin):
     _sMenuFlag = BaseImageFrame.sMenuFlag
     _cImageFrame = BaseImageFrame
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseImagePlugin, self).__init__(*args, **kwargs)
@@ -646,7 +646,7 @@ class BaseImagePlugin(BasePlugin):
             sFileName = sFileName.replace('/', os.path.sep)
             sDir = os.path.dirname(sFileName)
             ensure_dir_exists(sDir)
-            oOutputFile = file(sFileName, 'wb')
+            oOutputFile = open(sFileName, 'wb')
             oOutputFile.write(oData)
             oOutputFile.close()
         oProgressDialog.destroy()

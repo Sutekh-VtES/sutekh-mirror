@@ -48,7 +48,7 @@ class BaseImport(BasePlugin):
         # are sorted alphabetically
     }
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK
     def __init__(self, *aArgs, **kwargs):
         super(BaseImport, self).__init__(*aArgs, **kwargs)
@@ -74,7 +74,7 @@ class BaseImport(BasePlugin):
                                  (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.oDlg.vbox.pack_start(gtk.Label("URL:"), expand=False)
 
@@ -158,7 +158,7 @@ class BaseImport(BasePlugin):
 
     def make_cs_from_file(self, sFile, cParser):
         """From an file, create an Card Set"""
-        fIn = file(sFile, "rb")
+        fIn = open(sFile, "rb")
         try:
             import_cs(fIn, cParser(), self.parent)
         finally:

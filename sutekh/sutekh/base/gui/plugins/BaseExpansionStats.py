@@ -30,7 +30,7 @@ class BaseExpansionStats(BasePlugin):
     dTableVersions = {Expansion: (4, )}
     aModelsSupported = (PhysicalCard,)
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExpansionStats, self).__init__(*args, **kwargs)
@@ -60,7 +60,7 @@ class BaseExpansionStats(BasePlugin):
 
         self._oStatsVbox = gtk.VBox(False, 0)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox methods not seen
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)
@@ -84,7 +84,7 @@ class BaseExpansionStats(BasePlugin):
 
 
 class StatsView(gtk.TreeView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """TreeView used to display expansion stats"""
 
@@ -106,12 +106,12 @@ class StatsView(gtk.TreeView):
 
 
 class StatsModel(gtk.TreeStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the expansion statistics"""
 
     def __init__(self, cGrping, bHideIllegal):
-        # pylint: disable-msg=W0142
+        # pylint: disable=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
@@ -121,7 +121,7 @@ class StatsModel(gtk.TreeStore):
             self.oLegalFilter = make_illegal_filter()
         self.load(cGrping)
 
-    # pylint: disable-msg=R0914, R0912
+    # pylint: disable=R0914, R0912
     # R0912: Lots of different cases and loops, so a lot of branches
     # R0914: We use lots of local variables for clarity
     def load(self, cSubGrping):
@@ -138,7 +138,7 @@ class StatsModel(gtk.TreeStore):
             sDate = 'Unknown Date'
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # pyprotocols confuses pylint
                 oExp = IExpansion(sExp.strip())
                 if oExp.releasedate:
@@ -177,7 +177,7 @@ class StatsModel(gtk.TreeStore):
                             if not oPair.expansion.name.startswith('Promo-'):
                                 continue
                             oExp = oPair.expansion
-                            # pylint: disable-msg=E1103
+                            # pylint: disable=E1103
                             # pyprotocols confuses pylint
                             if oExp.releasedate:
                                 self.set(oCardIter, 1,

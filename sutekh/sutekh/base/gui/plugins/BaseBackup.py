@@ -72,7 +72,7 @@ class BaseBackup(BasePlugin):
 
     def handle_backup_response(self, sFilename):
         """Handle response from backup dialog"""
-        # pylint: disable-msg=W0703
+        # pylint: disable=W0703
         # we really do want all the exceptions
         try:
             oLogHandler = SutekhCountLogHandler()
@@ -80,10 +80,10 @@ class BaseBackup(BasePlugin):
             oProgressDialog.set_description("Saving backup")
             oLogHandler.set_dialog(oProgressDialog)
             oProgressDialog.show()
-            # pylint: disable-msg=E1102
+            # pylint: disable=E1102
             # subclasses will provide a callable cZipWrapper
             oFile = self.cZipWrapper(sFilename)
-            # pylint: enable-msg=E1102
+            # pylint: enable=E1102
             oFile.do_dump_all_to_zip(oLogHandler)
             oProgressDialog.destroy()
         except Exception, oException:
@@ -99,7 +99,7 @@ class BaseBackup(BasePlugin):
 
         oWarning = gtk.Label()
         oWarning.set_markup("<b>This will delete all existing Card Sets</b>")
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # plint doesn't pick up vbox methods correctly
         oDlg.vbox.pack_start(oWarning, expand=False)
         oDlg.vbox.reorder_child(oWarning, 0)
@@ -126,10 +126,10 @@ class BaseBackup(BasePlugin):
                 oProgressDialog.set_description("Restoring backup")
                 oLogHandler.set_dialog(oProgressDialog)
                 oProgressDialog.show()
-                # pylint: disable-msg=E1102
+                # pylint: disable=E1102
                 # subclasses will provide a callable cZipWrapper
                 oFile = self.cZipWrapper(sFilename)
-                # pylint: enable-msg=E1102
+                # pylint: enable=E1102
                 oFile.do_restore_from_zip(self.cardlookup, oLogHandler)
                 # restore successful, refresh display
                 aMessages = oFile.get_warnings()
@@ -143,7 +143,7 @@ class BaseBackup(BasePlugin):
                 self.parent.update_to_new_db()
                 oProgressDialog.destroy()
                 self.parent.restore_editable_panes(aEditable)
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we really do want all the exceptions
             except Exception, oException:
                 # Undo effects of prepare for

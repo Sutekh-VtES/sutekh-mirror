@@ -26,7 +26,7 @@ class BaseCountCSCards(BasePlugin):
     TOT_FORMAT = ''
     TOT_TOOLTIP = ''
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseCountCSCards, self).__init__(*args, **kwargs)
@@ -42,7 +42,7 @@ class BaseCountCSCards(BasePlugin):
             MessageBus.subscribe(self.model, 'alter_card_count',
                                  self.alter_card_count)
             MessageBus.subscribe(self.model, 'load', self.load)
-    # pylint: enable-msg=W0142
+    # pylint: enable=W0142
 
     def cleanup(self):
         """Remove the listener"""

@@ -56,7 +56,7 @@ class BaseShowExported(BasePlugin):
         oTextView.set_wrap_mode(gtk.WRAP_NONE)  # preserve long lines
         oTextView.set_border_width(5)
         oTextView.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("white"))
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(AutoScrolledWindow(oTextView))
         # Add the radio buttons
@@ -102,7 +102,7 @@ class BaseShowExported(BasePlugin):
 
 
 class ExportBuffer(gtk.TextBuffer):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Buffer object for showing the exported card set text"""
 

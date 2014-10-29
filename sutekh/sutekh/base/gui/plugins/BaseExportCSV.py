@@ -30,7 +30,7 @@ class BaseExportCSV(BasePlugin):
 
     def make_dialog(self, _oWidget):
         """Create the dialog"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oDlg = ExportDialog("Choose FileName for Exported CardSet",
                             self.parent,
@@ -50,7 +50,7 @@ class BaseExportCSV(BasePlugin):
 
     def handle_response(self, sFileName, bIncHeader, bIncExpansion):
         """Handle the users response. Write the CSV output to file."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods confuse pylint
         if sFileName is not None:
             oCardSet = self.get_card_set()
