@@ -108,7 +108,7 @@ def monger_url(oCard, bVamp):
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
             sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s ADV" \
-                    % sName
+                         % sName
         else:
             sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s" % sName
     else:
@@ -125,13 +125,13 @@ def secret_library_url(oCard, bVamp):
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
             sURL = "http://www.secretlibrary.info/?crypt=%s+Adv" \
-                    % sName
+                   % sName
         else:
             sURL = "http://www.secretlibrary.info/?crypt=%s" \
-                    % sName
+                   % sName
     else:
         sURL = "http://www.secretlibrary.info/?lib=%s" \
-                    % sName
+               % sName
     sURL = sURL.replace(' ', '+')
     # ET will replace " with &quot;, which can lead to issues with SL, so we
     # drop double quotes entirely

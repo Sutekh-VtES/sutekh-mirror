@@ -29,29 +29,29 @@ from sutekh.SutekhInfo import SutekhInfo
 
 def parse_options(aArgs):
     """SutekhGui's option parsing"""
-    oOptParser = optparse.OptionParser(usage="usage: %prog [options]",
-            version="%%prog %s" % SutekhInfo.VERSION_STR)
+    oOptParser = optparse.OptionParser(
+        usage="usage: %prog [options]",
+        version="%%prog %s" % SutekhInfo.VERSION_STR)
     oOptParser.add_option("-d", "--db",
-                  type="string", dest="db", default=None,
-                  help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
+                          type="string", dest="db", default=None,
+                          help="Database URI. [sqlite://$PREFSDIR$/sutekh.db]")
     oOptParser.add_option("--ignore-db-version",
-                  action="store_true", dest="ignore_db_version", default=False,
-                  help="Ignore the database version check. Only use this if "
-                          "you know what you're doing.")
-    oOptParser.add_option("--rcfile",
-                  type="string", dest="sRCFile", default=None,
-                  help="Specify Alternative resources file. "
-                          "[~/.sutekh/sutekhrc or "
-                          "$APPDATA$/Sutekh/sutekhrc]")
-    oOptParser.add_option("--sql-debug",
-                  action="store_true", dest="sql_debug", default=False,
-                  help="Print out SQL statements.")
-    oOptParser.add_option("--verbose",
-            action="store_true", dest="verbose", default=False,
-            help="Display warning messages")
-    oOptParser.add_option("--error-log",
-            type="string", dest="sErrFile", default=None,
-            help="File to log messages to. Defaults to no logging")
+                          action="store_true", dest="ignore_db_version",
+                          default=False, help="Ignore the database version "
+                                              "check. Only use this if you "
+                                              "know what you're doing.")
+    oOptParser.add_option("--rcfile", type="string", dest="sRCFile",
+                          default=None, help="Specify Alternative resources "
+                                             "file. [~/.sutekh/sutekhrc or "
+                                             "$APPDATA$/Sutekh/sutekhrc]")
+    oOptParser.add_option("--sql-debug", action="store_true",
+                          dest="sql_debug", default=False,
+                          help="Print out SQL statements.")
+    oOptParser.add_option("--verbose", action="store_true", dest="verbose",
+                          default=False, help="Display warning messages")
+    oOptParser.add_option("--error-log", type="string", dest="sErrFile",
+                          default=None, help="File to log messages to. "
+                                             "Defaults to no logging")
     return oOptParser, oOptParser.parse_args(aArgs)
 
 
