@@ -93,8 +93,8 @@ class BasicFrame(gtk.Frame):
         for cPlugin in \
                 self._oMainWindow.plugin_manager.get_card_list_plugins():
             self._aPlugins.append(cPlugin(self._oController.view,
-                                  self._oController.view.get_model(),
-                                  self._cModelType))
+                                          self._oController.view.get_model(),
+                                          self._cModelType))
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""

@@ -449,8 +449,7 @@ class FilterValuesBox(gtk.VBox):
                     self._oWidget.get_children()[1].grab_focus()
             if isinstance(self._oLastFilter, FilterBoxModel) or \
                     (isinstance(self._oLastFilter, FilterBoxItem) and
-                            self._oLastFilter.iValueType ==
-                            FilterBoxItem.LIST_FROM):
+                     self._oLastFilter.iValueType == FilterBoxItem.LIST_FROM):
                 if oEvent.keyval in LEFT:
                     # bottom child needs the focus
                     oAutoScrolled = self._oWidget.get_children()[2]
@@ -1336,13 +1335,13 @@ class FilterBoxModelEditView(CustomDragIconView):
         elif oFilterObj.iValueType == FilterBoxItem.NONE:
             # None filter, so delete always removes
             self.remove_filter_at_iter(self.oCurSelectIter)
-        elif (oFilterObj.iValueType == FilterBoxItem.LIST or
-                oFilterObj.iValueType == FilterBoxItem.ENTRY) \
-                        and not oFilterObj.aCurValues:
-            # Emptu filter
+        elif ((oFilterObj.iValueType == FilterBoxItem.LIST or
+               oFilterObj.iValueType == FilterBoxItem.ENTRY)
+              and not oFilterObj.aCurValues):
+            # Empty filter
             self.remove_filter_at_iter(self.oCurSelectIter)
-        elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM and \
-                not oFilterObj.aCurValues[0] and not oFilterObj.aCurValues[1]:
+        elif (oFilterObj.iValueType == FilterBoxItem.LIST_FROM and
+              not oFilterObj.aCurValues[0] and not oFilterObj.aCurValues[1]):
             # empty list from filter, so remove
             self.remove_filter_at_iter(self.oCurSelectIter)
         else:

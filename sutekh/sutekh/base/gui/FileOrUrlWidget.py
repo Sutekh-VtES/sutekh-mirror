@@ -157,7 +157,7 @@ class FileOrUrlWidget(gtk.VBox):
         if bUrl:
             oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler)
         else:
-            oFile = file(sUrl, "rb")
+            oFile = open(sUrl, "rb")
 
         if not oFile:
             # Probable timeout in urlopen, so bail

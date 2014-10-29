@@ -270,7 +270,7 @@ class CardListModel(gtk.TreeStore):
                          0, sName,
                          8, oCard,
                          9, PhysicalCardAdapter((oCard, None)),
-                         )
+                        )
                 aExpansionInfo = self.get_expansion_info(oCard,
                                                          fGetExpanInfo(oItem))
                 for oPhysCard, sExpansion in aExpansionInfo:
@@ -278,7 +278,7 @@ class CardListModel(gtk.TreeStore):
                     self.set(oExpansionIter,
                              0, sExpansion,
                              9, oPhysCard,
-                             )
+                            )
                 bEmpty = False
 
             # Update Group Section
@@ -286,7 +286,7 @@ class CardListModel(gtk.TreeStore):
             if aTexts:
                 self.set(oSectionIter, 0, sGroup,
                          5, aTexts, 6, aIcons,
-                         )
+                        )
             else:
                 self.set(oSectionIter, 0, sGroup)
 

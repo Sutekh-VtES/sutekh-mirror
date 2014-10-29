@@ -285,7 +285,10 @@ class CardSetCardListModel(CardListModel):
             self._bPhysicalFilter = self.configfilter.is_physical_card_only()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
+        # pylint: disable=W0632
+        # pylint misinterprets the number of iterms grouped_card_iter returns
         oGroupedIter, aCards = self.grouped_card_iter(oCardIter)
+        # pylint: enable=W0632
         self.oEmptyIter = None
 
         # Disable sorting while we do the insertions
@@ -333,7 +336,7 @@ class CardSetCardListModel(CardListModel):
                          3, bIncCard, 4, bDecCard,
                          8, oCard,
                          9, oRow.oPhysCard,
-                         )
+                        )
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
@@ -343,11 +346,11 @@ class CardSetCardListModel(CardListModel):
                 self.set(oSectionIter, 0, sGroup,
                          1, iGrpCnt, 2, iParGrpCnt,
                          5, aTexts, 6, aIcons,
-                         )
+                        )
             else:
                 self.set(oSectionIter, 0, sGroup,
                          1, iGrpCnt, 2, iParGrpCnt,
-                         )
+                        )
 
             self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
@@ -1157,7 +1160,10 @@ class CardSetCardListModel(CardListModel):
         oCardIter = self.get_card_iterator(oCardFilter)
 
         iCnt = 0  # Since we'll test this later, and may skip assigning it
+        # pylint: disable=W0632
+        # pylint misinterprets the number of iterms grouped_card_iter returns
         oGroupedIter, _aCards = self.grouped_card_iter(oCardIter)
+        # pylint: enable=W0632
         bPostfix = self._oConfig.get_postfix_the_display()
 
         # Iterate over groups
@@ -1196,7 +1202,7 @@ class CardSetCardListModel(CardListModel):
                 self.set(oChildIter, 0, sName,
                          1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
                          8, oCard, 9, oRow.oPhysCard,
-                         )
+                        )
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
                 # Handle as for loading
@@ -2164,7 +2170,7 @@ class CardSetCardListModel(CardListModel):
                     sExpName in self._dAbsSecondLevel2Iter[oAbsId]:
                 self._inc_exp_child_set_count(tExpKey, sCardSetName)
         elif (oAbsId in self._dAbsSecondLevel2Iter and
-                sExpName in self._dAbsSecondLevel2Iter[oAbsId]):
+              sExpName in self._dAbsSecondLevel2Iter[oAbsId]):
             if (tExpKey in self._dAbs2nd3rdLevel2Iter and
                     sCardSetName in self._dAbs2nd3rdLevel2Iter[tExpKey]):
                 bRemove = False

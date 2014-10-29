@@ -284,7 +284,7 @@ class AppMenu(SutekhMenu):
             # pylint: enable-msg=E1102
             oIdParser.id_file(sFileName)
             if oIdParser.can_parse():
-                fIn = file(sFileName, 'rU')
+                fIn = open(sFileName, 'rU')
                 oParser = oIdParser.get_parser()
                 import_cs(fIn, oParser, self._oMainWindow)
             else:
