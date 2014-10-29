@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
-# GPL v2 or later - see the COPYRIGHT file for deatils
+# GPL v2 or later - see the COPYRIGHT file for details
 
 """Functions to help maintain compatability across various pylint versions."""
 

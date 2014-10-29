@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Based on custom.py from pylint, so the license is
-# GPL v2 or later - see the COPYRIGHT file for deatils
+# GPL v2 or later - see the COPYRIGHT file for details
 
 """Custom checker for pylint - warn about about 'in Dict.keys()' usage"""
 
