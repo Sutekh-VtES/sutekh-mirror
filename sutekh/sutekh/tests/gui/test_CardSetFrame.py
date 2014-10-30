@@ -15,10 +15,10 @@ from sutekh.tests.core.test_Filters import make_card
 
 class TestCardSetFrame(GuiSutekhTest):
     """Class for the CardSetFrame test cases"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # I prefer to have these as methods
 
     def _select_cards(self, oFrame, aCards):
@@ -63,16 +63,16 @@ class TestCardSetFrame(GuiSutekhTest):
         aPaths.sort()
         return aPaths
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""
-        # pylint: disable-msg=R0915, R0914
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
 
         # Add card sets needed for the tests
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # PyProtocols confuses pylint
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',

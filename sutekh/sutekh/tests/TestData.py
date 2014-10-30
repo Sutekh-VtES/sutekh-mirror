@@ -5,7 +5,7 @@
 #  * http://www.white-wolf.com/vtes/index.php?line=rulings
 
 """Data used for test cases"""
-# pylint: disable-msg=C0103
+# pylint: disable=C0103
 # don't care about naming conventions here
 
 # Note - Yvette & Aire of Elation are deliberately duplicated, so we ensure

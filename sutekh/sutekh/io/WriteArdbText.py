@@ -34,7 +34,7 @@ class WriteArdbText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an ARDB text file header."""
@@ -42,7 +42,7 @@ class WriteArdbText(ArdbInfo):
                "Author : %s\n" \
                "Description :\n%s\n" % (oHolder.name, oHolder.author,
                        oHolder.comment)
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _gen_crypt(self, dCards):
         """Generaten an ARDB text file crypt description.

@@ -26,7 +26,7 @@ ELDB_INV_EXAMPLE_1 = """
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestELDBInventoryParser(SutekhTest):
     """class for the ELDB inventory reading test"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):

@@ -22,7 +22,7 @@ LAST_WRITER_VERSION = "1.0"
 
 def make_example_pcxml():
     """Create the example XML File"""
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # E1101: SQLObject + PyProtocols magic confuses pylint
     oAC = IAbstractCard(ABSTRACT_CARDS[0])
     oPC = IPhysicalCard((oAC, None))
@@ -35,13 +35,13 @@ def make_example_pcxml():
 
 class PhysicalCardTests(SutekhTest):
     """class for the PhysicalCard tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
     def test_physical(self):
         """Test physical card handling"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
 
         # test IO

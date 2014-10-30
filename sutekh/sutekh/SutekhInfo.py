@@ -6,11 +6,11 @@
 """Requirements and such for setuptools"""
 
 # pylint doesn't see resource_string for some reason
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 from pkg_resources import resource_string
 
 
-# pylint: disable-msg=R0903,C0111
+# pylint: disable=R0903,C0111
 class SutekhInfo(object):
     VERSION = (0, 9, 2, 'alpha', 0)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])

@@ -28,7 +28,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         oDateElem = SubElement(oRoot, 'date')
         oDateElem.text = sDateWritten
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Methods so they're available to the subclasses
     def _ardb_crypt_card(self, oCardElem, oAbsCard, sSet):
         """Fill in name, set and advanced elements for a crypt card"""
@@ -51,7 +51,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         oSetElem = SubElement(oCardElem, 'set')
         oSetElem.text = sSet
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _gen_tree(self, oHolder):
         """Creates the actual XML document into memory."""

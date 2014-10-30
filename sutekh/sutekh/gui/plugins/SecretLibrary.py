@@ -35,12 +35,12 @@ def canonical_to_sl(sName):
 
 
 class ImportExportBase(SutekhDialog):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk Widget, so has many public methods
     # R0902 - we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
-    # pylint: disable-msg=W0201, R0913
+    # pylint: disable=W0201, R0913
     # W0201: we define attributes outside __init__, but it's OK because of
     # plugin structure
     # R0913: We needs lots of parameters for flexibility here
@@ -48,7 +48,7 @@ class ImportExportBase(SutekhDialog):
                     aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up vbox methods correctly
 
         self.vbox.set_spacing(10)
@@ -106,7 +106,7 @@ class ImportExportBase(SutekhDialog):
         self.vbox.pack_start(gtk.Label("Password"), False, False)
         self.vbox.pack_start(self._oPasswordEntry)
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def _deck_inv_changed(self, _oWidget):
         """Handle a change in whether we're importing/exporting to/from a
@@ -144,7 +144,7 @@ class ImportExportBase(SutekhDialog):
 
 
 class ImportDialog(ImportExportBase):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for importing card sets from the Secret Library."""
 
@@ -173,7 +173,7 @@ class ImportDialog(ImportExportBase):
 
 
 class ExportDialog(ImportExportBase):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for exporting cards sets to the Secret Library."""
 
@@ -466,7 +466,7 @@ class SecretLibrary(SutekhPlugin):
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):
@@ -481,7 +481,7 @@ class SecretLibrary(SutekhPlugin):
         oLibraryIter = self.model.get_card_iterator(oLibraryFilter)
 
         for oCard in oLibraryIter:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):

@@ -17,7 +17,7 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # W0201 - we define lots of things here, rather than __init__, since that's
     # how our override hooks work
     def _set_draw_title_and_size(self, oMainTitle):

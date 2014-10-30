@@ -17,7 +17,7 @@ class CardTextBuffer(BaseCardTextBuffer):
        This is also responsible for nicely formatting the output.
        """
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self):
         super(CardTextBuffer, self).__init__()
@@ -54,13 +54,13 @@ class CardTextView(BaseCardTextView):
        and feeding it to the buffer in suitable chunks.
        """
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oIconManager):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager)
 
-    # pylint: disable-msg=R0912, R0915
+    # pylint: disable=R0912, R0915
     # We need to consider all cases for oCard, so need the branches
     # and statements
     def print_card_to_buffer(self, oCard):

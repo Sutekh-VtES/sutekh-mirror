@@ -19,7 +19,7 @@ import unittest
 
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
     oFilterParser = FilterParser.FilterParser()
@@ -30,7 +30,7 @@ class FilterParserTests(SutekhTest):
         oAST = self.oFilterParser.apply(sFilter)
         return oAST.get_filter()
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # I prefer to have these as methods
     def _get_abs_names(self, oFilter):
         """Get the names of the cards selected by a filter on the
@@ -41,16 +41,16 @@ class FilterParserTests(SutekhTest):
     def _get_physical_names(self, oPCSFilter, oFilter):
         """Combine a card set filter with the filter and return the card
            names"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pyprotocols confuses pylinta
         oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
         aNames = [IAbstractCard(x).name for x in oFullFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         return sorted(aNames)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
-    # pylint: disable-msg=R0914
+    # pylint: disable=R0914
     # We don't really care about the number of local variables here
     def test_basic(self):
         """Set of simple tests of the filter parser."""
@@ -394,7 +394,7 @@ class FilterParserTests(SutekhTest):
                     ]
 
         for oPCSFilter, sFilter, oEquivFilter in aPCSNumberTests:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pyprotocols confuses pylinta
             oFilter = self._parse_filter(sFilter)
             aExpectedCards = self._get_physical_names(oPCSFilter, oEquivFilter)

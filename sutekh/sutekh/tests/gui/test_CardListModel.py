@@ -17,7 +17,7 @@ import unittest
 
 class TestListener(object):
     """Listener used in the test cases."""
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # CardListModelListener has no __init__
     def __init__(self, oModel):
         self.bLoadCalled = False
@@ -32,10 +32,10 @@ class TestListener(object):
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # I prefer to have these as methods
     def _count_expansions(self, oModel):
         """Count all the second level entries in the model."""
@@ -75,11 +75,11 @@ class CardListModelTests(ConfigSutekhTest):
             oIter = oModel.iter_next(oIter)
         return aResults
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
-        # pylint: disable-msg=R0915, R0914
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         oModel = CardListModel(self.oConfig)

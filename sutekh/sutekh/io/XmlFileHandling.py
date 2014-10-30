@@ -45,7 +45,7 @@ class PhysicalCardXmlFile(object):
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                         bIgnoreWarnings)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for backwards compatibility
     def write(self):
         """Write the card collection to the file (DEPRECATED)."""
@@ -73,7 +73,7 @@ class AbstractCardSetXmlFile(object):
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                         bIgnoreWarnings)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for backwards compatibility
     def write(self, _sAbstractCardSetName):
         """Write the given card set to the file (DEPRECATED)."""

@@ -56,7 +56,7 @@ def parse_options(aArgs):
 
 
 def main():
-    # pylint: disable-msg=R0912, R0914, R0915
+    # pylint: disable=R0912, R0914, R0915
     # lots of different cases to consider, so long and has lots of variables
     # and if statement
     """Start the Sutekh Gui.

@@ -6,7 +6,7 @@
 
 """Parser for Lackey CCG deck format"""
 
-# pylint: disable-msg=W0402
+# pylint: disable=W0402
 # string.digits is OK
 import string
 from sutekh.base.core.BaseObjects import AbstractCard

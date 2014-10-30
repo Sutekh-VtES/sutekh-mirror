@@ -14,7 +14,7 @@ from sutekh.io.SLDeckParser import SLDeckParser
 
 class TestSLDeckParser(SutekhTest):
     """Class for the Secret Library deck parser tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     sTestText1 = """

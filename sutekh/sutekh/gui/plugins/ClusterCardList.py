@@ -24,17 +24,17 @@ class ClusterCardList(SutekhPlugin):
        Allows the user to choose various clustering parameters, such as
        attributes to to use and methods, and then to create card sets
        from the clustering results."""
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # we use a lot of attributes to keep track of data & gui aspects
 
     dTableVersions = {}
     aModelsSupported = (PhysicalCard, PhysicalCardSet)
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK
     def __init__(self, *args, **kwargs):
         super(ClusterCardList, self).__init__(*args, **kwargs)
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
             self._fMakeCardSetFromCluster = None
@@ -50,7 +50,7 @@ class ClusterCardList(SutekhPlugin):
         self._oNumClustersSpin = None
         self._oNumIterSpin = None
 
-    # pylint: enable-msg=W0142
+    # pylint: enable=W0142
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
@@ -88,7 +88,7 @@ class ClusterCardList(SutekhPlugin):
         self._oNotebook.append_page(oAlgorithmSection, gtk.Label('Settings'))
         self._oNotebook.append_page(oResultsSection, gtk.Label('Results'))
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oDlg.vbox.pack_start(self._oNotebook)
         oDlg.show_all()
@@ -239,7 +239,7 @@ class ClusterCardList(SutekhPlugin):
 
         return oVbx
 
-    # pylint: disable-msg=W0201, R0914
+    # pylint: disable=W0201, R0914
     # W0201: We create a lot of attributes here, which is OK, because of
     # plugin structure
     # R0914: We use lots of local variables for clarity
@@ -308,7 +308,7 @@ class ClusterCardList(SutekhPlugin):
 
         self._oResultsVbox.show_all()
 
-    # pylint: enable-msg=W0201, R0914
+    # pylint: enable=W0201, R0914
 
     # Actions
 
@@ -351,7 +351,7 @@ class ClusterCardList(SutekhPlugin):
 
             # iCard is defined because k_means doesn't call
             # this unless aCards is non-empty
-            # pylint: disable-msg=W0631
+            # pylint: disable=W0631
 
             if iCard == len(aCards):
                 # guard against slight possibility of being very close
@@ -452,7 +452,7 @@ class ClusterCardList(SutekhPlugin):
         # Create Deck
         oDeck = PhysicalCardSet(name=sDeckName)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         aCards = [IPhysicalCard(self._aCards[x]) for x in
             self._aClusters[iClusterId]]
@@ -469,7 +469,7 @@ class Vector(object):
         self._aData = aData
 
     # We do want to access _aData on other Vectors.
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
 
     def euclidian_distance(self, oVec2):
         """Euclidean distance between two vectors."""

@@ -18,11 +18,11 @@ from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
                                           IPhysicalCardSet)
 from sutekh.core.SutekhObjects import TABLE_LIST
-# pylint: disable-msg=W0611
+# pylint: disable=W0611
 # We need this import to ensure we have all the filters imported
 # correctly, even though we don't use it directly
 import sutekh.core.Filters
-# pylint: enable-msg=W0611
+# pylint: enable=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_date_list)
@@ -160,7 +160,7 @@ def parse_options(aArgs):
 
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
-    # pylint: disable-msg=E1101, R0912
+    # pylint: disable=E1101, R0912
     # E1101: SQLObject can confuse pylint
     # R0912: Several cases to consider, so many branches
     if len(oCard.cardtype) == 0:
@@ -214,7 +214,7 @@ def main_with_args(aTheArgs):
     accordingly.
     """
     # Turn off some pylint refactoring warnings
-    # pylint: disable-msg=R0915, R0912, R0911, R0914
+    # pylint: disable=R0915, R0912, R0911, R0914
     oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
     sPrefsDir = prefs_dir(SutekhInfo.NAME)
 

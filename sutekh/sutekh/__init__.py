@@ -45,7 +45,7 @@ from sutekh.SutekhCli import main_with_args
 
 
 # start() method for use when working in the Python interpreter
-# pylint: disable-msg=W0102
+# pylint: disable=W0102
 def start(aArgs=['sutekh']):
     """Initialise SQLObject connection and so forth, for working in the
        python interpreter"""

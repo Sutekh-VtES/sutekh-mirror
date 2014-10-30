@@ -189,7 +189,7 @@ class WriteArdbHTML(ArdbInfo):
 
     def write(self, fOut, oHolder):
         """Handle the response to the dialog"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods confuse pylint
         oRoot = self._gen_tree(oHolder)
         # We're producing XHTML output, so we need a doctype header
@@ -230,7 +230,7 @@ class WriteArdbHTML(ArdbInfo):
         return oDocRoot
 
     # methods to fill in the actual HTML content
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # these are all methods for consistency
     def _add_header(self, oDocRoot, oHolder):
         """Add the header and title of the HTML file."""
@@ -285,7 +285,7 @@ class WriteArdbHTML(ArdbInfo):
 
     def _add_crypt(self, oBody, dCards):
         """Add the crypt to the file"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # PyProtocol methods confuse pylint
         def start_section(oBody, dCards):
             """Format the start of the crypt section"""
@@ -356,7 +356,7 @@ class WriteArdbHTML(ArdbInfo):
 
         def add_row(oTBody, iCount, sName):
             """Add a row to the display table"""
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # IAbstrctCard confuses pylint
             oCard = IAbstractCard(sName)
             oTR = SubElement(oTBody, "tr")
@@ -426,7 +426,7 @@ class WriteArdbHTML(ArdbInfo):
                 _add_span(oListItem, "/".join(aClan), 'requirement')
             # Cost
             if oCard.costtype is not None:
-                # pylint: disable-msg=E1103
+                # pylint: disable=E1103
                 # SQLObject methods confuse pylint
                 oListItem = SubElement(oList, "li")
                 _add_span(oListItem, 'Cost:', 'label')
@@ -445,7 +445,7 @@ class WriteArdbHTML(ArdbInfo):
             oTypeHead.attrib["class"] = "libraryttype"
             oTypeHead.text = sType
             for sName in sorted([x[1] for x in aList[1:]]):
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # IAbstrctCard confuses pylint
                 oCard = IAbstractCard(sName)
                 oCardHead = SubElement(oCardText, "h5")

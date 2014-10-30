@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0111, C0302
+# pylint: disable=C0111, C0302
 # C0111 - No point in docstrings for these classes, really
 # C0302 - lots of lines as we want all these related definitions in one file
 
@@ -18,12 +18,12 @@ from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
                                           BASE_TABLE_LIST, MAX_ID_LENGTH,
                                           StrAdaptMeta)
 
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import SQLObject, IntCol, UnicodeCol, RelatedJoin, \
        EnumCol, MultipleJoin, DatabaseIndex, ForeignKey, \
        SQLObjectNotFound
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from protocols import advise, Interface
 
 
@@ -56,10 +56,10 @@ class IVirtue(Interface):
     pass
 
 
-# pylint: enable-msg=C0321
+# pylint: enable=C0321
 # Table Objects
 
-# pylint: disable-msg=W0232, R0902, W0201, C0103
+# pylint: disable=W0232, R0902, W0201, C0103
 # W0232: Most of the classes defined here don't have __init__ methods by design
 # R0902: We aren't worried about the number of insance variables
 # W0201: We don't care about attributes defined outside init, by design
@@ -255,7 +255,7 @@ class MapAbstractCardToVirtue(SQLObject):
     virtueIndex = DatabaseIndex(virtue, unique=False)
 
 
-# pylint: enable-msg=W0232, R0902, W0201, C0103
+# pylint: enable=W0232, R0902, W0201, C0103
 
 # List of Tables to be created, dropped, etc.
 
@@ -282,7 +282,7 @@ class SutekhObjectMaker(BaseObjectMaker):
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    # pylint: disable-msg=R0201, R0913
+    # pylint: disable=R0201, R0913
     # we want SutekhObjectMaker self-contained, so these are all methods.
     # This needs all these arguments
     def make_clan(self, sClan):
@@ -325,7 +325,7 @@ class SutekhObjectMaker(BaseObjectMaker):
 
 # Abbreviation lookup based adapters
 class ClanAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IClan], asAdapterForTypes=[basestring])
@@ -335,7 +335,7 @@ class ClanAdapter(Adapter):
 
 
 class CreedAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICreed], asAdapterForTypes=[basestring])
@@ -345,7 +345,7 @@ class CreedAdapter(Adapter):
 
 
 class DisciplineAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IDiscipline], asAdapterForTypes=[basestring])
@@ -355,7 +355,7 @@ class DisciplineAdapter(Adapter):
 
 
 class SectAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ISect], asAdapterForTypes=[basestring])
@@ -365,7 +365,7 @@ class SectAdapter(Adapter):
 
 
 class TitleAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ITitle], asAdapterForTypes=[basestring])
@@ -375,7 +375,7 @@ class TitleAdapter(Adapter):
 
 
 class VirtueAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IVirtue], asAdapterForTypes=[basestring])
@@ -396,7 +396,7 @@ class DisciplinePairAdapter(Adapter):
         cls.__dCache = {}
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # adapters confuses pylint
         oDis = IDiscipline(tData[0])
         sLevel = str(tData[1])

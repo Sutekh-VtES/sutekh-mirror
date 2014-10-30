@@ -15,7 +15,7 @@ class MainMenu(AppMenu):
 
        Extends AppMenu with the various sutekh specific options.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):

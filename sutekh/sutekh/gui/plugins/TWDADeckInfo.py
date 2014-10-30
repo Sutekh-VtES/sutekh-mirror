@@ -68,7 +68,7 @@ class BinnedCountLogHandler(SutekhCountLogHandler):
 
 
 class TWDAConfigDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the TWDA plugin."""
 
@@ -96,7 +96,7 @@ class TWDAConfigDialog(SutekhDialog):
                                            "TWDA decks",
                                            {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(gtk.HSeparator(), False, False)
@@ -141,7 +141,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         'twda configured': 'option("Yes", "No", "Unasked", default="Unasked")',
     }
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(TWDAInfoPlugin, self).__init__(*args, **kwargs)
@@ -187,7 +187,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         dSelected = self.view.process_selection()
         aAbsCards = []
         for sCardName in dSelected:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oCard = IAbstractCard(sCardName)
             aAbsCards.append(oCard)
@@ -212,7 +212,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         oMapFilter = MultiPhysicalCardSetMapFilter(aNames)
         oFullFilter = FilterAndBox([oCardFilter, oMapFilter])
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # Pyprotocols confuses pylint
         dCardSets = {}
         for oMapCard in oFullFilter.select(MapPhysicalCardToPhysicalCardSet):
@@ -365,7 +365,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         aZipHolders = []
         iZipCount = 0
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # Pyprotocols confuses pylint
         for sUrl, sDate in zip(aUrls, aDates):
             if not sUrl:
@@ -545,7 +545,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 if not check_cs_exists(sParentName):
                     # Missing parent, so it the file is invalid
                     return False
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we really do want all the exceptions
             try:
                 oHolder = oZipFile.read_single_card_set(sFilename)
@@ -557,7 +557,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 # exists, as being the most sensible default
                 aChildren = []
                 if check_cs_exists(oHolder.name):
-                    # pylint: disable-msg=E1101, E1103
+                    # pylint: disable=E1101, E1103
                     # pyprotocols confuses pylint
                     oCS = IPhysicalCardSet(oHolder.name)
                     aChildren = find_children(oCS)
@@ -582,7 +582,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         sqlhub.processConnection = oOldConn
         return True
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Method for consistency with _unzip methods
     def _clean_empty(self, aMyList, aExistingList):
         """Remove any newly created sets in that have no cards AND no
@@ -595,7 +595,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             except SQLObjectNotFound:
                 # set not there, so skip
                 continue
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # QLObject + PyProtocols confuses pylint
             if has_children(oCS):
                 continue
@@ -603,6 +603,6 @@ class TWDAInfoPlugin(SutekhPlugin):
                 continue  # has cards
             delete_physical_card_set(sName)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
 plugin = TWDAInfoPlugin

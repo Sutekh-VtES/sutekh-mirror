@@ -13,7 +13,7 @@ from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
 
-# pylint: disable-msg=W0511, C0301
+# pylint: disable=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
@@ -61,12 +61,12 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card>
   </library>
 </inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
-# pylint: enable-msg=W0511, C0301
+# pylint: enable=W0511, C0301
 
 
 class ArdbInvXMLWriterTests(SutekhTest):
     """class for the ARDB inventory XML writer tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):

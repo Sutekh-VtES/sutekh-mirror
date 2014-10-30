@@ -27,7 +27,7 @@ LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu')
 
 
 class CardImageFrame(BaseImageFrame):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
     """Frame which displays the image.
@@ -57,7 +57,7 @@ class CardImageFrame(BaseImageFrame):
         """Convert the Full Expansion name into the abbreviation needed."""
         if sExpansionName == '' or not self._bShowExpansions:
             return ''
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up IExpansion methods correctly
         try:
             oExpansion = IExpansion(sExpansionName)
@@ -122,7 +122,7 @@ class CardImageFrame(BaseImageFrame):
 
 
 class ImageConfigDialog(BaseImageConfigDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
@@ -136,7 +136,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
         # here, rather than cluttering up the generic ConfigDialog with
         # this entirely Sutekh specific logic
         if bDownloadUpgrade:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pylint doesn't pick up vbox methods correctly
             # Clear the dialog vbox and start again
             self.vbox.remove(self.oDescLabel)

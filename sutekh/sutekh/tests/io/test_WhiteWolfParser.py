@@ -22,7 +22,7 @@ class WhiteWolfParserTests(SutekhTest):
        Check the parsing done in SutekhTest setup and verify the results
        are correct.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = [
         u".44 Magnum",
@@ -101,7 +101,7 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic WW list parser tests"""
-        # pylint: disable-msg=E1101, R0915, R0914
+        # pylint: disable=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequential test case to minimise
         aCards = sorted(list(AbstractCard.select()), key=lambda oC: oC.name)
@@ -110,7 +110,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual([oC.name for oC in aCards], self.aExpectedCards)
 
         # Check Magnum
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # o44 is OK here
         o44 = IAbstractCard(".44 Magnum")
         self.assertEqual(o44.canonicalName, u".44 magnum")
@@ -124,7 +124,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(o44.costtype, 'pool')
         self.assertEqual(o44.level, None)
 
-        # pylint: enable-msg=C0103
+        # pylint: enable=C0103
         oCommon = IRarity('Common')
         oJyhad = IExpansion('Jyhad')
         oVTES = IExpansion('VTES')

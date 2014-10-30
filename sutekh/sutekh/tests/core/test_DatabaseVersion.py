@@ -12,7 +12,7 @@ from sutekh.core.SutekhObjects import TABLE_LIST
 
 class DatabaseVersionTests(SutekhTest):
     """Class for the database version tests."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_version(self):

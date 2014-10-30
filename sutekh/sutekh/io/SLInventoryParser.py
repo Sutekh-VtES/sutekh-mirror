@@ -36,7 +36,7 @@ class SLInventoryParser(CardSetParser):
         '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
     def __init__(self):
-        # pylint: disable-msg=W0231
+        # pylint: disable=W0231
         # No need to call IOBase.__init__()
         self._dSectionParsers = {
             'crypt': self._crypt_section,
@@ -55,14 +55,14 @@ class SLInventoryParser(CardSetParser):
             raise IOError('Unknown section heading in Secret'
                           ' Library inventory format')
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Making these functions for clarity
     def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise IOError('Data line outside of section'
                       ' for Secret Library inventory format')
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""

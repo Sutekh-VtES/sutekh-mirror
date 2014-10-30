@@ -122,12 +122,12 @@ PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_physical_card_set_parser(self):
         """Test physical card set reading"""
-        # pylint: disable-msg=E1101, R0915, R0914
+        # pylint: disable=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
@@ -209,7 +209,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_card_set_parser_no_id(self):
         """Test physical card set reading for new card sets"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
@@ -263,7 +263,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_card_set_parser_no_author(self):
         """Test physical card set reading for card sets without an author"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         oParser = PhysicalCardSetParser()
 

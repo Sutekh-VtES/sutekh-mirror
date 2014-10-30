@@ -36,12 +36,12 @@ ACS_EXAMPLE_2 = '<abstractcardset author="A test author" ' \
 
 class AbstractCardSetParserTest(SutekhTest):
     """class for the Abstract Card Set Parser"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_abstract_cs_parser(self):
         """Test abstract card set parser"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
 
         # Support for everything except reading has been removed.

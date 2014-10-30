@@ -95,7 +95,7 @@ ARDB_DECK_EXAMPLE_1 = """
 
 class ArdbXMLDeckParserTests(SutekhTest):
     """class for the ARDB XML deck file parser tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     # ARDB produces tag pairs for empty elements, we produce minimal

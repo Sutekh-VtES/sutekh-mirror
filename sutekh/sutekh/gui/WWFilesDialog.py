@@ -26,7 +26,7 @@ def make_alignment(oLabel, oFileButton, oUseButton):
 
 
 class WWFilesDialog(SutekhDialog):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
     """Actual dialog widget"""
@@ -87,7 +87,7 @@ class WWFilesDialog(SutekhDialog):
                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oCardAlign = make_alignment(oCardListLabel,
                 self.oCardListFileButton, self.oUseWwCardListButton)

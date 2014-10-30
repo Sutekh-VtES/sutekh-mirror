@@ -3,7 +3,7 @@
 # Copyright 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0301
+# pylint: disable=C0301
 # documentation, so line length ignored
 """Writer for VEKN Forum posts, based on the ARDB Text format
 
@@ -31,7 +31,7 @@
      4x [url=....]Dream World[/url]
    ...
    """
-# pylint: enable-msg=C0301
+# pylint: enable=C0301
 import time
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhUtility import secret_library_url
@@ -60,7 +60,7 @@ def add_clan_symbol(dLine):
 class WriteVEKNForum(ArdbInfo):
     """Create a string suitable for pasting into the VEKN forums"""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an suitable forum header."""
@@ -69,7 +69,7 @@ class WriteVEKNForum(ArdbInfo):
                "[b][u]Description :[/u][/b]\n%s\n" % (oHolder.name,
                                                       oHolder.author,
                                                       oHolder.comment)
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _gen_crypt(self, dCards):
         """Generaten a VEKN Forum crypt description.

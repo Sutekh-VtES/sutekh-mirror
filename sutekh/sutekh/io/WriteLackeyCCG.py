@@ -44,7 +44,7 @@ def lackey_name(oCard):
 class WriteLackeyCCG(object):
     """Create a string in Lackey CCG format representing a card set."""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Method for consistency
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
@@ -64,7 +64,7 @@ class WriteLackeyCCG(object):
                 sResult += 'Crypt:\n'
         return sResult
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an Lackey CCG

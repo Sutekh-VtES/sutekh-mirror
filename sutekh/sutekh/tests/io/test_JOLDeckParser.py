@@ -38,7 +38,7 @@ Test Card 4
 
 class TestJOLDeckParser(SutekhTest):
     """class for the JOL deck file parser tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):

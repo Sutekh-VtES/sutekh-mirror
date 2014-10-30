@@ -21,7 +21,7 @@ class FakeTitle(object):
     """Fake titles not in the database"""
 
     def __init__(self, sText):
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # We duplicate Title naming here
         self.name = sText
 
@@ -30,14 +30,14 @@ class MergedKeyword(object):
     """Fake a 'merged' keyword"""
 
     def __init__(self):
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # We duplicate Keyword naming here
         self.keyword = 'merged'
 
 
 class FakeCard(object):
     """Class which fakes being an AbstractCard for the text view."""
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # Need all the attributes to match AbstractCard
 
     # Keywords which obselete each other
@@ -58,7 +58,7 @@ class FakeCard(object):
         else:
             self.oBase = oAbsCard
             self.oAdvanced = self._find_adv_vampire()
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # We duplicate AbstractCard naming here
         self.name = self.oAdvanced.name.replace('(Advanced)', '(Merged)')
         # These are never set
@@ -105,7 +105,7 @@ class FakeCard(object):
 
     def _fix_special_cases(self):
         """This is a long and tedious set of cases we need to handle."""
-        # pylint: disable-msg=R0915, R0912
+        # pylint: disable=R0915, R0912
         # We can't really shorten this, due to the number
         # of individual special cases.
         if self.name == 'Al-Ashrad, Amr of Alamut (Merged)':
@@ -247,7 +247,7 @@ class FakeCard(object):
         """Find the corresponding base vampire.
 
            Due to the checks in the plugin, this is assumed to be safe."""
-        # pylint: disable-msg=E1103
+        # pylint: disable=E1103
         # pyprotocols confuses pylint
         sBaseName = self.oAdvanced.name.replace(' (Advanced)', '')
         # Special cases
@@ -259,7 +259,7 @@ class FakeCard(object):
         """Find the corresponding advanced vampire
 
            Due to the checks in the plugin, this is assumed to be safe."""
-        # pylint: disable-msg=E1103
+        # pylint: disable=E1103
         # pyprotocols confuses pylint
         sAdvName = self.oBase.name + ' (Advanced)'
         # Note that base brunhilde links to the non-storyline advanced version
@@ -270,7 +270,7 @@ class FakeCard(object):
            phrases and mostly handling the sect / title prefixes.
            Special cases and hard to automatically fix isses will be
            cleaned up in the special case code."""
-        # pylint: disable-msg=E1103
+        # pylint: disable=E1103
         # pyprotocols confuses pylint
         if ':' in self.oBase.text:
             sBaseText = self.oBase.text.split(':', 1)[1]
@@ -321,7 +321,7 @@ class MergedVampirePlugin(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = ("MainWindow",)
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(MergedVampirePlugin, self).__init__(*args, **kwargs)

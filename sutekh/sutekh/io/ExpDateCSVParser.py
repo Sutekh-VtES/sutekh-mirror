@@ -17,7 +17,7 @@ class ExpDateCSVParser(object):
     """Parse expansion and date info from a CSV file and update the
        database with the correct dates"""
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # we may need all these arguments for some files
     def __init__(self, oLogHandler):
         self.oLogger = Logger('exp date parser')
@@ -42,7 +42,7 @@ class ExpDateCSVParser(object):
                 continue
             oDate = datetime.datetime.strptime(sDate, "%Y%m%d").date()
             oExp.releasedate = oDate
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # E1101 - avoid SQLObject method not detected problems
             oExp.syncUpdate()
             self.oLogger.info('Added Expansion: %s' % sExp)

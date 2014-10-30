@@ -75,7 +75,7 @@ class CardSetExportHTML(SutekhPlugin):
             self.set_config_item('HTML export mode',
                     sChoice)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # we define attributes outside __init__, but it's OK because of plugin
     # structure
     def make_dialog(self):
@@ -83,7 +83,7 @@ class CardSetExportHTML(SutekhPlugin):
         oDlg = ExportDialog("Filename to save as", self.parent,
                 '%s.html' % safe_filename(self.view.sSetName))
         oDlg.add_filter_with_pattern('HTML Files', ['*.html'])
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.oTextButton = gtk.CheckButton("Include Card _Texts?")
         self.oTextButton.set_active(False)
@@ -91,14 +91,14 @@ class CardSetExportHTML(SutekhPlugin):
         oDlg.show_all()
         return oDlg
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def handle_response(self, sFileName):
         """Handle the response to the dialog"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods confuse pylint
         if sFileName is not None:
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we do want to catch all exceptions here
             oCardSet = self.get_card_set()
             if not oCardSet:
