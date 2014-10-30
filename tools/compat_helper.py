@@ -55,4 +55,6 @@ def compat_register(cChecker, oLinter):
         oLinter.register_checker(oChecker)
     except ValueError:
         strip_symbol_from_msgs(oChecker)
-        oLinter.register_checker(oChecker)
+        # We just re-register the messages, to avoid having
+        # duplicate checkers registered
+        oLinter.register_messages(oChecker)
