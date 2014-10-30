@@ -57,7 +57,7 @@ def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, sFilterType, oDialog):
@@ -92,7 +92,7 @@ class FilterModelPanes(gtk.HBox):
 
 class FilterEditorToolbar(CustomDragIconView):
     """Toolbar listing the possible filter elements"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, sFilterType):
@@ -137,7 +137,7 @@ class FilterEditorToolbar(CustomDragIconView):
 
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902: We need to keep a lot of state to handle all the cases
 
@@ -190,7 +190,7 @@ class FilterValuesBox(gtk.VBox):
                                   gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
         oViewWidget.connect('drag_data_received', self.drag_drop_handler)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Methods for consistency
 
     def _set_drag_for_widget(self, oWidget, fCallback, oFilter):
@@ -208,7 +208,7 @@ class FilterValuesBox(gtk.VBox):
             oSetWidget = oWidget.view
         return oSetWidget
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _make_filter_group_list(self, oFilter):
         """Create the toolbar for the filter group"""
@@ -332,7 +332,7 @@ class FilterValuesBox(gtk.VBox):
         self._oLastFilter = oFilter
         self.show_all()
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Methods for consistency
     def set_box_model_value(self, oBoxModel, oWidget):
         """Set the correct selection for this box model"""
@@ -341,7 +341,7 @@ class FilterValuesBox(gtk.VBox):
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
                 oWidget.set_selected_entry(sDesc)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def update_box_model(self, _oSelection, oBoxModel, oList):
         """Update the box model to the current selection"""
@@ -353,7 +353,7 @@ class FilterValuesBox(gtk.VBox):
                 oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
         self._oBoxModelEditor.update_box_text(oBoxModel)
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # function signature requires all these arguments
 
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
@@ -381,7 +381,7 @@ class FilterValuesBox(gtk.VBox):
                 bDragRes = False
         oDragContext.finish(bDragRes, False, oTime)
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def get_selected_values(self):
         """Get the most recent selection - used by the drop values code"""
@@ -577,7 +577,7 @@ class FilterValuesBox(gtk.VBox):
 
 class BoxModelPopupMenu(gtk.Menu):
     """Popup context menu for disable/ negate & delete"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
 
     def __init__(self, oBoxModelEditor):
@@ -597,7 +597,7 @@ class BoxModelPopupMenu(gtk.Menu):
 
 class FilterBoxModelStore(gtk.TreeStore):
     """TreeStore for the FilterBoxModelEditor"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
 
     BLACK = gtk.gdk.color_parse('black')
@@ -828,7 +828,7 @@ class FilterBoxModelStore(gtk.TreeStore):
 
 class FilterBoxModelEditView(CustomDragIconView):
     """TreeView for the FilterBoxModelEditor"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
 
     def __init__(self, oStore, oValuesWidget, oBoxModel):
@@ -1005,7 +1005,7 @@ class FilterBoxModelEditView(CustomDragIconView):
             if oCurFilter is oFilterObj:
                 self.select_path(oPath)
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # function signature requires all these arguments
 
     def drag_drop_handler(self, _oWindow, oDragContext, iXPos, iYPos,
@@ -1125,7 +1125,7 @@ class FilterBoxModelEditView(CustomDragIconView):
         # Ensure we don't propogate this signal further
         return True
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def _do_drop_value(self, sData, tRowInfo):
         """Handled dropping in new values"""
@@ -1385,7 +1385,7 @@ class FilterBoxModelEditView(CustomDragIconView):
 
 class FilterBoxModelEditBox(gtk.VBox):
     """Box to hold the BoxModel view."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
 
     def __init__(self, oValuesWidget):

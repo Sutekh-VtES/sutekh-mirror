@@ -15,7 +15,7 @@ from .CardSetController import CardSetController
 
 
 class CardSetFrame(CardListFrame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """class for Card Set frames.
 
@@ -44,12 +44,12 @@ class CardSetFrame(CardListFrame):
 
         self.update_name(sName)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     name = property(fget=lambda self: self._sName, doc="Frame Name")
     cardset_name = property(fget=lambda self: self._oController.view.sSetName,
                             doc="Name of the card set for this frame")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""

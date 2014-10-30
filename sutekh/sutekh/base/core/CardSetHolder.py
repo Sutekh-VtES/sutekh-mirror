@@ -12,7 +12,7 @@ from sqlobject import SQLObjectNotFound, sqlhub
 
 
 class CardSetHolder(object):
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # Need to keep state of card set, so many attributes
     """Holder for Card Sets.
 
@@ -72,7 +72,7 @@ class CardSetHolder(object):
         """Set the name, ensuring we have santised any encoding issues"""
         self._sName = self._sanitise_text(sValue, 'the card set name', True)
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
     name = property(fget=lambda self: self._sName,
@@ -90,7 +90,7 @@ class CardSetHolder(object):
                       fset=lambda self, x: setattr(self, '_sParent', x))
     num_entries = property(fget=lambda self: len(self._dCards))
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -178,7 +178,7 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # SQLObject confuses pylint
             if not oPhysCard:
                 continue
@@ -186,12 +186,12 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
 
-# pylint: disable-msg=R0921
+# pylint: disable=R0921
 # This isn't a abstract base class. It just looks like one to pylint.
 class CardSetWrapper(CardSetHolder):
     """CardSetHolder class which provides a read-only wrapper of a card set."""
 
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # We don't want to call the base __init__
     def __init__(self, oCS):
         self._oCS = oCS
@@ -227,7 +227,7 @@ class CardSetWrapper(CardSetHolder):
         else:
             return self._oCS.parent.name
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
     name = property(fget=lambda self: self._get_cs_attr('name'))
@@ -239,20 +239,20 @@ class CardSetWrapper(CardSetHolder):
     num_entries = property(fget=lambda self: len(self._oCS.cards))
     cards = property(fget=lambda self: self._oCS.cards)
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
         return self._oCS.parent
 
-# pylint: enable-msg=R0921
+# pylint: enable=R0921
 
 
 class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
        cached dictionary of Lookup results.
        """
-    # pylint: disable-msg=W0102, W0221
+    # pylint: disable=W0102, W0221
     # W0102 - {} is the right thing here
     # W0221 - We need the extra argument
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
@@ -262,7 +262,7 @@ class CachedCardSetHolder(CardSetHolder):
            calling oCardLookup.lookup(...).
            """
         # Need to cache both abstract card lookups & expansion lookups
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
         dLookupCache.setdefault('expansions', {})
@@ -314,7 +314,7 @@ class CachedCardSetHolder(CardSetHolder):
 
 def make_card_set_holder(oCardSet):
     """Given a CardSet, create a Cached Card Set Holder for it."""
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # C0103: we use the column naming conventions
     oCS = CachedCardSetHolder()
     oCS.name = oCardSet.name

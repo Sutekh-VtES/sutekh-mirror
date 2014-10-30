@@ -20,7 +20,7 @@ class PhysicalCardMenu(CardListMenu):
        Enables actions specific to the physical card collection (export to
        file, etc), filtering and plugins.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)
@@ -34,7 +34,7 @@ class PhysicalCardMenu(CardListMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # called from __init__, so OK
     def __create_physical_cl_menu(self):
         """Create the Actions menu for the card list."""

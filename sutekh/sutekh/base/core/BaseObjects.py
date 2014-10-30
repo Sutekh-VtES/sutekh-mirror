@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0111, C0302
+# pylint: disable=C0111, C0302
 # C0111 - No point in docstrings for these classes, really
 # C0302 - lots of lines as we want all these related definitions in one file
 
@@ -13,13 +13,13 @@
 from .CachedRelatedJoin import CachedRelatedJoin
 from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
 from ..Utility import move_articles_to_front
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        MultipleJoin, BoolCol, DatabaseIndex, ForeignKey,
                        SQLObjectNotFound, DateCol)
 from sqlobject.inheritance import InheritableSQLObject
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from protocols import advise, Interface
 
 # Interfaces
@@ -68,10 +68,10 @@ class IArtist(Interface):
 class IKeyword(Interface):
     pass
 
-# pylint: enable-msg=C0321
+# pylint: enable=C0321
 # Table Objects
 
-# pylint: disable-msg=W0232, R0902, W0201, C0103
+# pylint: disable=W0232, R0902, W0201, C0103
 # W0232: Most of the classes defined here don't have __init__ methods by design
 # R0902: We aren't worried about the number of insance variables
 # W0201: We don't care about attributes defined outside init, by design
@@ -305,7 +305,7 @@ class MapAbstractCardToKeyword(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     keywordIndex = DatabaseIndex(keyword, unique=False)
 
-# pylint: enable-msg=W0232, R0902, W0201, C0103
+# pylint: enable=W0232, R0902, W0201, C0103
 
 # List of Tables to be created, dropped, etc.
 
@@ -334,7 +334,7 @@ class BaseObjectMaker(object):
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    # pylint: disable-msg=R0201, R0913
+    # pylint: disable=R0201, R0913
     # we want SutekhObjectMaker self-contained, so these are all methods.
     # This needs all these arguments
     def _make_object(self, cObjClass, cInterface, cAbbreviation, sObj,
@@ -348,7 +348,7 @@ class BaseObjectMaker(object):
                 dKw['shortname'] = cAbbreviation.shortname(sObj)
             if bFullname:
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
-            # pylint: disable-msg=W0142
+            # pylint: disable=W0142
             # ** magic OK here
             return cObjClass(**dKw)
 
@@ -406,14 +406,14 @@ class BaseObjectMaker(object):
 # Abbreviation lookup based adapters
 class StrAdaptMeta(type):
     """Metaclass for the string adapters."""
-    # pylint: disable-msg=W0231, C0203
+    # pylint: disable=W0231, C0203
     # W0231 - no point in calling type's init
     # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
     def __init__(cls, _sName, _aBases, _dDict):
         cls.make_object_cache()
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # W0201 - make_object_cache called from init
     def make_object_cache(cls):
         cls.__dCache = {}
@@ -434,7 +434,7 @@ class Adapter(object):
 
 
 class CardTypeAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[ICardType], asAdapterForTypes=[basestring])
@@ -444,7 +444,7 @@ class CardTypeAdapter(Adapter):
 
 
 class ExpansionAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IExpansion], asAdapterForTypes=[basestring])
@@ -454,7 +454,7 @@ class ExpansionAdapter(Adapter):
 
 
 class RarityAdapter(Adapter):
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
     advise(instancesProvide=[IRarity], asAdapterForTypes=[basestring])
@@ -476,7 +476,7 @@ class RarityPairAdapter(Adapter):
         cls.__dCache = {}
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # adapters confuses pylint
         oExp = IExpansion(tData[0])
         oRarity = IRarity(tData[1])
@@ -494,7 +494,7 @@ class AbstractCardAdapter(Adapter):
     advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         try:
             oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
@@ -513,7 +513,7 @@ class RulingAdapter(Adapter):
     advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101,
+        # pylint: disable=E1101,
         # SQLObject confuses pylint
         sText, _sCode = tData
         return Ruling.byText(sText.encode('utf8'))
@@ -523,7 +523,7 @@ class KeywordAdapter(Adapter):
     advise(instancesProvide=[IKeyword], asAdapterForTypes=[basestring])
 
     def __new__(cls, sKeyword):
-        # pylint: disable-msg=E1101,
+        # pylint: disable=E1101,
         # SQLObject confuses pylint
         return Keyword.byKeyword(sKeyword.encode('utf8'))
 
@@ -532,7 +532,7 @@ class ArtistAdapter(Adapter):
     advise(instancesProvide=[IArtist], asAdapterForTypes=[basestring])
 
     def __new__(cls, sArtistName):
-        # pylint: disable-msg=E1101,
+        # pylint: disable=E1101,
         # SQLObject confuses pylint
         return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
@@ -541,7 +541,7 @@ class PhysicalCardSetAdapter(Adapter):
     advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
 
     def __new__(cls, sName):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         return PhysicalCardSet.byName(sName.encode('utf8'))
 
@@ -639,7 +639,7 @@ class PhysicalCardAdapter(Adapter):
         cls.__dCache = {}
         # pre-populate cache with mappings to commonly used
         # physical card with None expansion.
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         try:
             for oPhysicalCard in PhysicalCard.select(
@@ -653,7 +653,7 @@ class PhysicalCardAdapter(Adapter):
             pass
 
     def __new__(cls, tData):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         oAbsCard, oExp = tData
         # oExp may be None, so we don't use oExp.id here
@@ -664,4 +664,4 @@ class PhysicalCardAdapter(Adapter):
             cls.__dCache[(oAbsCard.id, oExp)] = oPhysicalCard
         return oPhysicalCard
 
-# pylint: enable-msg=C0111
+# pylint: enable=C0111

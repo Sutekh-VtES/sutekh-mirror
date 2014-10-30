@@ -32,7 +32,7 @@ HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # inherit a lot of public methods for gtk, need local attributes for state
     """Provides a card list specific API for accessing a gtk.TreeStore."""
     # Use spaces to ensure it sorts first
@@ -81,7 +81,7 @@ class CardListModel(gtk.TreeStore):
         MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
                              self.set_postfix_the_display)
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
     cardclass = property(fget=lambda self: self._cCardClass,
@@ -114,7 +114,7 @@ class CardListModel(gtk.TreeStore):
                           doc="Cardset ID of card list "
                               "(for selecting profiles)")
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
     def cleanup(self):
         """Remove the config file listener if needed"""
@@ -188,7 +188,7 @@ class CardListModel(gtk.TreeStore):
             aTexts = aIcons = []
         return aTexts, aIcons
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Method so it can be inherited
     def _fix_group_name(self, sGroup):
         """Fix the None group name"""
@@ -197,7 +197,7 @@ class CardListModel(gtk.TreeStore):
             return "<< None >>"
         return sGroup
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _set_display_name(self, bPostfix):
         """Set the correct display name for the cards.
@@ -229,7 +229,7 @@ class CardListModel(gtk.TreeStore):
             self.set_sort_column_id(iSortColumn, iSortOrder)
 
     def load(self):
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # we use many local variables for clarity
         """Clear and reload the underlying store. For use after initialisation
            or when the filter or grouping changes."""
@@ -332,7 +332,7 @@ class CardListModel(gtk.TreeStore):
         dAbsCards = {}
 
         for oPhysCard in oCardIter:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # sqlobject confuses pylint
             if not self.check_card_visible(oPhysCard):
                 continue
@@ -360,7 +360,7 @@ class CardListModel(gtk.TreeStore):
 
            This is also responsible for handling the not legal filter case
            and any filter specified by the profile."""
-        # pylint: disable-msg=R0911
+        # pylint: disable=R0911
         # This is a bit combinational explosion'ish, I'm afraid, so
         # there are a lot of return statements
         if self.configfilter:

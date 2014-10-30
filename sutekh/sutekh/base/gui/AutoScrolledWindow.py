@@ -9,7 +9,7 @@ import gtk
 
 
 class AutoScrolledWindow(gtk.ScrolledWindow):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk widget, so many public methods
     """Wrap a widget in a gtk.ScrolledWindow.
 

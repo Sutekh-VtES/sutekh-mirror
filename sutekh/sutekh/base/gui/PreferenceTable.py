@@ -13,7 +13,7 @@ import gtk
 
 class PreferenceTable(gtk.Table):
     """A widget for editing a list of options."""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
 
     COLUMNS = 3
@@ -38,7 +38,7 @@ class PreferenceTable(gtk.Table):
             "yoptions": 0,
         }
         for iRow, oOpt in enumerate(self._aOptions):
-            # pylint: disable-msg=W0142
+            # pylint: disable=W0142
             # *args magic OK here
             self.attach(oOpt.oLabel, self.KEY_COL, self.KEY_COL + 1,
                         iRow, iRow + 1, **dAttachOpts)
@@ -151,7 +151,7 @@ class BaseParsedSpec(object):
 class UneditableSpec(BaseParsedSpec):
     """Class for a spec entry that can't be edited"""
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # we define _oOrigValue outside __init__, but it's OK because create_widget
     # is called in init
     def create_widget(self):
@@ -300,7 +300,7 @@ SPEC_TYPE_MAP = {
 def parse_spec(sConfigSpec, oValidator):
     """Parse a configobj spec into a parsed spec."""
     # TODO: is it okay to use an _ method from the validator?
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We know we're accessing a protected member, and pylint flags our
     # note above, so don't flag this twice
     sType, aArgs, dKwargs, sDefault = \

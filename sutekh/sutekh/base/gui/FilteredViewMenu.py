@@ -11,7 +11,7 @@ import gtk
 
 
 class FilteredViewMenu(SutekhMenu):
-    # pylint: disable-msg=R0904, R0922
+    # pylint: disable=R0904, R0922
     # R0904 - gtk.Widget, so many public methods
     # R0922 - we use this in other files
     """Base class for individual FilteredView menus
@@ -87,7 +87,7 @@ class FilteredViewMenu(SutekhMenu):
 
     # profile helpers
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # We need all these arguments
     def _create_profile_menu(self, oParentMenu, sTitle, sType, fCallback,
                              sProfile):
@@ -105,7 +105,7 @@ class FilteredViewMenu(SutekhMenu):
 
         return oMenu
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def _update_profile_group(self, oMenu, sType, fCallback, sProfile):
         """Update the profile selection menu"""
@@ -135,7 +135,7 @@ class FilteredViewMenu(SutekhMenu):
 
 
 class CardListMenu(FilteredViewMenu):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
     """Base class for Card List Menus
 

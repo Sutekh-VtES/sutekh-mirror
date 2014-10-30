@@ -22,7 +22,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             oJoin.flush_cache()
        """
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(SOCachedRelatedJoin, self).__init__(*aArgs, **kwargs)
@@ -54,7 +54,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         oIntermediateTable = Table(self.intermediateTable)
         oJoinColumn = getattr(oIntermediateTable, self.joinColumn)
         oOtherColumn = getattr(oIntermediateTable, self.otherColumn)
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # We need to access _connection here
         oConn = self.soClass._connection
 
@@ -79,7 +79,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             self._oOtherJoin.invalidate_cache_item(oOther, oInst,
                                                    bDoOther=False)
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # Name must match SQLObject conventions
     def performJoin(self, oInst):
         """Return the join the result, from the cache if possible."""

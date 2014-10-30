@@ -15,13 +15,13 @@ from .GuiDataPack import gui_error_handler, progress_fetch_data
 
 class FileOrUrlWidget(gtk.VBox):
     """Compound widget for loading a file from either a URL or a local file."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
 
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
-    # pylint: disable-msg=R0913, C0103
+    # pylint: disable=R0913, C0103
     # R0913: Need this many arguments
     # C0103: Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
@@ -80,7 +80,7 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
 
-    # pylint: enable-msg=R0913, C0103
+    # pylint: enable=R0913, C0103
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""
@@ -178,12 +178,12 @@ class FileOrUrlWidget(gtk.VBox):
 
 class FileOrDirOrUrlWidget(FileOrUrlWidget):
     """Allow the user to select either a file, an url or a directory"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
 
     OTHER_DIR = 'Select directory ...'
 
-    # pylint: disable-msg=R0913, C0103
+    # pylint: disable=R0913, C0103
     # R0913: Need this many arguments
     # C0103: Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, sDirTitle=None,
@@ -206,7 +206,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
         self._oSrcCombo.append_text(self.OTHER_DIR)
 
-    # pylint: enable-msg=R0913, C0103
+    # pylint: enable=R0913, C0103
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""

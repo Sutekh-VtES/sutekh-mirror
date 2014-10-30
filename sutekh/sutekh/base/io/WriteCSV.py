@@ -30,7 +30,7 @@ class WriteCSV(object):
             return oCard.expansion.name
         return 'Unknown Expansion'
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with the other methods
     def _gen_header(self):
         """Generate column headers."""
@@ -60,7 +60,7 @@ class WriteCSV(object):
                 sResult += '"%s", %d\n' % (tKey[0], iNum)
         return sResult
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory

@@ -17,7 +17,7 @@ RENAME, REPLACE, PROMPT = 1, 2, 3
 
 
 class RenameDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk widget, so has many public methods
     """Class to handle the card set renaming"""
 
@@ -50,7 +50,7 @@ class RenameDialog(SutekhDialog):
         self.oEntry.connect("activate", self.handle_response, RENAME)
         self.connect("response", self.handle_response)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint misses vbox methods
         self.vbox.pack_start(oLabel)
         self.vbox.pack_start(self.oEntry)

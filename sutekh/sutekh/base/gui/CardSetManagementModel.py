@@ -13,7 +13,7 @@ from .BaseConfigFile import CARDSET_LIST
 
 
 class CardSetManagementModel(gtk.TreeStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     """TreeModel for the card set list"""
     def __init__(self, oMainWindow):
@@ -33,7 +33,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
         self._aExcludedSet = set()
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212 - we explicitly allow access via these properties
     # C0103 - we allow these names
     applyfilter = property(fget=lambda self: self._bApplyFilter,
@@ -53,9 +53,9 @@ class CardSetManagementModel(gtk.TreeStore):
                           doc="Cardset ID of card set list "
                               "(for selecting profiles)")
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # this should be a method for consistency
     def get_card_set_iterator(self, oFilter):
         """Return an interator over the card set model.
@@ -65,7 +65,7 @@ class CardSetManagementModel(gtk.TreeStore):
         if not oFilter:
             oFilter = NullFilter()
         return oFilter.select(PhysicalCardSet).distinct()
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _format_set(self, oSet):
         """Format the card set name for display"""

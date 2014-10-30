@@ -13,7 +13,7 @@ class MainToolbar(gtk.Toolbar):
 
        This provides a place to minimize panes.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
     def __init__(self, oWindow):
         super(MainToolbar, self).__init__()
@@ -21,7 +21,7 @@ class MainToolbar(gtk.Toolbar):
         self.set_style(gtk.TOOLBAR_BOTH)
         self._oMainWindow = oWindow
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Method for consistency
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):
         """Create a Toolbar button with the given action."""
@@ -30,7 +30,7 @@ class MainToolbar(gtk.Toolbar):
             oToolButton.connect('clicked', fAction)
         return oToolButton
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def remove_frame_button(self, sTitle):
         """Remove the button associated with the given frame title."""

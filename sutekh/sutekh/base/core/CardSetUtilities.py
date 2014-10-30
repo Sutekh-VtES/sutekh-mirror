@@ -69,7 +69,7 @@ def break_loop(oCardSet):
 
 def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # SQLObject confuse pylint
     def _delete_cards(oCS):
         """Remove cards from the card set.
@@ -97,7 +97,7 @@ def delete_physical_card_set(sSetName):
 
 def find_children(oCardSet):
     """Find all the children of the given card set"""
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # SQLObject confuses pylint
     if oCardSet:
         return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))

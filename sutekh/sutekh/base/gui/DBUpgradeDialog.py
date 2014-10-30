@@ -11,7 +11,7 @@ from .SutekhDialog import SutekhDialog
 
 
 class DBUpgradeDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Dialog which prompts the user at the end of a database upgrade.
 
@@ -20,7 +20,7 @@ class DBUpgradeDialog(SutekhDialog):
        """
     def __init__(self, aMessages):
         # Create Dialog
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         super(DBUpgradeDialog, self).__init__(
             "Memory Copy Created", None,

@@ -12,11 +12,11 @@
    uses intospection to find the filters to add to the grammar.
    """
 
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # pylint 0.18 misses ply parts
 import ply.lex as lex
 import ply.yacc as yacc
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from .BaseFilters import Filter, FilterNot, FilterAndBox, FilterOrBox
 from ..Utility import find_subclasses
 
@@ -37,7 +37,7 @@ LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
 # Misc utility functions
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
-    # pylint: disable-msg=W0621
+    # pylint: disable=W0621
     return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
 
 
@@ -52,7 +52,7 @@ def get_filters_for_type(sFilterType):
 # which are based on ply examples
 class ParseFilterDefinitions(object):
     """Provides the lexer used by PLY"""
-    # pylint: disable-msg=C0103, R0201
+    # pylint: disable=C0103, R0201
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
@@ -110,7 +110,7 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    # pylint: disable-msg=W0201, W0142
+    # pylint: disable=W0201, W0142
     def build(self, **kwargs):
         """Create the lexer object.
 
@@ -132,7 +132,7 @@ class ParseFilterDefinitions(object):
 # Define a yacc parser to produce the abstract syntax tree
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
-    # pylint: disable-msg=C0103, R0201
+    # pylint: disable=C0103, R0201
     tokens = ParseFilterDefinitions.tokens
     aUsedVariables = []
 
@@ -243,7 +243,7 @@ class FilterYaccParser(object):
 # Wrapper objects around the parser
 class FilterParser(object):
     """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
-    # pylint: disable-msg=R0903
+    # pylint: disable=R0903
     # This really does only need the 1 public method
     _oGlobalLexer = None
     _oGlobalParser = None
@@ -325,7 +325,7 @@ class ValueObject(object):
         """Does this represent a assigned string value?"""
         return isinstance(self.oValue, str) and self.oValue != ''
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     def is_None(self):
         """Is this node's value None?"""
         return self.oValue is None

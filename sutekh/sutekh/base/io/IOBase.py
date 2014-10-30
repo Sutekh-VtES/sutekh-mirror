@@ -9,17 +9,17 @@
 
 from ..Utility import pretty_xml, norm_xml_quotes
 from xml.etree.ElementTree import parse, tostring
-# pylint: disable-msg=E0611, F0401
+# pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
 
-# pylint: enable-msg=E0611, F0401
+# pylint: enable=E0611, F0401
 
 
-# pylint: disable-msg=R0921, R0922
+# pylint: disable=R0921, R0922
 # These may be referenced elsewhere, and mainly exist as interface
 # documentation, rather than genuine base classes
 class CardSetParser(object):

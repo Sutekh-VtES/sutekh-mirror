@@ -21,7 +21,7 @@ class FilterBoxModel(list):
 
     AND, OR = 'and', 'or'
 
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # no point to calling list's __init__
     def __init__(self, oAST, sFilterType, oVarNameMaker=None):
         """Initialise a filter box from an AST filter representation."""
@@ -196,7 +196,7 @@ class FilterBoxItem(object):
        This represents either a single FilterPart or a single
        NOT(FilterPart) expression in the AST.
        """
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # We track a lot of state, so several instance attributes
     NONE, ENTRY, LIST, LIST_FROM = range(4)
 

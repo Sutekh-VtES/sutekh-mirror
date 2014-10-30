@@ -12,7 +12,7 @@ import os
 import glob
 import re
 
-# pylint: disable-msg=C0103
+# pylint: disable=C0103
 # we ignore our usual naming conventions here
 
 try:
@@ -64,7 +64,7 @@ description describes the arguments the filter takes and the results it
 produces.
 """
 
-# pylint: enable-msg=C0103
+# pylint: enable=C0103
 
 
 class FilterGroup(object):
@@ -102,11 +102,11 @@ def textile2markdown(aLines, fProcessText):
        This is rule-based, and doesn't cover the full textile syntax.
        We aim to convert to the markdown variant supported by the
        sourceforge wiki."""
-    # pylint: disable-msg=R0914
+    # pylint: disable=R0914
     # We use a bunch of local variables as psuedo-constants to
     # keep this self-contained
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # we break the naming convention for these pseudo-constants
     HEADER = re.compile('h([0-9])\(#(.*)\)\. (.*)$')
     NUM_LINK = re.compile('^(#*) "([^:]*)":(#.*)$')
@@ -116,7 +116,7 @@ def textile2markdown(aLines, fProcessText):
     # good enough
     LIST_ITEM = re.compile(r'^(\*+)([^\*]+$|[^\*]+\*[^\*]+\*[^\*]*)+$')
     EMP_ITEM = re.compile(r'\*([^\*]+)\*')
-    # pylint: enable-msg=C0103
+    # pylint: enable=C0103
 
     aOutput = []
     for sLine in aLines:
@@ -197,7 +197,7 @@ def _load_textile(sTextilePath):
 
 def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
-    # pylint: disable-msg=R0914
+    # pylint: disable=R0914
     # R0914: Reducing the number of variables won't help clarity
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
@@ -241,7 +241,7 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
 
 def make_filter_txt(sDir, aFilters):
     """Convert base filters into the approriate textile files"""
-    # pylint: disable-msg=R0914, R0915, R0912
+    # pylint: disable=R0914, R0915, R0912
     # R0914: Reducing the number of variables won't help clarity
     # R0912, R0915: We choose not to split this into subfuctions to
     # reduce line count and branches since the logic isn't reused

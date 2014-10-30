@@ -12,7 +12,7 @@ from xml.etree.ElementTree import Element, SubElement
 
 
 class BaseCardXMLParser(BaseXMLParser):
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
     """Base class for cardset XML files.
@@ -33,7 +33,7 @@ class BaseCardXMLParser(BaseXMLParser):
         if oRoot.attrib[self.sVersionTag] not in self.aSupportedVersions:
             raise IOError("Unrecognised %s File version" % self.sTypeName)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method so subclasses can use it if needed
 
     def _parse_card(self, oElem, oHolder):
@@ -50,7 +50,7 @@ class BaseCardXMLParser(BaseXMLParser):
 
 
 class BaseCardSetParser(BaseCardXMLParser):
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
     """Base class for physical cardset XML files.
@@ -63,7 +63,7 @@ class BaseCardSetParser(BaseCardXMLParser):
         oRoot = self._oTree.getroot()
         oHolder.name = oRoot.attrib['name'][:MAX_ID_LENGTH]
         oHolder.inuse = False
-        # pylint: disable-msg=W0704
+        # pylint: disable=W0704
         # exceptions does enough for us
         try:
             oHolder.author = oRoot.attrib['author']
@@ -79,7 +79,7 @@ class BaseCardSetParser(BaseCardXMLParser):
                 oHolder.inuse = True
         except KeyError:
             pass
-        # pylint: enable-msg=W0704
+        # pylint: enable=W0704
 
         if 'parent' in oRoot.attrib:
             oHolder.parent = oRoot.attrib['parent']

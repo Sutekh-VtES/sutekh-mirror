@@ -106,7 +106,7 @@ class BaseGuiDBManager(object):
         oProgressDialog.set_description("Saving backup")
         oLogHandler.set_dialog(oProgressDialog)
         oProgressDialog.show()
-        # pylint: disable-msg=E1102
+        # pylint: disable=E1102
         # subclasses will provide a callable cZipFileWrapper
         oFile = self.cZipFileWrapper(sBackupFile)
         oFile.do_dump_all_to_zip(oLogHandler)
@@ -114,7 +114,7 @@ class BaseGuiDBManager(object):
 
     def refresh_card_list(self):
         """Handle grunt work of refreshing the card lists"""
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # We're juggling lots of different bits of state, so we use a lot
         # of variables
         aEditable = self._oWin.get_editable_panes()
@@ -124,7 +124,7 @@ class BaseGuiDBManager(object):
             return False  # Nothing happened
         oProgressDialog = ProgressDialog()
         if sBackupFile is not None:
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we do want to catch all exceptions here
             try:
                 self.save_backup(sBackupFile, oProgressDialog)

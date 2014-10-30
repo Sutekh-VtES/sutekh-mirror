@@ -24,7 +24,7 @@ class CardSetController(object):
     _sFilterType = 'PhysicalCard'
 
     def __init__(self, sName, oMainWindow, oFrame, bStartEditable):
-        # pylint: disable-msg=E1101, E1103
+        # pylint: disable=E1101, E1103
         # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._aUndoList = collections.deque([], 50)
@@ -34,26 +34,26 @@ class CardSetController(object):
         self.__oPhysCardSet = IPhysicalCardSet(sName)
         self.model.set_controller(self)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # explicitly allow access to these values via thesep properties
     view = property(fget=lambda self: self._oView, doc="Associated View")
     model = property(fget=lambda self: self._oView._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
                           doc="Associated Type")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def cleanup(self):
         """Remove the signal handlers."""
         self.model.cleanup()
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
         MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def inc_card(self, oPhysCard, sCardSetName, bAddUndo=True):
         """Returns True if a card was successfully added, False otherwise."""
@@ -61,7 +61,7 @@ class CardSetController(object):
 
     def dec_card(self, oPhysCard, sCardSetName, bAddUndo=True):
         """Returns True if a card was successfully removed, False otherwise."""
-        # pylint: disable-msg=E1101, E1103
+        # pylint: disable=E1101, E1103
         # SQLObject +Pyprotocol methods confuse pylint
         try:
             if sCardSetName:
@@ -111,7 +111,7 @@ class CardSetController(object):
 
     def add_card(self, oPhysCard, sCardSetName, bAddUndo=True):
         """Returns True if a card was successfully added, False otherwise."""
-        # pylint: disable-msg=E1101, E1103
+        # pylint: disable=E1101, E1103
         # SQLObject + PyProtocols methods confuse pylint
         try:
             if sCardSetName:
@@ -173,7 +173,7 @@ class CardSetController(object):
     def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # sqlobject confuses pylint
         if check_ok_to_delete(self.__oPhysCardSet):
             self._oMainWindow.config_file.clear_cardset_profile(

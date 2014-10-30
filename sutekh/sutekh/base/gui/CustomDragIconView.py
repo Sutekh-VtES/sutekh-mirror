@@ -9,7 +9,7 @@ import gtk
 
 
 class CustomDragIconView(gtk.TreeView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Base class for tree views that fiddle with the drag icon"""
 
@@ -52,7 +52,7 @@ class CustomDragIconView(gtk.TreeView):
             self.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
         # We don't change anything in the nothing selected case
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
                     _oTimestamp):

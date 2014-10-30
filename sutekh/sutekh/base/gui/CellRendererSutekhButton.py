@@ -19,7 +19,7 @@ import gobject
 # but that is currently not a priority
 
 
-# pylint: disable-msg=R0904
+# pylint: disable=R0904
 # gtk widget, so we must have a lot of public methods
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
     """Render a icon in a cell in a TreeView.
@@ -79,7 +79,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # R0913 - number of parameters needed by function signature
     def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
                     _oCellArea, _iFlags):
@@ -91,7 +91,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.emit('clicked', oPath)
         return True
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # R0913 - number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, oBackgroundArea,
                   oCellArea, oExposeArea, _iFlags):

@@ -41,13 +41,13 @@ class IterGrouping(object):
 # If you need to group PhysicalCards,
 # set fGetCard to lambda x: x.abstractCard
 
-# pylint: disable-msg=E0602
+# pylint: disable=E0602
 # pylint is confused by the lambda x: x construction
 DEF_GET_CARD = lambda x: x
-# pylint: enable-msg=E0602
+# pylint: enable=E0602
 
 
-# pylint: disable-msg=C0111
+# pylint: disable=C0111
 # class names are pretty self-evident, so skip docstrings
 class CardTypeGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
@@ -61,7 +61,7 @@ class MultiTypeGrouping(IterGrouping):
        """
 
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # we accept x here for consistency with other groupings
         def multitype(x):
             """Return a list of one string with slash separated card types."""

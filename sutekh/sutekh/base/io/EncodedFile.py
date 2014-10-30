@@ -35,7 +35,7 @@ class EncodedFile(object):
        returns a file-like object with the encoding set correctly.
        """
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # we accept sfFile here
     def __init__(self, sfFile, bUrl=False, bFileObj=False):
         self.sfFile = sfFile
@@ -46,7 +46,7 @@ class EncodedFile(object):
             raise ValueError(
                 "EncodedFile cannot be both a URL and a fileobject")
 
-    # pylint: enable-msg=C0103
+    # pylint: enable=C0103
 
     def open(self):
         """Return a file object for the file.

@@ -20,7 +20,7 @@ import gobject
 class FrameProfileEditor(SutekhDialog):
     """Dialog which allows the user to edit profiles of the specified type.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
 
     RESPONSE_SAVE_AND_CLOSE = 1
@@ -47,7 +47,7 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.connect("changed", self._selector_changed)
         self.__oSelectorCombo.connect("notify::popup-shown",
                                       self._selector_opened)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
 

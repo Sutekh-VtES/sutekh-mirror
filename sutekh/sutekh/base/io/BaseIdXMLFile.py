@@ -9,13 +9,13 @@
    Defines the public interface available."""
 
 from xml.etree.ElementTree import parse, fromstring, ElementTree
-# pylint: disable-msg=E0611, F0401
+# pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
-# pylint: enable-msg=E0611, F0401
+# pylint: enable=E0611, F0401
 
 
 class BaseIdXMLFile(object):
@@ -37,7 +37,7 @@ class BaseIdXMLFile(object):
         self._sName = None
         self._sParent = None
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     name = property(fget=lambda self: self._sName,
                     doc='The name from the XML file')
@@ -52,7 +52,7 @@ class BaseIdXMLFile(object):
                           ' database')
     type = property(fget=lambda self: self._sType,
                     doc='The type of the XML data')
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def _identify_tree(self, oTree):
         """Process the ElementTree to identify the XML file type."""

@@ -13,7 +13,7 @@ from .MessageBus import MessageBus, DATABASE_MSG
 
 
 class BasicFrame(gtk.Frame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lotes of public methods
     """The basic, blank frame for sutekh.
 
@@ -64,7 +64,7 @@ class BasicFrame(gtk.Frame):
 
         self.set_unique_id()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # explicitly allow access to these values via thesep properties
     title = property(fget=lambda self: self._oTitleLabel.get_text(),
                      doc="Frame Title")
@@ -80,7 +80,7 @@ class BasicFrame(gtk.Frame):
                        doc="ID number for this pane (should be unique)")
     config_frame_id = property(fget=lambda self: "pane%s" % (self._iId,),
                                doc="Config frame id for this pane")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def set_unique_id(self):
         """Set a unique id for this pane"""
@@ -148,7 +148,7 @@ class BasicFrame(gtk.Frame):
         self._oMainWindow.replace_with_physical_card_set(aData[1], self)
         return True
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Methods so sub-classes can override them
     def is_card_set(self, _sSetName):
         """Returns true if we're a copy of the given card set"""
@@ -165,7 +165,7 @@ class BasicFrame(gtk.Frame):
         MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
                              self.update_to_new_db)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def cleanup(self, _bQuit=False):
         """Hook for cleanup actions when the frame is removed."""
@@ -277,7 +277,7 @@ class BasicFrame(gtk.Frame):
         oFocusFunc(self, oEvent, self)
         return False
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # function signature requires all these arguments
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
                           oSelectionData, _oInfo, oTime):
@@ -305,7 +305,7 @@ class BasicFrame(gtk.Frame):
         sData = 'Basic Pane:\n%s' % self.pane_id
         oSelectionData.set(oSelectionData.target, 8, sData)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
                     _oTimestamp):
@@ -317,7 +317,7 @@ class BasicFrame(gtk.Frame):
 
     def minimize_to_toolbar(self, _oWidget, oEvent):
         """Minimize the frame to the toolbar on double-click."""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # We need to access _2BUTTON_PRESS
         if oEvent.type == gtk.gdk._2BUTTON_PRESS:
             self._oMainWindow.minimize_to_toolbar(self)

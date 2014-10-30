@@ -17,7 +17,7 @@ class CSVParser(object):
        the card comes from.
        """
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # we may need all these arguments for some files
     def __init__(self, iCardNameColumn, iCountColumn, iExpansionColumn=None,
                  bHasHeader=True):
@@ -27,7 +27,7 @@ class CSVParser(object):
         self.iExpansionColumn = iExpansionColumn
         self.bHasHeader = bHasHeader
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def _process_row(self, aRow):
         """Extract the relevant data from a single row in the CSV file."""

@@ -15,7 +15,7 @@ from .GuiCardSetFunctions import (create_card_set, update_card_set,
 
 class CardSetManagementController(object):
     """Controller object for the card set list."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     _sFilterType = 'PhysicalCardSet'
 
@@ -27,14 +27,14 @@ class CardSetManagementController(object):
         self._oView = CardSetManagementView(self, oMainWindow)
         self._oModel = self._oView.get_model()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # explicitly allow access to these values via thesep properties
     view = property(fget=lambda self: self._oView, doc="Associated View")
     model = property(fget=lambda self: self._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
                           doc="Associated Type")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def create_new_card_set(self, _oWidget):
         """Create a new card set"""
@@ -55,7 +55,7 @@ class CardSetManagementController(object):
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
             return
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # sqlobject confuses pylint
         try:
             oCS = PhysicalCardSet.byName(sSetName)
@@ -76,7 +76,7 @@ class CardSetManagementController(object):
         if not sSetName:
             return
         try:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # SQLObject confuses pylint
             oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:

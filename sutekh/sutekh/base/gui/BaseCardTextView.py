@@ -16,7 +16,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
     """Base class for buffer object which holds the actual card text.
        """
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self):
         super(BaseCardTextBuffer, self).__init__(None)
@@ -34,13 +34,13 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 
         self._oIter = None
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def tag_text(self, *aArgs, **kwargs):
         """Inset the text (possibly with tags) at the current position"""
         self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
 
-    # pylint: enable-msg=W0142
+    # pylint: enable=W0142
 
     # Methods for adding new tags to the buffer
 
@@ -141,7 +141,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 class BaseCardTextView(gtk.TextView):
     """Base class for TextView widget which holds the TextBuffer."""
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oBuffer, oIconManager):
         super(BaseCardTextView, self).__init__()
@@ -159,13 +159,13 @@ class BaseCardTextView(gtk.TextView):
         logging.info('Pango Font Description : %s',
                      oContext.get_font_description())
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
 
     text_buffer = property(fget=lambda self: self._oBuf,
                            doc="Return reference to text buffer")
 
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def update_to_new_db(self):
         """Handle any database changes as required"""

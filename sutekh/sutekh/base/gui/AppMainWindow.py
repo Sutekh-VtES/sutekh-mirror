@@ -12,10 +12,10 @@ import gtk
 import logging
 import socket
 from itertools import chain
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from ..core.BaseObjects import PhysicalCardSet, PhysicalCard
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
@@ -30,7 +30,7 @@ from .SutekhDialog import do_complaint_error_details, do_exception_complaint
 
 class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we need to keep a lot of state, so many instance attributes
     def __init__(self):
@@ -70,12 +70,12 @@ class AppMainWindow(MultiPaneWindow):
 
     def do_refresh_card_list(self):
         """Handle reloading the card list via the database manager object."""
-        # pylint: disable-msg=E1102
+        # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
         oDBManager.refresh_card_list()
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # We define attributes here, since this is called after database checks
     def setup(self, oConfig):
         """Entry point for setting up the application window"""
@@ -144,9 +144,9 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses will implement this
         raise NotImplementedError
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup,
@@ -165,7 +165,7 @@ class AppMainWindow(MultiPaneWindow):
     card_text_pane = property(fget=lambda self: self._oCardTextPane,
                               doc="Return reference to the card text pane")
 
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
         """Add a key to the list of menu items to manage."""
@@ -186,7 +186,7 @@ class AppMainWindow(MultiPaneWindow):
 
     def restore_from_config(self):
         """Restore all the frame form the config file."""
-        # pylint: disable-msg=R0912, R0914, W9967
+        # pylint: disable=R0912, R0914, W9967
         # R0912: Need to consider all these cases, so many branches
         # R0914: Consequently, many local variables
         self._clear_frames()
@@ -274,7 +274,7 @@ class AppMainWindow(MultiPaneWindow):
                                        bStartEditable=False):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
-            # pylint: disable-msg=W0704
+            # pylint: disable=W0704
             # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName, bStartEditable,
@@ -349,7 +349,7 @@ class AppMainWindow(MultiPaneWindow):
         if self._oPCSListPane is not None:
             self._oPCSListPane.reload()
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Making these functions would not be convenient
     def update_to_new_db(self):
         """Resync panes against the database."""
@@ -360,7 +360,7 @@ class AppMainWindow(MultiPaneWindow):
         """Handle any preparation for the database upgrade"""
         MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def get_editable_panes(self):
         """Get a list of panes, which are currently editable.
@@ -435,7 +435,7 @@ class AppMainWindow(MultiPaneWindow):
 
     # startup, exit and other misc functions
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # making this a function would not be convient
     def run(self):
         """gtk entry point"""
@@ -464,7 +464,7 @@ class AppMainWindow(MultiPaneWindow):
         else:
             raise ValueError("Unknown resource %s" % sLocalUrl)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def action_close(self, _oWidget, _oEvent):
         """Close the app (menu or window manager) and save the settings"""
@@ -511,12 +511,12 @@ class AppMainWindow(MultiPaneWindow):
         self._oConfig.set_window_size(self.get_size())
 
     def save_frames(self):
-        # pylint:disable-msg=R0912
+        # pylint: disable=R0912
         # lots of decisions, so many branches
         """save the current frame layout"""
         self._oConfig.clear_open_frames()
 
-        # pylint: disable-msg=R0913
+        # pylint: disable=R0913
         # we need all these arguments
         def save_pane_to_config(iNum, oPane, oConfig, bVert, bClosed, iPos):
             """Save a pane to the config file, dealing with card set panes

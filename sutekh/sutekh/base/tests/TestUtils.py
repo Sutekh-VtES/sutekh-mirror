@@ -41,7 +41,7 @@ class BaseTestCase(unittest.TestCase):
 
        Define some useful helper methods.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     TEST_CONN = None
@@ -60,7 +60,7 @@ class BaseTestCase(unittest.TestCase):
 
         return sFilename
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # setUp + tearDown names are needed by unittest - use their convention
     def _setUpTemps(self):
         """Create a directory to hold the temporary files."""
@@ -91,7 +91,7 @@ class BaseTestCase(unittest.TestCase):
         fIn.close()
         return sData
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with _round_trip_obj
     def _make_holder_from_string(self, oParser, sString):
         """Read the given string into a DummyHolder.
@@ -106,7 +106,7 @@ class DummyHolder(object):
     """Emulate CardSetHolder for test purposes."""
     def __init__(self):
         self.dCards = {}
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # placeholder names for CardSetHolder attributes
         self.name = ''
         self.comment = ''
@@ -134,7 +134,7 @@ class DummyHolder(object):
 class GuiBaseTest(unittest.TestCase):
     """Adds useful methods for gui test cases."""
 
-    # pylint: disable-msg=C0103, R0904
+    # pylint: disable=C0103, R0904
     # C0103 - setUp + tearDown names are needed by unittest,
     #         so use their convention
     # R0904 - unittest.TestCase, so many public methods
@@ -178,7 +178,7 @@ def _iterdump(connection):
     database for later restoration.  This function should not be called
     directly but instead called from the Connection method, iterdump().
     """
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # Using the original naming convention
 
     cu = connection.cursor()

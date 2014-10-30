@@ -17,7 +17,7 @@ from .GuiCardSetFunctions import export_cs
 
 
 class CardSetMenu(CardListMenu):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Card Set Menu.
 
@@ -25,7 +25,7 @@ class CardSetMenu(CardListMenu):
        card set specific actions - editing card set properties, editng
        annotations, exporting to file, and so on.
        """
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # R0902 - we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, cPCSWriter):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
@@ -44,7 +44,7 @@ class CardSetMenu(CardListMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     name = property(fget=lambda self: self._oController.view.sSetName,
                     doc="Associated Card Set Name")
@@ -57,9 +57,9 @@ class CardSetMenu(CardListMenu):
                           doc="Cardset ID of associated card set "
                               "(for selecting profiles)")
 
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # these methods are called from __init__, so it's OK
     def _create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
@@ -120,7 +120,7 @@ class CardSetMenu(CardListMenu):
 
         self.add_edit_menu_actions(oMenu)
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def cleanup(self):
         """Remove the menu listener"""
@@ -133,7 +133,7 @@ class CardSetMenu(CardListMenu):
 
     def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # sqlobject confuses pylint
         self._oController.edit_properties(self)
 

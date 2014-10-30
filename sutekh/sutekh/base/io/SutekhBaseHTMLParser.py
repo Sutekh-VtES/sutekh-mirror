@@ -48,7 +48,7 @@ class BaseState(object):
 class LogState(BaseState):
     """Base class for the State transitions with a log handler"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # descendants will override transition, so still abstract here.
     def __init__(self, oLogger):
         super(LogState, self).__init__()
@@ -58,7 +58,7 @@ class LogState(BaseState):
 class LogStateWithInfo(LogState):
     """Base class for states which contain information of interest"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # transition method is still abstract here
     def __init__(self, dInfo, oLogger):
         super(LogStateWithInfo, self).__init__(oLogger)
@@ -68,7 +68,7 @@ class LogStateWithInfo(LogState):
 class HolderState(BaseState):
     """Base class for parser states"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # transition method is still abstract here
     def __init__(self, oHolder):
         super(HolderState, self).__init__()
@@ -90,7 +90,7 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
         super(SutekhBaseHTMLParser, self).reset()
         self._oState = BaseState()
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # names are as listed in HTMLParser docs, so no need for docstrings
     def handle_starttag(self, sTag, aAttr):
         self._oState = self._oState.transition(sTag.lower(), dict(aAttr))

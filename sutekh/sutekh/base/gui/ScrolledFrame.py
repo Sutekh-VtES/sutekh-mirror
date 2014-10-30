@@ -13,7 +13,7 @@ from .BasicFrame import BasicFrame
 
 
 class ScrolledFrame(BasicFrame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Frame which holds a view in a scrolled window.
 
@@ -23,7 +23,7 @@ class ScrolledFrame(BasicFrame):
 
     _sName = 'scrolled'
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     def __init__(self, oView, oMainWindow):
         super(ScrolledFrame, self).__init__(oMainWindow)
@@ -31,10 +31,10 @@ class ScrolledFrame(BasicFrame):
         self.add_parts()
         self.set_name(self._sName.lower())
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # allow access via these properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def add_parts(self):
         """Add Widget + title widgets to the Frame."""

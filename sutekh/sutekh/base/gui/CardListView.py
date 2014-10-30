@@ -13,7 +13,7 @@ from .FilterDialog import FilterDialog
 
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
-    # pylint: disable-msg=R0904, R0902, R0901
+    # pylint: disable=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
@@ -179,7 +179,7 @@ class CardListView(FilteredView):
                         [true_expansion(x) for x in aLines[3::3]])
         return sSource, aCardInfo
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # arguments as required by the function signature
 
     def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
@@ -246,7 +246,7 @@ class CardListView(FilteredView):
 
         return True
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     # Activating Rows
     def card_activated(self, _oTree, oPath, _oColumn):

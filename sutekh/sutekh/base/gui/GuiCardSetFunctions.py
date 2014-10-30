@@ -197,7 +197,7 @@ def write_cs_to_file(oCardSet, oWriter, sFileName):
 
        Split out as a separate function so the plugins which tweak the
        Export Dialog can still use the same logic."""
-    # pylint: disable-msg=W0703
+    # pylint: disable=W0703
     # we really do want all the exceptions
     fOut = None
     try:
@@ -238,7 +238,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     """Create a card set from the given file object."""
     oHolder = CardSetHolder()
 
-    # pylint: disable-msg=W0703
+    # pylint: disable=W0703
     # we really do want all the exceptions
     try:
         oParser.parse(fIn, oHolder)

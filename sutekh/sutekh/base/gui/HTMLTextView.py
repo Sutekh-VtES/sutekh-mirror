@@ -49,7 +49,7 @@ def _parse_css_color(sColor):
 
 
 class HtmlHandler(HTMLParser.HTMLParser):
-    # pylint: disable-msg=R0201, R0902, R0904
+    # pylint: disable=R0201, R0902, R0904
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
     # R0904: Lots of public methods from HTMLParser
@@ -93,7 +93,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
            calls callback(length, *args) when the length is first computed
            or changes
            """
-        # pylint: disable-msg=W0142
+        # pylint: disable=W0142
         # *magic required here
         if sValue.endswith('%'):
             fFrac = float(sValue[:-1]) / 100
@@ -297,7 +297,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Insert text into the TextBuffer"""
         aTags = self._get_style_tags()
         if aTags:
-            # pylint: disable-msg=W0142
+            # pylint: disable=W0142
             # * magic required
             self._oTextBuf.insert_with_tags(self._oIter, sText, *aTags)
         else:
@@ -312,7 +312,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # Arguments needed by function signature
     def _anchor_event(self, _oTag, _oView, oEvent, _oIter, oHref, oType):
         """Something happened to a link, so see if we need to react."""
@@ -326,11 +326,11 @@ class HtmlHandler(HTMLParser.HTMLParser):
                                fFrac, fCallback, args):
         """call the required callback function when the size allocation
            changes."""
-        # pylint: disable-msg=W0142
+        # pylint: disable=W0142
         # *magic required here
         fCallback(oAllocation.width * fFrac, *args)
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def handle_data(self, sContent):
         """Process the character comments of an element."""
@@ -342,7 +342,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Get the list of target anchors."""
         return self._dTargets
 
-    # pylint: disable-msg=R0912, R0915, R0914
+    # pylint: disable=R0912, R0915, R0914
     # entity handler, so it is is a massive if..elif.. statement
     def handle_entityref(self, sEntity):
         """Convert entity to something we can use"""
@@ -462,7 +462,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 sListHead = "%i." % self._aListCounters[-1]
             self._sText = sListHead + ' '
         elif sName == 'img':
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we want to catch all errors here
             try:
                 oFile = self._fLinkLoader(oAttrs['src'])
@@ -563,7 +563,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
 
 class HTMLTextView(gtk.TextView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """TextView subclass to display HTML"""
     __gtype_name__ = 'HTMLTextView'
@@ -644,7 +644,7 @@ class HTMLTextView(gtk.TextView):
 
 
 class HTMLViewDialog(SutekhDialog):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904: gtk.Widget, so many public methods
     # R0902: We need to keep a lot of state to handle navigation
     """Dialog Window that wraps the HTMLTextView
@@ -669,7 +669,7 @@ class HTMLViewDialog(SutekhDialog):
         super(HTMLViewDialog, self).__init__('Help', oParent,
                                              oButtons=(gtk.STOCK_CLOSE,
                                                        gtk.RESPONSE_CLOSE))
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oDirButtons = gtk.HButtonBox()
         self._oBackButton = gtk.Button(stock=gtk.STOCK_GO_BACK)
@@ -731,7 +731,7 @@ class HTMLViewDialog(SutekhDialog):
         else:
             sPos = None
         if sFile:
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we really do want all the exceptions
             try:
                 fInput = self._fLinkLoader(sFile)

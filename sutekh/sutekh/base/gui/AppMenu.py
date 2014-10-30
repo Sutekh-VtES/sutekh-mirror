@@ -21,7 +21,7 @@ class AppMenu(SutekhMenu):
        This provides access to the major pane management actions, the
        global file actions, the help system, and any global plugins.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
@@ -44,7 +44,7 @@ class AppMenu(SutekhMenu):
         # subclasses need to provide this
         self.cIdentifyFile = None
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # these are called from __init__
     def _create_file_menu(self):
         """Create the File Menu"""
@@ -237,7 +237,7 @@ class AppMenu(SutekhMenu):
         """Make the 'Last shown help page' option active"""
         self.oHelpLast.set_sensitive(True)
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def del_pane_set_sensitive(self, bValue):
         """Set the 'pane can be removed' option to bValue"""
@@ -278,10 +278,10 @@ class AppMenu(SutekhMenu):
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
-            # pylint: disable-msg=E1102
+            # pylint: disable=E1102
             # subclasses will provide a callable cIdentifyFile
             oIdParser = self.cIdentifyFile()
-            # pylint: enable-msg=E1102
+            # pylint: enable=E1102
             oIdParser.id_file(sFileName)
             if oIdParser.can_parse():
                 fIn = open(sFileName, 'rU')

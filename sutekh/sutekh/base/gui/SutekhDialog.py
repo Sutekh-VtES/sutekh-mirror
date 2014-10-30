@@ -19,7 +19,7 @@ from sutekh.SutekhInfo import SutekhInfo as AppInfo
 
 
 class SutekhDialog(gtk.Dialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk widget, so has many public methods
     """wrapper class for gtk.Dialog"""
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
@@ -81,7 +81,7 @@ def do_complaint_warning(sMessage):
 
 class DetailDialog(SutekhDialog):
     """Message dialog with a details expander"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk widget, so has many public methods
 
     def __init__(self, sMessage, sDetails):
@@ -107,7 +107,7 @@ class DetailDialog(SutekhDialog):
         oExpander.add(oFrame)
         oMessageBox.pack_start(oExpander)
         oHBox.pack_start(oMessageBox)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.vbox.pack_start(oHBox)
         oExpander.set_expanded(False)

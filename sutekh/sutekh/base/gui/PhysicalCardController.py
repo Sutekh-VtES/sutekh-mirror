@@ -25,7 +25,7 @@ class PhysicalCardController(object):
         self._sFilterType = 'PhysicalCard'
         self.model.set_controller(self)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We provide read access to these items via these properties
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     model = property(fget=lambda self: self.__oModel,
@@ -33,19 +33,19 @@ class PhysicalCardController(object):
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
                           doc="Associated Type")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def cleanup(self):
         """Remove the signal handlers."""
         self.model.cleanup()
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
         MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""

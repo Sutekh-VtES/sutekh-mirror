@@ -20,7 +20,7 @@ def mouse_in_button(oButton):
 
 
 class MultiSelectComboBox(gtk.HBox):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Implementation of a multiselect combo box widget."""
 
@@ -41,7 +41,7 @@ class MultiSelectComboBox(gtk.HBox):
             "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
             gtk.DIALOG_DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # action_area, vbox confuses pylint
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(oScrolled)
@@ -95,7 +95,7 @@ class MultiSelectComboBox(gtk.HBox):
 
         tWinPos = oParent.get_origin()
         # Need coordinates relative to root window
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # allocation confuses pylint
         tButtonPos = (self._oButton.allocation.x, self._oButton.allocation.y)
         tShift = (5, self._oButton.allocation.height)

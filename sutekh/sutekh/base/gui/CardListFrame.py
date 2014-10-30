@@ -12,7 +12,7 @@ from .BasicFrame import BasicFrame
 
 
 class CardListFrame(BasicFrame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     """Base class for all the Card Lists.
 
@@ -28,14 +28,14 @@ class CardListFrame(BasicFrame):
         self._oController = None
         self._oMenu = None
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     view = property(fget=lambda self: self._oController.view,
                     doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table,
                     doc="Frame Type")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def reload(self):
         """Reload frame contents"""

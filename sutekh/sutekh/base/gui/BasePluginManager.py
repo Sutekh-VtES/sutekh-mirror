@@ -70,7 +70,7 @@ class BasePluginManager(object):
         """Load list of Plugin Classes from plugin dir."""
         for sPluginName in submodules(aPlugins):
             # load module
-            # pylint: disable-msg=C0103
+            # pylint: disable=C0103
             # mPlugin is legal name here
             try:
                 mPlugin = __import__("%s.%s" % (self.sPluginDir, sPluginName),
@@ -106,7 +106,7 @@ class BasePluginManager(object):
 class PluginConfigFileListener(object):
     """Listen for messages and inform plugins when their config changes."""
 
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
@@ -182,7 +182,7 @@ class BasePlugin(object):
         MessageBus.subscribe(DATABASE_MSG, 'prepare_for_db_update',
                              self.prepare_for_db_update)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # we allow access to the members via these properties
     parent = property(fget=lambda self: self._oView.mainwindow,
                       doc="Parent window to use when creating dialogs.")
@@ -196,7 +196,7 @@ class BasePlugin(object):
                             doc="Icon manager.")
     config = property(fget=lambda self: self._oView.mainwindow.config_file,
                       doc="Configuration object.")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     @classmethod
     def update_config(cls):
@@ -231,7 +231,7 @@ class BasePlugin(object):
                     # Plugins acts as a catchall Menu
                     oCatchAllMenu.add(oMenuItem)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # We expect children to override these when needed
     def get_menu_item(self):
         """Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
@@ -274,7 +274,7 @@ class BasePlugin(object):
            """
         return None
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     # Utility Functions / Plugin API
 
@@ -311,7 +311,7 @@ class BasePlugin(object):
     def get_card_set(self):
         """Get the Card Set for this view."""
         if self._cModelType is PhysicalCardSet:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # sqlobject confuses pylint
             return self.model.cardset
         return None
@@ -376,7 +376,7 @@ class BasePlugin(object):
            during a database upgrade"""
         pass
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # utilty function for plugins
     def escape(self, sInput):
         """Escape strings so that markup and special characters don't break

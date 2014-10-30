@@ -27,7 +27,7 @@ class FilterDialog(SutekhDialog):
        This also listens to Config File events, so the list of available
        filters remains syncronised across the different views.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
 
@@ -70,7 +70,7 @@ class FilterDialog(SutekhDialog):
         self.add_button("Save", self.RESPONSE_SAVE)
         self.add_button("Delete", self.RESPONSE_DELETE)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox, action_area confuse pylint
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
 
@@ -86,7 +86,7 @@ class FilterDialog(SutekhDialog):
 
         if sDefaultFilter:
             # Ensure filter isn't broken
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sDefaultFilter)
@@ -116,11 +116,11 @@ class FilterDialog(SutekhDialog):
 
         self.show_all()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # explicitly allow access to these values via thesep properties
     accel_group = property(fget=lambda self: self._oAccelGroup,
                            doc="Dialog Accelerator group")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def __button_response(self, _oWidget, iResponse):
         """Handle the button choices from the user.
@@ -196,7 +196,7 @@ class FilterDialog(SutekhDialog):
         oFilterSelector.pack_start(oCell, True)
         oFilterSelector.set_cell_data_func(oCell, iter_to_text)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oLoadDialog.vbox.pack_start(oFilterSelector)
         oLoadDialog.show_all()
@@ -229,7 +229,7 @@ class FilterDialog(SutekhDialog):
         aErrMsgs = []
 
         for sName, sFilter in oFilterIter:
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sFilter)
