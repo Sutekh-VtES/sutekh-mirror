@@ -27,6 +27,9 @@ MESSAGES = {
     'W0632': ('Possible unbalanced tuple unpacking',
               'unbalanced-tuple-unpacking',
               'Dummy message to silence W0632 disabling errors'),
+    'W0640': ('Cell variable defined in loop',
+              'cell-var-from-loop',
+              'Dummy message to silence W0604 disabling errors'),
 }
 
 
