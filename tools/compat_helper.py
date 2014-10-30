@@ -58,3 +58,4 @@ def compat_register(cChecker, oLinter):
         # We just re-register the messages, to avoid having
         # duplicate checkers registered
         oLinter.register_messages(oChecker)
+        oChecker.load_defaults()
