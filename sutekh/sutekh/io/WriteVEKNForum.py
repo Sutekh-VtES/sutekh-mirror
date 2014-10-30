@@ -94,7 +94,7 @@ class WriteVEKNForum(ArdbInfo):
             dLine = {'count': iCount}
             if len(oCard.creed) > 0:
                 dLine['clan'] = "%s (Imbued)" % \
-                        [x.name for x in oCard.creed][0]
+                    [x.name for x in oCard.creed][0]
                 dLine['capacity'] = oCard.life
             else:
                 dLine['clan'] = [x.name for x in oCard.clan][0]
@@ -127,11 +127,11 @@ class WriteVEKNForum(ArdbInfo):
 
         sCrypt += "[table]\n"
         for dLine in aCryptLines:
-            sCrypt += "[tr][td]%(count)dx[/td]" \
-                    "[td][url=%(url)s]%(name)s[/url][/td][td]%(adv)s[/td]" \
-                    "[td](%(capacity)d)[/td][td]%(disc)s[/td]" \
-                    "[td]%(title)s[/td][td]%(clansymbol)s %(clan)s[/td]" \
-                    "[td](group %(group)d)[/td][/tr]\n" % dLine
+            sCrypt += ("[tr][td]%(count)dx[/td]"
+                       "[td][url=%(url)s]%(name)s[/url][/td][td]%(adv)s[/td]"
+                       "[td](%(capacity)d)[/td][td]%(disc)s[/td]"
+                       "[td]%(title)s[/td][td]%(clansymbol)s %(clan)s[/td]"
+                       "[td](group %(group)d)[/td][/tr]\n" % dLine)
 
         sCrypt += "[/table]"
 

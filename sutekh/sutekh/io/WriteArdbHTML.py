@@ -134,7 +134,7 @@ def _sort_vampires(dVamps):
             iCapacity = oCard.capacity
             sClan = [oClan.name for oClan in oCard.clan][0]
         aSortedVampires.append(((iCount, iCapacity, oCard.name, sClan),
-            oCard))
+                                oCard))
     # We reverse sort by Capacity and Count, normal sort by name
     # fortunately, python's sort is stable, so this works
     aSortedVampires.sort(key=lambda x: x[0][2])
@@ -194,8 +194,8 @@ class WriteArdbHTML(ArdbInfo):
         oRoot = self._gen_tree(oHolder)
         # We're producing XHTML output, so we need a doctype header
         fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
-                ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
-                'xhtml1-strict.dtd">\n')
+                   ' Strict//EN"\n "http://www.w3.org/TR/xhtml1/DTD/'
+                   'xhtml1-strict.dtd">\n')
         sData = tostring(oRoot)
         sData = norm_xml_quotes(sData)
         fOut.write(sData)
@@ -203,7 +203,7 @@ class WriteArdbHTML(ArdbInfo):
     def _gen_tree(self, oHolder):
         """Convert the Cards to a element tree containing 'nice' HTML"""
         oDocRoot = Element('html', xmlns='http://www.w3.org/1999/xhtml',
-                lang='en')
+                           lang='en')
         oDocRoot.attrib["xml:lang"] = 'en'
 
         oBody = self._add_header(oDocRoot, oHolder)
@@ -222,9 +222,9 @@ class WriteArdbHTML(ArdbInfo):
         # Closing stuff
         oGenerator = SubElement(oBody, "div")
         _add_span(oGenerator, "Crafted with : Sutekh [ %s ]. [ %s ]" %
-                (SutekhInfo.VERSION_STR,
-                    time.strftime('%Y-%m-%d', time.localtime())),
-                "generator")
+                  (SutekhInfo.VERSION_STR,
+                   time.strftime('%Y-%m-%d', time.localtime())),
+                  "generator")
 
         pretty_xml(oDocRoot)
         return oDocRoot
@@ -274,10 +274,10 @@ class WriteArdbHTML(ArdbInfo):
         oRowHREF = oSpan
         if self._sLinkMode == 'Monger':
             oRowHREF = SubElement(oSpan, "a",
-                    href=monger_url(oCard, bVamp))
+                                  href=monger_url(oCard, bVamp))
         elif self._sLinkMode == 'Secret Library':
             oRowHREF = SubElement(oSpan, "a",
-                    href=secret_library_url(oCard, bVamp))
+                                  href=secret_library_url(oCard, bVamp))
         if bVamp:
             oRowHREF.text = sName.replace(' (Advanced)', '')
         else:
@@ -294,7 +294,7 @@ class WriteArdbHTML(ArdbInfo):
             oCryptTitle = SubElement(oCrypt, "h3", id="crypttitle")
             _add_span(oCryptTitle, 'Crypt')
             _add_span(oCryptTitle, "[%(size)d vampires] Capacity min : %(min)d"
-                    " max : %(max)d average : %(avg).2f" % dCryptStats)
+                      " max : %(max)d average : %(avg).2f" % dCryptStats)
             aSortedVampires = _sort_vampires(self._group_sets(dVamps))
             return oCrypt, aSortedVampires
 
@@ -324,18 +324,18 @@ class WriteArdbHTML(ArdbInfo):
             oTD = SubElement(oTR, "td")
             if len(oCard.title) > 0:
                 _add_span(oTD, [oTitle.name for oTitle in oCard.title][0],
-                        'tablevalue')
+                          'tablevalue')
             # Clan
             oTD = SubElement(oTR, "td")
             _add_span(oTD, "%s (group %d)" % (tVampInfo[3], oCard.group),
-                    'tablevalue')
+                      'tablevalue')
 
         oCrypt, aSortedVampires = start_section(oBody, dCards)
-        oCryptTBody = SubElement(
-                SubElement(
-                    SubElement(oCrypt, "div", id="crypttable"),
-                    "table", summary="Crypt card table"),
-                "tbody")
+        oCryptTBody = SubElement(SubElement(SubElement(oCrypt, "div",
+                                                       id="crypttable"),
+                                            "table",
+                                            summary="Crypt card table"),
+                                 "tbody")
         # Need to sort vampires by number, then capacity
         for tVampInfo, oCard in aSortedVampires:
             add_row(oCryptTBody, tVampInfo, oCard)
@@ -351,7 +351,7 @@ class WriteArdbHTML(ArdbInfo):
             oLibTitle = SubElement(oLib, "h3", id="librarytitle")
             _add_span(oLibTitle, "Library")
             _add_span(oLibTitle, '[%d cards]' % iLibSize, 'stats',
-                    'librarystats')
+                      'librarystats')
             return oLib, aSortedLibCards
 
         def add_row(oTBody, iCount, sName):
@@ -376,10 +376,10 @@ class WriteArdbHTML(ArdbInfo):
             oTypeHead.attrib["class"] = "librarytype"
             _add_span(oTypeHead, sType)
             _add_span(oTypeHead, '[%d]' % aList[0], 'stats')
-            oTBody = SubElement(
-                    SubElement(oLibTable, "table",
-                        summary="Library card table"),
-                    "tbody")
+            oTBody = SubElement(SubElement(oLibTable,
+                                           "table",
+                                           summary="Library card table"),
+                                "tbody")
             # Sort alphabetically within cards
             for iCount, sName in sorted(aList[1:], key=lambda x: x[1]):
                 add_row(oTBody, iCount, sName)
@@ -431,7 +431,7 @@ class WriteArdbHTML(ArdbInfo):
                 oListItem = SubElement(oList, "li")
                 _add_span(oListItem, 'Cost:', 'label')
                 _add_span(oListItem, "%d %s" % (oCard.cost,
-                    oCard.costtype), 'cost')
+                                                oCard.costtype), 'cost')
             # Disciplines
             sDisciplines = self._gen_disciplines(oCard)
             if sDisciplines != "":

@@ -38,10 +38,10 @@ class WriteArdbText(ArdbInfo):
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an ARDB text file header."""
-        return "Deck Name : %s\n" \
-               "Author : %s\n" \
-               "Description :\n%s\n" % (oHolder.name, oHolder.author,
-                       oHolder.comment)
+        return ("Deck Name : %s\n"
+                "Author : %s\n"
+                "Description :\n%s\n" % (oHolder.name, oHolder.author,
+                                         oHolder.comment))
     # pylint: enable=R0201
 
     def _gen_crypt(self, dCards):
@@ -71,14 +71,14 @@ class WriteArdbText(ArdbInfo):
             dLine = {'count': iCount}
             if len(oCard.creed) > 0:
                 dLine['clan'] = "%s (Imbued)" % \
-                        [x.name for x in oCard.creed][0]
+                    [x.name for x in oCard.creed][0]
                 dLine['capacity'] = oCard.life
             else:
                 dLine['clan'] = [x.name for x in oCard.clan][0]
                 if dLine['clan'].endswith('antitribu'):
                     # ARDB doesn't truncate antitribu further
                     dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
-                            '')
+                                                                '')
                 else:
                     dLine['clan'] = dLine['clan'][:10]  # truncate if needed
                 dLine['capacity'] = oCard.capacity
@@ -95,7 +95,7 @@ class WriteArdbText(ArdbInfo):
             if len(oCard.title):
                 dLine['title'] = [oC.name for oC in oCard.title][0]
                 dLine['title'] = dLine['title'].replace('Independent with ',
-                        '')[:12]
+                                                        '')[:12]
                 iTitleJust = max(iTitleJust, len(dLine['title']))
             dLine['group'] = int(oCard.group)
             aCryptLines.append(dLine)
@@ -128,7 +128,7 @@ class WriteArdbText(ArdbInfo):
             sLib += "%s [%d]\n" % (sTypeString, iTotal)
 
             for oCard, iCount in sorted(dCards.iteritems(),
-                    key=lambda x: x[0].name):
+                                        key=lambda x: x[0].name):
                 sLib += " %dx %s\n" % (iCount, oCard.name)
 
             sLib += "\n"

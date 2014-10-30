@@ -70,8 +70,9 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         oDescElem.text = oHolder.comment
 
         oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']),
-                min=str(dCryptStats['min']), max=str(dCryptStats['max']),
-                avg='%.2f' % dCryptStats['avg'])
+                                min=str(dCryptStats['min']),
+                                max=str(dCryptStats['max']),
+                                avg='%.2f' % dCryptStats['avg'])
         self.format_vamps(oCryptElem, dVamps)
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
         self.format_library(oLibElem, dLib)
@@ -80,12 +81,13 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
     def format_vamps(self, oCryptElem, dVamps):
         """Convert the Vampire dictionary into ElementTree representation."""
         for (oCard, sSet), iNum in sorted(dVamps.iteritems(),
-                key=lambda x: (x[0][0].name, x[0][1], x[1])):
+                                          key=lambda x: (x[0][0].name,
+                                                         x[0][1], x[1])):
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
             oCardElem = SubElement(oCryptElem, 'vampire',
-                    databaseID=str(oCard.id), count=str(iNum))
+                                   databaseID=str(oCard.id), count=str(iNum))
             self._ardb_crypt_card(oCardElem, oCard, sSet)
             oDiscElem = SubElement(oCardElem, 'disciplines')
             oDiscElem.text = self._gen_disciplines(oCard)
@@ -116,7 +118,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         for (oCard, sTypeString, sSet), iNum in sorted(dLib.iteritems(),
                 key=lambda x: (x[0][0].name, x[0][1], x[1])):
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(oCard.id),
-                    count=str(iNum))
+                                   count=str(iNum))
             self._ardb_lib_card(oCardElem, oCard, sSet)
             if oCard.costtype is not None:
                 oCostElem = SubElement(oCardElem, 'cost')

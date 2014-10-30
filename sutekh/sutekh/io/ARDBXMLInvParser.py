@@ -75,12 +75,12 @@ class ARDBInvXMLState(object):
                     self._sCardSet = None
                 else:
                     self._sCardSet = unescape_ardb_expansion_name(
-                            self._sCardSet)
+                        self._sCardSet)
                 if self._sAdvanced == '(Advanced)':
                     self._sCardName = self._sCardName + ' (Advanced)'
                 self._sCardName = move_articles_to_front(self._sCardName)
                 self._oHolder.add(self._iCount, self._sCardName,
-                        self._sCardSet)
+                                  self._sCardSet)
                 self._sCardName = None
                 self._sCardSet = None
                 self._iState = self.NOTAG

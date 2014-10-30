@@ -36,19 +36,22 @@ class WriteArdbInvXML(WriteArdbXML):
     def format_vamps(self, oCryptElem, dCombinedVamps):
         """Convert the Vampire dictionary into ElementTree representation."""
         for oCard, (iNum, sSet) in sorted(dCombinedVamps.iteritems(),
-                key=lambda x: (x[0].name, x[1][1], x[1][0])):
+                                          key=lambda x: (x[0].name,
+                                                         x[1][1], x[1][0])):
             # This won't match the ARDB ID's, unless by chance.
             # It looks like that should not be an issue as ARDB will
             # use the name if the IDs don't match
             oCardElem = SubElement(oCryptElem, 'vampire',
-                    databaseID=str(oCard.id), have=str(iNum),
-                    spare='0', need='0')
+                                   databaseID=str(oCard.id), have=str(iNum),
+                                   spare='0', need='0')
             self._ardb_crypt_card(oCardElem, oCard, sSet)
 
     def format_library(self, oLibElem, dCombinedLib):
         """Format the dictionary of library cards for the element tree."""
         for oCard, (iNum, _sType, sSet) in sorted(dCombinedLib.iteritems(),
-                key=lambda x: (x[0].name, x[1][2], x[1][0])):
+                                                  key=lambda x: (x[0].name,
+                                                                 x[1][2],
+                                                                 x[1][0])):
             oCardElem = SubElement(oLibElem, 'card', databaseID=str(oCard.id),
-                    have=str(iNum), spare='0', need='0')
+                                   have=str(iNum), spare='0', need='0')
             self._ardb_lib_card(oCardElem, oCard, sSet)
