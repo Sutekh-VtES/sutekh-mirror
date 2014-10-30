@@ -33,48 +33,49 @@ class WWFilesDialog(SutekhDialog):
 
     def __init__(self, oParent, bDisableBackup):
         super(WWFilesDialog, self).__init__("Choose White Wolf Files", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-            gtk.RESPONSE_CANCEL))
+                                            gtk.DIALOG_MODAL |
+                                            gtk.DIALOG_DESTROY_WITH_PARENT,
+                                            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                             gtk.STOCK_CANCEL,
+                                             gtk.RESPONSE_CANCEL))
         oCardListLabel = gtk.Label()
         oCardListLabel.set_markup("<b>Official Card List:</b>")
         self._oParent = oParent
         self.oCardListFileButton = SutekhFileButton(oParent,
-                "Official Card List")
+                                                    "Official Card List")
         self.oCardListFileButton.add_filter_with_pattern('TXT files',
-                ['*.txt'])
+                                                         ['*.txt'])
         self.oUseWwCardListButton = gtk.CheckButton(
-                label="Grab official V:EKN card list (from bitbucket.org)?")
+            label="Grab official V:EKN card list (from bitbucket.org)?")
 
         oExtraLabel = gtk.Label()
         oExtraLabel.set_markup("<b>Additional Card List (optional):</b>")
         self.oExtraFileButton = SutekhFileButton(oParent,
-                "Additional Card List")
-        self.oExtraFileButton.add_filter_with_pattern('TXT files',
-                ['*.txt'])
+                                                 "Additional Card List")
+        self.oExtraFileButton.add_filter_with_pattern('TXT files', ['*.txt'])
         self.oUseExtraUrlButton = gtk.CheckButton(
-                label="Grab default additional cards (from bitbucket.org)?")
+            label="Grab default additional cards (from bitbucket.org)?")
 
         oRulingsLabel = gtk.Label()
         oRulingsLabel.set_markup("<b>Official Rulings File (optional):</b>")
         self.oRulingsFileButton = SutekhFileButton(oParent,
-                "Official Rulings File")
+                                                   "Official Rulings File")
         self.oRulingsFileButton.add_filter_with_pattern('HTML files',
-                ['*.html', '*htm'])
+                                                        ['*.html', '*htm'])
         self.oUseWwRulingsButton = gtk.CheckButton(
-                label="Grab official rulings (from bitbucket.org)?")
+            label="Grab official rulings (from bitbucket.org)?")
 
         oExpDateLabel = gtk.Label()
         oExpDateLabel.set_markup(
-                "<b>Expansion Release Date File (optional):</b>")
-        self.oExpDateFileButton = SutekhFileButton(oParent,
-                "Expasion Release Date File")
+            "<b>Expansion Release Date File (optional):</b>")
+        self.oExpDateFileButton = SutekhFileButton(
+            oParent, "Expasion Release Date File")
         self.oExpDateFileButton.add_filter_with_pattern('CSV files', ['*csv'])
         self.oUseExpDateButton = gtk.CheckButton(
-                label="Grab expansion date information (from bitbucket.org)?")
+            label="Grab expansion date information (from bitbucket.org)?")
 
         self.oBackupFileButton = gtk.CheckButton(
-                label="Backup database contents to File?")
+            label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
         self.oBackupFileLabel = gtk.Label("(None)")
         if bDisableBackup:
@@ -82,37 +83,41 @@ class WWFilesDialog(SutekhDialog):
             self.oBackupFileLabel.set_sensitive(False)  # For consistency
         # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(oParent,
-                "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                                                  "Database Backup file",
+                                                  gtk.FILE_CHOOSER_ACTION_SAVE,
+                                                  (gtk.STOCK_OK,
+                                                   gtk.RESPONSE_OK,
+                                                   gtk.STOCK_CANCEL,
+                                                   gtk.RESPONSE_CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
         # pylint: disable=E1101
         # vbox confuses pylint
         oCardAlign = make_alignment(oCardListLabel,
-                self.oCardListFileButton, self.oUseWwCardListButton)
+                                    self.oCardListFileButton,
+                                    self.oUseWwCardListButton)
         self.vbox.pack_start(oCardAlign)
         oExtraAlign = make_alignment(oExtraLabel, self.oExtraFileButton,
-                self.oUseExtraUrlButton)
+                                     self.oUseExtraUrlButton)
         self.vbox.pack_start(oExtraAlign)
         oExpDateAlign = make_alignment(oExpDateLabel, self.oExpDateFileButton,
-                self.oUseExpDateButton)
+                                       self.oUseExpDateButton)
         self.vbox.pack_start(oExpDateAlign)
         oRulingsAlign = make_alignment(oRulingsLabel, self.oRulingsFileButton,
-                self.oUseWwRulingsButton)
+                                       self.oUseWwRulingsButton)
         self.vbox.pack_start(oRulingsAlign)
         self.vbox.pack_start(self.oBackupFileButton)
         self.vbox.pack_start(self.oBackupFileLabel)
 
         self.oBackupFileButton.connect("toggled", self.backup_file_toggled)
         self.oUseWwCardListButton.connect("toggled",
-                self.use_ww_cardlist_toggled)
+                                          self.use_ww_cardlist_toggled)
         self.oUseExtraUrlButton.connect("toggled",
-                self.use_extra_url_toggled)
+                                        self.use_extra_url_toggled)
         self.oUseWwRulingsButton.connect("toggled",
-                self.use_ww_rulings_toggled)
+                                         self.use_ww_rulings_toggled)
         self.oUseExpDateButton.connect("toggled",
-                self.use_exp_date_toggled)
+                                       self.use_exp_date_toggled)
         self.connect("response", self.handle_response)
 
         self.oUseWwCardListButton.set_active(True)

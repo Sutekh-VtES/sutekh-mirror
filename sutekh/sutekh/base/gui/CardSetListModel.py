@@ -1570,8 +1570,8 @@ class CardSetCardListModel(CardListModel):
         # pylint: disable=E1101, E1103
         # pyprotocols confuses pylint
         return (self._iParentCountMode == MINUS_THIS_SET or
-                (self._iParentCountMode == MINUS_SETS_IN_USE and
-                    self._oCardSet.inuse)) and self._oCardSet.parentID
+                (self._iParentCountMode == MINUS_SETS_IN_USE
+                 and self._oCardSet.inuse)) and self._oCardSet.parentID
 
     def _update_parent_count(self, oIter, iChg, iParChg):
         """Update the card and parent counts"""
@@ -1740,9 +1740,9 @@ class CardSetCardListModel(CardListModel):
                                                             iParChg)
                     self._update_entry(oSubIter, iCnt, iParCnt)
                     if bRemoveChild or (bCheckAddRemove and
-                            (iChg < 0 or iParChg < 0) and
-                            not self.check_child_iter_stays(oSubIter,
-                                                            oPhysCard)):
+                                        (iChg < 0 or iParChg < 0) and
+                                        not self.check_child_iter_stays(
+                                            oSubIter, oPhysCard)):
                         bRemoveChild = True
                         self.remove(oSubIter)
             if bRemoveChild:
@@ -1795,9 +1795,9 @@ class CardSetCardListModel(CardListModel):
                                                         iParChg)
                 self._update_entry(oChildIter, iCnt, iParCnt)
                 if bRemove or (bCheckAddRemove and
-                        (iChg < 0 or iParChg < 0) and
-                        not self.check_child_iter_stays(oChildIter,
-                                                        oPhysCard)):
+                               (iChg < 0 or iParChg < 0) and
+                               not self.check_child_iter_stays(oChildIter,
+                                                               oPhysCard)):
                     bRemove = True
             if not bRemove:
                 self._update_3rd_level_card_sets(oPhysCard, iChg, iParChg,

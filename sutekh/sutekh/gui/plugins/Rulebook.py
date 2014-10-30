@@ -209,7 +209,7 @@ class RulebookPlugin(SutekhPlugin):
         """Return a file-like object which sLocalUrl can be read from."""
         sResource = os.path.join(self._sPrefsPath, sLocalUrl)
         if os.path.exists(sResource):
-            return file(sResource, 'rb')
+            return open(sResource, 'rb')
         else:
             raise ValueError("Unknown resource %s" % sLocalUrl)
 

@@ -45,10 +45,10 @@ RT_BANNED = 'RT:Banned'
 
 # Lookup for titles for the not legal tabs
 ILLEGAL_LOOKUP = {
-        RT_BANNED: 'Cards Banned in Rapid Thoughts',
-        RT_WATCHLIST: 'Cards on the Rapid Thoughts Watchlist',
-        'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
-        }
+    RT_BANNED: 'Cards Banned in Rapid Thoughts',
+    RT_WATCHLIST: 'Cards on the Rapid Thoughts Watchlist',
+    'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
+}
 
 
 # utility functions
@@ -92,10 +92,11 @@ def _format_card_line(sString, sTrailer, iNum, iLibSize):
     """Format card lines for notebook"""
     sPer = _percentage(iNum, iLibSize, "Library")
     return "Number of %(type)s %(trail)s = %(num)d %(per)s\n" % {
-            'type': sString,
-            'trail': sTrailer,
-            'num': iNum,
-            'per': sPer, }
+        'type': sString,
+        'trail': sTrailer,
+        'num': iNum,
+        'per': sPer,
+        }
 
 
 def _get_card_costs(aCards):
@@ -128,7 +129,7 @@ def _get_card_disciplines(aCards):
     for oAbsCard in aCards:
         if len(oAbsCard.discipline) > 0:
             aThisDisc = [oP.discipline.fullname for oP
-                    in oAbsCard.discipline]
+                         in oAbsCard.discipline]
         else:
             aThisDisc = []
         if len(oAbsCard.virtue) > 0:
@@ -179,15 +180,15 @@ def _format_cost_numbers(sCardType, sCostString, aCost, iNum):
             "Cards with variable cost = %(var)d %(per)s\n" \
             "Cards with %(type)s cost = %(numcost)d %(percost)s\n" \
             "Average %(name)s card %(type)s cost = %(avg)5.3f\n" % {
-                    'name': sCardType,
-                    'type': sCostString,
-                    'var': aCost[0],
-                    'per': sVarPercent,
-                    'max': aCost[1],
-                    'avg': fAvg,
-                    'numcost': aCost[3],
-                    'percost': sNumPercent,
-                    }
+                'name': sCardType,
+                'type': sCostString,
+                'var': aCost[0],
+                'per': sVarPercent,
+                'max': aCost[1],
+                'avg': fAvg,
+                'numcost': aCost[3],
+                'percost': sNumPercent,
+                }
     return sText
 
 
@@ -209,9 +210,9 @@ def _format_disciplines(sDiscType, dDisc, iNum):
     """Format the display of disciplines and virtues"""
     sText = ''
     for sDisc, iNum in sorted(dDisc.items(), key=lambda x: x[1],
-            reverse=True):
+                              reverse=True):
         sText += 'Number of cards requiring %s %s = %d\n' % (sDiscType,
-                sDisc, iNum)
+                                                             sDisc, iNum)
     return sText
 
 
@@ -222,13 +223,13 @@ def _format_clan(sCardType, iClanRequirement, dClan, iNum):
         sPer = _percentage(iClanRequirement, iNum, '%s cards' % sCardType)
         sText += "Number of %(type)s with a Clan requirement = %(num)d " \
                 "%(per)s\n" % {'type': sCardType, 'num': iClanRequirement,
-                'per': sPer, }
+                               'per': sPer, }
         for sClan, iClanNum in sorted(dClan.items(), key=lambda x: x[1],
-                reverse=True):
+                                      reverse=True):
             sPer = _percentage(iClanNum, iNum, '%s cards' % sCardType)
             sText += 'Number of %(type)s requiring %(clan)s = %(num)d ' \
                     '%(per)s\n' % {'type': sCardType, 'clan': sClan,
-                    'num': iClanNum, 'per': sPer, }
+                                   'num': iClanNum, 'per': sPer, }
     return sText
 
 
@@ -236,11 +237,11 @@ def _format_multi(sCardType, dMulti, iNum):
     """Format the multi-role cards list for display"""
     sText = ''
     for sType, iMulti in sorted(dMulti.items(), key=lambda x: x[1],
-            reverse=True):
+                                reverse=True):
         sPer = _percentage(iMulti, iNum, '%s cards' % sCardType)
         sText += '%(num)d %(type)s cards are %(multitype)s cards' \
                 ' %(per)s\n' % {'num': iMulti, 'type': sCardType,
-                'multitype': sType, 'per': sPer, }
+                                'multitype': sType, 'per': sPer, }
     return sText
 
 
@@ -305,12 +306,12 @@ def _simple_back_checks(dCards, sType):
         sText += SLEEVED % sType
         return sText
     elif len(dCards) == 1 and None not in dCards:
-        sText = "All %s cards have identical backs\n" % sType.lower() + \
-                    UNSLEEVED % sType
+        sText = "All %s cards have identical backs\n" % sType.lower()
+        sText += UNSLEEVED % sType
         return sText
     elif None in dCards:
-        sText = "%s has cards from unspecified expansions." \
-                    " Ignoring the %s\n" % (sType, sType.lower())
+        sText = ("%s has cards from unspecified expansions."
+                 " Ignoring the %s\n" % (sType, sType.lower()))
         return sText
     return None
 
@@ -327,10 +328,11 @@ def _percentage_backs(dCards, iSize, fPer, sType):
         else:
             sName = oExp
         sText += "%d %s backs (%2.1f%% of the %s).\n" % (dCards[oExp], sName,
-                fThisPer, sType.lower())
+                                                         fThisPer,
+                                                         sType.lower())
         if fThisPer < fPer:
-            sText += "Group of cards with the same back that's smaller" \
-                    " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
+            sText += ("Group of cards with the same back that's smaller"
+                      " than %2.1f%% of the %s.\n" % (fPer, sType.lower()))
             bOK = False
     return sText, bOK
 
@@ -345,16 +347,16 @@ def _group_backs(dCards, aCards, iNum):
     for oExp in dCards:
         if oExp != 'Other':
             dCardsByExp[oExp] = [oCard for oCard in aCards if
-                    oCard.expansion == oExp]
+                                 oCard.expansion == oExp]
         else:
             dCardsByExp[oExp] = [oCard for oCard in aCards if
-                    oCard.expansion not in ODD_BACKS]
+                                 oCard.expansion not in ODD_BACKS]
     for oExp, aExpCards in dCardsByExp.iteritems():
         # For each expansion, count number of distinct cards
         aNames = set([x.abstractCard.name for x in aExpCards])
         if len(aNames) < iNum:
-            sText += "Group of fewer than %d different cards" \
-                    " with the same back.\n" % iNum
+            sText += ("Group of fewer than %d different cards"
+                      " with the same back.\n" % iNum)
             sText += "\t" + ", ".join(aNames) + "\n"
             bOK = False
     if not bOK:
@@ -450,41 +452,41 @@ class AnalyzeCardList(SutekhPlugin):
         if not self.check_cs_size('Analyze Deck', 500):
             return
         oDlg = SutekhDialog("Analysis of Card List", self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                            gtk.DIALOG_DESTROY_WITH_PARENT,
+                            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         dConstruct = {
-                'Vampire': self._process_vampire,
-                'Imbued': self._process_imbued,
-                'Combat': self._process_combat,
-                'Reaction': self._process_reaction,
-                'Action': self._process_action,
-                'Action Modifier': self._process_action_modifier,
-                'Retainer': self._process_retainer,
-                'Equipment': self._process_equipment,
-                'Ally': self._process_allies,
-                'Political Action': self._process_political_action,
-                'Power': self._process_power,
-                'Conviction': self._process_conviction,
-                'Event': self._process_event,
-                'Master': self._process_master,
-                'Multirole': self._process_multi,
-                'Not Tournament Legal Cards': self._process_non_legal,
-                'Mixed Card Backs': self._process_backs,
-                }
+            'Vampire': self._process_vampire,
+            'Imbued': self._process_imbued,
+            'Combat': self._process_combat,
+            'Reaction': self._process_reaction,
+            'Action': self._process_action,
+            'Action Modifier': self._process_action_modifier,
+            'Retainer': self._process_retainer,
+            'Equipment': self._process_equipment,
+            'Ally': self._process_allies,
+            'Political Action': self._process_political_action,
+            'Power': self._process_power,
+            'Conviction': self._process_conviction,
+            'Event': self._process_event,
+            'Master': self._process_master,
+            'Multirole': self._process_multi,
+            'Not Tournament Legal Cards': self._process_non_legal,
+            'Mixed Card Backs': self._process_backs,
+        }
 
         self.dTypeNumbers = {}
         dCardLists = {}
 
         aAllPhysCards = [IPhysicalCard(x) for x in
-                self.model.get_card_iterator(None)]
+                         self.model.get_card_iterator(None)]
         aAllCards = _get_abstract_cards(aAllPhysCards)
 
         for sCardType in dConstruct:
             if sCardType not in SPECIAL:
                 oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
-                        self.model.get_card_iterator(oFilter))
+                    self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
             elif sCardType == 'Multirole':
                  # Multirole values start empty, and are filled in later
@@ -493,7 +495,7 @@ class AnalyzeCardList(SutekhPlugin):
             elif sCardType == 'Not Tournament Legal Cards':
                 oFilter = FilterNot(self.model.oLegalFilter)
                 dCardLists[sCardType] = _get_abstract_cards(
-                        self.model.get_card_iterator(oFilter))
+                    self.model.get_card_iterator(oFilter))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
                 if bRapid:
                     try:
@@ -501,9 +503,9 @@ class AnalyzeCardList(SutekhPlugin):
                             oKeyword = IKeyword(sType)
                             oFilter = KeywordFilter(oKeyword)
                             dCardLists[sType] = _get_abstract_cards(
-                                    self.model.get_card_iterator(oFilter))
+                                self.model.get_card_iterator(oFilter))
                             self.dTypeNumbers[sType] = \
-                                    len(dCardLists[sType])
+                                len(dCardLists[sType])
                     except SQLObjectNotFound:
                         # We ignore this if the keywords aren't present
                         self.dTypeNumbers[RT_BANNED] = 0
@@ -540,20 +542,21 @@ class AnalyzeCardList(SutekhPlugin):
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = sorted(CRYPT_TYPES) + \
                 [x for x in sorted(self.dTypeNumbers) if
-                        (x not in CRYPT_TYPES and x not in SPECIAL
-                            and x not in [RT_BANNED, RT_WATCHLIST])] + \
-                                sorted(SPECIAL)
+                 (x not in CRYPT_TYPES and x not in SPECIAL
+                  and x not in [RT_BANNED, RT_WATCHLIST])] + \
+                sorted(SPECIAL)
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
                 oNotebook.append_page(_wrap(fProcess(dCardLists[sCardType])),
-                        gtk.Label(sCardType))
+                                      gtk.Label(sCardType))
         if bRapid:
             fProcess = dConstruct['Not Tournament Legal Cards']
             for sType in [RT_BANNED, RT_WATCHLIST]:
                 if self.dTypeNumbers[sType]:
                     oNotebook.append_page(_wrap(fProcess(dCardLists[sType],
-                        sType)), gtk.Label(ILLEGAL_LOOKUP[sType]))
+                                                         sType)),
+                                          gtk.Label(ILLEGAL_LOOKUP[sType]))
 
         # Setup the main notebook
         oTitle, oDesc, oDetails = self._prepare_main(bRapid)
@@ -597,11 +600,11 @@ class AnalyzeCardList(SutekhPlugin):
 
         # Skip the any group case, as it has no effect here
         get_info([x.group for x in aVampireCards if x.group != -1],
-                [x.group for x in aImbuedCards if x.group != -1], 'group')
+                 [x.group for x in aImbuedCards if x.group != -1], 'group')
         get_info([x.capacity for x in aVampireCards],
-                [x.life for x in aImbuedCards], 'cost')
+                 [x.life for x in aImbuedCards], 'cost')
         aAllCosts = sorted([x.capacity for x in aVampireCards] +
-                [x.life for x in aImbuedCards])
+                           [x.life for x in aImbuedCards])
         self.dCryptStats['total cost'] = sum(aAllCosts)
         self.dCryptStats['min draw'] = sum(aAllCosts[0:4])
         self.dCryptStats['max draw'] = sum(aAllCosts[-1:-5:-1])
@@ -644,7 +647,7 @@ class AnalyzeCardList(SutekhPlugin):
                 self.dLibStats['clan'][sClan] += 1
             if len(oCard.discipline) > 0:
                 aDisciplines = [oP.discipline.fullname for oP in
-                        oCard.discipline]
+                                oCard.discipline]
             elif len(oCard.virtue) > 0:
                 aDisciplines = [oV.fullname for oV in oCard.virtue]
             else:
@@ -657,11 +660,11 @@ class AnalyzeCardList(SutekhPlugin):
         """Setup the main notebook display"""
         oCS = self.get_card_set()
 
-        sTitleText = "Analysis Results for :\n\t\t<b>%(name)s</b>\n" \
-                "\t\tby <i>%(author)s</i>\n" % {
-                        'name': self.escape(self.view.sSetName),
-                        'author': self.escape(oCS.author),
-                        }
+        sTitleText = ("Analysis Results for :\n\t\t<b>%(name)s</b>\n"
+                      "\t\tby <i>%(author)s</i>\n" % {
+                          'name': self.escape(self.view.sSetName),
+                          'author': self.escape(oCS.author),
+                      })
         # We wrap the description in a scrollable widget, since it
         # can be very, very long (Matt Morgan's TWDA entries, for
         # example)
@@ -680,48 +683,47 @@ class AnalyzeCardList(SutekhPlugin):
         # Set main notebook text
         for sCardType in CRYPT_TYPES:
             if self.dTypeNumbers[sCardType] > 0:
-                sMainText += 'Number of %s = %d\n' % (sCardType,
-                        self.dTypeNumbers[sCardType])
+                sMainText += 'Number of %s = %d\n' % (
+                    sCardType, self.dTypeNumbers[sCardType])
         if (self.dTypeNumbers['Vampire'] > 0 and
                 self.dTypeNumbers['Imbued'] > 0) or self.iCryptSize == 0:
             sMainText += "Total Crypt size = %d\n" % self.iCryptSize
         if self.iCryptSize > 0:
-            sMainText += "Minimum Group in Crypt = %d\n" % \
-                    self.dCryptStats['min group']
-            sMainText += "Maximum Group in Crypt = %d\n" % \
-                    self.dCryptStats['max group']
-
+            sMainText += ("Minimum Group in Crypt = %d\n" %
+                          self.dCryptStats['min group'])
+            sMainText += ("Maximum Group in Crypt = %d\n" %
+                          self.dCryptStats['max group'])
         if bRapid:
             if self.iCryptSize < 6:
-                sMainText += '<span foreground = "red">Less than 6 Crypt' \
-                        ' Cards</span>\n'
+                sMainText += ('<span foreground = "red">Less than 6 Crypt'
+                              ' Cards</span>\n')
         elif self.iCryptSize < 12:
-            sMainText += '<span foreground = "red">Less than 12 Crypt Cards' \
-                    '</span>\n'
+            sMainText += ('<span foreground = "red">Less than 12 Crypt Cards'
+                          '</span>\n')
 
         if self.dCryptStats['max group'] - self.dCryptStats['min group'] > 1:
-            sMainText += '<span foreground = "red">Group Range Exceeded' \
-                    '</span>\n'
+            sMainText += ('<span foreground = "red">Group Range Exceeded'
+                          '</span>\n')
 
         if self.dTypeNumbers['Not Tournament Legal Cards'] > 0:
-            sMainText += '<span foreground = "red">Card Set uses cards that ' \
-                    'are not legal for tournament play</span>\n'
+            sMainText += ('<span foreground = "red">Card Set uses cards that '
+                          'are not legal for tournament play</span>\n')
 
         if bRapid and self.dTypeNumbers[RT_BANNED]:
-            sMainText += '<span foreground = "red">Card Set uses cards that ' \
-                    'are not legal for rapid thought play</span>\n'
+            sMainText += ('<span foreground = "red">Card Set uses cards that '
+                          'are not legal for rapid thought play</span>\n')
 
         if bRapid and self.dTypeNumbers[RT_WATCHLIST]:
-            sMainText += '<span foreground = "yellow">Card Set uses cards ' \
-                    ' that are on the rapid thoughts watchlist</span>\n'
+            sMainText += ('<span foreground = "yellow">Card Set uses cards '
+                          'that are on the rapid thoughts watchlist</span>\n')
 
         if self.iCryptSize > 0:
-            sMainText += '\nMaximum cost in crypt = %d\n' % \
-                    self.dCryptStats['max cost']
-            sMainText += 'Minimum cost in crypt = %d\n' % \
-                    self.dCryptStats['min cost']
+            sMainText += ('\nMaximum cost in crypt = %d\n' %
+                          self.dCryptStats['max cost'])
+            sMainText += ('Minimum cost in crypt = %d\n' %
+                          self.dCryptStats['min cost'])
         fAvg, fAvgDraw = _crypt_avg(self.dCryptStats['total cost'],
-                self.iCryptSize)
+                                    self.iCryptSize)
 
         sMainText += 'Average cost = %3.2f (%3.2f average crypt draw cost)\n' \
                 % (fAvg, fAvgDraw)
@@ -731,16 +733,16 @@ class AnalyzeCardList(SutekhPlugin):
         sMainText += "Total Library Size = %d\n" % self.iLibSize
 
         if self.iLibSize < 40:
-            sMainText += '<span foreground = "red">Less than 40 Library' \
-                    ' Cards</span>\n'
+            sMainText += ('<span foreground = "red">Less than 40 Library'
+                          ' Cards</span>\n')
         elif self.iLibSize < 60 and not bRapid:
-            sMainText += '<span foreground = "orange">Less than 60 Library' \
-                    ' Cards - this deck is not legal for standard' \
-                    ' constructed tournaments</span>'
+            sMainText += ('<span foreground = "orange">Less than 60 Library'
+                          ' Cards - this deck is not legal for standard'
+                          ' constructed tournaments</span>')
         elif self.iLibSize > 90:
-            sMainText += '<span foreground = "orange">More than 90 Library' \
-                    ' Cards - this deck is not legal for standard' \
-                    ' constructed tournaments</span>\n'
+            sMainText += ('<span foreground = "orange">More than 90 Library'
+                          ' Cards - this deck is not legal for standard'
+                          ' constructed tournaments</span>\n')
 
         return _wrap(sTitleText), oScrolledBox, _wrap(sMainText)
 
@@ -751,53 +753,56 @@ class AnalyzeCardList(SutekhPlugin):
         sTypeText = ''
         # Show card types, sorted by number (then alphabetical by type)
         for sType, iCount in sorted(self.dTypeNumbers.items(),
-                key=lambda x: (x[1], x[0]), reverse=True):
+                                    key=lambda x: (x[1], x[0]), reverse=True):
             if sType not in CRYPT_TYPES and sType not in SPECIAL and \
                     iCount > 0:
                 sTypeText += _format_card_line(sType, 'cards', iCount,
-                        self.iLibSize)
+                                               self.iLibSize)
         if self.dTypeNumbers['Multirole'] > 0:
-            sTypeText += '\n' + _format_card_line('Multirole', 'cards',
-                    self.dTypeNumbers['Multirole'], self.iLibSize)
+            sTypeText += '\n' + _format_card_line(
+                'Multirole', 'cards', self.dTypeNumbers['Multirole'],
+                self.iLibSize)
         oLibNotebook.append_page(_wrap(sTypeText),
-                gtk.Label('Card Types'))
+                                 gtk.Label('Card Types'))
         # Stats by discipline
         sDiscText = _format_card_line('Master', 'cards',
-                self.dTypeNumbers['Master'], self.iLibSize)
-        sDiscText += _format_card_line('non-master cards with No '
-                'discipline requirement', '',
-                self.dLibStats['discipline']['No Discipline'],
-                self.iLibSize) + '\n'
+                                      self.dTypeNumbers['Master'],
+                                      self.iLibSize)
+        sDiscText += _format_card_line(
+            'non-master cards with No ' 'discipline requirement', '',
+            self.dLibStats['discipline']['No Discipline'],
+            self.iLibSize) + '\n'
         # sort by number, then name
         for sDisc, iNum in sorted(self.dLibStats['discipline'].items(),
-                key=lambda x: (x[1], x[0]), reverse=True):
+                                  key=lambda x: (x[1], x[0]), reverse=True):
             if sDisc != 'No Discipline' and iNum > 0:
                 sDiscDesc = 'non-master cards with %s' % sDisc
                 sDiscText += _format_card_line(sDiscDesc, '', iNum,
-                        self.iLibSize)
+                                               self.iLibSize)
         oLibNotebook.append_page(_wrap(sDiscText),
-                gtk.Label('Disciplines'))
+                                 gtk.Label('Disciplines'))
         # Stats by clan requirement
         sClanText = _format_card_line('cards with No clan requirement', '',
-                self.dLibStats['clan']['No Clan'], self.iLibSize) + '\n'
+                                      self.dLibStats['clan']['No Clan'],
+                                      self.iLibSize) + '\n'
         for sClan, iNum in sorted(self.dLibStats['clan'].items()):
             if sClan != 'No Clan' and iNum > 0:
                 sClanDesc = 'cards requiring %s' % sClan
                 sClanText += _format_card_line(sClanDesc, '', iNum,
-                        self.iLibSize)
+                                               self.iLibSize)
         oLibNotebook.append_page(_wrap(sClanText),
-                gtk.Label('Clan Requirements'))
+                                 gtk.Label('Clan Requirements'))
         return oLibNotebook
 
     def _process_vampire(self, aCards):
         """Process the list of vampires"""
         dDeckDetails = {
-                'vampires': {},
-                'titles': {},
-                'clans': {},
-                'sects': {},
-                'votes': 0,
-                }
+            'vampires': {},
+            'titles': {},
+            'clans': {},
+            'sects': {},
+            'votes': 0,
+        }
         iNum = self.dTypeNumbers['Vampire']
         for oAbsCard in aCards:
             dDeckDetails['vampires'].setdefault(oAbsCard.name, 0)
@@ -815,56 +820,62 @@ class AnalyzeCardList(SutekhPlugin):
         # Build up Text
         sVampText = "\t\t<b>Vampires :</b>\n\n"
         sVampText += '<span foreground = "blue">Basic Crypt stats</span>\n'
-        sVampText += "Number of Vampires = %d %s\n" % (iNum,
-                _percentage(iNum, self.iCryptSize, "Crypt"))
-        sVampText += "Number of Unique Vampires = %d\n" % len(
-                dDeckDetails['vampires'])
-        sVampText += "Minimum Group is : %d\n" % \
-                self.dCryptStats['vampire min group']
+        sVampText += ("Number of Vampires = %d %s\n" %
+                      (iNum, _percentage(iNum, self.iCryptSize, "Crypt")))
+        sVampText += ("Number of Unique Vampires = %d\n" %
+                      len(dDeckDetails['vampires']))
+        sVampText += ("Minimum Group is : %d\n" %
+                      self.dCryptStats['vampire min group'])
         sVampText += "Maximum Group is : %d\n" % \
                 self.dCryptStats['vampire max group']
         sVampText += '\n<span foreground = "blue">Crypt cost</span>\n'
         sVampText += "Cheapest is : %d\n" % \
                 self.dCryptStats['vampire min cost']
-        sVampText += "Most Expensive is : %d\n" % \
-                self.dCryptStats['vampire max cost']
-        sVampText += "Average Capacity is : %2.3f\n\n" % (
-                sum([x.capacity for x in aCards]) / float(iNum))
+        sVampText += ("Most Expensive is : %d\n" %
+                      self.dCryptStats['vampire max cost'])
+        sVampText += ("Average Capacity is : %2.3f\n\n" %
+                      (sum([x.capacity for x in aCards]) / float(iNum)))
         sVampText += '<span foreground = "blue">Clans</span>\n'
         for oClan, iCount in dDeckDetails['clans'].iteritems():
-            sVampText += "%d Vampires of clan %s %s\n" % (iCount,
-                    oClan.name, _percentage(iCount, self.iCryptSize, "Crypt"))
+            sVampText += ("%d Vampires of clan %s %s\n" %
+                          (iCount, oClan.name,
+                           _percentage(iCount, self.iCryptSize, "Crypt")))
         sVampText += '<span foreground = "blue">Sects</span>\n'
         for oSect, iCount in dDeckDetails['sects'].iteritems():
-            sVampText += "%d %s vampires %s\n" % (iCount,
-                    oSect.name, _percentage(iCount, self.iCryptSize, "Crypt"))
+            sVampText += ("%d %s vampires %s\n" %
+                          (iCount, oSect.name,
+                           _percentage(iCount, self.iCryptSize, "Crypt")))
         sVampText += '\n<span foreground = "blue">Titles</span>\n'
         iTotalTitles = 0
         for oTitle, iCount in dDeckDetails['titles'].iteritems():
-            sVampText += "%d vampires with the title %s (%d votes)\n" % (
-                    iCount, oTitle.name, Titles.vote_value(oTitle.name))
+            sVampText += ("%d vampires with the title %s (%d votes)\n" %
+                          (iCount, oTitle.name,
+                           Titles.vote_value(oTitle.name)))
             iTotalTitles += iCount
-        sVampText += "%d vampires with titles (%s)\n" % (
-                iTotalTitles, _percentage(iTotalTitles, self.iCryptSize,
-                    "Crypt"))
-        sVampText += "%d votes from titles in the crypt. Average votes per" \
-                " vampire is %2.3f\n" % (dDeckDetails['votes'],
-                        dDeckDetails['votes'] / float(iNum))
+        sVampText += ("%d vampires with titles (%s)\n" %
+                      (iTotalTitles, _percentage(iTotalTitles,
+                                                 self.iCryptSize, "Crypt")))
+        sVampText += ("%d votes from titles in the crypt. Average votes per"
+                      " vampire is %2.3f\n" %
+                      (dDeckDetails['votes'],
+                       dDeckDetails['votes'] / float(iNum)))
         sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
         for oDisc, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
                 key=_disc_sort_key):
             if aInfo[0] == 'discipline':
-                sVampText += "%(infcount)d Vampires with %(disc)s %(iper)s," \
-                        " %(supcount)d at Superior %(sper)s\n" % {
-                                'disc': oDisc.fullname,
-                                'infcount': aInfo[1],
-                                'iper': _percentage(aInfo[1],
-                                    self.iCryptSize, "Crypt"),
-                                'supcount': aInfo[2],
-                                'sper': _percentage(aInfo[2],
-                                    self.iCryptSize, "Crypt"),
-                                }
+                sVampText += ("%(infcount)d Vampires with %(disc)s %(iper)s,"
+                              " %(supcount)d at Superior %(sper)s\n" % {
+                                  'disc': oDisc.fullname,
+                                  'infcount': aInfo[1],
+                                  'iper': _percentage(aInfo[1],
+                                                      self.iCryptSize,
+                                                      "Crypt"),
+                                  'supcount': aInfo[2],
+                                  'sper': _percentage(aInfo[2],
+                                                      self.iCryptSize,
+                                                      "Crypt"),
+                              })
         return sVampText
 
     def _process_imbued(self, aCards):
@@ -881,30 +892,32 @@ class AnalyzeCardList(SutekhPlugin):
         # Build up Text
         sImbuedText = "\t\t<b>Imbued</b>\n\n"
         sImbuedText += '<span foreground = "blue">Basic Crypt stats</span>\n'
-        sImbuedText += "Number of Imbued = %d %s\n" % (iNum, _percentage(iNum,
-            self.iCryptSize, "Crypt"))
+        sImbuedText += "Number of Imbued = %d %s\n" % (
+            iNum, _percentage(iNum, self.iCryptSize, "Crypt"))
         sImbuedText += "Number of Unique Imbued = %d\n" % len(dDeckImbued)
         sImbuedText += 'Minimum Group is : %d\n' % \
-                self.dCryptStats['imbued min group']
+            self.dCryptStats['imbued min group']
         sImbuedText += 'Maximum Group is : %d\n' % \
-                self.dCryptStats['imbued max group']
+            self.dCryptStats['imbued max group']
         sImbuedText += '\n<span foreground = "blue">Crypt cost</span>\n'
         sImbuedText += "Cheapest is : %d\n" % \
-                self.dCryptStats['imbued min cost']
+            self.dCryptStats['imbued min cost']
         sImbuedText += "Most Expensive is : %d\n" % \
-                self.dCryptStats['imbued max cost']
+            self.dCryptStats['imbued max cost']
         sImbuedText += "Average Life is : %2.3f\n\n" % (
-                sum([x.life for x in aCards]) / float(iNum))
+            sum([x.life for x in aCards]) / float(iNum))
         for oCreed, iCount in dDeckCreed.iteritems():
-            sImbuedText += "%d Imbued of creed %s %s\n" % (iCount,
-                    oCreed.name, _percentage(iCount, self.iCryptSize, "Crypt"))
+            sImbuedText += "%d Imbued of creed %s %s\n" % (
+                iCount, oCreed.name, _percentage(iCount, self.iCryptSize,
+                                                 "Crypt"))
         for oVirtue, aInfo in sorted(
                 self.dCryptStats['crypt discipline'].iteritems(),
                 key=_disc_sort_key):
             if aInfo[0] == 'virtue':
-                sImbuedText += "%d Imbued with %s %s\n" % (aInfo[1],
-                        oVirtue.fullname, _percentage(aInfo[1],
-                            self.iCryptSize, "Crypt"))
+                sImbuedText += "%d Imbued with %s %s\n" % (
+                    aInfo[1], oVirtue.fullname, _percentage(aInfo[1],
+                                                            self.iCryptSize,
+                                                            "Crypt"))
         return sImbuedText
 
     def _process_master(self, aCards):
@@ -914,8 +927,8 @@ class AnalyzeCardList(SutekhPlugin):
         iClanRequirement, dClan, dMulti = _get_card_clan_multi(aCards)
         # Build up Text
         sText = "\t\t<b>Master Cards :</b>\n\n"
-        sText += "Number of Masters = %d %s\n" % (iNum,
-                _percentage(iNum, self.iLibSize, "Library"))
+        sText += "Number of Masters = %d %s\n" % (
+            iNum, _percentage(iNum, self.iLibSize, "Library"))
         # Extract the number of out-of-turn and trifles
         for sType in ('trifle', 'out-of-turn'):
             try:
@@ -925,12 +938,12 @@ class AnalyzeCardList(SutekhPlugin):
                     if oKeyword in oCard.keywords:
                         iCount += 1
                 if iCount:
-                    sText += '   Number of %s masters = %d (%s)\n' % (sType,
-                            iCount, _percentage(iCount, iNum, 'Masters'))
+                    sText += '   Number of %s masters = %d (%s)\n' % (
+                        sType, iCount, _percentage(iCount, iNum, 'Masters'))
             except SQLObjectNotFound:
-                sText += '<span foreground="red">Keyword <b>%s</b> not '\
-                        'in the database -- please re-import the WW ' \
-                        'cardlist</span>\n' % sType
+                sText += ('<span foreground="red">Keyword <b>%s</b> not '
+                          'in the database -- please re-import the WW '
+                          'cardlist</span>\n' % sType)
         if aPool[1] > 0:
             sText += '\n<span foreground = "blue">Cost</span>\n'
             sText += _format_cost_numbers('Master', 'pool', aPool, iNum)
@@ -950,26 +963,27 @@ class AnalyzeCardList(SutekhPlugin):
         iClanRequirement, dClan, dMulti = _get_card_clan_multi(aCards)
         # Build up Text
         sPerCards = _percentage(iNum, self.iLibSize, 'Library')
-        sText = "\t\t<b>%(type)s Cards :</b>\n\n" \
-                "Number of %(type)s cards = %(num)d %(per)s\n" % {
-                        'type': sType,
-                        'num': iNum,
-                        'per': sPerCards, }
+        sText = ("\t\t<b>%(type)s Cards :</b>\n\n"
+                 "Number of %(type)s cards = %(num)d %(per)s\n" % {
+                     'type': sType,
+                     'num': iNum,
+                     'per': sPerCards,
+                 })
         if aBlood[1] > 0 or aPool[1] > 0 or aConviction[1] > 0:
             sText += '\n<span foreground = "blue">Costs</span>\n'
         if aBlood[1] > 0:
             sText += _format_cost_numbers(sType, 'blood', aBlood, iNum)
         if aConviction[1] > 0:
             sText += _format_cost_numbers(sType, 'conviction', aConviction,
-                    iNum)
+                                          iNum)
         if aPool[1] > 0:
             sText += _format_cost_numbers(sType, 'pool', aPool, iNum)
         if iClanRequirement > 0:
             sText += '\n<span foreground = "blue">Clan/Creed</span>\n'
             sText += _format_clan(sType, iClanRequirement, dClan, iNum)
         sText += '\n<span foreground = "blue">Discipline/Virtues</span>\n'
-        sText += 'Number of cards with no discipline/virtue requirement = ' \
-                '%d\n' % iNoneCount
+        sText += ('Number of cards with no discipline/virtue requirement = '
+                  '%d\n' % iNoneCount)
         if len(dDisciplines) > 0:
             sText += _format_disciplines('discipline', dDisciplines, iNum)
         if len(dVirtues) > 0:
@@ -997,8 +1011,8 @@ class AnalyzeCardList(SutekhPlugin):
         """Fill the events tab"""
         iNumEvents = len(aCards)
         sEventText = "\t\t<b>Event Cards :</b>\n\n"
-        sEventText += "Number of Event cards = %d %s\n\n" % (iNumEvents,
-                _percentage(iNumEvents, self.iLibSize, "Library"))
+        sEventText += "Number of Event cards = %d %s\n\n" % (
+            iNumEvents, _percentage(iNumEvents, self.iLibSize, "Library"))
         sEventText += '<span foreground = "blue">Event classes</span>\n'
         dEventTypes = {}
         for oCard in aCards:
@@ -1006,9 +1020,9 @@ class AnalyzeCardList(SutekhPlugin):
             dEventTypes.setdefault(sType, 0)
             dEventTypes[sType] += 1
         for sType, iCount in dEventTypes.iteritems():
-            sEventText += '%d of type %s : %s (%s) \n' % (iCount, sType,
-                    _percentage(iCount, iNumEvents, 'Events'),
-                    _percentage(iCount, self.iLibSize, 'Library'))
+            sEventText += '%d of type %s : %s (%s) \n' % (
+                iCount, sType, _percentage(iCount, iNumEvents, 'Events'),
+                _percentage(iCount, self.iLibSize, 'Library'))
         return sEventText
 
     def _process_action(self, aCards):
@@ -1050,12 +1064,12 @@ class AnalyzeCardList(SutekhPlugin):
         """Fill the multirole card tab"""
         dMulti = {}
         sPerCards = _percentage(self.dTypeNumbers['Multirole'], self.iLibSize,
-                'Library')
-        sText = "\t\t<b>Multirole Cards :</b>\n\n" \
-                "Number of Multirole cards = %(num)d %(per)s\n" % {
-                        'num': self.dTypeNumbers['Multirole'],
-                        'per': sPerCards,
-                        }
+                                'Library')
+        sText = ("\t\t<b>Multirole Cards :</b>\n\n"
+                 "Number of Multirole cards = %(num)d %(per)s\n" % {
+                     'num': self.dTypeNumbers['Multirole'],
+                     'per': sPerCards,
+                 })
         for oAbsCard in aCards:
             aTypes = [x.name for x in oAbsCard.cardtype]
             if len(aTypes) > 1:
@@ -1063,13 +1077,13 @@ class AnalyzeCardList(SutekhPlugin):
                 dMulti.setdefault(sKey, 0)
                 dMulti[sKey] += 1
         for sMultiType, iNum in sorted(dMulti.items(), key=lambda x: x[1],
-                reverse=True):
+                                       reverse=True):
             sPer = _percentage(iNum, self.iLibSize, 'Library')
             sText += 'Number of %(multitype)s cards = %(num)d %(per)s\n' % {
-                    'multitype': sMultiType,
-                    'num': iNum,
-                    'per': sPer,
-                    }
+                'multitype': sMultiType,
+                'num': iNum,
+                'per': sPer,
+            }
 
         return sText
 
@@ -1078,23 +1092,23 @@ class AnalyzeCardList(SutekhPlugin):
         iTotal = self.iCryptSize + self.iLibSize
         dNonLegal = {}
         sPerCards = _percentage(self.dTypeNumbers[sType], iTotal, 'Deck')
-        sText = "\t\t<b>%(type)s :</b>\n\n" \
-                "Number of cards %(lowertype)s =" \
-                " %(num)d %(per)s\n" % {
-                        'type': ILLEGAL_LOOKUP[sType],
-                        'lowertype': ILLEGAL_LOOKUP[sType].lower(),
-                        'num': self.dTypeNumbers[sType],
-                        'per': sPerCards,
-                        }
+        sText = ("\t\t<b>%(type)s :</b>\n\n"
+                 "Number of cards %(lowertype)s ="
+                 " %(num)d %(per)s\n" % {
+                     'type': ILLEGAL_LOOKUP[sType],
+                     'lowertype': ILLEGAL_LOOKUP[sType].lower(),
+                     'num': self.dTypeNumbers[sType],
+                     'per': sPerCards,
+                 })
         for oAbsCard in aCards:
             dNonLegal.setdefault(oAbsCard.name, 0)
             dNonLegal[oAbsCard.name] += 1
         for sName, iNum in sorted(dNonLegal.items(), key=lambda x: x[1],
-                reverse=True):
+                                  reverse=True):
             sText += '%(num)d X %(name)s\n' % {
-                    'num': iNum,
-                    'name': sName,
-                    }
+                'num': iNum,
+                'name': sName,
+            }
 
         return sText
 
@@ -1107,7 +1121,7 @@ class AnalyzeCardList(SutekhPlugin):
             sText += sAddText
             return sText
         sAddText, bOK = _percentage_backs(dCrypt, self.iCryptSize, 20.0,
-                'Crypt')
+                                          'Crypt')
         if sAddText:
             sText += sAddText
         sAddText, _dCryptByExp = _group_backs(dCrypt, aCrypt, 3)
@@ -1115,8 +1129,8 @@ class AnalyzeCardList(SutekhPlugin):
             sText += sAddText
             bOK = False
         if bOK:
-            sText += "Mixed backs, but seems sufficiently mixed.\n" \
-                    + UNSLEEVED % "Crypt"
+            sText += "Mixed backs, but seems sufficiently mixed.\n"
+            sText += UNSLEEVED % "Crypt"
         else:
             sText += SLEEVED % "Crypt"
 
@@ -1145,13 +1159,13 @@ class AnalyzeCardList(SutekhPlugin):
                 aAllTypes.add("/".join(aTypes))
             if len(aAllTypes) < 3:
                 aNames = set([x.abstractCard.name for x in aExpCards])
-                sText += "Group of cards with the same back" \
-                        " containing less than 3 different card types.\n"
+                sText += ("Group of cards with the same back"
+                          " containing less than 3 different card types.\n")
                 sText += "\t" + ", ".join(aNames) + "\n"
                 bOK = False
         if bOK:
-            sText += "Mixed backs, but seems sufficiently mixed.\n" + \
-                    UNSLEEVED % "Library"
+            sText += "Mixed backs, but seems sufficiently mixed.\n"
+            sText += UNSLEEVED % "Library"
         else:
             sText += SLEEVED % "Library"
 
@@ -1170,8 +1184,8 @@ class AnalyzeCardList(SutekhPlugin):
                       "The V:EKN requires that these cards be sleeved in "
                       "opaque sleeves with a existing VtES card\n")
         elif None in dCrypt and None in dLib:
-            sText += "Both library and crypt have cards with unspecified" \
-                    " expansions.\nIgnoring the mixed backs.\n"
+            sText += ("Both library and crypt have cards with unspecified"
+                      " expansions.\nIgnoring the mixed backs.\n")
             return sText
         else:
             # We know there are mixed cards, when we get here.
@@ -1190,27 +1204,27 @@ class AnalyzeCardList(SutekhPlugin):
         oHFVBox.pack_start(oMainLabel)
         # Build up Text
         sHappyFamilyText = "\t\t<b>Happy Families Analysis :</b>\n"
-        sHappyFamilyText += "\t<small><i>Happy Families Analysis from the " \
-                "Gangrel antitribu newsletter, Jan 2000, by Legbiter" \
-                "</i></small>\n"
+        sHappyFamilyText += ("\t<small><i>Happy Families Analysis from the "
+                             "Gangrel antitribu newsletter, Jan 2000, by "
+                             "Legbiter</i></small>\n")
         if self.dTypeNumbers['Imbued'] > 0:
-            sHappyFamilyText += '\n<span foreground = "red">This is not' \
-                    ' optimised for Imbued, and treats them as small ' \
-                    'vampires</span>\n'
+            sHappyFamilyText += ('\n<span foreground = "red">This is not'
+                                 ' optimised for Imbued, and treats them'
+                                 ' as small vampires</span>\n')
         if self.dTypeNumbers['Event'] > 0:
-            sHappyFamilyText += '\n<span foreground = "red">Events are' \
-                    ' not considered by Happy Families. We treat them' \
-                    ' as additional masters.</span>'
+            sHappyFamilyText += ('\n<span foreground = "red">Events are'
+                                 ' not considered by Happy Families. We'
+                                 ' treat them as additional masters.</span>')
         if self.iCryptSize == 0:
-            sHappyFamilyText += '\n<span foreground = "red">Need to have' \
-                    ' a crypt to do the analysis</span>\n'
+            sHappyFamilyText += ('\n<span foreground = "red">Need to have'
+                                 ' a crypt to do the analysis</span>\n')
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
         if len(self.dCryptStats['crypt discipline']) < 1:
             # Crypt only has Smudge, for example
-            sHappyFamilyText += '\n<span foreground = "red">Need disciplines' \
-                    ' in the crypt to do analysis</span>\n'
+            sHappyFamilyText += ('\n<span foreground = "red">Need disciplines'
+                                 ' in the crypt to do analysis</span>\n')
             oMainLabel.set_markup(sHappyFamilyText)
             oHFVBox.show_all()
             return
@@ -1219,17 +1233,20 @@ class AnalyzeCardList(SutekhPlugin):
         iHFMasters = int(round(0.2 * self.iLibSize))
         iLibMasters = self.dTypeNumbers['Master'] + self.dTypeNumbers['Event']
         iNonMasters = (self.iLibSize - self.dTypeNumbers['Master']
-                - self.dTypeNumbers['Event'])
+                       - self.dTypeNumbers['Event'])
         sHappyFamilyText += "\n\t<b>Master Cards</b>\n"
-        sHappyFamilyText += "%d Masters %s\n" % (self.dTypeNumbers['Master'],
-                _percentage(self.dTypeNumbers['Master'],
-                        self.iLibSize, "Library"))
+        sHappyFamilyText += ("%d Masters %s\n" %
+                             (self.dTypeNumbers['Master'],
+                              _percentage(self.dTypeNumbers['Master'],
+                                          self.iLibSize, "Library")))
         if self.dTypeNumbers['Event'] > 0:
-            sHappyFamilyText += "%d Events %s\n" % (self.dTypeNumbers['Event'],
-                    _percentage(self.dTypeNumbers['Event'], self.iLibSize,
-                        "Library"))
-            sHappyFamilyText += "%d Total %s\n" % (iLibMasters,
-                    _percentage(iLibMasters, self.iLibSize, 'Library'))
+            sHappyFamilyText += "%d Events %s\n" % (
+                self.dTypeNumbers['Event'],
+                _percentage(self.dTypeNumbers['Event'], self.iLibSize,
+                            "Library"))
+            sHappyFamilyText += "%d Total %s\n" % (
+                iLibMasters,
+                _percentage(iLibMasters, self.iLibSize, 'Library'))
         sHappyFamilyText += "Happy Families recommends 20%, which would" \
                 " be " + str(iHFMasters) + '  : '
         sHappyFamilyText += "<span foreground = \"blue\">Difference = " + \
@@ -1244,10 +1261,10 @@ class AnalyzeCardList(SutekhPlugin):
         oResLabel = gtk.Label()
         oButton = gtk.Button('Recalculate Happy Family Analysis')
         oButton.connect('clicked', self._redo_happy_family, oDiscSelect,
-                oResLabel)
+                        oResLabel)
         oHFVBox.pack_start(oButton, False, False)
         oResLabel.set_markup(self._happy_lib_analysis(aSortedDiscs[:2],
-            iNonMasters))
+                                                      iNonMasters))
         oHFVBox.pack_start(oResLabel)
         oHFVBox.show_all()
 
@@ -1259,7 +1276,7 @@ class AnalyzeCardList(SutekhPlugin):
         iNonMasters = self.iLibSize - self.dTypeNumbers['Master']
         oResLabel.hide()
         oResLabel.set_markup(self._happy_lib_analysis(aTheseDiscs,
-            iNonMasters))
+                                                      iNonMasters))
         oResLabel.show()
         oResLabel.get_parent().show_all()
 
@@ -1275,7 +1292,7 @@ class AnalyzeCardList(SutekhPlugin):
         dCryptDiscs = {}
         for sDisc in aDiscsToUse:
             oDisc = _lookup_discipline(sDisc,
-                    self.dCryptStats['crypt discipline'])
+                                       self.dCryptStats['crypt discipline'])
             dCryptDiscs[sDisc] = self.dCryptStats['crypt discipline'][oDisc][1]
             fDemon += dCryptDiscs[sDisc]
         iHFNoDiscipline = int((iNonMasters * self.iCryptSize / fDemon))
@@ -1287,34 +1304,36 @@ class AnalyzeCardList(SutekhPlugin):
             iDiff -= iHFNumber
         if iDiff > 0:
             iHFNoDiscipline += iDiff  # Shove rounding errors here
-        sHappyFamilyText += "Number of Minion cards requiring " \
-                " No discipline : %s\n" \
-                % (self.dLibStats['discipline']['No Discipline']
-                        - self.dTypeNumbers['Master']
-                        - self.dTypeNumbers['Event'])
-        sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
-                iHFNoDiscipline, (80 * self.iCryptSize / fDemon))
-        sHappyFamilyText += '<span foreground = "blue">Difference = ' \
-                '%s</span>\n\n' % abs(iHFNoDiscipline -
-                        (self.dLibStats['discipline']['No Discipline']
-                            - self.dTypeNumbers['Master']
-                            - self.dTypeNumbers['Event']))
+        sHappyFamilyText += ("Number of Minion cards requiring "
+                             " No discipline : %s\n"
+                             % (self.dLibStats['discipline']['No Discipline']
+                                - self.dTypeNumbers['Master']
+                                - self.dTypeNumbers['Event']))
+        sHappyFamilyText += ("Happy Families recommends %d (%.1f %%): " %
+                             (iHFNoDiscipline,
+                              (80 * self.iCryptSize / fDemon)))
+        sHappyFamilyText += ('<span foreground = "blue">Difference = '
+                             '%s</span>\n\n' %
+                             abs(iHFNoDiscipline -
+                                 (self.dLibStats['discipline']['No Discipline']
+                                  - self.dTypeNumbers['Master']
+                                  - self.dTypeNumbers['Event'])))
         for sDisc in aDiscsToUse:
             iHFNum = dDiscNumbers[sDisc]
             if sDisc in self.dLibStats['discipline']:
                 iLibNum = self.dLibStats['discipline'][sDisc]
             else:
                 iLibNum = 0
-            sHappyFamilyText += "Number of Minion cards requiring %(disc)s :" \
-                    " %(lib)d (%(crypt)d crypt members)\n" % {
-                            'disc': sDisc,
-                            'lib': iLibNum,
-                            'crypt': dCryptDiscs[sDisc],
-                            }
-            sHappyFamilyText += "Happy Families recommends %d (%.1f %%): " % (
-                    iHFNum, 80 * dCryptDiscs[sDisc] / fDemon)
-            sHappyFamilyText += '<span foreground = "blue">Difference = ' \
-                    '%d </span>\n' % abs(iHFNum - iLibNum)
+            sHappyFamilyText += ("Number of Minion cards requiring %(disc)s :"
+                                 " %(lib)d (%(crypt)d crypt members)\n" % {
+                                     'disc': sDisc,
+                                     'lib': iLibNum,
+                                     'crypt': dCryptDiscs[sDisc],
+                                 })
+            sHappyFamilyText += ("Happy Families recommends %d (%.1f %%): " %
+                                 (iHFNum, 80 * dCryptDiscs[sDisc] / fDemon))
+            sHappyFamilyText += ('<span foreground = "blue">Difference = '
+                                 '%d </span>\n' % abs(iHFNum - iLibNum))
         return sHappyFamilyText
 
 plugin = AnalyzeCardList

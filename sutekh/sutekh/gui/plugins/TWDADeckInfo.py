@@ -277,8 +277,8 @@ class TWDAInfoPlugin(SutekhPlugin):
             oName = gtk.Label(oCS.name)
             aCardInfo = []
             for sName in sorted(dCardSets[oCS]):
-                aCardInfo.append(u"  - %s \u00D7 %d" % (sName,
-                                 dCardSets[oCS][sName]))
+                aCardInfo.append(
+                    u"  - %s \u00D7 %d" % (sName, dCardSets[oCS][sName]))
             oCards = gtk.Label('\n'.join(aCardInfo))
             oButton = gtk.Button("Open cardset")
             oButton.connect('clicked', self._open_card_set, oCS)
