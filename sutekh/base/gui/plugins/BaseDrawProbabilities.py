@@ -118,7 +118,7 @@ def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
 class BaseDrawProbPlugin(BasePlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # we use a lot of attributes to pass the data around
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
@@ -131,7 +131,7 @@ class BaseDrawProbPlugin(BasePlugin):
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # W0201 - we define lots of things here, rather than __init__, since this
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, _oWidget):
@@ -250,7 +250,7 @@ class BaseDrawProbPlugin(BasePlugin):
         oResultsBox = gtk.VBox(False, 2)
         oResultsBox.pack_start(oTitleLabel, False, False)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't detect gtk methods correctly
 
         oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,
@@ -268,7 +268,7 @@ class BaseDrawProbPlugin(BasePlugin):
         aSelectedCards = []
         _oModel, aSelection = self.view.get_selection().get_selected_rows()
         for oPath in aSelection:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pylint doesn't pick up adapter's methods correctly
             oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
             aSelectedCards.append(oCard)

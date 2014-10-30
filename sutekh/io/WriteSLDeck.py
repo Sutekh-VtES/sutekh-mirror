@@ -29,7 +29,7 @@ from sutekh.SutekhUtility import is_crypt_card
 class WriteSLDeck(object):
     """Create a string in SL import format representing a card set."""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with the other methods
 
     def _escape(self, sName):
@@ -54,12 +54,12 @@ class WriteSLDeck(object):
             aResult.append('%d %s\n' % (dCards[sName], sName))
         return ''.join(aResult)
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
     def _gen_sl_deck(self, oHolder):
         """Process the card set, creating the lines as needed"""
         # Add the header information
         sResult = self._gen_header(oHolder)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pyprotocols confuses pylint
         dCards = {'Crypt': {}, 'Library': {}}
         for oCard in oHolder.cards:
@@ -78,7 +78,7 @@ class WriteSLDeck(object):
         # Assume conversion will be handled by viewers/editor/web browser?
         return sResult
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an JOL deck

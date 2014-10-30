@@ -13,7 +13,7 @@ from .MessageBus import MessageBus, CARD_TEXT_MSG
 
 class BaseCardTextFrame(ScrolledFrame):
     """ScrolledFrame which adds listeners for the 'set_card_text' signal."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
 
     _sName = 'Card Text'

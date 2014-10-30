@@ -12,11 +12,11 @@
    uses intospection to find the filters to add to the grammar.
    """
 
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # pylint 0.18 misses ply parts
 import ply.lex as lex
 import ply.yacc as yacc
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from .BaseFilters import Filter, FilterNot, FilterAndBox, FilterOrBox
 from ..Utility import find_subclasses
 
@@ -25,19 +25,19 @@ PARSER_FILTERS = [x for x in find_subclasses(Filter) if hasattr(x, 'keyword')]
 
 
 ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'istextentry') and x.istextentry])
+                     if hasattr(x, 'istextentry') and x.istextentry])
 WITH_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'iswithfilter') and x.iswithfilter])
+                    if hasattr(x, 'iswithfilter') and x.iswithfilter])
 FROM_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'isfromfilter') and x.isfromfilter])
+                    if hasattr(x, 'isfromfilter') and x.isfromfilter])
 LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'islistfilter') and x.islistfilter])
+                    if hasattr(x, 'islistfilter') and x.islistfilter])
 
 
 # Misc utility functions
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
-    # pylint: disable-msg=W0621
+    # pylint: disable=W0621
     return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
 
 
@@ -52,24 +52,24 @@ def get_filters_for_type(sFilterType):
 # which are based on ply examples
 class ParseFilterDefinitions(object):
     """Provides the lexer used by PLY"""
-    # pylint: disable-msg=C0103, R0201
+    # pylint: disable=C0103, R0201
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
-            'NOT',
-            'FILTERTYPE',
-            'ID',
-            'STRING',
-            'OR',
-            'AND',
-            'COMMA',
-            'IN',
-            'LPAREN',
-            'RPAREN',
-            'VARIABLE',
-            'WITH',
-            'FROM',
-            )
+        'NOT',
+        'FILTERTYPE',
+        'ID',
+        'STRING',
+        'OR',
+        'AND',
+        'COMMA',
+        'IN',
+        'LPAREN',
+        'RPAREN',
+        'VARIABLE',
+        'WITH',
+        'FROM',
+    )
 
     t_AND = r'\&\&'
     t_OR = r'\|\|'
@@ -110,7 +110,7 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    # pylint: disable-msg=W0201, W0142
+    # pylint: disable=W0201, W0142
     def build(self, **kwargs):
         """Create the lexer object.
 
@@ -132,19 +132,19 @@ class ParseFilterDefinitions(object):
 # Define a yacc parser to produce the abstract syntax tree
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
-    # pylint: disable-msg=C0103, R0201
+    # pylint: disable=C0103, R0201
     tokens = ParseFilterDefinitions.tokens
     aUsedVariables = []
 
     # COMMA's have higher precedence than AND + OR
     # This shut's up most shift/reduce warnings
     precedence = (
-            ('left', 'AND', 'OR'),
-            ('left', 'NOT'),
-            ('left', 'IN'),
-            ('left', 'FROM'),
-            ('left', 'COMMA'),
-            ('left', 'WITH'),
+        ('left', 'AND', 'OR'),
+        ('left', 'NOT'),
+        ('left', 'IN'),
+        ('left', 'FROM'),
+        ('left', 'COMMA'),
+        ('left', 'WITH'),
     )
 
     def reset(self):
@@ -243,7 +243,7 @@ class FilterYaccParser(object):
 # Wrapper objects around the parser
 class FilterParser(object):
     """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
-    # pylint: disable-msg=R0903
+    # pylint: disable=R0903
     # This really does only need the 1 public method
     _oGlobalLexer = None
     _oGlobalParser = None
@@ -325,7 +325,7 @@ class ValueObject(object):
         """Does this represent a assigned string value?"""
         return isinstance(self.oValue, str) and self.oValue != ''
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     def is_None(self):
         """Is this node's value None?"""
         return self.oValue is None
@@ -345,14 +345,14 @@ class AstBaseNode(object):
 
            Useful for debugging
            """
-        sAttrs = '(' + ",".join([str(oValue) for sKey, oValue
-                in self.__dict__.items() if not sKey.startswith("_") and
-                sKey != "aChildren" and oValue not in self.aChildren]) + ")"
+        sAttrs = '(' + ",".join(
+            [str(oValue) for sKey, oValue in self.__dict__.items()
+             if not sKey.startswith("_") and sKey != "aChildren" and
+             oValue not in self.aChildren]) + ')'
         sOutput = self.__class__.__name__ + sAttrs
         for oChild in self.aChildren:
-            sOutput += ("\n" +
-                    "\n".join(["\t" + sVal for sVal in
-                        str(oChild).split("\n")]))
+            sOutput += ("\n" + "\n".join(["\t" + sVal for sVal in
+                                          str(oChild).split("\n")]))
         return sOutput
 
     def get_values(self):
@@ -505,7 +505,7 @@ class FilterPartNode(OperatorNode):
             # We don't take any input for this filter, so there are no
             # values to return
             return [ValueObject(get_filter_type(self.sFilterName).description,
-                self), ValueObject(None, self)]
+                                self), ValueObject(None, self)]
         # Want a list within ValueObject for the GUI stuff to work
         # '' case for Entry boxes works as well
         aVals = get_filter_type(self.sFilterName).get_values()
@@ -521,7 +521,7 @@ class FilterPartNode(OperatorNode):
         oTemp = get_filter_type(self.sFilterName)([])  # Create Instance
         aValidVals = oTemp.get_values()
         if isinstance(aValidVals[0], list) and (len(aCurVals) ==
-                len(aValidVals)):
+                                                len(aValidVals)):
             for aSubCurVals, aSubValidVals in zip(aCurVals, aValidVals):
                 for oVal in aSubCurVals:
                     if oVal.oValue == ',':
@@ -550,7 +550,7 @@ class FilterPartNode(OperatorNode):
             sCountList = ",".join(aVals[0])
             sSetList = ",".join(aVals[1])
             sInternalFilter = '%s=%s from %s' % (self.sFilterName,
-                    sCountList, sSetList)
+                                                 sCountList, sSetList)
         else:
             sCommaList = ",".join(aVals)
             sInternalFilter = '%s=%s' % (self.sFilterName, sCommaList)
@@ -651,8 +651,8 @@ class BinOpNode(OperatorNode):
             # Add the extra brackets so the display in the dialog
             # reflects the correct precedence
             aResults = [ValueObject('(', None)] + aLeft + \
-                    [ValueObject(') ' + self.oOp + ' (', self)] + \
-                    aRight + [ValueObject(')', None)]
+                [ValueObject(') ' + self.oOp + ' (', self)] + \
+                aRight + [ValueObject(')', None)]
             return aResults
 
     def get_filter(self):
@@ -725,7 +725,7 @@ class WithNode(OperatorNode):
     def get_values(self):
         """Get values"""
         return [ValueObject(self.oLeft.get_filter()[0] + ' ' + self.oOp +
-            ' ' + self.oRight.get_filter()[0], self)]
+                            ' ' + self.oRight.get_filter()[0], self)]
 
     def get_filter(self):
         """Get filter expression"""
@@ -748,7 +748,7 @@ class FromNode(OperatorNode):
     def get_values(self):
         """Get values"""
         return [self.oLeft.get_values(),
-            self.oRight.get_values()]
+                self.oRight.get_values()]
 
     def get_filter(self):
         """Get filter expression"""

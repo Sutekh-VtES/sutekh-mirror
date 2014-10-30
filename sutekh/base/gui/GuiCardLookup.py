@@ -47,7 +47,7 @@ class DummyController(object):
 
 class ACLLookupView(PhysicalCardView):
     """Specialised version for the Card Lookup."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
@@ -73,7 +73,7 @@ class ACLLookupView(PhysicalCardView):
 
 class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
@@ -101,7 +101,7 @@ class PCLLookupView(PhysicalCardView):
 
 class ReplacementTreeView(gtk.TreeView):
     """A TreeView which tracks the current set of replacement cards."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods.
 
     def __init__(self, oCardListView, oFilterToggleButton):
@@ -159,7 +159,7 @@ class ReplacementTreeView(gtk.TreeView):
         oCell.connect('clicked', fClicked)
         self._dToolTips[oColumn] = sToolTip
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # Need this many arguments from function signature
     # Show tooltips for the column buttons
     def _show_tooltip(self, _oWidget, _iXPos, _iYPos, _bKeyboard, oToolTip):
@@ -177,7 +177,7 @@ class ReplacementTreeView(gtk.TreeView):
             return True
         return False
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""
@@ -290,7 +290,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
            Provides an implementation for AbstractCardLookup.
            """
-        # pylint: disable-msg=R0912
+        # pylint: disable=R0912
         # Lots of different cases to consider, to several branches
         dCards = {}
         dUnknownCards = {}
@@ -333,11 +333,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             if sNewName is None:
                 continue
             try:
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # SQLObject methods confuse pylint
                 oAbs = AbstractCard.byCanonicalName(
                     sNewName.encode('utf8').lower())
-                # pylint: enable-msg=E1101
+                # pylint: enable=E1101
                 dUnknownCards[sName] = oAbs
             except SQLObjectNotFound:
                 raise RuntimeError("Unexpectedly encountered missing"
@@ -432,14 +432,14 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
            We allow the user to select the correct replacements from the
            Physical Card List
            """
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # we use lots of variables for clarity
 
         oUnknownDialog, oHBox = self._create_dialog(
             sInfo, "The following card and expansion combinations could not "
             "be found:")
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
 
         oPhysCardView = PCLLookupView(oUnknownDialog, self._oConfig)
@@ -487,7 +487,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         else:
             return False
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # These are methods for convenience
     def _create_dialog(self, sInfo, sMsg):
         """Create the dialog to present to the user.
@@ -499,7 +499,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
@@ -519,7 +519,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
            dialog."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oViewWin = AutoScrolledWindow(oView)
         oViewWin.set_size_request(200, 600)
@@ -581,7 +581,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     def _lookup_new_phys_card(self, sNewName, sNewExpName):
         """Lookup the physical card, given the correct name + expansion
            name."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject + pyprotocols confuse pylint
         if sNewExpName is not None:
             try:
@@ -598,7 +598,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                                       expansionID=iExpID).getOne()
         return oPhys
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _handle_unknown_abstract_cards(self, dUnknownCards, sInfo):
         """Handle the list of unknown abstract cards.
@@ -606,11 +606,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
            We allow the user to select the correct replacements from the
            Abstract Card List.
            """
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # we use lots of variables for clarity
         oUnknownDialog, oHBox = self._create_dialog(
             sInfo, "The following card names could not be found")
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
 
         oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
@@ -675,7 +675,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             "OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
 
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
@@ -742,7 +742,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             "Cards with unknown expansion %s" % sName, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         oLabel = gtk.Label(sCardText)
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
@@ -754,7 +754,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     @staticmethod
     def _popup_exp(_oButton, oSelector):
         """Popup the list of cards from the selected replacement expansion"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox & SQLObject confuse pylint
         sNewName = oSelector.get_active_text()
         if sNewName == 'No Expansion' or sNewName is None:

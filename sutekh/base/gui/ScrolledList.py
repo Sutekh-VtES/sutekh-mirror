@@ -13,7 +13,7 @@ from .CustomDragIconView import CustomDragIconView
 
 
 class ScrolledListStore(gtk.ListStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Simple list store for ScrolledList widget"""
     def __init__(self):
@@ -28,7 +28,7 @@ class ScrolledListStore(gtk.ListStore):
 
 
 class ScrolledListView(CustomDragIconView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Simple tree view for the ScrolledList widget"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
@@ -43,10 +43,10 @@ class ScrolledListView(CustomDragIconView):
         if bSpecialSelect:
             self._oSelection.connect('changed', self.row_selected)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # allow access via these properties
     store = property(fget=lambda self: self._oModel, doc="List of values")
-    # disable-msg=W0212
+    # pylint: enable=W0212
 
     def get_selected_data(self):
         """Get the list of selected values"""
@@ -82,7 +82,7 @@ class ScrolledListView(CustomDragIconView):
 
 
 class ScrolledList(gtk.Frame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
@@ -93,11 +93,11 @@ class ScrolledList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # allow access via these properties
     view = property(fget=lambda self: self._oTreeView,
                     doc="Associated View Object")
-    # disable-msg=W0212
+    # pylint: enable=W0212
 
     def set_select_single(self):
         """set selection to single mode"""

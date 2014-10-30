@@ -21,7 +21,7 @@ from sutekh.core.ELDBUtilities import norm_name, type_of_card
 class WriteELDBInventory(object):
     """Create a string in ELDB inventory format representing a card set."""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with the other methods
     def _gen_header(self):
         """Generate an ELDB inventory file header."""
@@ -38,10 +38,10 @@ class WriteELDBInventory(object):
             dCards[oAbsCard] += 1
         for oCard, iNum in dCards.iteritems():
             sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
-                    type_of_card(oCard))
+                                                type_of_card(oCard))
         return sResult
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory

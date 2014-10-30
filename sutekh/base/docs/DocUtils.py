@@ -10,8 +10,9 @@
 import textile
 import os
 import glob
+import re
 
-# pylint: disable-msg=C0103
+# pylint: disable=C0103
 # we ignore our usual naming conventions here
 
 try:
@@ -63,7 +64,7 @@ description describes the arguments the filter takes and the results it
 produces.
 """
 
-# pylint: enable-msg=C0103
+# pylint: enable=C0103
 
 
 class FilterGroup(object):
@@ -95,9 +96,108 @@ def textile2html(sText, dContext, fProcessText):
     return sHtml
 
 
+def textile2markdown(aLines, fProcessText):
+    """Convert textile content to markdown.
+
+       This is rule-based, and doesn't cover the full textile syntax.
+       We aim to convert to the markdown variant supported by the
+       sourceforge wiki."""
+    # pylint: disable=R0914
+    # We use a bunch of local variables as psuedo-constants to
+    # keep this self-contained
+
+    # pylint: disable=C0103
+    # we break the naming convention for these pseudo-constants
+    HEADER = re.compile(r'h([0-9])\(#(.*)\)\. (.*)$')
+    NUM_LINK = re.compile(r'^(#*) "([^:]*)":(#.*)$')
+    LINK_TEXT = re.compile(r'"([^"]*)":([^ ]*)\b')
+    # we want to match starting *'s that aren't meant to be starting
+    # list items. Because of our textile conventions, this is currently
+    # good enough
+    LIST_ITEM = re.compile(r'^(\*+)([^\*]+$|[^\*]+\*[^\*]+\*[^\*]*)+$')
+    EMP_ITEM = re.compile(r'\*([^\*]+)\*')
+    # pylint: enable=C0103
+
+    aOutput = []
+    for sLine in aLines:
+        sLine = fProcessText(sLine).strip()
+        # We need to remove single line breaks in paragraphs, because
+        # sf turns those into <br> elements, but we need to keep
+        # \n\n sequences to create paragraph breaks
+        # This differs from traditional markdown, which is annoying
+        if not sLine:
+            sLine = '\n\n'
+        elif sLine.startswith('h1.'):
+            sLine = sLine.replace('h1.', '#')
+        elif sLine.startswith('h2.'):
+            sLine = sLine.replace('h2.', '##')
+        elif sLine.startswith('h3.'):
+            sLine = sLine.replace('h3.', '###')
+        elif sLine.startswith('h4.'):
+            sLine = sLine.replace('h4.', '####')
+        else:
+            oMatch = HEADER.search(sLine)
+            if oMatch:
+                sDepth, sLabel, sHeader = oMatch.groups()
+                sLine = '%s <a name="%s"></a> %s' % ('#' * int(sDepth),
+                                                     sLabel, sHeader)
+            oMatch = NUM_LINK.search(sLine)
+            # List items need to end with a line break
+            if oMatch:
+                sHash, sText, sLink = oMatch.groups()
+                sIndent = '  ' * len(sHash)
+                sLine = '%s 1. [%s](%s)\n' % (sIndent, sText, sLink)
+            # fix links
+            sLine = re.sub(LINK_TEXT, r'[\1](\2)', sLine)
+            oMatch = LIST_ITEM.search(sLine)
+            if oMatch:
+                # markdown docs say 4 space indents, although
+                # sourceforge seems happier with less
+                # We change to '-' for lists to make the emphasis
+                # match easier
+                sIndent = '    ' * (len(oMatch.groups()[0]) - 1) + '-\\2'
+                sLine = re.sub(LIST_ITEM, sIndent, sLine)
+                sLine += '\n'
+            sLine = re.sub(EMP_ITEM, r'**\1**', sLine)
+        if not sLine.endswith('\n'):
+            sLine += ' '
+        aOutput.append(sLine)
+    return ''.join(aOutput)
+
+
+def _load_textile(sTextilePath):
+    """Load lines from the textile file."""
+    fTextile = open(sTextilePath, "rb")
+
+    # NB: Late night fast 'n dirty hack alert
+    # Annoyingly, python-textile 2.1 doesn't handle list elements split
+    # over multiple lines the way python-textile 2.0 does [1], so we need
+    # to manually join lines before feeding them to textile
+    # We use the tradional trailing \ to indicate continuation
+    # [1] Note that the 2.10 version in karmic is a misnumbered 2.0.10
+    aLines = []
+    aCurLine = []
+    for sLine in fTextile.readlines():
+        if sLine.endswith("\\\n"):
+            if aCurLine:
+                aCurLine.append(sLine[:-2])
+            else:
+                aCurLine = [sLine[:-2]]
+            continue
+        elif aCurLine:
+            aCurLine.append(sLine)
+            aLines.append(''.join(aCurLine))
+            aCurLine = []
+        else:
+            aLines.append(sLine)
+
+    fTextile.close()
+    return aLines
+
+
 def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
-    # pylint: disable-msg=R0914
+    # pylint: disable=R0914
     # R0914: Reducing the number of variables won't help clarity
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
@@ -108,34 +208,12 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
             'title': "%s %s" % (cAppInfo.NAME, sFilename.replace('_', ' ')),
         }
 
-        fTextile = file(sTextilePath, "rb")
-        fHtml = file(sHtmlPath, "wb")
+        fHtml = open(sHtmlPath, "wb")
 
-        # NB: Late night fast 'n dirty hack alert
-        # Annoyingly, python-textile 2.1 doesn't handle list elements split
-        # over multiple lines the way python-textile 2.0 does [1], so we need
-        # to manually join lines before feeding them to textile
-        # We use the tradional trailing \ to indicate continuation
-        # [1] Note that the 2.10 version in karmic is a misnumbered 2.0.10
-        aLines = []
-        aCurLine = []
-        for sLine in fTextile.readlines():
-            if sLine.endswith("\\\n"):
-                if aCurLine:
-                    aCurLine.append(sLine[:-2])
-                else:
-                    aCurLine = [sLine[:-2]]
-                continue
-            elif aCurLine:
-                aCurLine.append(sLine)
-                aLines.append(''.join(aCurLine))
-                aCurLine = []
-            else:
-                aLines.append(sLine)
+        aLines = _load_textile(sTextilePath)
 
         fHtml.write(textile2html(''.join(aLines), dContext, fProcessText))
 
-        fTextile.close()
         fHtml.close()
 
         if tidy is not None:
@@ -145,9 +223,25 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
                 print '\n'.join([x.err for x in aErrors])
 
 
+def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
+    """Convert textile files to markdown syntax."""
+    for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
+        sBasename = os.path.basename(sTextilePath)
+        sFilename, _sExt = os.path.splitext(sBasename)
+        sMarkdownPath = os.path.join(sMarkdownDir, sFilename + ".md")
+
+        fMarkdown = open(sMarkdownPath, "wb")
+
+        aLines = _load_textile(sTextilePath)
+
+        fMarkdown.write(textile2markdown(aLines, fProcessText))
+
+        fMarkdown.close()
+
+
 def make_filter_txt(sDir, aFilters):
     """Convert base filters into the approriate textile files"""
-    # pylint: disable-msg=R0914, R0915, R0912
+    # pylint: disable=R0914, R0915, R0912
     # R0914: Reducing the number of variables won't help clarity
     # R0912, R0915: We choose not to split this into subfuctions to
     # reduce line count and branches since the logic isn't reused
@@ -171,8 +265,8 @@ def make_filter_txt(sDir, aFilters):
         aOutput = []
         iTocIndex = 0
 
-        fTemplate = file(sTemplatePath, "rb")
-        fTextile = file(sTextilePath, "wb")
+        fTemplate = open(sTemplatePath, "rb")
+        fTextile = open(sTextilePath, "wb")
 
         for sLine in fTemplate.readlines():
             sKeyword = sLine.strip()

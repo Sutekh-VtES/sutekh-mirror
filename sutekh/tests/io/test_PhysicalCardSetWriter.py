@@ -74,12 +74,12 @@ EXPECTED_3 = '<physicalcardset author="" name="Test Set 2" '\
 
 class PhysicalCardSetWriterTests(SutekhTest):
     """class for the Physical Card Set writer tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_physical_card_set_writer(self):
         """Test physical card set writing"""
-        # pylint: disable-msg=E1101, R0915, R0914
+        # pylint: disable=E1101, R0915, R0914
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables

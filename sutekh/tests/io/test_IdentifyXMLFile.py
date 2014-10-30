@@ -16,12 +16,12 @@ from StringIO import StringIO
 
 class TestIdentifyXMLFile(SutekhTest):
     """class for the IdentifyXMLFile tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # test IO
         sExample = make_example_pcxml()

@@ -36,7 +36,7 @@ def _set_selected_rows(_oButton, oScrolledList, aData):
 
 
 class ZipFileDirStore(gtk.TreeStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Simple tree store to show card set hierachy in a ScrolledList widget"""
     def __init__(self):
@@ -70,7 +70,7 @@ class ZipFileDirStore(gtk.TreeStore):
 
 class SelectZipFileContents(SutekhDialog):
     """Dialog for querying contents of the zip file"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Dialog, so lots of public methods
 
     def __init__(self, dEscapedList, oParent):
@@ -86,7 +86,7 @@ class SelectZipFileContents(SutekhDialog):
 
         # Ask user to select entries to import
         self.oScrolledList = ScrolledList('Available Card Sets', oModel)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.vbox.pack_start(self.oScrolledList)
         self.oScrolledList.set_size_request(450, 300)
@@ -182,10 +182,10 @@ class BaseZipImport(BasePlugin):
                                % sFilename)
             return
 
-        # pylint: disable-msg=E1102
+        # pylint: disable=E1102
         # subclasses will provide a callable cZipWrapper
         oFile = self.cZipWrapper(sFilename)
-        # pylint: enable-msg=E1102
+        # pylint: enable=E1102
         dList = oFile.get_all_entries()
         dEscapedList = {}
         for sName, tInfo in dList.iteritems():
@@ -219,7 +219,7 @@ class BaseZipImport(BasePlugin):
     def _read_heart(self, oFile, dSelected, oLogger, iClashMode):
         """Heart of the reading loop - ensure we read parents before
            children, and correct for renames that occur."""
-        # pylint: disable-msg=W0703, R0914
+        # pylint: disable=W0703, R0914
         # @0703: we really do want all the exceptions
         # R0914: Use track a lot of state, so many local variables
         dRemaining = {}

@@ -54,7 +54,7 @@ class DatabaseVersion(object):
         for oVer in VersionTable.select(connection=oConn):
             if oVer.TableName in dCache:
                 raise RuntimeError("Multiple version entries for %s"
-                    " found in the database." % oVer.TableName)
+                                   " found in the database." % oVer.TableName)
             else:
                 dCache[oVer.TableName] = oVer.Version
 
@@ -62,7 +62,7 @@ class DatabaseVersion(object):
     def ensure_table_exists(cls, oConn):
         """Enusre the table exists, but that describe is only called
            once per connection."""
-        if not oConn in cls._dConns:
+        if oConn not in cls._dConns:
             VersionTable.createTable(ifNotExists=True, connection=oConn)
             cls._dConns[oConn] = True
 
@@ -71,7 +71,7 @@ class DatabaseVersion(object):
         """Expire the created table for this connection.
            Needed in the database upgrade code.
            """
-        if not oConn in cls._dConns:
+        if oConn not in cls._dConns:
             return  # Nothing to do
         del cls._dConns[oConn]
 
@@ -84,7 +84,7 @@ class DatabaseVersion(object):
         except AttributeError:
             return False
         aVer = list(VersionTable.selectBy(TableName=sTableName,
-            connection=oConn))
+                                          connection=oConn))
         iTableCount = len(aVer)
         if iTableCount == 0:
             VersionTable(TableName=sTableName,
@@ -99,7 +99,7 @@ class DatabaseVersion(object):
                 dCache[sTableName] = iTableVersion
         else:
             print ("Multiple version entries for %s in the database"
-                    % sTableName)
+                   % sTableName)
             print "Giving up. I suggest dumping and reloading everything"
             return False
         return True
@@ -128,7 +128,7 @@ class DatabaseVersion(object):
                 dCache[sName] = iTableVersion
         else:
             print ("Multiple version entries for %s in the database"
-                    % oTable.sqlmeta.table)
+                   % oTable.sqlmeta.table)
             print "Giving up. I suggest dumping and reloading everything"
             # Should this be an exception?
             iTableVersion = -999

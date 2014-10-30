@@ -3,7 +3,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0302
+# pylint: disable=C0302
 # This tests the card set list model extensively, so it's quite long
 
 """Tests the Card List Model"""
@@ -44,7 +44,7 @@ import unittest
 
 class CardSetListener(object):
     """Listener used in the test cases."""
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # CardListModelListener has no __init__
     def __init__(self, oModel):
         self.bLoadCalled = False
@@ -69,7 +69,7 @@ class DummyController(object):
     def __init__(self):
         self.bReload = False
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
 
     view = property(fget=lambda self: self)
@@ -77,9 +77,9 @@ class DummyController(object):
     pane_id = property(fget=lambda self: 10)
     config_frame_id = property(fget=lambda self: 'pane10')
 
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
-    # pylint: disable-msg=R0201, C0111
+    # pylint: disable=R0201, C0111
     # dummy functions, so they're empty
 
     def set_parent_count_col_vis(self, _bVal):
@@ -94,7 +94,7 @@ class DummyController(object):
 
 class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904: We test a number of sepetate bits, so many methods
 
     aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
@@ -107,7 +107,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     aNames = ['Test 1', 'Test Child 1', 'Test Grand Child', 'Test Sibling',
             'Test Grand Child 2']
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # I prefer to have these as methods
     def _count_second_level(self, oModel):
         """Count all the second level entries in the model."""
@@ -196,7 +196,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _reset_modes(self, oModel):
         """Set the model to the minimal state."""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         # The database signal handling means that all CardSetListModels
         # associated with a card set will update when send_changed_signal is
@@ -212,11 +212,11 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             oModel.cleanup()
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # Need all these arguments here
     def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # Need info from _oCardSet here
         if oPCS:
             sModel = "Changing card set %s\n" % oPCS.name
@@ -237,10 +237,10 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oModel.bEditable)
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
-    # pylint: enable-msg=R0201
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0201
+    # pylint: enable=R0913
 
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # setUp + tearDown names are needed by unittest - use their convention
     def setUp(self):
         """Setup the card list used in _loop_modes"""
@@ -255,12 +255,12 @@ class CardSetListModelTests(ConfigSutekhTest):
             oCard = make_card(sName, sExp)
             self.aPhysCards.append(oCard)
 
-    # pylint: enable-msg=C0103
+    # pylint: enable=C0103
 
     def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # pylint: disable-msg=E1101, R0914
+        # pylint: disable=E1101, R0914
         # E1101: SQLObjext confuses pylint
         # R0914: several local variables, as we test a number of conditions
         dModelInfo = {}
@@ -335,7 +335,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
            _add_remove_cards to test the model."""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         dCountInfo = {}
         for oModel in aModels:
@@ -370,7 +370,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         for oModel in aModels:
             # Ensure we start with a clean cache
@@ -443,7 +443,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
            a zero result filters to test the model."""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         for bEditFlag in (False, True):
             oModel.bEditable = bEditFlag
@@ -483,7 +483,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oModel.load()
@@ -506,7 +506,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 (u"Alexandra", None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
                 (None, None, 2, 0))
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access this protected methods
         oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.load()
@@ -521,7 +521,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_db_listeners(self):
         """Test that the model responds to changes to the card set hierarchy"""
         # We use an empty card set for these tests, to minimise time taken
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
@@ -565,7 +565,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_config_listener(self):
         """Test that the model responds to the profile changes as expected"""
         # We use an empty card set for these tests, to minimise time taken
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
@@ -617,7 +617,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _setup_simple(self):
         """Convenience method for setting up a single card set for tests"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # PyProtocols confuses pylint
         oPCS = PhysicalCardSet(name=self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
@@ -687,7 +687,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_cache_simple(self):
         """Test that the special persistent caches don't affect results"""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # we need to access protected methods
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
@@ -708,7 +708,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable-msg=E1101
+                    # pylint: disable=E1101
                     # E1101: SQLObjext confuses pylint
                     for oCard in aCardsToAdd:
                         oPCS.addPhysicalCard(oCard.id)
@@ -732,7 +732,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_cache_complex(self):
         """Test that the special persistent caches don't affect results with
            more complex card set relationships"""
-        # pylint: disable-msg=W0212, R0914
+        # pylint: disable=W0212, R0914
         # we need to access protected methods
         # We loop over a lot of combinations, so lots of local variables
         _oCache = SutekhObjectCache()
@@ -769,7 +769,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable-msg=E1101, E1103
+                    # pylint: disable=E1101, E1103
                     # E1101: SQLObjext confuses pylint
                     for oCS in (oEmptyPCS, oChildPCS, oGrandChildPCS, oPCS):
                         for oCard in aCardsToAdd:
@@ -809,13 +809,13 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
@@ -829,7 +829,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildPCS.syncUpdate()
@@ -837,7 +837,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _setup_relationships(self):
         """Convenience method to setup a card set hierarchy for test cases"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # PyProtocols confuses pylint
         aCards, oPCS, oChildPCS = self._setup_parent_child()
         oChildPCS.inuse = True
@@ -919,7 +919,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
         oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
@@ -929,7 +929,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101, E1103
+            # pylint: disable=E1101, E1103
             # PyProtocols confuses pylint
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             if sName == 'Aire of Elation':
@@ -1052,7 +1052,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_filters(self):
         """Test filtering for the card set"""
-        # pylint: disable-msg=R0915, W0212
+        # pylint: disable=R0915, W0212
         # R0915: Want a long, sequential test case to reduce
         # repeated setups, so it has lots of lines
         # W0212: We need to access protected methods
@@ -1066,7 +1066,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oModel = self._get_model(self.aNames[0])
@@ -1126,7 +1126,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oModel.bEditable = False
@@ -1182,7 +1182,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
@@ -1212,7 +1212,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
@@ -1248,7 +1248,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 ('Yvette, The Hopeless', 'BSC')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)

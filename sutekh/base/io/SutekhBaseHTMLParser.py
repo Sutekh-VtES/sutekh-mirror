@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # BAse classes for the HTML Parsers in Sutekh
-# Copyright 2009 Neil Muller <drnlmuller+gmail@gmail.com>
+# Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Common base classes for the different HTML Parsers"""
@@ -26,7 +26,7 @@ class HTMLStateError(StateError):
 
     def __str__(self):
         return "HTML Parser State Error : %s\nsData : %s\nTag : %s" % (
-                self._sInfo, self._sData, self._sTag)
+            self._sInfo, self._sData, self._sTag)
 
 
 class BaseState(object):
@@ -48,7 +48,7 @@ class BaseState(object):
 class LogState(BaseState):
     """Base class for the State transitions with a log handler"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # descendants will override transition, so still abstract here.
     def __init__(self, oLogger):
         super(LogState, self).__init__()
@@ -58,7 +58,7 @@ class LogState(BaseState):
 class LogStateWithInfo(LogState):
     """Base class for states which contain information of interest"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # transition method is still abstract here
     def __init__(self, dInfo, oLogger):
         super(LogStateWithInfo, self).__init__(oLogger)
@@ -68,7 +68,7 @@ class LogStateWithInfo(LogState):
 class HolderState(BaseState):
     """Base class for parser states"""
 
-    # pylint: disable-msg=W0223
+    # pylint: disable=W0223
     # transition method is still abstract here
     def __init__(self, oHolder):
         super(HolderState, self).__init__()
@@ -90,7 +90,7 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
         super(SutekhBaseHTMLParser, self).reset()
         self._oState = BaseState()
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # names are as listed in HTMLParser docs, so no need for docstrings
     def handle_starttag(self, sTag, aAttr):
         self._oState = self._oState.transition(sTag.lower(), dict(aAttr))

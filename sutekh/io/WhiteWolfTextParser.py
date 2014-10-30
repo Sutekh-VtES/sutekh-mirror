@@ -30,7 +30,7 @@ def _find_sect_and_title(aLines):
        This is potentially brittle, since it had to rely on WW's
        standard text layout.
        """
-    # pylint: disable-msg=R0912, R0915
+    # pylint: disable=R0912, R0915
     # R0912: Need to consider all the cases here
     # R0915: This is thus a long function
     # Card text for vampires is either Sect attributes. or Sect.
@@ -75,7 +75,7 @@ def _find_sect_and_title(aLines):
         # Independent titles are on the next line. Of the form
         # 'Name has X vote(s)'
         # Templating change with the Unaligned. Now Independent. X vote(s).
-        # pylint: disable-msg=W0704
+        # pylint: disable=W0704
         # error isn't fatal, so ignoring it is fine
         try:
             # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
@@ -105,7 +105,7 @@ def _find_sect_and_title(aLines):
         except IndexError:
             pass
         # also check for Baron title
-        # pylint: disable-msg=W0704
+        # pylint: disable=W0704
         # error isn't fatal, so ignoring it is fine
         try:
             oBaronTitle = re.compile('Anarch Baron of')
@@ -321,7 +321,7 @@ class CardDict(dict):
 
     def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""
-        # pylint: disable-msg=R0912
+        # pylint: disable=R0912
         # Complex set of conditions, so many branches
         sType = None
         if 'cardtype' in self:
@@ -481,7 +481,7 @@ class CardDict(dict):
         """Add the life to the card."""
         sLife = self.oWhiteSp.sub(' ', sLife).strip()
         aLife = sLife.split()
-        # pylint: disable-msg=W0704
+        # pylint: disable=W0704
         # ignoring the error is the right thing here
         try:
             oCard.life = int(aLife[0], 10)
@@ -504,7 +504,7 @@ class CardDict(dict):
         """Add the capacity to the card."""
         sCap = self.oWhiteSp.sub(' ', sCap).strip()
         aCap = sCap.split()
-        # pylint: disable-msg=W0704
+        # pylint: disable=W0704
         # ignoring the error is the right thing here
         try:
             oCard.capacity = int(aCap[0], 10)
@@ -550,7 +550,7 @@ class CardDict(dict):
             self._oMaker.make_physical_card(oCard, oExp)
 
     def save(self):
-        # pylint: disable-msg=R0912
+        # pylint: disable=R0912
         # Need to consider all cases, so many branches
         """Commit the card to the database.
 
@@ -634,7 +634,7 @@ class CardDict(dict):
         # the parent here.
         # It's not clear to me if this is a bug in SQLObject or not, given
         # the logic that requires us to force the update to oCard here anyway.
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # Need to access _parent here
         oCard._parent.syncUpdate()
         # FIXME: Pass back any error confitions? Missing text, etc.

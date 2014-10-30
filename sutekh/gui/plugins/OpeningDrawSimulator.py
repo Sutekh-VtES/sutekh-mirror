@@ -39,7 +39,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
 
     COLUMN_WIDTH = 290  # 3 columns
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(OpeningHandSimulator, self).__init__(*args, **kwargs)
@@ -90,7 +90,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         """Fill in the stats from the draws"""
         oHBox = gtk.HBox(True, 3)
         # setup display widgets
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oHBox)
         dLibProbs = self._get_lib_props()

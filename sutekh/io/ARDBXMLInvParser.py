@@ -7,13 +7,13 @@
 """Parser for ARDB XML inventory format."""
 
 from xml.etree.ElementTree import XMLParser
-# pylint: disable-msg=E0611, F0401
+# pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
-# pylint: enable-msg=E0611, F0401
+# pylint: enable=E0611, F0401
 from sutekh.base.Utility import move_articles_to_front
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 

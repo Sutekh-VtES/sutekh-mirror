@@ -49,7 +49,7 @@ def _get_groups(oCard):
     # We ignore the any group cases as they are currently uninteresing
     # and excluded by the discipline check
     # If this ever changes, this will need to be revisited.
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # SQLObject confuses pylint
     iGrp = oCard.group
     iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
@@ -93,7 +93,7 @@ class FindLikeVampires(SutekhPlugin):
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # we define attributes outside __init__, but it's OK because of plugin
     # structure
     def activate(self, _oWidget):
@@ -106,7 +106,7 @@ class FindLikeVampires(SutekhPlugin):
             do_complaint_error("Please select only 1 crypt card.")
             return
         # We treat imbued and vampires differently
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         if is_vampire(self.oSelCard):
             if len(self.oSelCard.discipline) == 0:
@@ -119,7 +119,7 @@ class FindLikeVampires(SutekhPlugin):
                 return
             dGroups = self.find_imbued_like()
         self.display_results(dGroups)
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def _group_cards(self, aCards, iNum, aSubSets, bSuperior, bUseCardSet):
         """Group the cards and return only cards with iNum or more
@@ -163,7 +163,7 @@ class FindLikeVampires(SutekhPlugin):
         # We allow multiple selections of the same card
         # (discipline grouping, etc).
         for oPath in aSelection:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pylint doesn't pick up adapter's methods correctly
             oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
             if not is_crypt_card(oCard):
@@ -177,7 +177,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def find_vampires_like(self):
         """Construct a vampire search from the card"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Vampire'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Vampires like', self.parent,
@@ -243,7 +243,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def find_imbued_like(self):
         """Construct a imbued search from the card"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Imbued'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Imbued like', self.parent,
@@ -315,7 +315,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def display_results(self, dGroups):
         """Display the results nicely"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject and gtk confuse pylint
         bVampire = is_vampire(self.oSelCard)
         if bVampire:
@@ -368,7 +368,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def _make_cs(self, _oButton, oNotebook):
         """Create a card set with the given cards"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
         iPage = oNotebook.get_current_page()
         oView = oNotebook.get_nth_page(iPage).get_child()
@@ -386,7 +386,7 @@ class FindLikeVampires(SutekhPlugin):
 
 
 class LikeCardsView(gtk.TreeView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """TreeView for showing details of matching cards"""
 
@@ -429,7 +429,7 @@ class LikeCardsView(gtk.TreeView):
 
 
 class LikeCardsModel(gtk.ListStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """ListStore for holding details of the matching cards"""
 

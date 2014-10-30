@@ -13,7 +13,7 @@ from .CellRendererIcons import CellRendererIcons
 
 
 class PhysicalCardView(CardListView):
-    # pylint: disable-msg=R0904, R0902, R0901
+    # pylint: disable=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite

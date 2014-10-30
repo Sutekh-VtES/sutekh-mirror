@@ -49,7 +49,7 @@ def make_physical_card_sets():
             # Set 3
             [('Yvette, The Hopeless', 'BSC')]]
     aPCSs = []
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # sqlobject confuses pylint
     for iCnt, tData in enumerate(aCardSets):
         sName, sAuthor, sComment, bInUse = tData
@@ -68,7 +68,7 @@ def make_physical_card_sets():
 
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
@@ -91,7 +91,7 @@ class FilterTests(SutekhTest):
 
         aPhysicalCards = []
         for sName in aExpectedNames:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # sqlobject confuses pylint
             oAbs = AbstractCardAdapter(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
@@ -126,7 +126,7 @@ class FilterTests(SutekhTest):
                         % (sName, sExp))
         return sorted(aPhysCards)
 
-    # pylint: disable-msg=R0914
+    # pylint: disable=R0914
     # We don't really care about the number of local variables here
     def test_basic(self):
         """Simple tests of the filter"""
@@ -459,7 +459,7 @@ class FilterTests(SutekhTest):
         ]
 
         for tTest in aExpansionTests:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # sqlobject confuses pylint
             oFilter, aExpectedCards = self._physical_test(tTest)
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
@@ -567,7 +567,7 @@ class FilterTests(SutekhTest):
                     " failed. %s != %s." % (oFilter, aCardSets, aExpectedSets))
 
         # Test data for the Specific card filters
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # sqlobject confuses pylint
         oAbsAK = AbstractCardAdapter('ak-47')
         oExp = ExpansionAdapter('LotN')
@@ -692,7 +692,7 @@ class FilterTests(SutekhTest):
                     ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSNumberTests:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pyprotocols confuses pylint
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             aCSCards = [IAbstractCard(x).name for x in oFullFilter.select(

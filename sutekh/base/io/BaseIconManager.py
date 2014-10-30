@@ -22,7 +22,7 @@ class BaseIconManager(object):
     def __init__(self, sPath):
         self._sPrefsDir = sPath
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # R0201: This exists to be overridden
     def _get_icon(self, sFileName, _iSize=12):
         """Return the icon.
@@ -51,7 +51,7 @@ class BaseIconManager(object):
             oUrl = urlopen(sUrl)
             # copy url to file
             ensure_dir_exists(sBaseDir)
-            fOut = file(sFullFilename, 'wb')
+            fOut = open(sFullFilename, 'wb')
             fOut.write(oUrl.read())
             fOut.close()
         except HTTPError, oErr:

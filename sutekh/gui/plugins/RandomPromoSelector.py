@@ -18,7 +18,7 @@ from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
 
 class RandomPromoDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for displaying random sets of cards."""
 
@@ -43,7 +43,7 @@ class RandomPromoDialog(SutekhDialog):
         oHbox.pack_start(gtk.Label("Cards per group:"), expand=False,
                          padding=5)
         oHbox.pack_start(self._oCardsPerGroup, expand=False)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.vbox.pack_start(oHbox, expand=False)
 
@@ -95,7 +95,7 @@ class RandomPromoSelector(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(RandomPromoSelector, self).__init__(*args, **kwargs)

@@ -11,12 +11,12 @@ from sutekh.base.Utility import get_database_url
 import gtk
 
 
-# pylint: disable-msg=R0904
+# pylint: disable=R0904
 # R0904 - gtk Widget, so has many public methods
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)
@@ -34,7 +34,7 @@ class SutekhAboutDialog(gtk.AboutDialog):
         self.set_artists([tAuth[0] for tAuth in SutekhInfo.ARTISTS])
         self.set_logo(SutekhIcon.SUTEKH_ICON)
         # self.set_translator_credits(translator_credits)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't like the dialog vbox
         oUrlText = gtk.Label('Database URI: %s' % get_database_url())
         self.vbox.pack_end(oUrlText, False, False)

@@ -4,7 +4,7 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=C0301
+# pylint: disable=C0301
 # documentation, so line length ignored
 """Parser for ELDB HTML format.
 
@@ -19,7 +19,7 @@
    ...
    <TR><TD COLSPAN=2 WIDTH=650>2&nbsp;&nbsp;<a href="http://monger.vekn.org/showcard.html?ID=109" class="textLink">Blood Doll</a></TD></TR>
    """
-# pylint: enable-msg=C0301
+# pylint: enable=C0301
 
 from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
                                                  HolderState)
@@ -102,7 +102,7 @@ class CardItem(HolderState):
 # Parser
 class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904: Lots of public methods from HTMLParser
 
     def __init__(self):

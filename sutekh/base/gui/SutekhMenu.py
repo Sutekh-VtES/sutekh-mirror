@@ -10,7 +10,7 @@ import gtk
 
 
 class SutekhMenu(gtk.MenuBar):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
     """Base class for Menus
 
@@ -65,7 +65,7 @@ class SutekhMenu(gtk.MenuBar):
             self._add_accel(oMenuItem, sAccelKey)
         return oMenuItem
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # We need all the arguments here
     def create_check_menu_item(self, sName, oMenu, fAction, bState=False,
                                sAccelKey=None):
@@ -83,7 +83,7 @@ class SutekhMenu(gtk.MenuBar):
             self._add_accel(oMenuItem, sAccelKey)
         return oMenuItem
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def create_menu_item_with_submenu(self, oTopLevelMenu, sName):
         """Create a MenuItem and a submenu, returning the menu_item"""

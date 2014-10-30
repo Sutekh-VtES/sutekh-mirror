@@ -18,7 +18,7 @@ import gtk
 class LocalProfileEditor(SutekhDialog):
     """Dialog which allows the user to set temporary option profiles.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
 
     RESPONSE_CLOSE = 1
@@ -44,7 +44,7 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
                                                 bUseViewport=True))

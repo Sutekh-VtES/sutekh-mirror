@@ -11,15 +11,15 @@
    (currently 0.8)
    """
 
-# pylint: disable-msg=C0302
+# pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
 # WhizzardObjects. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from logging import Logger
 from .BaseObjects import (PhysicalCard, AbstractCard,
                           PhysicalCardSet, Expansion,
@@ -42,7 +42,7 @@ class BaseDBUpgradeManager(object):
     """Convience class to define and manage all the various aspects
        around database upgrades."""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # R0201 - We provide many stub methods for subclasses to override
 
     # subclasses should extend/replace these as needed.
@@ -208,7 +208,10 @@ class BaseDBUpgradeManager(object):
         """Copy RairtyPair, assuming versions match"""
         for oObj in RarityPair.select(connection=oOrigConn):
             # Force for SQLObject >= 0.11.4
+            # pylint: disable=W0212
+            # Need to access _connect here
             oObj._connection = oOrigConn
+            # pylint: enable=W0212
             _oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                                 rarity=oObj.rarity, connection=oTrans)
 
@@ -277,11 +280,11 @@ class BaseDBUpgradeManager(object):
         for oCard in self.cAbstractCardCls.select(
                 connection=oOrigConn).orderBy('id'):
             # force issue for SQObject >= 0.11.4
+            # pylint: disable=W0212
+            # Need to access _parent and _connection here
             oCard._connection = oOrigConn
-            # pylint: disable-msg=W0212
-            # Need to access _parent here
             oCard._parent._connection = oOrigConn
-            # pylint: enable-msg=W0212
+            # pylint: enable=W0212
             oCardCopy = self._make_abs_card(oCard, oTrans)
             # Copy the stuff defined in base
             for oData in oCard.rarity:
@@ -295,7 +298,7 @@ class BaseDBUpgradeManager(object):
             for oData in oCard.keywords:
                 oCardCopy.addKeyword(oData)
             oCardCopy.syncUpdate()
-            # pylint: disable-msg=W0212
+            # pylint: disable=W0212
             # Need to access _parent here
             oCardCopy._parent.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
@@ -361,7 +364,10 @@ class BaseDBUpgradeManager(object):
         # SQLObject < 0.11.4 does this automatically, but later versions don't
         # We depend on this, so we force the issue
         for oSet in aSets:
+            # pylint: disable=W0212
+            # Need to access _connection here
             oSet._connection = oOrigConn
+            # pyline: enable=W0212
         while not bDone:
             # We make sure we copy parent's before children
             # We need to be careful, since we don't retain card set IDs,
@@ -374,7 +380,7 @@ class BaseDBUpgradeManager(object):
                         oParent = dDone[oSet.parent.id]
                     else:
                         oParent = None
-                    # pylint: disable-msg=E1101
+                    # pylint: disable=E1101
                     # SQLObject confuses pylint
                     oCopy = PhysicalCardSet(name=oSet.name,
                                             author=oSet.author,
@@ -402,7 +408,7 @@ class BaseDBUpgradeManager(object):
 
     def _copy_old_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
-        # pylint: disable-msg=E1101, E1103
+        # pylint: disable=E1101, E1103
         # SQLObject confuses pylint
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
@@ -423,7 +429,7 @@ class BaseDBUpgradeManager(object):
     def read_old_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Read the old database into new database, filling in
            blanks when needed"""
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # R0914: Reducing the number of variables won't help clarity
         try:
             if not self.check_can_read_old_database(oOrigConn):
@@ -454,7 +460,7 @@ class BaseDBUpgradeManager(object):
                 aNewMessages = ['Unable to copy %s: Error %s' % (sName, oExp)]
             else:
                 if not bPassLogger:
-                    oLogger.info('%s copied' % sName)
+                    oLogger.info('%s copied', sName)
             bRes = bRes and bOK
             aMessages.extend(aNewMessages)
             oTrans.commit()
@@ -502,7 +508,7 @@ class BaseDBUpgradeManager(object):
                 oTrans.commit()
                 oTrans.cache.clear()
                 if not bPassLogger:
-                    oLogger.info('%s copied' % sName)
+                    oLogger.info('%s copied', sName)
         flush_cache()
         oTrans.commit(close=True)
         # Clear out cache related joins and such

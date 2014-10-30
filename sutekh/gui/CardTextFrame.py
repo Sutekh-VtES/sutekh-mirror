@@ -13,7 +13,7 @@ from sutekh.base.gui.BaseCardTextFrame import BaseCardTextFrame
 
 class CardTextFrame(BaseCardTextFrame):
     """Frame which holds the CardTextView."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oIconManager):
         oView = CardTextView(oIconManager)

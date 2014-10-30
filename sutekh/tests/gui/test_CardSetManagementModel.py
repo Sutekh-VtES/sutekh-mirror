@@ -14,7 +14,7 @@ from sutekh.base.gui.CardSetManagementModel import CardSetManagementModel
 class DummyWindow(object):
     """Dummy main window object"""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Must be a method to act as dummy
     def find_pane_by_name(self, sName):
         """Proxy for the find_pane_by_name method"""
@@ -29,7 +29,7 @@ class DummyWindow(object):
 
 class CardSetManagementModelTests(SutekhTest):
     """Class for the test cases"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):

@@ -22,12 +22,12 @@ import zipfile
 
 class ZipFileWrapperTest(SutekhTest):
     """class for the Zip File tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_zip_file(self):
         """Test zip file handling"""
-        # pylint: disable-msg=E1101, R0915
+        # pylint: disable=E1101, R0915
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # R0915: Want a single test case to avoid re-initialising the database
         sTempFileName = self._create_tmp_file()
@@ -111,7 +111,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_read_single(self):
         """Check read_single_works"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
@@ -139,7 +139,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_old_format(self):
         """Test that an old zip file loads correctly"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101: SQLObject + PyProtocols magic confuses pylint
         # Create a test zipfile with old data
         sPhysicalCards = make_example_pcxml()

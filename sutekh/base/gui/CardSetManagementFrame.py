@@ -15,7 +15,7 @@ from .AutoScrolledWindow import AutoScrolledWindow
 
 
 class CardSetManagementFrame(BasicFrame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so lots of public methods
     """Pane for the List of card sets.
 
@@ -40,13 +40,13 @@ class CardSetManagementFrame(BasicFrame):
 
         self.add_parts()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     view = property(fget=lambda self: self._oController.view,
                     doc="Associated View Object")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def add_parts(self):
         """Add a list object to the frame"""

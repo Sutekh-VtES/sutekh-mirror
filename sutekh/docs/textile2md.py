@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 
 """
-Convert Sutekh textile documentation into HTML pages.
+Convert Sutekh textile documentation into Markdown pages for the wiki.
 """
 
 import imp
@@ -25,7 +25,10 @@ Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
 sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
                         'DocUtils.py')
+sUtilPath = os.path.join(os.path.dirname(__file__), '..', 'base',
+                         'Utility.py')
 DocUtils = imp.load_source('DocUtils', sDocPath)
+Utility = imp.load_source('Utility', sUtilPath)
 
 # pylint: enable=C0103
 
@@ -37,6 +40,7 @@ def replace_version(sText):
 
 
 if __name__ == "__main__":
+    Utility.ensure_dir_exists('md')
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
-    DocUtils.convert("textile", "html", SutekhInfo, replace_version)
+    DocUtils.convert_to_markdown("textile", "md", replace_version)
     DocUtils.cleanup('textile')

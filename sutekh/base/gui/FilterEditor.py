@@ -12,7 +12,7 @@ import gtk
 
 
 class FilterEditor(gtk.Alignment):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """GTK component for editing Sutekh filter ASTs.
 

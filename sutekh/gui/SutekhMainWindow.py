@@ -26,7 +26,7 @@ from sutekh.base.gui.AppMainWindow import AppMainWindow
 
 class SutekhMainWindow(AppMainWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we need to keep a lot of state, so many instance attributes
     def __init__(self):
@@ -97,7 +97,7 @@ class SutekhMainWindow(AppMainWindow):
         """Remove the cached set of objects, for card list reloads, etc."""
         del self.__oSutekhObjectCache
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # convienent to have this as a method
     def show_about_dialog(self, _oWidget):
         """Display the about dialog"""
@@ -105,7 +105,7 @@ class SutekhMainWindow(AppMainWindow):
         oDlg.run()
         oDlg.destroy()
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def show_tutorial(self):
         """Show the HTML Tutorial"""

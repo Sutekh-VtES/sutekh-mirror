@@ -27,7 +27,7 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
         oFilter = PhysicalCardSetFilter(sCardSetName)
         oCardSet = oFilter.select(PhysicalCard)
         for oCard in oCardSet:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # pylint doesn't see IAbstractCard methods
             oAbsCard = IAbstractCard(oCard)
             if bIgnoreExpansions:
@@ -84,7 +84,7 @@ class BaseCompare(BasePlugin):
                             (gtk.STOCK_OK, gtk.RESPONSE_OK,
                              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oCSView = CardSetsListView(None, oDlg)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint misses vbox methods
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
@@ -182,7 +182,7 @@ class BaseCompare(BasePlugin):
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
         oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
         oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint misses vbox methods
         oResultDlg.vbox.pack_start(oNotebook)
         oResultDlg.set_size_request(600, 600)

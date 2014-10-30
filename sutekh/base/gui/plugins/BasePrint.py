@@ -18,7 +18,7 @@ NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
 def _card_expansion_details(oCard, iMode):
     """Get the expansion for the name"""
-    # pylint: disable-msg=E1101
+    # pylint: disable=E1101
     # SQLObject & PyPrototocols confuses pylint
     oPhysCard = IPhysicalCard(oCard)
     if oPhysCard.expansion:
@@ -139,7 +139,7 @@ class BasePrint(BasePlugin):
     def draw_page(self, _oPrintOp, oContext, iPageNum):
         """Page drawing callback.
            """
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # We use lots of variables for clarity
         iStartPageLine, iEndPageLine = 0, 0
         aPageBreaks = self._aPageBreaks
@@ -212,7 +212,7 @@ class BasePrint(BasePlugin):
             dCardInfo = {}
             dExpInfo = {}
             for oCard in oGroupIter:
-                # pylint: disable-msg=E1101
+                # pylint: disable=E1101
                 # pyprotocols confuses pylint
                 oAbsCard = IAbstractCard(oCard)
                 dCardInfo.setdefault(oAbsCard.name, 0)

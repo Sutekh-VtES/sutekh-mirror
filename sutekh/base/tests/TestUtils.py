@@ -24,7 +24,7 @@ def create_tmp_file(sDir, sData):
     os.close(fTemp)
 
     if sData:
-        fTmp = file(sFilename, "wb")
+        fTmp = open(sFilename, "wb")
         fTmp.write(sData)
         fTmp.close()
 
@@ -41,7 +41,7 @@ class BaseTestCase(unittest.TestCase):
 
        Define some useful helper methods.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     TEST_CONN = None
@@ -60,8 +60,10 @@ class BaseTestCase(unittest.TestCase):
 
         return sFilename
 
-    # pylint: disable-msg=C0103
-    # setUp + tearDown names are needed by unittest - use their convention
+    # pylint: disable=C0103, W0201
+    # C0103: setUp + tearDown names are needed by unittest, so we use
+    #        their conventions
+    # W0201: _setUpTemps is called from setUp, so defining things here OK
     def _setUpTemps(self):
         """Create a directory to hold the temporary files."""
         self._sTempDir = tempfile.mkdtemp(suffix='dir', prefix=self.PREFIX)
@@ -76,13 +78,14 @@ class BaseTestCase(unittest.TestCase):
         os.rmdir(self._sTempDir)
         self._sTempDir = None
         self._aTempFiles = None
+    # pylint: enable=C0103, W0201
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
 
            Common operation for the writer tests."""
         sTempFile = self._create_tmp_file()
-        fOut = file(sTempFile, 'w')
+        fOut = open(sTempFile, 'w')
         oWriter.write(fOut, oObj)
         fOut.close()
 
@@ -91,7 +94,7 @@ class BaseTestCase(unittest.TestCase):
         fIn.close()
         return sData
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # method for consistency with _round_trip_obj
     def _make_holder_from_string(self, oParser, sString):
         """Read the given string into a DummyHolder.
@@ -106,7 +109,7 @@ class DummyHolder(object):
     """Emulate CardSetHolder for test purposes."""
     def __init__(self):
         self.dCards = {}
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # placeholder names for CardSetHolder attributes
         self.name = ''
         self.comment = ''
@@ -134,7 +137,7 @@ class DummyHolder(object):
 class GuiBaseTest(unittest.TestCase):
     """Adds useful methods for gui test cases."""
 
-    # pylint: disable-msg=C0103, R0904
+    # pylint: disable=C0103, R0904
     # C0103 - setUp + tearDown names are needed by unittest,
     #         so use their convention
     # R0904 - unittest.TestCase, so many public methods
@@ -178,7 +181,7 @@ def _iterdump(connection):
     database for later restoration.  This function should not be called
     directly but instead called from the Connection method, iterdump().
     """
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # Using the original naming convention
 
     cu = connection.cursor()
@@ -192,6 +195,9 @@ def _iterdump(connection):
             type == 'table'
         """
     schema_res = cu.execute(q)
+    # pylint: disable-msg=W0612
+    # W0612: _type and _name are unused, by don't match our conventions
+    # due to matching original naming
     for table_name, _type, sql in schema_res.fetchall():
         if table_name == 'sqlite_sequence':
             yield('DELETE FROM sqlite_sequence;')
@@ -219,6 +225,7 @@ def _iterdump(connection):
         query_res = cu.execute(q % {'tbl_name': table_name})
         for row in query_res:
             yield("%s;" % row[0])
+    # pylint: enable-msg=W0612
 
     # Now when the type is 'index', 'trigger', or 'view'
     q = """
@@ -228,7 +235,10 @@ def _iterdump(connection):
             type IN ('index', 'trigger', 'view')
         """
     schema_res = cu.execute(q)
+    # pylint: disable-msg=W0612
+    # see above
     for _name, _type, sql in schema_res.fetchall():
         yield('%s;' % sql)
+    # pylint: enable-msg=W0612
 
     # yield('COMMIT;')

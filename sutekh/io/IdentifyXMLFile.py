@@ -12,7 +12,7 @@ from sutekh.base.io.BaseIdXMLFile import BaseIdXMLFile
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
-# pylint: enable-msg=E0611, F0401
+# pylint: enable=E0611, F0401
 
 
 class IdentifyXMLFile(BaseIdXMLFile):
@@ -25,7 +25,7 @@ class IdentifyXMLFile(BaseIdXMLFile):
         """Process the ElementTree to identify the XML file type."""
         self._clear_id_results()
         oRoot = oTree.getroot()
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
             # only present in legacy backups

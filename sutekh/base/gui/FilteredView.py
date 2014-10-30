@@ -13,7 +13,7 @@ from .CustomDragIconView import CustomDragIconView
 
 class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # gtk.Widget, so many public methods. We need to keep state, so many attrs
 
     def __init__(self, oController, oMainWindow, oModel, oConfig):
@@ -41,7 +41,7 @@ class FilteredView(CustomDragIconView):
 
     # Introspection
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
                           doc="The parent window used for dialogs, etc.")
@@ -51,7 +51,7 @@ class FilteredView(CustomDragIconView):
                      doc="The frame used by the view.")
     filterdialog = property(fget=lambda self: self._oFilterDialog,
                             doc="The filter dialog.")
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def load(self):
         """Called when the model needs to be reloaded."""
@@ -92,7 +92,7 @@ class FilteredView(CustomDragIconView):
 
     # Filtering
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Method so sub-classes can override this
 
     def _get_filter_dialog(self, _sDefaultFilter):
@@ -102,7 +102,7 @@ class FilteredView(CustomDragIconView):
            do."""
         return False
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def get_filter(self, oMenu, sDefaultFilter=None):
         """Get the Filter from the FilterDialog.
@@ -173,7 +173,7 @@ class FilteredView(CustomDragIconView):
         """Convert a Name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # Various arguments required by function signatures
 
     def _set_row_selected_status(self, _oModel, oPath, oIter, aSelectedSet):
@@ -285,7 +285,7 @@ class FilteredView(CustomDragIconView):
                 self.reload_keep_expanded()
 
     # drag-n-drop helpers
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # These need to be available to children as methods
 
     def split_selection_data(self, sSelectionData):

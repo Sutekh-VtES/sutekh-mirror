@@ -20,7 +20,7 @@ def _layout_text(oLayout, sText):
     oLayout.set_alignment(pango.ALIGN_LEFT)
 
 
-# pylint: disable-msg=R0904
+# pylint: disable=R0904
 # gtk widget, so we must have a lot of public methods
 class CellRendererIcons(gtk.GenericCellRenderer):
     """Render a list of icons and text in a cell in a TreeView.
@@ -60,7 +60,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the properties"""
-        # pylint: disable-msg=R0912
+        # pylint: disable=R0912
         # Essentially nested case statements, so many branches
         if oProp.name == 'icons':
             if oValue is None:
@@ -144,7 +144,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # R0913 - number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, _oBackgroundArea,
                   oCellArea, oExposeArea, _iFlags):

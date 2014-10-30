@@ -41,15 +41,15 @@ class ArdbInfo(object):
     sDatabaseVersion = 'Sutekh-20090410'
 
     sVersionString = SutekhInfo.VERSION_STR
-    # pylint: disable-msg=W0511
+    # pylint: disable=W0511
     # this is not a actual TODO item
     # Claim same version as recent ARDB
     sFormatVersion = '-TODO-1.0'
-    # pyline: enable-msg=W0511
+    # pylint: enable=W0511
 
     def _get_cards(self, oCardIter):
         """Create the dictionary of cards given the list of cards"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods confuse pylint
         dDict = {}
         for oCard in oCardIter:
@@ -60,7 +60,7 @@ class ArdbInfo(object):
             dDict[(oAbsCard, sSet)] += 1
         return dDict
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # these need to be available to the descendants
     def _group_sets(self, dCards):
         """Group the cards together regardless of set.
@@ -161,7 +161,7 @@ class ArdbInfo(object):
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # IAbstractCard confuses pylint
         if oPhysCard.expansion:
             oExpansion = oPhysCard.expansion

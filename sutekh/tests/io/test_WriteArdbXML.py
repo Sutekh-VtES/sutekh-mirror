@@ -13,7 +13,7 @@ from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
 
-# pylint: disable-msg=W0511, C0301
+# pylint: disable=W0511, C0301
 # W0511 - this is not a actual TODO item
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
@@ -120,12 +120,12 @@ Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less b
     </card>
   </library>
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
-# pylint: enable-msg=W0511, C0301
+# pylint: enable=W0511, C0301
 
 
 class ArdbXMLWriterTests(SutekhTest):
     """class for the ARDB deck XML writer tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):

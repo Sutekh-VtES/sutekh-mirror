@@ -13,7 +13,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
     ROOTTAG, NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, \
-            CARDSET, ADVANCED = range(9)
+        CARDSET, ADVANCED = range(9)
 
     COUNT_KEY = 'count'
 
@@ -23,7 +23,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
         """Start tag encountered"""
         # Handle those different from base class
         if self._iState == self.NOTAG and sTag in ['name', 'author',
-                'description']:
+                                                   'description']:
             if sTag == 'name':
                 self._iState = self.DECKNAME
             elif sTag == 'author':

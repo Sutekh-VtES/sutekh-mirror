@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# Copyright 2008 Neil Muller <drnmuller+sutekh@gmail.com>
+# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Test case for ELDB HTML parser"""
@@ -40,7 +40,7 @@ ELDB_HTML_EXAMPLE_1 = """<HTML>
 
 class ELDBHTMLParserTests(SutekhTest):
     """class for the ELDB HTML input parser"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):

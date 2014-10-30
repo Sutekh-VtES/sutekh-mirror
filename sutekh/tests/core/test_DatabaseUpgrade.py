@@ -21,7 +21,7 @@ from sqlobject import sqlhub, connectionForURI
 
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_copy_to_new_ac_db(self):
@@ -34,7 +34,7 @@ class DatabaseUpgradeTests(SutekhTest):
         oMyCollection.author = "test author"
 
         oPCS1 = PhysicalCardSet(name="PCS1", parent=oMyCollection)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject confuses pylint
 
         oPC = PhysicalCardAdapter((AbstractCardAdapter(".44 magnum"),

@@ -33,10 +33,10 @@ class SLInventoryParser(CardSetParser):
     """Parser for the Secret Library web API inventory format."""
 
     oCardLineRegexp = re.compile(
-            '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
+        '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
     def __init__(self):
-        # pylint: disable-msg=W0231
+        # pylint: disable=W0231
         # No need to call IOBase.__init__()
         self._dSectionParsers = {
             'crypt': self._crypt_section,
@@ -53,23 +53,23 @@ class SLInventoryParser(CardSetParser):
             return self._dSectionParsers[sSection]
         else:
             raise IOError('Unknown section heading in Secret'
-                ' Library inventory format')
+                          ' Library inventory format')
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Making these functions for clarity
     def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise IOError('Data line outside of section'
-            ' for Secret Library inventory format')
+                      ' for Secret Library inventory format')
 
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
             raise IOError('Unrecognised crypt line for Secrety Library'
-                ' deck format')
+                          ' deck format')
         iNum = int(oMatch.group('have'))
         sName = oMatch.group('name')
 
@@ -88,7 +88,7 @@ class SLInventoryParser(CardSetParser):
         oMatch = self.oCardLineRegexp.match(sLine)
         if oMatch is None:
             raise IOError('Unrecognised library line for Secrety Library'
-                ' deck format')
+                          ' deck format')
         iNum = int(oMatch.group('have'))
         sName = oMatch.group('name')
 

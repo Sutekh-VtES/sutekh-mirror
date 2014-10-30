@@ -17,7 +17,7 @@ from .MessageBus import MessageBus, CONFIG_MSG
 class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
        """
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
         super(CardSetManagementMenu, self).__init__(oFrame, oWindow,
@@ -34,7 +34,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # called from __init__, so OK
     def __create_actions_menu(self):
         """Add the Actions Menu"""
@@ -50,7 +50,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
-    # pylint: enable-msg=W0201
+    # pylint: enable=W0201
 
     def create_edit_menu(self):
         """Create the edit menu and populate it"""

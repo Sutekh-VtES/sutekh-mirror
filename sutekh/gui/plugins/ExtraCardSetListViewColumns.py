@@ -30,7 +30,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraCSListViewColumns):
 
     CS_KEYS = ('Total Cards', 'Library', 'Crypt')
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when

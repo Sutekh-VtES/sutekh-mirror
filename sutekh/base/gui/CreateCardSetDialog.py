@@ -30,7 +30,7 @@ def make_scrolled_text(oCardSet, sAttr):
 
 
 class CreateCardSetDialog(SutekhDialog):
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We manage a bunch of state, so need several attributes
     """Prompt the user for the name of a new card set.
@@ -62,7 +62,7 @@ class CreateCardSetDialog(SutekhDialog):
         self.oInUse = gtk.CheckButton('Mark card Set as In Use')
 
         self.set_default_size(500, 500)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # gtk methods confuse pylint
         self.vbox.pack_start(oNameLabel, expand=False)
         self.vbox.pack_start(self.oName, expand=False)
@@ -143,7 +143,7 @@ class CreateCardSetDialog(SutekhDialog):
                 self.sName = self.sName.replace(">", ")")
                 if self.sName != self.sOrigName:
                     # check if card set exists
-                    # pylint: disable-msg=W0704
+                    # pylint: disable=W0704
                     # doing nothing is correct here
                     try:
                         IPhysicalCardSet(self.sName)

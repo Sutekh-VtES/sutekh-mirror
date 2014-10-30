@@ -12,7 +12,7 @@ from sqlobject import SQLObjectNotFound, sqlhub
 
 
 class CardSetHolder(object):
-    # pylint: disable-msg=R0902
+    # pylint: disable=R0902
     # Need to keep state of card set, so many attributes
     """Holder for Card Sets.
 
@@ -22,7 +22,7 @@ class CardSetHolder(object):
        """
     def __init__(self):
         self._sName, self._sAuthor, self._sComment, \
-                self._sAnnotations = None, '', '', ''
+            self._sAnnotations = None, '', '', ''
         self._bInUse = False
         self._sParent = None
         self._dCards = {}  # card name -> count
@@ -53,14 +53,16 @@ class CardSetHolder(object):
 
            sExpansionName may be None.
            """
-        if not sName in self._dCards or self._dCards[sName] < iCnt:
+        if sName not in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'."
-                    % (sName, iCnt))
-        elif not sName in self._dCardExpansions \
+                               % (sName, iCnt))
+        elif sName not in self._dCardExpansions \
                 or sExpansionName not in self._dCardExpansions[sName] \
                 or self._dCardExpansions[sName][sExpansionName] < iCnt:
             raise RuntimeError("Not enough of card '%s' from expansion"
-                    " '%s' to remove '%d'." % (sName, sExpansionName, iCnt))
+                               " '%s' to remove '%d'." % (sName,
+                                                          sExpansionName,
+                                                          iCnt))
         self._dCardExpansions[sName][sExpansionName] -= iCnt
         # This should be covered by check on self._dCardExpansions
         self._dExpansions[sExpansionName] -= iCnt
@@ -70,24 +72,25 @@ class CardSetHolder(object):
         """Set the name, ensuring we have santised any encoding issues"""
         self._sName = self._sanitise_text(sValue, 'the card set name', True)
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
     name = property(fget=lambda self: self._sName,
-            fset=_set_name)
+                    fset=_set_name)
     author = property(fget=lambda self: self._sAuthor,
-            fset=lambda self, x: setattr(self, '_sAuthor', x))
+                      fset=lambda self, x: setattr(self, '_sAuthor', x))
     comment = property(fget=lambda self: self._sComment,
-            fset=lambda self, x: setattr(self, '_sComment', x))
+                       fset=lambda self, x: setattr(self, '_sComment', x))
     annotations = property(fget=lambda self: self._sAnnotations,
-            fset=lambda self, x: setattr(self, '_sAnnotations', x))
+                           fset=lambda self, x: setattr(self,
+                                                        '_sAnnotations', x))
     inuse = property(fget=lambda self: self._bInUse,
-            fset=lambda self, x: setattr(self, '_bInUse', x))
+                     fset=lambda self, x: setattr(self, '_bInUse', x))
     parent = property(fget=lambda self: self._sParent,
-            fset=lambda self, x: setattr(self, '_sParent', x))
+                      fset=lambda self, x: setattr(self, '_sParent', x))
     num_entries = property(fget=lambda self: len(self._dCards))
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -121,16 +124,17 @@ class CardSetHolder(object):
 
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts],
-                'Card Set "%s"' % self.name)
+                                       'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         aExpNames = self._dExpansions.keys()
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                self._dCardExpansions)
+                                             self._dCardExpansions)
         dExpansionLookup = dict(zip(aExpNames, aExps))
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
+                                                 dNameCards, dExpansionLookup,
+                                                 'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):
             # We're already in a transaction, so doInTransaction is
@@ -151,30 +155,30 @@ class CardSetHolder(object):
                 sSane = sText  # Nothing to do in this case
         except UnicodeDecodeError:
             sSane = sText.decode('ascii', 'replace').encode('ascii',
-                    'replace')
+                                                            'replace')
             if bIncludeFallback:
                 self.add_warning('Unexpected encoding encountered for %s.\n'
-                        'Replaced with %s.' % (sIdentifier, sSane))
+                                 'Replaced with %s.' % (sIdentifier, sSane))
             else:
                 self.add_warning('Unexpected encoding encountered for %s.\n'
-                        'Used Ascii fallback.' % sIdentifier)
+                                 'Used Ascii fallback.' % sIdentifier)
         return sSane
 
     def _commit_pcs(self, aPhysCards):
         """Commit the card set to the database."""
         oParent = self.get_parent_pcs()
         oPCS = PhysicalCardSet(name=self.name,
-                author=self._sanitise_text(self.author,
-                    'the card set author', True),
-                comment=self._sanitise_text(self.comment, 'the comments',
-                    False),
-                annotations=self._sanitise_text(self.annotations,
-                    'the annotations', False),
-                inuse=self.inuse, parent=oParent)
+                               author=self._sanitise_text(
+                                   self.author, 'the card set author', True),
+                               comment=self._sanitise_text(
+                                   self.comment, 'the comments', False),
+                               annotations=self._sanitise_text(
+                                   self.annotations, 'the annotations', False),
+                               inuse=self.inuse, parent=oParent)
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
-            # pylint: disable-msg=E1101
+            # pylint: disable=E1101
             # SQLObject confuses pylint
             if not oPhysCard:
                 continue
@@ -182,12 +186,12 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
 
-# pylint: disable-msg=R0921
+# pylint: disable=R0921
 # This isn't a abstract base class. It just looks like one to pylint.
 class CardSetWrapper(CardSetHolder):
     """CardSetHolder class which provides a read-only wrapper of a card set."""
 
-    # pylint: disable-msg=W0231
+    # pylint: disable=W0231
     # We don't want to call the base __init__
     def __init__(self, oCS):
         self._oCS = oCS
@@ -223,7 +227,7 @@ class CardSetWrapper(CardSetHolder):
         else:
             return self._oCS.parent.name
 
-    # pylint: disable-msg=W0212, C0103
+    # pylint: disable=W0212, C0103
     # W0212: we delibrately allow access via these properties
     # C0103: we use the column naming conventions
     name = property(fget=lambda self: self._get_cs_attr('name'))
@@ -235,20 +239,20 @@ class CardSetWrapper(CardSetHolder):
     num_entries = property(fget=lambda self: len(self._oCS.cards))
     cards = property(fget=lambda self: self._oCS.cards)
 
-    # pylint: enable-msg=W0212, C0103
+    # pylint: enable=W0212, C0103
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
         return self._oCS.parent
 
-# pylint: enable-msg=R0921
+# pylint: enable=R0921
 
 
 class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
        cached dictionary of Lookup results.
        """
-    # pylint: disable-msg=W0102, W0221
+    # pylint: disable=W0102, W0221
     # W0102 - {} is the right thing here
     # W0221 - We need the extra argument
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
@@ -258,7 +262,7 @@ class CachedCardSetHolder(CardSetHolder):
            calling oCardLookup.lookup(...).
            """
         # Need to cache both abstract card lookups & expansion lookups
-        # pylint: disable-msg=R0914
+        # pylint: disable=R0914
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
         dLookupCache.setdefault('expansions', {})
@@ -266,9 +270,13 @@ class CachedCardSetHolder(CardSetHolder):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        aAbsCards = oCardLookup.lookup([dLookupCache['cards'].get(tCardCnt[0],
-            tCardCnt[0]) for tCardCnt in aCardCnts],
+        # pylint: disable=C0103
+        # name OK here
+        aAbsCards = oCardLookup.lookup(
+            [dLookupCache['cards'].get(tCardCnt[0], tCardCnt[0])
+             for tCardCnt in aCardCnts],
             'Card Set "%s"' % self.name)
+        # pylint: enable=C0103
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         # Update dLookupCache
@@ -280,15 +288,15 @@ class CachedCardSetHolder(CardSetHolder):
 
         # Apply Expansion lookups
         aExpNames = [dLookupCache['expansions'].get(sExp, sExp) for sExp
-                in self._dExpansions]
+                     in self._dExpansions]
         dCardExpansions = {}
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
             for sExp, iCnt in self._dCardExpansions[sName].iteritems():
-                dCardExpansions[sName][dLookupCache['expansions'].get(sExp,
-                    sExp)] = iCnt
+                dCardExpansions[sName][dLookupCache['expansions'].get(
+                    sExp, sExp)] = iCnt
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                self._dCardExpansions)
+                                             self._dCardExpansions)
         dExpansionLookup = dict(zip(aExpNames, aExps))
         # Update expansion lookup cache
         for sName, oExp in dExpansionLookup.iteritems():
@@ -298,7 +306,8 @@ class CachedCardSetHolder(CardSetHolder):
                 dLookupCache['expansions'][sName] = oExp.name
 
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
-                dNameCards, dExpansionLookup, 'Card Set "%s"' % self.name)
+                                                 dNameCards, dExpansionLookup,
+                                                 'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):
             self._commit_pcs(aPhysCards)
@@ -308,7 +317,7 @@ class CachedCardSetHolder(CardSetHolder):
 
 def make_card_set_holder(oCardSet):
     """Given a CardSet, create a Cached Card Set Holder for it."""
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # C0103: we use the column naming conventions
     oCS = CachedCardSetHolder()
     oCS.name = oCardSet.name

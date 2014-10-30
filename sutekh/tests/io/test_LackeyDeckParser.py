@@ -25,7 +25,7 @@ Crypt:
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestLackeyDeckFileParser(SutekhTest):
     """class for the ELDB deck file parser tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_basic(self):

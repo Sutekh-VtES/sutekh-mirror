@@ -24,7 +24,7 @@ LABELS = {
 
 
 class ProfileListStore(gtk.ListStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Simple list store for profiles widget"""
     def __init__(self):
@@ -60,7 +60,7 @@ class ProfileListStore(gtk.ListStore):
 
 
 class ProfileListView(gtk.TreeView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Simple tree view for the profile list"""
     def __init__(self, sTitle):
@@ -84,7 +84,7 @@ class ProfileListView(gtk.TreeView):
 
 
 class ScrolledProfileList(gtk.Frame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
@@ -96,16 +96,16 @@ class ScrolledProfileList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # allow access via these properties
     store = property(fget=lambda self: self._oStore, doc="List of values")
     view = property(fget=lambda self: self._oView, doc="List of values")
-    # disable-msg=W0212
+    # pylint: enable=W0212
 
 
 class ProfileMngDlg(SutekhDialog):
     """Dialog which allows the user to delete and edit profiles."""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
 
@@ -131,7 +131,7 @@ class ProfileMngDlg(SutekhDialog):
             self._oNotebook.append_page(oProfileList, gtk.Label(LABELS[sType]))
             self._dLists[oProfileList] = sType
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox, action_area confuse pylint
         self.vbox.pack_start(self._oNotebook)
         # Add buttons

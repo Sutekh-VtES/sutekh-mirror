@@ -12,7 +12,7 @@ import unittest
 
 class RulingParserTests(SutekhTest):
     """Check the results of the ruling parser call in SutekhTest SetUp"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
     aExpectedRulings = [
         u"[LSJ 19990215]", u"[LSJ 19990216]", u"[LSJ 20070928]",
@@ -33,7 +33,7 @@ class RulingParserTests(SutekhTest):
         oRuling = aRulings[2]
         self.failUnless(oRuling.text.startswith(u"The AK-47 provides "))
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # IRuling confuses pylint
         oRuling = IRuling((aRulings[0].text, aRulings[0].code))
         self.assertEqual(oRuling.code, self.aExpectedRulings[0])

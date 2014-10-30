@@ -17,7 +17,7 @@ from .BasicFrame import BasicFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
     # R0902 - we need to keep a lot of state, so many instance attributes
     def __init__(self):
@@ -56,7 +56,7 @@ class MultiPaneWindow(gtk.Window):
         self.show_all()
         self.connect('key-press-event', self.key_press)
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # We allow access via these properties
     # Needed for Backup plugin
     focussed_pane = property(fget=lambda self: self._oFocussed,
@@ -64,7 +64,7 @@ class MultiPaneWindow(gtk.Window):
     mainwindow = property(fget=lambda self: self,
                           doc="Return reference to the main window")
 
-    # pylint: enable-msg=W0212
+    # pylint: enable=W0212
 
     def _clear_frames(self):
         """Clear out all existing frames (loop over copies of the list)"""
@@ -572,7 +572,7 @@ class MultiPaneWindow(gtk.Window):
     def set_busy_cursor(self):
         """Set the window cursor to indicate busy status"""
         # This needs to be on the top level widget, so has to be here
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:
@@ -583,7 +583,7 @@ class MultiPaneWindow(gtk.Window):
 
     def restore_cursor(self):
         """Restore the ordinary cursor"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:

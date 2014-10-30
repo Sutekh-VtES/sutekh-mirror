@@ -38,7 +38,7 @@ class BaseConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
-    # pylint: disable-msg=R0904, R0902
+    # pylint: disable=R0904, R0902
     # R0904 - We need to provide fine-grained access to all the data,
     # so lots of methods
     # R0902 - Lots of internal state, so lots of attributes
@@ -92,7 +92,7 @@ class BaseConfigFile(object):
 
     def validate(self):
         """Validate a configuration object."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pkg_resources confuses pylint here
         fConfigSpec = pkg_resources.resource_stream(__name__,
                                                     "baseconfigspec.ini")
@@ -278,7 +278,7 @@ class BaseConfigFile(object):
                 # use set_profile to ensure we call the message bus
                 self.set_profile(FRAME, sNewId, dOldProfiles[sOldId])
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos,
                   sPaneId):
@@ -307,7 +307,7 @@ class BaseConfigFile(object):
         else:
             oNewPane['position'] = -1
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     #
     # Plugin Config Section Handling
@@ -393,7 +393,7 @@ class BaseConfigFile(object):
         else:
             return None
 
-    # pylint: disable-msg=W0102
+    # pylint: disable=W0102
     # W0102 - {} is the right thing here
     def add_filter(self, sKey, sQuery, dVars={}):
         """Add a filter to the config file."""
@@ -406,7 +406,7 @@ class BaseConfigFile(object):
             self._oConfig['filters'][sKey] = dFilter
             MessageBus.publish(CONFIG_MSG, 'add_filter', sKey, sQuery)
 
-    # pylint: enable-msg=W0102
+    # pylint: enable=W0102
 
     def remove_filter(self, sKey, sFilter):
         """Remove a filter from the file"""

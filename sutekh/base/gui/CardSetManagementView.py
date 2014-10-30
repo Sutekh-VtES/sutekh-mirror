@@ -15,7 +15,7 @@ from .FilterDialog import FilterDialog
 
 class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
-    # pylint: disable-msg=R0904, R0902, R0901
+    # pylint: disable=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
@@ -57,7 +57,7 @@ class CardSetManagementView(CardSetsListView):
             # use pane icon
             self.frame.make_drag_icon(self, oDragContext)
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # arguments as required by the function signature
     def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
         """Allow card sets to be dragged to a frame."""
@@ -88,7 +88,7 @@ class CardSetManagementView(CardSetsListView):
             oPath = self.get_path_at_pointer()
             if oPath:
                 sThisName = aData[1]
-                # pylint: disable-msg=W0704
+                # pylint: disable=W0704
                 # doing nothing on SQLObjectNotFound seems the best choice
                 try:
                     oDraggedCS = IPhysicalCardSet(sThisName)
@@ -114,7 +114,7 @@ class CardSetManagementView(CardSetsListView):
         sName = self._oModel.get_name_from_path(oPath)
         self._oMainWin.add_new_physical_card_set(sName)
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def get_path_at_pointer(self):
         """Get the path at the current pointer position"""

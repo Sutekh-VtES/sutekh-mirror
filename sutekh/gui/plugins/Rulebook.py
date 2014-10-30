@@ -24,7 +24,7 @@ from logging import Logger
 
 
 class RulebookConfigDialog(SutekhDialog):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Rulebook plugin."""
 
@@ -49,7 +49,7 @@ class RulebookConfigDialog(SutekhDialog):
                                            "rulebook zip file",
                                            {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)
@@ -93,7 +93,7 @@ class RulebookPlugin(SutekhPlugin):
         'rulebook path': 'string(default=None)',
     }
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(RulebookPlugin, self).__init__(*args, **kwargs)
@@ -218,7 +218,7 @@ class RulebookPlugin(SutekhPlugin):
         iResponse = oConfigDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # we want to catch all errors here
             try:
                 sData = oConfigDialog.get_data()

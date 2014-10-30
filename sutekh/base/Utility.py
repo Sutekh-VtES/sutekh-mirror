@@ -97,7 +97,7 @@ def pretty_xml(oElement, iIndentLevel=0):
             for oSubElement in oElement:
                 pretty_xml(oSubElement, iIndentLevel + 1)
             # Reset indentation level for last child element
-            # pylint: disable-msg=W0631
+            # pylint: disable=W0631
             # We know SubElement will exist because of the len check above
             if not oSubElement.tail or not oSubElement.tail.strip():
                 oSubElement.tail = sIndent
@@ -118,7 +118,7 @@ def get_database_url():
     """Return the database url, with the password stripped out if
        needed"""
     sDBuri = sqlhub.processConnection.uri()
-    # pylint: disable-msg=E1103
+    # pylint: disable=E1103
     # pylint doesn't like the SpiltResult named tuple
     tParsed = urlparse.urlsplit(sDBuri)
     if tParsed.password:

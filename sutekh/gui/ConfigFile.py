@@ -18,7 +18,7 @@ class ConfigFile(BaseConfigFile):
        Provides application overrides and the default setup.
        """
 
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - Extends ConfigFile, which needs a lot of methods to manage
     # all the state
 
@@ -40,7 +40,7 @@ class ConfigFile(BaseConfigFile):
 
     def _get_app_configspec_file(self):
         """Get the application specific config file"""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pkg_resources confuses pylint
         fConfigSpec = pkg_resources.resource_stream(__name__, "configspec.ini")
         return fConfigSpec

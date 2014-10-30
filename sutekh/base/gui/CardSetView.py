@@ -45,7 +45,7 @@ MINUS_KEYS = set([
 
 
 class CardSetView(CardListView):
-    # pylint: disable-msg=R0904, R0902, R0901
+    # pylint: disable=R0904, R0902, R0901
     # R0904 - gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
@@ -59,7 +59,7 @@ class CardSetView(CardListView):
        """
 
     # Initialise key ranges for key tests
-    # pylint: disable-msg=R0915
+    # pylint: disable=R0915
     # We need a lot of setup here, so this is long
     def __init__(self, oMainWindow, oController, sName, bStartEditable):
         oModel = CardSetCardListModel(sName, oMainWindow.config_file)
@@ -136,7 +136,7 @@ class CardSetView(CardListView):
 
         self.set_fixed_height_mode(True)
 
-    # pylint: enable-msg=R0915
+    # pylint: enable=R0915
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -229,7 +229,7 @@ class CardSetView(CardListView):
                 dSelectedData[oPhysCard][sCardSet] = [iCount, iNewCount]
         return dSelectedData
 
-    # pylint: disable-msg=R0913
+    # pylint: disable=R0913
     # elements required by function signature
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
@@ -257,7 +257,7 @@ class CardSetView(CardListView):
             # else paste succeeds
         oContext.finish(bDragRes, False, oTime)
 
-    # pylint: enable-msg=R0913
+    # pylint: enable=R0913
 
     def inc_card(self, _oCell, oPath):
         """Called to increment the count for a card."""

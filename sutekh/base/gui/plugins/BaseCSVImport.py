@@ -40,7 +40,7 @@ class BaseCSVImport(BasePlugin):
         oDlg = self.make_dialog()
         oDlg.run()
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # defining elements outside of init is OK here, because of plugin structure
     def make_dialog(self):
         """Create the dialog.
@@ -56,7 +56,7 @@ class BaseCSVImport(BasePlugin):
         oLabel = gtk.Label()
         oLabel.set_markup("<b>Select CSV File ...</b>")
         oLabel.set_alignment(0.0, 0.5)
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox confuses pylint
         self.oDlg.vbox.pack_start(oLabel, padding=5)
 
@@ -115,10 +115,10 @@ class BaseCSVImport(BasePlugin):
         """Update the column selection options for a new file."""
         sFile = oFileChooser.get_filename()
 
-        # pylint: disable-msg=W0703
+        # pylint: disable=W0703
         # We want to catch all exceptions here
         try:
-            fIn = file(sFile, "rb")
+            fIn = open(sFile, "rb")
         except Exception:
             self._clear_column_selectors()
             return
@@ -151,7 +151,7 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, True)
         self._set_column_selectors(aColumns)
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # A method for consistency
     def _create_column_selector(self):
         """Create a combo box from which a column can be selected."""
@@ -161,7 +161,7 @@ class BaseCSVImport(BasePlugin):
         oComboBox.pack_start(oCell, True)
         oComboBox.add_attribute(oCell, 'text', 1)
         return oComboBox
-    # pylint: enable-msg=R0201
+    # pylint: enable=R0201
 
     def _clear_column_selectors(self):
         """Clear the column selection lists."""
@@ -187,7 +187,10 @@ class BaseCSVImport(BasePlugin):
            """
         if oResponse == gtk.RESPONSE_OK:
 
+            # pylint: disable=W0632
+            # pylint thinks _get_cols isn't returning a list
             iCardNameColumn, iCountColumn, iExpansionColumn = self._get_cols()
+            # pylint: enable=W0632
 
             if iCardNameColumn is None or iCountColumn is None:
                 sMsg = ("Importing a CSV file requires valid columns for both"
@@ -201,10 +204,10 @@ class BaseCSVImport(BasePlugin):
 
             sFile = self.oFileChooser.get_filename()
 
-            # pylint: disable-msg=W0703
+            # pylint: disable=W0703
             # We want to catch all exceptions here
             try:
-                fIn = file(sFile, "rb")
+                fIn = open(sFile, "rb")
             except Exception:
                 do_complaint_error("Could not open file '%s'." % sFile)
                 self.oDlg.destroy()

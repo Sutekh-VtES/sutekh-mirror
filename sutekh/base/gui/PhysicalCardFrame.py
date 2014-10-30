@@ -14,7 +14,7 @@ from .PhysicalCardMenu import PhysicalCardMenu
 
 
 class PhysicalCardFrame(CardListFrame):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Frame which holds the Physical Card Collection View.
 

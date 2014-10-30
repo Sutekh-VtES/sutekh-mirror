@@ -788,6 +788,9 @@ set import -- they can assist you in finding matches for unknown cards.
 Currently, the only way to filter on the properties of a merged vampire, such as
 different discipline levels, is to filter on the card text.
 
+For a more detailed description of these filters, see the 
+"The Card Filter help":Card_Filters.html.
+
 h3(#card_set_filters). Card Set Filters
 
 These filters apply to the card set list. The following basic filters are
@@ -816,6 +819,8 @@ those sets are also displayed even if they do not match the filter themselves,
 so that the matching sets can be shown in their correct position in the
 hierarchy.
 
+For a more detailed description of these filters, see the 
+"The Card Set Filter help":Card_Set_Filters.html.
 
 h3(#combining). Combining Basic Filters
 

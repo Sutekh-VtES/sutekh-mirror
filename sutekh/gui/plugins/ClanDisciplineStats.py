@@ -30,7 +30,7 @@ class ClanDisciplineStats(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = (PhysicalCard,)
 
-    # pylint: disable-msg=W0142
+    # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
         super(ClanDisciplineStats, self).__init__(*args, **kwargs)
@@ -60,7 +60,7 @@ class ClanDisciplineStats(SutekhPlugin):
 
         self._oStatsVbox = gtk.VBox(False, 0)
 
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox methods not seen
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)
@@ -140,7 +140,7 @@ class ClanStats(object):
 
 
 class StatsView(gtk.TreeView):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """TreeView used to display clan discipline stats"""
 
@@ -165,12 +165,12 @@ class StatsView(gtk.TreeView):
 
 
 class StatsModel(gtk.TreeStore):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the clan statistics"""
 
     def __init__(self, bHideIllegal):
-        # pylint: disable-msg=W0142
+        # pylint: disable=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
@@ -194,7 +194,7 @@ class StatsModel(gtk.TreeStore):
             oClanIter = self.append(None)
             self.set_iter_values(oClanIter, oClan, None, oClanStats.oAllStats)
 
-            # pylint: disable-msg=C0103
+            # pylint: disable=C0103
             # atGrps doesn't match the regexp, but is a valid name
             atGrps = oClanStats.dSubStats.keys()
             atGrps.sort()
@@ -234,7 +234,7 @@ class StatsModel(gtk.TreeStore):
 
     def gather_stats(self):
         """Collect up information on vampires from all clans."""
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101 - avoid SQLObject method not detected problems
         iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
 
@@ -244,7 +244,7 @@ class StatsModel(gtk.TreeStore):
         for oClan in aClans:
             yield (oClan, self.gather_clan_stats(oClan, iMaxGrp))
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # could be a function, but that doesn't add to clarity
     def gather_clan_stats(self, oClan, iMaxGrp):
         """Collect information on vampires from a particular clan."""

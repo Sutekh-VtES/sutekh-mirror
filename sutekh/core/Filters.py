@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable-msg=W0231, W0223, C0302
+# pylint: disable=W0231, W0223, C0302
 # W0231 - the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
 # W0223 - not every abstract method is immediately overridden
@@ -65,10 +65,10 @@ class SutekhCardFilter(Filter):
         self._oMapTable = make_table_alias('sutekh_abstract_card')
         super(SutekhCardFilter, self).__init__()
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id == self._oMapTable.q.id)]
@@ -80,7 +80,7 @@ class ClanFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sClan):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._oId = IClan(sClan).id
         self._oMapTable = make_table_alias('abs_clan_map')
@@ -97,13 +97,13 @@ class MultiClanFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aClans):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [IClan(x).id for x in aClans]
         self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -115,7 +115,7 @@ class DisciplineFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sDiscipline):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
@@ -132,7 +132,7 @@ class MultiDisciplineFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDisciplines):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         oPairs = []
         for sDis in aDisciplines:
@@ -141,7 +141,7 @@ class MultiDisciplineFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -153,7 +153,7 @@ class DisciplineLevelFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, tDiscLevel):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         sDiscipline, sLevel = tDiscLevel
         sLevel = sLevel.lower()
@@ -177,7 +177,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDiscLevels):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = []
         if isinstance(aDiscLevels[0], basestring):
@@ -192,7 +192,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -215,7 +215,7 @@ class CryptCardFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [ICardType(x).id for x in CRYPT_TYPES]
         self._oMapTable = make_table_alias('abs_type_map')
@@ -227,7 +227,7 @@ class SectFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sSect):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._oId = ISect(sSect).id
         self._oMapTable = make_table_alias('abs_sect_map')
@@ -244,13 +244,13 @@ class MultiSectFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aSects):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [ISect(x).id for x in aSects]
         self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -262,7 +262,7 @@ class TitleFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sTitle):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._oId = ITitle(sTitle).id
         self._oMapTable = make_table_alias('abs_title_map')
@@ -278,13 +278,13 @@ class MultiTitleFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aTitles):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [ITitle(x).id for x in aTitles]
         self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -296,7 +296,7 @@ class CreedFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCreed):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._oId = ICreed(sCreed).id
         self._oMapTable = make_table_alias('abs_creed_map')
@@ -313,13 +313,13 @@ class MultiCreedFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCreeds):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [ICreed(x).id for x in aCreeds]
         self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -331,7 +331,7 @@ class VirtueFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sVirtue):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._oId = IVirtue(sVirtue).id
         self._oMapTable = make_table_alias('abs_virtue_map')
@@ -348,13 +348,13 @@ class MultiVirtueFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aVirtues):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         self._aIds = [IVirtue(x).id for x in aVirtues]
         self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -369,7 +369,7 @@ class GroupFilter(SutekhCardFilter):
         super(GroupFilter, self).__init__()
         self.__iGroup = iGroup
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.grp == self.__iGroup
@@ -390,11 +390,11 @@ class MultiGroupFilter(SutekhCardFilter):
         if 'Any' in aGroups:
             self.__aGroups.append(-1)
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101 - avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
         return [str(x) for x in range(1, iMax + 1)] + ['Any']
@@ -411,7 +411,7 @@ class CapacityFilter(SutekhCardFilter):
         super(CapacityFilter, self).__init__()
         self.__iCap = iCap
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.capacity == self.__iCap
@@ -430,11 +430,11 @@ class MultiCapacityFilter(SutekhCardFilter):
         super(MultiCapacityFilter, self).__init__()
         self.__aCaps = [int(sV) for sV in aCaps]
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101 - avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.capacity)
         return [str(x) for x in range(1, iMax + 1)]
@@ -456,7 +456,7 @@ class CostFilter(SutekhCardFilter):
         if not iCost:
             self.__iCost = None
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.cost == self.__iCost
@@ -480,11 +480,11 @@ class MultiCostFilter(SutekhCardFilter):
             self.__bZeroCost = True
             self.__aCost.remove(0)
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101 - avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.cost)
         return [str(x) for x in range(0, iMax + 1)] + ['X']
@@ -508,7 +508,7 @@ class CostTypeFilter(SutekhCardFilter):
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ("blood", "pool", "conviction", None)
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.costtype == self.__sCostType.lower()
@@ -531,7 +531,7 @@ class MultiCostTypeFilter(SutekhCardFilter):
         if None in aCostTypes:
             self.__aCostTypes.append(None)
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -549,7 +549,7 @@ class LifeFilter(SutekhCardFilter):
         super(LifeFilter, self).__init__()
         self.__iLife = iLife
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.life == self.__iLife
@@ -570,11 +570,11 @@ class MultiLifeFilter(SutekhCardFilter):
         super(MultiLifeFilter, self).__init__()
         self.__aLife = [int(sV) for sV in aLife]
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # E1101 - avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.life)
         return [str(x) for x in range(1, iMax + 1)]
@@ -591,10 +591,10 @@ class CardTextFilter(BaseCardTextFilter):
         self._bBraces = '{' in self._sPattern or '}' in self._sPattern
         self._oMapTable = make_table_alias('sutekh_abstract_card')
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id == self._oMapTable.q.id)]
@@ -604,7 +604,7 @@ class CardTextFilter(BaseCardTextFilter):
         return ''
 
     def _get_expression(self):
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         if self._bBraces:
             super(CardTextFilter, self).get_expression()
@@ -676,7 +676,7 @@ class CardFunctionFilter(DirectFilter):
                 CardTextFilter('bleed'), CardTextFilter('reduce')]))
         self._oFilter = FilterOrBox(aFilters)
 
-    # pylint: disable-msg=C0111
+    # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -687,7 +687,7 @@ class CardFunctionFilter(DirectFilter):
             ])
         return aVals
 
-    # pylint: disable-msg=W0212
+    # pylint: disable=W0212
     # we access protexted members intentionally
     def _get_joins(self):
         """Joins for the constructed filter"""

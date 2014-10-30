@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-# pylint: disable-msg=C0302
+# pylint: disable=C0302
 # C0302 - This covers a lot of cases, and splitting it into multiple
 # files won't gain any clarity
 
@@ -273,7 +273,7 @@ def _split_into_crypt_lib(aPhysCards):
     aCrypt = []
     aLib = []
     for oCard in aPhysCards:
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # pyprotocols confuses pylint
         oAbsCard = IAbstractCard(oCard)
         sType = [x.name for x in oAbsCard.cardtype][0]
@@ -364,7 +364,7 @@ def _group_backs(dCards, aCards, iNum):
 
 
 class DisciplineNumberSelect(gtk.HBox):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget so many public methods
     """Holds a combo box and a discpline list for choosing a list
        of disciplines to use."""
@@ -439,7 +439,7 @@ class AnalyzeCardList(SutekhPlugin):
         """Activate for non RT analysis"""
         self.activate_heart(True)
 
-    # pylint: disable-msg=W0201, R0915
+    # pylint: disable=W0201, R0915
     # W0201 - We define a lot of class variables here, because a) this is the
     # plugin entry point, and, b) they need to reflect the current CardSet,
     # so they can't be filled properly in __init__
@@ -563,14 +563,14 @@ class AnalyzeCardList(SutekhPlugin):
         oMainBox.pack_start(oDetails, False)
         if self.iLibSize > 0:
             oMainBox.pack_start(self._process_library())
-        # pylint: disable-msg=E1101
+        # pylint: disable=E1101
         # vbox methods not seen
         oDlg.vbox.pack_start(oNotebook)
         oDlg.show_all()
         oNotebook.set_current_page(0)
         oDlg.run()
 
-    # pylint: enable-msg=W0201, R0915
+    # pylint: enable=W0201, R0915
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
         """Extract the relevant statistics about the crypt from the lists

@@ -11,16 +11,16 @@
    (currently 0.8)
    """
 
-# pylint: disable-msg=C0302
+# pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
 # SutekhObjects. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
-# pylint: disable-msg=E0611
+# pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, ForeignKey)
-# pylint: enable-msg=E0611
+# pylint: enable=E0611
 from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
                                           PhysicalCardSet, Expansion,
                                           RarityPair,
@@ -40,7 +40,7 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # old versions
 
 
-# pylint: disable-msg=C0103, W0232
+# pylint: disable=C0103, W0232
 # C0103 - names set largely by SQLObject conventions, so ours don't apply
 # W0232 - SQLObject classes don't have user defined __init__
 class AbstractCard_v5(SQLObject):
@@ -196,12 +196,12 @@ class RarityPair_Ev3(SQLObject):
     rarity = ForeignKey('Rarity')
 
 
-# pylint: enable-msg=C0103, W0232
+# pylint: enable=C0103, W0232
 
 class DBUpgradeManager(BaseDBUpgradeManager):
     """Class to handle database upgrades,"""
 
-    # pylint: disable-msg=R0201
+    # pylint: disable=R0201
     # R0201: Several _copy methods are very simple, but methods for
     # consistency.
 
@@ -428,7 +428,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _make_abs_card(self, oOldCard, oTrans):
         """Copy SutekhAbstractCard, assuming versions match"""
-        # pylint: disable-msg=E1101, R0912
+        # pylint: disable=E1101, R0912
         # E1101 - SQLObject confuses pylint
         # R0912 - need the branches for this
         oCardCopy = SutekhAbstractCard(
@@ -459,7 +459,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
-        # pylint: disable-msg=E1101, R0912, R0915
+        # pylint: disable=E1101, R0912, R0915
         # E1101 - SQLObject confuses pylint
         # R0912 - need the branches for this
         # R0915 - This is long, but needs to be to handle all the cases
@@ -509,7 +509,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 for oData in oCard.artists:
                     oCardCopy.addArtist(oData)
                 oCardCopy.syncUpdate()
-                # pylint: disable-msg=W0212
+                # pylint: disable=W0212
                 # Need to access _parent here
                 oCardCopy._parent.syncUpdate()
                 oLogger.info('copied AC %s', oCardCopy.name)
@@ -554,7 +554,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 for oData in oCard.artists:
                     oCardCopy.addArtist(oData)
                 oCardCopy.syncUpdate()
-                # pylint: disable-msg=W0212
+                # pylint: disable=W0212
                 # Need to access _parent here
                 oCardCopy._parent.syncUpdate()
                 oLogger.info('copied AC %s', oCardCopy.name)
@@ -591,7 +591,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
-        # pylint: disable-msg=E1101, E1103
+        # pylint: disable=E1101, E1103
         # SQLObject confuses pylint
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],

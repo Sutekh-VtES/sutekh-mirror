@@ -18,19 +18,19 @@ from sutekh.base.core.BaseObjects import AbstractCard
 
 class DummyDialog(gtk.Dialog):
     """Dummy dialog for the filter pane tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk widget, so has many public methods
 
     def __init__(self):
         super(DummyDialog, self).__init__('Dummy', None, 0)
-        # pylint: disable-msg=C0103
+        # pylint: disable=C0103
         # Needs to match the property name in the FilterDialog
         self.accel_group = gtk.AccelGroup()
 
 
 class TestFilterModelPane(GuiSutekhTest):
     """Class for the FilterModelPanes tests"""
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def _check_asts(self, oAST1, oAST2):
@@ -48,7 +48,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_basic(self):
         """Set of simple tests of central part the Filter editor dialog"""
-        # pylint: disable-msg=W0212, R0915
+        # pylint: disable=W0212, R0915
         # W0212: We directly access lots of internals details for testing
         # setup
         # R0915: Long test case to avoid repeated setups
@@ -167,7 +167,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_quoting(self):
         """Test that quotes are properly escaped from the gui widget"""
-        # pylint: disable-msg=W0212, R0915
+        # pylint: disable=W0212, R0915
         # W0212: We directly access lots of internals details for testing
         # setup
         # R0915: Long test case to avoid repeated setups
@@ -200,7 +200,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_widgets(self):
         """Test that various filters lead to the right type of widget"""
-        # pylint: disable-msg=W0212
+        # pylint: disable=W0212
         # We directly access lots of internals details for testing
         oParser = FilterParser()
         oDialog = DummyDialog()

@@ -7,10 +7,10 @@
 """classes needed for the progress dialog"""
 
 import gtk
-# pylint: disable-msg=W0402
+# pylint: disable=W0402
 # we need data from the string module
 import string
-# pylint: enable-msg=W0402
+# pylint: enable=W0402
 from logging import Handler
 
 
@@ -94,7 +94,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
 
 
 class ProgressDialog(gtk.Window):
-    # pylint: disable-msg=R0904
+    # pylint: disable=R0904
     # gtk.Widget, so many public methods
     """Show a window with a single progress bar."""
     # This is not a proper dialog, since we don't want the blocking

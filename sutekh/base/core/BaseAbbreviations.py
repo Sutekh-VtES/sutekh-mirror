@@ -12,7 +12,7 @@
 # Base Classes
 class AbbrevMeta(type):
     """Meta class for the abbreviation classes"""
-    # pylint: disable-msg=W0231, C0203
+    # pylint: disable=W0231, C0203
     # W0231 - no point in calling type's init
     # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
@@ -20,7 +20,7 @@ class AbbrevMeta(type):
         if cls.dKeys:
             cls.make_lookup()
 
-    # pylint: disable-msg=W0201
+    # pylint: disable=W0201
     # W0201 - make_lookup called from init
     def make_lookup(cls):
         """Create a lookup table for the class."""
@@ -31,7 +31,7 @@ class AbbrevMeta(type):
                 cls._dLook[sAlt] = sKey
 
 
-# pylint: disable-msg=E1101
+# pylint: disable=E1101
 # meta-class magic with _dLook confuses pylint
 class AbbreviationLookup(object):
     """Base class for specific abbreviation tables."""
