@@ -19,7 +19,10 @@ class FilterBoxModel(list):
        Values are retained for each contained filter.
        """
 
+    # pylint: disable=C0103
+    # These are the best names to use
     AND, OR = 'and', 'or'
+    # pylint: enable=C0103
 
     # pylint: disable=W0231
     # no point to calling list's __init__
@@ -57,7 +60,7 @@ class FilterBoxModel(list):
             self.sBoxType = self.AND
         else:
             raise ValueError("FilterBoxModel cannot represent AST %s of"
-                    " type %s" % (oAST, type(oAST)))
+                             " type %s" % (oAST, type(oAST)))
 
         assert self.sBoxType in (self.AND, self.OR)
 
@@ -75,17 +78,17 @@ class FilterBoxModel(list):
                 self._init_binop(oChild)
             elif type(oChild) is BinOpNode:
                 self.append(FilterBoxModel(oChild, self.sFilterType,
-                    self.oVarNameMaker))
+                                           self.oVarNameMaker))
             elif type(oChild) is NotOpNode and \
                     type(oChild.oSubExpression) is BinOpNode:
                 self.append(FilterBoxModel(oChild, self.sFilterType,
-                    self.oVarNameMaker))
+                                           self.oVarNameMaker))
             elif type(oChild) in (NotOpNode, FilterPartNode):
                 self.append(FilterBoxItem(oChild, self.oVarNameMaker))
             else:
                 raise ValueError("FilterBoxModel encountered unsupported AST"
-                        " node type %s (%s) while examing BinOpNode tree." %
-                        (type(oChild), oChild))
+                                 " node type %s (%s) while examing BinOpNode"
+                                 " tree." % (type(oChild), oChild))
 
     def set_boxtype(self, sBoxType, bNegate=False):
         """Set the type for this filter box"""
@@ -297,9 +300,12 @@ class FilterBoxItem(object):
         if self.aCurValues:
             if self.iValueType == self.LIST:
                 dVars[self.sVariableName] = ['"%s"' % escape(sValue)
-                        for sValue in self.aCurValues]
+                                             for sValue in self.aCurValues]
             elif self.iValueType == self.LIST_FROM:
+                # pylint: disable=W0632
+                # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
+                # pylint: enable=W0632
                 if aFrom:
                     aFrom = ['"%s"' % escape(x) for x in aFrom]
                     if aValues:
@@ -307,7 +313,7 @@ class FilterBoxItem(object):
                         dVars[self.sVariableName] = [aValues, aFrom]
             elif self.iValueType == self.ENTRY:
                 dVars[self.sVariableName] = ['"%s"' %
-                        escape(self.aCurValues[0])]
+                                             escape(self.aCurValues[0])]
         return dVars
 
     def get_ast(self):
@@ -316,7 +322,7 @@ class FilterBoxItem(object):
                 or self.bDisabled:
             return None
         oAST = FilterPartNode(self.sFilterName, None,
-                self.sVariableName)
+                              self.sVariableName)
         if self.bNegated:
             oAST = NotOpNode(oAST)
         return oAST
@@ -330,14 +336,17 @@ class FilterBoxItem(object):
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
             if self.iValueType == self.LIST:
                 sValues = ",".join(['"%s"' % escape(sValue) for sValue in
-                        self.aCurValues])
+                                    self.aCurValues])
             elif self.iValueType == self.LIST_FROM:
+                # pylint: disable=W0632
+                # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
+                # pylint: enable=W0632
                 sFromValues = '"-1"'
                 sFrom = '""'  # Sentinals
                 if aValues:
                     sFromValues = ",".join(['"%s"' % escape(x)
-                        for x in aValues])
+                                            for x in aValues])
                 if aFrom:
                     sFrom = ",".join(['"%s"' % escape(x) for x in aFrom])
                 if aFrom or aValues:

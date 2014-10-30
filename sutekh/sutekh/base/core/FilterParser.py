@@ -25,13 +25,13 @@ PARSER_FILTERS = [x for x in find_subclasses(Filter) if hasattr(x, 'keyword')]
 
 
 ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'istextentry') and x.istextentry])
+                     if hasattr(x, 'istextentry') and x.istextentry])
 WITH_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'iswithfilter') and x.iswithfilter])
+                    if hasattr(x, 'iswithfilter') and x.iswithfilter])
 FROM_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'isfromfilter') and x.isfromfilter])
+                    if hasattr(x, 'isfromfilter') and x.isfromfilter])
 LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
-    if hasattr(x, 'islistfilter') and x.islistfilter])
+                    if hasattr(x, 'islistfilter') and x.islistfilter])
 
 
 # Misc utility functions
@@ -56,20 +56,20 @@ class ParseFilterDefinitions(object):
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
-            'NOT',
-            'FILTERTYPE',
-            'ID',
-            'STRING',
-            'OR',
-            'AND',
-            'COMMA',
-            'IN',
-            'LPAREN',
-            'RPAREN',
-            'VARIABLE',
-            'WITH',
-            'FROM',
-            )
+        'NOT',
+        'FILTERTYPE',
+        'ID',
+        'STRING',
+        'OR',
+        'AND',
+        'COMMA',
+        'IN',
+        'LPAREN',
+        'RPAREN',
+        'VARIABLE',
+        'WITH',
+        'FROM',
+    )
 
     t_AND = r'\&\&'
     t_OR = r'\|\|'
@@ -139,12 +139,12 @@ class FilterYaccParser(object):
     # COMMA's have higher precedence than AND + OR
     # This shut's up most shift/reduce warnings
     precedence = (
-            ('left', 'AND', 'OR'),
-            ('left', 'NOT'),
-            ('left', 'IN'),
-            ('left', 'FROM'),
-            ('left', 'COMMA'),
-            ('left', 'WITH'),
+        ('left', 'AND', 'OR'),
+        ('left', 'NOT'),
+        ('left', 'IN'),
+        ('left', 'FROM'),
+        ('left', 'COMMA'),
+        ('left', 'WITH'),
     )
 
     def reset(self):
@@ -345,14 +345,14 @@ class AstBaseNode(object):
 
            Useful for debugging
            """
-        sAttrs = '(' + ",".join([str(oValue) for sKey, oValue
-                in self.__dict__.items() if not sKey.startswith("_") and
-                sKey != "aChildren" and oValue not in self.aChildren]) + ")"
+        sAttrs = '(' + ",".join(
+            [str(oValue) for sKey, oValue in self.__dict__.items()
+             if not sKey.startswith("_") and sKey != "aChildren" and
+             oValue not in self.aChildren]) + ')'
         sOutput = self.__class__.__name__ + sAttrs
         for oChild in self.aChildren:
-            sOutput += ("\n" +
-                    "\n".join(["\t" + sVal for sVal in
-                        str(oChild).split("\n")]))
+            sOutput += ("\n" + "\n".join(["\t" + sVal for sVal in
+                                          str(oChild).split("\n")]))
         return sOutput
 
     def get_values(self):
@@ -505,7 +505,7 @@ class FilterPartNode(OperatorNode):
             # We don't take any input for this filter, so there are no
             # values to return
             return [ValueObject(get_filter_type(self.sFilterName).description,
-                self), ValueObject(None, self)]
+                                self), ValueObject(None, self)]
         # Want a list within ValueObject for the GUI stuff to work
         # '' case for Entry boxes works as well
         aVals = get_filter_type(self.sFilterName).get_values()
@@ -521,7 +521,7 @@ class FilterPartNode(OperatorNode):
         oTemp = get_filter_type(self.sFilterName)([])  # Create Instance
         aValidVals = oTemp.get_values()
         if isinstance(aValidVals[0], list) and (len(aCurVals) ==
-                len(aValidVals)):
+                                                len(aValidVals)):
             for aSubCurVals, aSubValidVals in zip(aCurVals, aValidVals):
                 for oVal in aSubCurVals:
                     if oVal.oValue == ',':
@@ -550,7 +550,7 @@ class FilterPartNode(OperatorNode):
             sCountList = ",".join(aVals[0])
             sSetList = ",".join(aVals[1])
             sInternalFilter = '%s=%s from %s' % (self.sFilterName,
-                    sCountList, sSetList)
+                                                 sCountList, sSetList)
         else:
             sCommaList = ",".join(aVals)
             sInternalFilter = '%s=%s' % (self.sFilterName, sCommaList)
@@ -651,8 +651,8 @@ class BinOpNode(OperatorNode):
             # Add the extra brackets so the display in the dialog
             # reflects the correct precedence
             aResults = [ValueObject('(', None)] + aLeft + \
-                    [ValueObject(') ' + self.oOp + ' (', self)] + \
-                    aRight + [ValueObject(')', None)]
+                [ValueObject(') ' + self.oOp + ' (', self)] + \
+                aRight + [ValueObject(')', None)]
             return aResults
 
     def get_filter(self):
@@ -725,7 +725,7 @@ class WithNode(OperatorNode):
     def get_values(self):
         """Get values"""
         return [ValueObject(self.oLeft.get_filter()[0] + ' ' + self.oOp +
-            ' ' + self.oRight.get_filter()[0], self)]
+                            ' ' + self.oRight.get_filter()[0], self)]
 
     def get_filter(self):
         """Get filter expression"""
@@ -748,7 +748,7 @@ class FromNode(OperatorNode):
     def get_values(self):
         """Get values"""
         return [self.oLeft.get_values(),
-            self.oRight.get_values()]
+                self.oRight.get_values()]
 
     def get_filter(self):
         """Get filter expression"""

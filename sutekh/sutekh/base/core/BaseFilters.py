@@ -182,13 +182,16 @@ class FilterNot(Filter):
         aJoins = self.__oSubFilter._get_joins()
         if 'AbstractCard' in self.__oSubFilter.types:
             return NOT(IN(AbstractCard.q.id, Select(AbstractCard.q.id,
-                          oExpression, join=aJoins)))
+                                                    oExpression,
+                                                    join=aJoins)))
         elif 'PhysicalCard' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id,
-                          oExpression, join=aJoins)))
+                                                    oExpression,
+                                                    join=aJoins)))
         elif 'PhysicalCardSet' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id,
-                          oExpression, join=aJoins)))
+                                                       oExpression,
+                                                       join=aJoins)))
         else:
             raise RuntimeError("FilterNot unable to handle sub-filter type.")
 
@@ -377,7 +380,7 @@ class MultiExpansionRarityFilter(MultiFilter):
             aValues = aExpansionRarities
         for sExpansion, sRarity in aValues:
             self._aIds.append(IRarityPair((IExpansion(sExpansion),
-                              IRarity(sRarity))).id)
+                                           IRarity(sRarity))).id)
         self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
@@ -825,7 +828,7 @@ class PhysicalCardSetFilter(Filter):
                     PhysicalCard.q.id == self.__oTable.physical_card_id),
                 LEFTJOINOn(None, AbstractCard,
                     AbstractCard.q.id == PhysicalCard.q.abstractCardID),
-                ]
+               ]
 
     def _get_expression(self):
         return self.__oTable.physical_card_set_id == self.__iCardSetId
@@ -899,7 +902,7 @@ class MultiPhysicalCardSetMapFilter(Filter):
                     PhysicalCard.q.id == self.__oTable.physical_card_id),
                 LEFTJOINOn(None, AbstractCard,
                     AbstractCard.q.id == PhysicalCard.q.abstractCardID),
-                ]
+               ]
 
     def _get_expression(self):
         return IN(self.__oTable.physical_card_set_id, self.__aCardSetIds)
@@ -936,7 +939,7 @@ class PhysicalCardSetInUseFilter(Filter):
 
     def _get_joins(self):
         return [LEFTJOINOn(None, self.__oTable,
-                self.__oPT.id == self.__oTable.q.physical_card_id)]
+                           self.__oPT.id == self.__oTable.q.physical_card_id)]
 
     def _get_expression(self):
         return IN(self.__oTable.q.physical_card_set_id, self.__aCardSetIds)

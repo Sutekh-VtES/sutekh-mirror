@@ -34,9 +34,9 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         """Locate the equivalent join on the other class."""
         if self._oOtherJoin is None:
             aJoins = [oJ for oJ in self.otherClass.sqlmeta.joins
-                        if oJ.otherClass is self.soClass
-                        and oJ.intermediateTable == self.intermediateTable
-                        and oJ.otherColumn == self.joinColumn]
+                      if oJ.otherClass is self.soClass
+                      and oJ.intermediateTable == self.intermediateTable
+                      and oJ.otherColumn == self.joinColumn]
             assert len(aJoins) == 1
             self._oOtherJoin = aJoins[0]
 
@@ -58,8 +58,8 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         # We need to access _connection here
         oConn = self.soClass._connection
 
-        for (oId, oOtherId) in oConn.queryAll(repr(Select(
-            (oJoinColumn, oOtherColumn)))):
+        for (oId, oOtherId) in oConn.queryAll(
+                repr(Select((oJoinColumn, oOtherColumn)))):
             oInst = self.soClass.get(oId, oConn)
             oOther = self.otherClass.get(oOtherId, oConn)
             self._dJoinCache.setdefault(oInst, [])
@@ -68,7 +68,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         # Apply ordering (we assume it won't change later)
         for oInst in self._dJoinCache:
             self._dJoinCache[oInst] = self._applyOrderBy(
-                    self._dJoinCache[oInst], self.otherClass)
+                self._dJoinCache[oInst], self.otherClass)
 
     def invalidate_cache_item(self, oInst, oOther, bDoOther=True):
         """Invalidate a cache item and its equivalent in the other join."""
@@ -83,9 +83,9 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
     # Name must match SQLObject conventions
     def performJoin(self, oInst):
         """Return the join the result, from the cache if possible."""
-        if not oInst in self._dJoinCache:
+        if oInst not in self._dJoinCache:
             self._dJoinCache[oInst] = joins.SORelatedJoin.performJoin(self,
-                    oInst)
+                                                                      oInst)
         return self._dJoinCache[oInst]
 
     def add(self, oInst, oOther):

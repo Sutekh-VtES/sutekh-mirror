@@ -318,7 +318,7 @@ BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
                    MapAbstractCardToCardType,
                    MapAbstractCardToArtist,
                    MapAbstractCardToKeyword,
-                   ]
+                  ]
 
 # For reloading the Physical Card Sets
 PHYSICAL_SET_LIST = [PhysicalCardSet, MapPhysicalCardToPhysicalCardSet]

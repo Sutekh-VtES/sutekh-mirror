@@ -108,8 +108,8 @@ def textile2markdown(aLines, fProcessText):
 
     # pylint: disable=C0103
     # we break the naming convention for these pseudo-constants
-    HEADER = re.compile('h([0-9])\(#(.*)\)\. (.*)$')
-    NUM_LINK = re.compile('^(#*) "([^:]*)":(#.*)$')
+    HEADER = re.compile(r'h([0-9])\(#(.*)\)\. (.*)$')
+    NUM_LINK = re.compile(r'^(#*) "([^:]*)":(#.*)$')
     LINK_TEXT = re.compile(r'"([^"]*)":([^ ]*)\b')
     # we want to match starting *'s that aren't meant to be starting
     # list items. Because of our textile conventions, this is currently
@@ -167,7 +167,7 @@ def textile2markdown(aLines, fProcessText):
 
 def _load_textile(sTextilePath):
     """Load lines from the textile file."""
-    fTextile = file(sTextilePath, "rb")
+    fTextile = open(sTextilePath, "rb")
 
     # NB: Late night fast 'n dirty hack alert
     # Annoyingly, python-textile 2.1 doesn't handle list elements split
@@ -208,7 +208,7 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
             'title': "%s %s" % (cAppInfo.NAME, sFilename.replace('_', ' ')),
         }
 
-        fHtml = file(sHtmlPath, "wb")
+        fHtml = open(sHtmlPath, "wb")
 
         aLines = _load_textile(sTextilePath)
 
@@ -230,7 +230,7 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
         sFilename, _sExt = os.path.splitext(sBasename)
         sMarkdownPath = os.path.join(sMarkdownDir, sFilename + ".md")
 
-        fMarkdown = file(sMarkdownPath, "wb")
+        fMarkdown = open(sMarkdownPath, "wb")
 
         aLines = _load_textile(sTextilePath)
 
@@ -265,8 +265,8 @@ def make_filter_txt(sDir, aFilters):
         aOutput = []
         iTocIndex = 0
 
-        fTemplate = file(sTemplatePath, "rb")
-        fTextile = file(sTextilePath, "wb")
+        fTemplate = open(sTemplatePath, "rb")
+        fTextile = open(sTextilePath, "wb")
 
         for sLine in fTemplate.readlines():
             sKeyword = sLine.strip()

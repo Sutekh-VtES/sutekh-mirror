@@ -270,10 +270,13 @@ class CachedCardSetHolder(CardSetHolder):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
+        # pylint: disable=C0103
+        # name OK here
         aAbsCards = oCardLookup.lookup(
             [dLookupCache['cards'].get(tCardCnt[0], tCardCnt[0])
              for tCardCnt in aCardCnts],
             'Card Set "%s"' % self.name)
+        # pylint: enable=C0103
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         # Update dLookupCache
@@ -290,8 +293,8 @@ class CachedCardSetHolder(CardSetHolder):
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
             for sExp, iCnt in self._dCardExpansions[sName].iteritems():
-                dCardExpansions[sName][dLookupCache['expansions'].get(sExp,
-                    sExp)] = iCnt
+                dCardExpansions[sName][dLookupCache['expansions'].get(
+                    sExp, sExp)] = iCnt
         aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
                                              self._dCardExpansions)
         dExpansionLookup = dict(zip(aExpNames, aExps))

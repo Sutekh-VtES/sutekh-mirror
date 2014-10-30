@@ -208,7 +208,10 @@ class BaseDBUpgradeManager(object):
         """Copy RairtyPair, assuming versions match"""
         for oObj in RarityPair.select(connection=oOrigConn):
             # Force for SQLObject >= 0.11.4
+            # pylint: disable=W0212
+            # Need to access _connect here
             oObj._connection = oOrigConn
+            # pylint: enable=W0212
             _oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                                 rarity=oObj.rarity, connection=oTrans)
 
@@ -277,9 +280,9 @@ class BaseDBUpgradeManager(object):
         for oCard in self.cAbstractCardCls.select(
                 connection=oOrigConn).orderBy('id'):
             # force issue for SQObject >= 0.11.4
-            oCard._connection = oOrigConn
             # pylint: disable=W0212
-            # Need to access _parent here
+            # Need to access _parent and _connection here
+            oCard._connection = oOrigConn
             oCard._parent._connection = oOrigConn
             # pylint: enable=W0212
             oCardCopy = self._make_abs_card(oCard, oTrans)
@@ -361,7 +364,10 @@ class BaseDBUpgradeManager(object):
         # SQLObject < 0.11.4 does this automatically, but later versions don't
         # We depend on this, so we force the issue
         for oSet in aSets:
+            # pylint: disable=W0212
+            # Need to access _connection here
             oSet._connection = oOrigConn
+            # pyline: enable=W0212
         while not bDone:
             # We make sure we copy parent's before children
             # We need to be careful, since we don't retain card set IDs,
@@ -454,7 +460,7 @@ class BaseDBUpgradeManager(object):
                 aNewMessages = ['Unable to copy %s: Error %s' % (sName, oExp)]
             else:
                 if not bPassLogger:
-                    oLogger.info('%s copied' % sName)
+                    oLogger.info('%s copied', sName)
             bRes = bRes and bOK
             aMessages.extend(aNewMessages)
             oTrans.commit()
@@ -502,7 +508,7 @@ class BaseDBUpgradeManager(object):
                 oTrans.commit()
                 oTrans.cache.clear()
                 if not bPassLogger:
-                    oLogger.info('%s copied' % sName)
+                    oLogger.info('%s copied', sName)
         flush_cache()
         oTrans.commit(close=True)
         # Clear out cache related joins and such

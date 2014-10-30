@@ -69,7 +69,7 @@ def refresh_tables(aTables, oConn, bMakeCache=True):
     oVerHandler.expire_table_conn(oConn)
     oVerHandler.ensure_table_exists(oConn)
     if not oVerHandler.set_version(VersionTable, VersionTable.tableversion,
-            oConn):
+                                   oConn):
         return False
     for cCls in aTables:
         cCls.createTable(connection=oConn)

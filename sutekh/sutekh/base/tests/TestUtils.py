@@ -24,7 +24,7 @@ def create_tmp_file(sDir, sData):
     os.close(fTemp)
 
     if sData:
-        fTmp = file(sFilename, "wb")
+        fTmp = open(sFilename, "wb")
         fTmp.write(sData)
         fTmp.close()
 
@@ -60,8 +60,10 @@ class BaseTestCase(unittest.TestCase):
 
         return sFilename
 
-    # pylint: disable=C0103
-    # setUp + tearDown names are needed by unittest - use their convention
+    # pylint: disable=C0103, W0201
+    # C0103: setUp + tearDown names are needed by unittest, so we use
+    #        their conventions
+    # W0201: _setUpTemps is called from setUp, so defining things here OK
     def _setUpTemps(self):
         """Create a directory to hold the temporary files."""
         self._sTempDir = tempfile.mkdtemp(suffix='dir', prefix=self.PREFIX)
@@ -76,13 +78,14 @@ class BaseTestCase(unittest.TestCase):
         os.rmdir(self._sTempDir)
         self._sTempDir = None
         self._aTempFiles = None
+    # pylint: enable=C0103, W0201
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
 
            Common operation for the writer tests."""
         sTempFile = self._create_tmp_file()
-        fOut = file(sTempFile, 'w')
+        fOut = open(sTempFile, 'w')
         oWriter.write(fOut, oObj)
         fOut.close()
 
@@ -192,6 +195,9 @@ def _iterdump(connection):
             type == 'table'
         """
     schema_res = cu.execute(q)
+    # pylint: disable-msg=W0612
+    # W0612: _type and _name are unused, by don't match our conventions
+    # due to matching original naming
     for table_name, _type, sql in schema_res.fetchall():
         if table_name == 'sqlite_sequence':
             yield('DELETE FROM sqlite_sequence;')
@@ -219,6 +225,7 @@ def _iterdump(connection):
         query_res = cu.execute(q % {'tbl_name': table_name})
         for row in query_res:
             yield("%s;" % row[0])
+    # pylint: enable-msg=W0612
 
     # Now when the type is 'index', 'trigger', or 'view'
     q = """
@@ -228,7 +235,10 @@ def _iterdump(connection):
             type IN ('index', 'trigger', 'view')
         """
     schema_res = cu.execute(q)
+    # pylint: disable-msg=W0612
+    # see above
     for _name, _type, sql in schema_res.fetchall():
         yield('%s;' % sql)
+    # pylint: enable-msg=W0612
 
     # yield('COMMIT;')
