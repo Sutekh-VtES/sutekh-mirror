@@ -256,7 +256,8 @@ class SingleFilter(Filter):
     # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
         return [LEFTJOINOn(None, self._oMapTable,
-                AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
+                           AbstractCard.q.id ==
+                           self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
         return self._oIdField == self._oId
@@ -274,7 +275,8 @@ class MultiFilter(Filter):
     # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
         return [LEFTJOINOn(None, self._oMapTable,
-                AbstractCard.q.id == self._oMapTable.q.abstract_card_id)]
+                           AbstractCard.q.id ==
+                           self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
         return IN(self._oIdField, self._aIds)
@@ -663,7 +665,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                          aIds),
-                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                join=LEFTJOINOn(
+                    PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
                 groupBy=PhysicalCard.q.abstractCardID,
@@ -674,7 +677,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                          aIds),
-                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                join=LEFTJOINOn(
+                    PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
                 groupBy=(PhysicalCard.q.abstractCardID,
@@ -687,7 +691,8 @@ class CardSetMultiCardCountFilter(DirectFilter):
                 PhysicalCard.q.abstractCardID,
                 where=IN(MapPhysicalCardToPhysicalCardSet.q.physicalCardSetID,
                          aIds),
-                join=LEFTJOINOn(PhysicalCard, MapPhysicalCardToPhysicalCardSet,
+                join=LEFTJOINOn(
+                    PhysicalCard, MapPhysicalCardToPhysicalCardSet,
                     PhysicalCard.q.id ==
                     MapPhysicalCardToPhysicalCardSet.q.physicalCardID),
                 groupBy=(PhysicalCard.q.abstractCardID,
@@ -795,7 +800,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         # None in the IN statement doesn't do the right thing for me
         if self.__bOrUnspec and self._aIds:
             return OR(IN(oTable.expansion_id, self._aIds),
-                         oTable.expansion_id == None)
+                      oTable.expansion_id == None)
         elif self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
             return oTable.expansion_id == None
@@ -824,11 +829,11 @@ class PhysicalCardSetFilter(Filter):
         # pylint: disable=E1101
         # SQLObject methods not detected by pylint
         return [
-                LEFTJOINOn(None, PhysicalCard,
-                    PhysicalCard.q.id == self.__oTable.physical_card_id),
-                LEFTJOINOn(None, AbstractCard,
-                    AbstractCard.q.id == PhysicalCard.q.abstractCardID),
-               ]
+            LEFTJOINOn(None, PhysicalCard,
+                       PhysicalCard.q.id == self.__oTable.physical_card_id),
+            LEFTJOINOn(None, AbstractCard,
+                       AbstractCard.q.id == PhysicalCard.q.abstractCardID),
+        ]
 
     def _get_expression(self):
         return self.__oTable.physical_card_set_id == self.__iCardSetId
@@ -898,11 +903,11 @@ class MultiPhysicalCardSetMapFilter(Filter):
     # C0111 - don't need docstrings for get_values & _get_joins
     def _get_joins(self):
         return [
-                LEFTJOINOn(None, PhysicalCard,
-                    PhysicalCard.q.id == self.__oTable.physical_card_id),
-                LEFTJOINOn(None, AbstractCard,
-                    AbstractCard.q.id == PhysicalCard.q.abstractCardID),
-               ]
+            LEFTJOINOn(None, PhysicalCard,
+                       PhysicalCard.q.id == self.__oTable.physical_card_id),
+            LEFTJOINOn(None, AbstractCard,
+                       AbstractCard.q.id == PhysicalCard.q.abstractCardID),
+        ]
 
     def _get_expression(self):
         return IN(self.__oTable.physical_card_set_id, self.__aCardSetIds)
