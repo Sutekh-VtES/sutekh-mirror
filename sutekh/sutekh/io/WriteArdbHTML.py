@@ -250,7 +250,7 @@ class WriteArdbHTML(ArdbInfo):
         oTitle = SubElement(oHead, "title")
         if oHolder.author:
             oTitle.text = "VTES deck : %s by %s" % (oHolder.name,
-                oHolder.author)
+                                                    oHolder.author)
         else:
             oTitle.text = "VTES deck : %s" % oHolder.name
 

@@ -160,7 +160,7 @@ class DisciplineLevelFilter(MultiFilter):
         assert sLevel in ('inferior', 'superior')
         # There will be 0 or 1 ids
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs if
-                oP.level == sLevel]
+                      oP.level == sLevel]
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
@@ -188,7 +188,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
             sLevel = sLevel.lower()
             assert sLevel in ('inferior', 'superior')
             self._aIds.extend([oP.id for oP in IDiscipline(sDiscipline).pairs
-                    if oP.level == sLevel])
+                               if oP.level == sLevel])
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
@@ -493,7 +493,7 @@ class MultiCostFilter(SutekhCardFilter):
         if self.__bZeroCost:
             if self.__aCost:
                 return OR(IN(self._oMapTable.q.cost, self.__aCost),
-                             self._oMapTable.q.cost == None)
+                          self._oMapTable.q.cost == None)
             else:
                 return self._oMapTable.q.cost == None
         return IN(self._oMapTable.q.cost, self.__aCost)
@@ -645,35 +645,40 @@ class CardFunctionFilter(DirectFilter):
         aFilters = []
         if self.__sStealth in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Action Modifier'),
-                CardTextFilter('+_ stealth')]))
+                                          CardTextFilter('+_ stealth')]))
         if self.__sIntercept in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
-                CardTextFilter('+_ intercept')]))
+                                          CardTextFilter('+_ intercept')]))
         if self.__sUntap in aTypes:
-            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
-                FilterOrBox([CardTextFilter('this vampire untaps'),
-                    CardTextFilter('this reacting vampire untaps'),
-                    CardTextFilter('untap this vampire'),
-                    CardTextFilter('untap this reacting vampire'),
-                    CardTextFilter('as though untapped')])]))
+            aFilters.append(FilterAndBox(
+                [CardTypeFilter('Reaction'),
+                 FilterOrBox([CardTextFilter('this vampire untaps'),
+                              CardTextFilter('this reacting vampire untaps'),
+                              CardTextFilter('untap this vampire'),
+                              CardTextFilter('untap this reacting vampire'),
+                              CardTextFilter('as though untapped')])
+                ]))
         if self.__sBounce in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
-                CardTextFilter('is now bleeding')]))
+                                          CardTextFilter('is now bleeding')]))
         if self.__sEnterCombat in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Action'),
-                CardTextFilter('(D) Enter combat')]))
+                                          CardTextFilter('(D) Enter combat')]))
         if self.__sBleedModifier in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Action Modifier'),
-                CardTextFilter('+_ bleed')]))
+                                          CardTextFilter('+_ bleed')]))
         if self.__sBleedAction in aTypes:
-            aFilters.append(FilterAndBox([CardTypeFilter('Action'),
-                FilterOrBox([CardTextFilter('(D) bleed%at +_ bleed'),
-                    CardTextFilter('(D) bleed%with +_ bleed')])]))
+            aFilters.append(FilterAndBox(
+                [CardTypeFilter('Action'),
+                 FilterOrBox([CardTextFilter('(D) bleed%at +_ bleed'),
+                              CardTextFilter('(D) bleed%with +_ bleed')])
+                ]))
         if self.__sBleedReduction in aTypes:
             # Ordering of bleed and reduce not consistent, so we
             # use an AND filter, rather than 'reduce%bleed'
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
-                CardTextFilter('bleed'), CardTextFilter('reduce')]))
+                                          CardTextFilter('bleed'),
+                                          CardTextFilter('reduce')]))
         self._oFilter = FilterOrBox(aFilters)
 
     # pylint: disable=C0111
@@ -682,9 +687,10 @@ class CardFunctionFilter(DirectFilter):
     def get_values(cls):
         """Values supported by this filter"""
         aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
-            cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
-            cls.__sBleedAction, cls.__sBleedReduction,
-            ])
+                        cls.__sBounce, cls.__sEnterCombat,
+                        cls.__sBleedModifier, cls.__sBleedAction,
+                        cls.__sBleedReduction,
+                       ])
         return aVals
 
     # pylint: disable=W0212

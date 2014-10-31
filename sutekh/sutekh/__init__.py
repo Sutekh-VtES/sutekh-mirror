@@ -53,24 +53,25 @@ def start(aArgs=['sutekh']):
 
 # What we expose to import *
 
-ALL = [  # Sutekh Objects
-         AbstractCard, PhysicalCard, PhysicalCardSet,
-         RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
-         Clan, CardType, Ruling,
-         # Filters
-         FilterAndBox, FilterOrBox, ClanFilter, DisciplineFilter,
-         CardTypeFilter, CardTextFilter, MultiCardTypeFilter,
-         MultiDisciplineFilter, MultiClanFilter, PhysicalCardSetFilter,
-         PhysicalCardFilter, GroupFilter, MultiGroupFilter,
-         ExpansionFilter, MultiExpansionFilter, CardNameFilter,
-         CardSetNameFilter, CardSetAuthorFilter, CardSetDescriptionFilter,
-         CardSetAnnotationsFilter, PhysicalExpansionFilter,
-         MultiPhysicalExpansionFilter,
-         # Groupings
-         CardTypeGrouping, ClanGrouping, DisciplineGrouping,
-         ExpansionGrouping, RarityGrouping,
-         # Misc
-         start, CardListTabulator,
-         ]
+ALL = [
+    # Sutekh Objects
+    AbstractCard, PhysicalCard, PhysicalCardSet,
+    RarityPair, Expansion, Rarity, DisciplinePair, Discipline,
+    Clan, CardType, Ruling,
+    # Filters
+    FilterAndBox, FilterOrBox, ClanFilter, DisciplineFilter,
+    CardTypeFilter, CardTextFilter, MultiCardTypeFilter,
+    MultiDisciplineFilter, MultiClanFilter, PhysicalCardSetFilter,
+    PhysicalCardFilter, GroupFilter, MultiGroupFilter,
+    ExpansionFilter, MultiExpansionFilter, CardNameFilter,
+    CardSetNameFilter, CardSetAuthorFilter, CardSetDescriptionFilter,
+    CardSetAnnotationsFilter, PhysicalExpansionFilter,
+    MultiPhysicalExpansionFilter,
+    # Groupings
+    CardTypeGrouping, ClanGrouping, DisciplineGrouping,
+    ExpansionGrouping, RarityGrouping,
+    # Misc
+    start, CardListTabulator,
+]
 
 __all__ = [x.__name__ for x in ALL]

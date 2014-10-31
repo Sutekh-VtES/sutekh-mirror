@@ -14,7 +14,7 @@ from sutekh.base.io.IOBase import BaseLineParser
 class JOLDeckParser(BaseLineParser):
     """Parser for the JOL Deck format."""
 
-    oCardLineRegexp = re.compile('((?P<num>[0-9]+)(\s)*x(\s)*)?(?P<name>.*)$')
+    oCardLineRegexp = re.compile(r'((?P<num>[0-9]+)(\s)*x(\s)*)?(?P<name>.*)$')
 
     def _feed(self, sLine, oHolder):
         """Read the line into the given CardSetHolder"""

@@ -11,15 +11,15 @@ from sutekh.base.Utility import move_articles_to_back
 from sutekh.SutekhUtility import is_crypt_card
 
 SINGLE_QUOTE_NAMES = [
-        "Al-Muntathir, God's Witness",
-        "Crypt's Sons",
-        "Poacher's Hunting Ground",
-        "World's a Canvas, The",
-        "Joumlon's Axe",
-        "Mole's Tunneling",
-        "Three's a Crowd",
-        "Unleash Hell's Fury",
-        ]
+    "Al-Muntathir, God's Witness",
+    "Crypt's Sons",
+    "Poacher's Hunting Ground",
+    "World's a Canvas, The",
+    "Joumlon's Axe",
+    "Mole's Tunneling",
+    "Three's a Crowd",
+    "Unleash Hell's Fury",
+]
 
 
 def type_of_card(oCard):
