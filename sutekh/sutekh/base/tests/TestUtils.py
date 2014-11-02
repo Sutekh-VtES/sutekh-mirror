@@ -195,7 +195,7 @@ def _iterdump(connection):
             type == 'table'
         """
     schema_res = cu.execute(q)
-    # pylint: disable-msg=W0612
+    # pylint: disable=W0612
     # W0612: _type and _name are unused, by don't match our conventions
     # due to matching original naming
     for table_name, _type, sql in schema_res.fetchall():
@@ -225,7 +225,7 @@ def _iterdump(connection):
         query_res = cu.execute(q % {'tbl_name': table_name})
         for row in query_res:
             yield("%s;" % row[0])
-    # pylint: enable-msg=W0612
+    # pylint: enable=W0612
 
     # Now when the type is 'index', 'trigger', or 'view'
     q = """
@@ -235,10 +235,10 @@ def _iterdump(connection):
             type IN ('index', 'trigger', 'view')
         """
     schema_res = cu.execute(q)
-    # pylint: disable-msg=W0612
+    # pylint: disable=W0612
     # see above
     for _name, _type, sql in schema_res.fetchall():
         yield('%s;' % sql)
-    # pylint: enable-msg=W0612
+    # pylint: enable=W0612
 
     # yield('COMMIT;')
