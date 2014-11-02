@@ -65,7 +65,7 @@ class WriteArdbText(ArdbInfo):
         iTitleJust = 0
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                 key=lambda x: (-x[1][0], self._get_cap_key(x[0]),
-                    x[0].name)):
+                               x[0].name)):
             # We sort inversely on count, then capacity and then normally by
             # name
             dLine = {'count': iCount}
