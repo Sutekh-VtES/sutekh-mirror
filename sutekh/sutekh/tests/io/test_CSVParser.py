@@ -8,8 +8,8 @@
 import unittest
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.io.CSVParser import CSVParser
-from sutekh.tests.io.test_WriteCSV import EXPECTED_1, EXPECTED_2, EXPECTED_3, \
-        EXPECTED_4
+from sutekh.tests.io.test_WriteCSV import (EXPECTED_1, EXPECTED_2, EXPECTED_3,
+                                           EXPECTED_4)
 
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
@@ -23,15 +23,15 @@ class TestCSVParser(SutekhTest):
 
         # Check we can round trip from our own CSV files
         aTests = [
-                (0, 2, 1, True, EXPECTED_1),
-                (0, 2, 1, False, EXPECTED_2),
-                (0, 1, None, True, EXPECTED_3),
-                (0, 1, None, False, EXPECTED_4),
-                ]
+            (0, 2, 1, True, EXPECTED_1),
+            (0, 2, 1, False, EXPECTED_2),
+            (0, 1, None, True, EXPECTED_3),
+            (0, 1, None, False, EXPECTED_4),
+        ]
 
         for tTestInfo in aTests:
             oParser = CSVParser(tTestInfo[0], tTestInfo[1], tTestInfo[2],
-                    tTestInfo[3])
+                                tTestInfo[3])
 
             oHolder = self._make_holder_from_string(oParser, tTestInfo[4])
 

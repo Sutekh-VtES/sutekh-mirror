@@ -38,7 +38,7 @@ class DatabaseUpgradeTests(SutekhTest):
         # SQLObject confuses pylint
 
         oPC = PhysicalCardAdapter((AbstractCardAdapter(".44 magnum"),
-            ExpansionAdapter("Jyhad")))
+                                   ExpansionAdapter("Jyhad")))
         oMyCollection.addPhysicalCard(oPC)
 
         assert list(PhysicalCardSet.select())
@@ -66,7 +66,7 @@ class DatabaseUpgradeTests(SutekhTest):
         oLogHandler = make_null_handler()
 
         copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
-                oLogHandler)
+                                     oLogHandler)
 
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())

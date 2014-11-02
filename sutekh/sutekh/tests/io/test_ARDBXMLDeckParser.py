@@ -104,7 +104,7 @@ class ArdbXMLDeckParserTests(SutekhTest):
     def test_basic(self):
         """Run the input test."""
         oHolder = self._make_holder_from_string(ARDBXMLDeckParser(),
-                ARDB_DECK_EXAMPLE_1)
+                                                ARDB_DECK_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
@@ -116,8 +116,8 @@ class ArdbXMLDeckParserTests(SutekhTest):
         self.assertEqual(len(aCards), 8)
         self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)
         self.failUnless((("Test Vamp 2", "SW"), 1) in aCards)
-        self.failUnless((("Test Vamp 2 (Advanced)", "Promo-20051001"), 1)
-                in aCards)
+        self.failUnless(
+            (("Test Vamp 2 (Advanced)", "Promo-20051001"), 1) in aCards)
         self.failUnless((("Test Card 1", "Sabbat"), 4) in aCards)
         self.failUnless((("Test Card 2", "BH"), 2) in aCards)
         self.failUnless((("Test Card 3", "BH"), 12) in aCards)
@@ -126,9 +126,9 @@ class ArdbXMLDeckParserTests(SutekhTest):
 
         oParser = ARDBXMLDeckParser()
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
-                ACS_EXAMPLE_1)
+                          ACS_EXAMPLE_1)
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
-                'random stuff')
+                          'random stuff')
 
 
 if __name__ == "__main__":

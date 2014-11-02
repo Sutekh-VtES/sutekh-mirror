@@ -32,7 +32,7 @@ class TestELDBInventoryParser(SutekhTest):
     def test_basic(self):
         """Run the input test."""
         oHolder = self._make_holder_from_string(ELDBInventoryParser(),
-                ELDB_INV_EXAMPLE_1)
+                                                ELDB_INV_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, '')  # DummyHolder default
 

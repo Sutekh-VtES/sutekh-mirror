@@ -6,24 +6,26 @@
 """Test the PhysicalCardSet object handling"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.tests.core.test_Filters import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
 
 ABSTRACT_CARDS = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
-CARD_EXPANSIONS = [('.44 magnum', 'Jyhad'),
-        ('ak-47', 'LotN'),
-        ('abbot', 'Third Edition'),
-        ('abombwe', 'Legacy of Blood'),
-        ('alan sovereign (advanced)', 'Promo-20051001'),
-        ('the path of blood', 'LotN'),
-        ('the siamese', 'BL'),
-        ('inez "nurse216" villagrande', 'NoR'),
-        ('Scapelli, the Family "Mechanic"', 'DS'),
-        ("Aaron's Feeding Razor", "KoT")]
+CARD_EXPANSIONS = [
+    ('.44 magnum', 'Jyhad'),
+    ('ak-47', 'LotN'),
+    ('abbot', 'Third Edition'),
+    ('abombwe', 'Legacy of Blood'),
+    ('alan sovereign (advanced)', 'Promo-20051001'),
+    ('the path of blood', 'LotN'),
+    ('the siamese', 'BL'),
+    ('inez "nurse216" villagrande', 'NoR'),
+    ('Scapelli, the Family "Mechanic"', 'DS'),
+    ("Aaron's Feeding Razor", "KoT")
+]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
 
@@ -90,7 +92,8 @@ class PhysicalCardSetTests(SutekhTest):
             physicalCardID=aAddedPhysCards[7].id).count(), 0)
 
         oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1],
-                comment='Test 2', author=oPhysCardSet1.author)
+                                        comment='Test 2',
+                                        author=oPhysCardSet1.author)
 
         self.assertEqual(oPhysCardSet2.name, CARD_SET_NAMES[1])
         self.assertEqual(oPhysCardSet2.author, oPhysCardSet1.author)
@@ -101,12 +104,15 @@ class PhysicalCardSetTests(SutekhTest):
         oPhysCardSet2.syncUpdate()
 
         self.assertEqual(len(oPhysCardSet2.cards), 5)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 1)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[4].id).count(), 2)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[7].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[4].id).count(), 2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[7].id).count(), 1)
 
         oPhysCardSet3 = make_set_1()
         self.assertEqual(len(oPhysCardSet3.cards), len(aAddedPhysCards) + 2)
@@ -130,24 +136,28 @@ class PhysicalCardSetTests(SutekhTest):
         PhysicalCardSet.delete(oPhysCardSet3.id)
 
         self.assertRaises(SQLObjectNotFound, PhysicalCardSet.byName,
-            CARD_SET_NAMES[0])
+                          CARD_SET_NAMES[0])
 
         delete_physical_card_set(CARD_SET_NAMES[1])
 
         self.assertRaises(SQLObjectNotFound, PhysicalCardSet.byName,
-            CARD_SET_NAMES[1])
+                          CARD_SET_NAMES[1])
 
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 1)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[4].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[4].id).count(), 1)
 
         delete_physical_card_set(CARD_SET_NAMES[2])
 
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 0)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[4].id).count(), 0)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[0].id).count(), 0)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[4].id).count(), 0)
 
 if __name__ == "__main__":
     unittest.main()

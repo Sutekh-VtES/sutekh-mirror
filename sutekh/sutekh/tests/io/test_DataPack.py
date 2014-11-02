@@ -120,8 +120,11 @@ class DataPackTest(SutekhTest):
         aErrors = []
 
         _sUrl, _sHash = find_data_pack('starters', sTempUrl,
-                                     fErrorHandler=aErrors.append)
+                                       fErrorHandler=aErrors.append)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, ValueError))
         self.assertEqual(str(oExp), "No JSON object could be decoded")
 

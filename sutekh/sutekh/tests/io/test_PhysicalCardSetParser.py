@@ -6,10 +6,11 @@
 """Test Card Set reading from file"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
+from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
+                                                    get_phys_cards)
+from sutekh.base.core.BaseObjects import (IPhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet,
+                                          PhysicalCardSet)
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
@@ -18,106 +19,116 @@ import os
 from StringIO import StringIO
 
 # Test's include single quotes both escaped and not escape by ET
-PCS_EXAMPLE_1 = '<physicalcardset author="A test author" ' \
-        'comment="A test comment" name="Test Set 1" '\
-        'sutekh_xml_version="1.2"><annotations /><card count="1" ' \
-        'expansion="None Specified" id="11" name="Abebe" /><card ' \
-        'count="1" expansion="None Specified" id="1" ' \
-        'name=".44 Magnum" /><card count="1" expansion="None ' \
-        'Specified" id="8" name="Abbot" /><card count="1" ' \
-        'expansion="None Specified" id="2" name="AK-47" /><card ' \
-        'count="1" expansion="None Specified" id="14" ' \
-        'name="Abombwe" /></physicalcardset>'
+PCS_EXAMPLE_1 = ('<physicalcardset author="A test author" '
+                 'comment="A test comment" name="Test Set 1" '
+                 'sutekh_xml_version="1.2"><annotations /><card count="1" '
+                 'expansion="None Specified" id="11" name="Abebe" /><card '
+                 'count="1" expansion="None Specified" id="1" '
+                 'name=".44 Magnum" /><card count="1" expansion="None '
+                 'Specified" id="8" name="Abbot" /><card count="1" '
+                 'expansion="None Specified" id="2" name="AK-47" /><card '
+                 'count="1" expansion="None Specified" id="14" '
+                 'name="Abombwe" /></physicalcardset>')
 
-PCS_EXAMPLE_2 = '<physicalcardset author="A test author" ' \
-        'name="Test Set 2" '\
-        'sutekh_xml_version="1.3"><comment>A test comment</comment>' \
-        '<annotations />\n"' \
-        '<card count="1" expansion="None Specified" id="8" ' \
-        'name="Abbot" />\n' \
-        '<card count="2" expansion="None Specified" id="2" ' \
-        'name="AK-47" />\n' \
-        '<card count="1" expansion="None Specified" id="14" ' \
-        'name="Abombwe" />\n' \
-        '<card count="1" expansion = "Jyhad" id="1" ' \
-        'name=".44 Magnum" />\n' \
-        '<card count="1" expansion = "Nights of Reckoning" id="16" ' \
-        'name="Inez &quot;Nurse216&quot; " />\n' \
-        '<card count="1" expansion = "Nights of Reckoning" id="16" ' \
-        'name="Inez &quot;Nurse216&quot; Villagrande" />\n' \
-        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
-        'name="Aaron\'s Feeding Razor" />\n' \
-        '<card count="1" expansion="Lords of the Night" id="2" ' \
-        'name="AK-47" />\n</physicalcardset>'
+PCS_EXAMPLE_2 = ('<physicalcardset author="A test author" '
+                 'name="Test Set 2" '
+                 'sutekh_xml_version="1.3"><comment>A test comment</comment>'
+                 '<annotations />\n"'
+                 '<card count="1" expansion="None Specified" id="8" '
+                 'name="Abbot" />\n'
+                 '<card count="2" expansion="None Specified" id="2" '
+                 'name="AK-47" />\n'
+                 '<card count="1" expansion="None Specified" id="14" '
+                 'name="Abombwe" />\n'
+                 '<card count="1" expansion = "Jyhad" id="1" '
+                 'name=".44 Magnum" />\n'
+                 '<card count="1" expansion = "Nights of Reckoning" id="16" '
+                 'name="Inez &quot;Nurse216&quot; " />\n'
+                 '<card count="1" expansion = "Nights of Reckoning" id="16" '
+                 'name="Inez &quot;Nurse216&quot; Villagrande" />\n'
+                 '<card count="1" expansion="Keepers of Tradition" id="17" '
+                 'name="Aaron\'s Feeding Razor" />\n'
+                 '<card count="1" expansion="Lords of the Night" id="2" '
+                 'name="AK-47" />\n</physicalcardset>')
 
-PCS_EXAMPLE_2_NO_ID = '<physicalcardset author="A test author" ' \
-        'name="Test Set 2" '\
-        'sutekh_xml_version="1.3"><comment>A test comment</comment>' \
-        '<annotations />\n"' \
-        '<card count="1" expansion="None Specified" name="Abbot" />\n' \
-        '<card count="2" expansion="None Specified" name="AK-47" />\n' \
-        '<card count="1" expansion="None Specified" name="Abombwe" />\n' \
-        '<card count="1" expansion = "Jyhad" name=".44 Magnum" />\n' \
-        '<card count="1" expansion = "Nights of Reckoning" ' \
-        'name="Inez &quot;Nurse216&quot; Villagrande" />\n' \
-        '<card count="1" expansion="Keepers of Tradition" ' \
-        'name="Aaron&apos;s Feeding Razor" />\n' \
-        '<card count="1" expansion="Lords of the Night" ' \
-        'name="AK-47" />\n</physicalcardset>'
+PCS_EXAMPLE_2_NO_ID = ('<physicalcardset author="A test author" '
+                       'name="Test Set 2" '
+                       'sutekh_xml_version="1.3">'
+                       '<comment>A test comment</comment>'
+                       '<annotations />\n"'
+                       '<card count="1" expansion="None Specified"'
+                       ' name="Abbot" />\n'
+                       '<card count="2" expansion="None Specified"'
+                       ' name="AK-47" />\n'
+                       '<card count="1" expansion="None Specified"'
+                       ' name="Abombwe" />\n'
+                       '<card count="1" expansion = "Jyhad"'
+                       ' name=".44 Magnum" />\n'
+                       '<card count="1" expansion = "Nights of Reckoning" '
+                       'name="Inez &quot;Nurse216&quot; Villagrande" />\n'
+                       '<card count="1" expansion="Keepers of Tradition" '
+                       'name="Aaron&apos;s Feeding Razor" />\n'
+                       '<card count="1" expansion="Lords of the Night" '
+                       'name="AK-47" />\n</physicalcardset>')
 
-PCS_EXAMPLE_3 = '<physicalcardset author="A test author" ' \
-        'name="Test Set 3" '\
-        'sutekh_xml_version="1.3">' \
-        '<comment>A formatted test comment\n' \
-        'A second line</comment>' \
-        '<annotations>Some annotations</annotations>\n"' \
-        '<card count="1" expansion="None Specified" id="8" ' \
-        'name="Abbot" />\n' \
-        '<card count="2" expansion="None Specified" id="2" ' \
-        'name="AK-47" />\n' \
-        '<card count="1" expansion="None Specified" id="14" ' \
-        'name="Abombwe" />\n' \
-        '<card count="1" expansion = "Jyhad" id="1" ' \
-        'name=".44 Magnum" />\n' \
-        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
-        'name="Aaron&apos;s Feeding Razor" />\n' \
-        '<card count="1" expansion="Lords of the Night" id="2" ' \
-        'name="AK-47" />\n</physicalcardset>'
+PCS_EXAMPLE_3 = ('<physicalcardset author="A test author" '
+                 'name="Test Set 3" '
+                 'sutekh_xml_version="1.3">'
+                 '<comment>A formatted test comment\n'
+                 'A second line</comment>'
+                 '<annotations>Some annotations</annotations>\n"'
+                 '<card count="1" expansion="None Specified" id="8" '
+                 'name="Abbot" />\n'
+                 '<card count="2" expansion="None Specified" id="2" '
+                 'name="AK-47" />\n'
+                 '<card count="1" expansion="None Specified" id="14" '
+                 'name="Abombwe" />\n'
+                 '<card count="1" expansion = "Jyhad" id="1" '
+                 'name=".44 Magnum" />\n'
+                 '<card count="1" expansion="Keepers of Tradition" id="17" '
+                 'name="Aaron&apos;s Feeding Razor" />\n'
+                 '<card count="1" expansion="Lords of the Night" id="2" '
+                 'name="AK-47" />\n</physicalcardset>')
 
 
-PCS_EXAMPLE_3_NO_ID = '<physicalcardset author="A test author" ' \
-        'name="Test Set 3" '\
-        'sutekh_xml_version="1.3">' \
-        '<comment>A formatted test comment\n' \
-        'A second line</comment>' \
-        '<annotations>Some annotations</annotations>\n"' \
-        '<card count="1" expansion="None Specified" name="Abbot" />\n' \
-        '<card count="2" expansion="None Specified" name="AK-47" />\n' \
-        '<card count="1" expansion="None Specified" name="Abombwe" />\n' \
-        '<card count="1" expansion="Jyhad" name=".44 Magnum" />\n' \
-        '<card count="1" expansion="Keepers of Tradition" ' \
-        'name="Aaron\'s Feeding Razor" />\n' \
-        '<card count="1" expansion="Lords of the Night" name="AK-47" />\n' \
-        '</physicalcardset>'
+PCS_EXAMPLE_3_NO_ID = ('<physicalcardset author="A test author" '
+                       'name="Test Set 3" '
+                       'sutekh_xml_version="1.3">'
+                       '<comment>A formatted test comment\n'
+                       'A second line</comment>'
+                       '<annotations>Some annotations</annotations>\n"'
+                       '<card count="1" expansion="None Specified"'
+                       ' name="Abbot" />\n'
+                       '<card count="2" expansion="None Specified"'
+                       ' name="AK-47" />\n'
+                       '<card count="1" expansion="None Specified"'
+                       ' name="Abombwe" />\n'
+                       '<card count="1" expansion="Jyhad"'
+                       ' name=".44 Magnum" />\n'
+                       '<card count="1" expansion="Keepers of Tradition" '
+                       'name="Aaron\'s Feeding Razor" />\n'
+                       '<card count="1" expansion="Lords of the Night"'
+                       ' name="AK-47" />\n'
+                       '</physicalcardset>')
 
-PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
-        'name="Test Set 3" '\
-        'sutekh_xml_version="1.3">' \
-        '<comment>A formatted test comment\n' \
-        'A second line</comment>' \
-        '<annotations>Some annotations</annotations>\n"' \
-        '<card count="1" expansion="None Specified" id="8" ' \
-        'name="Abbot" />\n' \
-        '<card count="2" expansion="None Specified" id="2" ' \
-        'name="AK-47" />\n' \
-        '<card count="1" expansion="None Specified" id="14" ' \
-        'name="Abombwe" />\n' \
-        '<card count="1" expansion = "Jyhad" id="1" ' \
-        'name=".44 Magnum" />\n' \
-        '<card count="1" expansion="Keepers of Tradition" id="17" ' \
-        'name="Aaron\'s Feeding Razor" />\n' \
-        '<card count="1" expansion="Lords of the Night" id="2" ' \
-        'name="AK-47" />\n</physicalcardset>'
+PCS_EXAMPLE_NO_AUTH = ('<physicalcardset '
+                       'name="Test Set 3" '
+                       'sutekh_xml_version="1.3">'
+                       '<comment>A formatted test comment\n'
+                       'A second line</comment>'
+                       '<annotations>Some annotations</annotations>\n"'
+                       '<card count="1" expansion="None Specified" id="8" '
+                       'name="Abbot" />\n'
+                       '<card count="2" expansion="None Specified" id="2" '
+                       'name="AK-47" />\n'
+                       '<card count="1" expansion="None Specified" id="14" '
+                       'name="Abombwe" />\n'
+                       '<card count="1" expansion = "Jyhad" id="1" '
+                       'name=".44 Magnum" />\n'
+                       '<card count="1" expansion="Keepers of Tradition"'
+                       ' id="17" name="Aaron\'s Feeding Razor" />\n'
+                       '<card count="1" expansion="Lords of the Night" id="2" '
+                       'name="AK-47" />\n</physicalcardset>')
 
 
 class PhysicalCardSetParserTests(SutekhTest):
@@ -163,22 +174,29 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertEqual(len(oPhysCardSet1.cards), 5)
         self.assertEqual(len(oPhysCardSet2.cards), 8)
         self.assertEqual(len(oPhysCardSet3.cards), 7)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 1)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[7].id).count(), 0)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[4].id).count(), 3)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[1].id).count(), 5)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[6].id).count(), 2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[7].id).count(), 0)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[4].id).count(), 3)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[1].id).count(), 5)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[6].id).count(), 2)
         # Aaron's Feeding razor
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[14].id).count(), 2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[14].id).count(), 2)
         # Inez
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[12].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[12].id).count(), 1)
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
@@ -201,11 +219,11 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         self.assertEqual(oPhysCardSet2.comment, 'A test comment')
         self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
-                'A second line')
+                                                'A second line')
 
         oHolder = CardSetHolder()
-        self.assertRaises(IOError, oParser.parse, StringIO(
-            '<caards></caards>'), oHolder)
+        self.assertRaises(IOError, oParser.parse,
+                          StringIO('<caards></caards>'), oHolder)
 
     def test_card_set_parser_no_id(self):
         """Test physical card set reading for new card sets"""
@@ -237,29 +255,36 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertEqual(len(oPhysCardSet2.cards), 8)
         self.assertEqual(len(oPhysCardSet3.cards), 7)
 
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[7].id).count(), 0)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[4].id).count(), 3)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 1)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[1].id).count(), 5)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[6].id).count(), 2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[7].id).count(), 0)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[4].id).count(), 3)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[1].id).count(), 5)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[6].id).count(), 2)
         # Aaron's Feeding razor
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[14].id).count(), 2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[14].id).count(), 2)
         # Inez
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[12].id).count(), 1)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=aAddedPhysCards[12].id).count(), 1)
 
         self.assertEqual(oPhysCardSet2.annotations, None)
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
 
         self.assertEqual(oPhysCardSet2.comment, 'A test comment')
         self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
-                'A second line')
+                                                'A second line')
 
     def test_card_set_parser_no_author(self):
         """Test physical card set reading for card sets without an author"""
@@ -277,7 +302,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')
 
         self.assertEqual(oPhysCardSet3.comment, 'A formatted test comment\n'
-                'A second line')
+                                                'A second line')
 
         # This test is a bit funky, as we may get either None or ''
         # depending on sqlobject version,

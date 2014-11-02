@@ -38,14 +38,20 @@ class UrlOpsTest(SutekhTest):
 
         oFile = FailFile(socket.timeout)
         fetch_data(oFile, fErrorHandler=error_handler)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, socket.timeout))
 
         del aErrors[:]
 
         oFile = FailFile(urllib2.URLError('aaa'))
         fetch_data(oFile, fErrorHandler=error_handler)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, urllib2.URLError))
 
 

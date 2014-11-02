@@ -6,10 +6,10 @@
 """Test the Zip File Wrapper"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        get_phys_cards
-from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1, \
-        ACS_EXAMPLE_2
+from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
+                                                    get_phys_cards)
+from sutekh.tests.io.test_AbstractCardSetParser import (ACS_EXAMPLE_1,
+                                                        ACS_EXAMPLE_2)
 from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
 from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
@@ -41,7 +41,7 @@ class ZipFileWrapperTest(SutekhTest):
             oMyCollection.syncUpdate()
 
         oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0],
-                parent=oMyCollection)
+                                        parent=oMyCollection)
         oPhysCardSet1.comment = 'A test comment'
         oPhysCardSet1.author = 'A test author'
 
@@ -98,14 +98,14 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertNotEqual(oPhysCardSet1.parent, None)
         self.assertEqual(oPhysCardSet1.parent.id, oMyCollection.id)
         self.assertEqual(sorted([x.abstractCard.name for x in
-            oPhysCardSet1.cards]), aCardSet1)
+                                 oPhysCardSet1.cards]), aCardSet1)
         self.assertEqual(oPhysCardSet2.parent, None)
         self.assertEqual(sorted([x.abstractCard.name for x in
-            oPhysCardSet2.cards]), aCardSet2)
+                                 oPhysCardSet2.cards]), aCardSet2)
 
         self.assertEqual(sorted([x.abstractCard.name for x in
-            oMyCollection.cards]), sorted([x.abstractCard.name for x in
-                aPhysCards]))
+                                 oMyCollection.cards]),
+                         sorted([x.abstractCard.name for x in aPhysCards]))
         self.assertEqual(len(oPhysCardSet1.cards), 6)
         self.assertEqual(len(oPhysCardSet2.cards), 5)
 
@@ -134,8 +134,8 @@ class ZipFileWrapperTest(SutekhTest):
         oMyCollection = IPhysicalCardSet('My Collection')
 
         self.assertEqual(sorted([x.abstractCard.name for x in
-            oMyCollection.cards]), sorted([x.abstractCard.name for x in
-                aPhysCards]))
+                                 oMyCollection.cards]),
+                         sorted([x.abstractCard.name for x in aPhysCards]))
 
     def test_old_format(self):
         """Test that an old zip file loads correctly"""
@@ -159,7 +159,7 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(oHandler.fTot, 4)
 
         oMyCollection = IPhysicalCardSet("My Collection")
-        assert(len(oMyCollection.cards) == 1)
+        self.assertEqual(len(oMyCollection.cards), 1)
 
         oPhysCardSet1 = IPhysicalCardSet('Test Set 1')
 

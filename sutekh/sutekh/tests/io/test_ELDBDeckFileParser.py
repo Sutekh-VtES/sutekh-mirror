@@ -55,7 +55,7 @@ class TestELDBDeckFileParser(SutekhTest):
     def test_basic(self):
         """Run the input test."""
         oHolder = self._make_holder_from_string(ELDBDeckFileParser(),
-                ELDB_TEXT_EXAMPLE_1)
+                                                ELDB_TEXT_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")

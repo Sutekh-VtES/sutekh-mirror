@@ -7,8 +7,8 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.base.core.BaseObjects import IAbstractCard, IPhysicalCard, \
-        IPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.BaseObjects import (IAbstractCard, IPhysicalCard,
+                                          IPhysicalCardSet, PhysicalCardSet)
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
@@ -27,9 +27,9 @@ def make_example_pcxml():
     oAC = IAbstractCard(ABSTRACT_CARDS[0])
     oPC = IPhysicalCard((oAC, None))
 
-    sExample = '<cards sutekh_xml_version="%s"><card count="1" ' \
-            'expansion="None Specified" id="%d" name="%s" /></cards>' \
-            % (LAST_WRITER_VERSION, oPC.id, oAC.name)
+    sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
+                'expansion="None Specified" id="%d" name="%s" /></cards>'
+                % (LAST_WRITER_VERSION, oPC.id, oAC.name))
     return sExample
 
 
@@ -52,7 +52,7 @@ class PhysicalCardTests(SutekhTest):
         oHolder.create_pcs()
 
         oMyCollection = IPhysicalCardSet("My Collection")
-        assert(len(oMyCollection.cards) == 1)
+        self.assertEqual(len(oMyCollection.cards), 1)
         PhysicalCardSet.delete(oMyCollection.id)
 
         sTempFileName = self._create_tmp_file()
@@ -68,24 +68,26 @@ class PhysicalCardTests(SutekhTest):
 
         # Test incorrect input
         oHolder = CardSetHolder()
-        self.assertRaises(IOError, oParser.parse, StringIO(
-            '<ccaardd sutekh_xml_version="1.0"><card count="1" '
-            'expansion="None Specified" id="12" name="Abbot" /></ccaardd>'),
-            oHolder)
-        self.assertRaises(IOError, oParser.parse, StringIO(
-            '<cards sutekh_xml_version="5.0"><card count="1" '
-            'expansion="None Specified" id="12" name="Abbot" /></cards>'),
-            oHolder)
+        self.assertRaises(IOError, oParser.parse,
+                          StringIO('<ccaardd sutekh_xml_version="1.0"><card'
+                                   ' count="1" expansion="None Specified"'
+                                   ' id="12" name="Abbot" /></ccaardd>'),
+                          oHolder)
+        self.assertRaises(IOError, oParser.parse,
+                          StringIO('<cards sutekh_xml_version="5.0"><card'
+                                   ' count="1" expansion="None Specified"'
+                                   ' id="12" name="Abbot" /></cards>'),
+                          oHolder)
 
         # Check read results
         oMyCollection = IPhysicalCardSet("My Collection")
-        assert(len(oMyCollection.cards) == 1)
+        self.assertEqual(len(oMyCollection.cards), 1)
         PhysicalCardSet.delete(oMyCollection.id)
 
         oFile = PhysicalCardXmlFile(sTempFileName)
         oFile.read()
         oMyCollection = IPhysicalCardSet("My Collection")
-        assert(len(oMyCollection.cards) == 1)
+        self.assertEqual(len(oMyCollection.cards), 1)
         oFile.delete()
         self.assertFalse(os.path.exists(sTempFileName))
         self.assertRaises(RuntimeError, oFile.write)

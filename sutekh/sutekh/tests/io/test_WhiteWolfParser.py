@@ -188,7 +188,7 @@ class WhiteWolfParserTests(SutekhTest):
                     oPair = IPhysicalCard((oAbs, oExp))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
-                        % (oAbs.name, oExp.name))
+                              % (oAbs.name, oExp.name))
 
         # Check Yvette
         oYvette = IAbstractCard(u"Yvette, The Hopeless")
@@ -538,7 +538,7 @@ class WhiteWolfParserTests(SutekhTest):
         oAA = IExpansion('Anarchs and Alastors Storyline')
 
         self.assertTrue(oAnarchs in [oP.expansion for oP in
-            oAnarchRailroad.rarity])
+                                     oAnarchRailroad.rarity])
         self.assertTrue(oAA in [oP.expansion for oP in oAnarchRailroad.rarity])
 
         oAnarchRevolt = IAbstractCard("Anarch Revolt")
@@ -547,10 +547,10 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(oAnarchRevolt.text.startswith(u"Master."))
 
         self.assertTrue(oAnarchs in [oP.expansion for oP in
-            oAnarchRevolt.rarity])
+                                     oAnarchRevolt.rarity])
         self.assertTrue(oAA in [oP.expansion for oP in oAnarchRevolt.rarity])
         self.assertTrue(oJyhad in [oP.expansion for oP in
-            oAnarchRevolt.rarity])
+                                   oAnarchRevolt.rarity])
 
         oHtH = IAbstractCard("Hide the Heart")
         self.assertEqual(oHtH.canonicalName, u"hide the heart")

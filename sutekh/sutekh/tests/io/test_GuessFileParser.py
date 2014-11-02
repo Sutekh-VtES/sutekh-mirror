@@ -36,17 +36,17 @@ class TestGuessFileParser(SutekhTest):
     # R0904 - unittest.TestCase, so many public methods
 
     TESTS = [
-            (AbstractCardSetParser, ACS_EXAMPLE_1),
-            (PhysicalCardSetParser, PCS_EXAMPLE_1),
-            (ARDBXMLDeckParser, ARDB_DECK_EXAMPLE_1),
-            (ARDBXMLInvParser, ARDB_INV_EXAMPLE_1),
-            (ARDBTextParser, ARDB_TEXT_EXAMPLE_1),
-            (JOLDeckParser, JOL_EXAMPLE_1),
-            (ELDBInventoryParser, ELDB_INV_EXAMPLE_1),
-            (ELDBDeckFileParser, ELDB_TEXT_EXAMPLE_1),
-            (ELDBHTMLParser, ELDB_HTML_EXAMPLE_1),
-            (LackeyDeckParser, LACKEY_EXAMPLE_1),
-            ]
+        (AbstractCardSetParser, ACS_EXAMPLE_1),
+        (PhysicalCardSetParser, PCS_EXAMPLE_1),
+        (ARDBXMLDeckParser, ARDB_DECK_EXAMPLE_1),
+        (ARDBXMLInvParser, ARDB_INV_EXAMPLE_1),
+        (ARDBTextParser, ARDB_TEXT_EXAMPLE_1),
+        (JOLDeckParser, JOL_EXAMPLE_1),
+        (ELDBInventoryParser, ELDB_INV_EXAMPLE_1),
+        (ELDBDeckFileParser, ELDB_TEXT_EXAMPLE_1),
+        (ELDBHTMLParser, ELDB_HTML_EXAMPLE_1),
+        (LackeyDeckParser, LACKEY_EXAMPLE_1),
+    ]
 
     def test_guess(self):
         """test guess against the correct parser."""
@@ -54,18 +54,18 @@ class TestGuessFileParser(SutekhTest):
         for cCorrectParser, sData in self.TESTS:
             oHolder1 = self._make_holder_from_string(oGuessParser, sData)
             oHolder2 = self._make_holder_from_string(cCorrectParser(),
-                    sData)
+                                                     sData)
 
             self.assertEqual(oHolder1.name, oHolder2.name,
-                    "Holder names don't match:"
-                    " %s vs %s, using %s, correct choice %s" % (oHolder1.name,
-                        oHolder2.name, oGuessParser.oChosenParser,
-                        cCorrectParser))
+                             "Holder names don't match:"
+                             " %s vs %s, using %s, correct choice %s" % (
+                                 oHolder1.name, oHolder2.name,
+                                 oGuessParser.oChosenParser, cCorrectParser))
             self.assertEqual(oHolder1.get_cards(), oHolder2.get_cards(),
-                    "Guess cards don't match:"
-                    " %s vs %s, using %s, correct %s" % (oHolder1.get_cards(),
-                        oHolder2.get_cards(), oGuessParser.oChosenParser,
-                        cCorrectParser))
+                             "Guess cards don't match:"
+                             " %s vs %s, using %s, correct %s" % (
+                                 oHolder1.get_cards(), oHolder2.get_cards(),
+                                 oGuessParser.oChosenParser, cCorrectParser))
 
 if __name__ == "__main__":
     unittest.main()
