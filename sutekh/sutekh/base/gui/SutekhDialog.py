@@ -167,3 +167,48 @@ def exception_handler(oType, oValue, oTraceback):
     # work correctly, and the exception may be lost
 
     do_complaint_error_details(sMessage, sDetails)
+
+
+class NotebookDialog(SutekhDialog):
+    """Dialog with a notebook widget."""
+    # pylint: disable=R0904
+    # gtk widget, so has many public methods
+
+    def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
+        super(NotebookDialog, self).__init__(sTitle, oParent, iFlags,
+                                             oButtons)
+        self._oNotebook = gtk.Notebook()
+        self._oNotebook.set_scrollable(True)
+        self._oNotebook.popup_enable()
+
+        # pylint: disable=E1101
+        # vbox, action_area confuse pylint
+        self.vbox.pack_start(self._oNotebook)
+
+    # pylint: disable=W0212
+    # We allow access via these properties
+    notebook = property(fget=lambda self: self._oNotebook,
+                        doc="Notebook Widget")
+    # pylint: enable=W0212
+
+    def add_widget_page(self, oWidget, sTabText, sMenuText=None,
+                        bMarkup=False):
+        """Add a widget to the notebook as a page, specifying tab header.
+
+           sMenuText can be used to control the text of the popup menu
+           item.
+           If bMarkup is True, the header text is interpreted as a markup
+           string."""
+        oHeader = gtk.Label()
+        if bMarkup:
+            oHeader.set_markup(sTabText)
+        else:
+            oHeader.set_text(sTabText)
+        if sMenuText:
+            oMenuLabel =  gtk.Label(sMenuText)
+            # Left align the menu items, to match notebook's default
+            # behaviour
+            oMenuLabel.set_alignment(0.0, 0.5)
+            self._oNotebook.append_page_menu(oWidget, oHeader, oMenuLabel)
+        else:
+            self._oNotebook.append_page(oWidget, oHeader)

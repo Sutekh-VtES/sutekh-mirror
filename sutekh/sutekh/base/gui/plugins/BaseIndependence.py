@@ -12,7 +12,8 @@ from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
 from ...core.BaseFilters import ParentCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..CardSetsListView import CardSetsListView
-from ..SutekhDialog import SutekhDialog, do_complaint, do_complaint_error
+from ..SutekhDialog import (SutekhDialog, NotebookDialog,
+                            do_complaint, do_complaint_error)
 from ..AutoScrolledWindow import AutoScrolledWindow
 
 
@@ -164,13 +165,10 @@ class BaseIndependence(BasePlugin):
         """Display the list of missing cards"""
         # pylint: disable=E1101
         # E1101: PyProtocols confuses pylint
-        oResultDlg = SutekhDialog("Missing Cards", None,
-                                  gtk.DIALOG_MODAL |
-                                  gtk.DIALOG_DESTROY_WITH_PARENT,
-                                  (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oNotebook = gtk.Notebook()
-        oNotebook.set_scrollable(True)
-        oNotebook.popup_enable()
+        oResultDlg = NotebookDialog("Missing Cards", None,
+                                    gtk.DIALOG_MODAL |
+                                    gtk.DIALOG_DESTROY_WITH_PARENT,
+                                    (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         dFormatted = {}
         aParentList = []
         for oCard, oInfo in sorted(dMissing.iteritems(),
@@ -198,18 +196,13 @@ class BaseIndependence(BasePlugin):
                                                             sExpansion,
                                                             oInfo.iCount,
                                                             iCount))
-        oHeading = gtk.Label()
-        oHeading.set_markup('Missing from %s' % self.escape(oParentCS.name))
-        oNotebook.append_page(AutoScrolledWindow(
-            _make_align_list(aParentList), True), oHeading)
+        oResultDlg.add_widget_page(
+            AutoScrolledWindow(_make_align_list(aParentList), True),
+            'Missing from %s' % self.escape(oParentCS.name), bMarkup=True)
         for sCardSet, aMsgs in dFormatted.iteritems():
-            oHeading = gtk.Label()
-            oHeading.set_markup('Missing in %s' % self.escape(sCardSet))
-            oNotebook.append_page(AutoScrolledWindow(
-                _make_align_list(aMsgs), True), oHeading)
-        # pylint: disable=E1101
-        # pylint misses vbox methods
-        oResultDlg.vbox.pack_start(oNotebook)
+            oResultDlg.add_widget_page(
+                AutoScrolledWindow(_make_align_list(aMsgs), True),
+                'Missing in %s' % self.escape(sCardSet), bMarkup=True)
         oResultDlg.set_size_request(600, 600)
         oResultDlg.show_all()
         oResultDlg.run()

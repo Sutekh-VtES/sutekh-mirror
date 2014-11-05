@@ -10,7 +10,7 @@ import gtk
 import gobject
 from sqlobject import SQLObjectNotFound
 from ..core.BaseObjects import PhysicalCardSet
-from .SutekhDialog import (SutekhDialog, do_complaint_error,
+from .SutekhDialog import (NotebookDialog, do_complaint_error,
                            do_complaint_warning)
 from .AutoScrolledWindow import AutoScrolledWindow
 from .FrameProfileEditor import FrameProfileEditor
@@ -103,7 +103,7 @@ class ScrolledProfileList(gtk.Frame):
     # pylint: enable=W0212
 
 
-class ProfileMngDlg(SutekhDialog):
+class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
     # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -123,24 +123,19 @@ class ProfileMngDlg(SutekhDialog):
 
         self.set_default_size(700, 550)
 
-        self._oNotebook = gtk.Notebook()
-        self._oNotebook.set_scrollable(True)
-        self._oNotebook.popup_enable()
         for sType in (CARDSET, FULL_CARDLIST, CARDSET_LIST):
             oProfileList = self._make_profile_list(sType)
-            self._oNotebook.append_page(oProfileList, gtk.Label(LABELS[sType]))
+            self.add_widget_page(oProfileList, LABELS[sType])
             self._dLists[oProfileList] = sType
 
         # pylint: disable=E1101
-        # vbox, action_area confuse pylint
-        self.vbox.pack_start(self._oNotebook)
-        # Add buttons
-        self.add_button("Edit Profile", self.RESPONSE_EDIT)
-        self.add_button("Delete", self.RESPONSE_DELETE)
-
+        # action_area confuse pylint
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
 
         self.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+
+        self.add_first_button("Delete", self.RESPONSE_DELETE)
+        self.add_first_button("Edit Profile", self.RESPONSE_EDIT)
 
         self.connect("response", self._button_response)
 
