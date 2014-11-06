@@ -205,10 +205,21 @@ class NotebookDialog(SutekhDialog):
         else:
             oHeader.set_text(sTabText)
         if sMenuText:
-            oMenuLabel =  gtk.Label(sMenuText)
+            oMenuLabel = gtk.Label(sMenuText)
             # Left align the menu items, to match notebook's default
             # behaviour
             oMenuLabel.set_alignment(0.0, 0.5)
             self._oNotebook.append_page_menu(oWidget, oHeader, oMenuLabel)
         else:
             self._oNotebook.append_page(oWidget, oHeader)
+
+    def get_cur_widget(self):
+        """Get the main widget of the current page."""
+        iPage = self._oNotebook.get_current_page()
+        return self._oNotebook.get_nth_page(iPage)
+
+    def iter_all_page_widgets(self):
+        """Iterator over all the pages in the notebook, returning
+           the main widget of each page."""
+        for iPage in range(self._oNotebook.get_n_pages()):
+            yield self._oNotebook.get_nth_page(iPage)

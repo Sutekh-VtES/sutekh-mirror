@@ -168,14 +168,9 @@ class ProfileMngDlg(NotebookDialog):
         # else CLOSE was pressed, so exit
         return iResponse
 
-    def _get_cur_list(self):
-        """Ensure list stores reflect the correct state"""
-        iPageNum = self._oNotebook.get_current_page()
-        return self._oNotebook.get_nth_page(iPageNum)
-
     def _get_selected_profile(self):
         """Get the currently selected profile and type"""
-        oList = self._get_cur_list()
+        oList = self.get_cur_widget()
         sType = self._dLists[oList]
         tSelected = oList.view.get_selected()
         if tSelected:
@@ -196,7 +191,7 @@ class ProfileMngDlg(NotebookDialog):
             sNewName = self.__oConfig.get_profile_option(sType, sProfile,
                                                          'name')
             if sNewName != sOldName:
-                oList = self._get_cur_list()
+                oList = self.get_cur_widget()
                 oList.store.fix_entry(sProfile, sNewName)
 
     def _get_in_use_mesg(self, sType, aPanes):
@@ -253,5 +248,5 @@ class ProfileMngDlg(NotebookDialog):
                 if iRes == gtk.RESPONSE_CANCEL:
                     return
             self.__oConfig.remove_profile(sType, sProfile)
-            oList = self._get_cur_list()
+            oList = self.get_cur_widget()
             oList.store.remove_entry(sProfile)
