@@ -20,7 +20,7 @@ from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
                                           KeywordFilter)
 from sutekh.core.Abbreviations import Titles
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.SutekhDialog import SutekhDialog
+from sutekh.base.gui.SutekhDialog import NotebookDialog
 from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
@@ -451,9 +451,9 @@ class AnalyzeCardList(SutekhPlugin):
         """Create the actual dialog, and populate it"""
         if not self.check_cs_size('Analyze Deck', 500):
             return
-        oDlg = SutekhDialog("Analysis of Card List", self.parent,
-                            gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oDlg = NotebookDialog("Analysis of Card List", self.parent,
+                              gtk.DIALOG_DESTROY_WITH_PARENT,
+                              (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
         dConstruct = {
             'Vampire': self._process_vampire,
@@ -531,13 +531,9 @@ class AnalyzeCardList(SutekhPlugin):
         self.happy_families_init(oHappyBox, oDlg)
 
         # Fill the dialog with the results
-        oNotebook = gtk.Notebook()
-        # Oh, popup_enable and scrollable - how I adore thee
-        oNotebook.set_scrollable(True)
-        oNotebook.popup_enable()
         oMainBox = gtk.VBox(False, 2)
-        oNotebook.append_page(oMainBox, gtk.Label('Basic Info'))
-        oNotebook.append_page(oHappyBox, gtk.Label('Happy Families Analysis'))
+        oDlg.add_widget_page(oMainBox, 'Basic Info')
+        oDlg.add_widget_page(oHappyBox, 'Happy Families Analysis')
 
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = sorted(CRYPT_TYPES) + \
@@ -548,15 +544,15 @@ class AnalyzeCardList(SutekhPlugin):
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = dConstruct[sCardType]
-                oNotebook.append_page(_wrap(fProcess(dCardLists[sCardType])),
-                                      gtk.Label(sCardType))
+                oDlg.add_widget_page(_wrap(fProcess(dCardLists[sCardType])),
+                                     sCardType)
         if bRapid:
             fProcess = dConstruct['Not Tournament Legal Cards']
             for sType in [RT_BANNED, RT_WATCHLIST]:
                 if self.dTypeNumbers[sType]:
-                    oNotebook.append_page(_wrap(fProcess(dCardLists[sType],
-                                                         sType)),
-                                          gtk.Label(ILLEGAL_LOOKUP[sType]))
+                    oDlg.add_widget_page(_wrap(fProcess(dCardLists[sType],
+                                                        sType)),
+                                         ILLEGAL_LOOKUP[sType])
 
         # Setup the main notebook
         oTitle, oDesc, oDetails = self._prepare_main(bRapid)
@@ -566,11 +562,8 @@ class AnalyzeCardList(SutekhPlugin):
         oMainBox.pack_start(oDetails, False)
         if self.iLibSize > 0:
             oMainBox.pack_start(self._process_library())
-        # pylint: disable=E1101
-        # vbox methods not seen
-        oDlg.vbox.pack_start(oNotebook)
         oDlg.show_all()
-        oNotebook.set_current_page(0)
+        oDlg.notebook.set_current_page(0)
         oDlg.run()
 
     # pylint: enable=W0201, R0915

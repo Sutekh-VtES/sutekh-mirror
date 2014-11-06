@@ -15,7 +15,7 @@ from sutekh.base.core.CardSetUtilities import check_cs_exists
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.SutekhDialog import NotebookDialog, do_complaint_error
 
 
 class ClusterCardList(SutekhPlugin):
@@ -42,7 +42,6 @@ class ClusterCardList(SutekhPlugin):
         self._dPropButtons = {}
         self._dGroups = {}
         self._oResultsVbox = None
-        self._oNotebook = None
         self._aDistanceMeasureGroup = None
 
         # cluster parameter widgets
@@ -71,26 +70,21 @@ class ClusterCardList(SutekhPlugin):
 
         self._make_prop_groups()
 
-        oDlg = SutekhDialog(sDlgName, self.parent,
-                            gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = NotebookDialog(sDlgName, self.parent,
+                              gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
 
         oDlg.connect("response", self.handle_response)
 
-        self._oNotebook = gtk.Notebook()
-
         oTableSection = self._make_table_section()
         oAlgorithmSection = self._make_algorithm_section()
         oResultsSection = self._make_results_section()
 
-        self._oNotebook.append_page(oTableSection, gtk.Label('Select Columns'))
-        self._oNotebook.append_page(oAlgorithmSection, gtk.Label('Settings'))
-        self._oNotebook.append_page(oResultsSection, gtk.Label('Results'))
+        oDlg.add_widget_page(oTableSection, 'Select Columns')
+        oDlg.add_widget_page(oAlgorithmSection, 'Settings')
+        oDlg.add_widget_page(oResultsSection, 'Results')
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
-        oDlg.vbox.pack_start(self._oNotebook)
         oDlg.show_all()
 
         return oDlg
@@ -319,7 +313,7 @@ class ClusterCardList(SutekhPlugin):
         elif oResponse == gtk.RESPONSE_APPLY:
             self.do_clustering()
             # change to results section
-            self._oNotebook.set_current_page(2)
+            oDlg.notebook.set_current_page(2)
 
     def handle_make_card_sets(self, _oSomeObj):
         """Create card a suitable card set from the chosen clusters"""

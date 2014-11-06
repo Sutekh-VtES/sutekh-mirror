@@ -15,7 +15,8 @@ from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhCountLogHandler)
-from sutekh.base.gui.SutekhDialog import (SutekhDialog, do_exception_complaint,
+from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
+                                          do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                find_children, has_children,
@@ -238,34 +239,30 @@ class TWDAInfoPlugin(SutekhPlugin):
             sMatchText = 'Matching ALL of "%s"' % sCards
 
         # Create a dialog showing the results
-        oDlg = SutekhDialog("TWDA matches", self.parent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oDlg.set_default_size(700, 600)
-        # We create tabs for each year, and then list card
-        # sets below them
         if dCardSets:
-            self._fill_dlg(oDlg, dCardSets, sMatchText)
+            oDlg = self._fill_dlg(dCardSets, sMatchText)
         else:
-            self._empty_dlg(oDlg, sMatchText)
+            oDlg = self._empty_dlg(sMatchText)
 
+        oDlg.set_default_size(700, 600)
         oDlg.show_all()
         oDlg.run()
         oDlg.destroy()
 
-    def _fill_dlg(self, oDlg, dCardSets, sMatchText):
+    def _fill_dlg(self, dCardSets, sMatchText):
         """Add info about the card sets to the dialog"""
+        oDlg = NotebookDialog("TWDA matches", self.parent,
+                              gtk.DIALOG_MODAL |
+                              gtk.DIALOG_DESTROY_WITH_PARENT,
+                              (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         aParents = set([oCS.parent.name for oCS in dCardSets])
         dPages = {}
-        oNotebook = gtk.Notebook()
-        oNotebook.set_scrollable(True)
-        oNotebook.popup_enable()
-        oDlg.vbox.pack_start(oNotebook, expand=True)
+        # We create tabs for each year, and then list card
+        # sets below them
         for sName in sorted(aParents):
             oInfo = gtk.VBox(False, 2)
-            oTitle = gtk.Label(sName.replace("TWDA ", ""))
-            oNotebook.append_page(AutoScrolledWindow(oInfo, True),
-                                  oTitle)
+            oDlg.add_widget_page(AutoScrolledWindow(oInfo, True),
+                                 sName.replace("TWDA ", ""))
             oInfo.pack_start(gtk.Label(sMatchText), expand=False, padding=6)
             iCardSets = len([x for x in dCardSets if x.parent.name == sName])
             oInfo.pack_start(gtk.Label("%d Card Sets" % iCardSets),
@@ -286,11 +283,18 @@ class TWDAInfoPlugin(SutekhPlugin):
             oInfo.pack_start(oCards, expand=False)
             oInfo.pack_start(oButton, expand=False)
             oInfo.pack_start(gtk.HSeparator(), expand=False)
+        return oDlg
 
-    def _empty_dlg(self, oDlg, sMatchText):
+    def _empty_dlg(self, sMatchText):
         """Add an nothing found notice to dialog"""
+        # pylint: disable=E1101
+        # gtk confuses pylint
+        oDlg = SutekhDialog("No TWDA matches", self.parent,
+                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oLabel = gtk.Label("No decks found statisfying %s" % sMatchText)
         oDlg.vbox.pack_start(oLabel)
+        return oDlg
 
     def _open_card_set(self, _oButton, oCS):
         """Wrapper around open_cs to handle being called directly from a
