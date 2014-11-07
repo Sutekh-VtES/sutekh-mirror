@@ -49,17 +49,6 @@ TEST_DATA = json.dumps({
 })
 
 
-class FailFile(object):
-    """File'ish that raises exceptions for checking the error handler stuff"""
-
-    def __init__(self, oExp):
-        self._oExp = oExp
-
-    def read(self):
-        """Dummy method"""
-        raise self._oExp
-
-
 class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
     # pylint: disable=R0904

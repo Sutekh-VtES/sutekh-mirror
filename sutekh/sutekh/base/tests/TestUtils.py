@@ -242,3 +242,14 @@ def _iterdump(connection):
     # pylint: enable=W0612
 
     # yield('COMMIT;')
+
+
+class FailFile(object):
+    """File'ish that raises exceptions for checking error handler stuff"""
+
+    def __init__(self, oExp):
+        self._oExp = oExp
+
+    def read(self):
+        """Dummy method"""
+        raise self._oExp

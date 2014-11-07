@@ -9,18 +9,8 @@ import unittest
 import urllib2
 import socket
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import FailFile
 from sutekh.base.io.UrlOps import fetch_data
-
-
-class FailFile(object):
-    """File'ish that raises exceptions for checking the error handler stuff"""
-
-    def __init__(self, oExp):
-        self._oExp = oExp
-
-    def read(self):
-        """Dummy method"""
-        raise self._oExp
 
 
 class UrlOpsTest(SutekhTest):
