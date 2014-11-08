@@ -1,3 +1,13 @@
+07 Nov 2014
+ * Move FailFile from the test suite into the base test helpers module
+
+06 Nov 2014
+ * Update plugins to use new NotebookDialog helper
+
+05 Nov 2014
+ * Add a NotebookDialog helper class to unify logic around a fairly
+   common construct
+
 23 Oct 2014
  * Add the "Show merged" button to the appropriate base vampires as
    well.
