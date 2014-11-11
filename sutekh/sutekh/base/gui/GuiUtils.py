@@ -72,3 +72,13 @@ def make_markup_button(sMarkup):
     oBut.add(oLabel)
     oBut.show_all()
     return oBut
+
+
+def wrap(sText):
+    """Return a gtk.Label which wraps the given text"""
+    oLabel = gtk.Label()
+    oLabel.set_line_wrap(True)
+    oLabel.set_width_chars(80)
+    oLabel.set_alignment(0, 0)  # Align top-left
+    oLabel.set_markup(sText)
+    return oLabel
