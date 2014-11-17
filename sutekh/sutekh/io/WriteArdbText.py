@@ -64,10 +64,7 @@ class WriteArdbText(ArdbInfo):
         iDiscJust = 0
         iTitleJust = 0
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
-                key=lambda x: (-x[1][0], self._get_cap_key(x[0]),
-                               x[0].name)):
-            # We sort inversely on count, then capacity and then normally by
-            # name
+                                             key=self._crypt_sort_key):
             dLine = {'count': iCount}
             if len(oCard.creed) > 0:
                 dLine['clan'] = "%s (Imbued)" % \

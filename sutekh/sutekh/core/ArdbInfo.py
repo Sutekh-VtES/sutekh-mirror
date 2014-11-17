@@ -159,6 +159,13 @@ class ArdbInfo(object):
         # Shouldn't happen, but ensure we sort last
         return 1
 
+    def _crypt_sort_key(self, tItem):
+        """Sort the vampire dictionary in ARDB's ordering.
+
+           We sort inversely by count, then capacity,
+           then normally by card name."""
+        return (-tItem[1][0], self._get_cap_key(tItem[0]), tItem[0].name)
+
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
         # pylint: disable=E1101
