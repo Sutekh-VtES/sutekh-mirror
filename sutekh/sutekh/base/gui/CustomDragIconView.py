@@ -46,8 +46,10 @@ class CustomDragIconView(gtk.TreeView):
         elif iNumSelected == 1:
             _oModel, aSelectedRows = self._oSelection.get_selected_rows()
             # Create icon from correct path
-            # FIXME: gtk comments suggest this may leak, although docs
-            # don't mention this - something to watch for
+            # NB: Comments in the gtk source suggest this may leak, although
+            # docs don't mention this.
+            # With gtk version 2.24, there doesn't appear to be any noticable
+            # leaks but it is something to watch for
             oDrawable = self.create_row_drag_icon(aSelectedRows[0])
             self.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
         # We don't change anything in the nothing selected case
