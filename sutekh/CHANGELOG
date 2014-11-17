@@ -1,3 +1,6 @@
+11 Nov 2014
+ * Move 'wrap' text formatting helper from Analyze plugin to GuiUtils
+
 07 Nov 2014
  * Move FailFile from the test suite into the base test helpers module
 
