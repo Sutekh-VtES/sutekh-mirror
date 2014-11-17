@@ -68,22 +68,24 @@ class CardSetController(object):
                 oThePCS = IPhysicalCardSet(sCardSetName)
             else:
                 oThePCS = self.__oPhysCardSet
+            aPhysCards = [oPhysCard]
             # find if the physical card given is in the set
             # Can only happen when expansion is None, since that may be a
             # top-level item or an expansion level item.
             # This also means, when removing cards from via a top-level item,
             # we will prefer removing cards without expansion information if
             # they are present.
-            if not oPhysCard.expansion and \
-                    MapPhysicalCardToPhysicalCardSet.selectBy(
-                        physicalCardID=oPhysCard.id,
-                        physicalCardSetID=oThePCS.id).count() == 0:
-                # Given card is not in the card set, so consider all
-                # cards with the same name.
-                aPhysCards = list(PhysicalCard.selectBy(
-                    abstractCardID=oPhysCard.abstractCard.id))
-            else:
-                aPhysCards = [oPhysCard]
+
+            if not oPhysCard.expansion:
+                iCardCount = MapPhysicalCardToPhysicalCardSet.selectBy(
+                    physicalCardID=oPhysCard.id,
+                    physicalCardSetID=oThePCS.id).count()
+                if iCardCount == 0:
+                    # Given card is not in the card set, so consider all
+                    # cards with the same name.
+                    aPhysCards = list(PhysicalCard.selectBy(
+                        abstractCardID=oPhysCard.abstractCard.id))
+
         except SQLObjectNotFound:
             # Bail on error
             return False

@@ -681,10 +681,9 @@ class BaseConfigFile(object):
                 return ['Full Card List']
         elif sType == CARDSET:
             aUsers = []
-            for dProfiles in (
-                    self._oConfig['per_deck']['cardset_profiles'],
-                    self._oConfig['per_deck']['frame_profiles'],
-                    ):
+            for dProfiles in (self._oConfig['per_deck']['cardset_profiles'],
+                              self._oConfig['per_deck']['frame_profiles'],
+                             ):
                 for sId, sCurProfile in dProfiles.iteritems():
                     if sProfile == sCurProfile:
                         aUsers.append(sId)

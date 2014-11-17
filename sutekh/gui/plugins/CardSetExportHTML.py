@@ -43,11 +43,12 @@ class CardSetExportHTML(SutekhPlugin):
             if sDefault is None:
                 sDefault = 'Secret Library'
                 self.set_config_item('HTML export mode',
-                        sDefault)
+                                     sDefault)
             for sString, sVal in (("Add links to The Secret Library",
-                'Secret Library'),
-                    ("Add links to VTES Monger", 'Monger'),
-                    ("Don't add links in the HTML file", 'None')):
+                                   'Secret Library'),
+                                  ("Add links to VTES Monger", 'Monger'),
+                                  ("Don't add links in the HTML file",
+                                   'None')):
                 oItem = gtk.RadioMenuItem(oGroup, sString)
                 if not oGroup:
                     oGroup = oItem
@@ -73,7 +74,7 @@ class CardSetExportHTML(SutekhPlugin):
         sCur = self.get_config_item('HTML export mode')
         if sChoice != sCur:
             self.set_config_item('HTML export mode',
-                    sChoice)
+                                 sChoice)
 
     # pylint: disable=W0201
     # we define attributes outside __init__, but it's OK because of plugin
@@ -81,7 +82,7 @@ class CardSetExportHTML(SutekhPlugin):
     def make_dialog(self):
         """Create the dialog prompted for the filename."""
         oDlg = ExportDialog("Filename to save as", self.parent,
-                '%s.html' % safe_filename(self.view.sSetName))
+                            '%s.html' % safe_filename(self.view.sSetName))
         oDlg.add_filter_with_pattern('HTML Files', ['*.html'])
         # pylint: disable=E1101
         # vbox confuses pylint

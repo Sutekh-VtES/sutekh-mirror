@@ -7,8 +7,10 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseObjects import PhysicalCardSet
-from sutekh.base.core.CardSetUtilities import delete_physical_card_set, \
-        get_loop_names, detect_loop, find_children, break_loop, format_cs_list
+from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
+                                               get_loop_names, detect_loop,
+                                               find_children, break_loop,
+                                               format_cs_list)
 import unittest
 
 
@@ -36,24 +38,24 @@ class CardSetUtilTests(SutekhTest):
         aFoundChildren = find_children(oChild)
         self.assertEqual(len(aFoundChildren), 4)
         self.assertEqual(sorted([x.name for x in aFoundChildren]),
-                sorted([x.name for x in aChildren]))
+                         sorted([x.name for x in aChildren]))
 
         # Check formatiing works
-        sList = " Root\n" \
-             "    Child\n" \
-             "       Card Set 0\n" \
-             "       Card Set 1\n" \
-             "       Card Set 2\n" \
-             "       Card Set 3"
-        sList2 = " Child\n" \
-             "    Card Set 0\n" \
-             "    Card Set 1\n" \
-             "    Card Set 2\n" \
-             "    Card Set 3"
-        sList3 = "  Card Set 0\n" \
-             "  Card Set 1\n" \
-             "  Card Set 2\n" \
-             "  Card Set 3"
+        sList = (" Root\n"
+                 "    Child\n"
+                 "       Card Set 0\n"
+                 "       Card Set 1\n"
+                 "       Card Set 2\n"
+                 "       Card Set 3")
+        sList2 = (" Child\n"
+                  "    Card Set 0\n"
+                  "    Card Set 1\n"
+                  "    Card Set 2\n"
+                  "    Card Set 3")
+        sList3 = ("  Card Set 0\n"
+                  "  Card Set 1\n"
+                  "  Card Set 2\n"
+                  "  Card Set 3")
         self.assertEqual(format_cs_list(None), sList)
         self.assertEqual(format_cs_list(oRoot), sList2)
         self.assertEqual(format_cs_list(oChild, '  '), sList3)
@@ -63,7 +65,7 @@ class CardSetUtilTests(SutekhTest):
         aFoundChildren = find_children(oRoot)
         self.assertEqual(len(aFoundChildren), 4)
         self.assertEqual(sorted([x.name for x in aFoundChildren]),
-                sorted([x.name for x in aChildren]))
+                         sorted([x.name for x in aChildren]))
 
         # Check ordinary deletion
         bRes = delete_physical_card_set(aChildren[0].name)
@@ -71,7 +73,7 @@ class CardSetUtilTests(SutekhTest):
         aFoundChildren = find_children(oRoot)
         self.assertEqual(len(aFoundChildren), 3)
         self.assertEqual(sorted([x.name for x in aFoundChildren]),
-                sorted([x.name for x in aChildren[1:]]))
+                         sorted([x.name for x in aChildren[1:]]))
 
         # Check trying to delete non-existant card set
         bRes = delete_physical_card_set(aChildren[0].name)

@@ -45,7 +45,7 @@ def _find_sect_and_title(aLines):
         elif aLines[0].find('Justicar') != -1:
             # Since Justicar titles are of the form
             # 'Camarilla <Clan> Justicar'
-            oJusticar = re.compile('Camarilla [A-Z][a-z]* Justicar')
+            oJusticar = re.compile(r'Camarilla [A-Z][a-z]* Justicar')
             if oJusticar.search(aLines[0]) is not None:
                 sTitle = 'Justicar'
         # Inner circle my be either Camariila Inner Circle or
@@ -55,7 +55,8 @@ def _find_sect_and_title(aLines):
             if aLines[0].find('Camarilla Inner Circle') != -1:
                 sTitle = 'Inner Circle'
             else:
-                oInnerCircle = re.compile('Camarilla [A-Z][a-z]* Inner Circle')
+                oInnerCircle = re.compile(
+                    r'Camarilla [A-Z][a-z]* Inner Circle')
                 if oInnerCircle.search(aLines[0]) is not None:
                     sTitle = 'Inner Circle'
     elif aLines[0].find('Sabbat') != -1:
@@ -80,13 +81,13 @@ def _find_sect_and_title(aLines):
         try:
             # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
             # anchor the regexp
-            oIndTitle = re.compile('[A-Z][a-z]* has ([0-9]) vote')
+            oIndTitle = re.compile(r'[A-Z][a-z]* has ([0-9]) vote')
             oMatch = oIndTitle.search(aLines[1])
-            oIndTitle_new = re.compile('Independent. ([0-9]) vote')
+            oIndTitle_new = re.compile(r'Independent. ([0-9]) vote')
             oMatch_new = oIndTitle_new.search(aLines[0])
             sVotes = ''
             if oMatch is not None and not aLines[1].startswith('[MERGED]'):
-                oMergedTitle = re.compile('MERGED.*has ([0-9]) vote')
+                oMergedTitle = re.compile(r'MERGED.*has ([0-9]) vote')
                 oMergedMatch = oMergedTitle.search(aLines[1])
                 if oMergedMatch is not None and oMergedMatch.groups()[0] == \
                         oMatch.groups()[0]:
@@ -108,7 +109,7 @@ def _find_sect_and_title(aLines):
         # pylint: disable=W0704
         # error isn't fatal, so ignoring it is fine
         try:
-            oBaronTitle = re.compile('Anarch Baron of')
+            oBaronTitle = re.compile(r'Anarch Baron of')
             oMatch = oBaronTitle.search(aLines[0])
             if oMatch is not None:
                 sTitle = 'Baron'
@@ -134,112 +135,113 @@ class CardDict(dict):
     # the text
     # Defaults
     oCryptInfoRgx = re.compile(
-            '[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?:(?=\.)|$)')
+        r'[:\.] ([+-]\d) (bleed|strength|stealth|intercept)(?:(?=\.)|$)')
     # We avoid running these searches on the merged text of advanced
     # vampires to avoid confusion.
     dCryptProperties = {
-            'black hand': re.compile('Sabbat\. Black Hand'),
-            # Seraph has a special case
-            'seraph': re.compile('Sabbat\. Black Hand(\.)? Seraph'),
-            'infernal': re.compile('[.:] Infernal\.'),
-            'red list': re.compile('\. Red List:'),
-            'anarch': re.compile('\. Anarch:|\. Anarch Baron'),
-            'scarce': re.compile('[.:] Scarce.'),
-            'sterile': re.compile('[.:] Sterile.'),
-            # Need the } to handle some of the errata'd cards
-            'blood cursed': re.compile('[.:\}] \(?Blood [Cc]ursed'),
-            }
+        'black hand': re.compile(r'Sabbat\. Black Hand'),
+        # Seraph has a special case
+        'seraph': re.compile(r'Sabbat\. Black Hand(\.)? Seraph'),
+        'infernal': re.compile(r'[.:] Infernal\.'),
+        'red list': re.compile(r'\. Red List:'),
+        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron'),
+        'scarce': re.compile(r'[.:] Scarce.'),
+        'sterile': re.compile(r'[.:] Sterile.'),
+        # Need the } to handle some of the errata'd cards
+        'blood cursed': re.compile(r'[.:\}] \(?Blood [Cc]ursed'),
+    }
 
     # Searches for these keywords must include the full text, including
     # any merge text
     dCryptFullTextProperties = {
-            'not for legal play': re.compile(
-                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
-            }
+        'not for legal play': re.compile(
+            r'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
+    }
 
     # Properites we check for all library cards
     dLibProperties = {
-            'not for legal play': re.compile(
-                'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
-            }
+        'not for legal play': re.compile(
+            r'NOT FOR LEGAL PLAY|Added to the V:EKN banned list'),
+    }
 
     # Ally properties
     dAllyProperties = {
-            # Red list allies are templated differently
-            'red list': re.compile('\. Red List\.'),
-            }
-    oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
-            ' with (\d) life\.')
+        # Red list allies are templated differently
+        'red list': re.compile(r'\. Red List\.'),
+    }
+    oLifeRgx = re.compile(r'(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
+                          r' with (\d) life\.')
 
     # equipment properties
     dEquipmentProperties = {
-            'unique': re.compile('Unique (melee )?weapon|Unique equipment|'
-                'represents a unique location|'
-                'this is a unique location|'
-                'as equipment (while|when) in play. (Haven. )?Unique.'),
-            'location': re.compile('represents a (unique )?location|'
-                'this is a (unique )?location'),
-            'melee weapon': re.compile('[mM]elee weapon\.'),
-            'cold iron': re.compile('weapon\. Cold iron\.'),
-            'gun': re.compile('[wW]eapon[:,.] [gG]un\.'),
-            'weapon': re.compile('[wW]eapon[:,.] [gG]un\.|[mM]elee weapon\.|'
-                'Weapon.|Unique weapon.'),
-            'vehicle': re.compile('Vehicle\.'),
-            'haven': re.compile('Haven\.'),
-            'electronic equipment': re.compile('Electronic equipment.'),
-            }
+        'unique': re.compile(r'Unique (melee )?weapon|Unique equipment|'
+                             r'represents a unique location|'
+                             r'this is a unique location|'
+                             r'as equipment (while|when) in play.'
+                             r' (Haven. )?Unique.'),
+        'location': re.compile(r'represents a (unique )?location|'
+                               r'this is a (unique )?location'),
+        'melee weapon': re.compile(r'[mM]elee weapon\.'),
+        'cold iron': re.compile(r'weapon\. Cold iron\.'),
+        'gun': re.compile(r'[wW]eapon[:,.] [gG]un\.'),
+        'weapon': re.compile(r'[wW]eapon[:,.] [gG]un\.|[mM]elee weapon\.|'
+                             r'Weapon.|Unique weapon.'),
+        'vehicle': re.compile(r'Vehicle\.'),
+        'haven': re.compile(r'Haven\.'),
+        'electronic equipment': re.compile(r'Electronic equipment.'),
+    }
 
     # master properties
     dMasterProperties = {
-            # unique isn't very consistent
-            'unique': re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
-                'Unique\.'),
-            'trifle': re.compile('[mM]aster[:.] .*[tT]rifle'),
-            'discipline': re.compile('Master: Discipline\.'),
-            'out-of-turn': re.compile('Master: out-of-turn'),
-            'location': re.compile('Master[:.] (unique )?[Ll]ocation'),
-            'boon': re.compile('Boon\.'),
-            'frenzy': re.compile('Frenzy\.'),
-            'hunting ground': re.compile('\. Hunting [Gg]round'),
-            'haven': re.compile('Haven\.'),
-            'trophy': re.compile('Master\. Trophy'),
-            'investment': re.compile('Master[.:] (unique )?[Ii]nvestment'),
-            'archetype': re.compile('Master: archetype'),
-            'watchtower': re.compile('Master: watchtower'),
-            'title': re.compile('Title\.'),
-            }
+        # unique isn't very consistent
+        'unique': re.compile(r'[Uu]nique [mM]aster|Master[:.] unique|'
+                             r'Unique\.'),
+        'trifle': re.compile(r'[mM]aster[:.] .*[tT]rifle'),
+        'discipline': re.compile(r'Master: Discipline\.'),
+        'out-of-turn': re.compile(r'Master: out-of-turn'),
+        'location': re.compile(r'Master[:.] (unique )?[Ll]ocation'),
+        'boon': re.compile(r'Boon\.'),
+        'frenzy': re.compile(r'Frenzy\.'),
+        'hunting ground': re.compile(r'\. Hunting [Gg]round'),
+        'haven': re.compile(r'Haven\.'),
+        'trophy': re.compile(r'Master\. Trophy'),
+        'investment': re.compile(r'Master[.:] (unique )?[Ii]nvestment'),
+        'archetype': re.compile(r'Master: archetype'),
+        'watchtower': re.compile(r'Master: watchtower'),
+        'title': re.compile(r'Title\.'),
+    }
 
     # event properties
     dEventProperties = {
-            'gehenna': re.compile('Gehenna\.'),
-            'transient': re.compile('Transient\.'),
-            'inconnu': re.compile('Inconnu\.'),
-            'government': re.compile('Government\.'),
-            'inquisition': re.compile('Inquisition\.'),
-            }
+        'gehenna': re.compile(r'Gehenna\.'),
+        'transient': re.compile(r'Transient\.'),
+        'inconnu': re.compile(r'Inconnu\.'),
+        'government': re.compile(r'Government\.'),
+        'inquisition': re.compile(r'Inquisition\.'),
+    }
 
     # Catch for non-specified card types
     dOtherProperties = {
-            'unique': re.compile('Unique\.'),
-            'boon': re.compile('Boon\.'),
-            'watchtower': re.compile('Watchtower\.'),
-            'frenzy': re.compile('Frenzy\.'),
-            'title': re.compile('Title\.'),
-            }
+        'unique': re.compile(r'Unique\.'),
+        'boon': re.compile(r'Boon\.'),
+        'watchtower': re.compile(r'Watchtower\.'),
+        'frenzy': re.compile(r'Frenzy\.'),
+        'title': re.compile(r'Title\.'),
+    }
 
     # Special cases that aren't handled by the general code
     dAllyKeywordSpecial = {
-            'Gypsies': ['1 stealth'],
-            'Veneficti (Mage)': ['1 stealth'],
-            'High Top': ['1 intercept'],
-            'Ghoul Retainer': ['1 strength'],
-            }
+        'Gypsies': ['1 stealth'],
+        'Veneficti (Mage)': ['1 stealth'],
+        'High Top': ['1 intercept'],
+        'Ghoul Retainer': ['1 strength'],
+    }
     # These vampires aren't templated as normal
     dCryptKeywordSpecial = {
-            'Spider-Killer': {'stealth': 1},
-            'Muaziz, Archon of Ulugh Beg': {'stealth': 1},
-            'Rebekka, Chantry Elder of Munich': {'stealth': 1},
-            }
+        'Spider-Killer': {'stealth': 1},
+        'Muaziz, Archon of Ulugh Beg': {'stealth': 1},
+        'Rebekka, Chantry Elder of Munich': {'stealth': 1},
+    }
 
     def __init__(self, oLogger):
         super(CardDict, self).__init__()
@@ -281,10 +283,10 @@ class CardDict(dict):
         """Extract ally and retainer life and strength & bleed keywords from
            the card text"""
         # Restrict ourselves to text before Superior disciplines
-        sText = strip_braces(re.split('\[[A-Z]{3}\]', self['text'])[0])
+        sText = strip_braces(re.split(r'\[[A-Z]{3}\]', self['text'])[0])
         # Annoyingly not standardised
-        oDetail1Rgx = re.compile('\. (\d strength), (\d bleed)[\.,]')
-        oDetail2Rgx = re.compile('\. (\d bleed), (\d strength)[\.,]')
+        oDetail1Rgx = re.compile(r'\. (\d strength), (\d bleed)[\.,]')
+        oDetail2Rgx = re.compile(r'\. (\d bleed), (\d strength)[\.,]')
         oMatch = self.oLifeRgx.search(sText)
         if oMatch:
             # Normalise type
@@ -329,7 +331,7 @@ class CardDict(dict):
             # Determine if we need to examine the card further based on type
             for sVal in sTypes.split('/'):
                 if sVal in ['Vampire', 'Imbued', 'Ally', 'Retainer',
-                        'Equipment', 'Master', 'Event']:
+                            'Equipment', 'Master', 'Event']:
                     sType = sVal
         # Check for REFLEX card type
         if self['text'].find(' [REFLEX] ') != -1:
@@ -355,7 +357,7 @@ class CardDict(dict):
             aLines = strip_braces(self['text']).split(':')
             sSect, sTitle = _find_sect_and_title(aLines)
             # check if the vampire has flight (text ends has Flight [FLIGHT].)
-            oFlightRexegp = re.compile('Flight \[FLIGHT\]\.')
+            oFlightRexegp = re.compile(r'Flight \[FLIGHT\]\.')
             oMatch = oFlightRexegp.search(aLines[-1])
             if oMatch:
                 if 'discipline' in self:
@@ -557,7 +559,7 @@ class CardDict(dict):
            This fills in the needed fields and creates entries in the join
            tables as needed.
            """
-        if not 'name' in self:
+        if 'name' not in self:
             return
 
         if 'level' in self:
@@ -686,14 +688,14 @@ class InCard(LogStateWithInfo):
     # card text
 
     aTextTags = [
-            'master',
-            'camarilla',
-            'sabbat',
-            'laibon',
-            'independent',
-            'strike',
-            'weapon',
-            ]
+        'master',
+        'camarilla',
+        'sabbat',
+        'laibon',
+        'independent',
+        'strike',
+        'weapon',
+    ]
 
     def transition(self, sLine, _dAttr):
         oCardText = None
@@ -741,7 +743,7 @@ class InCardText(LogStateWithInfo):
         """Transition back to InCard if needed."""
         if sLine.startswith('Artist:') or not sLine.strip():
             self._dInfo['text'] = fix_clarification_markers(
-                    self._dInfo['text'].strip())
+                self._dInfo['text'].strip())
             oInCard = InCard(self._dInfo, self._oLogger)
             return oInCard.transition(sLine, None)
         else:
@@ -788,8 +790,8 @@ class WhiteWolfTextParser(object):
             self._oState.flush()
         else:
             raise IOError('Failed to parse card list - '
-                    'unexpected state at end of file.\n'
-                    'Card list probably truncated.')
+                          'unexpected state at end of file.\n'
+                          'Card list probably truncated.')
 
     def feed(self, sLine):
         """Feed the line to the current state"""

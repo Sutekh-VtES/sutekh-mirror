@@ -53,17 +53,17 @@ class CardListTabulator(object):
 
         # properties from direct attributes of Abstract Cards
         dProps['group'] = lambda card: (card.group is not None and
-                card.group) or 0
+                                        card.group) or 0
         dProps['capacity'] = lambda card: (card.capacity is not None and
-                card.capacity) or 0
+                                           card.capacity) or 0
         dProps['pool cost'] = lambda card: (card.costtype == 'pool' and
-                card.cost) or 0
+                                            card.cost) or 0
         dProps['blood cost'] = lambda card: (card.costtype == 'blood' and
-                card.cost) or 0
+                                             card.cost) or 0
         dProps['conviction cost'] = lambda card: (card.costtype == 'conviction'
-                and card.cost) or 0
+                                                  and card.cost) or 0
         dProps['advanced'] = lambda card: (card.level == 'advanced' and
-                1) or 0
+                                           1) or 0
         dProps['physical card count'] = lambda card: len(card.physicalCards)
 
         # The little helper functions below are necessary for scoping reasons.
@@ -72,7 +72,7 @@ class CardListTabulator(object):
         def make_dis_func(oTmpDis):
             """Create a function that tests for the given discipline."""
             return lambda card: ((oTmpDis in [oPair.discipline for oPair in
-                card.discipline]) and 1) or 0
+                                              card.discipline]) and 1) or 0
 
         for oDis in Discipline.select():
             dProps['discipline: ' + oDis.fullname] = make_dis_func(oDis)
@@ -81,7 +81,7 @@ class CardListTabulator(object):
         def make_rar_func(oTmpRar):
             """Create a function that tests for the given rarity."""
             return lambda card: ((oTmpRar in [oPair.rarity for oPair in
-                card.rarity]) and 1) or 0
+                                              card.rarity]) and 1) or 0
 
         for oRar in Rarity.select():
             dProps['rarity: ' + oRar.name] = make_rar_func(oRar)
@@ -90,7 +90,7 @@ class CardListTabulator(object):
         def make_exp_func(oTmpExp):
             """Create a function that tests for the given expansion."""
             return lambda card: ((oTmpExp in [oPair.expansion for oPair in
-                card.rarity]) and 1) or 0
+                                              card.rarity]) and 1) or 0
 
         for oExp in Expansion.select():
             dProps['expansion: ' + oExp.name] = make_exp_func(oExp)

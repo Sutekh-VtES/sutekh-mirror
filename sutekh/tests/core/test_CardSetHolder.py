@@ -7,8 +7,9 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, IExpansion, \
-        MapPhysicalCardToPhysicalCardSet, IAbstractCard
+from sutekh.base.core.BaseObjects import (IPhysicalCardSet, IExpansion,
+                                          MapPhysicalCardToPhysicalCardSet,
+                                          IAbstractCard)
 from sutekh.core import Filters
 import unittest
 
@@ -25,12 +26,12 @@ class CardSetHolderTests(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {
-                '.44 Magnum': [3, None],
-                'AK-47': [2, 'LotN'],
-                'Abebe': [3, 'LoB'],
-                'Abombwe': [3, 'LoB'],
-                'Abbot': [1, 'Third Edition'],
-                }
+            '.44 Magnum': [3, None],
+            'AK-47': [2, 'LotN'],
+            'Abebe': [3, 'LoB'],
+            'Abombwe': [3, 'LoB'],
+            'Abbot': [1, 'Third Edition'],
+        }
         oCSH = CardSetHolder()
         aExpectedExpansions = []
 
@@ -68,7 +69,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH.parent = 'Test Set 1'
         self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None)
         self.assertRaises(RuntimeError, oCSH.remove, 2, 'Abbot',
-            'Third Edition')
+                          'Third Edition')
         oCSH.remove(1, 'Abbot', 'Third Edition')
         oCSH.remove(1, 'Abombwe', 'LoB')
         oCSH.create_pcs()
@@ -91,9 +92,9 @@ class CardSetHolderTests(SutekhTest):
 
         # Misspelt cards - the default lookup should exclude these
         dSet2 = {
-                '.44 Magnum': [3, None],
-                'Abede': [3, 'LoB'],
-                }
+            '.44 Magnum': [3, None],
+            'Abede': [3, 'LoB'],
+        }
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
@@ -111,19 +112,20 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'.44 Magnum', u'.44 Magnum',
-            '.44 Magnum'])
+                                    '.44 Magnum'])
         oVampireFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.CardTypeFilter('Vampire')])
-        aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
-            MapPhysicalCardToPhysicalCardSet).distinct()]
+        aCSCards = [IAbstractCard(x).name for x in
+                    oVampireFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [])
 
         # Misspelt expansions - all cards should be added, but some with
         # None for the expansion
         dSet3 = {
-                'AK-47': [2, 'Lords of the Knight'],
-                'Abebe': [3, 'Legacy of Bllod'],
-                }
+            'AK-47': [2, 'Lords of the Knight'],
+            'Abebe': [3, 'Legacy of Bllod'],
+        }
 
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet3.iteritems():
@@ -167,12 +169,12 @@ class CardSetHolderTests(SutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {
-                '.44 Magnum': [3, None],
-                'AK-47': [2, 'LotN'],
-                'Abebe': [3, 'LoB'],
-                'Abombwe': [3, 'LoB'],
-                'Abbot': [1, 'Third Edition'],
-                }
+            '.44 Magnum': [3, None],
+            'AK-47': [2, 'LotN'],
+            'Abebe': [3, 'LoB'],
+            'Abombwe': [3, 'LoB'],
+            'Abbot': [1, 'Third Edition'],
+        }
         oCSH = CachedCardSetHolder()
         aExpectedExpansions = []
         dLookupCache = {}
@@ -195,26 +197,28 @@ class CardSetHolderTests(SutekhTest):
         oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 1')
         oAbbotFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.SpecificCardFilter('Abbot')])
-        aCSCards = [IAbstractCard(x).name for x in oAbbotFilter.select(
-            MapPhysicalCardToPhysicalCardSet).distinct()]
+        aCSCards = [IAbstractCard(x).name for x in
+                    oAbbotFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abbot'])
         oVampireFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.CardTypeFilter('Vampire')])
-        aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
-            MapPhysicalCardToPhysicalCardSet).distinct()]
+        aCSCards = [IAbstractCard(x).name for x in
+                    oVampireFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
         aExpansions = [oCard.expansion for oCard in oCS.cards]
         aExpansions.sort()
         self.assertEqual(aExpansions, aExpectedExpansions)
         self.assertEqual(dLookupCache['cards'][u'Abbot'], u'abbot')
         self.assertEqual(dLookupCache['expansions'][u'LotN'],
-                u'Lords of the Night')
+                         u'Lords of the Night')
 
         oCSH.name = 'Test Set 2'
         oCSH.parent = 'Test Set 1'
         self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None)
         self.assertRaises(RuntimeError, oCSH.remove, 2, 'Abbot',
-            'Third Edition')
+                          'Third Edition')
         oCSH.remove(1, 'Abbot', 'Third Edition')
         oCSH.remove(1, 'Abombwe', 'LoB')
         oCSH.create_pcs(dLookupCache=dLookupCache)
@@ -239,9 +243,9 @@ class CardSetHolderTests(SutekhTest):
 
         # Misspelt cards - the default lookup should exclude these
         dSet2 = {
-                '.44 Magnum': [3, None],
-                'Abede': [3, 'LoB'],
-                }
+            '.44 Magnum': [3, None],
+            'Abede': [3, 'LoB'],
+        }
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
@@ -259,7 +263,7 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'.44 Magnum', u'.44 Magnum',
-            '.44 Magnum'])
+                                    '.44 Magnum'])
         oVampireFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
@@ -271,9 +275,9 @@ class CardSetHolderTests(SutekhTest):
         # Misspelt expansions - all cards should be added, but some with
         # None for the expansion
         dSet3 = {
-                'AK-47': [2, 'Lords of the Knight'],
-                'Abebe': [3, 'Legacy of Bllod'],
-                }
+            'AK-47': [2, 'Lords of the Knight'],
+            'Abebe': [3, 'Legacy of Bllod'],
+        }
         dLookupCache = {}
 
         oCSH = CachedCardSetHolder()
@@ -291,13 +295,15 @@ class CardSetHolderTests(SutekhTest):
         oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 4')
         oGunFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.SpecificCardFilter('AK-47')])
-        aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
-            MapPhysicalCardToPhysicalCardSet).distinct()]
+        aCSCards = [IAbstractCard(x).name for x in
+                    oGunFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'AK-47', u'AK-47'])
         oVampireFilter = Filters.FilterAndBox([
             oPCSFilter, Filters.CardTypeFilter('Vampire')])
-        aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
-            MapPhysicalCardToPhysicalCardSet).distinct()]
+        aCSCards = [IAbstractCard(x).name for x in
+                    oVampireFilter.select(
+                        MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
 
         aExpansions = [oCard.expansion for oCard in oCS.cards]
@@ -305,7 +311,7 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(aExpansions, aExpectedExpansions)
 
         self.assertEqual(dLookupCache['expansions']['Legacy of Bllod'],
-                None)
+                         None)
 
 
 if __name__ == "__main__":

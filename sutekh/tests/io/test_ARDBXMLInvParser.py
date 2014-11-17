@@ -77,7 +77,7 @@ class ArdbXMLInvParserTests(SutekhTest):
     def test_basic(self):
         """Run the input test."""
         oHolder = self._make_holder_from_string(ARDBXMLInvParser(),
-                ARDB_INV_EXAMPLE_1)
+                                                ARDB_INV_EXAMPLE_1)
 
         self.assertEqual(oHolder.name, "")
 
@@ -92,15 +92,15 @@ class ArdbXMLInvParserTests(SutekhTest):
         self.failUnless((("Test Card 4", None), 1) in aCards)
         self.failUnless((("The Path of Blood", None), 1) in aCards)
         self.failUnless((("Alan Sovereign (Advanced)", 'Promo-20051001'), 1)
-                in aCards)
+                        in aCards)
 
         oParser = ARDBXMLInvParser()
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
-                ACS_EXAMPLE_1)
+                          ACS_EXAMPLE_1)
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
-                ARDB_DECK_EXAMPLE_1)
+                          ARDB_DECK_EXAMPLE_1)
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
-                'random stuff')
+                          'random stuff')
 
 if __name__ == "__main__":
     unittest.main()

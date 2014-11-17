@@ -38,11 +38,11 @@ class ExpDateCSVParser(object):
                 # This error is non-fatal - the user may not have imported
                 # the extra card lists, so we can legimately encounter
                 # expansions here which aren't in the database
-                self.oLogger.info('Skipped Expansion: %s' % sExp)
+                self.oLogger.info('Skipped Expansion: %s', sExp)
                 continue
             oDate = datetime.datetime.strptime(sDate, "%Y%m%d").date()
             oExp.releasedate = oDate
             # pylint: disable=E1101
             # E1101 - avoid SQLObject method not detected problems
             oExp.syncUpdate()
-            self.oLogger.info('Added Expansion: %s' % sExp)
+            self.oLogger.info('Added Expansion: %s', sExp)

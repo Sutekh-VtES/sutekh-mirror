@@ -62,23 +62,23 @@ class CryptLibraryGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # Vampires and Imbued have exactly one card type (we hope that WW
         # don't change that)
-        super(CryptLibraryGrouping, self).__init__(oIter,
-                lambda x: [fGetCard(x).cardtype[0].name in CRYPT_TYPES
-                    and "Crypt" or "Library"])
+        super(CryptLibraryGrouping, self).__init__(
+            oIter, lambda x: [fGetCard(x).cardtype[0].name in CRYPT_TYPES
+                              and "Crypt" or "Library"])
 
 
 class SectGrouping(IterGrouping):
     """Group by Sect"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(SectGrouping, self).__init__(oIter,
-                lambda x: [y.name for y in fGetCard(x).sect])
+        super(SectGrouping, self).__init__(
+            oIter, lambda x: [y.name for y in fGetCard(x).sect])
 
 
 class TitleGrouping(IterGrouping):
     """Group by Title"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(TitleGrouping, self).__init__(oIter,
-            lambda x: [y.name for y in fGetCard(x).title])
+        super(TitleGrouping, self).__init__(
+            oIter, lambda x: [y.name for y in fGetCard(x).title])
 
 
 class CostGrouping(IterGrouping):

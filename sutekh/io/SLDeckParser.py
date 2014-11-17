@@ -39,7 +39,7 @@ from sutekh.base.io.IOBase import CardSetParser
 class SLDeckParser(CardSetParser):
     """Parser for the Secret Library Web API deck format."""
 
-    oCardLineRegexp = re.compile('^(?P<num>[0-9]+)\s+(?P<name>.*)$')
+    oCardLineRegexp = re.compile(r'^(?P<num>[0-9]+)\s+(?P<name>.*)$')
 
     def __init__(self):
         # pylint: disable=W0231

@@ -49,17 +49,6 @@ TEST_DATA = json.dumps({
 })
 
 
-class FailFile(object):
-    """File'ish that raises exceptions for checking the error handler stuff"""
-
-    def __init__(self, oExp):
-        self._oExp = oExp
-
-    def read(self):
-        """Dummy method"""
-        raise self._oExp
-
-
 class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
     # pylint: disable=R0904
@@ -120,8 +109,11 @@ class DataPackTest(SutekhTest):
         aErrors = []
 
         _sUrl, _sHash = find_data_pack('starters', sTempUrl,
-                                     fErrorHandler=aErrors.append)
+                                       fErrorHandler=aErrors.append)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, ValueError))
         self.assertEqual(str(oExp), "No JSON object could be decoded")
 

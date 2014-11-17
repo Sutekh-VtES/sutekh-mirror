@@ -82,9 +82,9 @@ def gen_temp_dir():
 def format_text(sCardText):
     """Ensure card text is formatted properly"""
     # We want to split the . [dis] pattern into .\n[dis] again
-    sResult = re.sub('(\.|\.\)) (\[...\])', '\\1\n\\2', sCardText)
+    sResult = re.sub(r'(\.|\.\)) (\[...\])', '\\1\n\\2', sCardText)
     # But don't split the 'is not a discpline'
-    return re.sub('\n(\[...\] is not a Dis)', ' \\1', sResult)
+    return re.sub(r'\n(\[...\] is not a Dis)', ' \\1', sResult)
 
 
 # Utility test for crypt cards

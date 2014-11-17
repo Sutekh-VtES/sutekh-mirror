@@ -90,7 +90,7 @@ class Cards(HolderState):
     """HolderState for extracting the cards"""
     _oCardRe = re.compile(
         r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
-    _oAdvRe = re.compile('\sAdv\s')
+    _oAdvRe = re.compile(r'\sAdv\s')
 
     def transition(self, sLine, _dAttr):
         """Extract the cards from the data.

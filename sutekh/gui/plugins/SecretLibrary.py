@@ -149,10 +149,11 @@ class ImportDialog(ImportExportBase):
     """Dialog for importing card sets from the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
-        super(ImportDialog, self).__init__('Import from Secret Library',
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        super(ImportDialog, self).__init__(
+            'Import from Secret Library',
+            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         self._oDeckId = gtk.Entry()
         aDeckWidgets = [
@@ -178,10 +179,11 @@ class ExportDialog(ImportExportBase):
     """Dialog for exporting cards sets to the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
-        super(ExportDialog, self).__init__('Export to Secret Library',
-                oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        super(ExportDialog, self).__init__(
+            'Export to Secret Library',
+            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_OK, gtk.RESPONSE_OK,
+             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         self._oPublic = gtk.CheckButton("Make deck public")
         aDeckWidgets = [self._oPublic]
@@ -248,7 +250,7 @@ class SecretLibrary(SutekhPlugin):
         sPassword = None
         if sUsername:
             sPassword = keyring.get_password('www.secretlibrary.info',
-                    sUsername)
+                                             sUsername)
         return sUsername, sPassword
 
     def set_auth(self, sUsername, sPassword):
@@ -256,7 +258,7 @@ class SecretLibrary(SutekhPlugin):
         self.set_config_item('username', sUsername)
         if sPassword:
             keyring.set_password('www.secretlibrary.info',
-                    sUsername, sPassword)
+                                 sUsername, sPassword)
 
     def make_import_dialog(self, _oWidget):
         """Create the importing dialog"""
@@ -342,7 +344,7 @@ class SecretLibrary(SutekhPlugin):
         # get rid of the dialog
         oExportDialog.destroy()
 
-    SL_ERROR_RE = re.compile("^(?P<code>\d+)\:.*$")
+    SL_ERROR_RE = re.compile(r"^(?P<code>\d+)\:.*$")
 
     def _check_sl_result(self, sResponse):
         """Inspect the line for a Secret Library error report.
@@ -356,8 +358,8 @@ class SecretLibrary(SutekhPlugin):
             if oMatch:
                 if int(oMatch.group('code')) != 0:
                     do_complaint_error(
-                            "The Secret Library site returned the error:\n"
-                            + sLine.strip())
+                        "The Secret Library site returned the error:\n"
+                        + sLine.strip())
                     return False
         return True
 

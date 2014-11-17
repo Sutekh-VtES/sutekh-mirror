@@ -11,7 +11,7 @@ from ...core.BaseObjects import (PhysicalCard, IPhysicalCard,
                                  IPhysicalCardSet)
 from ...core.BaseFilters import PhysicalCardSetFilter
 from ..BasePluginManager import BasePlugin
-from ..SutekhDialog import SutekhDialog, do_complaint_error
+from ..SutekhDialog import SutekhDialog, NotebookDialog, do_complaint_error
 from ..CardSetsListView import CardSetsListView
 from ..AutoScrolledWindow import AutoScrolledWindow
 from ..GuiCardSetFunctions import create_card_set
@@ -157,34 +157,25 @@ class BaseCompare(BasePlugin):
 
         (dDifferences, dCommon) = _get_card_set_list(aCardSetNames,
                                                      bIgnoreExpansions)
-        oResultDlg = SutekhDialog("Card Comparison", self.parent,
-                                  gtk.DIALOG_MODAL |
-                                  gtk.DIALOG_DESTROY_WITH_PARENT,
-                                  (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oNotebook = gtk.Notebook()
-        oNotebook.set_scrollable(True)
-        oNotebook.popup_enable()
-        oHeading = gtk.Label()
-        sTabText = 'Common Cards'
-        oHeading.set_markup('<span foreground = "blue">%s</span>' % sTabText)
+        oResultDlg = NotebookDialog("Card Comparison", self.parent,
+                                    gtk.DIALOG_MODAL |
+                                    gtk.DIALOG_DESTROY_WITH_PARENT,
+                                    (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        sTabTitle = 'Common Cards'
+        sMarkup = '<span foreground = "blue">%s</span>' % sTabTitle
         oComm = format_list(dCommon, 'green')
         oPage = make_page(oComm, dCommon)
-        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        oHeading = gtk.Label()
-        sTabText = 'Cards only in %s' % self.escape(aCardSetNames[0])
-        oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
+        oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
+        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[0])
+        sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
-        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        sTabText = 'Cards only in %s' % self.escape(aCardSetNames[1])
-        oHeading = gtk.Label()
-        oHeading.set_markup('<span foreground = "red">%s</span>' % sTabText)
+        oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
+        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[1])
+        sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
         oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
-        oNotebook.append_page_menu(oPage, oHeading, gtk.Label(sTabText))
-        # pylint: disable=E1101
-        # pylint misses vbox methods
-        oResultDlg.vbox.pack_start(oNotebook)
+        oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
         oResultDlg.set_size_request(600, 600)
         oResultDlg.show_all()
         oResultDlg.run()

@@ -8,8 +8,8 @@
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCard, \
-        IAbstractCard
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCard,
+                                          IAbstractCard)
 from sutekh.tests.core.test_Filters import make_card
 
 
@@ -43,7 +43,7 @@ class TestCardSetFrame(GuiSutekhTest):
                     sExp = oModel.get_name_from_iter(oExpIter)
                     if sExp == oModel.sUnknownExpansion:
                         sExp = None
-                    if ((sName, sExp) in aCards):
+                    if (sName, sExp) in aCards:
                         oPath = oModel.get_path(oExpIter)
                         oSelection.select_path(oPath)
                     oExpIter = oModel.iter_next(oExpIter)
@@ -76,12 +76,14 @@ class TestCardSetFrame(GuiSutekhTest):
         # PyProtocols confuses pylint
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',
-                parent=oPhysCardSet)
+                                parent=oPhysCardSet)
         # Add some cards
-        aCards = [('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
-                ('Anna "Dictatrix11" Suljic', 'NoR'), ('Ablative Skin',
-                    'Sabbat')] + [('Alexandra', 'CE'), ('Alexandra', None),
-                ('Ablative Skin', None)] * 5
+        aCards = [
+            ('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
+            ('Anna "Dictatrix11" Suljic', 'NoR'),
+            ('Ablative Skin', 'Sabbat')
+        ] + [('Alexandra', 'CE'), ('Alexandra', None),
+             ('Ablative Skin', None)] * 5
         aPhysCards = []
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
@@ -105,7 +107,7 @@ class TestCardSetFrame(GuiSutekhTest):
         # paste it into the new card set
         oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', None),
-            (u'AK-47', u'Lords of the Night')])
+                                    (u'AK-47', u'Lords of the Night')])
         self.assertEqual(oFrame.view.get_selection().count_selected_rows(), 2)
         # Copy
         oFrame.view.copy_selection()
@@ -118,7 +120,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len(oPCS2.cards), 2)
         # Select cards in new card set and change numbers
         self._select_cards(oNewFrame, [(u'AK-47', None),
-                (u'AK-47', u'Lords of the Night')])
+                                       (u'AK-47', u'Lords of the Night')])
         # Generate key_press event
         oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
         oEvent.keyval = int(gtk.gdk.keyval_from_name('4'))
@@ -157,8 +159,8 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.toggle_editable(False)
         # Verify that trying to paste the selection does nothing
         self._select_cards(oFrame, [(u'AK-47', None),
-                ('Ablative Skin', 'Sabbat'),
-                ('Alexandra', 'Camarilla Edition')])
+                                    ('Ablative Skin', 'Sabbat'),
+                                    ('Alexandra', 'Camarilla Edition')])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
@@ -168,36 +170,36 @@ class TestCardSetFrame(GuiSutekhTest):
         # We should get 5 copies of Alexandra from My Collection
         self.assertEqual(len(oPCS2.cards), 9)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'Alexandra']), 5)
+                              IAbstractCard(x).name == 'Alexandra']), 5)
         # Tests involving the top level selection
         oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
-            (u'Ablative Skin', 'Top Level')])
+                                    (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 11)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'Alexandra']), 5)
+                              IAbstractCard(x).name == 'Alexandra']), 5)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'AK-47']), 4)
+                              IAbstractCard(x).name == 'AK-47']), 4)
         aCardNames = [oCard.abstractCard.name for oCard in oPCS2.cards]
         self._select_cards(oNewFrame, [(sName, 'Top Level') for sName in
-            aCardNames])
+                                       aCardNames])
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
         oFrame = oMyColl
         self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
-            (u'Ablative Skin', 'Top Level')])
+                                    (u'Ablative Skin', 'Top Level')])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 7)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'AK-47']), 1)
+                              IAbstractCard(x).name == 'AK-47']), 1)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'Ablative Skin']), 6)
+                              IAbstractCard(x).name == 'Ablative Skin']), 6)
         self.assertEqual(len([x for x in oPCS2.cards if
-            IAbstractCard(x).name == 'Ablative Skin' and
-            IPhysicalCard(x).expansionID is None]), 5)
+                              IAbstractCard(x).name == 'Ablative Skin' and
+                              IPhysicalCard(x).expansionID is None]), 5)
         # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
 

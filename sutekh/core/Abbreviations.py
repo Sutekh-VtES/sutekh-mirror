@@ -200,7 +200,7 @@ class Rarities(AbbreviationLookup):
         'Tenth': ['A', 'B'],
         'BSC': ['X'],
         'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
-            'PO3'],
+                   'PO3'],
         'Not Applicable': ['NA'],
         'Rules': ['Rules'],
         'Demo': ['Demo'],
@@ -256,21 +256,21 @@ class Titles(AbbreviationLookup):
     }
 
     dVoteValues = {
-            # Camarilla Titles
-            'Primogen': 1, 'Prince': 2, 'Justicar': 3,
-            'Inner Circle': 4,
-            # Sabbat Titles
-            'Bishop': 1, 'Archbishop': 2, 'Priscus': 3,
-            'Cardinal': 3, 'Regent': 4,
-            # Independent Titles
-            'Independent with 1 vote': 1,
-            'Independent with 2 votes': 2,
-            'Independent with 3 votes': 3,
-            # Laibon Titles
-            'Magaji': 2,
-            # Anarch Titles
-            'Baron': 2,
-            }
+        # Camarilla Titles
+        'Primogen': 1, 'Prince': 2, 'Justicar': 3,
+        'Inner Circle': 4,
+        # Sabbat Titles
+        'Bishop': 1, 'Archbishop': 2, 'Priscus': 3,
+        'Cardinal': 3, 'Regent': 4,
+        # Independent Titles
+        'Independent with 1 vote': 1,
+        'Independent with 2 votes': 2,
+        'Independent with 3 votes': 3,
+        # Laibon Titles
+        'Magaji': 2,
+        # Anarch Titles
+        'Baron': 2,
+    }
 
     @classmethod
     def vote_value(cls, sTitle):

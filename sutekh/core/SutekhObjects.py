@@ -20,9 +20,9 @@ from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
 
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
-from sqlobject import SQLObject, IntCol, UnicodeCol, RelatedJoin, \
-       EnumCol, MultipleJoin, DatabaseIndex, ForeignKey, \
-       SQLObjectNotFound
+from sqlobject import (SQLObject, IntCol, UnicodeCol, RelatedJoin,
+                       EnumCol, MultipleJoin, DatabaseIndex, ForeignKey,
+                       SQLObjectNotFound)
 # pylint: enable=E0611
 from protocols import advise, Interface
 
@@ -78,26 +78,31 @@ class SutekhAbstractCard(AbstractCard):
     cost = IntCol(default=None)
     life = IntCol(default=None)
     costtype = EnumCol(enumValues=['pool', 'blood', 'conviction', None],
-            default=None)
+                       default=None)
     level = EnumCol(enumValues=['advanced', None], default=None)
 
     # Most of these names are singular when they should be plural
     # since they refer to lists. We've decided to live with the
     # inconsistency for old columns but do the right thing for new
     # ones.
-    discipline = CachedRelatedJoin('DisciplinePair',
-            intermediateTable='abs_discipline_pair_map',
-            joinColumn="abstract_card_id", createRelatedTable=False)
+    discipline = CachedRelatedJoin(
+        'DisciplinePair', intermediateTable='abs_discipline_pair_map',
+        joinColumn="abstract_card_id", createRelatedTable=False)
     clan = CachedRelatedJoin('Clan', joinColumn="abstract_card_id",
-            intermediateTable='abs_clan_map', createRelatedTable=False)
+                             intermediateTable='abs_clan_map',
+                             createRelatedTable=False)
     sect = CachedRelatedJoin('Sect', intermediateTable='abs_sect_map',
-            joinColumn="abstract_card_id", createRelatedTable=False)
+                             joinColumn="abstract_card_id",
+                             createRelatedTable=False)
     title = CachedRelatedJoin('Title', intermediateTable='abs_title_map',
-            joinColumn="abstract_card_id", createRelatedTable=False)
+                              joinColumn="abstract_card_id",
+                              createRelatedTable=False)
     creed = CachedRelatedJoin('Creed', intermediateTable='abs_creed_map',
-            joinColumn="abstract_card_id", createRelatedTable=False)
+                              joinColumn="abstract_card_id",
+                              createRelatedTable=False)
     virtue = CachedRelatedJoin('Virtue', intermediateTable='abs_virtue_map',
-            joinColumn="abstract_card_id", createRelatedTable=False)
+                               joinColumn="abstract_card_id",
+                               createRelatedTable=False)
 
 
 class DisciplinePair(SQLObject):
@@ -108,8 +113,9 @@ class DisciplinePair(SQLObject):
     level = EnumCol(enumValues=['inferior', 'superior'])
     disciplineLevelIndex = DatabaseIndex(discipline, level, unique=True)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_discipline_pair_map',
-            otherColumn="abstract_card_id", createRelatedTable=False)
+                        intermediateTable='abs_discipline_pair_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 class Discipline(SQLObject):
@@ -128,8 +134,9 @@ class Virtue(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     fullname = UnicodeCol(default=None)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_virtue_map',
-            otherColumn="abstract_card_id", createRelatedTable=False)
+                        intermediateTable='abs_virtue_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 class Creed(SQLObject):
@@ -139,8 +146,9 @@ class Creed(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     shortname = UnicodeCol(default=None)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_creed_map', otherColumn="abstract_card_id",
-            createRelatedTable=False)
+                        intermediateTable='abs_creed_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 class Clan(SQLObject):
@@ -150,8 +158,9 @@ class Clan(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     shortname = UnicodeCol(default=None)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_clan_map', otherColumn="abstract_card_id",
-            createRelatedTable=False)
+                        intermediateTable='abs_clan_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 class Sect(SQLObject):
@@ -160,8 +169,9 @@ class Sect(SQLObject):
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_sect_map', otherColumn="abstract_card_id",
-            createRelatedTable=False)
+                        intermediateTable='abs_sect_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 class Title(SQLObject):
@@ -170,8 +180,9 @@ class Title(SQLObject):
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('SutekhAbstractCard',
-            intermediateTable='abs_title_map', otherColumn="abstract_card_id",
-            createRelatedTable=False)
+                        intermediateTable='abs_title_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
 
 
 # Mapping Tables
@@ -269,7 +280,7 @@ TABLE_LIST = BASE_TABLE_LIST + [SutekhAbstractCard,
                                 MapAbstractCardToTitle,
                                 MapAbstractCardToVirtue,
                                 MapAbstractCardToCreed,
-                                ]
+                               ]
 
 # Generically useful constant
 CRYPT_TYPES = ('Vampire', 'Imbued')
@@ -290,11 +301,11 @@ class SutekhObjectMaker(BaseObjectMaker):
 
     def make_creed(self, sCreed):
         return self._make_object(Creed, ICreed, Creeds, sCreed,
-                bShortname=True)
+                                 bShortname=True)
 
     def make_discipline(self, sDis):
         return self._make_object(Discipline, IDiscipline, Disciplines, sDis,
-                bFullname=True)
+                                 bFullname=True)
 
     def make_sect(self, sSect):
         return self._make_object(Sect, ISect, Sects, sSect)
@@ -304,7 +315,7 @@ class SutekhObjectMaker(BaseObjectMaker):
 
     def make_virtue(self, sVirtue):
         return self._make_object(Virtue, IVirtue, Virtues, sVirtue,
-                bFullname=True)
+                                 bFullname=True)
 
     def make_abstract_card(self, sCard):
         try:
@@ -404,7 +415,7 @@ class DisciplinePairAdapter(Adapter):
         oPair = cls.__dCache.get((oDis.id, sLevel), None)
         if oPair is None:
             oPair = DisciplinePair.selectBy(discipline=oDis,
-                    level=sLevel).getOne()
+                                            level=sLevel).getOne()
             cls.__dCache[(oDis.id, sLevel)] = oPair
 
         return oPair

@@ -20,17 +20,17 @@ class TestSutekhMainWindow(GuiSutekhTest):
         # Add card sets needed for the tests
         oPhysCardSet1 = PhysicalCardSet(name='My Collection')
         PhysicalCardSet(name='Test Set 1',
-                parent=oPhysCardSet1)
+                        parent=oPhysCardSet1)
         PhysicalCardSet(name='Test Set 2',
-                parent=oPhysCardSet1)
+                        parent=oPhysCardSet1)
         self.oWin.setup(self.oConfig)
         # Check we have the correct panes in place
         self.assertTrue(
-                self.oWin.is_open_by_menu_name('Full Card List'))
+            self.oWin.is_open_by_menu_name('Full Card List'))
         self.assertTrue(self.oWin.is_open_by_menu_name('Card Set List'))
         self.assertTrue(self.oWin.is_open_by_menu_name('Card Text'))
         self.assertNotEqual(
-                self.oWin.find_cs_pane_by_set_name('My Collection'), [])
+            self.oWin.find_cs_pane_by_set_name('My Collection'), [])
         # Remove a pane
         for oPane in self.oWin.aOpenFrames[:]:
             if oPane.title == 'Card Text':

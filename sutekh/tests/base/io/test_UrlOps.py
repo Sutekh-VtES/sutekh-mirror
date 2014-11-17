@@ -9,18 +9,8 @@ import unittest
 import urllib2
 import socket
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import FailFile
 from sutekh.base.io.UrlOps import fetch_data
-
-
-class FailFile(object):
-    """File'ish that raises exceptions for checking the error handler stuff"""
-
-    def __init__(self, oExp):
-        self._oExp = oExp
-
-    def read(self):
-        """Dummy method"""
-        raise self._oExp
 
 
 class UrlOpsTest(SutekhTest):
@@ -38,14 +28,20 @@ class UrlOpsTest(SutekhTest):
 
         oFile = FailFile(socket.timeout)
         fetch_data(oFile, fErrorHandler=error_handler)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, socket.timeout))
 
         del aErrors[:]
 
         oFile = FailFile(urllib2.URLError('aaa'))
         fetch_data(oFile, fErrorHandler=error_handler)
+        # pylint: disable=W0632
+        # by construction, this unpacking is safe
         [oExp] = aErrors
+        # pylint: enable=W0632
         self.assertTrue(isinstance(oExp, urllib2.URLError))
 
 

@@ -24,7 +24,7 @@ import os
 def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
     """Helper function to read from a parser"""
     oHolder = CardSetHolder()
-    oParser.parse(file(sFileName, 'rU'), oHolder)
+    oParser.parse(open(sFileName, 'rU'), oHolder)
     oHolder.create_pcs(oLookup)
     if not bIgnoreWarnings:
         return oHolder.get_warnings()
@@ -106,9 +106,9 @@ class PhysicalCardSetXmlFile(object):
         oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
             sFileName = safe_filename(sPhysicalCardSetName)
-            fOut = file(sFileName, 'w')
+            fOut = open(sFileName, 'w')
         else:
-            fOut = file(self.sXmlFile, 'w')
+            fOut = open(self.sXmlFile, 'w')
         try:
             oPCS = IPhysicalCardSet(sPhysicalCardSetName)
         except SQLObjectNotFound:

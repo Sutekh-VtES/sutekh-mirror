@@ -31,7 +31,7 @@ class TestLackeyDeckFileParser(SutekhTest):
     def test_basic(self):
         """Run the input test."""
         oHolder = self._make_holder_from_string(LackeyDeckParser(),
-                LACKEY_EXAMPLE_1)
+                                                LACKEY_EXAMPLE_1)
 
         aCards = oHolder.get_cards()
 

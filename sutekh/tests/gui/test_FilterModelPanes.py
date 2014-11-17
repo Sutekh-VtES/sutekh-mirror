@@ -9,8 +9,8 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
 import gtk
 from sutekh.base.core.FilterParser import FilterParser
-from sutekh.base.gui.FilterModelPanes import FilterModelPanes, \
-        FilterEditorToolbar, ENTER_KEYS
+from sutekh.base.gui.FilterModelPanes import (FilterModelPanes,
+                                              FilterEditorToolbar, ENTER_KEYS)
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.CardSetsListView import CardSetsListView
 from sutekh.base.core.BaseObjects import AbstractCard
@@ -42,9 +42,9 @@ class TestFilterModelPane(GuiSutekhTest):
         # card
         aResults1 = list(oFilter1.select(AbstractCard))
         aResults2 = list(oFilter2.select(AbstractCard))
-        self.assertEqual(aResults1, aResults2, 'results differ: '
-                '%s (from %s) != %s (from %s)' % (
-                    aResults1, oAST1, aResults2, oAST2))
+        self.assertEqual(aResults1, aResults2,
+                         'results differ: %s (from %s) != %s (from %s)' % (
+                             aResults1, oAST1, aResults2, oAST2))
 
     def test_basic(self):
         """Set of simple tests of central part the Filter editor dialog"""
@@ -57,13 +57,13 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilterPanes = FilterModelPanes('PhysicalCard', oDialog)
         # check that we can round trip a filter with values
         oAST = oParser.apply('CardType in Equipment, Imbued or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes.replace_ast(oAST)
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
         # Check that we can disable parts of the filter (sect subfilter)
         oAST2 = oParser.apply('CardType in Equipment, Imbued or '
-                'Discipline in Presence')
+                              'Discipline in Presence')
         # select sect
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:1:1')
         oFilterPanes._oSelectBar._oBoxModelEditor.set_disabled(True)
@@ -77,7 +77,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
         # Check that we can negate bits
         oAST = oParser.apply('NOT CardType in Equipment, Imbued or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         oFilterPanes._oSelectBar._oBoxModelEditor.set_negate(True)
         oFilterAST = oFilterPanes.get_ast_with_values()
@@ -88,7 +88,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
         # Check that we can delete a value
         oAST = oParser.apply('CardType in Equipment or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0:1')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0:0:1')
         oFilterPanes._oSelectBar._oBoxModelEditor.delete(None)
@@ -105,7 +105,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
         # Check we can add filter values
         oAST = oParser.apply('CardType in Equipment or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0:0')
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
@@ -118,7 +118,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oEvent.keyval = int(list(ENTER_KEYS)[0])
         oEvent.state = gtk.gdk.CONTROL_MASK
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
-                oEvent, oFilter, 'Value')
+                                           oEvent, oFilter, 'Value')
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
 
@@ -132,10 +132,10 @@ class TestFilterModelPane(GuiSutekhTest):
 
         # Check adding filter elements and filter values
         oAST = oParser.apply('CardType in Equipment or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes.replace_ast(oAST)
         oAST = oParser.apply('CardType in Equipment or Keyword in location or '
-                '(Discipline in Presence and Sect in Sabbat)')
+                             '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0')
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
@@ -160,7 +160,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oList.set_selected_entry('location')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
-                oEvent, oFilter, 'Value')
+                                           oEvent, oFilter, 'Value')
         # ENTER_KEYS contains longs, but keyval needs int
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
@@ -217,11 +217,11 @@ class TestFilterModelPane(GuiSutekhTest):
         # unselect
         oFilterPanes._oEditBox._oTreeView.get_selection().unselect_all()
         self.assertEqual(oFilterPanes._oSelectBar._oWidget,
-                oFilterPanes._oSelectBar._oEmptyWidget)
+                         oFilterPanes._oSelectBar._oEmptyWidget)
         # select card set in use filter
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         self.assertEqual(oFilterPanes._oSelectBar._oWidget,
-                oFilterPanes._oSelectBar._oNoneWidget)
+                         oFilterPanes._oSelectBar._oNoneWidget)
         oAST = oParser.apply('CardSetAuthor in $x')
         oFilterPanes.replace_ast(oAST)
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')

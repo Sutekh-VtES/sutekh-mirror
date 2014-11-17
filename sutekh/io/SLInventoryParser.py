@@ -33,7 +33,7 @@ class SLInventoryParser(CardSetParser):
     """Parser for the Secret Library web API inventory format."""
 
     oCardLineRegexp = re.compile(
-        '^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
+        r'^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
     def __init__(self):
         # pylint: disable=W0231

@@ -218,7 +218,8 @@ class StatsModel(gtk.TreeStore):
         sScoresPerVamp = " ".join(["%.2f" % (float(x[3]) / oGrpStats.iVamps)
                                    for x in aTopN])
         sScoresPerCap = " ".join(["%.2f" % (float(x[3]) /
-                                  oGrpStats.iTotalCapacity) for x in aTopN])
+                                            oGrpStats.iTotalCapacity)
+                                  for x in aTopN])
 
         self.set(oIter,
                  0, oClan.name,
@@ -230,7 +231,7 @@ class StatsModel(gtk.TreeStore):
                  6, sScores,
                  7, sScoresPerVamp,
                  8, sScoresPerCap,
-                 )
+                )
 
     def gather_stats(self):
         """Collect up information on vampires from all clans."""

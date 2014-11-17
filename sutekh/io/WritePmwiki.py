@@ -40,10 +40,10 @@ class WritePmwiki(ArdbInfo):
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an pmwiki header."""
-        return "(:title %s by %s :)\n\n" \
-               "!! Description\n%s\n" \
-               "!! Notes\n%s\n" % (oHolder.name, oHolder.author,
-                       oHolder.comment, oHolder.annotations)
+        return ("(:title %s by %s :)\n\n"
+                "!! Description\n%s\n"
+                "!! Notes\n%s\n" % (oHolder.name, oHolder.author,
+                                    oHolder.comment, oHolder.annotations))
     # pylint: enable=R0201
 
     def _gen_crypt(self, dCards):
@@ -59,7 +59,7 @@ class WritePmwiki(ArdbInfo):
         aCryptLines = []
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                 key=lambda x: (-x[1][0], self._get_cap_key(x[0]),
-                    x[0].name)):
+                               x[0].name)):
             # We sort inversely on count, then capacity and then normally by
             # name
             dLine = {'count': iCount}
@@ -97,7 +97,7 @@ class WritePmwiki(ArdbInfo):
             sLib += "!!! %s [%d]\n" % (sTypeString, iTotal)
 
             for oCard, iCount in sorted(dCards.iteritems(),
-                    key=lambda x: x[0].name):
+                                        key=lambda x: x[0].name):
                 sLib += " %dx %s\n" % (iCount, oCard.name)
 
             sLib += "\n"

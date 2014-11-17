@@ -494,13 +494,12 @@ class FilterPartNode(OperatorNode):
         """List of ValueObjects describing the filter and its associated
            values."""
         if self.sFilterName in ENTRY_FILTERS:
-            aResults = (
-                    [ValueObject(get_filter_type(self.sFilterName).description
-                        + ' includes', self)])
+            aResults = [ValueObject(
+                get_filter_type(self.sFilterName).description + ' includes',
+                self)]
         elif self.sFilterName in LIST_FILTERS:
-            aResults = (
-                    [ValueObject(get_filter_type(self.sFilterName).description
-                        + ' in', self)])
+            aResults = [ValueObject(
+                get_filter_type(self.sFilterName).description + ' in', self)]
         else:
             # We don't take any input for this filter, so there are no
             # values to return

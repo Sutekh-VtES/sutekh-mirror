@@ -92,29 +92,29 @@ class CardListModelTests(ConfigSutekhTest):
         aExpectedCards = set(AbstractCard.select())
         self.assertEqual(aExpectedCards, set(oListener.aCards))
         self.assertEqual(oModel.get_card_iterator(None).count(),
-                PhysicalCard.select().count())
+                         PhysicalCard.select().count())
         # The model as an entry for every AbstractCard and entries
         # below that for every PhysicalCard
         # Set grouping to None for these tests
         oModel.groupby = NullGrouping
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
-                AbstractCard.select().count())
+                         AbstractCard.select().count())
         self.assertEqual(self._count_expansions(oModel),
-                PhysicalCard.select().count())
+                         PhysicalCard.select().count())
         # Check without expansions
         oModel.bExpansions = False
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
-                AbstractCard.select().count())
+                         AbstractCard.select().count())
         self.assertEqual(self._count_expansions(oModel), 0)
         oModel.bExpansions = True
         oModel.groupby = CryptLibraryGrouping
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
-                AbstractCard.select().count())
+                         AbstractCard.select().count())
         self.assertEqual(self._count_expansions(oModel),
-                PhysicalCard.select().count())
+                         PhysicalCard.select().count())
         self.assertEqual(self._count_top_level(oModel), 2)
         # Test filtering
         # Test filter which selects nothing works
@@ -126,9 +126,9 @@ class CardListModelTests(ConfigSutekhTest):
         oModel.applyfilter = False
         oModel.load()
         self.assertEqual(self._count_all_cards(oModel),
-                AbstractCard.select().count())
+                         AbstractCard.select().count())
         self.assertEqual(self._count_expansions(oModel),
-                PhysicalCard.select().count())
+                         PhysicalCard.select().count())
         self.assertEqual(self._count_top_level(oModel), 2)
         # Test card type
         oModel.selectfilter = Filters.CardTypeFilter('Vampire')
@@ -136,20 +136,22 @@ class CardListModelTests(ConfigSutekhTest):
         oModel.load()
         self.assertEqual(self._count_top_level(oModel), 1)
         self.assertEqual(self._count_expansions(oModel),
-                oModel.get_card_iterator(oModel.selectfilter).count())
+                         oModel.get_card_iterator(
+                             oModel.selectfilter).count())
         oModel.groupby = CardTypeGrouping
         oModel.load()
         self.assertEqual(self._count_top_level(oModel), 1)
         self.assertEqual(self._count_expansions(oModel),
-                oModel.get_card_iterator(oModel.selectfilter).count())
+                         oModel.get_card_iterator(
+                             oModel.selectfilter).count())
         # Test path queries
         # The remain tests require a sorted model
         oModel.enable_sorting()
         oPath = '0:0:0'  # First expansion for the first card
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
-                oModel.sUnknownExpansion)
+                         oModel.sUnknownExpansion)
         self.assertEqual(oModel.get_card_name_from_path(oPath),
-                u'Aabbt Kindred')
+                         u'Aabbt Kindred')
         tAll = oModel.get_all_from_path(oPath)
         self.assertEqual(tAll[0], u'Aabbt Kindred')
         self.assertEqual(tAll[1], oModel.sUnknownExpansion)
@@ -159,14 +161,14 @@ class CardListModelTests(ConfigSutekhTest):
         oPath = '0:0'  # First card
         self.assertEqual(oModel.get_exp_name_from_path(oPath), None)
         self.assertEqual(oModel.get_inc_dec_flags_from_path(oPath),
-                (False, False))
+                         (False, False))
         tAll = oModel.get_all_from_path(oPath)
         self.assertEqual(tAll[0], u'Aabbt Kindred')
         self.assertEqual(tAll[1], None)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 1)
         self.assertEqual(oModel.get_child_entries_from_path(oPath),
-                [(oModel.sUnknownExpansion, 0), ('Final Nights', 0)])
+                         [(oModel.sUnknownExpansion, 0), ('Final Nights', 0)])
 
         oListener.bLoadCalled = False
         # Test MessageBus clear does the right thing

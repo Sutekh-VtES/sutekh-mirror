@@ -182,7 +182,7 @@ class SectionRule(LogStateWithInfo):
 class InRuleText(LogStateWithInfo):
     """In the text of a ruling."""
 
-    oCodePattern = re.compile('\[[^]]*\]')
+    oCodePattern = re.compile(r'\[[^]]*\]')
 
     def transition(self, sTag, dAttr):
         """Transition to SectionRule if needed."""

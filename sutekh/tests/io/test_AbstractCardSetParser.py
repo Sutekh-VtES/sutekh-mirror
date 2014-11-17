@@ -6,32 +6,33 @@
 """Test the Abstract Card Set parser"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.core.BaseObjects import IAbstractCard, IPhysicalCard, \
-        IPhysicalCardSet, MapPhysicalCardToPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.BaseObjects import (IAbstractCard, IPhysicalCard,
+                                          IPhysicalCardSet, PhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
-from sutekh.tests.core.test_PhysicalCardSet import CARD_SET_NAMES, \
-        ABSTRACT_CARDS
+from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
+                                                    ABSTRACT_CARDS)
 import unittest
 import os
 from StringIO import StringIO
 
-ACS_EXAMPLE_1 = '<abstractcardset author="A test author" ' \
-  'comment="A test comment" name="Test Set 1" ' \
-  'sutekh_xml_version="1.1"><annotations /><card count="1" ' \
-  'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-  '/><card count="1" id="1" name=".44 Magnum" /><card ' \
-  'count="1" id="2" name="AK-47" /><card count="1" id="14" ' \
-  'name="Abombwe" /></abstractcardset>'
+ACS_EXAMPLE_1 = ('<abstractcardset author="A test author" '
+                 'comment="A test comment" name="Test Set 1" '
+                 'sutekh_xml_version="1.1"><annotations /><card count="1" '
+                 'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
+                 '/><card count="1" id="1" name=".44 Magnum" /><card '
+                 'count="1" id="2" name="AK-47" /><card count="1" id="14" '
+                 'name="Abombwe" /></abstractcardset>')
 
-ACS_EXAMPLE_2 = '<abstractcardset author="A test author" ' \
-  'comment="A test comment" name="Test Set 2" ' \
-  'sutekh_xml_version="1.1"><annotations /><card count="2" ' \
-  'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" ' \
-  '/><card count="2" id="2" name=".44 Magnum" /><card ' \
-  'count="2" id="2" name="AK-47" /><card count="2" id="14" ' \
-  'name="Abombwe" /></abstractcardset>'
+ACS_EXAMPLE_2 = ('<abstractcardset author="A test author" '
+                 'comment="A test comment" name="Test Set 2" '
+                 'sutekh_xml_version="1.1"><annotations /><card count="2" '
+                 'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
+                 '/><card count="2" id="2" name=".44 Magnum" /><card '
+                 'count="2" id="2" name="AK-47" /><card count="2" id="14" '
+                 'name="Abombwe" /></abstractcardset>')
 
 
 class AbstractCardSetParserTest(SutekhTest):
@@ -74,12 +75,12 @@ class AbstractCardSetParserTest(SutekhTest):
 
         self.assertEqual(len(oCardSet1.cards), 5)
         self.assertEqual(len(oCardSet2.cards), 9)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=oPhysCard0.id).count(),
-            3)
-        self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=oPhysCard2.id).count(),
-            2)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=oPhysCard0.id).count(), 3)
+        self.assertEqual(
+            MapPhysicalCardToPhysicalCardSet.selectBy(
+                physicalCardID=oPhysCard2.id).count(), 2)
 
         PhysicalCardSet.delete(oCardSet1.id)
         oFile = AbstractCardSetXmlFile()

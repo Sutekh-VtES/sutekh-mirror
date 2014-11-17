@@ -18,7 +18,8 @@ from sutekh.core.Filters import (MultiGroupFilter, MultiVirtueFilter,
                                  MultiDisciplineLevelFilter)
 from sutekh.SutekhUtility import is_crypt_card, is_vampire
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
+                                          do_complaint_error)
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.GuiCardSetFunctions import create_card_set
 
@@ -322,56 +323,49 @@ class FindLikeVampires(SutekhPlugin):
             sTitle = 'Vampires like %s' % self.oSelCard.name
         else:
             sTitle = 'Imbued like %s' % self.oSelCard.name
-        oResults = SutekhDialog(sTitle, self.parent,
-                                gtk.DIALOG_MODAL |
-                                gtk.DIALOG_DESTROY_WITH_PARENT,
-                                (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oResults = NotebookDialog(sTitle, self.parent,
+                                  gtk.DIALOG_MODAL |
+                                  gtk.DIALOG_DESTROY_WITH_PARENT,
+                                  (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
 
         oResults.set_size_request(700, 600)
 
-        oNotebook = gtk.Notebook()
-        oResults.vbox.pack_start(oNotebook)
-        oNotebook.set_scrollable(True)
-        oNotebook.popup_enable()
-
         oAllView = LikeCardsView(dGroups['all'], 'All Matches', bVampire)
-        oNotebook.append_page(AutoScrolledWindow(oAllView),
-                              gtk.Label('All Matches'))
+        oResults.add_widget_page(AutoScrolledWindow(oAllView),
+                                 'All Matches')
         for sSet in sorted(dGroups):
             if sSet == 'all':
                 # Already handled
                 continue
             oView = LikeCardsView(dGroups[sSet], sSet, bVampire)
-            oNotebook.append_page(AutoScrolledWindow(oView),
-                                  gtk.Label(sSet))
+            oResults.add_widget_page(AutoScrolledWindow(oView), sSet)
         oActions = gtk.HBox()
         oToggle = gtk.CheckButton('Include original card')
-        oToggle.connect('toggled', self._update_notebook, oNotebook)
+        oToggle.connect('toggled', self._update_notebook, oResults)
         oActions.pack_start(oToggle)
         oCreateCardSet = gtk.Button('Create card set from selection')
-        oCreateCardSet.connect('clicked', self._make_cs, oNotebook)
+        oCreateCardSet.connect('clicked', self._make_cs, oResults)
         oActions.pack_start(oCreateCardSet)
         oResults.vbox.pack_start(oActions, expand=False)
         oResults.show_all()
         oResults.run()
         oResults.destroy()
 
-    def _update_notebook(self, oCheckBox, oNotebook):
+    def _update_notebook(self, oCheckBox, oDlg):
         """Add or remove the original card as required"""
         bInclude = oCheckBox.get_active()
-        for iPage in range(oNotebook.get_n_pages()):
-            oModel = oNotebook.get_nth_page(iPage).get_child().get_model()
+        for oScroll in oDlg.iter_all_page_widgets():
+            oModel = oScroll.get_child().get_model()
             if bInclude:
                 oModel.add_card(self.oSelCard)
             else:
                 oModel.remove_card(self.oSelCard)
 
-    def _make_cs(self, _oButton, oNotebook):
+    def _make_cs(self, _oButton, oDlg):
         """Create a card set with the given cards"""
         # pylint: disable=E1101
         # SQLObject confuses pylint
-        iPage = oNotebook.get_current_page()
-        oView = oNotebook.get_nth_page(iPage).get_child()
+        oView = oDlg.get_cur_widget().get_child()
         aCards = oView.get_selected_cards()
         if not aCards:
             do_complaint_error("No cards selected for card set.")

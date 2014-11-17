@@ -80,7 +80,7 @@ class GuiDBManager(BaseGuiDBManager):
                                  sRulingsFileName]
             else:
                 aRulingsFiles = [EncodedFile(sRulingsFileName,
-                                 bUrl=bRulingsIsUrl)]
+                                             bUrl=bRulingsIsUrl)]
         else:
             aRulingsFiles = None
         if sExpDateFileName is not None:
@@ -89,7 +89,7 @@ class GuiDBManager(BaseGuiDBManager):
                                  sExpDateFileName]
             else:
                 aExpDateFiles = [EncodedFile(sExpDateFileName,
-                                 bUrl=bExpDateIsUrl)]
+                                             bUrl=bExpDateIsUrl)]
         else:
             aExpDateFiles = None
 

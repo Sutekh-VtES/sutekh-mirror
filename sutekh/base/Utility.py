@@ -168,7 +168,7 @@ def move_articles_to_front(sName):
 def normalise_whitespace(sText):
     """Return a copy of sText with all whitespace normalised to single
        spaces."""
-    return re.sub('\s+', ' ', sText, flags=re.MULTILINE).strip()
+    return re.sub(r'\s+', ' ', sText, flags=re.MULTILINE).strip()
 
 
 def find_subclasses(cClass):

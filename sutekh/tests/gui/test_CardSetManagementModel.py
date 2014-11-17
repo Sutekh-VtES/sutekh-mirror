@@ -59,7 +59,7 @@ class CardSetManagementModelTests(SutekhTest):
         self.assertEqual(oModel.get_path_from_name('Card Set 1'), (0, 0, 1))
         self.assertEqual(oModel.get_path_from_name('Card Set 3'), (0, 0, 3))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'),
-                (0, 1, 0))
+                         (0, 1, 0))
         # Test filtering
         oFilter = Filters.CardSetNameFilter('Child 2')
         self.assertEqual(oModel.get_card_set_iterator(oFilter).count(), 3)
@@ -71,7 +71,7 @@ class CardSetManagementModelTests(SutekhTest):
         self.assertEqual(oModel.get_path_from_name('Sib'), None)
         self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), (0, 0))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'),
-                (0, 0, 0))
+                         (0, 0, 0))
         oModel.applyfilter = False
         oModel.load()
         # Test that tree is restored

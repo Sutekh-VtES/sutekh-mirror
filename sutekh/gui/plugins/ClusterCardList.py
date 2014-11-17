@@ -15,7 +15,7 @@ from sutekh.base.core.CardSetUtilities import check_cs_exists
 from sutekh.core.CardListTabulator import CardListTabulator
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.SutekhDialog import NotebookDialog, do_complaint_error
 
 
 class ClusterCardList(SutekhPlugin):
@@ -42,7 +42,6 @@ class ClusterCardList(SutekhPlugin):
         self._dPropButtons = {}
         self._dGroups = {}
         self._oResultsVbox = None
-        self._oNotebook = None
         self._aDistanceMeasureGroup = None
 
         # cluster parameter widgets
@@ -71,26 +70,21 @@ class ClusterCardList(SutekhPlugin):
 
         self._make_prop_groups()
 
-        oDlg = SutekhDialog(sDlgName, self.parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT)
+        oDlg = NotebookDialog(sDlgName, self.parent,
+                              gtk.DIALOG_DESTROY_WITH_PARENT)
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
 
         oDlg.connect("response", self.handle_response)
 
-        self._oNotebook = gtk.Notebook()
-
         oTableSection = self._make_table_section()
         oAlgorithmSection = self._make_algorithm_section()
         oResultsSection = self._make_results_section()
 
-        self._oNotebook.append_page(oTableSection, gtk.Label('Select Columns'))
-        self._oNotebook.append_page(oAlgorithmSection, gtk.Label('Settings'))
-        self._oNotebook.append_page(oResultsSection, gtk.Label('Results'))
+        oDlg.add_widget_page(oTableSection, 'Select Columns')
+        oDlg.add_widget_page(oAlgorithmSection, 'Settings')
+        oDlg.add_widget_page(oResultsSection, 'Results')
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
-        oDlg.vbox.pack_start(self._oNotebook)
         oDlg.show_all()
 
         return oDlg
@@ -104,10 +98,10 @@ class ClusterCardList(SutekhPlugin):
             aParts = sName.split(":")
             if len(aParts) == 1:
                 self._dGroups.setdefault("Miscellaneous",
-                        {})[sName.capitalize()] = fProp
+                                         {})[sName.capitalize()] = fProp
             else:
-                sGroup, sRest = aParts[0].strip().capitalize(), \
-                        ":".join(aParts[1:]).strip().capitalize()
+                sGroup, sRest = (aParts[0].strip().capitalize(),
+                                 ":".join(aParts[1:]).strip().capitalize())
                 self._dGroups.setdefault(sGroup, {})[sRest] = fProp
 
     def _make_table_section(self):
@@ -258,7 +252,7 @@ class ClusterCardList(SutekhPlugin):
         iExtraCols = 4
 
         oTable = gtk.Table(rows=len(aMeans) + iHeaderRows,
-                columns=iExtraCols)
+                           columns=iExtraCols)
         oTable.set_row_spacings(0)
 
         # Headings
@@ -295,14 +289,14 @@ class ClusterCardList(SutekhPlugin):
             oTable.attach(oBut, 0, 1, iRow, iRow + 1)
             oTable.attach(gtk.Label(str(iId)), 1, 2, iRow, iRow + 1)
             oTable.attach(gtk.Label(str(len(aClusters[iId]))),
-                2, 3, iRow, iRow + 1)
+                          2, 3, iRow, iRow + 1)
             oTable.attach(oCenterLabel, 3, 4, iRow, iRow + 1)
 
         # top align, using viewport to scroll
         self._oResultsVbox.pack_start(AutoScrolledWindow(oTable, True))
 
         oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
-                " Clusters")
+                                         " Clusters")
         oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
         self._oResultsVbox.pack_end(oMakeCardSetsButton, False)  # bottom align
 
@@ -319,7 +313,7 @@ class ClusterCardList(SutekhPlugin):
         elif oResponse == gtk.RESPONSE_APPLY:
             self.do_clustering()
             # change to results section
-            self._oNotebook.set_current_page(2)
+            oDlg.notebook.set_current_page(2)
 
     def handle_make_card_sets(self, _oSomeObj):
         """Create card a suitable card set from the chosen clusters"""
@@ -383,8 +377,12 @@ class ClusterCardList(SutekhPlugin):
             # calculate membership in clusters
             for iCard in xrange(iCards):
                 oVec = aCards[iCard]
+                # pylint: disable=W0640
+                # Since we use key immediately, this warning isn't
+                # an issue
                 iVmin = min(xrange(iNumClust),
-                    key=lambda iV: fDist(oVec, aMeans[iV]))
+                            key=lambda iV: fDist(oVec, aMeans[iV]))
+                # pylint: enable=W0640
                 aClusters[iVmin].append(iCard)
 
             # recompute the centroids
@@ -407,7 +405,7 @@ class ClusterCardList(SutekhPlugin):
             for sName, oBut in dButtons.iteritems():
                 if oBut.get_active():
                     dPropFuncs[sGroup + ": " + sName] = \
-                            self._dGroups[sGroup][sName]
+                        self._dGroups[sGroup][sName]
 
         # sort column names
         aColNames = dPropFuncs.keys()
@@ -435,7 +433,7 @@ class ClusterCardList(SutekhPlugin):
         # aClusters -> list of clusters, each cluster is a list of card indexes
 
         aMeans, aClusters = self.k_means(aTable, iNumClusts, iIterations,
-                fDist)
+                                         fDist)
 
         self._populate_results(aCards, aColNames, aMeans, aClusters)
 
@@ -455,7 +453,7 @@ class ClusterCardList(SutekhPlugin):
         # pylint: disable=E1101
         # SQLObject confuses pylint
         aCards = [IPhysicalCard(self._aCards[x]) for x in
-            self._aClusters[iClusterId]]
+                  self._aClusters[iClusterId]]
         self._commit_cards(oDeck, aCards)
         self.open_cs(sDeckName, True)
 

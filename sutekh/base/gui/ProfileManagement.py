@@ -10,7 +10,7 @@ import gtk
 import gobject
 from sqlobject import SQLObjectNotFound
 from ..core.BaseObjects import PhysicalCardSet
-from .SutekhDialog import (SutekhDialog, do_complaint_error,
+from .SutekhDialog import (NotebookDialog, do_complaint_error,
                            do_complaint_warning)
 from .AutoScrolledWindow import AutoScrolledWindow
 from .FrameProfileEditor import FrameProfileEditor
@@ -103,7 +103,7 @@ class ScrolledProfileList(gtk.Frame):
     # pylint: enable=W0212
 
 
-class ProfileMngDlg(SutekhDialog):
+class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
     # pylint: disable=R0904, R0902
     # R0904 - gtk.Widget, so many public methods
@@ -123,24 +123,19 @@ class ProfileMngDlg(SutekhDialog):
 
         self.set_default_size(700, 550)
 
-        self._oNotebook = gtk.Notebook()
-        self._oNotebook.set_scrollable(True)
-        self._oNotebook.popup_enable()
         for sType in (CARDSET, FULL_CARDLIST, CARDSET_LIST):
             oProfileList = self._make_profile_list(sType)
-            self._oNotebook.append_page(oProfileList, gtk.Label(LABELS[sType]))
+            self.add_widget_page(oProfileList, LABELS[sType])
             self._dLists[oProfileList] = sType
 
         # pylint: disable=E1101
-        # vbox, action_area confuse pylint
-        self.vbox.pack_start(self._oNotebook)
-        # Add buttons
-        self.add_button("Edit Profile", self.RESPONSE_EDIT)
-        self.add_button("Delete", self.RESPONSE_DELETE)
-
+        # action_area confuse pylint
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
 
         self.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+
+        self.add_first_button("Delete", self.RESPONSE_DELETE)
+        self.add_first_button("Edit Profile", self.RESPONSE_EDIT)
 
         self.connect("response", self._button_response)
 
@@ -173,14 +168,9 @@ class ProfileMngDlg(SutekhDialog):
         # else CLOSE was pressed, so exit
         return iResponse
 
-    def _get_cur_list(self):
-        """Ensure list stores reflect the correct state"""
-        iPageNum = self._oNotebook.get_current_page()
-        return self._oNotebook.get_nth_page(iPageNum)
-
     def _get_selected_profile(self):
         """Get the currently selected profile and type"""
-        oList = self._get_cur_list()
+        oList = self.get_cur_widget()
         sType = self._dLists[oList]
         tSelected = oList.view.get_selected()
         if tSelected:
@@ -201,7 +191,7 @@ class ProfileMngDlg(SutekhDialog):
             sNewName = self.__oConfig.get_profile_option(sType, sProfile,
                                                          'name')
             if sNewName != sOldName:
-                oList = self._get_cur_list()
+                oList = self.get_cur_widget()
                 oList.store.fix_entry(sProfile, sNewName)
 
     def _get_in_use_mesg(self, sType, aPanes):
@@ -258,5 +248,5 @@ class ProfileMngDlg(SutekhDialog):
                 if iRes == gtk.RESPONSE_CANCEL:
                     return
             self.__oConfig.remove_profile(sType, sProfile)
-            oList = self._get_cur_list()
+            oList = self.get_cur_widget()
             oList.store.remove_entry(sProfile)

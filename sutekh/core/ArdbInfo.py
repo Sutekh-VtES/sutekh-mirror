@@ -70,7 +70,7 @@ class ArdbInfo(object):
            entry per card."""
         dCombinedCards = {}
         for tKey, iNum in sorted(dCards.iteritems(),
-                key=lambda x: (x[0][0].name, x[0][-1])):
+                                 key=lambda x: (x[0][0].name, x[0][-1])):
             oCard = tKey[0]
             dCombinedCards.setdefault(oCard, [0] + list(tKey[1:]))
             dCombinedCards[oCard][0] += iNum
@@ -89,11 +89,11 @@ class ArdbInfo(object):
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
         dCryptStats = {
-                'size': 0,
-                'min': 75,
-                'max': 0,
-                'avg': 0.0,
-                }
+            'size': 0,
+            'min': 75,
+            'max': 0,
+            'avg': 0.0,
+        }
         dVamps = {}
         for tKey, iCount in dCards.iteritems():
             oCard = tKey[0]
@@ -111,7 +111,7 @@ class ArdbInfo(object):
                     dCryptStats['min'] = iCap
         if dCryptStats['size'] > 0:
             dCryptStats['avg'] = round(dCryptStats['avg'] /
-                    dCryptStats['size'], 2)
+                                       dCryptStats['size'], 2)
         if dCryptStats['min'] == 75:
             dCryptStats['min'] = 0
         return dVamps, dCryptStats
@@ -171,7 +171,7 @@ class ArdbInfo(object):
             # need to fake it. We use the first legitimate expansion
             # We sort the list to ensure stable results across databases, etc.
             aExp = sorted([oP.expansion for oP in oAbsCard.rarity],
-                    key=lambda x: x.shortname)
+                          key=lambda x: x.shortname)
             oExpansion = aExp[0]
         sSet = escape_ardb_expansion_name(oExpansion)
         return sSet
