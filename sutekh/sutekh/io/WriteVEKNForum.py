@@ -88,21 +88,9 @@ class WriteVEKNForum(ArdbInfo):
         # so we need to keep track and format later
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                                              key=self._crypt_sort_key):
-            dLine = {'count': iCount}
-            if len(oCard.creed) > 0:
-                dLine['clan'] = "%s (Imbued)" % \
-                    [x.name for x in oCard.creed][0]
-                dLine['capacity'] = oCard.life
-            else:
-                dLine['clan'] = [x.name for x in oCard.clan][0]
-                dLine['capacity'] = oCard.capacity
+            dLine = self._format_crypt_line(oCard, iCount)
             add_clan_symbol(dLine)
-            dLine['name'] = oCard.name
-            dLine['url'] = secret_library_url(oCard, True)
-            dLine['adv'] = ''
-            if oCard.level is not None:
-                dLine['name'] = dLine['name'].replace(' (Advanced)', '')
-                dLine['adv'] = 'Adv'
+            dLine['adv'] = dLine['adv'].strip()
             aDisc = self._gen_disciplines(oCard).split()
             if aDisc:
                 # Get nice frum symbols for the disciplines
@@ -113,13 +101,8 @@ class WriteVEKNForum(ArdbInfo):
                 dLine['disc'] = dLine['disc'].replace(":FLI:", ":flight:")
             else:
                 dLine['disc'] = ""
+            dLine['url'] = secret_library_url(oCard, True)
 
-            dLine['title'] = '   '
-            if len(oCard.title):
-                dLine['title'] = [oC.name for oC in oCard.title][0]
-                dLine['title'] = dLine['title'].replace('Independent with ',
-                                                        '')[:12]
-            dLine['group'] = int(oCard.group)
             aCryptLines.append(dLine)
 
         sCrypt += "[table]\n"

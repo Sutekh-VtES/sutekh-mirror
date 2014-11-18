@@ -59,16 +59,7 @@ class WritePmwiki(ArdbInfo):
         aCryptLines = []
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                                              key=self._crypt_sort_key):
-            dLine = {'count': iCount}
-            if len(oCard.creed) > 0:
-                dLine['capacity'] = oCard.life
-            else:
-                dLine['capacity'] = oCard.capacity
-            dLine['name'] = oCard.name
-            dLine['adv'] = ''
-            if oCard.level is not None:
-                dLine['name'] = dLine['name'].replace(' (Advanced)', '')
-                dLine['adv'] = 'Adv'
+            dLine = self._format_crypt_line(oCard, iCount)
             aCryptLines.append(dLine)
 
         for dLine in aCryptLines:

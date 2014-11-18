@@ -65,36 +65,19 @@ class WriteArdbText(ArdbInfo):
         iTitleJust = 0
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
                                              key=self._crypt_sort_key):
-            dLine = {'count': iCount}
-            if len(oCard.creed) > 0:
-                dLine['clan'] = "%s (Imbued)" % \
-                    [x.name for x in oCard.creed][0]
-                dLine['capacity'] = oCard.life
-            else:
-                dLine['clan'] = [x.name for x in oCard.clan][0]
-                if dLine['clan'].endswith('antitribu'):
-                    # ARDB doesn't truncate antitribu further
-                    dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
-                                                                '')
-                else:
-                    dLine['clan'] = dLine['clan'][:10]  # truncate if needed
-                dLine['capacity'] = oCard.capacity
-            dLine['name'] = oCard.name
-            dLine['adv'] = '   '
-            if oCard.level is not None:
-                dLine['name'] = dLine['name'].replace(' (Advanced)', '')
-                dLine['adv'] = 'Adv'
+            dLine = self._format_crypt_line(oCard, iCount)
+            if dLine['clan'].endswith('antitribu'):
+                # ARDB doesn't truncate antitribu further
+                dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
+                                                            '')
+            elif 'Imbued' not in dLine['clan']:
+                dLine['clan'] = dLine['clan'][:10]  # truncate if needed
+
             dLine['name'] = dLine['name'].ljust(18)[:18]  # truncate if needed
             dLine['disc'] = self._gen_disciplines(oCard)
             iDiscJust = max(iDiscJust, len(dLine['disc']))
 
-            dLine['title'] = '   '
-            if len(oCard.title):
-                dLine['title'] = [oC.name for oC in oCard.title][0]
-                dLine['title'] = dLine['title'].replace('Independent with ',
-                                                        '')[:12]
-                iTitleJust = max(iTitleJust, len(dLine['title']))
-            dLine['group'] = int(oCard.group)
+            iTitleJust = max(iTitleJust, len(dLine['title']))
             aCryptLines.append(dLine)
 
         for dLine in aCryptLines:
