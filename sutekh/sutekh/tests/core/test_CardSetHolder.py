@@ -10,7 +10,7 @@ from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
 from sutekh.base.core.BaseObjects import (IPhysicalCardSet, IExpansion,
                                           MapPhysicalCardToPhysicalCardSet,
                                           IAbstractCard)
-from sutekh.core import Filters
+from sutekh.base.core import BaseFilters
 import unittest
 
 
@@ -50,14 +50,14 @@ class CardSetHolderTests(SutekhTest):
         oCSH.create_pcs()
         oCS = IPhysicalCardSet('Test Set 1')
         self.assertEqual(len(oCS.cards), 12)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 1')
-        oAbbotFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('Abbot')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 1')
+        oAbbotFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('Abbot')])
         aCSCards = [IAbstractCard(x).name for x in oAbbotFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abbot'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
@@ -78,14 +78,14 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(oCS2.parent, oCS)
         self.assertEqual(len(oCS2.cards), 10)
 
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 2')
-        oAbbotFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('Abbot')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 2')
+        oAbbotFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('Abbot')])
         aCSCards = [IAbstractCard(x).name for x in oAbbotFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
@@ -106,15 +106,15 @@ class CardSetHolderTests(SutekhTest):
 
         oCS = IPhysicalCardSet('Test Set 3')
         self.assertEqual(len(oCS.cards), 3)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 3')
-        oGunFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('.44 Magnum')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 3')
+        oGunFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('.44 Magnum')])
         aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'.44 Magnum', u'.44 Magnum',
                                     '.44 Magnum'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
@@ -146,14 +146,14 @@ class CardSetHolderTests(SutekhTest):
 
         oCS = IPhysicalCardSet('Test Set 4')
         self.assertEqual(len(oCS.cards), 5)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 4')
-        oGunFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('AK-47')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 4')
+        oGunFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('AK-47')])
         aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'AK-47', u'AK-47'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
@@ -194,15 +194,15 @@ class CardSetHolderTests(SutekhTest):
         oCSH.create_pcs(dLookupCache=dLookupCache)
         oCS = IPhysicalCardSet('Test Set 1')
         self.assertEqual(len(oCS.cards), 12)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 1')
-        oAbbotFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('Abbot')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 1')
+        oAbbotFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('Abbot')])
         aCSCards = [IAbstractCard(x).name for x in
                     oAbbotFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abbot'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
@@ -227,14 +227,14 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(oCS2.parent, oCS)
         self.assertEqual(len(oCS2.cards), 10)
 
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 2')
-        oAbbotFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('Abbot')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 2')
+        oAbbotFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('Abbot')])
         aCSCards = [IAbstractCard(x).name for x in oAbbotFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
@@ -257,15 +257,15 @@ class CardSetHolderTests(SutekhTest):
 
         oCS = IPhysicalCardSet('Test Set 3')
         self.assertEqual(len(oCS.cards), 3)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 3')
-        oGunFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('.44 Magnum')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 3')
+        oGunFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('.44 Magnum')])
         aCSCards = [IAbstractCard(x).name for x in oGunFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'.44 Magnum', u'.44 Magnum',
                                     '.44 Magnum'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [])
@@ -292,15 +292,15 @@ class CardSetHolderTests(SutekhTest):
 
         oCS = IPhysicalCardSet('Test Set 4')
         self.assertEqual(len(oCS.cards), 5)
-        oPCSFilter = Filters.PhysicalCardSetFilter('Test Set 4')
-        oGunFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.SpecificCardFilter('AK-47')])
+        oPCSFilter = BaseFilters.PhysicalCardSetFilter('Test Set 4')
+        oGunFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.SpecificCardFilter('AK-47')])
         aCSCards = [IAbstractCard(x).name for x in
                     oGunFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'AK-47', u'AK-47'])
-        oVampireFilter = Filters.FilterAndBox([
-            oPCSFilter, Filters.CardTypeFilter('Vampire')])
+        oVampireFilter = BaseFilters.FilterAndBox([
+            oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]

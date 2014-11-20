@@ -26,7 +26,7 @@ from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               MINUS_SETS_IN_USE, CHILD_CARDS,
                                               IGNORE_PARENT, PARENT_COUNT,
                                               MINUS_THIS_SET, THIS_SET_ONLY)
-from sutekh.core import Filters
+from sutekh.base.core import BaseFilters
 from sutekh.core.Groupings import (CryptLibraryGrouping,
                                    DisciplineGrouping, ClanGrouping)
 from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
@@ -475,7 +475,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for iShowMode in (THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
                                       CHILD_CARDS):
                         oModel._change_count_mode(iShowMode)
-                        oModel.selectfilter = Filters.CardNameFilter('ZZZZZZZ')
+                        oModel.selectfilter = BaseFilters.CardNameFilter(
+                            'ZZZZZZZ')
                         oModel.applyfilter = True
                         oModel.load()
                         tFilterTotals = (
@@ -678,10 +679,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
-        for oFilter in (Filters.CardTypeFilter('Vampire'),
-                        Filters.PhysicalExpansionFilter('Sabbat'),
-                        Filters.CardSetMultiCardCountFilter((['2', '3'],
-                                                             self.aNames[0])),
+        for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
+                        BaseFilters.PhysicalExpansionFilter('Sabbat'),
+                        BaseFilters.CardSetMultiCardCountFilter(
+                            (['2', '3'], self.aNames[0])),
                        ):
             oModel = self._get_model(self.aNames[0])
             oModel.selectfilter = oFilter
@@ -695,10 +696,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
         aModels = []
-        for oFilter in (Filters.CardTypeFilter('Vampire'),
-                        Filters.PhysicalExpansionFilter('Sabbat'),
-                        Filters.CardSetMultiCardCountFilter((['2', '3'],
-                                                             self.aNames[0])),
+        for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
+                        BaseFilters.PhysicalExpansionFilter('Sabbat'),
+                        BaseFilters.CardSetMultiCardCountFilter(
+                            (['2', '3'], self.aNames[0])),
                        ):
             # pylint: disable=W0212
             # we need to access protected methods
@@ -1024,10 +1025,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        for oFilter in (Filters.CardTypeFilter('Vampire'),
-                        Filters.PhysicalExpansionFilter('Sabbat'),
-                        Filters.CardSetMultiCardCountFilter((['2', '3'],
-                                                             self.aNames[0])),
+        for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
+                        BaseFilters.PhysicalExpansionFilter('Sabbat'),
+                        BaseFilters.CardSetMultiCardCountFilter(
+                            (['2', '3'], self.aNames[0])),
                        ):
             for sName in self.aNames[:4]:
                 oModel = self._get_model(sName)
@@ -1044,10 +1045,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        for oFilter in (Filters.CardTypeFilter('Vampire'),
-                        Filters.PhysicalExpansionFilter('Sabbat'),
-                        Filters.CardSetMultiCardCountFilter((['2', '3'],
-                                                             self.aNames[0])),
+        for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
+                        BaseFilters.PhysicalExpansionFilter('Sabbat'),
+                        BaseFilters.CardSetMultiCardCountFilter(
+                            (['2', '3'], self.aNames[0])),
                        ):
             for sName in self.aNames[:4]:
                 # pylint: disable=W0212
@@ -1065,10 +1066,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oPCS, _oSPCS, oChildPCS, _oGCPCS, _oGC2PCS = \
                 self._setup_relationships()
         aModels = []
-        oConfigFilter = Filters.CardSetMultiCardCountFilter((['2', '3'],
-                                                             self.aNames[0]))
-        for oFilter in (Filters.CardTypeFilter('Vampire'),
-                        Filters.PhysicalExpansionFilter('Sabbat')):
+        oConfigFilter = BaseFilters.CardSetMultiCardCountFilter(
+            (['2', '3'], self.aNames[0]))
+        for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
+                        BaseFilters.PhysicalExpansionFilter('Sabbat')):
             for sName in self.aNames[:4]:
                 # pylint: disable=W0212
                 # we need to access protected methods
@@ -1111,7 +1112,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.bEditable = False
         oModel.hideillegal = True
         # Test card type
-        oModel.selectfilter = Filters.CardTypeFilter('Vampire')
+        oModel.selectfilter = BaseFilters.CardTypeFilter('Vampire')
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
