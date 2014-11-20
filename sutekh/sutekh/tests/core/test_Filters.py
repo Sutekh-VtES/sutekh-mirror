@@ -6,6 +6,7 @@
 """Sutekh Filters tests"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
                                           AbstractCardAdapter,
@@ -17,21 +18,6 @@ from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 from sqlobject import SQLObjectNotFound
 import unittest
-
-
-# Split off as a function, so can be used by several test cases
-
-def make_card(sCardName, sExpName):
-    """Create a Physical card given the name and expansion.
-
-       Handle None for the expansion name properly"""
-    if sExpName:
-        oExp = ExpansionAdapter(sExpName)
-    else:
-        oExp = None
-    oAbs = AbstractCardAdapter(sCardName)
-    oCard = PhysicalCardAdapter((oAbs, oExp))
-    return oCard
 
 
 def make_physical_card_sets():

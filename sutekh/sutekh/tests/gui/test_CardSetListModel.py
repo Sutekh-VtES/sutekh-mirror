@@ -9,6 +9,7 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
+from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
 from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               EXTRA_LEVEL_OPTION,
@@ -34,7 +35,6 @@ from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
                                             RarityGrouping, NullGrouping)
 from sutekh.base.core.BaseObjects import (PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
-from sutekh.tests.core.test_Filters import make_card
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.base.core.DBSignals import send_changed_signal

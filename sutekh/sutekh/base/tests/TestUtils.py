@@ -17,6 +17,22 @@ import gtk
 from nose import SkipTest
 from logging import FileHandler
 
+from ..core.BaseObjects import (AbstractCardAdapter, PhysicalCardAdapter,
+                                ExpansionAdapter)
+
+
+def make_card(sCardName, sExpName):
+    """Create a Physical card given the name and expansion.
+
+       Handle None for the expansion name properly"""
+    if sExpName:
+        oExp = ExpansionAdapter(sExpName)
+    else:
+        oExp = None
+    oAbs = AbstractCardAdapter(sCardName)
+    oCard = PhysicalCardAdapter((oAbs, oExp))
+    return oCard
+
 
 def create_tmp_file(sDir, sData):
     """Create a temporary file in the given directory."""

@@ -8,7 +8,7 @@
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
-from sutekh.tests.core.test_Filters import make_card
+from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 from sqlobject import SQLObjectNotFound
 import unittest
