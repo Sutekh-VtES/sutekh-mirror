@@ -6,8 +6,8 @@
 """Test the Abstract Card Set parser"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.core.BaseObjects import (IAbstractCard, IPhysicalCard,
-                                          IPhysicalCardSet, PhysicalCardSet,
+from sutekh.base.tests.TestUtils import make_card
+from sutekh.base.core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
@@ -68,10 +68,8 @@ class AbstractCardSetParserTest(SutekhTest):
         oCardSet1 = IPhysicalCardSet("(ACS) " + CARD_SET_NAMES[0])
         oCardSet2 = IPhysicalCardSet("(ACS) " + CARD_SET_NAMES[1])
 
-        oAbsCard0 = IAbstractCard(ABSTRACT_CARDS[0])
-        oAbsCard2 = IAbstractCard(ABSTRACT_CARDS[2])
-        oPhysCard0 = IPhysicalCard((oAbsCard0, None))
-        oPhysCard2 = IPhysicalCard((oAbsCard2, None))
+        oPhysCard0 = make_card(ABSTRACT_CARDS[0], None)
+        oPhysCard2 = make_card(ABSTRACT_CARDS[2], None)
 
         self.assertEqual(len(oCardSet1.cards), 5)
         self.assertEqual(len(oCardSet2.cards), 9)

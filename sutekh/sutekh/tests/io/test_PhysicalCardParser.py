@@ -6,9 +6,9 @@
 """Test PhysicalCard handling"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.base.core.BaseObjects import (IAbstractCard, IPhysicalCard,
-                                          IPhysicalCardSet, PhysicalCardSet)
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
@@ -24,12 +24,11 @@ def make_example_pcxml():
     """Create the example XML File"""
     # pylint: disable=E1101
     # E1101: SQLObject + PyProtocols magic confuses pylint
-    oAC = IAbstractCard(ABSTRACT_CARDS[0])
-    oPC = IPhysicalCard((oAC, None))
+    oPC = make_card(ABSTRACT_CARDS[0], None)
 
     sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
                 'expansion="None Specified" id="%d" name="%s" /></cards>'
-                % (LAST_WRITER_VERSION, oPC.id, oAC.name))
+                % (LAST_WRITER_VERSION, oPC.id, ABSTRACT_CARDS[0]))
     return sExample
 
 
