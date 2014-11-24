@@ -16,7 +16,7 @@ import zipfile
 import re
 from sqlobject import sqlhub
 from ..core.DatabaseVersion import DatabaseVersion
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseObjects import PhysicalCardSet, IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
 from .MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from .SutekhDialog import do_complaint_warning
@@ -315,6 +315,19 @@ class BasePlugin(object):
             # sqlobject confuses pylint
             return self.model.cardset
         return None
+
+    def get_selected_abs_cards(self):
+        """Extract selected abstract cards from the selection."""
+        aSelectedCards = []
+        if self._cModelType is PhysicalCardSet:
+            _oModel, aSelected = self.view.get_selection().get_selected_rows()
+            for oPath in aSelected:
+                # pylint: disable=E1101
+                # pylint doesn't pick up adapter's methods correctly
+                oCard = IAbstractCard(
+                    self.model.get_card_name_from_path(oPath))
+                aSelectedCards.append(oCard)
+        return aSelectedCards
 
     def get_all_cards(self):
         """Get the cards from the card set."""

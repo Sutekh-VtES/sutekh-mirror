@@ -102,7 +102,7 @@ class FindLikeVampires(SutekhPlugin):
 
            Prompt the user for attributes that are important and so forth
            """
-        self.oSelCard = self._get_selected_cards()
+        self.oSelCard = self._get_selected_crypt_card()
         if not self.oSelCard:
             do_complaint_error("Please select only 1 crypt card.")
             return
@@ -155,25 +155,16 @@ class FindLikeVampires(SutekhPlugin):
                                         []).append(oCard)
         return dResults
 
-    def _get_selected_cards(self):
+    def _get_selected_crypt_card(self):
         """Extract selected crypt card from the model."""
-        aCards = []
-        _oModel, aSelection = self.view.get_selection().get_selected_rows()
-        if len(aSelection) == 0:
+        # Only interested in distinct cards
+        aAbsCards = set(self.get_selected_abs_cards())
+        if len(aAbsCards) != 1:
             return None
-        # We allow multiple selections of the same card
-        # (discipline grouping, etc).
-        for oPath in aSelection:
-            # pylint: disable=E1101
-            # pylint doesn't pick up adapter's methods correctly
-            oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
-            if not is_crypt_card(oCard):
-                # Only want crypt cards
-                return None
-            if oCard not in aCards:
-                aCards.append(oCard)
-            if len(aCards) > 1:
-                return None
+        oCard = aAbsCards.pop()
+        if not is_crypt_card(oCard):
+            # Only want crypt cards
+            return None
         return oCard
 
     def find_vampires_like(self):

@@ -184,21 +184,10 @@ class TWDAInfoPlugin(SutekhPlugin):
         """Disconnect the database listeners"""
         super(TWDAInfoPlugin, self).cleanup()
 
-    def _get_selected_cards(self):
-        """Extract selected cards from the selection."""
-        dSelected = self.view.process_selection()
-        aAbsCards = []
-        for sCardName in dSelected:
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
-            oCard = IAbstractCard(sCardName)
-            aAbsCards.append(oCard)
-
-        return aAbsCards
-
     def find_twda(self, _oWidget, sMode):
         """Find decks which match the given search"""
-        aAbsCards = self._get_selected_cards()
+        # Only want the distinct cards - numbers are unimportant
+        aAbsCards = set(self.get_selected_abs_cards())
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return

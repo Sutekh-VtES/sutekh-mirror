@@ -40,7 +40,9 @@ class BaseSetExpansion(BasePlugin):
         """Find the common subset of the selected cards, and prompt the user
            for the expansion.
            """
-        dSelected, aAbsCards = self._get_selected_cards()
+        dSelected = self.view.process_selection()
+        # Only want the distinct cards here - numbers are unimportant
+        aAbsCards = set(self.get_selected_abs_cards())
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return
@@ -98,21 +100,11 @@ class BaseSetExpansion(BasePlugin):
                     send_changed_signal(oCS, oNewCard, +1)
         self.view.reload_keep_expanded()
 
-    def _get_selected_cards(self):
-        """Extract selected cards from the selection."""
-        dSelected = self.view.process_selection()
-        aAbsCards = []
-        for sCardName in dSelected:
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
-            oCard = IAbstractCard(sCardName)
-            aAbsCards.append(oCard)
-        return dSelected, aAbsCards
-
     def find_common_expansions(self, aCardList):
         """Find the common possible set of expansions for the given list
            of abstract cards."""
-        aCandExpansions = set([x.expansion.name for x in aCardList[0].rarity])
+        oFirstCard = aCardList.pop()
+        aCandExpansions = set([x.expansion.name for x in oFirstCard.rarity])
         for oCard in aCardList:
             aThisExpansions = set([x.expansion.name for x in oCard.rarity])
             aCandExpansions = aThisExpansions.intersection(aCandExpansions)
