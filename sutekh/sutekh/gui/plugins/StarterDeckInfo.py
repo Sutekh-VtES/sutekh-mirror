@@ -24,7 +24,8 @@ from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                find_children, has_children,
-                                               check_cs_exists)
+                                               check_cs_exists, clean_empty,
+                                               get_current_card_sets)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.io.DataPack import DOC_URL, find_data_pack
@@ -273,7 +274,7 @@ class StarterInfoPlugin(SutekhPlugin):
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Importing Starters")
         oLogger = Logger('Read zip file')
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
         dList = oFile.get_all_entries()
         # Check that we match starter regex
         bOK = False
@@ -302,7 +303,7 @@ class StarterInfoPlugin(SutekhPlugin):
                 oProgressDialog.destroy()
                 return False  # Error
         # Cleanup
-        self._clean_empty(oFile.get_all_entries(), aExistingList)
+        clean_empty(oFile.get_all_entries(), aExistingList)
         self._clean_removed(sRemovedInfo)
         self.reload_pcs_list()
         oProgressDialog.destroy()
@@ -385,29 +386,6 @@ class StarterInfoPlugin(SutekhPlugin):
                     # FIXME: Prompt in this case
                     continue
                 delete_physical_card_set(sName)
-
-    # pylint: disable=R0201
-    # Method for consistency with _unzip methods
-    def _clean_empty(self, aMyList, aExistingList):
-        """Remove any newly created sets in that have no cards AND no
-           children"""
-        for sName in aMyList:
-            if sName in aExistingList:
-                continue  # Not a card set we added
-            try:
-                oCS = IPhysicalCardSet(sName)
-            except SQLObjectNotFound:
-                # set not there, so skip
-                continue
-            # pylint: disable=E1101
-            # QLObject + PyProtocols confuses pylint
-            if has_children(oCS):
-                continue
-            if len(oCS.cards) > 0:
-                continue  # has cards
-            delete_physical_card_set(sName)
-
-    # pylint: enable=R0201
 
     def _toggle_starter(self, oToggle):
         """Toggle the show info flag"""
@@ -496,5 +474,6 @@ class StarterInfoPlugin(SutekhPlugin):
             oCardTextBuf.labelled_list('Preconstructed Decks',
                                        dInfo['Starters'], 'starters')
         oCardTextBuf.set_cur_iter(oTempIter)
+
 
 plugin = StarterInfoPlugin

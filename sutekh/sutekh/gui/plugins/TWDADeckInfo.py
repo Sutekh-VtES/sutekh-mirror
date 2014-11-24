@@ -19,7 +19,8 @@ from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
                                           do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, has_children,
+                                               find_children, clean_empty,
+                                               get_current_card_sets,
                                                check_cs_exists)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data
@@ -462,7 +463,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         oProgressDialog.destroy()
 
         oLogHandler = SutekhCountLogHandler()
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Adding TWDA Data")
         oLogger = Logger('Read zip file')
@@ -478,7 +479,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 return False
             aCSList.extend(oZipFile.get_all_entries().keys())
         oProgressDialog.destroy()
-        self._clean_empty(aCSList, aExistingList)
+        clean_empty(aCSList, aExistingList)
         self.reload_pcs_list()
         return True
 
@@ -488,7 +489,8 @@ class TWDAInfoPlugin(SutekhPlugin):
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Importing TWDA Data")
         oLogger = Logger('Read zip file')
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
+        oProgressDialog = ProgressDialog()
         dList = oFile.get_all_entries()
         # Check that we match holder regex
         bOK = False
@@ -514,7 +516,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             oProgressDialog.destroy()
             return False
         # Cleanup
-        self._clean_empty(oFile.get_all_entries().keys(), aExistingList)
+        clean_empty(oFile.get_all_entries().keys(), aExistingList)
         self.reload_pcs_list()
         oProgressDialog.destroy()
         return True
@@ -586,27 +588,5 @@ class TWDAInfoPlugin(SutekhPlugin):
         sqlhub.processConnection = oOldConn
         return True
 
-    # pylint: disable=R0201
-    # Method for consistency with _unzip methods
-    def _clean_empty(self, aMyList, aExistingList):
-        """Remove any newly created sets in that have no cards AND no
-           children"""
-        for sName in aMyList:
-            if sName in aExistingList:
-                continue  # Not a card set we added
-            try:
-                oCS = IPhysicalCardSet(sName)
-            except SQLObjectNotFound:
-                # set not there, so skip
-                continue
-            # pylint: disable=E1101
-            # QLObject + PyProtocols confuses pylint
-            if has_children(oCS):
-                continue
-            if len(oCS.cards) > 0:
-                continue  # has cards
-            delete_physical_card_set(sName)
-
-    # pylint: enable=R0201
 
 plugin = TWDAInfoPlugin
