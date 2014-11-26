@@ -16,7 +16,7 @@ import zipfile
 import re
 from sqlobject import sqlhub
 from ..core.DatabaseVersion import DatabaseVersion
-from ..core.BaseObjects import PhysicalCardSet, IAbstractCard
+from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
 from .MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from .SutekhDialog import do_complaint_warning
@@ -319,7 +319,7 @@ class BasePlugin(object):
     def get_selected_abs_cards(self):
         """Extract selected abstract cards from the selection."""
         aSelectedCards = []
-        if self._cModelType is PhysicalCardSet:
+        if self._cModelType in [PhysicalCardSet, PhysicalCard]:
             _oModel, aSelected = self.view.get_selection().get_selected_rows()
             for oPath in aSelected:
                 # pylint: disable=E1101
