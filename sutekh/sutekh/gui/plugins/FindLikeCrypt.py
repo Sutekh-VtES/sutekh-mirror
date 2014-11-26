@@ -119,7 +119,8 @@ class FindLikeVampires(SutekhPlugin):
                 do_complaint_error("Please select an Imbued with virtues.")
                 return
             dGroups = self.find_imbued_like()
-        self.display_results(dGroups)
+        if dGroups:
+            self.display_results(dGroups)
     # pylint: enable=W0201
 
     def _group_cards(self, aCards, iNum, aSubSets, bSuperior, bUseCardSet):
