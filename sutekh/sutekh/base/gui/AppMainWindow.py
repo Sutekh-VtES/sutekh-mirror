@@ -26,6 +26,7 @@ from .CardSetManagementFrame import CardSetManagementFrame
 from .MessageBus import MessageBus, DATABASE_MSG
 from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import do_complaint_error_details, do_exception_complaint
+from .UpdateDialog import UpdateDialog
 
 
 class AppMainWindow(MultiPaneWindow):
@@ -135,6 +136,7 @@ class AppMainWindow(MultiPaneWindow):
 
         self._setup_vbox()
         self.restore_from_config()
+        self.check_for_updates()
 
     def _create_app_menu(self):
         """Hook for creating the main application menu."""
@@ -245,6 +247,29 @@ class AppMainWindow(MultiPaneWindow):
         if not self.aOpenFrames:
             # We always have at least one pane
             self.add_pane()
+
+    def check_for_updates(self):
+        """Check for updated data from plugins or updated cardlists
+           and so forth."""
+        # FIXME: We should probably add a config option so people can
+        # skip this if desirable.
+        aMessages = []
+        aUpdatePlugins = []
+        for oPlugin in self._aPlugins:
+            sMsg = oPlugin.check_for_updates()
+            if sMsg:
+                aMessages.append(sMsg)
+                aUpdatePlugins.append(oPlugin)
+        # FIXME: Check for cardlist updates as well
+        if aMessages:
+            # prompt the user
+            oDialog = UpdateDialog(aMessages)
+            iResponse = oDialog.run()
+            oDialog.destroy()
+            if iResponse != gtk.RESPONSE_OK:
+                return
+            for oPlugin in aUpdatePlugins:
+                oPlugin.do_update()
 
     # Pane manipulation functions
 

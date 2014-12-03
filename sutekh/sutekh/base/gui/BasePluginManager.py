@@ -274,6 +274,17 @@ class BasePlugin(object):
            """
         return None
 
+    def check_for_updates(self):
+        """Called to check if the plugin has newer data to download.
+
+           Should return a string with a message, or None if there's
+           nothing to download."""
+        return None
+
+    def do_update(self):
+        """Called to handle any pending updates."""
+        pass
+
     # pylint: enable=R0201
 
     # Utility Functions / Plugin API
