@@ -20,7 +20,7 @@ min-public-methods=0
 max-parents=12
 
 [MASTER]
-#load-plugins=dict_keys_check, pyprotocols_interface, pep8_wrapper, dummy_pylint_msgs
+#load-plugins=dict_keys_check, pyprotocols_interface, pep8_wrapper, dummy_pylint_msgs, force_gtk_import
 
 [FORMAT]
 # PEP 008 says 79, not 80
