@@ -23,7 +23,7 @@ from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                get_current_card_sets,
                                                check_cs_exists)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data
+from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data, HashError
 from sutekh.io.DataPack import find_all_data_packs, DOC_URL
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
@@ -341,10 +341,10 @@ class TWDAInfoPlugin(SutekhPlugin):
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
             if oDialog.is_url():
-                aUrls, aDates, _aHashes = oDialog.get_url_data()
+                aUrls, aDates, aHashes = oDialog.get_url_data()
                 if not aUrls:
                     do_complaint_error('Unable to access TWD data')
-                elif not self._get_decks(aUrls, aDates):
+                elif not self._get_decks(aUrls, aDates, aHashes):
                     do_complaint_error(
                         'Unable to successfully download TWD data')
             else:
@@ -352,18 +352,36 @@ class TWDAInfoPlugin(SutekhPlugin):
         # cleanup
         oDialog.destroy()
 
-    def _get_decks(self, aUrls, aDates):
-        """Unzip a file containing the decks."""
+    def check_for_updates(self):
+        """Check for any updates at startup."""
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'twd', fErrorHandler=gui_error_handler)
+        aToUnzip, _aToReplace = self._get_decks_to_download(aUrls, aDates,
+                                                            aHashes)
+        if aToUnzip:
+            aMessages = ["The following TWDA updates are available: "]
+            for _sUrl, sTWDA, _sHash in aToUnzip:
+                aMessages.append("<b>%s</b>" % sTWDA)
+            return '\n'.join(aMessages)
+        return None
+
+    def do_update(self):
+        """Handle the 'download stuff' respone from the startup check"""
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'twd', fErrorHandler=gui_error_handler)
+        if not self._get_decks(aUrls, aDates, aHashes):
+            do_complaint_error('Unable to successfully download TWD data')
+
+    def _get_decks_to_download(self, aUrls, aDates, aHashes):
+        """Check for any decks we need to download."""
         aToUnzip = []
         aToReplace = []
-        aZipHolders = []
-        iZipCount = 0
 
         # pylint: disable=E1101
         # Pyprotocols confuses pylint
-        for sUrl, sDate in zip(aUrls, aDates):
+        for sUrl, sDate, sHash in zip(aUrls, aDates, aHashes):
             if not sUrl:
-                return False
+                return False, False
             # Check if we need to download this url
             # This is a bit crude, but works because we control the format
             sZipName = sUrl.split('/')[-1]
@@ -374,7 +392,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 oHolder = IPhysicalCardSet(sTWDA)
             except SQLObjectNotFound:
                 # New TWDA holder, so add it to the list
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 continue
             # Existing TWDA entry, so check dates
             try:
@@ -394,12 +412,58 @@ class TWDAInfoPlugin(SutekhPlugin):
             if oTWDDate is None or oUrlDate is None:
                 # Unable to extract the dates correctly, so we treat this as
                 # something to replace
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 aToReplace.append(sTWDA)
             elif oTWDDate < oUrlDate:
                 # Url is newer, so we replace
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 aToReplace.append(sTWDA)
+        return aToUnzip, aToReplace
+
+    def _get_decks(self, aUrls, aDates, aHashes):
+        """Unzip a file containing the decks."""
+        iZipCount = 0
+        aZipHolders = []
+        aToUnzip, aToReplace = self._get_decks_to_download(aUrls, aDates,
+                                                           aHashes)
+        if not aToUnzip:
+            return False
+        # We download everything first, so we don't delete card sets which
+        # fail to download.
+        oLogHandler = BinnedCountLogHandler()
+        oProgressDialog = ProgressDialog()
+        oProgressDialog.set_description("Downloading TWDA data")
+        oLogger = Logger('Download zip files')
+        oLogger.addHandler(oLogHandler)
+        oLogHandler.set_dialog(oProgressDialog)
+        oLogHandler.set_tot_bins(len(aToUnzip))
+        oProgressDialog.show()
+        # We sort the list of urls to download for cosmetic reasons
+        for sUrl, sTWDA, sHash in sorted(aToUnzip, key=lambda x: x[1]):
+            oFile = urlopen_with_timeout(sUrl,
+                                         fErrorHandler=gui_error_handler)
+            oProgressDialog.set_description('Downloading %s' % sTWDA)
+            try:
+
+                sData = fetch_data(oFile, sHash=sHash,
+                                   oLogHandler=oLogHandler,
+                                   fErrorHandler=gui_error_handler)
+            except HashError:
+                do_complaint_error("Download failed for %s\nSkipping"
+                                   % sTWDA)
+                # Don't delete this, since we're not replacing it
+                aToReplace.remove(sTWDA)
+                continue
+            oZipFile = ZipFileWrapper(StringIO(sData))
+            aZipHolders.append(oZipFile)
+            iZipCount += len(oZipFile.get_all_entries())
+            oLogHandler.inc_cur_bin()
+        oProgressDialog.destroy()
+
+        # Bomb out if we're going to end up doing nothing
+        if len(aZipHolders) == 0:
+            return False
+
         # Delete all TWDA entries in the holders we replace
         # We do this to handle card sets being removed from the TWDA
         # correctly
@@ -429,27 +493,6 @@ class TWDAInfoPlugin(SutekhPlugin):
 
             oTrans.commit(close=True)
             sqlhub.processConnection = oOldConn
-
-        oLogHandler = BinnedCountLogHandler()
-        oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Downloading TWDA data")
-        oLogger = Logger('Download zip files')
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_tot_bins(len(aToUnzip))
-        oProgressDialog.show()
-        # We sort the list of urls to download for cosmetic reasons
-        for sUrl, sTWDA in sorted(aToUnzip, key=lambda x: x[1]):
-            oFile = urlopen_with_timeout(sUrl,
-                                         fErrorHandler=gui_error_handler)
-            oProgressDialog.set_description('Downloading %s' % sTWDA)
-            sData = fetch_data(oFile, oLogHandler=oLogHandler,
-                               fErrorHandler=gui_error_handler)
-            oZipFile = ZipFileWrapper(StringIO(sData))
-            aZipHolders.append(oZipFile)
-            iZipCount += len(oZipFile.get_all_entries())
-            oLogHandler.inc_cur_bin()
-        oProgressDialog.destroy()
 
         oLogHandler = SutekhCountLogHandler()
         aExistingList = get_current_card_sets()
