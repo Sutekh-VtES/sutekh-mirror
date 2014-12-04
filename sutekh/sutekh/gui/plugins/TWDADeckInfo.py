@@ -347,8 +347,13 @@ class TWDAInfoPlugin(SutekhPlugin):
                 elif not self._get_decks(aUrls, aDates, aHashes):
                     do_complaint_error(
                         'Unable to successfully download TWD data')
+                else:
+                    # Successful download, so we're configured
+                    self.set_config_item('twda configured', 'Yes')
             else:
-                self._unzip_twda_file(oDialog.get_file_data())
+                if self._unzip_twda_file(oDialog.get_file_data()):
+                    # Success, so we're configured
+                    self.set_config_item('twda configured', 'Yes')
         # cleanup
         oDialog.destroy()
 
