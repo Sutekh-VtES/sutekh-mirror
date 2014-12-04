@@ -28,7 +28,7 @@ from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                get_current_card_sets)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout
-from sutekh.io.DataPack import DOC_URL, find_data_pack
+from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
@@ -36,6 +36,7 @@ from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhFileWidget import add_filter
 import re
 import gtk
+import datetime
 from logging import Logger
 from StringIO import StringIO
 from sqlobject import SQLObjectNotFound
@@ -223,6 +224,108 @@ class StarterInfoPlugin(SutekhPlugin):
                 bEnabled = True
                 break
         return bEnabled
+
+    def check_for_updates(self):
+        """Check to see if the starter decks need to be updated."""
+        sPrefsValue = self.get_config_item('show starters')
+        # Only check if we're meant to show the starters
+        if sPrefsValue.lower() != 'yes':
+            return None
+        aUrls, aDates, _aHashes = find_all_data_packs(
+            'starters', fErrorHandler=gui_error_handler)
+        if self._check_for_starters_to_download(aUrls[0], aDates[0]):
+            return "Updated starter deck information available"
+        return None
+
+    def do_update(self):
+        """Download the starter decks, if requested."""
+        sPrefsValue = self.get_config_item('show starters')
+        # Only check if we're meant to show the starters
+        if sPrefsValue.lower() != 'yes':
+            return None
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'starters', fErrorHandler=gui_error_handler)
+
+        if self._check_for_starters_to_download(aUrls[0], aDates[0]):
+            # Check to see if cards are available
+            bExcludeDemoDecks = False
+            bExcludeStorylineDecks = False
+            try:
+                _oSkip = IRarityPair(('White Wolf 2003 Demo', 'Demo'))
+            except SQLObjectNotFound:
+                bExcludeDemoDecks = True
+            try:
+                _oSkip = IRarityPair(('Nergal Storyline', 'Storyline'))
+            except SQLObjectNotFound:
+                bExcludeStorylineDecks = True
+            try:
+                oHolder = IPhysicalCardSet("White Wolf Starter Decks")
+            except SQLObjectNotFound:
+                # No info, so download everything we can
+                oHolder = None
+            if oHolder:
+                # We assume missing Holders are due to user choice, so we
+                # try to honour those. People can always use the explicit
+                # download option to recover accidental deletions
+                if not bExcludeDemoDecks:
+                    try:
+                        _oSkip = IPhysicalCardSet("White Wolf Demo Decks")
+                    except SQLObjectNotFound:
+                        bExcludeDemoDecks = True
+                if not bExcludeStorylineDecks:
+                    try:
+                        _oSkip = IPhysicalCardSet("White Wolf Storyline Decks")
+                    except SQLObjectNotFound:
+                        bExcludeStorylineDecks = True
+            oFile = urlopen_with_timeout(aUrls[0],
+                                         fErrorHandler=gui_error_handler)
+            if oFile:
+                sData = progress_fetch_data(oFile, None, aHashes[0])
+            else:
+                sData = None
+            if not sData:
+                do_complaint_error('Unable to access zipfile data')
+            elif not self._unzip_file(sData, bExcludeStorylineDecks,
+                                      bExcludeDemoDecks):
+                do_complaint_error('Unable to successfully unzip zipfile')
+
+    def _check_for_starters_to_download(self, sUrl, sDate):
+        """Check for any decks we need to download."""
+        if not sUrl:
+            return False
+        # Check if we need to download this url
+        try:
+            oHolder = IPhysicalCardSet("White Wolf Starter Decks")
+        except SQLObjectNotFound:
+            # No starters, so assume we need to download
+            return True
+        # Existing TWDA entry, so check dates
+        try:
+            oUrlDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
+        except ValueError:
+            oUrlDate = None
+        sUpdated = "Date Updated:"
+        oDeckDate = None
+        # pylint: disable=E1101
+        # Pyprotocols confuses pylint
+        if not oHolder.annotations:
+            # No date information, so we assume we need to download
+            return True
+        for sLine in oHolder.annotations.splitlines():
+            if sLine.startswith(sUpdated):
+                sDate = sLine.split(sUpdated)[1][1:11]
+                try:
+                    oDeckDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
+                except ValueError:
+                    pass
+        if oDeckDate is None or oUrlDate is None:
+            # Unable to extract the dates correctly, so we treat this as
+            # something to replace
+            return True
+        elif oDeckDate < oUrlDate:
+            # Url is newer, so we replace
+            return True
+        return False
 
     def setup(self):
         """1st time setup tasks"""
