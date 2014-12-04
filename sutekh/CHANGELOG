@@ -1,3 +1,31 @@
+04 Dec 2014
+ * Add support to check for updates to the TWDA plugin
+   * Correctly set the 'twda configured' config key after a successful download.
+ * Also add update checking support to the Starter deck plugin
+ * Rework plugin API to make the external method / internal utility helper
+   split clearer
+
+03 Dec 2014
+ * Add check_for_updates hook to the plugins and call it when the main application
+   is started
+
+02 Dec 2014
+ * Use utf8 for the config file, so we don't crash when saving decks with
+   non-ascii characters to the config file.
+
+26 Nov 2014
+ * Fix _get_selected_abs_card helper to also work with the full card list.
+ * Fix handling of the cancel button in the "find similar crypt cards" plugin.
+
+24 Nov 2014
+ * Move clean_empty helper out of the plugins and into CardSetUtilities.
+ * Add a '_get_selected_abs_card' helper for the plugins that need to query
+   card selection.
+
+20 Nov 2014
+ * Add a "make_card" helper to TestUtils to reduce duplicate code in the
+   test suite.
+
 11 Nov 2014
  * Move 'wrap' text formatting helper from Analyze plugin to GuiUtils
 
