@@ -354,6 +354,9 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def check_for_updates(self):
         """Check for any updates at startup."""
+        sPrefsValue = self.get_config_item('twda configured')
+        if sPrefsValue.lower() != 'yes':
+            return None
         aUrls, aDates, aHashes = find_all_data_packs(
             'twd', fErrorHandler=gui_error_handler)
         aToUnzip, _aToReplace = self._get_decks_to_download(aUrls, aDates,
@@ -367,6 +370,9 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def do_update(self):
         """Handle the 'download stuff' respone from the startup check"""
+        sPrefsValue = self.get_config_item('twda configured')
+        if sPrefsValue.lower() != 'yes':
+            return
         aUrls, aDates, aHashes = find_all_data_packs(
             'twd', fErrorHandler=gui_error_handler)
         if not self._get_decks(aUrls, aDates, aHashes):
