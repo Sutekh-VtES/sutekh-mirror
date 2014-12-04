@@ -30,7 +30,7 @@ class BaseBackup(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         oBackup = gtk.MenuItem("Save a Full Backup")

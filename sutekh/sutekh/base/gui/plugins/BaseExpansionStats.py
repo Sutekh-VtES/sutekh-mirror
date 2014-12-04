@@ -38,7 +38,7 @@ class BaseExpansionStats(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oExpStats = gtk.MenuItem("Expansion Stats")
         oExpStats.connect("activate", self.activate)

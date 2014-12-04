@@ -88,7 +88,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oGenFilter = gtk.MenuItem("Find similar crypt cards")
         oGenFilter.connect("activate", self.activate)
@@ -159,7 +159,7 @@ class FindLikeVampires(SutekhPlugin):
     def _get_selected_crypt_card(self):
         """Extract selected crypt card from the model."""
         # Only interested in distinct cards
-        aAbsCards = set(self.get_selected_abs_cards())
+        aAbsCards = set(self._get_selected_abs_cards())
         if len(aAbsCards) != 1:
             return None
         oCard = aAbsCards.pop()
@@ -368,7 +368,7 @@ class FindLikeVampires(SutekhPlugin):
             for oCard in aCards:
                 # We add with unknown expansion
                 oCardSet.addPhysicalCard(IPhysicalCard((oCard, None)))
-            self.open_cs(sCSName, True)
+            self._open_cs(sCSName, True)
 
 
 class LikeCardsView(gtk.TreeView):

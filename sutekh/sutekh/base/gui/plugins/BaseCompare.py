@@ -71,7 +71,7 @@ class BaseCompare(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oCompare = gtk.MenuItem("Compare with another Card Set")
         oCompare.connect("activate", self.activate)
@@ -166,12 +166,12 @@ class BaseCompare(BasePlugin):
         oComm = format_list(dCommon, 'green')
         oPage = make_page(oComm, dCommon)
         oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
-        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[0])
+        sTabTitle = 'Cards only in %s' % self._escape(aCardSetNames[0])
         sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
         oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
-        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[1])
+        sTabTitle = 'Cards only in %s' % self._escape(aCardSetNames[1])
         sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
         oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
@@ -200,4 +200,4 @@ class BaseCompare(BasePlugin):
             for _iNum in range(iCnt):
                 aCards.append(oPhysCard)
         self._commit_cards(oCardSet, aCards)
-        self.open_cs(sCSName)
+        self._open_cs(sCSName)

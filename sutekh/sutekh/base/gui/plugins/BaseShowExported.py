@@ -34,7 +34,7 @@ class BaseShowExported(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oShowExported = gtk.MenuItem("Display card set in alternative format")
         oShowExported.connect("activate", self.activate)
@@ -42,7 +42,7 @@ class BaseShowExported(BasePlugin):
 
     def activate(self, _oWidget):
         """Handle response from menu"""
-        oCardSet = self.get_card_set()
+        oCardSet = self._get_card_set()
         if not oCardSet:
             return
         oDlg = SutekhDialog("Exported CardSet: %s" % self.view.sSetName,

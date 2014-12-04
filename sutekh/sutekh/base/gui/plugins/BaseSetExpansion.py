@@ -26,7 +26,7 @@ class BaseSetExpansion(BasePlugin):
 
     def get_menu_item(self):
         """Return a gtk.MenuItem to activate this plugin."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oMenuItem = gtk.MenuItem("Set selected cards to a single expansion")
         oMenuItem.connect("activate", self.activate)
@@ -42,7 +42,7 @@ class BaseSetExpansion(BasePlugin):
            """
         dSelected = self.view.process_selection()
         # Only want the distinct cards here - numbers are unimportant
-        aAbsCards = set(self.get_selected_abs_cards())
+        aAbsCards = set(self._get_selected_abs_cards())
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return
@@ -76,7 +76,7 @@ class BaseSetExpansion(BasePlugin):
     def do_set_expansion(self, dSelected, oExpansion):
         """Iterate over the cards, setting the correct expansion"""
         # Dealing with selected cards, so filter list is the correct one
-        oCS = self.get_card_set()
+        oCS = self._get_card_set()
         for oCard in self.model.get_card_iterator(
                 self.model.get_current_filter()):
             # pylint: disable=E1101

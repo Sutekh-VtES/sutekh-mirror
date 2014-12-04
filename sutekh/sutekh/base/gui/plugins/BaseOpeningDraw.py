@@ -197,7 +197,7 @@ class BaseOpeningDraw(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oCardDraw = gtk.MenuItem("Simulate opening hand")
         oCardDraw.connect("activate", self.activate)
@@ -206,7 +206,7 @@ class BaseOpeningDraw(BasePlugin):
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
-        if not self.check_cs_size(sDiagName, self.MAXSIZE):
+        if not self._check_cs_size(sDiagName, self.MAXSIZE):
             return
 
         if not self._get_cards():

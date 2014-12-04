@@ -125,7 +125,7 @@ class BaseDrawProbPlugin(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oCardDraw = gtk.MenuItem("Card Draw probabilities")
         oCardDraw.connect("activate", self.activate)
@@ -136,7 +136,7 @@ class BaseDrawProbPlugin(BasePlugin):
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it."""
-        if not self.check_cs_size('Card Draw probabilities', 500):
+        if not self._check_cs_size('Card Draw probabilities', 500):
             return
 
         self.iTotal = 0
@@ -145,7 +145,7 @@ class BaseDrawProbPlugin(BasePlugin):
         self.iOpeningDraw = 0
 
         # Get currently selected cards
-        aSelectedCards = self.get_selected_abs_cards()
+        aSelectedCards = self._get_selected_abs_cards()
 
         if len(aSelectedCards) == 0:
             do_complaint_error("No cards selected")

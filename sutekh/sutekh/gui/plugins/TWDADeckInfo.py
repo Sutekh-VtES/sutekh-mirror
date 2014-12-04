@@ -155,7 +155,7 @@ class TWDAInfoPlugin(SutekhPlugin):
 
            Adds the menu item to the analyze menu.
            """
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         if self.model is None:
             # Add entry to the data download menu
@@ -187,7 +187,7 @@ class TWDAInfoPlugin(SutekhPlugin):
     def find_twda(self, _oWidget, sMode):
         """Find decks which match the given search"""
         # Only want the distinct cards - numbers are unimportant
-        aAbsCards = set(self.get_selected_abs_cards())
+        aAbsCards = set(self._get_selected_abs_cards())
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return
@@ -289,7 +289,7 @@ class TWDAInfoPlugin(SutekhPlugin):
     def _open_card_set(self, _oButton, oCS):
         """Wrapper around open_cs to handle being called directly from a
            gtk widget"""
-        self.open_cs(oCS.name)
+        self._open_cs(oCS.name)
 
     def check_enabled(self):
         """check for TWD decks in the database and disable menu if not"""
@@ -523,7 +523,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             aCSList.extend(oZipFile.get_all_entries().keys())
         oProgressDialog.destroy()
         clean_empty(aCSList, aExistingList)
-        self.reload_pcs_list()
+        self._reload_pcs_list()
         return True
 
     def _unzip_twda_file(self, oFile):
@@ -560,7 +560,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             return False
         # Cleanup
         clean_empty(oFile.get_all_entries().keys(), aExistingList)
-        self.reload_pcs_list()
+        self._reload_pcs_list()
         oProgressDialog.destroy()
         return True
 
@@ -575,7 +575,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
-                self.reload_pcs_list()
+                self._reload_pcs_list()
                 return False  # Error
         return True
 

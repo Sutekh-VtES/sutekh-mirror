@@ -43,7 +43,7 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
     def _setup_cardlists(self, aSelectedCards):
         """Extract the needed card info from the model"""
         aAllAbsCards = [IAbstractCard(oCard) for oCard in
-                        self.get_all_cards()]
+                        self._get_all_cards()]
         iCryptSize = 0
         iLibrarySize = 0
         self.dSelectedCounts = {}

@@ -230,7 +230,7 @@ class SecretLibrary(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         if self.model is None:
@@ -408,7 +408,7 @@ class SecretLibrary(SutekhPlugin):
 
     def _export_deck(self, sApiUrl, dData):
         """Export a card set to the Secret Library as a deck."""
-        oCardSet = self.get_card_set()
+        oCardSet = self._get_card_set()
 
         dData['title'] = oCardSet.name
         dData['author'] = oCardSet.author

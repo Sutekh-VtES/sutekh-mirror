@@ -174,7 +174,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             disconnect_row_update(self.card_set_changed, PhysicalCardSet)
             disconnect_row_destroy(self.card_set_added_deleted,
                                    PhysicalCardSet)
@@ -189,7 +189,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
@@ -402,13 +402,13 @@ class StarterInfoPlugin(SutekhPlugin):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
-                self.reload_pcs_list()
+                self._reload_pcs_list()
                 oProgressDialog.destroy()
                 return False  # Error
         # Cleanup
         clean_empty(oFile.get_all_entries(), aExistingList)
         self._clean_removed(sRemovedInfo)
-        self.reload_pcs_list()
+        self._reload_pcs_list()
         oProgressDialog.destroy()
         return True
 

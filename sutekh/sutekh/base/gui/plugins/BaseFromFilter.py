@@ -20,7 +20,7 @@ class BaseFromFilter(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Filter' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oGenPCS = gtk.MenuItem("Card Set From Filter")
         oGenPCS.connect("activate", self.activate)
@@ -35,7 +35,7 @@ class BaseFromFilter(BasePlugin):
         if sCSName:
             oCardSet = self.make_cs_from_filter(sCSName)
             if oCardSet:
-                self.open_cs(sCSName, True)
+                self._open_cs(sCSName, True)
 
     def make_cs_from_filter(self, sCSName):
         """Create the actual PCS."""

@@ -416,7 +416,7 @@ class AnalyzeCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oAnalyze = gtk.MenuItem("Analyze Deck")
         oAnalyze.connect("activate", self.activate)
@@ -440,7 +440,7 @@ class AnalyzeCardList(SutekhPlugin):
     # a long function, and there's no benefit to splitting it up further
     def activate_heart(self, bRapid=False):
         """Create the actual dialog, and populate it"""
-        if not self.check_cs_size('Analyze Deck', 500):
+        if not self._check_cs_size('Analyze Deck', 500):
             return
         oDlg = NotebookDialog("Analysis of Card List", self.parent,
                               gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -642,17 +642,17 @@ class AnalyzeCardList(SutekhPlugin):
 
     def _prepare_main(self, bRapid):
         """Setup the main notebook display"""
-        oCS = self.get_card_set()
+        oCS = self._get_card_set()
 
         sTitleText = ("Analysis Results for :\n\t\t<b>%(name)s</b>\n"
                       "\t\tby <i>%(author)s</i>\n" % {
-                          'name': self.escape(self.view.sSetName),
-                          'author': self.escape(oCS.author),
+                          'name': self._escape(self.view.sSetName),
+                          'author': self._escape(oCS.author),
                       })
         # We wrap the description in a scrollable widget, since it
         # can be very, very long (Matt Morgan's TWDA entries, for
         # example)
-        sDesc = self.escape(oCS.comment)
+        sDesc = self._escape(oCS.comment)
         oDesc = wrap(sDesc)
         oScrolledBox = gtk.VBox(False, 1)
         oDescTitle = gtk.Label()

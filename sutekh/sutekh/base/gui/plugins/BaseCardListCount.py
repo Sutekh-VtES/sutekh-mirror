@@ -62,14 +62,14 @@ class BaseCardListCount(BasePlugin):
 
         # We only add listeners to windows we're going to display the toolbar
         # on
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             MessageBus.subscribe(self.model, 'load', self.load)
         self.perpane_config_updated()
     # pylint: enable=W0142
 
     def cleanup(self):
         """Remove the listener"""
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             MessageBus.unsubscribe(self.model, 'load', self.load)
         super(BaseCardListCount, self).cleanup()
 
@@ -83,7 +83,7 @@ class BaseCardListCount(BasePlugin):
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         if self._iMode == self.COUNT_CARDS:
@@ -154,7 +154,7 @@ class BaseCardListCount(BasePlugin):
 
     def perpane_config_updated(self, _bDoReload=True):
         """Called by base class on config updates."""
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             sCountMode = self.get_perpane_item(self.OPTION_NAME)
             self._iMode = self.MODES.get(sCountMode, self.NO_COUNT)
             if self._iMode == self.NO_COUNT:

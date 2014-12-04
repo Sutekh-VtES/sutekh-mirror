@@ -125,7 +125,7 @@ class RulebookPlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the files can be found.
            """
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         # Need to set this up here, after register_with_config has been called

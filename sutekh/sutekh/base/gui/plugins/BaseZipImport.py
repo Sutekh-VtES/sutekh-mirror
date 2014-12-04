@@ -154,7 +154,7 @@ class BaseZipImport(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         oImport = gtk.MenuItem("Import Card Set(s) from zip file")
@@ -189,8 +189,8 @@ class BaseZipImport(BasePlugin):
         dList = oFile.get_all_entries()
         dEscapedList = {}
         for sName, tInfo in dList.iteritems():
-            dEscapedList[self.escape(sName)] = (sName, tInfo[0], tInfo[1],
-                                                tInfo[2])
+            dEscapedList[self._escape(sName)] = (sName, tInfo[0], tInfo[1],
+                                                 tInfo[2])
 
         oSelDlg = SelectZipFileContents(dEscapedList, self.parent)
         oResponse = oSelDlg.run()
@@ -270,7 +270,7 @@ class BaseZipImport(BasePlugin):
                 if self.parent.find_cs_pane_by_set_name(oCardSetHolder.name):
                     # Already open, so update to changes
                     update_open_card_sets(self.parent, oCardSetHolder.name)
-                self.reload_pcs_list()
+                self._reload_pcs_list()
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                                                                 oException)

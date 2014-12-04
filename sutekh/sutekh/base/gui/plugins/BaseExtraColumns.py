@@ -80,7 +80,7 @@ class BaseExtraColumns(BasePlugin):
 
         self._iShowMode = self.MODES[self.DEFAULT_MODE]
 
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             self.perpane_config_updated()
     # pylint: enable=W0142
 
@@ -161,7 +161,7 @@ class BaseExtraColumns(BasePlugin):
     def perpane_config_updated(self, _bDoReload=True):
         """Called by base class on config updates."""
         aCols = None
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
             sShowMode = self.get_perpane_item(self.ICON_MODE)
             self._iShowMode = self.MODES.get(sShowMode, self.DEFAULT_MODE)
