@@ -449,7 +449,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                                    oLogHandler=oLogHandler,
                                    fErrorHandler=gui_error_handler)
             except HashError:
-                do_complaint_error("Download failed for %s\nSkipping"
+                do_complaint_error("Checksum failed for %s\nSkipping"
                                    % sTWDA)
                 # Don't delete this, since we're not replacing it
                 aToReplace.remove(sTWDA)
