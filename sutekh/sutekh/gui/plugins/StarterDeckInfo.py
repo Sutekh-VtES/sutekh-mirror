@@ -233,6 +233,9 @@ class StarterInfoPlugin(SutekhPlugin):
             return None
         aUrls, aDates, _aHashes = find_all_data_packs(
             'starters', fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # Timeout means we skip trying anything
+            return None
         if self._check_for_starters_to_download(aUrls[0], aDates[0]):
             return "Updated starter deck information available"
         return None

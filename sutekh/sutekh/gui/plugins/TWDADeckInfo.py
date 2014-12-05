@@ -364,6 +364,9 @@ class TWDAInfoPlugin(SutekhPlugin):
             return None
         aUrls, aDates, aHashes = find_all_data_packs(
             'twd', fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # Timeout means we skip trying anything
+            return None
         aToUnzip, _aToReplace = self._get_decks_to_download(aUrls, aDates,
                                                             aHashes)
         if aToUnzip:
