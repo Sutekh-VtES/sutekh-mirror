@@ -131,9 +131,13 @@ class BaseParsedSpec(object):
             sType, aArgs, dKwargs, sDefault
         self.oEntry = self.create_widget()
 
+    # pylint: disable=R0201
+    # This is a method so duck-typing works
     def format_value(self, oValue):
         """Return a string representation of a value."""
         return str(oValue)
+
+    # pylint: enable=R0201
 
     def create_widget(self):
         """Return a widget for editing this config spec."""
@@ -242,12 +246,16 @@ class OptionListParsedSpec(BaseParsedSpec):
             oContainer.pack_start(gtk.CheckButton(sValue))
         return oContainer
 
+    # pylint: disable=R0201
+    # This is a method so duck-typing works
     def format_value(self, oValue):
         """Return a string representation of the value."""
         if not oValue:
             return "None"
         else:
             return ", ".join(oValue)
+
+    # pylint: enable=R0201
 
     def set_value(self, oValue):
         """Set the selected list correctly"""
@@ -299,10 +307,11 @@ SPEC_TYPE_MAP = {
 
 def parse_spec(sConfigSpec, oValidator):
     """Parse a configobj spec into a parsed spec."""
-    # TODO: is it okay to use an _ method from the validator?
     # pylint: disable=W0212
-    # We know we're accessing a protected member, and pylint flags our
-    # note above, so don't flag this twice
+    # While it's not ideal to use a protected method from the validator here,
+    # there isn't another method for getting what we want, and upstream has
+    # recommended using this method to other people
+    # (e.g. http://sourceforge.net/p/configobj/mailman/message/26744481/ )
     sType, aArgs, dKwargs, sDefault = \
         oValidator._parse_with_caching(sConfigSpec)
     cParsedSpec = SPEC_TYPE_MAP.get(sType, UneditableSpec)
