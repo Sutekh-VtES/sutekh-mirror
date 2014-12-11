@@ -191,7 +191,10 @@ class TWDAInfoPlugin(SutekhPlugin):
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return
-
+        if len(aAbsCards) > 20:
+            do_complaint_error('Too many cards selected (%d). Please select '
+                               'no more than 20 cards' % len(aAbsCards))
+            return
         aCardFilters = []
         iTotCards = len(aAbsCards)
         for oCard in aAbsCards:
