@@ -101,6 +101,9 @@ class CardImageFrame(BaseImageFrame):
             sCurExpansionPath, sFilename)
         if sCurExpansionPath in LACKEY_IMAGES:
             # Try get the card from lackey first
+            # Strip the "(Mythic storyline)" prefix from the returned cards
+            if sCurExpansionPath == 'vekn_2014_the_returned':
+                sFilename = sFilename.replace('mythicstoryline', '')
             sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
                 sFilename)
             return (sLackeyUrl, sUrl)
