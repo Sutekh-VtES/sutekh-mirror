@@ -103,10 +103,18 @@ class CardImageFrame(BaseImageFrame):
             # Try get the card from lackey first
             # Strip the "(Mythic storyline)" prefix from the returned cards
             if sCurExpansionPath == 'vekn_2014_the_returned':
+                # Lackey uses 'montaro2' and so forth for the duplicate names
+                # between the 2015 storyline rewards expansion and the actual
+                # storyline cards, but this only applies to some of the card
+                # names, so we need to try all possibilities in the right
+                # order
                 sFilename = sFilename.replace('mythicstoryline', '')
+                sFilename2 = sFilename.replace('.jpg', '2.jpg')
             sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
                 sFilename)
-            return (sLackeyUrl, sUrl)
+            sLackeyUrl2 = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
+                sFilename2)
+            return (sLackeyUrl2, sLackeyUrl, sUrl)
         return (sUrl, )
 
     def _norm_cardname(self):
