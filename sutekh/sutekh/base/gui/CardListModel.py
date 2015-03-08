@@ -19,6 +19,7 @@ from ..core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
 from ..Utility import move_articles_to_back
 from ..core.FilterParser import FilterParser
 from .BaseConfigFile import FULL_CARDLIST
+from .SutekhDialog import do_exception_complaint
 from .MessageBus import MessageBus, CONFIG_MSG
 
 EXTRA_LEVEL_OPTION = "extra levels"
@@ -557,7 +558,11 @@ class CardListModel(gtk.TreeStore):
         if sFilterText:
             oAST = self._oFilterParser.apply(sFilterText)
             if oAST:
-                oFilter = oAST.get_filter()
+                try:
+                    oFilter = oAST.get_filter()
+                except RuntimeError as oErr:
+                    # Tell user about the issue
+                    do_exception_complaint("Failed to load Filter: %s" % oErr)
         if oFilter == self._oConfigFilter:
             return False
         self._oConfigFilter = oFilter

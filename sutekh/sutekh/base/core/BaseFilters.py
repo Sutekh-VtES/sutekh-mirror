@@ -860,7 +860,13 @@ class MultiPhysicalCardSetFilter(Filter):
         # SQLObject methods not detected by pylint
         self.__aCardSetIds = []
         for sName in aNames:
-            self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
+            try:
+                self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
+            except SQLObjectNotFound:
+                # May happen if config has been edited, or pointed to new database
+                # and so forth, convert to a more informative error
+                raise RuntimeError(
+                    "Unable to load Card Set (%s) for filter" % sName)
         self.__oTable = make_table_alias('physical_map')
         self.__oPT = Table('physical_card')
 
