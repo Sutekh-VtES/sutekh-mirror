@@ -23,7 +23,7 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
 
 
 # We try lackeyccg for images from these sets
-LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu')
+LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu', 'promo')
 
 
 class CardImageFrame(BaseImageFrame):
@@ -102,6 +102,7 @@ class CardImageFrame(BaseImageFrame):
         if sCurExpansionPath in LACKEY_IMAGES:
             # Try get the card from lackey first
             # Strip the "(Mythic storyline)" prefix from the returned cards
+            sFilename2 = None
             if sCurExpansionPath == 'vekn_2014_the_returned':
                 # Lackey uses 'montaro2' and so forth for the duplicate names
                 # between the 2015 storyline rewards expansion and the actual
@@ -112,9 +113,14 @@ class CardImageFrame(BaseImageFrame):
                 sFilename2 = sFilename.replace('.jpg', '2.jpg')
             sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
                 sFilename)
-            sLackeyUrl2 = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
-                sFilename2)
-            return (sLackeyUrl2, sLackeyUrl, sUrl)
+            if sFilename2:
+                sLackeyUrl2 = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
+                    sFilename2)
+                return (sLackeyUrl2, sLackeyUrl, sUrl)
+            if sCurExpansionPath == 'promo':
+                # We prefer nekhomanta.h2.pl for older promos
+                return (sUrl, sLackeyUrl)
+            return (sLackeyUrl, sUrl)
         return (sUrl, )
 
     def _norm_cardname(self):
