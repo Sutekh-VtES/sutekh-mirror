@@ -1,3 +1,20 @@
+08 Mar 2015
+ * Update Merged Vampire plugin to handle Red Sign vampires
+ * Make Merged Vampire plugin more robust against misspelt cards
+ * Improve handling of card sets not existing in a filter
+
+05 Mar 2015
+ * Update to handle Lackey renaming of Mythic storyline vampires
+
+04 Jan 2015
+ * Download Mythic storyline vampire images from Lackey
+
+11 Dec 2014
+ * Protect against overly long selections in TWDA plugin
+
+05 Dec 2014
+ * Handle timeout failures when downloading starters and TWDA lists better
+
 04 Dec 2014
  * Add support to check for updates to the TWDA plugin
    * Correctly set the 'twda configured' config key after a successful download.
