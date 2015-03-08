@@ -120,6 +120,11 @@ class FakeCard(object):
             self.keywords.append(IKeyword('3 bleed'))
             self.keywords.append(IKeyword('1 stealth'))
             self.text = self.text.replace('. +1 bleed.', '. +2 bleed.')
+        elif self.name == 'Ankh-Sen-Sutekh (Red Sign) (Merged)':
+            self.keywords.append(IKeyword('1 stealth'))
+            self.text = self.text.replace(
+                '{NOT FOR LEGAL PLAY} +1 bleed. +1 stealth.',
+                '+1 bleed. +1 stealth. {NOT FOR LEGAL PLAY}')
         elif self.name == 'Batsheva (Merged)':
             self.keywords.append(IKeyword('2 strength'))
         elif self.name == 'Brunhilde (EC 2013) (Merged)':
@@ -140,6 +145,13 @@ class FakeCard(object):
             self.keywords.append(IKeyword('anarch'))
             self.title = [ITitle('Baron')]
             self.sect = [ISect('Independent')]
+        elif self.name == 'Duality (Red Sign) (Merged)':
+            self.discipline.remove(IDisciplinePair(('Thaumaturgy',
+                                                    'inferior')))
+            self.discipline.append(IDisciplinePair(('Thaumaturgy',
+                                                    'superior')))
+            self.discipline.append(IDisciplinePair(('Fortitude', 'inferior')))
+            self.text = self.text.replace(' Duality gets [for] and [THA]', '')
         elif self.name == 'Dr. Julius Sutphen (Merged)':
             self.title = [ITitle('Archbishop')]
             self.text = 'Sabbat ' + self.text
@@ -204,6 +216,13 @@ class FakeCard(object):
             self.text = self.text.replace(
                 ' Older vampires do not tap for successfully blocking'
                 ' Reverend Adams.', '', 1)
+        elif self.name == 'Rutor (Red Sign) (Merged)':
+            self.discipline.remove(IDisciplinePair(('Vicissitude',
+                                                    'inferior')))
+            self.discipline.append(IDisciplinePair(('Vicissitude',
+                                                    'superior')))
+            self.discipline.append(IDisciplinePair(('Fortitude', 'inferior')))
+            self.text = self.text.replace(' Rutor gets [for] and [VIC] ', '')
         elif self.name == 'Sascha Vykos, The Angel of Caine (Merged)':
             self.title = [ITitle('Cardinal')]
             self.text = self.text.replace(' Sabbat cardinal.', '')
@@ -253,6 +272,8 @@ class FakeCard(object):
         # Special cases
         if '(EC 2013)' in sBaseName:
             sBaseName = sBaseName.replace(' (EC 2013)', '')
+        if '(Red Sign)' in sBaseName:
+            sBaseName = sBaseName.replace(' (Red Sign)', '')
         return IAbstractCard(sBaseName)
 
     def _find_adv_vampire(self):
