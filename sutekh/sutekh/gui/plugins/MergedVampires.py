@@ -12,6 +12,7 @@ from sutekh.core.SutekhObjects import (ITitle, ISect, IDisciplinePair,
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.base.gui.GuiUtils import make_markup_button
+from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import normalise_whitespace
 
 from sqlobject import SQLObjectNotFound
@@ -359,6 +360,8 @@ class MergedVampirePlugin(SutekhPlugin):
         self._oAbsCard = None
         self._oFakeCard = None
         self._aBaseVamps = set()
+        # Exclusions, due to card list errors, etc.
+        self._aExcluded = set()
         self._make_base_map()
 
     def cleanup(self):
@@ -385,7 +388,15 @@ class MergedVampirePlugin(SutekhPlugin):
         if self._oAbsCard.level is None:
             if self._oAbsCard not in self._aBaseVamps:
                 return
-        self._oFakeCard = FakeCard(self._oAbsCard)
+        if self._oAbsCard in self._aExcluded:
+            return
+        try:
+            self._oFakeCard = FakeCard(self._oAbsCard)
+        except SQLObjectNotFound:
+            do_complaint_error(
+                "Unable to find base vampire for %s" % self._oAbsCard.name)
+            self._aExcluded.add(self._oAbsCard)
+            return
         oCardTextView = self.parent.card_text_pane.view
         # Button logic
         # For the normal view, we show the buttons
