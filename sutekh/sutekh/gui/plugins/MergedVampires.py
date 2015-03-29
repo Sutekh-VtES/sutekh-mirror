@@ -135,6 +135,11 @@ class FakeCard(object):
                                           'Anarch Baron of Stockholm:')
             self.text = self.text.replace('{NOT FOR LEGAL PLAY} +1 strength.',
                                           '+1 strength. {NOT FOR LEGAL PLAY}')
+        elif self.name == 'Bulscu (Merged)':
+            self.text = self.text.replace(' Prince of Budapest.', '')
+            self.title = [ITitle('Prince')]
+            self.text = self.text.replace('Camarilla',
+                                          'Camarilla Prince of Budapest')
         elif self.name == 'Count Germaine (Merged)':
             self.text = 'Independent. ' + self.text
             self.keywords.append(IKeyword('anarch'))
