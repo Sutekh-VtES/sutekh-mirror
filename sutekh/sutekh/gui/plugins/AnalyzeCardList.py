@@ -81,7 +81,13 @@ def _disc_sort_key(tData):
 def _load_pdf_sets():
     """Cache the sets from the VEKN pdf expansions"""
     PDF_SETS.clear()
-    for sSet in ['Danse Macabre']:
+    for sSet in ['Danse Macabre', 'The Unaligned',
+                 # Storyline reward cards are an annoying scattering of
+                 # promo dates
+                 'Promo-20150211', 'Promo-20150212', 'Promo-20150213',
+                 'Promo-20150214', 'Promo-20150216', 'Promo-20150217',
+                 'Promo-20150218', 'Promo-20150219', 'Promo-20150220',
+                 'Promo-20150221']:
         try:
             oSet = IExpansion(sSet)
             PDF_SETS.add(oSet)
