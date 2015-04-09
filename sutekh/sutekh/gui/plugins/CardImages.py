@@ -77,13 +77,13 @@ class CardImageFrame(BaseImageFrame):
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
 
-    def _make_card_urls(self):
+    def _make_card_urls(self, _sFullFilename):
         """Return a url pointing to the vtes.pl scan of the image"""
         sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        sFilename = self._norm_cardname()
+        sFilename = self._norm_cardname()[0]
         if sCurExpansionPath == '' or sFilename == '':
             # Error path, we don't know where to search for the image
-            return ''
+            return None
         # Remap paths to point to the vtes.pl equivilents
         if sCurExpansionPath == 'nergal_storyline':
             sCurExpansionPath = 'isl'
@@ -135,7 +135,7 @@ class CardImageFrame(BaseImageFrame):
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        return sFilename
+        return [sFilename]
 
 
 class ImageConfigDialog(BaseImageConfigDialog):
