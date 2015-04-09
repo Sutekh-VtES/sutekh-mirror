@@ -335,9 +335,35 @@ class BaseImageFrame(BasicFrame):
             else:
                 self.oExpansionLabel.hide()  # config changes can cause this
                 iHeightOffset = 0
-            oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
-            iWidth = oPixbuf.get_width()
-            iHeight = oPixbuf.get_height()
+            aPixbufs = []
+            iHeight = 0
+            iWidth = 0
+            for sFullFilename in aFullFilenames:
+                oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
+                iWidth = max(iWidth, oPixbuf.get_width())
+                iHeight = max(iHeight, oPixbuf.get_height())
+                aPixbufs.append(oPixbuf)
+            if len(aPixbufs) > 1:
+                # Create composite pixbuf
+                oPixbuf = gtk.gdk.Pixbuf(aPixbufs[0].get_colorspace(),
+                                         aPixbufs[0].get_has_alpha(),
+                                         aPixbufs[0].get_bits_per_sample(),
+                                         (iWidth + 4) * len(aPixbufs) - 4,
+                                         iHeight)
+                oPixbuf.fill(0x00000000)  # fill with transparent black
+                iPos = 0
+                for oThisPixbuf in aPixbufs:
+                    # Scale all images to the same size
+                    oThisPixbuf.scale_simple(iWidth, iHeight,
+                                             gtk.gdk.INTERP_HYPER)
+                    # Add to the composite pixbuf
+                    oThisPixbuf.copy_area(0, 0, iWidth, iHeight,
+                                          oPixbuf, iPos, 0)
+                    iPos += iWidth + 4
+                # Make iWidth the total width
+                iWidth = (iWidth + 4) * len(aPixbufs) - 4
+            else:
+                oPixbuf = aPixbufs[0]
             if self._iZoomMode == FIT:
                 # Need to fix aspect ratios
                 iPaneHeight = (self._oView.get_vadjustment().page_size -
