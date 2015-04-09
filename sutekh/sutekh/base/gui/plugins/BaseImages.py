@@ -252,7 +252,7 @@ class BaseImageFrame(BasicFrame):
         aFullFilenames = self._convert_cardname_to_path()
         self._load_image(aFullFilenames)
 
-    def _make_card_urls(self):
+    def _make_card_urls(self, _sFullFilename):
         """Return a list of possible urls pointing to a scan of the image"""
         raise NotImplementedError("implement _make_card_urls")
 
@@ -272,7 +272,7 @@ class BaseImageFrame(BasicFrame):
 
     def _download_image(self, sFullFilename):
         """Attempt to download the image."""
-        aUrls = self._make_card_urls()
+        aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
             return False
         for sUrl in aUrls:
