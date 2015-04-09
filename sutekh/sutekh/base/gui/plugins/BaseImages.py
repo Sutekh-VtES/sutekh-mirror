@@ -249,8 +249,8 @@ class BaseImageFrame(BasicFrame):
         if not self._sCardName:
             # Don't go down the rest of redraw path during startup
             return
-        sFullFilename = self._convert_cardname_to_path()
-        self._load_image(sFullFilename)
+        aFullFilenames = self._convert_cardname_to_path()
+        self._load_image(aFullFilenames)
 
     def _make_card_urls(self):
         """Return a list of possible urls pointing to a scan of the image"""
@@ -263,56 +263,67 @@ class BaseImageFrame(BasicFrame):
     def _convert_cardname_to_path(self):
         """Convert sCardName to the form used by the card image list"""
         sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        sFilename = self._norm_cardname()
-        return os.path.join(self._sPrefsPath, sCurExpansionPath, sFilename)
+        aFilenames = self._norm_cardname()
+        aFullFileNames = []
+        for sFilename in aFilenames:
+            aFullFileNames.append(os.path.join(self._sPrefsPath,
+                                               sCurExpansionPath, sFilename))
+        return aFullFileNames
 
-    def _load_image(self, sFullFilename):
+    def _download_image(self, sFullFilename):
+        """Attempt to download the image."""
+        aUrls = self._make_card_urls()
+        if not aUrls:
+            return False
+        for sUrl in aUrls:
+            if sUrl not in self._dUrlCache:
+                logging.info('Trying %s as source for %s',
+                             sUrl, sFullFilename)
+                oFile = urlopen_with_timeout(
+                    sUrl, fErrorHandler=image_gui_error_handler)
+            else:
+                oFile = self._dUrlCache[sUrl]
+            self._dUrlCache[sUrl] = oFile
+            if oFile:
+                # Ensure the directory exists, for expansions we
+                # haven't encountered before
+                sBaseDir = os.path.dirname(sFullFilename)
+                ensure_dir_exists(sBaseDir)
+                # Create file
+                # Attempt to fetch the data
+                sImgData = progress_fetch_data(oFile)
+                oFile.close()
+                if sImgData:
+                    oOutFile = open(sFullFilename, 'wb')
+                    oOutFile.write(sImgData)
+                    oOutFile.close()
+                    logging.info('Using image data from %s', sUrl)
+                else:
+                    logging.info('Invalid image data from %s', sUrl)
+                    # Got bogus data, so skip this in future
+                    self._dUrlCache[sUrl] = None
+                # Don't attempt to follow other urls
+                break
+        return True
+
+    def _load_image(self, aFullFilenames):
         """Load an image into the pane, show broken image if needed"""
         # pylint: disable=R0912, R0914, R0915
         # This is has to handle a number of special cases
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
 
-        if not check_file(sFullFilename):
-            if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
-                    self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)):
-                # Attempt to download the image from the url
-                aUrls = self._make_card_urls()
-                if not aUrls:
-                    # No url, so fall back to the 'no image' case
-                    self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                                                gtk.ICON_SIZE_DIALOG)
-                    self._oImage.queue_draw()
-                    return
-                for sUrl in aUrls:
-                    if sUrl not in self._dUrlCache:
-                        logging.info('Trying %s as source for %s',
-                                     sUrl, sFullFilename)
-                        oFile = urlopen_with_timeout(
-                            sUrl, fErrorHandler=image_gui_error_handler)
-                    else:
-                        oFile = self._dUrlCache[sUrl]
-                    self._dUrlCache[sUrl] = oFile
-                    if oFile:
-                        # Ensure the directory exists, for expansions we
-                        # haven't encountered before
-                        sBaseDir = os.path.dirname(sFullFilename)
-                        ensure_dir_exists(sBaseDir)
-                        # Create file
-                        # Attempt to fetch the data
-                        sImgData = progress_fetch_data(oFile)
-                        oFile.close()
-                        if sImgData:
-                            oOutFile = open(sFullFilename, 'wb')
-                            oOutFile.write(sImgData)
-                            oOutFile.close()
-                            logging.info('Using image data from %s', sUrl)
-                        else:
-                            logging.info('Invalid image data from %s', sUrl)
-                            # Got bogus data, so skip this in future
-                            self._dUrlCache[sUrl] = None
-                        # Don't attempt to follow other urls
-                        break
+        for sFullFilename in aFullFilenames:
+            if not check_file(sFullFilename):
+                if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
+                        self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)):
+                    # Attempt to download the image from the url
+                    if not self._download_image(sFullFilename):
+                        # No download, so fall back to the 'no image' case
+                        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
+                                                    gtk.ICON_SIZE_DIALOG)
+                        self._oImage.queue_draw()
+                        return
         try:
             if self._bShowExpansions:
                 self.oExpansionLabel.set_markup(
@@ -393,10 +404,12 @@ class BaseImageFrame(BasicFrame):
                         self._iExpansionPos < len(self._aExpansions):
                     self._sCurExpansion = \
                         self._aExpansions[self._iExpansionPos]
-                    sFullFilename = self._convert_cardname_to_path()
-                    if check_file(sFullFilename):
-                        bFound = True
-                    else:
+                    aFullFilenames = self._convert_cardname_to_path()
+                    for sFullFilename in aFullFilenames:
+                        if check_file(sFullFilename):
+                            bFound = True
+                            break
+                    if not bFound:
                         self._iExpansionPos += 1
                 if not bFound:
                     self._sCurExpansion = self._aExpansions[0]
