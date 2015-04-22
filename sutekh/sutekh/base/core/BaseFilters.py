@@ -863,8 +863,8 @@ class MultiPhysicalCardSetFilter(Filter):
             try:
                 self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
             except SQLObjectNotFound:
-                # May happen if config has been edited, or pointed to new database
-                # and so forth, convert to a more informative error
+                # May happen if config has been edited, or pointed to new
+                # database and so forth, convert to a more informative error
                 raise RuntimeError(
                     "Unable to load Card Set (%s) for filter" % sName)
         self.__oTable = make_table_alias('physical_map')
