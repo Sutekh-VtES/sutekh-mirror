@@ -46,10 +46,11 @@ class MyDictKeyChecker(Base):
                 oChild = list(oForObject.get_children())[0]
                 if hasattr(oChild, 'attrname') and oChild.attrname == 'keys':
                     # Should check oChild to see if it's a dict?
-                    self.add_message('W9967', line=oNode.lineno)
+                    self.add_message('W9967', line=oNode.lineno, node=oNode)
         elif hasattr(oNode.list, 'node') and \
                 hasattr(oNode.list.node, 'attrname') and \
                 oNode.list.node.attrname == 'keys':
+            # Older pylint, so older add_message signature
             self.add_message('W9967', line=oNode.lineno)
 
     def visit_for(self, oNode):
