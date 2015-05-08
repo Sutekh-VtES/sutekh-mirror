@@ -210,6 +210,12 @@ class FakeCard(object):
             self.discipline.append(IDisciplinePair(('Spiritus', 'superior')))
             # Almost all of her text ends up cancelling out, so
             self.text = 'Sabbat: Sterile.'
+        elif self.name == 'Masika (Merged)':
+            self.title = [ITitle('Prince')]
+            # Clear merged title
+            self.text = self.text.replace(' Prince of Lisbon.', '')
+            self.text = self.text.replace('Camarilla primogen',
+                                          'Camarilla Prince of Lisbon')
         elif self.name == 'Melinda Galbraith (Merged)':
             self.keywords.append(IKeyword('3 bleed'))
             self.title = [ITitle('Regent')]
@@ -387,7 +393,7 @@ class MergedVampirePlugin(SutekhPlugin):
                              self.post_set_card_text)
 
     def post_set_card_text(self, oPhysCard):
-        """Update the card text pane with the starter info"""
+        """Update the card text pane with the 'show merged', etc. buttons"""
         self._oAbsCard = oPhysCard.abstractCard
         self._oFakeCard = None
         if self._oAbsCard.level is None:
