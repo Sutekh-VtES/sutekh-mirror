@@ -490,6 +490,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 continue
             if oCS.parent.name in aToReplace:
                 aToRemove.append(oCS.name)
+        aOpenSets = []
         if aToRemove:
             oOldConn = sqlhub.processConnection
             oTrans = oOldConn.transaction()
@@ -504,8 +505,16 @@ class TWDAInfoPlugin(SutekhPlugin):
             oLogHandler.set_dialog(oProgressDialog)
             oProgressDialog.show()
             for sName in aToRemove:
+                # We close any open card sets to avoid issues with
+                # holding open references to the deleted card sets
+                for oFrame in self.parent.find_cs_pane_by_set_name(sName):
+                    oFrame.close_frame()
+                    # We will open as many copies as we closed.
+                    # We lose the minimised to toolbar status, though
+                    aOpenSets.append(sName)
                 delete_physical_card_set(sName)
                 oLogger.info('deleted %s', sName)
+            self._reload_pcs_list()
             oProgressDialog.destroy()
 
             oTrans.commit(close=True)
@@ -529,6 +538,9 @@ class TWDAInfoPlugin(SutekhPlugin):
             aCSList.extend(oZipFile.get_all_entries().keys())
         oProgressDialog.destroy()
         clean_empty(aCSList, aExistingList)
+        # Reopen any card sets we closed
+        for sName in aOpenSets:
+            self._open_cs(sName, False)
         self._reload_pcs_list()
         return True
 
