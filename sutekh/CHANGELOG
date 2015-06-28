@@ -1,3 +1,17 @@
+28 Jun 2015
+ * Fix a bug where TWDA updates failed if decks from the changed datapack
+   where open
+
+08 May 2015
+ * Fix Masika details in the Merged Vampire plugin
+
+09 Apr 2015
+ * Rework image plugin to be a bit more generic
+
+29 Mar 2015
+ * Update Merged Vampire plugin to handle storyline reward vampires
+ * Update PDF set list in analysis plugin
+
 08 Mar 2015
  * Update Merged Vampire plugin to handle Red Sign vampires
  * Make Merged Vampire plugin more robust against misspelt cards
