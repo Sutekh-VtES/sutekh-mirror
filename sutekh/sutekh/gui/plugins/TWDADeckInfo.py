@@ -239,17 +239,16 @@ class TWDAInfoPlugin(SutekhPlugin):
 
         oDlg.set_default_size(700, 600)
         oDlg.show_all()
-        oDlg.run()
-        oDlg.destroy()
+        oDlg.show()
 
     def _fill_dlg(self, dCardSets, sMatchText):
         """Add info about the card sets to the dialog"""
         oDlg = NotebookDialog("TWDA matches", self.parent,
-                              gtk.DIALOG_MODAL |
                               gtk.DIALOG_DESTROY_WITH_PARENT,
                               (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         aParents = set([oCS.parent.name for oCS in dCardSets])
         dPages = {}
+        oDlg.connect('response', lambda dlg, but: dlg.destroy())
         # We create tabs for each year, and then list card
         # sets below them
         for sName in sorted(aParents):
@@ -283,8 +282,9 @@ class TWDAInfoPlugin(SutekhPlugin):
         # pylint: disable=E1101
         # gtk confuses pylint
         oDlg = SutekhDialog("No TWDA matches", self.parent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            gtk.DIALOG_DESTROY_WITH_PARENT,
                             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oDlg.connect('response', lambda dlg, but: dlg.destroy())
         oLabel = gtk.Label("No decks found statisfying %s" % sMatchText)
         oDlg.vbox.pack_start(oLabel)
         return oDlg
