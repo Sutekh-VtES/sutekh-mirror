@@ -53,6 +53,7 @@ h2. Contents
 ## "Find similiar crypt cards":#find_crypt
 ## "Simulate Opening Hand":#opening_hand
 ## "Card draw probabilities":#draw_prob
+## "Find TWDA decks containing":#twda_cards
 # "Profiles":#profiles
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
@@ -549,6 +550,7 @@ The following analysis options are available for card sets:
 * "Compare with another Card Set":#compare
 * "Simulate Opening Hand":#opening_hand
 * "Test Card Set Independence":#test_indep
+* "Find TWDA decks containing":#twda_cards
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
@@ -1062,6 +1064,23 @@ a number from one to the total number of cards selected.
 
 The selected changes are only applied when you press the the _recalculate table_
 button.
+
+h3(#twda_cards). Find TWDA decks containing...
+
+If you have downloaded the database of tournament winning decks, this
+allows you to search the tournament winning deck archive for decks
+containing specific combinations of cards.
+
+You can either search for all the selected cards or for those that
+contain at least 1 of the selected cards.
+
+The results are grouped by year, and list the number of matching card found in
+each listed deck. The resulting decks can be opened as new panes by choosing
+the "Open cardset" option.
+
+The results dialog in not modal, so it's possible to examine the opened card
+sets closely without closing the search results.
+
 
 h2(#profiles). Profiles
 
