@@ -1,3 +1,12 @@
+27 Jul 2015
+ * Fix a bug when creating a card set from the results of comparing card sets
+   ignoring expansions would do the wrong thing
+
+30 Jun 2015
+ * Make the TWDA results dialog non-modal, so it's possible to keep the
+   list of matches open while interacting with the card sets.
+ * Document TWDA plugin in the manual.
+
 28 Jun 2015
  * Fix a bug where TWDA updates failed if decks from the changed datapack
    where open
