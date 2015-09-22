@@ -156,6 +156,9 @@ class BaseImageFrame(BasicFrame):
     # Subclasses should override this
     APP_NAME = 'Deck Builder'
 
+    # If fancy header manipulation is needed, set this
+    _dReqHeaders = {}
+
     def __init__(self, oImagePlugin):
         super(BaseImageFrame, self).__init__(oImagePlugin.parent)
         self._oImagePlugin = oImagePlugin
@@ -280,7 +283,8 @@ class BaseImageFrame(BasicFrame):
                 logging.info('Trying %s as source for %s',
                              sUrl, sFullFilename)
                 oFile = urlopen_with_timeout(
-                    sUrl, fErrorHandler=image_gui_error_handler)
+                    sUrl, fErrorHandler=image_gui_error_handler,
+                    dHeaders=self._dReqHeaders)
             else:
                 oFile = self._dUrlCache[sUrl]
             self._dUrlCache[sUrl] = oFile
