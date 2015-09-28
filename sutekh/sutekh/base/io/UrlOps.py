@@ -28,7 +28,7 @@ class HashError(Exception):
         self.sData = sData
 
 
-def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None):
+def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
     """Wrap urllib2.urlopen to handle timeouts nicely"""
     # Note: The global timeout is currently set to the
     # config value at startup
@@ -36,6 +36,8 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None):
     if dHeaders:
         for sHeader, sValue in dHeaders.items():
             oReq.add_header(sHeader, sValue)
+    if sData:
+        oReq.add_data(sData)
     try:
         return urllib2.urlopen(oReq)
     except urllib2.URLError, oExp:
