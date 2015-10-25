@@ -222,11 +222,15 @@ class SecretLibrary(SutekhPlugin):
 
     SL_API_URL = "http://www.secretlibrary.info/api.php"
 
-    try:
-        ILLEGAL = IKeyword('not for legal play')
-    except SQLObjectNotFound, oExcDetails:
-        logging.warn("Illegal keyword missing (%s).", oExcDetails, exc_info=1)
-        ILLEGAL = None
+    def __init__(self, oCardListView, oCardListModel, cModelType):
+        try:
+            self.ILLEGAL = IKeyword('not for legal play')
+        except SQLObjectNotFound, oExcDetails:
+            logging.warn("Illegal keyword missing (%s).", oExcDetails,
+                         exc_info=1)
+            self.ILLEGAL = None
+        super(SecretLibrary, self).__init__(oCardListView, oCardListModel,
+                                            cModelType)
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
@@ -368,8 +372,8 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
         oParser = SLDeckParser()
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probably a timeout we've already complained about,
             # so we just bail out of this
@@ -390,8 +394,8 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
         oParser = SLInventoryParser()
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
@@ -417,8 +421,8 @@ class SecretLibrary(SutekhPlugin):
 
         sData = urllib.urlencode(dData)
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
@@ -436,8 +440,8 @@ class SecretLibrary(SutekhPlugin):
 
         sData = urllib.urlencode(dData)
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
