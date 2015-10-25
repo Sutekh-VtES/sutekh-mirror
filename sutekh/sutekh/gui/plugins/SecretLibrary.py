@@ -6,7 +6,6 @@
 """Plugin for interacting with the Secret Library website."""
 
 import gtk
-import urllib2
 import urllib
 import StringIO
 import re
