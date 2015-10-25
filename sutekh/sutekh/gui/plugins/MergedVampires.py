@@ -36,13 +36,11 @@ class MergedKeyword(object):
         self.keyword = 'merged'
 
 
-class FakeCard(object):
-    """Class which fakes being an AbstractCard for the text view."""
-    # pylint: disable=R0902
-    # Need all the attributes to match AbstractCard
-
+def make_replace_keywords():
     # Keywords which obselete each other
-    REPLACE_KEYWORD_MAP = {
+    # We do this as a function to avoid issues with importing the plugin
+    # without the database running
+    dReplaceKeywordMap = {
         IKeyword('3 bleed'): [IKeyword('2 bleed'), IKeyword('1 bleed')],
         IKeyword('2 bleed'): [IKeyword('1 bleed')],
         IKeyword('3 strength'): [IKeyword('2 strength'),
@@ -51,14 +49,24 @@ class FakeCard(object):
         IKeyword('1 strength'): [IKeyword('0 strength')],
         IKeyword('1 stealth'): [IKeyword('0 stealth')],
     }
+    return dReplaceKeywordMap
 
-    def __init__(self, oAbsCard):
+
+class FakeCard(object):
+    """Class which fakes being an AbstractCard for the text view."""
+    # pylint: disable=R0902
+    # Need all the attributes to match AbstractCard
+
+    def __init__(self, oAbsCard, dReplaceMap):
         if oAbsCard.level:
             self.oAdvanced = oAbsCard
             self.oBase = self._find_base_vampire()
         else:
             self.oBase = oAbsCard
             self.oAdvanced = self._find_adv_vampire()
+
+        self.dReplaceMap = dReplaceMap
+
         # pylint: disable=C0103
         # We duplicate AbstractCard naming here
         self.name = self.oAdvanced.name.replace('(Advanced)', '(Merged)')
@@ -96,7 +104,7 @@ class FakeCard(object):
     def _fix_keywords(self):
         """Fix keywords to remove duplicates and merge things as
            approriates."""
-        for oReplacement, aObselete in self.REPLACE_KEYWORD_MAP.items():
+        for oReplacement, aObselete in self.dReplaceMap.items():
             if oReplacement in self.keywords:
                 for oKeyword in aObselete:
                     while oKeyword in self.keywords:
@@ -374,6 +382,7 @@ class MergedVampirePlugin(SutekhPlugin):
         # Exclusions, due to card list errors, etc.
         self._aExcluded = set()
         self._make_base_map()
+        self._dReplaceMap = make_replace_keywords()
 
     def cleanup(self):
         """Remove the listener"""
@@ -402,7 +411,7 @@ class MergedVampirePlugin(SutekhPlugin):
         if self._oAbsCard in self._aExcluded:
             return
         try:
-            self._oFakeCard = FakeCard(self._oAbsCard)
+            self._oFakeCard = FakeCard(self._oAbsCard, self._dReplaceMap)
         except SQLObjectNotFound:
             do_complaint_error(
                 "Unable to find base vampire for %s" % self._oAbsCard.name)
