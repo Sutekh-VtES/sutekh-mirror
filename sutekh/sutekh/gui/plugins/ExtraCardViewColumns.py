@@ -37,7 +37,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
     # sorting
     def _get_data_clan(self, oCard, bGetIcons=True):
         """get the clan for the card"""
-        if not oCard is None:
+        if oCard is not None:
             aClans = [x.name for x in oCard.clan]
             aIcons = []
             if aClans:
@@ -65,7 +65,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_disciplines(self, oCard, bGetIcons=True):
         """get discipline info for card"""
-        if not oCard is None:
+        if oCard is not None:
             # There are better ways of doing this, but this is 1st draft
             # attempt, so we'll do the firt that occurs to me
             aInfo = [((oP.level != 'superior') and oP.discipline.name or
@@ -102,7 +102,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_group(self, oCard, _bGetIcons=True):
         """get the group info for the card"""
-        if not oCard is None and not oCard.group is None:
+        if oCard is not None and oCard.group is not None:
             return oCard.group, [None]
         # We use -1 for the any group, so flag with a very different number
         return -100, [None]
@@ -121,9 +121,9 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_capacity(self, oCard, _bGetIcons=True):
         """Get the card's capacity"""
-        if not oCard is None and not oCard.capacity is None:
+        if oCard is not None and oCard.capacity is not None:
             return oCard.capacity, [None]
-        if not oCard is None and not oCard.life is None:
+        if oCard is not None and oCard.life is not None:
             return oCard.life, [None]
         return -1, [None]
 
@@ -136,7 +136,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_cost(self, oCard, _bGetIcons=True):
         """Get the card's cost"""
-        if not oCard is None and not oCard.cost is None:
+        if oCard is not None and oCard.cost is not None:
             return oCard.cost, oCard.costtype, [None]
         return 0, "", [None]
 
@@ -172,7 +172,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_title(self, oCard, bGetIcons=True):
         """Get the card's title."""
-        if not oCard is None:
+        if oCard is not None:
             aTitles = [oT.name for oT in oCard.title]
             aTitles.sort()
             aIcons = []
@@ -189,7 +189,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
 
     def _get_data_sect(self, oCard, bGetIcons=True):
         """Get the card's sect."""
-        if not oCard is None:
+        if oCard is not None:
             aSects = [oS.name for oS in oCard.sect]
             aSects.sort()
             aIcons = []
