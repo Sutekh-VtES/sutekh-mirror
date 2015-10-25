@@ -25,15 +25,7 @@ from sutekh.base.gui.GuiUtils import wrap
 from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
-try:
-    THIRD_ED = IExpansion('Third Edition')
-    JYHAD = IExpansion('Jyhad')
-except SQLObjectNotFound, oExcDetails:
-    # log exception at same level as plugin errors (verbose)
-    logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
-    # Turn exception into a ImportError, so plugin is just disabled
-    raise ImportError('Unable to load the required expansions')
-ODD_BACKS = (None, THIRD_ED, JYHAD)
+ODD_BACKS = set()
 
 PDF_SETS = set()
 
@@ -76,6 +68,19 @@ def _disc_sort_key(tData):
     """Sort disciplines by reverse number, then reverse superior number,
        then alphabetically by name"""
     return (-tData[1][1], -tData[1][2], tData[0].fullname)
+
+
+def _load_odd_backs():
+    ODD_BACKS.clear()
+    try:
+        THIRD_ED = IExpansion('Third Edition')
+        JYHAD = IExpansion('Jyhad')
+        ODD_BACKS.add(THIRD_ED)
+        ODD_BACKS.add(JYHAD)
+        ODD_BACKS.add(None)
+    except SQLObjectNotFound, oExcDetails:
+        # log exception at same level as plugin errors (verbose)
+        logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
 
 
 def _load_pdf_sets():
@@ -285,6 +290,9 @@ def _split_into_crypt_lib(aPhysCards):
 def _check_same(aPhysCards):
     """Check that all the crypt cards and all the library cards have the
        same backs"""
+    if not ODD_BACKS:
+        # Error importing the expansions, so complain
+        return False
     aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
     dCrypt = _get_back_counts(aCrypt)
     dLib = _get_back_counts(aLib)
@@ -419,6 +427,7 @@ class AnalyzeCardList(SutekhPlugin):
     def __init__(self, *args, **kwargs):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
         _load_pdf_sets()
+        _load_odd_backs()
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
@@ -659,6 +668,8 @@ class AnalyzeCardList(SutekhPlugin):
         # can be very, very long (Matt Morgan's TWDA entries, for
         # example)
         sDesc = self._escape(oCS.comment)
+        if not sDesc:
+            sDesc = "<i>No description</i>"
         oDesc = wrap(sDesc)
         oScrolledBox = gtk.VBox(False, 1)
         oDescTitle = gtk.Label()
@@ -1164,6 +1175,11 @@ class AnalyzeCardList(SutekhPlugin):
     def _process_backs(self, aPhysCards):
         """Run some heuristic tests to see if cards are 'of sufficiently
            mixed card type'"""
+        if not ODD_BACKS:
+            # Error importing the expansions, so complain
+            return ("Failed to import all the expansion information\n"
+                    "Unable to accurately analyze if this deck requires"
+                    "sleeves")
         aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
         dCrypt = _get_back_counts(aCrypt)
         dLib = _get_back_counts(aLib)
