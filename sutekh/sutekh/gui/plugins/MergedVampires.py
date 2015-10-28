@@ -37,6 +37,8 @@ class MergedKeyword(object):
 
 
 def make_replace_keywords():
+    """Cache the various keywords we need to drop when creating the
+       merged vampire."""
     # Keywords which obselete each other
     # We do this as a function to avoid issues with importing the plugin
     # without the database running

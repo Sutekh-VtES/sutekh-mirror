@@ -223,11 +223,11 @@ class SecretLibrary(SutekhPlugin):
 
     def __init__(self, oCardListView, oCardListModel, cModelType):
         try:
-            self.ILLEGAL = IKeyword('not for legal play')
+            self.oIllegal = IKeyword('not for legal play')
         except SQLObjectNotFound, oExcDetails:
             logging.warn("Illegal keyword missing (%s).", oExcDetails,
                          exc_info=1)
-            self.ILLEGAL = None
+            self.oIllegal = None
         super(SecretLibrary, self).__init__(oCardListView, oCardListModel,
                                             cModelType)
 
@@ -454,7 +454,7 @@ class SecretLibrary(SutekhPlugin):
     def _exclude(self, oAbsCard):
         """Secret Library does not support storyline cards yet, so
            exclude them"""
-        if self.ILLEGAL not in oAbsCard.keywords:
+        if self.oIllegal not in oAbsCard.keywords:
             # Excluded cards are all not legal for play
             return False
         for oPair in oAbsCard.rarity:

@@ -71,12 +71,13 @@ def _disc_sort_key(tData):
 
 
 def _load_odd_backs():
+    """Cache info about the non-standard card backs."""
     ODD_BACKS.clear()
     try:
-        THIRD_ED = IExpansion('Third Edition')
-        JYHAD = IExpansion('Jyhad')
-        ODD_BACKS.add(THIRD_ED)
-        ODD_BACKS.add(JYHAD)
+        oThirdEd = IExpansion('Third Edition')
+        oJyhad = IExpansion('Jyhad')
+        ODD_BACKS.add(oThirdEd)
+        ODD_BACKS.add(oJyhad)
         ODD_BACKS.add(None)
     except SQLObjectNotFound, oExcDetails:
         # log exception at same level as plugin errors (verbose)
