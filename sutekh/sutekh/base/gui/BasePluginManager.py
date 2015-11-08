@@ -216,6 +216,25 @@ class BasePlugin(object):
         oConfig.add_cardlist_specs(cls.__name__, cls.dCardListConfig)
         oConfig.add_cardset_list_specs(cls.__name__, cls.dCardSetListConfig)
 
+    @classmethod
+    def get_help_text(cls):
+        """Return the help documentation for the plugin"""
+        sText = getattr(cls, 'sHelpText', None)
+        if sText:
+            # Strip whitespace
+            sText = '\n'.join([x.strip() for x in sText.splitlines()])
+        return sText
+
+    @classmethod
+    def get_help_category(cls):
+        """Return the help category to add this plugin to"""
+        return getattr(cls, 'sHelpCategory', None)
+
+    @classmethod
+    def get_help_menu_entry(cls):
+        """Return the menu name for the html help."""
+        return getattr(cls, 'sMenuName', None)
+
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         """Grunt work of adding menu item to the frame"""
         aMenuItems = self.get_menu_item()

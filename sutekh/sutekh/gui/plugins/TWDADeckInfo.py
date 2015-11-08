@@ -143,6 +143,27 @@ class TWDAInfoPlugin(SutekhPlugin):
         'twda configured': 'option("Yes", "No", "Unasked", default="Unasked")',
     }
 
+    sMenuName = "Find TWDA decks containing"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """If you have downloaded the database of tournament winning
+                   decks, this allows you to search the tournament winning
+                   deck archive for decks containing specific combinations of
+                   cards.
+
+                   You can either search for all the selected cards or for
+                   those that contain at least 1 of the selected cards.
+
+                   The results are grouped by year, and list the number of
+                   matching card found in each listed deck. The matching
+                   decks can be opened as new panes by choosing the
+                   "Open cardset" option.
+
+                   The results dialog in not modal, so it's possible to
+                   examine the opened card sets closely without closing
+                   the search results."""
+
     # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
@@ -163,7 +184,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             oDownload.connect('activate', self.do_download)
             return ('Data Downloads', oDownload)
         # Add entries to the analyze list
-        oTWDMenu = gtk.MenuItem('Find TWDA decks containing ... ')
+        oTWDMenu = gtk.MenuItem(self.sMenuName + ' ... ')
         oSubMenu = gtk.Menu()
         oTWDMenu.set_submenu(oSubMenu)
         self.oAllTWDA = gtk.MenuItem("ALL selected cards")

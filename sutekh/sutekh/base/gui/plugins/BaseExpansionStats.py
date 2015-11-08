@@ -30,6 +30,24 @@ class BaseExpansionStats(BasePlugin):
     dTableVersions = {Expansion: (4, )}
     aModelsSupported = (PhysicalCard,)
 
+    sMenuName = "Expansion Stats"
+
+    sHelpCategory = "card_list:analysis"
+
+    sHelpText = """This lists some statistics about the different
+                   expansions and rarities.
+
+                   For each expansion, this lists the number of cards of each
+                   rarity. It also notes which cards are found only in the
+                   preconstructed decks for that expansion if needed. For each
+                   rarity, the individual cards are list, grouped according
+                   to the current grouping of the full card list.
+
+                   Note that this will only include cards not legal for
+                   tournament play (such as banned cards or storyline only
+                   cards) if the current profile for the full card list shows
+                   those cards."""
+
     # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
@@ -40,7 +58,7 @@ class BaseExpansionStats(BasePlugin):
         """Register on the 'Analyze' menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oExpStats = gtk.MenuItem("Expansion Stats")
+        oExpStats = gtk.MenuItem(self.sMenuName)
         oExpStats.connect("activate", self.activate)
         return ('Analyze', oExpStats)
 

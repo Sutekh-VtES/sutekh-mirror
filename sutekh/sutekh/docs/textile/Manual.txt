@@ -45,15 +45,12 @@ h2. Contents
 ## "List filters":#list
 # "Analysis Tools":#analysis
 ## "Cluster Cards":#cluster
-## "Clan Discipline Stats":#stats
-## "Expansion Stats":#exp_stats
-## "Compare with another Card Set":#compare
-## "Analyze Deck":#analyze_deck
+:numbered:card_list:analysis
 ## "Test Card Set Independence":#test_cs_indep
 ## "Find similiar crypt cards":#find_crypt
 ## "Simulate Opening Hand":#opening_hand
 ## "Card draw probabilities":#draw_prob
-## "Find TWDA decks containing":#twda_cards
+:numbered:card_sets:analysis
 # "Profiles":#profiles
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
@@ -354,9 +351,8 @@ h3(#ww_analyze). Analyze
 
 The following analysis options are available for White Wolf Card List:
 
-* "Clan Discipline Stats":#stats
-* "Expansion Stats":#exp_stats
 * "Cluster Cards":#cluster
+:list:card_list:analysis
 
 h2(#card_text). Card Text
 
@@ -543,14 +539,12 @@ h3(#cardsets_analyze). Analyze
 
 The following analysis options are available for card sets:
 
-* "Analyze Deck":#analyze_deck
 * "Find similar crypt cards":#find_crypt
 * "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
-* "Compare with another Card Set":#compare
 * "Simulate Opening Hand":#opening_hand
 * "Test Card Set Independence":#test_indep
-* "Find TWDA decks containing":#twda_cards
+:list:card_sets:analysis
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
@@ -927,73 +921,9 @@ many cards are present in each cluster, and the last lists the property
 values of the cluster center (property values of zero are omitted).
 
 
-h3(#stats). Clan Discipline Stats
+:text:card_list:analysis
 
-This shows an analysis of all the different clans in the White Wolf
-card list. For each clan, it displays the total number of vampires in the clan,
-the sum of the vampires' capacities, and the most common disciplines. It also
-shows the score for the disciplines, and various stats about how the disciplines
-are distributed.
-
-You can expand the tree view to show the details for each legal grouping
-combination.
-
-The score is intended to give you some indication of how common
-disciplines are within the clan. Vampires without a discipline score 0 for that
-discipline, vampires with the inferior discipline score 1 and vampires
-with the superior discipline score 2.
-
-Note that this will only include cards not legal for tournament play (such as
-banned cards or storyline only cards) if the current profile for the white wolf
-card list shows those cards.
-
-
-h3(#exp_stats). Expansion Stats
-
-This lists some statistics about the different expansions and rarities.
-
-For each expansion, this lists the number of cards of each rarity. It also
-notes which cards are found only in the preconstructed decks for that expansion
-if needed. For each rarity, the individual cards are list, grouped according
-to the current grouping of the white wolf card list.
-
-Note that this will only include cards not legal for tournament play (such as
-banned cards or storyline only cards) if the current profile for the white wolf
-card list shows those cards.
-
-
-h3(#compare). Compare with another Card Set
-
-This tool compares the current card set with a different card set. It displays
-which cards are common to both card sets, and lists the unique cards in each
-card set.
-
-By default, the tool considers the expansions of cards, and considers all cards
-with the same name with different expansions as different.  You can change
-this behaviour using the _Ignore Expansions_ checkbox when selecting a card set
-for comparison. If selected, all cards of with the same name are considered
-the same, regardless of expansion.
-
-The display of the results uses the same grouping as the card set.
-
-You can create card sets from each list of results using the 'Create Card Set
-from this list' button.
-
-
-h3(#analyze_deck). Analyze Deck
-
-This tool examines a card set and displays various statistics about it which
-are intended to give you some indication of how the card set will operate as a
-deck.
-
-It displays several tabs, each of which summarises different aspects
-of the card set. The first tab summarises some basic information about the
-entire set. The second tab implements Legbiter's Happy Family analysis for
-the card set. The remaining tabs consider specific card types.
-
-The happy family implementation allows you either to select the number of
-disciplines to use, or to select the disciplines to consider manually.
-
+:text:card_sets:analysis
 
 h3(#find_crypt). Find similiar crypt cards
 
@@ -1064,22 +994,6 @@ a number from one to the total number of cards selected.
 
 The selected changes are only applied when you press the the _recalculate table_
 button.
-
-h3(#twda_cards). Find TWDA decks containing...
-
-If you have downloaded the database of tournament winning decks, this
-allows you to search the tournament winning deck archive for decks
-containing specific combinations of cards.
-
-You can either search for all the selected cards or for those that
-contain at least 1 of the selected cards.
-
-The results are grouped by year, and list the number of matching card found in
-each listed deck. The resulting decks can be opened as new panes by choosing
-the "Open cardset" option.
-
-The results dialog in not modal, so it's possible to examine the opened card
-sets closely without closing the search results.
 
 
 h2(#profiles). Profiles

@@ -69,11 +69,32 @@ class BaseCompare(BasePlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Compare with another Card Set"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool compares the current card set with a different
+                   card set. It displays which cards are common to both card
+                   sets, and lists the unique cards in each card set.
+
+                   By default, the tool considers the expansions of cards, and
+                   considers all cards with the same name with different
+                   expansions as different.  You can change this behaviour
+                   using the _Ignore Expansions_ checkbox when selecting a
+                   card set for comparison. If selected, all cards of with the
+                   same name are considered the same, regardless of expansion.
+
+                   The display of the results uses the same grouping as the
+                   card set.
+
+                   You can create card sets from each list of results using
+                   the 'Create Card Set from this list' button."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oCompare = gtk.MenuItem("Compare with another Card Set")
+        oCompare = gtk.MenuItem(self.sMenuName)
         oCompare.connect("activate", self.activate)
         return ('Analyze', oCompare)
 

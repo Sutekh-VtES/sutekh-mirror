@@ -30,6 +30,31 @@ class ClanDisciplineStats(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = (PhysicalCard,)
 
+    sMenuName = "Clan Discipline Stats"
+
+    sHelpCategory = "card_list:analysis"
+
+    sHelpText = """This shows an analysis of all the different clans in the
+                   White Wolf card list. For each clan, it displays the total
+                   number of vampires in the clan, the sum of the vampires'
+                   capacities, and the most common disciplines. It also shows
+                   the score for the disciplines, and various stats about how
+                   the disciplines are distributed.
+
+                   You can expand the tree view to show the details for each
+                   legal grouping combination.
+
+                   The score is intended to give you some indication of how
+                   common disciplines are within the clan. Vampires without
+                   a discipline score 0 for that discipline, vampires with
+                   the inferior discipline score 1 and vampires with the
+                   superior discipline score 2.
+
+                   Note that this will only include cards not legal for
+                   tournament play (such as banned cards or storyline only
+                   cards) if the current profile for the full card list shows
+                   those cards."""
+
     # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
@@ -40,7 +65,7 @@ class ClanDisciplineStats(SutekhPlugin):
         """Register on the 'Analyze' menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oClanStats = gtk.MenuItem("Clan Discipline Stats")
+        oClanStats = gtk.MenuItem(self.sMenuName)
         oClanStats.connect("activate", self.activate)
         return ('Analyze', oClanStats)
 
