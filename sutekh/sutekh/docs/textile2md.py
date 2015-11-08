@@ -29,6 +29,11 @@ sUtilPath = os.path.join(os.path.dirname(__file__), '..', 'base',
                          'Utility.py')
 DocUtils = imp.load_source('DocUtils', sDocPath)
 Utility = imp.load_source('Utility', sUtilPath)
+# Import plugins
+sPluginPath = os.path.join(os.path.dirname(__file__), '..', 'gui',
+                           'PluginManager.py')
+PluginManager = imp.load_source('sutekh.gui.PluginManager', sPluginPath)
+
 
 # pylint: enable=C0103
 
@@ -41,6 +46,9 @@ def replace_version(sText):
 
 if __name__ == "__main__":
     Utility.ensure_dir_exists('md')
+    oPluginMngr = PluginManager.PluginManager()
+    oPluginMngr.load_plugins()
+    aPlugins = oPluginMngr.get_card_list_plugins()
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
-    DocUtils.convert_to_markdown("textile", "md", replace_version)
+    DocUtils.convert_to_markdown("textile", "md", aPlugins, replace_version)
     DocUtils.cleanup('textile')

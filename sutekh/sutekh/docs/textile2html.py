@@ -23,9 +23,16 @@ oFile, sModname, oDescription = imp.find_module('sutekh', [sModPath])
 sutekh_package = imp.load_module('sutekh', oFile, sModname, oDescription)
 Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
+# Import docutils
 sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
                         'DocUtils.py')
 DocUtils = imp.load_source('DocUtils', sDocPath)
+
+# Import plugins
+sPluginPath = os.path.join(os.path.dirname(__file__), '..', 'gui',
+                           'PluginManager.py')
+PluginManager = imp.load_source('sutekh.gui.PluginManager', sPluginPath)
+
 
 # pylint: enable=C0103
 
@@ -37,6 +44,10 @@ def replace_version(sText):
 
 
 if __name__ == "__main__":
+    oPluginMngr = PluginManager.PluginManager()
+    oPluginMngr.load_plugins()
+    aPlugins = oPluginMngr.get_card_list_plugins()
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
-    DocUtils.convert("textile", "html", SutekhInfo, replace_version)
+    DocUtils.convert("textile", "html", SutekhInfo, aPlugins,
+                     replace_version)
     DocUtils.cleanup('textile')

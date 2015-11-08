@@ -195,7 +195,66 @@ def _load_textile(sTextilePath):
     return aLines
 
 
-def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
+def _process_plugins(aLines, aPlugins):
+    """Add help text for plugins to the textile data."""
+    # Find all the possible tags
+    dTags = {}
+    for sLine in aLines:
+        if sLine.startswith(':'):
+            # check type
+            if ':list:' in sLine or ':numbered:' in sLine or ':text:' in sLine:
+                sTag = sLine.split(':', 2)[2].strip()
+                if sTag not in dTags:
+                    dTags[sTag] = {':list:': [], ':numbered:': [], ':text:': []}
+            else:
+                print "Unknown Tag type %s" % sLine
+    if dTags:
+        # Only replace stuff if we have tags, otherwise silently skip all this
+        for cPlugin in aPlugins:
+            sPluginCat = cPlugin.get_help_category()
+            if sPluginCat is None:
+                # No docs, so skip
+                continue
+            if sPluginCat not in dTags:
+                print "%s has unrecognised plugin help category: %s" % (cPlugin, sPluginCat)
+                continue
+            # Construct the tags
+            sName = cPlugin.get_help_menu_entry()
+            sLinkTag = sName.lower().replace(' ', '')
+            dTags[sPluginCat][':list:'].append(
+                    '* "%s":#%s' % (sName, sLinkTag))
+            dTags[sPluginCat][':numbered:'].append(
+                    '## "%s":#%s' % (sName, sLinkTag))
+            sText = cPlugin.get_help_text()
+            dTags[sPluginCat][':text:'].append(
+                    'h3(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
+        # replace tags
+        for iCnt, sLine in enumerate(aLines):
+            if sLine.startswith(':') and (':list:' in sLine
+                                          or ':numbered:' in sLine
+                                          or ':text:' in sLine):
+                sTag = sLine.split(':', 2)[2].strip()
+                # XXX: Should we sort here to ensure predictable ordering,
+                # rather than relying on import order?
+                for sType, aData in dTags[sTag].items():
+                    sFullTag = sType + sTag
+                    if sType in sLine:
+                        aLines[iCnt] = sLine.replace(sFullTag,
+                                                     '\n'.join(aData))
+                if not aLines[iCnt].strip():
+                    # Empty line, to avoid textile trying to turn it into
+                    # an element
+                    # Note that we only want to strip empty lines, since the
+                    # whitespace around non-empty lines matters.
+                    aLines[iCnt] = ''
+                    # XXX: Should there be a way to silence this?
+                    print 'Unused tag %s' % sTag
+    # This is a terrible idea, but works
+    sText = ''.join(aLines)
+    return sText.split('\n')
+
+
+def convert(sTextileDir, sHtmlDir, cAppInfo, aPlugins, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
     # pylint: disable=R0914
     # R0914: Reducing the number of variables won't help clarity
@@ -212,7 +271,9 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
 
         aLines = _load_textile(sTextilePath)
 
-        fHtml.write(textile2html(''.join(aLines), dContext, fProcessText))
+        aLines = _process_plugins(aLines, aPlugins)
+
+        fHtml.write(textile2html('\n'.join(aLines), dContext, fProcessText))
 
         fHtml.close()
 
@@ -223,7 +284,7 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
                 print '\n'.join([x.err for x in aErrors])
 
 
-def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
+def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
     """Convert textile files to markdown syntax."""
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
@@ -233,6 +294,8 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
         fMarkdown = open(sMarkdownPath, "wb")
 
         aLines = _load_textile(sTextilePath)
+
+        aLines = _process_plugins(aLines, aPlugins)
 
         fMarkdown.write(textile2markdown(aLines, fProcessText))
 
