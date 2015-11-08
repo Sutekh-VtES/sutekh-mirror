@@ -71,12 +71,12 @@
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#expansionstats">Expansion Stats</a></li>
 		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
-		<li><a href="#test_cs_indep">Test Card Set Independence</a></li>
-		<li><a href="#find_crypt">Find similiar crypt cards</a></li>
-		<li><a href="#opening_hand">Simulate Opening Hand</a></li>
 		<li><a href="#draw_prob">Card draw probabilities</a></li>
+		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
 		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
 		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 	</ol></li>
 		<li><a href="#profiles">Profiles</a>
 	<ol>
@@ -425,13 +425,13 @@
 	<p>The following analysis options are available for card sets:</p>
 
 	<ul>
-		<li><a href="#find_crypt">Find similar crypt cards</a></li>
 		<li><a href="#draw_prob">Card draw probabilities</a></li>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#opening_hand">Simulate Opening Hand</a></li>
-		<li><a href="#test_indep">Test Card Set Independence</a></li>
+		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
 		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
 		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 	</ul>
 
 	<h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
@@ -630,6 +630,22 @@
 
 	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
 
+	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
+
+	<p>This tool tests the current card set against other card sets with the same parent, and considers whether there are enough cards in the parent card set to simultaneously construct all the selected sets. Multiple decks can be selected from the list of card sets.</p>
+
+	<p>You can test the current card set against all sets with the same parent which are marked as <em>In Use</em> by checking the <em>Test against all card sets marked as in use</em> checkbox when selecting decks for comparison. This checkbox overrides any selected entries in the list.</p>
+
+	<p>By default the independence test is strict and checks whether the parent set contains enough cards to build all the selected child sets with exactly the card expansions specified. A less strict check which ignores expansions may be selected by checking <em>Ignore card expansions</em>.</p>
+
+	<p>The first tab of the results displays the full list of cards of which there is a shortage in the parent card set. For each selected set which includes any of these cards, the list of cards relevant to that set is shown in a separate tab.</p>
+
+	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
+
+	<p>This allows you to find crypt cards that are similar to the current selected crypt card. It will search for cards in a compatible grouping that share the specified number of disciplines or virtues with the selected crypt card.</p>
+
+	<p>More complex queries are possible by frist filtering the card set and then using the 'Only match cards visible in this pane&#8217; option to restrict the results of the crypt card search to match the filter.</p>
+
 	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
 
 	<p>This tool compares the current card set with a different card set. It displays which cards are common to both card sets, and lists the unique cards in each card set.</p>
@@ -650,23 +666,7 @@
 
 	<p>The results dialog in not modal, so it&#8217;s possible to examine the opened card sets closely without closing the search results.</p>
 
-	<h3 id="find_crypt">Find similiar crypt cards</h3>
-
-	<p>This allows you to find crypt cards that are similar to the current selected crypt card. It will search for cards in a compatible grouping that share the specified number of disciplines or virtues with the selected crypt card.</p>
-
-	<p>More complex queries are possible by frist filtering the card set and then using the 'Only match cards visible in this pane&#8217; option to restrict the results of the crypt card search to match the filter.</p>
-
-	<h3 id="test_indep">Test Card Set Independence</h3>
-
-	<p>This tool tests the current card set against other card sets with the same parent, and considers whether there are enough cards in the parent card set to simultaneously construct all the selected sets. Multiple decks can be selected from the list of card sets.</p>
-
-	<p>You can test the current card set against all sets with the same parent which are marked as <em>In Use</em> by checking the <em>Test against all card sets marked as in use</em> checkbox when selecting decks for comparison. This checkbox overrides any selected entries in the list.</p>
-
-	<p>By default the independence test is strict and checks whether the parent set contains enough cards to build all the selected child sets with exactly the card expansions specified. A less strict check which ignores expansions may be selected by checking <em>Ignore card expansions</em>.</p>
-
-	<p>The first tab of the results displays the full list of cards of which there is a shortage in the parent card set. For each selected set which includes any of these cards, the list of cards relevant to that set is shown in a separate tab.</p>
-
-	<h3 id="opening_hand">Simulate Opening Hand</h3>
+	<h3 id="simulateopeninghand">Simulate opening hand</h3>
 
 	<p>This tool treats the card set as a completed deck, and displays the expected distribution of cards in the opening hand and crypt. It is intended to give you some idea of how the deck will work in practice. In addition, you can generate example opening hands and crypts by clicking the <em>Draw sample hand</em> button.</p>
 
