@@ -46,7 +46,6 @@ h2. Contents
 # "Analysis Tools":#analysis
 ## "Cluster Cards":#cluster
 :numbered:card_list:analysis
-## "Find similiar crypt cards":#find_crypt
 ## "Card draw probabilities":#draw_prob
 :numbered:card_sets:analysis
 # "Profiles":#profiles
@@ -537,7 +536,6 @@ h3(#cardsets_analyze). Analyze
 
 The following analysis options are available for card sets:
 
-* "Find similar crypt cards":#find_crypt
 * "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
 :list:card_sets:analysis
@@ -919,16 +917,6 @@ values of the cluster center (property values of zero are omitted).
 :text:card_list:analysis
 
 :text:card_sets:analysis
-
-h3(#find_crypt). Find similiar crypt cards
-
-This allows you to find crypt cards that are similar to the current selected
-crypt card. It will search for cards in a compatible grouping that share
-the specified number of disciplines or virtues with the selected crypt card.
-
-More complex queries are possible by frist filtering the card set and then
-using the 'Only match cards visible in this pane' option to restrict the
-results of the crypt card search to match the filter.
 
 h3(#draw_prob). Card draw probabilities
 

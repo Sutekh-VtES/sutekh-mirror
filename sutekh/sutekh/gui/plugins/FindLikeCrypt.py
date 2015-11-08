@@ -86,11 +86,25 @@ class FindLikeVampires(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
+    sMenuName = "Find similar crypt cards"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This allows you to find crypt cards that are similar to the
+                   current selected crypt card. It will search for cards in a
+                   compatible grouping that share the specified number of
+                   disciplines or virtues with the selected crypt card.
+
+                   More complex queries are possible by frist filtering the
+                   card set and then using the 'Only match cards visible in
+                   this pane' option to restrict the results of the crypt card
+                   search to match the filter."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oGenFilter = gtk.MenuItem("Find similar crypt cards")
+        oGenFilter = gtk.MenuItem(self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
