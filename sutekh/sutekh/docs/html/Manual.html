@@ -69,15 +69,14 @@
 		<li><a href="#analysis">Analysis Tools</a>
 	<ol>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#stats">Clan Discipline Stats</a></li>
-		<li><a href="#exp_stats">Expansion Stats</a></li>
-		<li><a href="#compare">Compare with another Card Set</a></li>
-		<li><a href="#analyze_deck">Analyze Deck</a></li>
+		<li><a href="#expansionstats">Expansion Stats</a></li>
+		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
 		<li><a href="#test_cs_indep">Test Card Set Independence</a></li>
 		<li><a href="#find_crypt">Find similiar crypt cards</a></li>
 		<li><a href="#opening_hand">Simulate Opening Hand</a></li>
 		<li><a href="#draw_prob">Card draw probabilities</a></li>
-		<li><a href="#twda_cards">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 	</ol></li>
 		<li><a href="#profiles">Profiles</a>
 	<ol>
@@ -288,9 +287,9 @@
 	<p>The following analysis options are available for White Wolf Card List:</p>
 
 	<ul>
-		<li><a href="#stats">Clan Discipline Stats</a></li>
-		<li><a href="#exp_stats">Expansion Stats</a></li>
 		<li><a href="#cluster">Cluster Cards</a></li>
+		<li><a href="#expansionstats">Expansion Stats</a></li>
+		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
 	</ul>
 
 	<h2 id="card_text">Card Text</h2>
@@ -426,14 +425,13 @@
 	<p>The following analysis options are available for card sets:</p>
 
 	<ul>
-		<li><a href="#analyze_deck">Analyze Deck</a></li>
 		<li><a href="#find_crypt">Find similar crypt cards</a></li>
 		<li><a href="#draw_prob">Card draw probabilities</a></li>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#compare">Compare with another Card Set</a></li>
 		<li><a href="#opening_hand">Simulate Opening Hand</a></li>
 		<li><a href="#test_indep">Test Card Set Independence</a></li>
-		<li><a href="#twda_cards">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 	</ul>
 
 	<h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
@@ -614,7 +612,15 @@
 
 	<p>The results are presented as a table. Each row corresponds to a cluster of cards. The first column contains checkboxes. Use these to select which clusters to use to create card sets, then click the <em>Make Cards Sets from Selected Clusters</em> button at the bottom of the results. The second column contains the cluster number, which enables you to determine which clusters correspond to the created card sets. The third column shows how many cards are present in each cluster, and the last lists the property values of the cluster center (property values of zero are omitted).</p>
 
-	<h3 id="stats">Clan Discipline Stats</h3>
+	<h3 id="expansionstats">Expansion Stats</h3>
+
+	<p>This lists some statistics about the different expansions and rarities.</p>
+
+	<p>For each expansion, this lists the number of cards of each rarity. It also notes which cards are found only in the preconstructed decks for that expansion if needed. For each rarity, the individual cards are list, grouped according to the current grouping of the full card list.</p>
+
+	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
+
+	<h3 id="clandisciplinestats">Clan Discipline Stats</h3>
 
 	<p>This shows an analysis of all the different clans in the White Wolf card list. For each clan, it displays the total number of vampires in the clan, the sum of the vampires&#8217; capacities, and the most common disciplines. It also shows the score for the disciplines, and various stats about how the disciplines are distributed.</p>
 
@@ -622,17 +628,9 @@
 
 	<p>The score is intended to give you some indication of how common disciplines are within the clan. Vampires without a discipline score 0 for that discipline, vampires with the inferior discipline score 1 and vampires with the superior discipline score 2.</p>
 
-	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the white wolf card list shows those cards.</p>
+	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
 
-	<h3 id="exp_stats">Expansion Stats</h3>
-
-	<p>This lists some statistics about the different expansions and rarities.</p>
-
-	<p>For each expansion, this lists the number of cards of each rarity. It also notes which cards are found only in the preconstructed decks for that expansion if needed. For each rarity, the individual cards are list, grouped according to the current grouping of the white wolf card list.</p>
-
-	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the white wolf card list shows those cards.</p>
-
-	<h3 id="compare">Compare with another Card Set</h3>
+	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
 
 	<p>This tool compares the current card set with a different card set. It displays which cards are common to both card sets, and lists the unique cards in each card set.</p>
 
@@ -642,13 +640,15 @@
 
 	<p>You can create card sets from each list of results using the 'Create Card Set from this list&#8217; button.</p>
 
-	<h3 id="analyze_deck">Analyze Deck</h3>
+	<h3 id="findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</h3>
 
-	<p>This tool examines a card set and displays various statistics about it which are intended to give you some indication of how the card set will operate as a deck.</p>
+	<p>If you have downloaded the database of tournament winning decks, this allows you to search the tournament winning deck archive for decks containing specific combinations of cards.</p>
 
-	<p>It displays several tabs, each of which summarises different aspects of the card set. The first tab summarises some basic information about the entire set. The second tab implements Legbiter&#8217;s Happy Family analysis for the card set. The remaining tabs consider specific card types.</p>
+	<p>You can either search for all the selected cards or for those that contain at least 1 of the selected cards.</p>
 
-	<p>The happy family implementation allows you either to select the number of disciplines to use, or to select the disciplines to consider manually.</p>
+	<p>The results are grouped by year, and list the number of matching card found in each listed deck. The matching decks can be opened as new panes by choosing the &#8220;Open cardset&#8221; option.</p>
+
+	<p>The results dialog in not modal, so it&#8217;s possible to examine the opened card sets closely without closing the search results.</p>
 
 	<h3 id="find_crypt">Find similiar crypt cards</h3>
 
@@ -687,16 +687,6 @@
 	</ul>
 
 	<p>The selected changes are only applied when you press the the <em>recalculate table</em> button.</p>
-
-	<h3 id="twda_cards">Find <span class="caps">TWDA</span> decks containing&#8230;</h3>
-
-	<p>If you have downloaded the database of tournament winning decks, this allows you to search the tournament winning deck archive for decks containing specific combinations of cards.</p>
-
-	<p>You can either search for all the selected cards or for those that contain at least 1 of the selected cards.</p>
-
-	<p>The results are grouped by year, and list the number of matching card found in each listed deck. The resulting decks can be opened as new panes by choosing the &#8220;Open cardset&#8221; option.</p>
-
-	<p>The results dialog in not modal, so it&#8217;s possible to examine the opened card sets closely without closing the search results.</p>
 
 	<h2 id="profiles">Profiles</h2>
 
