@@ -46,7 +46,6 @@ h2. Contents
 # "Analysis Tools":#analysis
 ## "Cluster Cards":#cluster
 :numbered:card_list:analysis
-## "Test Card Set Independence":#test_cs_indep
 ## "Find similiar crypt cards":#find_crypt
 ## "Simulate Opening Hand":#opening_hand
 ## "Card draw probabilities":#draw_prob
@@ -543,7 +542,6 @@ The following analysis options are available for card sets:
 * "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
 * "Simulate Opening Hand":#opening_hand
-* "Test Card Set Independence":#test_indep
 :list:card_sets:analysis
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
@@ -920,7 +918,6 @@ which clusters correspond to the created card sets. The third column shows how
 many cards are present in each cluster, and the last lists the property
 values of the cluster center (property values of zero are omitted).
 
-
 :text:card_list:analysis
 
 :text:card_sets:analysis
@@ -934,27 +931,6 @@ the specified number of disciplines or virtues with the selected crypt card.
 More complex queries are possible by frist filtering the card set and then
 using the 'Only match cards visible in this pane' option to restrict the
 results of the crypt card search to match the filter.
-
-h3(#test_indep). Test Card Set Independence
-
-This tool tests the current card set against other card sets with the same
-parent, and considers whether there are enough cards in the parent card set to
-simultaneously construct all the selected sets. Multiple decks can be selected
-from the list of card sets.
-
-You can test the current card set against all sets with the same parent which
-are marked as _In Use_ by checking the _Test against all card sets marked as in use_
-checkbox when selecting decks for comparison. This checkbox overrides any
-selected entries in the list.
-
-By default the independence test is strict and checks whether the parent set
-contains enough cards to build all the selected child sets with exactly the
-card expansions specified. A less strict check which ignores expansions may
-be selected by checking _Ignore card expansions_.
-
-The first tab of the results displays the full list of cards of which there is a
-shortage in the parent card set. For each selected set which includes any of
-these cards, the list of cards relevant to that set is shown in a separate tab.
 
 h3(#opening_hand). Simulate Opening Hand
 

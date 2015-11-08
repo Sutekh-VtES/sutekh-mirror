@@ -71,11 +71,39 @@ class BaseIndependence(BasePlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Test Card Set Independence"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool tests the current card set against other card
+                   sets with the same parent, and considers whether there
+                   are enough cards in the parent card set to simultaneously
+                   construct all the selected sets. Multiple decks can be
+                   selected from the list of card sets.
+
+                   You can test the current card set against all sets with the
+                   same parent which are marked as _In Use_ by checking the
+                   _Test against all card sets marked as in use_ checkbox when
+                   selecting decks for comparison. This checkbox overrides any
+                   selected entries in the list.
+
+                   By default the independence test is strict and checks
+                   whether the parent set contains enough cards to build all
+                   the selected child sets with exactly the card expansions
+                   specified. A less strict check which ignores expansions may
+                   be selected by checking _Ignore card expansions_.
+
+                   The first tab of the results displays the full list of cards
+                   of which there is a shortage in the parent card set. For
+                   each selected set which includes any of these cards, the
+                   list of cards relevant to that set is shown in a separate
+                   tab."""
+
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oTest = gtk.MenuItem("Test Card Set Independence")
+        oTest = gtk.MenuItem(self.sMenuName)
         oTest.connect("activate", self.activate)
         return ('Analyze', oTest)
 
