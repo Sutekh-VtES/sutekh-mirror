@@ -17,6 +17,42 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
 
+    sHelpText = """This tool displays the probabilities of drawing the selected
+                   cards from the library or the crypt. Unlike the _simulate
+                   opening hand_ tool, this displays results for longer
+                   sequences of card draws.
+
+                   The first row of the table shows the probabilities of
+                   drawing a single card in the selected list. Sub-rows show
+                   the individual probabilities for each possible combination
+                   of selected cards. The second row shows the probabilities of
+                   drawing all possible combinations of two selected cards,
+                   etc..
+
+                   Each probability cell in the table displays two values: the
+                   probability of drawing at least that combination of cards,
+                   and the probability of drawing exactly that combination of
+                   cards (shown in brackets).
+
+                   The tool has the following settings:
+
+                   * _columns in table_: Set the number of draws shown in \
+                   the table. You must specify a number from one to eight \
+                   (the default is eight). The first column shows the \
+                   probabilities of drawing the given cards in your opening \
+                   hand or crypt draw. Subsequent columns show the total \
+                   probabilities of drawing the cards after you have drawn \
+                   the number of extra cards shown in the column header.
+                   * _step between columns_: Set the number of cards drawn \
+                   between columns. You must specify a number from one to \
+                   ten (the default is one).
+                   * _cards of interest_: Set the number of rows in the \
+                   table. You must specify a number from one to the total \
+                   number of cards selected.
+
+                   The selected changes are only applied when you press the
+                   the _recalculate table_ button."""
+
     # pylint: disable=W0201
     # W0201 - we define lots of things here, rather than __init__, since that's
     # how our override hooks work

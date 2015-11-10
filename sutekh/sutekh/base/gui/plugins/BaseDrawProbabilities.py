@@ -123,11 +123,19 @@ class BaseDrawProbPlugin(BasePlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Card Draw probabilities"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """Handle the probabilty of drawing cards.
+                   Subclasses should override this with the
+                   exact details of the game."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oCardDraw = gtk.MenuItem("Card Draw probabilities")
+        oCardDraw = gtk.MenuItem(self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
