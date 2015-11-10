@@ -1,3 +1,17 @@
+10 Nov 2015
+ * Move 'Card draw probabilities" help text into the plugin
+
+08 Nov 2015
+ * Restructure help system, so help text for certain cases can
+   be included in the plugin.
+ * Move the help for several plugins out of Manual.txt
+   - Expansion Stats plugin
+   - Clan Discipline Stats plugin
+   - Compare with another cardset plugin
+   - Find TWDA decks containing X plugin
+   - Find similar crypt card plugin
+   - Opening card draw plugin
+
 25 Oct 2015
  * Update the SecretLibrary plugin to the changed urlopen_with_timeout API
  * Change Keyword caching MergedVampire and SecretLibrary plugins to be at 
