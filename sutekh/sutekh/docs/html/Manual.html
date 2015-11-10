@@ -71,8 +71,8 @@
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#expansionstats">Expansion Stats</a></li>
 		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
-		<li><a href="#draw_prob">Card draw probabilities</a></li>
 		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+		<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
 		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
 		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
 		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
@@ -425,9 +425,9 @@
 	<p>The following analysis options are available for card sets:</p>
 
 	<ul>
-		<li><a href="#draw_prob">Card draw probabilities</a></li>
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+		<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
 		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
 		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
 		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
@@ -640,6 +640,24 @@
 
 	<p>The first tab of the results displays the full list of cards of which there is a shortage in the parent card set. For each selected set which includes any of these cards, the list of cards relevant to that set is shown in a separate tab.</p>
 
+	<h3 id="carddrawprobabilities">Card Draw probabilities</h3>
+
+	<p>This tool displays the probabilities of drawing the selected cards from the library or the crypt. Unlike the _simulate opening hand_ tool, this displays results for longer sequences of card draws.</p>
+
+	<p>The first row of the table shows the probabilities of drawing a single card in the selected list. Sub-rows show the individual probabilities for each possible combination of selected cards. The second row shows the probabilities of drawing all possible combinations of two selected cards, etc..</p>
+
+	<p>Each probability cell in the table displays two values: the probability of drawing at least that combination of cards, and the probability of drawing exactly that combination of cards (shown in brackets).</p>
+
+	<p>The tool has the following settings:</p>
+
+	<ul>
+		<li><em>columns in table</em>: Set the number of draws shown in                    the table. You must specify a number from one to eight                    (the default is eight). The first column shows the                    probabilities of drawing the given cards in your opening                    hand or crypt draw. Subsequent columns show the total                    probabilities of drawing the cards after you have drawn                    the number of extra cards shown in the column header.</li>
+		<li><em>step between columns</em>: Set the number of cards drawn                    between columns. You must specify a number from one to                    ten (the default is one).</li>
+		<li><em>cards of interest</em>: Set the number of rows in the                    table. You must specify a number from one to the total                    number of cards selected.</li>
+	</ul>
+
+	<p>The selected changes are only applied when you press the the <em>recalculate table</em> button.</p>
+
 	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
 
 	<p>This allows you to find crypt cards that are similar to the current selected crypt card. It will search for cards in a compatible grouping that share the specified number of disciplines or virtues with the selected crypt card.</p>
@@ -669,24 +687,6 @@
 	<h3 id="simulateopeninghand">Simulate opening hand</h3>
 
 	<p>This tool treats the card set as a completed deck, and displays the expected distribution of cards in the opening hand and crypt. It is intended to give you some idea of how the deck will work in practice. In addition, you can generate example opening hands and crypts by clicking the <em>Draw sample hand</em> button.</p>
-
-	<h3 id="draw_prob">Card draw probabilities</h3>
-
-	<p>This tool displays the probabilities of drawing the selected cards from the library or the crypt. Unlike the <em>simulate opening hand</em> tool, this displays results for longer sequences of card draws.</p>
-
-	<p>The first row of the table shows the probabilities of drawing a single card in the selected list. Sub-rows show the individual probabilities for each possible combination of selected cards. The second row shows the probabilities of drawing all possible combinations of two selected cards, etc..</p>
-
-	<p>Each probability cell in the table displays two values: the probability of drawing at least that combination of cards, and the probability of drawing exactly that combination of cards (shown in brackets).</p>
-
-	<p>The tool has the following settings:</p>
-
-	<ul>
-		<li><em>columns in table</em>: Set the number of draws shown in the table. You must specify a number from one to eight (the default is eight). The first column shows the probabilities of drawing the given cards in your opening hand or crypt draw. Subsequent columns show the total probabilities of drawing the cards after you have drawn the number of extra cards shown in the column header.</li>
-		<li><em>step between columns</em>: Set the number of cards drawn between columns. You must specify a number from one to ten (the default is one).</li>
-		<li><em>cards of interest</em>: Set the number of rows in the table. You must specify a number from one to the total number of cards selected.</li>
-	</ul>
-
-	<p>The selected changes are only applied when you press the the <em>recalculate table</em> button.</p>
 
 	<h2 id="profiles">Profiles</h2>
 
