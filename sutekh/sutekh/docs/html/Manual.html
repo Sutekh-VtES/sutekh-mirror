@@ -21,8 +21,8 @@
 	<ol>
 		<li><a href="#backup">Backup</a></li>
 		<li><a href="#import_csv">Import <span class="caps">CSV</span> file</a></li>
-		<li><a href="#import_ardb">Import <span class="caps">ARDB</span> or <span class="caps">ELDB</span> file</a></li>
 		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
+		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 	</ol></li>
 		<li><a href="#main_pane_actions">Pane Actions</a></li>
 		<li><a href="#rulebook">Rulebook</a></li>
@@ -140,8 +140,8 @@
 	<ul>
 		<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
 		<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
-		<li><em>Import <span class="caps">ARDB</span> or <span class="caps">ELDB</span> Card Set</em>: <a href="#import_ardb">Import a file</a> saved by either <span class="caps">ARDB</span> or <span class="caps">FELDB</span>. You may specify the correct type of file as well as the file name.</li>
 		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
+		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 	</ul></li>
 		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
 	<ul>
@@ -187,16 +187,6 @@
 
 	<p>If Sutekh cannot correctly interpret a name or expansion, it will prompt you to resolve the situation using the <a href="#lookup">Card Lookup Dialog</a>.</p>
 
-	<h4 id="import_ardb">Import <span class="caps">ARDB</span> or <span class="caps">ELDB</span> file</h4>
-
-	<p>This allows you to import files produced by <span class="caps">ARDB</span>, <span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>. While Sutekh will attempt to identify the file format automatically, this isn&#8217;t always reliable, so you have the option of specifying the format manually.</p>
-
-	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you will also need to specify a card set name for the imported file.</p>
-
-	<p>If the name of the card set clashes with an existing name, you will be asked to rename the imported card set or cancel the import.</p>
-
-	<p>If no cards are found in the card set, the card set will not be created.</p>
-
 	<h4 id="importcardsetsfromzipfile">Import Card Set(s) from zip file</h4>
 
 	<p>This option allows you to select some or all of the Card Sets included in a zip file (such as those produced by backups) and import them into the database. Unlike restoring a backup, this does not replace any existing card sets automatically.</p>
@@ -204,6 +194,16 @@
 	<p>After selecting the zip file, you will be asked to select the card sets to import from the list of card sets in the zip file. If any of the card sets share the same name as an existing card set, you will be asked either to rename the card set, or skip importing that card set.</p>
 
 	<p>If a card set to be imported has a parent card set, and that set cannot be found, the card set will be imported with no parent set.</p>
+
+	<h4 id="importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</h4>
+
+	<p>This allows you to import files produced by <span class="caps">ARDB</span>, <span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt to identify the file format automatically, this isn&#8217;t always reliable, so you have the option of specifying the format manually.</p>
+
+	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you will also need to specify a card set name for the imported file.</p>
+
+	<p>If the name of the card set clashes with an existing name, you will be asked to rename the imported card set or cancel the import.</p>
+
+	<p>If no cards are found in the card set, the card set will not be created.</p>
 
 	<h3 id="main_pane_actions">Pane Actions</h3>
 

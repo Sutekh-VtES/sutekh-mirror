@@ -24,6 +24,28 @@ class CardSetImporter(SutekhPlugin, BaseImport):
 
        Handles most of the common formats.
        """
+
+    sMenuName = "Import ARDB, JOL or ELDB Card Set"
+
+    sHelpCategory = "card_list:file"
+
+    sHelpText = """This allows you to import files produced by ARDB,
+                   JOL, Lackey CCG or FELDB.  While Sutekh will attempt
+                   to identify the file format automatically, this
+                   isn't always reliable, so you have the option of
+                   specifying the format manually.
+
+                   For some types of file, such as ARDB inventories, you
+                   will also need to specify a card set name for the
+                   imported file.
+
+                   If the name of the card set clashes with an existing
+                   name, you will be asked to rename the imported card
+                   set or cancel the import.
+
+                   If no cards are found in the card set, the card set
+                   will not be created."""
+
     PARSERS = {
         'ELDB HTML File': (ELDBHTMLParser, 'HTML files', ['*.html', '*.htm']),
         'ARDB Text File': (ARDBTextParser, 'TXT files', ['*.txt']),

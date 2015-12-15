@@ -10,7 +10,6 @@ h2. Contents
 ## "File":#main_file
 ### "Backup":#backup
 ### "Import CSV file":#import_csv
-### "Import ARDB or ELDB file":#import_ardb
 :numbered:3:card_list:file
 ## "Pane Actions":#main_pane_actions
 ## "Rulebook":#rulebook
@@ -121,9 +120,6 @@ format.
 "Import a card set from a comma-separated value file":#import_csv, as \
 produced by a spreadsheet. You can select the columns for card set, number \
 and expansion.
-** _Import ARDB or ELDB Card Set_: "Import a file":#import_ardb \
-saved by either ARDB or FELDB. You may specify the correct type of file as \
-well as the file name.
 :list:2:card_list:file
 * _Data Downloads_: This submenu allows you to update data from the various \
 external sources Sutekh uses.
@@ -195,20 +191,6 @@ the columns and their contents.
 
 If Sutekh cannot correctly interpret a name or expansion, it will prompt you to
 resolve the situation using the "Card Lookup Dialog":#lookup.
-
-h4(#import_ardb). Import ARDB or ELDB file
-
-This allows you to import files produced by ARDB, JOL, Lackey CCG or FELDB.
-While Sutekh will attempt to identify the file format automatically, this isn't
-always reliable, so you have the option of specifying the format manually.
-
-For some types of file, such as ARDB inventories, you will also need to specify
-a card set name for the imported file.
-
-If the name of the card set clashes with an existing name, you will
-be asked to rename the imported card set or cancel the import.
-
-If no cards are found in the card set, the card set will not be created.
 
 :text:4:card_list:file
 
