@@ -67,6 +67,15 @@ produces.
 # pylint: enable=C0103
 
 
+def _make_link(sName):
+    """Helper function to generate a sensible html link
+       from the menu name."""
+    sLinkTag = sName.lower()
+    for sChar in [',', '(', ')', ' ']:
+        sLinkTag = sLinkTag.replace(sChar, '')
+    return sLinkTag
+
+
 class FilterGroup(object):
     """Fake filter for Filter Group help."""
 
@@ -220,8 +229,7 @@ def _process_plugins(aLines, aPlugins):
                 continue
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
-            sLinkTag = sName.lower().replace(' ', '')
-            sLinkTag = sLinkTag.replace('(', '').replace(')', '')
+            sLinkTag = _make_link(sName)
             dTags[sPluginCat][':list:'].append(
                     '*listlevel* "%s":#%s' % (sName, sLinkTag))
             dTags[sPluginCat][':numbered:'].append(
