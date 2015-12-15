@@ -221,6 +221,7 @@ def _process_plugins(aLines, aPlugins):
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
             sLinkTag = sName.lower().replace(' ', '')
+            sLinkTag = sLinkTag.replace('(', '').replace(')', '')
             dTags[sPluginCat][':list:'].append(
                     '*listlevel* "%s":#%s' % (sName, sLinkTag))
             dTags[sPluginCat][':numbered:'].append(

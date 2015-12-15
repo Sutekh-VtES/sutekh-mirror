@@ -11,7 +11,7 @@ h2. Contents
 ### "Backup":#backup
 ### "Import CSV file":#import_csv
 ### "Import ARDB or ELDB file":#import_ardb
-### "Import card sets from zip file":#import_zip
+:numbered:3:card_list:file
 ## "Pane Actions":#main_pane_actions
 ## "Rulebook":#rulebook
 ## "Keyboard Shortcuts":#keyboard
@@ -124,8 +124,7 @@ and expansion.
 ** _Import ARDB or ELDB Card Set_: "Import a file":#import_ardb \
 saved by either ARDB or FELDB. You may specify the correct type of file as \
 well as the file name.
-** _Import Card Sets from zip file_: Select \
-"card sets from a zip file":#import_zip to import.
+:list:2:card_list:file
 * _Data Downloads_: This submenu allows you to update data from the various \
 external sources Sutekh uses.
 ** _Import new White Wolf Card List and rulings_: Update the \
@@ -211,21 +210,7 @@ be asked to rename the imported card set or cancel the import.
 
 If no cards are found in the card set, the card set will not be created.
 
-h4(#import_zip). Import card sets from zip file
-
-This option allows you to select some or all of the Sutekh Card Sets included
-in a zip file (such as those produced by backups) and import them into the card
-set. Unlike restoring a backup, this does not replace any existing card sets
-automatically.
-
-After selecting the zip file, you will be asked to select the card sets to
-import from the list of card sets in the zip file. If any of the card sets share
-the same name as an existing card set, you will be asked either to rename the
-card set, or skip importing that card set.
-
-If a card set to be imported has a parent card set, and that set cannot be
-found, the card set will be imported with no parent set.
-
+:text:4:card_list:file
 
 
 h3(#main_pane_actions). Pane Actions
