@@ -214,7 +214,8 @@ def _process_plugins(aLines, aPlugins):
             if ':list:' in sLine or ':numbered:' in sLine or ':text:' in sLine:
                 sTag = sLine.split(':', 3)[3].strip()
                 if sTag not in dTags:
-                    dTags[sTag] = {':list:': [], ':numbered:': [], ':text:': []}
+                    dTags[sTag] = {':list:': [], ':numbered:': [],
+                                   ':text:': []}
             else:
                 print "Unknown Tag type %s" % sLine
     if dTags:
@@ -225,18 +226,19 @@ def _process_plugins(aLines, aPlugins):
                 # No docs, so skip
                 continue
             if sPluginCat not in dTags:
-                print "%s has unrecognised plugin help category: %s" % (cPlugin, sPluginCat)
+                print "%s has unrecognised plugin help category: %s" % (
+                    cPlugin, sPluginCat)
                 continue
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
             sLinkTag = _make_link(sName)
             dTags[sPluginCat][':list:'].append(
-                    '*listlevel* "%s":#%s' % (sName, sLinkTag))
+                '*listlevel* "%s":#%s' % (sName, sLinkTag))
             dTags[sPluginCat][':numbered:'].append(
-                    '#numlevel# "%s":#%s' % (sName, sLinkTag))
+                '#numlevel# "%s":#%s' % (sName, sLinkTag))
             sText = cPlugin.get_help_text()
             dTags[sPluginCat][':text:'].append(
-                    'hlevel(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
+                'hlevel(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
         # replace tags
         for iCnt, sLine in enumerate(aLines):
             if sLine.startswith(':') and (':list:' in sLine
