@@ -203,7 +203,7 @@ def _process_plugins(aLines, aPlugins):
         if sLine.startswith(':'):
             # check type
             if ':list:' in sLine or ':numbered:' in sLine or ':text:' in sLine:
-                sTag = sLine.split(':', 2)[2].strip()
+                sTag = sLine.split(':', 3)[3].strip()
                 if sTag not in dTags:
                     dTags[sTag] = {':list:': [], ':numbered:': [], ':text:': []}
             else:
@@ -222,25 +222,36 @@ def _process_plugins(aLines, aPlugins):
             sName = cPlugin.get_help_menu_entry()
             sLinkTag = sName.lower().replace(' ', '')
             dTags[sPluginCat][':list:'].append(
-                    '* "%s":#%s' % (sName, sLinkTag))
+                    '*listlevel* "%s":#%s' % (sName, sLinkTag))
             dTags[sPluginCat][':numbered:'].append(
-                    '## "%s":#%s' % (sName, sLinkTag))
+                    '#numlevel# "%s":#%s' % (sName, sLinkTag))
             sText = cPlugin.get_help_text()
             dTags[sPluginCat][':text:'].append(
-                    'h3(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
+                    'hlevel(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
         # replace tags
         for iCnt, sLine in enumerate(aLines):
             if sLine.startswith(':') and (':list:' in sLine
                                           or ':numbered:' in sLine
                                           or ':text:' in sLine):
-                sTag = sLine.split(':', 2)[2].strip()
+                _sHead, _sSkipType, sLevel, sTag = sLine.split(':', 3)
+                sTag = sTag.strip()
+                iLevel = int(sLevel)
                 # XXX: Should we sort here to ensure predictable ordering,
                 # rather than relying on import order?
                 for sType, aData in dTags[sTag].items():
-                    sFullTag = sType + sTag
+                    sFullTag = '%s%d:%s' % (sType, iLevel, sTag)
                     if sType in sLine:
-                        aLines[iCnt] = sLine.replace(sFullTag,
-                                                     '\n'.join(aData))
+                        sData = '\n'.join(aData)
+                        if sType == ':list:':
+                            sData = sData.replace('*listlevel*',
+                                                  '*' * iLevel)
+                        elif sType == ':numbered:':
+                            sData = sData.replace('#numlevel#',
+                                                  '#' * iLevel)
+                        elif sType == ':text:':
+                            sData = sData.replace('hlevel(',
+                                                  'h%d(' % iLevel)
+                        aLines[iCnt] = sLine.replace(sFullTag, sData)
                 if not aLines[iCnt].strip():
                     # Empty line, to avoid textile trying to turn it into
                     # an element

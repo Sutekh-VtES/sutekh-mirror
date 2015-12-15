@@ -45,8 +45,8 @@ h2. Contents
 ## "List filters":#list
 # "Analysis Tools":#analysis
 ## "Cluster Cards":#cluster
-:numbered:card_list:analysis
-:numbered:card_sets:analysis
+:numbered:2:card_list:analysis
+:numbered:2:card_sets:analysis
 # "Profiles":#profiles
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
@@ -348,7 +348,7 @@ h3(#ww_analyze). Analyze
 The following analysis options are available for White Wolf Card List:
 
 * "Cluster Cards":#cluster
-:list:card_list:analysis
+:list:1:card_list:analysis
 
 h2(#card_text). Card Text
 
@@ -536,7 +536,7 @@ h3(#cardsets_analyze). Analyze
 The following analysis options are available for card sets:
 
 * "Cluster Cards":#cluster
-:list:card_sets:analysis
+:list:1:card_sets:analysis
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
@@ -912,9 +912,9 @@ which clusters correspond to the created card sets. The third column shows how
 many cards are present in each cluster, and the last lists the property
 values of the cluster center (property values of zero are omitted).
 
-:text:card_list:analysis
+:text:3:card_list:analysis
 
-:text:card_sets:analysis
+:text:3:card_sets:analysis
 
 h2(#profiles). Profiles
 
