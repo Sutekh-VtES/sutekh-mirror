@@ -18,6 +18,14 @@ class BaseFromFilter(BasePlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
+    sMenuName = "Card Set From Filter"
+
+    sHelpCategory = "card_list:filter"
+
+    sHelpText = """Create a new card set containing the results
+                   of the current filter. The new card set will
+                   be opened automatically and will be set editable."""
+
     def get_menu_item(self):
         """Register on the 'Filter' Menu"""
         if not self._check_versions() or not self._check_model_type():

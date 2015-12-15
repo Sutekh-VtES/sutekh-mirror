@@ -324,9 +324,7 @@ The filter menu has three options:
 * _Specify Filter_: Specify the filter to apply to the card list. See the \
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
-* _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter. The new card set will be opened automatically and \
-will be set editable.
+:list:1:card_list:filter
 
 h3(#ww_analyze). Analyze
 
@@ -503,9 +501,7 @@ The filter menu has three options:
 * _Specify Filter_: Specify the filter to apply to the card list. See the \
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
-* _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter. The new card set will be opened automatically and \
-will be set editable.
+:list:1:card_list:filter
 
 When editing a card set, the display is always updated according to the active
 filter (i.e. if the filter is being applied). This does mean that, when adding
@@ -515,6 +511,8 @@ appear and disappear due to the changing counts.
 
 Since complex filters may be expensive to evaluate, editing card sets with
 a filter active will be slow in some cases.
+
+:text:4:card_list:filter
 
 h3(#cardsets_analyze). Analyze
 
