@@ -226,6 +226,16 @@ class BasePlugin(object):
         return sText
 
     @classmethod
+    def get_help_list_text(cls):
+        """Return any additional text for list entries"""
+        return ""
+
+    @classmethod
+    def get_help_numbered_text(cls):
+        """Return any additional text for numbered entries"""
+        return ""
+
+    @classmethod
     def get_help_category(cls):
         """Return the help category to add this plugin to"""
         return getattr(cls, 'sHelpCategory', None)

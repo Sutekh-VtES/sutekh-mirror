@@ -232,10 +232,12 @@ def _process_plugins(aLines, aPlugins):
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
             sLinkTag = _make_link(sName)
+            sText = cPlugin.get_help_list_text()
             dTags[sPluginCat][':list:'].append(
-                '*listlevel* "%s":#%s' % (sName, sLinkTag))
+                '*listlevel* "%s":#%s%s' % (sName, sLinkTag, sText))
+            sText = cPlugin.get_help_numbered_text()
             dTags[sPluginCat][':numbered:'].append(
-                '#numlevel# "%s":#%s' % (sName, sLinkTag))
+                '#numlevel# "%s":#%s%s' % (sName, sLinkTag, sText))
             sText = cPlugin.get_help_text()
             dTags[sPluginCat][':text:'].append(
                 'hlevel(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
