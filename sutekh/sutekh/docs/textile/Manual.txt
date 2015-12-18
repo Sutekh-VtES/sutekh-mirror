@@ -8,7 +8,6 @@ h2. Contents
 # "Important Concepts":#concepts
 # "Main Window":#main
 ## "File":#main_file
-### "Backup":#backup
 ### "Import CSV file":#import_csv
 :numbered:3:card_list:file
 ## "Pane Actions":#main_pane_actions
@@ -110,8 +109,6 @@ h3(#main_file). File
 
 The file menu has the following options.
 
-* _Backup_: Save or restore backups of the database, discussed further in the \
-"Backup":#backup section.
 * _Import Card Set_: Import a card set from a existing file. The following \
 file types are supported:
 ** _Load Card Set from File_: Load a card set saved in Sutekh's XML file \
@@ -161,25 +158,6 @@ to edit or delete the various pane profiles
 
 If Sutekh encounters an unknown card when importing card sets, it will prompt
 you to identify it using the "Card Lookup Dialog":#lookup.
-
-h4(#backup). Backup
-
-This allows you either to save or to restore a full backup of the current
-database. The backup is saved as a zip file, and is independent of the
-database back-end which Sutekh uses. Consequently, the backup can also be used
-to transfer the complete state between different databases.
-
-There are two options offered:
-
-* _Save a Full Backup_: Save the current state (card sets and their contents) \
-to the specified zip file.
-* _Restore a Full Backup_: Import all the card sets from the specified zip \
-file. Note that restoring a backup will replace anything currently in the \
-database with the contents of the backup.
-
-You can save a backup at any time. Sutekh will ask you whether you would like to
-save a backup when you initiate certain actions, such as updating the White Wolf
-card list.
 
 h4(#import_csv). Import CSV file
 

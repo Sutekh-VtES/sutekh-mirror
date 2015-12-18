@@ -26,6 +26,35 @@ class BaseBackup(BasePlugin):
     # Subclasses should override this
     cZipWrapper = None
 
+    sMenuName = 'Backup'
+
+    sHelpCategory = "card_list:file"
+
+    sHelpText = """This allows you either to save or to restore a full backup
+                   of the current database. The backup is saved as a zip file,
+                   and is independent of the database back-end used.
+                   Consequently, the backup can also be used to transfer
+                   the complete state between different databases.
+
+                   There are two options offered:
+
+                   * _Save a Full Backup_: Save the current state (card sets \
+                   and their contents) to the specified zip file.
+                   * _Restore a Full Backup_: Import all the card sets from \
+                   the specified zip file. Note that restoring a backup will \
+                   replace anything currently in the database with the \
+                   contents of the backup.
+
+                   You can save a backup at any time. You will be asked
+                   whether you would like to save a backup when you
+                   initiate certain actions, such as updating the full
+                   card list."""
+
+    @classmethod
+    def get_help_list_text(cls):
+        return """ Save or restore backups of the database, discussed \
+                  further in the **Backup** section"""
+
     # Dialog and Menu Item Creation
 
     def get_menu_item(self):

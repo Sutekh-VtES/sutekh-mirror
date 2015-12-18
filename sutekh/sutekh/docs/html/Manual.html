@@ -19,8 +19,8 @@
 	<ol>
 		<li><a href="#main_file">File</a>
 	<ol>
-		<li><a href="#backup">Backup</a></li>
 		<li><a href="#import_csv">Import <span class="caps">CSV</span> file</a></li>
+		<li><a href="#backup">Backup</a></li>
 		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
 		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 	</ol></li>
@@ -135,11 +135,11 @@
 	<p>The file menu has the following options.</p>
 
 	<ul>
-		<li><em>Backup</em>: Save or restore backups of the database, discussed further in the <a href="#backup">Backup</a> section.</li>
 		<li><em>Import Card Set</em>: Import a card set from a existing file. The following file types are supported:
 	<ul>
 		<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
 		<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
+		<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
 		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
 		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 	</ul></li>
@@ -168,24 +168,24 @@
 
 	<p>If Sutekh encounters an unknown card when importing card sets, it will prompt you to identify it using the <a href="#lookup">Card Lookup Dialog</a>.</p>
 
-	<h4 id="backup">Backup</h4>
-
-	<p>This allows you either to save or to restore a full backup of the current database. The backup is saved as a zip file, and is independent of the database back-end which Sutekh uses. Consequently, the backup can also be used to transfer the complete state between different databases.</p>
-
-	<p>There are two options offered:</p>
-
-	<ul>
-		<li><em>Save a Full Backup</em>: Save the current state (card sets and their contents) to the specified zip file.</li>
-		<li><em>Restore a Full Backup</em>: Import all the card sets from the specified zip file. Note that restoring a backup will replace anything currently in the database with the contents of the backup.</li>
-	</ul>
-
-	<p>You can save a backup at any time. Sutekh will ask you whether you would like to save a backup when you initiate certain actions, such as updating the White Wolf card list.</p>
-
 	<h4 id="import_csv">Import <span class="caps">CSV</span> file</h4>
 
 	<p>This allows you to import card sets stored as a comma-separated file, a format commonly produced by spreadsheets. The file must contain a column with card names and a column with card counts, and can optionally contain a column with expansions. When you importing the file, you must specify the mapping between the columns and their contents.</p>
 
 	<p>If Sutekh cannot correctly interpret a name or expansion, it will prompt you to resolve the situation using the <a href="#lookup">Card Lookup Dialog</a>.</p>
+
+	<h4 id="backup">Backup</h4>
+
+	<p>This allows you either to save or to restore a full backup of the current database. The backup is saved as a zip file, and is independent of the database back-end used. Consequently, the backup can also be used to transfer the complete state between different databases.</p>
+
+	<p>There are two options offered:</p>
+
+	<ul>
+		<li><em>Save a Full Backup</em>: Save the current state (card sets                    and their contents) to the specified zip file.</li>
+		<li><em>Restore a Full Backup</em>: Import all the card sets from                    the specified zip file. Note that restoring a backup will                    replace anything currently in the database with the                    contents of the backup.</li>
+	</ul>
+
+	<p>You can save a backup at any time. You will be asked whether you would like to save a backup when you initiate certain actions, such as updating the full card list.</p>
 
 	<h4 id="importcardsetsfromzipfile">Import Card Set(s) from zip file</h4>
 
