@@ -58,5 +58,11 @@ class CardSetImporter(SutekhPlugin, BaseImport):
         GUESS_FILE_FORMAT: (GuessFileParser, None, None),
         }
 
+    @classmethod
+    def get_help_list_text(cls):
+        return """Import a file saved by another deck management tool. \
+                  You may specify the correct type of file as \
+                  well as the file name."""
+
 
 plugin = CardSetImporter

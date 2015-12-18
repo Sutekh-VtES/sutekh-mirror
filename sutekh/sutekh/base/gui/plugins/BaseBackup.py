@@ -52,7 +52,7 @@ class BaseBackup(BasePlugin):
 
     @classmethod
     def get_help_list_text(cls):
-        return """ Save or restore backups of the database, discussed \
+        return """Save or restore backups of the database, discussed \
                   further in the **Backup** section"""
 
     # Dialog and Menu Item Creation
