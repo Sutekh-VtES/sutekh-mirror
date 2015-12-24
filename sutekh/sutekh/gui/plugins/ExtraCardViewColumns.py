@@ -30,8 +30,59 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         'Cost': (100, '_render_cost', '_get_data_cost_sortkey'),
     })
 
+    sMenuName = "Extra Columns -- card sets"
+
+    sHelpCategory = "card_sets:profile"
+
+    sHelpText = """By default, Sutekh only shows card names in the White
+                   Wolf Card List, and card names and card counts in other
+                   card set card lists.  You can select additional columns
+                   to display as part of the pane profile.
+
+                   The possible extra columns are:
+
+                   * _Clans and Creeds:_ Show the Clans or Creeds listed \
+                     on the card.
+                   * _Group:_ Show the group number for the card.
+                   * _Disciplines and Virtues:_ Show the Disciplines or \
+                     Virtues listed on the card.
+                   * _Card Type:_ Show the card type.
+                   * _Expansions:_ Show the expansions in which the card \
+                     has been printed.
+                   * _Capacity or Life:_ Show the capacity associated with \
+                     the card, or its life.
+                   * _Sect_: Show the Sect associated with the card.
+                   * _Title_: Show the political titles listed on the card, \
+                     if it is a crypt card.  Titles listed on library cards \
+                     will not be shown.
+                   * _Card Text_: Show the text printed on the card.
+                   * _Cost_: Show the cost of the card, together with the \
+                     cost type.
+
+                   You can sort the display by a particular column by clicking
+                   on the column header. Click on the same header repeatedly
+                   to toggle between ascending and descending order.
+
+                   Cards which have equal values within the column selected
+                   for sorting are further sorted by the card name. Because
+                   the different cost types aren't comparable, if you choose
+                   to sort by cost, cards will be grouped by cost type first
+                   and sorted within those types.
+
+                   If you have downloaded the icons from the V:EKN site,
+                   you will be able to toggle the display between the
+                   _Show Icons and Names_, _Show Text only_ and
+                   _Show Icons only_ options using the combo box. This setting
+                   will affect all selected columns that can use icons."""
+
     # pylint: disable=R0201
     # Making these functions for clarity
+
+    @classmethod
+    def get_help_list_text(cls):
+        return """Select which extra columns of data are shown. See the \
+                  *Extra Columns -- card sets* section for more details."""
+
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when
     # sorting
