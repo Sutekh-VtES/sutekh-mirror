@@ -71,7 +71,7 @@ def _make_link(sName):
     """Helper function to generate a sensible html link
        from the menu name."""
     sLinkTag = sName.lower()
-    for sChar in [',', '(', ')', ' ']:
+    for sChar in [',', '(', ')', ' ', '-']:
         sLinkTag = sLinkTag.replace(sChar, '')
     return sLinkTag
 
