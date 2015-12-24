@@ -425,6 +425,26 @@ class AnalyzeCardList(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Analyze Deck"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool examines a card set and displays various
+                   statistics about it which are intended to give you
+                   some indication of how the card set will operate as
+                   a deck.
+
+                   It displays several tabs, each of which summarises
+                   different aspects of the card set. The first tab
+                   summarises some basic information about the entire set.
+                   The second tab implements Legbiter's Happy Family
+                   analysis for the card set. The remaining tabs
+                   consider specific card types.
+
+                   The happy family implementation allows you either to
+                   select the number of disciplines to use, or to select
+                   the disciplines to consider manually."""
+
     def __init__(self, *args, **kwargs):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
         _load_pdf_sets()
@@ -434,7 +454,7 @@ class AnalyzeCardList(SutekhPlugin):
         """Register on the 'Analyze' Menu"""
         if not self._check_versions() or not self._check_model_type():
             return None
-        oAnalyze = gtk.MenuItem("Analyze Deck")
+        oAnalyze = gtk.MenuItem(self.sMenuName)
         oAnalyze.connect("activate", self.activate)
         oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
         oAnalyzeRT.connect("activate", self.activate_rt)
