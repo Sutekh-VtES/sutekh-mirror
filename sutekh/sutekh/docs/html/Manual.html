@@ -71,6 +71,7 @@
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#expansionstats">Expansion Stats</a> </li>
 		<li><a href="#clandisciplinestats">Clan Discipline Stats</a> </li>
+		<li><a href="#analyzedeck">Analyze Deck</a> </li>
 		<li><a href="#testcardsetindependence">Test Card Set Independence</a> </li>
 		<li><a href="#carddrawprobabilities">Card Draw probabilities</a> </li>
 		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a> </li>
@@ -139,9 +140,9 @@
 	<ul>
 		<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
 		<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
-		<li><a href="#backup">Backup</a>  Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
+		<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
 		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a> </li>
-		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a>  Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
+		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
 	</ul></li>
 		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
 	<ul>
@@ -430,6 +431,7 @@
 
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
+		<li><a href="#analyzedeck">Analyze Deck</a> </li>
 		<li><a href="#testcardsetindependence">Test Card Set Independence</a> </li>
 		<li><a href="#carddrawprobabilities">Card Draw probabilities</a> </li>
 		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a> </li>
@@ -633,6 +635,14 @@
 	<p>The score is intended to give you some indication of how common disciplines are within the clan. Vampires without a discipline score 0 for that discipline, vampires with the inferior discipline score 1 and vampires with the superior discipline score 2.</p>
 
 	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
+
+	<h3 id="analyzedeck">Analyze Deck</h3>
+
+	<p>This tool examines a card set and displays various statistics about it which are intended to give you some indication of how the card set will operate as a deck.</p>
+
+	<p>It displays several tabs, each of which summarises different aspects of the card set. The first tab summarises some basic information about the entire set. The second tab implements Legbiter&#8217;s Happy Family analysis for the card set. The remaining tabs consider specific card types.</p>
+
+	<p>The happy family implementation allows you either to select the number of disciplines to use, or to select the disciplines to consider manually.</p>
 
 	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
 
