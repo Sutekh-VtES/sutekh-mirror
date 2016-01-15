@@ -81,7 +81,7 @@ class SutekhInfo(object):
     INSTALL_REQUIRES = [
         'SQLObject >= 0.9.0, < 1.7',  # fetching the dev version requires svn
                            # (which is a bit crazy as an install requirement)
-        'PyProtocols',
+        'singledispatch',
         'ply',
         'configobj',
         'keyring',  # Needed to store the SecretLibrary password
