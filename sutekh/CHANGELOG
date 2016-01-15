@@ -1,3 +1,7 @@
+15 Jan 2016
+ * Replaced PyProtocols-based adapters with singledispatch-base
+   adapter
+
 24 Dec 2015
  * Move 'extra columns' help text into the appropriate plugins
  * Re-add 'Analyze Deck' help text that got lost in edits to the
