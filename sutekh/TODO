@@ -30,7 +30,6 @@ Needs planning
        - Requires (anarch, titled, prince, etc.)
        [ implement a plugin which can filter out what a set of crypt
          cards can play first ]
- * Replace PyProtocols with something else
  * Real Plugin System
  * Abstract Card Editor
  * Stripped down UI for smart-phones
