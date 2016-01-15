@@ -13,9 +13,9 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter, CachedFilter,
                                 make_illegal_filter)
 from ..core.BaseGroupings import CardTypeGrouping
-from ..core.BaseObjects import (PhysicalCardToAbstractCardAdapter,
-                                PhysicalCard, PhysicalCardAdapter,
-                                ExpansionNameAdapter)
+from ..core.BaseObjects import (IAbstractCard,
+                                PhysicalCard, IPhysicalCard,
+                                IExpansionName, ExpansionNameAdapter)
 from ..Utility import move_articles_to_back
 from ..core.FilterParser import FilterParser
 from .BaseConfigFile import FULL_CARDLIST
@@ -176,7 +176,7 @@ class CardListModel(gtk.TreeStore):
         if not self.bExpansions:
             return aExpansions
         for oPhysCard in dExpanInfo:
-            aExpansions.append((oPhysCard, ExpansionNameAdapter(oPhysCard)))
+            aExpansions.append((oPhysCard, IExpansionName(oPhysCard)))
         return aExpansions
 
     def lookup_icons(self, sGroup):
@@ -270,7 +270,7 @@ class CardListModel(gtk.TreeStore):
                 self.set(oChildIter,
                          0, sName,
                          8, oCard,
-                         9, PhysicalCardAdapter((oCard, None)),
+                         9, IPhysicalCard((oCard, None)),
                         )
                 aExpansionInfo = self.get_expansion_info(oCard,
                                                          fGetExpanInfo(oItem))
@@ -337,7 +337,7 @@ class CardListModel(gtk.TreeStore):
             # sqlobject confuses pylint
             if not self.check_card_visible(oPhysCard):
                 continue
-            oAbsCard = PhysicalCardToAbstractCardAdapter(oPhysCard)
+            oAbsCard = IAbstractCard(oPhysCard)
             aCards.append(oPhysCard)
             dAbsCards.setdefault(oAbsCard, [0, {}])
             dAbsCards[oAbsCard][0] += 1

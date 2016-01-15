@@ -17,8 +17,8 @@ import gtk
 from nose import SkipTest
 from logging import FileHandler
 
-from ..core.BaseObjects import (AbstractCardAdapter, PhysicalCardAdapter,
-                                ExpansionAdapter)
+from ..core.BaseObjects import (IAbstractCard, IPhysicalCard,
+                                IExpansion)
 
 
 def make_card(sCardName, sExpName):
@@ -26,11 +26,11 @@ def make_card(sCardName, sExpName):
 
        Handle None for the expansion name properly"""
     if sExpName:
-        oExp = ExpansionAdapter(sExpName)
+        oExp = IExpansion(sExpName)
     else:
         oExp = None
-    oAbs = AbstractCardAdapter(sCardName)
-    oCard = PhysicalCardAdapter((oAbs, oExp))
+    oAbs = IAbstractCard(sCardName)
+    oCard = IPhysicalCard((oAbs, oExp))
     return oCard
 
 

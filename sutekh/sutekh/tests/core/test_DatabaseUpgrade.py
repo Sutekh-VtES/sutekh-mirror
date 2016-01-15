@@ -13,7 +13,7 @@ from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
 from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
-                                          AbstractCardAdapter,
+                                          IAbstractCard,
                                           IPhysicalCardSet)
 from sqlobject import sqlhub, connectionForURI
 
@@ -85,7 +85,7 @@ class DatabaseUpgradeTests(SutekhTest):
         self.assertEqual(AbstractCard.select().count(), iACCount)
         self.assertEqual(PhysicalCardSet.select().count(), iPCSCount)
 
-        oMagnum = AbstractCardAdapter('.44 magnum')
+        oMagnum = IAbstractCard('.44 magnum')
         assert oMagnum
 
         oMyCollection = IPhysicalCardSet("My Collection")
