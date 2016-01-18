@@ -31,7 +31,7 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
             # pylint doesn't see IAbstractCard methods
             oAbsCard = IAbstractCard(oCard)
             if bIgnoreExpansions:
-                oKey = (oAbsCard, oAbsCard.name, None)
+                oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
             else:
                 if oCard.expansion:
                     oKey = (oCard, oAbsCard.name, oCard.expansion.name)
@@ -199,7 +199,7 @@ class CardSetCompare(SutekhPlugin):
                 # Dealing with abstract cards in the list
                 oPhysCard = IPhysicalCard((oCard, None))
             else:
-                # Dealing with pysical cards in the list
+                # Dealing with physical cards in the list
                 oPhysCard = oCard
             # pylint: disable-msg=E1101
             # E1101 - sqlobject confuses pylint

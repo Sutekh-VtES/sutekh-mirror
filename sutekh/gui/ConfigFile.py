@@ -135,7 +135,8 @@ class ConfigFile(object):
         # pkg_resources confuses pylint here
         fConfigSpec = pkg_resources.resource_stream(__name__, "configspec.ini")
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
-                file_error=True, list_values=False)
+                file_error=True, list_values=False,
+                encoding='utf8')
 
         for sPlugin, dGlobal in self.__dPluginSpecs.items():
             oConfigSpec['plugins_main'][sPlugin] = dGlobal
@@ -164,7 +165,7 @@ class ConfigFile(object):
 
         self.__oConfigSpec = oConfigSpec
         self.__oConfig = ConfigObj(self.__sFileName, configspec=oConfigSpec,
-                indent_type='    ')
+                indent_type='    ', encoding='utf8')
         self.__oValidator = Validator(self.dCustomConfigTypes)
 
         oResults = self.__oConfig.validate(self.__oValidator,

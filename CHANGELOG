@@ -1,3 +1,11 @@
+18 Jan 2016
+ * Backport fix to make title parsing code more robust against case variations
+ * Backport fix for bug when creating a card set after comparings sets ignoring
+   expansions
+ * Backport 'Use utf8 to load/save config file, to avoid issues with non-ascii
+    characters in deck names' fix
+ * Update dates in the COPYRIGHT file
+
 15 Oct 2014
  * Backport fixes to handle new "The Unanligned" expansion
    - Add expansion abbreviation.
