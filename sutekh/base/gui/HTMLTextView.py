@@ -121,8 +121,9 @@ class HtmlHandler(HTMLParser.HTMLParser):
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                       *args)
         elif sValue.endswith('ex'):  # x-height, ~ the height of the letter 'x'
-            # FIXME: figure out how to calculate this correctly
-            #        for now 'em' size is used as approximation
+            # for now 'em' size is used as approximation
+            # This isn't correct, but that doesn't matter for our use
+            # case.
             oAttrs = self._get_current_attributes()
             fFontSize = oAttrs.font.get_size() / pango.SCALE
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,

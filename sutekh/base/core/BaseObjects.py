@@ -20,53 +20,88 @@ from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        SQLObjectNotFound, DateCol)
 from sqlobject.inheritance import InheritableSQLObject
 # pylint: enable=E0611
-from protocols import advise, Interface
 
-# Interfaces
-
-
-class IAbstractCard(Interface):
-    pass
+from singledispatch import singledispatch
 
 
-class IPhysicalCard(Interface):
-    pass
+# Adaption helper functions
+
+def fail_adapt(oUnknown, sCls):
+    """Generic failed to adapt handler"""
+    raise NotImplementedError("Can't adapt %r to %s" % (oUnknown, sCls))
 
 
-class IPhysicalCardSet(Interface):
-    pass
+def passthrough(oObj):
+    """Passthrough adapter for calling Ixxx() on an object of type xxx"""
+    return oObj
 
 
-class IRarityPair(Interface):
-    pass
+# Base adapters 
+
+@singledispatch
+def IAbstractCard(oUnknown):
+    """Default AbstractCard adapter"""
+    fail_adapt(oUnknown, 'AbstractCard')
 
 
-class IExpansion(Interface):
-    pass
+@singledispatch
+def IPhysicalCard(oUnknown):
+    """Default PhysicalCard adapter"""
+    fail_adapt(oUnknown, 'PhysicalCard')
 
 
-class IExpansionName(Interface):
-    pass
+@singledispatch
+def IPhysicalCardSet(oUnknown):
+    """Default PhysicalCardSet adapter"""
+    fail_adapt(oUnknown, 'PhysicalCardSet')
 
 
-class IRarity(Interface):
-    pass
+@singledispatch
+def IRarityPair(oUnknown):
+    """Default RarityPair adapter"""
+    fail_adapt(oUnknown, 'RarityPair')
 
 
-class ICardType(Interface):
-    pass
+@singledispatch
+def IExpansion(oUnknown):
+    """Default Expansion adapter"""
+    fail_adapt(oUnknown, 'Expansion')
 
 
-class IRuling(Interface):
-    pass
+@singledispatch
+def IExpansionName(oUnknown):
+    """Default Expansion Name adapter"""
+    fail_adapt(oUnknown, 'ExpansionName')
 
 
-class IArtist(Interface):
-    pass
+@singledispatch
+def IRarity(oUnknown):
+    """Default Rarirty adapter"""
+    fail_adapt(oUnknown, 'Rarity')
 
 
-class IKeyword(Interface):
-    pass
+@singledispatch
+def ICardType(oUnknown):
+    """Default CardType adapter"""
+    fail_adapt(oUnknown, 'CardType')
+
+
+@singledispatch
+def IRuling(oUnknown):
+    """Default Ruling adapter"""
+    fail_adapt(oUnknown, 'Ruling')
+
+
+@singledispatch
+def IArtist(oUnknown):
+    """The base for artist adaption"""
+    fail_adapt(oUnknown, 'Artist')
+
+@singledispatch
+def IKeyword(oUnknown):
+    """The base for keyword adaption"""
+    fail_adapt(oUnknown, 'Keyword')
+
 
 # pylint: enable=C0321
 # Table Objects
@@ -91,7 +126,6 @@ class VersionTable(SQLObject):
 
 
 class AbstractCard(InheritableSQLObject):
-    advise(instancesProvide=[IAbstractCard])
 
     tableversion = 7
     sqlmeta.lazyUpdate = True
@@ -126,7 +160,6 @@ class AbstractCard(InheritableSQLObject):
 
 
 class PhysicalCard(SQLObject):
-    advise(instancesProvide=[IPhysicalCard])
 
     tableversion = 2
     abstractCard = ForeignKey('AbstractCard')
@@ -138,8 +171,6 @@ class PhysicalCard(SQLObject):
 
 
 class PhysicalCardSet(SQLObject):
-    advise(instancesProvide=[IPhysicalCardSet])
-
     tableversion = 7
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     author = UnicodeCol(default='')
@@ -153,8 +184,6 @@ class PhysicalCardSet(SQLObject):
 
 
 class RarityPair(SQLObject):
-    advise(instancesProvide=[IRarityPair])
-
     tableversion = 1
     expansion = ForeignKey('Expansion')
     rarity = ForeignKey('Rarity')
@@ -165,7 +194,6 @@ class RarityPair(SQLObject):
 
 
 class Expansion(SQLObject):
-    advise(instancesProvide=[IExpansion])
 
     tableversion = 4
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -175,7 +203,6 @@ class Expansion(SQLObject):
 
 
 class Rarity(SQLObject):
-    advise(instancesProvide=[IRarity])
 
     tableversion = 3
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -183,7 +210,6 @@ class Rarity(SQLObject):
 
 
 class CardType(SQLObject):
-    advise(instancesProvide=[ICardType])
 
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -192,7 +218,6 @@ class CardType(SQLObject):
 
 
 class Ruling(SQLObject):
-    advise(instancesProvide=[IRuling])
 
     tableversion = 2
     text = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -203,7 +228,6 @@ class Ruling(SQLObject):
 
 
 class Artist(SQLObject):
-    advise(instancesProvide=[IArtist])
 
     tableversion = 1
     canonicalName = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -213,7 +237,6 @@ class Artist(SQLObject):
 
 
 class Keyword(SQLObject):
-    advise(instancesProvide=[IKeyword])
 
     # For sanity, avoid keywords with commas since this is the preferred
     # character for separating lists of keywords when displaying them
@@ -337,10 +360,10 @@ class BaseObjectMaker(object):
     # pylint: disable=R0201, R0913
     # we want SutekhObjectMaker self-contained, so these are all methods.
     # This needs all these arguments
-    def _make_object(self, cObjClass, cInterface, cAbbreviation, sObj,
+    def _make_object(self, cObjClass, fAdapter, cAbbreviation, sObj,
                      bShortname=False, bFullname=False):
         try:
-            return cInterface(sObj)
+            return fAdapter(sObj)
         except SQLObjectNotFound:
             sObj = cAbbreviation.canonical(sObj)
             dKw = {'name': sObj}
@@ -437,37 +460,52 @@ class CardTypeAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ICardType], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(CardTypes.canonical(sName), CardType)
+
+
+ICardType.register(CardType, passthrough)
+
+ICardType.register(basestring, CardTypeAdapter.lookup)
 
 
 class ExpansionAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IExpansion], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Expansions.canonical(sName), Expansion)
+
+
+IExpansion.register(Expansion, passthrough)
+
+IExpansion.register(basestring, ExpansionAdapter.lookup)
 
 
 class RarityAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IRarity], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Rarities.canonical(sName), Rarity)
+
+
+IRarity.register(Rarity, passthrough)
+
+
+IRarity.register(basestring, RarityAdapter.lookup)
 
 
 # Other Adapters
 
 
 class RarityPairAdapter(Adapter):
-    advise(instancesProvide=[IRarityPair], asAdapterForTypes=[tuple])
 
     __dCache = {}
 
@@ -475,7 +513,8 @@ class RarityPairAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, tData):
+    @classmethod
+    def lookup(cls, tData):
         # pylint: disable=E1101
         # adapters confuses pylint
         oExp = IExpansion(tData[0])
@@ -490,64 +529,67 @@ class RarityPairAdapter(Adapter):
         return oPair
 
 
-class AbstractCardAdapter(Adapter):
-    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[basestring])
+IRarityPair.register(RarityPair, passthrough)
 
-    def __new__(cls, sName):
-        # pylint: disable=E1101
-        # SQLObject confuses pylint
-        try:
-            oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-        except SQLObjectNotFound:
-            # Correct for common variations
-            sNewName = move_articles_to_front(sName)
-            if sNewName != sName:
-                oCard = AbstractCard.byCanonicalName(
-                    sNewName.encode('utf8').lower())
-            else:
-                raise
-        return oCard
+IRarityPair.register(tuple, RarityPairAdapter.lookup)
 
 
-class RulingAdapter(Adapter):
-    advise(instancesProvide=[IRuling], asAdapterForTypes=[tuple])
+IAbstractCard.register(AbstractCard, passthrough)
 
-    def __new__(cls, tData):
-        # pylint: disable=E1101,
-        # SQLObject confuses pylint
-        sText, _sCode = tData
-        return Ruling.byText(sText.encode('utf8'))
-
-
-class KeywordAdapter(Adapter):
-    advise(instancesProvide=[IKeyword], asAdapterForTypes=[basestring])
-
-    def __new__(cls, sKeyword):
-        # pylint: disable=E1101,
-        # SQLObject confuses pylint
-        return Keyword.byKeyword(sKeyword.encode('utf8'))
-
-
-class ArtistAdapter(Adapter):
-    advise(instancesProvide=[IArtist], asAdapterForTypes=[basestring])
-
-    def __new__(cls, sArtistName):
-        # pylint: disable=E1101,
-        # SQLObject confuses pylint
-        return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
+@IAbstractCard.register(basestring)
+def abstract_card_from_string(sName):
+    # pylint: disable=E1101
+    # SQLObject confuses pylint
+    try:
+        oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
+    except SQLObjectNotFound:
+        # Correct for common variations
+        sNewName = move_articles_to_front(sName)
+        if sNewName != sName:
+            oCard = AbstractCard.byCanonicalName(
+                sNewName.encode('utf8').lower())
+        else:
+            raise
+    return oCard
 
 
-class PhysicalCardSetAdapter(Adapter):
-    advise(instancesProvide=[IPhysicalCardSet], asAdapterForTypes=[basestring])
+IRuling.register(Ruling, passthrough)
 
-    def __new__(cls, sName):
-        # pylint: disable=E1101
-        # SQLObject confuses pylint
-        return PhysicalCardSet.byName(sName.encode('utf8'))
+
+@IRuling.register(tuple)
+def ruling_from_tuple(tData):
+    """Convert a (text, code) tuple to a ruling object."""
+    sText, _sCode = tData
+    return Ruling.byText(sText.encode('utf8'))
+
+
+IKeyword.register(Keyword, passthrough)
+
+
+@IKeyword.register(basestring)
+def keyword_from_string(sKeyword):
+    """Adapter for string -> Keyword"""
+    return Keyword.byKeyword(sKeyword.encode('utf8'))
+
+
+IArtist.register(Keyword, passthrough)
+
+@IArtist.register(basestring)
+def artist_from_string(sArtistName):
+    """Adapter for string -> Artist"""
+    return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
+
+
+IPhysicalCardSet.register(PhysicalCardSet, passthrough)
+
+
+@IPhysicalCardSet.register(basestring)
+def phys_card_set_from_string(sName):
+    """Adapter for string -> PhysicalCardSet"""
+    return PhysicalCardSet.byName(sName.encode('utf8'))
 
 
 class PhysicalCardToAbstractCardAdapter(Adapter):
-    advise(instancesProvide=[IAbstractCard], asAdapterForTypes=[PhysicalCard])
 
     __dCache = {}
 
@@ -555,17 +597,18 @@ class PhysicalCardToAbstractCardAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, oPhysCard):
+    @classmethod
+    def lookup(cls, oPhysCard):
         oCard = cls.__dCache.get(oPhysCard.abstractCardID, None)
         if oCard is None:
             oCard = oPhysCard.abstractCard
             cls.__dCache[oPhysCard.abstractCardID] = oCard
         return oCard
 
+IAbstractCard.register(PhysicalCard, PhysicalCardToAbstractCardAdapter.lookup)
+
 
 class PhysicalCardMappingToPhysicalCardAdapter(Adapter):
-    advise(instancesProvide=[IPhysicalCard],
-           asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
     __dCache = {}
 
@@ -573,25 +616,27 @@ class PhysicalCardMappingToPhysicalCardAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, oMapPhysCard):
+    @classmethod
+    def lookup(cls, oMapPhysCard):
         oCard = cls.__dCache.get(oMapPhysCard.physicalCardID, None)
         if oCard is None:
             oCard = oMapPhysCard.physicalCard
             cls.__dCache[oMapPhysCard.physicalCardID] = oCard
         return oCard
 
+IPhysicalCard.register(MapPhysicalCardToPhysicalCardSet,
+                       PhysicalCardMappingToPhysicalCardAdapter.lookup)
 
-class PhysicalCardMappingToCardSetAdapter(Adapter):
-    advise(instancesProvide=[IPhysicalCardSet],
-           asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
-    def __new__(cls, oMapPhysCard):
-        return oMapPhysCard.physicalCardSet
+@IPhysicalCardSet.register(MapPhysicalCardToPhysicalCardSet)
+def map_pcs_to_pcs(oMapPhysCard):
+    """Adapt a MapPhysicalCardToPhysicalCardSet to the corresponding
+       PhysicalCardSet"""
+    return oMapPhysCard.physicalCardSet
 
 
 class ExpansionNameAdapter(Adapter):
     """Converts PhysicalCard expansionID to name, used a lot in the gui"""
-    advise(instancesProvide=[IExpansionName], asAdapterForTypes=[PhysicalCard])
 
     __dCache = {}
     sUnknownExpansion = '  Unspecified Expansion'  # canonical version
@@ -600,7 +645,8 @@ class ExpansionNameAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, oPhysCard):
+    @classmethod
+    def lookup(cls, oPhysCard):
         sExpName = cls.__dCache.get(oPhysCard.expansionID, None)
         if sExpName is None:
             if oPhysCard.expansionID:
@@ -611,9 +657,10 @@ class ExpansionNameAdapter(Adapter):
         return sExpName
 
 
+IExpansionName.register(PhysicalCard, ExpansionNameAdapter.lookup)
+
+
 class PhysicalCardMappingToAbstractCardAdapter(Adapter):
-    advise(instancesProvide=[IAbstractCard],
-           asAdapterForTypes=[MapPhysicalCardToPhysicalCardSet])
 
     __dCache = {}
 
@@ -621,16 +668,19 @@ class PhysicalCardMappingToAbstractCardAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, oMapPhysCard):
+    @classmethod
+    def lookup(cls, oMapPhysCard):
         oCard = cls.__dCache.get(oMapPhysCard.physicalCardID, None)
         if oCard is None:
             oCard = IAbstractCard(oMapPhysCard.physicalCard)
             cls.__dCache[oMapPhysCard.physicalCardID] = oCard
         return oCard
 
+IAbstractCard.register(MapPhysicalCardToPhysicalCardSet,
+                       PhysicalCardMappingToAbstractCardAdapter.lookup)
+
 
 class PhysicalCardAdapter(Adapter):
-    advise(instancesProvide=[IPhysicalCard], asAdapterForTypes=[tuple])
 
     __dCache = {}
 
@@ -652,7 +702,8 @@ class PhysicalCardAdapter(Adapter):
             # just skip
             pass
 
-    def __new__(cls, tData):
+    @classmethod
+    def lookup(cls, tData):
         # pylint: disable=E1101
         # SQLObject confuses pylint
         oAbsCard, oExp = tData
@@ -663,5 +714,10 @@ class PhysicalCardAdapter(Adapter):
                                                   expansion=oExp).getOne()
             cls.__dCache[(oAbsCard.id, oExp)] = oPhysicalCard
         return oPhysicalCard
+
+IPhysicalCard.register(tuple, PhysicalCardAdapter.lookup)
+
+
+IPhysicalCard.register(PhysicalCard, passthrough)
 
 # pylint: enable=C0111

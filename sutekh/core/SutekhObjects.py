@@ -16,7 +16,8 @@ from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
 from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
                                           IAbstractCard, Adapter,
                                           BASE_TABLE_LIST, MAX_ID_LENGTH,
-                                          StrAdaptMeta)
+                                          StrAdaptMeta, fail_adapt,
+                                          passthrough)
 
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
@@ -24,36 +25,51 @@ from sqlobject import (SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, DatabaseIndex, ForeignKey,
                        SQLObjectNotFound)
 # pylint: enable=E0611
-from protocols import advise, Interface
+
+from singledispatch import singledispatch
 
 
-# Interfaces
-class IDisciplinePair(Interface):
-    pass
+# Default adapters
+@singledispatch
+def IDisciplinePair(oUnknown):
+    """Default DisplincePair adapter"""
+    fail_adapt(oUnknown, 'DisciplinePair')
 
 
-class IDiscipline(Interface):
-    pass
+@singledispatch
+def IDiscipline(oUnknown):
+    """Default Displince adapter"""
+    fail_adapt(oUnknown, 'Discipline')
 
 
-class IClan(Interface):
-    pass
+@singledispatch
+def IClan(oUnknown):
+    """Default Clan adapter"""
+    fail_adapt(oUnknown, 'Clan')
 
 
-class ISect(Interface):
-    pass
+@singledispatch
+def ISect(oUnknown):
+    """Default Sect adapter"""
+    fail_adapt(oUnknown, 'Sect')
 
 
-class ITitle(Interface):
-    pass
+@singledispatch
+def ITitle(oUnknown):
+    """Default Title adapter"""
+    fail_adapt(oUnknown, 'Title')
 
 
-class ICreed(Interface):
-    pass
+@singledispatch
+def ICreed(oUnknown):
+    """Default Creed adapter"""
+    fail_adapt(oUnknown, 'Creed')
 
 
-class IVirtue(Interface):
-    pass
+@singledispatch
+def IVirtue(oUnknown):
+    """Default Virtue adapter"""
+    fail_adapt(oUnknown, 'Virtue')
 
 
 # pylint: enable=C0321
@@ -106,7 +122,6 @@ class SutekhAbstractCard(AbstractCard):
 
 
 class DisciplinePair(SQLObject):
-    advise(instancesProvide=[IDisciplinePair])
 
     tableversion = 1
     discipline = ForeignKey('Discipline')
@@ -119,7 +134,6 @@ class DisciplinePair(SQLObject):
 
 
 class Discipline(SQLObject):
-    advise(instancesProvide=[IDiscipline])
 
     tableversion = 3
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -128,7 +142,6 @@ class Discipline(SQLObject):
 
 
 class Virtue(SQLObject):
-    advise(instancesProvide=[IVirtue])
 
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -140,7 +153,6 @@ class Virtue(SQLObject):
 
 
 class Creed(SQLObject):
-    advise(instancesProvide=[ICreed])
 
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -152,7 +164,6 @@ class Creed(SQLObject):
 
 
 class Clan(SQLObject):
-    advise(instancesProvide=[IClan])
 
     tableversion = 3
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -164,7 +175,6 @@ class Clan(SQLObject):
 
 
 class Sect(SQLObject):
-    advise(instancesProvide=[ISect])
 
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -175,7 +185,6 @@ class Sect(SQLObject):
 
 
 class Title(SQLObject):
-    advise(instancesProvide=[ITitle])
 
     tableversion = 2
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
@@ -339,66 +348,94 @@ class ClanAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IClan], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Clans.canonical(sName), Clan)
+
+IClan.register(Clan, passthrough)
+
+IClan.register(basestring, ClanAdapter.lookup)
 
 
 class CreedAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ICreed], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Creeds.canonical(sName), Creed)
+
+
+ICreed.register(Creed, passthrough)
+
+ICreed.register(basestring, CreedAdapter.lookup)
 
 
 class DisciplineAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IDiscipline], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Disciplines.canonical(sName), Discipline)
+
+
+IDiscipline.register(Discipline, passthrough)
+
+IDiscipline.register(basestring, DisciplineAdapter.lookup)
 
 
 class SectAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ISect], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Sects.canonical(sName), Sect)
+
+
+ISect.register(Sect, passthrough)
+
+ISect.register(basestring, SectAdapter.lookup)
 
 
 class TitleAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[ITitle], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Titles.canonical(sName), Title)
+
+
+ITitle.register(Title, passthrough)
+
+ITitle.register(basestring, TitleAdapter.lookup)
 
 
 class VirtueAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
-    advise(instancesProvide=[IVirtue], asAdapterForTypes=[basestring])
 
-    def __new__(cls, sName):
+    @classmethod
+    def lookup(cls, sName):
         return cls.fetch(Virtues.canonical(sName), Virtue)
+
+
+IVirtue.register(Virtue, passthrough)
+
+IVirtue.register(basestring, VirtueAdapter.lookup)
 
 # Other Adapters
 
 
 class DisciplinePairAdapter(Adapter):
-    advise(instancesProvide=[IDisciplinePair], asAdapterForTypes=[tuple])
 
     __dCache = {}
 
@@ -406,7 +443,8 @@ class DisciplinePairAdapter(Adapter):
     def make_object_cache(cls):
         cls.__dCache = {}
 
-    def __new__(cls, tData):
+    @classmethod
+    def lookup(cls, tData):
         # pylint: disable=E1101
         # adapters confuses pylint
         oDis = IDiscipline(tData[0])
@@ -419,3 +457,8 @@ class DisciplinePairAdapter(Adapter):
             cls.__dCache[(oDis.id, sLevel)] = oPair
 
         return oPair
+
+
+IDisciplinePair.register(DisciplinePair, passthrough)
+
+IDisciplinePair.register(tuple, DisciplinePairAdapter.lookup)

@@ -39,6 +39,13 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
 
     COLUMN_WIDTH = 290  # 3 columns
 
+    sHelpText = """This tool treats the card set as a completed deck, and
+                   displays the expected distribution of cards in the opening
+                   hand and crypt. It is intended to give you some idea of how
+                   the deck will work in practice. In addition, you can
+                   generate example opening hands and crypts by clicking the
+                   _Draw sample hand_ button."""
+
     # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):

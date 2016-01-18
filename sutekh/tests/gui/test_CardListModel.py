@@ -7,7 +7,7 @@
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard
-from sutekh.core import Filters
+from sutekh.base.core import BaseFilters
 from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
 from sutekh.core.Groupings import CryptLibraryGrouping
 from sutekh.base.gui.CardListModel import CardListModel
@@ -118,7 +118,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(self._count_top_level(oModel), 2)
         # Test filtering
         # Test filter which selects nothing works
-        oModel.selectfilter = Filters.CardNameFilter('ZZZZZZZ')
+        oModel.selectfilter = BaseFilters.CardNameFilter('ZZZZZZZ')
         oModel.applyfilter = True
         oModel.load()
         self.assertEqual(self._count_top_level(oModel), 1)
@@ -131,7 +131,7 @@ class CardListModelTests(ConfigSutekhTest):
                          PhysicalCard.select().count())
         self.assertEqual(self._count_top_level(oModel), 2)
         # Test card type
-        oModel.selectfilter = Filters.CardTypeFilter('Vampire')
+        oModel.selectfilter = BaseFilters.CardTypeFilter('Vampire')
         oModel.applyfilter = True
         oModel.load()
         self.assertEqual(self._count_top_level(oModel), 1)

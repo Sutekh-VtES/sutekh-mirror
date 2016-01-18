@@ -6,32 +6,18 @@
 """Sutekh Filters tests"""
 
 from sutekh.tests.TestCore import SutekhTest
+from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          AbstractCardAdapter,
-                                          PhysicalCard, PhysicalCardAdapter,
-                                          Expansion, ExpansionAdapter,
+                                          IAbstractCard,
+                                          PhysicalCard, IPhysicalCard,
+                                          Expansion, IExpansion,
                                           PhysicalCardSet, IPhysicalCard,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 from sqlobject import SQLObjectNotFound
 import unittest
-
-
-# Split off as a function, so can be used by several test cases
-
-def make_card(sCardName, sExpName):
-    """Create a Physical card given the name and expansion.
-
-       Handle None for the expansion name properly"""
-    if sExpName:
-        oExp = ExpansionAdapter(sExpName)
-    else:
-        oExp = None
-    oAbs = AbstractCardAdapter(sCardName)
-    oCard = PhysicalCardAdapter((oAbs, oExp))
-    return oCard
 
 
 def make_physical_card_sets():
@@ -90,7 +76,7 @@ class FilterTests(SutekhTest):
         else:
             assert len(tTest) == 3
             oFilter, aExpectedNames = tTest[:2]
-            aAllowedExpansions = set([ExpansionAdapter(sExp) for sExp
+            aAllowedExpansions = set([IExpansion(sExp) for sExp
                                       in tTest[2] if sExp is not None])
             if None in tTest[2]:
                 aAllowedExpansions.add(None)
@@ -99,17 +85,17 @@ class FilterTests(SutekhTest):
         for sName in aExpectedNames:
             # pylint: disable=E1101
             # sqlobject confuses pylint
-            oAbs = AbstractCardAdapter(sName)
+            oAbs = IAbstractCard(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
             if None in aAllowedExpansions:
-                aPhysicalCards.append(PhysicalCardAdapter((oAbs, None)))
+                aPhysicalCards.append(IPhysicalCard((oAbs, None)))
 
             for oExp in aExps:
                 if oExp not in aAllowedExpansions:
                     continue
                 try:
-                    aPhysicalCards.append(PhysicalCardAdapter((oAbs, oExp)))
+                    aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))
@@ -219,7 +205,8 @@ class FilterTests(SutekhTest):
             (Filters.MultiTitleFilter(['Magaji', 'Regent']),
              [u"Cesewayo", u"Kabede Maru", u"Sha-Ennu"]),
             (Filters.MultiTitleFilter(['Primogen', 'Priscus', 'Cardinal']),
-             [u"Akram", u"Angelica, The Canonicus", u"Bronwen"]),
+             [u"Akram", u"Angelica, The Canonicus", u"Bronwen",
+              u"Gracis Nostinus"]),
             (Filters.CreedFilter('Martyr'),
              [u'Anna "Dictatrix11" Suljic']),
             (Filters.MultiCreedFilter(['Martyr', 'Innocent']),
@@ -363,7 +350,7 @@ class FilterTests(SutekhTest):
             (Filters.CardNameFilter(u'L\xe1z\xe1r'),
              [u"L\xe1z\xe1r Dobrescu"]),
             (Filters.NullFilter(), self.aExpectedCards),
-            (Filters.SpecificCardFilter(AbstractCardAdapter("Abebe")),
+            (Filters.SpecificCardFilter(IAbstractCard("Abebe")),
              [u"Abebe"]),
 
             # Compound Filters
@@ -599,9 +586,9 @@ class FilterTests(SutekhTest):
         # Test data for the Specific card filters
         # pylint: disable=E1101
         # sqlobject confuses pylint
-        oAbsAK = AbstractCardAdapter('ak-47')
-        oExp = ExpansionAdapter('LotN')
-        oPhysAK = PhysicalCardAdapter((oAbsAK, oExp))
+        oAbsAK = IAbstractCard('ak-47')
+        oExp = IExpansion('LotN')
+        oPhysAK = IPhysicalCard((oAbsAK, oExp))
 
         aPCSAbsCardTests = [
             (Filters.PhysicalCardSetFilter('Test 1'),

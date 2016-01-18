@@ -6,7 +6,7 @@
 """Utility functions for dealing with managing the CardSet Objects"""
 
 from sqlobject import SQLObjectNotFound, sqlhub
-from .BaseObjects import PhysicalCardSet
+from .BaseObjects import PhysicalCardSet, IPhysicalCardSet
 
 
 def check_cs_exists(sName):
@@ -120,3 +120,31 @@ def format_cs_list(oParent=None, sIndent=' '):
         if has_children(oCS):
             aResult.append(format_cs_list(oCS, sIndent + '   '))
     return '\n'.join(aResult)
+
+
+def clean_empty(aMyList, aExistingList):
+    """Remove any newly created sets in that have no cards AND no
+       children"""
+    for sName in aMyList:
+        if sName in aExistingList:
+            continue  # Not a card set we added
+        try:
+            oCS = IPhysicalCardSet(sName)
+        except SQLObjectNotFound:
+            # set not there, so skip
+            continue
+        # pylint: disable=E1101
+        # SQLObject + PyProtocols confuses pylint
+        if has_children(oCS):
+            continue
+        if len(oCS.cards) > 0:
+            continue  # has cards
+        delete_physical_card_set(sName)
+
+
+def get_current_card_sets():
+    """Return a list of current card sets.
+
+       Useful for determining the existing list for clean_empty."""
+    # This is a one-liner, but helps ensure consistency
+    return [x.name for x in PhysicalCardSet.select()]

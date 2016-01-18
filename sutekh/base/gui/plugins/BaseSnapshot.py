@@ -25,7 +25,7 @@ class BaseSnapshot(BasePlugin):
 
     def get_menu_item(self):
         """Return a gtk.MenuItem to activate this plugin."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oMenuItem = gtk.MenuItem("Take a snapshot of this card set")
         oMenuItem.connect("activate", self.activate)
@@ -33,7 +33,7 @@ class BaseSnapshot(BasePlugin):
 
     def activate(self, _oWidget):
         """Create the snapshot."""
-        oMyCS = self.get_card_set()
+        oMyCS = self._get_card_set()
 
         sTime = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
 
@@ -52,6 +52,6 @@ class BaseSnapshot(BasePlugin):
 
         # Copy the cards
         self._commit_cards(oNewPCS, oMyCS.cards)
-        self.reload_pcs_list()
-        sMesg = 'Snapshot <b>%s</b> created' % self.escape(oTempHolder.name)
+        self._reload_pcs_list()
+        sMesg = 'Snapshot <b>%s</b> created' % self._escape(oTempHolder.name)
         do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)

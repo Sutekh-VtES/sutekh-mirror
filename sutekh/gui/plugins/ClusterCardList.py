@@ -53,7 +53,7 @@ class ClusterCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oCluster = gtk.MenuItem("Cluster Cards")
         oCluster.connect("activate", self.activate)
@@ -455,7 +455,7 @@ class ClusterCardList(SutekhPlugin):
         aCards = [IPhysicalCard(self._aCards[x]) for x in
                   self._aClusters[iClusterId]]
         self._commit_cards(oDeck, aCards)
-        self.open_cs(sDeckName, True)
+        self._open_cs(sDeckName, True)
 
 
 class Vector(object):

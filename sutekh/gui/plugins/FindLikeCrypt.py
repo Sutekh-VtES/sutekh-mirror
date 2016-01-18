@@ -86,11 +86,25 @@ class FindLikeVampires(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
+    sMenuName = "Find similar crypt cards"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This allows you to find crypt cards that are similar to the
+                   current selected crypt card. It will search for cards in a
+                   compatible grouping that share the specified number of
+                   disciplines or virtues with the selected crypt card.
+
+                   More complex queries are possible by frist filtering the
+                   card set and then using the 'Only match cards visible in
+                   this pane' option to restrict the results of the crypt card
+                   search to match the filter."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oGenFilter = gtk.MenuItem("Find similar crypt cards")
+        oGenFilter = gtk.MenuItem(self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
@@ -102,7 +116,7 @@ class FindLikeVampires(SutekhPlugin):
 
            Prompt the user for attributes that are important and so forth
            """
-        self.oSelCard = self._get_selected_cards()
+        self.oSelCard = self._get_selected_crypt_card()
         if not self.oSelCard:
             do_complaint_error("Please select only 1 crypt card.")
             return
@@ -119,7 +133,8 @@ class FindLikeVampires(SutekhPlugin):
                 do_complaint_error("Please select an Imbued with virtues.")
                 return
             dGroups = self.find_imbued_like()
-        self.display_results(dGroups)
+        if dGroups:
+            self.display_results(dGroups)
     # pylint: enable=W0201
 
     def _group_cards(self, aCards, iNum, aSubSets, bSuperior, bUseCardSet):
@@ -155,25 +170,16 @@ class FindLikeVampires(SutekhPlugin):
                                         []).append(oCard)
         return dResults
 
-    def _get_selected_cards(self):
+    def _get_selected_crypt_card(self):
         """Extract selected crypt card from the model."""
-        aCards = []
-        _oModel, aSelection = self.view.get_selection().get_selected_rows()
-        if len(aSelection) == 0:
+        # Only interested in distinct cards
+        aAbsCards = set(self._get_selected_abs_cards())
+        if len(aAbsCards) != 1:
             return None
-        # We allow multiple selections of the same card
-        # (discipline grouping, etc).
-        for oPath in aSelection:
-            # pylint: disable=E1101
-            # pylint doesn't pick up adapter's methods correctly
-            oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
-            if not is_crypt_card(oCard):
-                # Only want crypt cards
-                return None
-            if oCard not in aCards:
-                aCards.append(oCard)
-            if len(aCards) > 1:
-                return None
+        oCard = aAbsCards.pop()
+        if not is_crypt_card(oCard):
+            # Only want crypt cards
+            return None
         return oCard
 
     def find_vampires_like(self):
@@ -376,7 +382,7 @@ class FindLikeVampires(SutekhPlugin):
             for oCard in aCards:
                 # We add with unknown expansion
                 oCardSet.addPhysicalCard(IPhysicalCard((oCard, None)))
-            self.open_cs(sCSName, True)
+            self._open_cs(sCSName, True)
 
 
 class LikeCardsView(gtk.TreeView):

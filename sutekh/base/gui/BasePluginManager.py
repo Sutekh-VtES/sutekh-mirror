@@ -16,7 +16,7 @@ import zipfile
 import re
 from sqlobject import sqlhub
 from ..core.DatabaseVersion import DatabaseVersion
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
 from .MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from .SutekhDialog import do_complaint_warning
@@ -198,6 +198,9 @@ class BasePlugin(object):
                       doc="Configuration object.")
     # pylint: enable=W0212
 
+    # External API
+    # These methods are entry points to the plugin
+
     @classmethod
     def update_config(cls):
         """Handle any tweaks to the config that need to happen before
@@ -212,6 +215,35 @@ class BasePlugin(object):
         oConfig.add_deck_specs(cls.__name__, cls.dPerPaneConfig)
         oConfig.add_cardlist_specs(cls.__name__, cls.dCardListConfig)
         oConfig.add_cardset_list_specs(cls.__name__, cls.dCardSetListConfig)
+
+    @classmethod
+    def get_help_text(cls):
+        """Return the help documentation for the plugin"""
+        sText = getattr(cls, 'sHelpText', None)
+        if sText:
+            # Strip whitespace
+            sText = '\n'.join([x.strip() for x in sText.splitlines()])
+        return sText
+
+    @classmethod
+    def get_help_list_text(cls):
+        """Return any additional text for list entries"""
+        return ""
+
+    @classmethod
+    def get_help_numbered_text(cls):
+        """Return any additional text for numbered entries"""
+        return ""
+
+    @classmethod
+    def get_help_category(cls):
+        """Return the help category to add this plugin to"""
+        return getattr(cls, 'sHelpCategory', None)
+
+    @classmethod
+    def get_help_menu_entry(cls):
+        """Return the menu name for the html help."""
+        return getattr(cls, 'sMenuName', None)
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         """Grunt work of adding menu item to the frame"""
@@ -230,6 +262,28 @@ class BasePlugin(object):
                 else:
                     # Plugins acts as a catchall Menu
                     oCatchAllMenu.add(oMenuItem)
+
+    def get_config_item(self, sKey):
+        """Return the value of a plugin global config key."""
+        return self.config.get_plugin_key(self.__class__.__name__, sKey)
+
+    def set_config_item(self, sKey, sValue):
+        """Set the value of a plugin global config key."""
+        self.config.set_plugin_key(self.__class__.__name__, sKey, sValue)
+
+    def get_perpane_item(self, sKey):
+        """Return the value of a per-pane config key."""
+        oModel = self.model
+        if oModel is None or not hasattr(oModel, "cardset_id"):
+            return None
+        if oModel.cardset_id == FULL_CARDLIST or \
+                oModel.cardset_id == CARDSET_LIST:
+            sProfile = self.config.get_profile(oModel.cardset_id,
+                                               oModel.cardset_id)
+            return self.config.get_profile_option(oModel.cardset_id,
+                                                  sProfile, sKey)
+        return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
+                                           sKey)
 
     # pylint: disable=R0201
     # We expect children to override these when needed
@@ -274,92 +328,18 @@ class BasePlugin(object):
            """
         return None
 
-    # pylint: enable=R0201
+    def check_for_updates(self):
+        """Called to check if the plugin has newer data to download.
 
-    # Utility Functions / Plugin API
-
-    def check_model_type(self):
-        """Check whether the plugin should register on this frame."""
-        if self._cModelType in self.aModelsSupported:
-            return True
-        return False
-
-    def check_versions(self):
-        """Check whether the plugin supports the current version of
-           the Sutekh database tables."""
-        oDBVer = DatabaseVersion()
-        for oTable, aVersions in self.dTableVersions.iteritems():
-            if not oDBVer.check_table_in_versions(oTable, aVersions):
-                logging.warn("Skipping plugin %s due to version error (%s)",
-                             self, oTable)
-                return False
-        # If nothing is specified, currently we assume everything is A-OK
-        return True
-
-    def open_cs(self, sPCS, bStartEditable=False):
-        """Open a physical card set in the GUI."""
-        self.parent.add_new_physical_card_set(sPCS, bStartEditable)
-
-    def reload_pcs_list(self):
-        """Refresh the physical card set list if it is visible."""
-        self.parent.reload_pcs_list()
-
-    def reload_all(self):
-        """Reload all views."""
-        self.parent.reload_all()
-
-    def get_card_set(self):
-        """Get the Card Set for this view."""
-        if self._cModelType is PhysicalCardSet:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
-            return self.model.cardset
+           Should return a string with a message, or None if there's
+           nothing to download."""
         return None
 
-    def get_all_cards(self):
-        """Get the cards from the card set."""
-        if self._cModelType is PhysicalCardSet:
-            return self.model.get_card_iterator(None)
-        return []
+    def do_update(self):
+        """Called to handle any pending updates."""
+        pass
 
-    def check_cs_size(self, sName, iLimit):
-        """Check that the card set isn't considerably larger than we
-           expect to deal with and warn the user if it is"""
-        iCards = 0
-        aCards = self.get_all_cards()
-        if aCards:
-            iCards = aCards.count()
-        if iCards > iLimit:
-            iRes = do_complaint_warning("This card set is very large "
-                                        "(%d cards), and so using the %s "
-                                        "plugin doesn't seem sensible.\n"
-                                        "Are you sure you want to continue?" %
-                                        (iCards, sName))
-            if iRes == gtk.RESPONSE_CANCEL:
-                return False  # fail
-        return True  # A-OK
-
-    def get_config_item(self, sKey):
-        """Return the value of a plugin global config key."""
-        return self.config.get_plugin_key(self.__class__.__name__, sKey)
-
-    def set_config_item(self, sKey, sValue):
-        """Set the value of a plugin global config key."""
-        self.config.set_plugin_key(self.__class__.__name__, sKey, sValue)
-
-    def get_perpane_item(self, sKey):
-        """Return the value of a per-pane config key."""
-        oModel = self.model
-        if oModel is None or not hasattr(oModel, "cardset_id"):
-            return None
-        if oModel.cardset_id == FULL_CARDLIST or \
-                oModel.cardset_id == CARDSET_LIST:
-            sProfile = self.config.get_profile(oModel.cardset_id,
-                                               oModel.cardset_id)
-            return self.config.get_profile_option(oModel.cardset_id,
-                                                  sProfile, sKey)
-        return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
-                                           sKey)
+    # pylint: enable=R0201
 
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
@@ -376,9 +356,87 @@ class BasePlugin(object):
            during a database upgrade"""
         pass
 
+    # Utility Functions / Internal Plugin API
+    # This functions are for use by the plugins, and should not be
+    # called externally
+
+    def _check_model_type(self):
+        """Check whether the plugin should register on this frame."""
+        if self._cModelType in self.aModelsSupported:
+            return True
+        return False
+
+    def _check_versions(self):
+        """Check whether the plugin supports the current version of
+           the Sutekh database tables."""
+        oDBVer = DatabaseVersion()
+        for oTable, aVersions in self.dTableVersions.iteritems():
+            if not oDBVer.check_table_in_versions(oTable, aVersions):
+                logging.warn("Skipping plugin %s due to version error (%s)",
+                             self, oTable)
+                return False
+        # If nothing is specified, currently we assume everything is A-OK
+        return True
+
+    def _open_cs(self, sPCS, bStartEditable=False):
+        """Open a physical card set in the GUI."""
+        self.parent.add_new_physical_card_set(sPCS, bStartEditable)
+
+    def _reload_pcs_list(self):
+        """Refresh the physical card set list if it is visible."""
+        self.parent.reload_pcs_list()
+
+    def _reload_all(self):
+        """Reload all views."""
+        self.parent.reload_all()
+
+    def _get_card_set(self):
+        """Get the Card Set for this view."""
+        if self._cModelType is PhysicalCardSet:
+            # pylint: disable=E1101
+            # sqlobject confuses pylint
+            return self.model.cardset
+        return None
+
+    def _get_selected_abs_cards(self):
+        """Extract selected abstract cards from the selection."""
+        aSelectedCards = []
+        if self._cModelType in [PhysicalCardSet, PhysicalCard]:
+            _oModel, aSelected = self.view.get_selection().get_selected_rows()
+            for oPath in aSelected:
+                # pylint: disable=E1101
+                # pylint doesn't pick up adapter's methods correctly
+                oCard = IAbstractCard(
+                    self.model.get_card_name_from_path(oPath))
+                aSelectedCards.append(oCard)
+        return aSelectedCards
+
+    def _get_all_cards(self):
+        """Get the cards from the card set."""
+        if self._cModelType is PhysicalCardSet:
+            return self.model.get_card_iterator(None)
+        return []
+
+    def _check_cs_size(self, sName, iLimit):
+        """Check that the card set isn't considerably larger than we
+           expect to deal with and warn the user if it is"""
+        iCards = 0
+        aCards = self._get_all_cards()
+        if aCards:
+            iCards = aCards.count()
+        if iCards > iLimit:
+            iRes = do_complaint_warning("This card set is very large "
+                                        "(%d cards), and so using the %s "
+                                        "plugin doesn't seem sensible.\n"
+                                        "Are you sure you want to continue?" %
+                                        (iCards, sName))
+            if iRes == gtk.RESPONSE_CANCEL:
+                return False  # fail
+        return True  # A-OK
+
     # pylint: disable=R0201
     # utilty function for plugins
-    def escape(self, sInput):
+    def _escape(self, sInput):
         """Escape strings so that markup and special characters don't break
            things."""
         if sInput:

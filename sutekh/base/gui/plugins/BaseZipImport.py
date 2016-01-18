@@ -150,14 +150,35 @@ class BaseZipImport(BasePlugin):
 
     cZipWrapper = None
 
+    sMenuName = "Import Card Set(s) from zip file"
+
+    sHelpCategory = "card_list:file"
+
+    sHelpText = """This option allows you to select some or all of
+                   the Card Sets included in a zip file (such as those
+                   produced by backups) and import them into the database.
+                   Unlike restoring a backup, this does not replace any
+                   existing card sets automatically.
+
+                   After selecting the zip file, you will be asked to
+                   select the card sets to import from the list of card
+                   sets in the zip file. If any of the card sets share
+                   the same name as an existing card set, you will be
+                   asked either to rename the card set, or skip importing
+                   that card set.
+
+                   If a card set to be imported has a parent card set, and
+                   that set cannot be found, the card set will be imported
+                   with no parent set."""
+
     # Dialog and Menu Item Creation
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
-        oImport = gtk.MenuItem("Import Card Set(s) from zip file")
+        oImport = gtk.MenuItem(self.sMenuName)
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
@@ -189,8 +210,8 @@ class BaseZipImport(BasePlugin):
         dList = oFile.get_all_entries()
         dEscapedList = {}
         for sName, tInfo in dList.iteritems():
-            dEscapedList[self.escape(sName)] = (sName, tInfo[0], tInfo[1],
-                                                tInfo[2])
+            dEscapedList[self._escape(sName)] = (sName, tInfo[0], tInfo[1],
+                                                 tInfo[2])
 
         oSelDlg = SelectZipFileContents(dEscapedList, self.parent)
         oResponse = oSelDlg.run()
@@ -270,7 +291,7 @@ class BaseZipImport(BasePlugin):
                 if self.parent.find_cs_pane_by_set_name(oCardSetHolder.name):
                     # Already open, so update to changes
                     update_open_card_sets(self.parent, oCardSetHolder.name)
-                self.reload_pcs_list()
+                self._reload_pcs_list()
             except Exception, oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                                                                 oException)

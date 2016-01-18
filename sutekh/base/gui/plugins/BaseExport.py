@@ -30,7 +30,7 @@ class BaseCardSetExport(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Export Card Set' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         aMenuItems = []
         for sKey, tInfo in self.EXPORTERS.iteritems():
@@ -42,7 +42,7 @@ class BaseCardSetExport(BasePlugin):
 
     def make_dialog(self, _oWidget, sKey):
         """Create the dialog"""
-        oCardSet = self.get_card_set()
+        oCardSet = self._get_card_set()
         if not oCardSet:
             return
         tInfo = self.EXPORTERS[sKey]

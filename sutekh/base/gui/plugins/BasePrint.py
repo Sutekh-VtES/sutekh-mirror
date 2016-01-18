@@ -55,7 +55,7 @@ class BasePrint(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         oPrint = gtk.MenuItem("Print Card Set")
@@ -189,13 +189,13 @@ class BasePrint(BasePlugin):
 
     def cardlist_markup(self):
         """Format the card set nicely for printing."""
-        oCS = self.get_card_set()
+        oCS = self._get_card_set()
 
         aMarkup = []
-        aMarkup.append("<u>%s</u>" % self.escape(oCS.name))
-        aMarkup.append("  Author: %s" % self.escape(oCS.author))
-        aMarkup.append("  Comment: %s" % self.escape(oCS.comment))
-        aMarkup.append("  Annotations: %s" % self.escape(oCS.annotations))
+        aMarkup.append("<u>%s</u>" % self._escape(oCS.name))
+        aMarkup.append("  Author: %s" % self._escape(oCS.author))
+        aMarkup.append("  Comment: %s" % self._escape(oCS.comment))
+        aMarkup.append("  Annotations: %s" % self._escape(oCS.annotations))
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
@@ -207,7 +207,7 @@ class BasePrint(BasePlugin):
             if sGroup is None:
                 sGroup = '<< None >>'
 
-            aMarkup.append("<u>%s:</u>" % (self.escape(sGroup),))
+            aMarkup.append("<u>%s:</u>" % (self._escape(sGroup),))
 
             dCardInfo = {}
             dExpInfo = {}
@@ -228,18 +228,18 @@ class BasePrint(BasePlugin):
             for sCardName, iCnt in sorted(dCardInfo.items()):
                 if self._iPrintExpansions in (NO_EXPANSION, LONG_INDENT):
                     aMarkup.append(
-                        u"  %i \u00D7 %s" % (iCnt, self.escape(sCardName)))
+                        u"  %i \u00D7 %s" % (iCnt, self._escape(sCardName)))
                     if sCardName in dExpInfo:
                         for sExp, iCnt in sorted(dExpInfo[sCardName].items()):
                             aMarkup.append(
                                 u"    %i \u00D7 %s" % (iCnt,
-                                                       self.escape(sExp)))
+                                                       self._escape(sExp)))
                 else:
                     for sExp, iCnt in sorted(dExpInfo[sCardName].items()):
                         aMarkup.append(
                             u"  %i \u00D7 %s [%s]" % (iCnt,
-                                                      self.escape(sCardName),
-                                                      self.escape(sExp)))
+                                                      self._escape(sCardName),
+                                                      self._escape(sExp)))
 
             aMarkup.append("")
 

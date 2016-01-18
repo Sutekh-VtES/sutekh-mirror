@@ -7,7 +7,7 @@
 
 import gtk
 from copy import copy
-from ...core.BaseObjects import PhysicalCardSet, IAbstractCard
+from ...core.BaseObjects import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,
                             do_complaint_warning)
@@ -123,11 +123,19 @@ class BaseDrawProbPlugin(BasePlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Card Draw probabilities"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """Handle the probabilty of drawing cards.
+                   Subclasses should override this with the
+                   exact details of the game."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oCardDraw = gtk.MenuItem("Card Draw probabilities")
+        oCardDraw = gtk.MenuItem(self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
@@ -136,7 +144,7 @@ class BaseDrawProbPlugin(BasePlugin):
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it."""
-        if not self.check_cs_size('Card Draw probabilities', 500):
+        if not self._check_cs_size('Card Draw probabilities', 500):
             return
 
         self.iTotal = 0
@@ -145,7 +153,7 @@ class BaseDrawProbPlugin(BasePlugin):
         self.iOpeningDraw = 0
 
         # Get currently selected cards
-        aSelectedCards = self._get_selected_cards()
+        aSelectedCards = self._get_selected_abs_cards()
 
         if len(aSelectedCards) == 0:
             do_complaint_error("No cards selected")
@@ -262,17 +270,6 @@ class BaseDrawProbPlugin(BasePlugin):
         oDialog.vbox.pack_start(oWidgetBox, False, False)
         oDialog.vbox.pack_start(oResultsBox)
         return oDialog
-
-    def _get_selected_cards(self):
-        """Extract selected cards from the selection."""
-        aSelectedCards = []
-        _oModel, aSelection = self.view.get_selection().get_selected_rows()
-        for oPath in aSelection:
-            # pylint: disable=E1101
-            # pylint doesn't pick up adapter's methods correctly
-            oCard = IAbstractCard(self.model.get_card_name_from_path(oPath))
-            aSelectedCards.append(oCard)
-        return aSelectedCards
 
     def _steps_changed(self, oComboBox):
         """Handle changes to the oStepSize combo box."""

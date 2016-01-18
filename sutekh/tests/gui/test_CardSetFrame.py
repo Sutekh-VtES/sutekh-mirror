@@ -10,7 +10,7 @@ import unittest
 import gtk
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCard,
                                           IAbstractCard)
-from sutekh.tests.core.test_Filters import make_card
+from sutekh.base.tests.TestUtils import make_card
 
 
 class TestCardSetFrame(GuiSutekhTest):

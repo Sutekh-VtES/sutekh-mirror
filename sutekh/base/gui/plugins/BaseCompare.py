@@ -31,7 +31,7 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
             # pylint doesn't see IAbstractCard methods
             oAbsCard = IAbstractCard(oCard)
             if bIgnoreExpansions:
-                oKey = (oAbsCard, oAbsCard.name, None)
+                oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
             else:
                 if oCard.expansion:
                     oKey = (oCard, oAbsCard.name, oCard.expansion.name)
@@ -69,11 +69,32 @@ class BaseCompare(BasePlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Compare with another Card Set"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool compares the current card set with a different
+                   card set. It displays which cards are common to both card
+                   sets, and lists the unique cards in each card set.
+
+                   By default, the tool considers the expansions of cards, and
+                   considers all cards with the same name with different
+                   expansions as different.  You can change this behaviour
+                   using the _Ignore Expansions_ checkbox when selecting a
+                   card set for comparison. If selected, all cards of with the
+                   same name are considered the same, regardless of expansion.
+
+                   The display of the results uses the same grouping as the
+                   card set.
+
+                   You can create card sets from each list of results using
+                   the 'Create Card Set from this list' button."""
+
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oCompare = gtk.MenuItem("Compare with another Card Set")
+        oCompare = gtk.MenuItem(self.sMenuName)
         oCompare.connect("activate", self.activate)
         return ('Analyze', oCompare)
 
@@ -166,12 +187,12 @@ class BaseCompare(BasePlugin):
         oComm = format_list(dCommon, 'green')
         oPage = make_page(oComm, dCommon)
         oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
-        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[0])
+        sTabTitle = 'Cards only in %s' % self._escape(aCardSetNames[0])
         sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff1 = format_list(dDifferences[aCardSetNames[0]], 'red')
         oPage = make_page(oDiff1, dDifferences[aCardSetNames[0]])
         oResultDlg.add_widget_page(oPage, sMarkup, sTabTitle, True)
-        sTabTitle = 'Cards only in %s' % self.escape(aCardSetNames[1])
+        sTabTitle = 'Cards only in %s' % self._escape(aCardSetNames[1])
         sMarkup = '<span foreground = "red">%s</span>' % sTabTitle
         oDiff2 = format_list(dDifferences[aCardSetNames[1]], 'red')
         oPage = make_page(oDiff2, dDifferences[aCardSetNames[1]])
@@ -195,9 +216,9 @@ class BaseCompare(BasePlugin):
                 # Dealing with abstract cards in the list
                 oPhysCard = IPhysicalCard((oCard, None))
             else:
-                # Dealing with pysical cards in the list
+                # Dealing with physical cards in the list
                 oPhysCard = oCard
             for _iNum in range(iCnt):
                 aCards.append(oPhysCard)
         self._commit_cards(oCardSet, aCards)
-        self.open_cs(sCSName)
+        self._open_cs(sCSName)

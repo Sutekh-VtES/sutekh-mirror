@@ -23,7 +23,7 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
 
 
 # We try lackeyccg for images from these sets
-LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu')
+LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu', 'promo')
 
 
 class CardImageFrame(BaseImageFrame):
@@ -77,13 +77,13 @@ class CardImageFrame(BaseImageFrame):
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
 
-    def _make_card_urls(self):
+    def _make_card_urls(self, _sFullFilename):
         """Return a url pointing to the vtes.pl scan of the image"""
         sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        sFilename = self._norm_cardname()
+        sFilename = self._norm_cardname()[0]
         if sCurExpansionPath == '' or sFilename == '':
             # Error path, we don't know where to search for the image
-            return ''
+            return None
         # Remap paths to point to the vtes.pl equivilents
         if sCurExpansionPath == 'nergal_storyline':
             sCurExpansionPath = 'isl'
@@ -101,8 +101,25 @@ class CardImageFrame(BaseImageFrame):
             sCurExpansionPath, sFilename)
         if sCurExpansionPath in LACKEY_IMAGES:
             # Try get the card from lackey first
+            # Strip the "(Mythic storyline)" prefix from the returned cards
+            sFilename2 = None
+            if sCurExpansionPath == 'vekn_2014_the_returned':
+                # Lackey uses 'montaro2' and so forth for the duplicate names
+                # between the 2015 storyline rewards expansion and the actual
+                # storyline cards, but this only applies to some of the card
+                # names, so we need to try all possibilities in the right
+                # order
+                sFilename = sFilename.replace('mythicstoryline', '')
+                sFilename2 = sFilename.replace('.jpg', '2.jpg')
             sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
                 sFilename)
+            if sFilename2:
+                sLackeyUrl2 = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
+                    sFilename2)
+                return (sLackeyUrl2, sLackeyUrl, sUrl)
+            if sCurExpansionPath == 'promo':
+                # We prefer nekhomanta.h2.pl for older promos
+                return (sUrl, sLackeyUrl)
             return (sLackeyUrl, sUrl)
         return (sUrl, )
 
@@ -118,7 +135,7 @@ class CardImageFrame(BaseImageFrame):
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
-        return sFilename
+        return [sFilename]
 
 
 class ImageConfigDialog(BaseImageConfigDialog):

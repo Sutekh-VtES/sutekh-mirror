@@ -37,7 +37,7 @@ class BaseCountCSCards(BasePlugin):
 
         # We only add listeners to windows we're going to display the toolbar
         # on
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             MessageBus.subscribe(self.model, 'add_new_card', self.add_new_card)
             MessageBus.subscribe(self.model, 'alter_card_count',
                                  self.alter_card_count)
@@ -46,7 +46,7 @@ class BaseCountCSCards(BasePlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             MessageBus.unsubscribe(self.model, 'add_new_card',
                                    self.add_new_card)
             MessageBus.unsubscribe(self.model, 'alter_card_count',
@@ -56,7 +56,7 @@ class BaseCountCSCards(BasePlugin):
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         self._oTextLabel = gtk.Label(self.TOT_FORMAT % self.dInfo)

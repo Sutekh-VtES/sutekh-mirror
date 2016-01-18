@@ -71,11 +71,39 @@ class BaseIndependence(BasePlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Test Card Set Independence"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool tests the current card set against other card
+                   sets with the same parent, and considers whether there
+                   are enough cards in the parent card set to simultaneously
+                   construct all the selected sets. Multiple decks can be
+                   selected from the list of card sets.
+
+                   You can test the current card set against all sets with the
+                   same parent which are marked as _In Use_ by checking the
+                   _Test against all card sets marked as in use_ checkbox when
+                   selecting decks for comparison. This checkbox overrides any
+                   selected entries in the list.
+
+                   By default the independence test is strict and checks
+                   whether the parent set contains enough cards to build all
+                   the selected child sets with exactly the card expansions
+                   specified. A less strict check which ignores expansions may
+                   be selected by checking _Ignore card expansions_.
+
+                   The first tab of the results displays the full list of cards
+                   of which there is a shortage in the parent card set. For
+                   each selected set which includes any of these cards, the
+                   list of cards relevant to that set is shown in a separate
+                   tab."""
+
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oTest = gtk.MenuItem("Test Card Set Independence")
+        oTest = gtk.MenuItem(self.sMenuName)
         oTest.connect("activate", self.activate)
         return ('Analyze', oTest)
 
@@ -91,7 +119,7 @@ class BaseIndependence(BasePlugin):
         # E1101: PyProtocols confuses pylint
         # W0201: No need to define oThisCardSet, oCSView & oInUseButton in
         # __init__
-        self.oThisCardSet = self.get_card_set()
+        self.oThisCardSet = self._get_card_set()
         if not self.oThisCardSet.parent:
             do_complaint_error("Card Set has no parent, so nothing to test.")
             return None
@@ -173,11 +201,11 @@ class BaseIndependence(BasePlugin):
         aParentList = []
         for oCard, oInfo in sorted(dMissing.iteritems(),
                                    key=lambda x: IAbstractCard(x[0]).name):
-            sCardName = self.escape(IAbstractCard(oCard).name)
+            sCardName = self._escape(IAbstractCard(oCard).name)
             if not hasattr(oCard, 'expansion'):
                 sExpansion = ""
             elif oCard.expansion:
-                sExpansion = " [%s]" % self.escape(oCard.expansion.name)
+                sExpansion = " [%s]" % self._escape(oCard.expansion.name)
             else:
                 sExpansion = " [(unspecified expansion)]"
             aParentList.append('<span foreground = "blue">'
@@ -185,7 +213,7 @@ class BaseIndependence(BasePlugin):
                                '<span foreground="red">%d'
                                '</span> copies (used in %s)'
                                % (sCardName, sExpansion, oInfo.iCount,
-                                  self.escape(oInfo.format_cs())))
+                                  self._escape(oInfo.format_cs())))
             for sCardSet, iCount in oInfo.dCardSets.iteritems():
                 dFormatted.setdefault(sCardSet, [])
                 dFormatted[sCardSet].append('<span foreground="blue">%s%s'
@@ -198,11 +226,11 @@ class BaseIndependence(BasePlugin):
                                                             iCount))
         oResultDlg.add_widget_page(
             AutoScrolledWindow(_make_align_list(aParentList), True),
-            'Missing from %s' % self.escape(oParentCS.name), bMarkup=True)
+            'Missing from %s' % self._escape(oParentCS.name), bMarkup=True)
         for sCardSet, aMsgs in dFormatted.iteritems():
             oResultDlg.add_widget_page(
                 AutoScrolledWindow(_make_align_list(aMsgs), True),
-                'Missing in %s' % self.escape(sCardSet), bMarkup=True)
+                'Missing in %s' % self._escape(sCardSet), bMarkup=True)
         oResultDlg.set_size_request(600, 600)
         oResultDlg.show_all()
         oResultDlg.run()

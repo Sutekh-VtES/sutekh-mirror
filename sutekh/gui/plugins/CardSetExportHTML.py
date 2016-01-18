@@ -31,7 +31,7 @@ class CardSetExportHTML(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the Plugins Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         if self._cModelType == "MainWindow":
@@ -101,7 +101,7 @@ class CardSetExportHTML(SutekhPlugin):
         if sFileName is not None:
             # pylint: disable=W0703
             # we do want to catch all exceptions here
-            oCardSet = self.get_card_set()
+            oCardSet = self._get_card_set()
             if not oCardSet:
                 do_complaint_error("Unsupported Card Set Type")
                 return

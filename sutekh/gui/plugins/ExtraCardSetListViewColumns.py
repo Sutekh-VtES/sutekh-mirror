@@ -30,8 +30,40 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraCSListViewColumns):
 
     CS_KEYS = ('Total Cards', 'Library', 'Crypt')
 
+    sMenuName = "Extra Columns -- card set list view"
+
+    sHelpCategory = "card_set_list:profile"
+
+    sHelpText = """Only card set names are shown in the card set list by \
+                   default as well.  You can select additional columns \
+                   to display as part of the card set list profile.
+
+                   The possible extra columns are:
+
+                   * _Author_: Show the card set author.
+                   * _Description_: Show the card set description.
+                   * _Total cards_: Show the total number of cards in the \
+                     card set.
+                   * _Crypt_: Show the number of crypt cards in the card set.
+                   * _Library_: Show the number of library cards in the \
+                     card set.
+                   * _All Children_: Show the number of child card sets each \
+                     card set has
+                   * _In-Use Children_: Show the number of child card sets \
+                     marked as in use.
+
+                   The display can be sorted on these columns by clicking on \
+                   the column headers."""
+
     # pylint: disable=R0201
     # Making these functions for clarity
+
+    @classmethod
+    def get_help_list_text(cls):
+        return """ Select which extra columns of data are shown. \
+                   See the *Extra Columns -- card set list* section \
+                   for more details."""
+
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when
     # sorting

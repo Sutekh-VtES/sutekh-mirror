@@ -24,10 +24,11 @@ from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                find_children, has_children,
-                                               check_cs_exists)
+                                               check_cs_exists, clean_empty,
+                                               get_current_card_sets)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout
-from sutekh.io.DataPack import DOC_URL, find_data_pack
+from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
@@ -35,6 +36,7 @@ from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhFileWidget import add_filter
 import re
 import gtk
+import datetime
 from logging import Logger
 from StringIO import StringIO
 from sqlobject import SQLObjectNotFound
@@ -172,7 +174,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self.check_versions() and self.check_model_type():
+        if self._check_versions() and self._check_model_type():
             disconnect_row_update(self.card_set_changed, PhysicalCardSet)
             disconnect_row_destroy(self.card_set_added_deleted,
                                    PhysicalCardSet)
@@ -187,7 +189,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
@@ -222,6 +224,111 @@ class StarterInfoPlugin(SutekhPlugin):
                 bEnabled = True
                 break
         return bEnabled
+
+    def check_for_updates(self):
+        """Check to see if the starter decks need to be updated."""
+        sPrefsValue = self.get_config_item('show starters')
+        # Only check if we're meant to show the starters
+        if sPrefsValue.lower() != 'yes':
+            return None
+        aUrls, aDates, _aHashes = find_all_data_packs(
+            'starters', fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # Timeout means we skip trying anything
+            return None
+        if self._check_for_starters_to_download(aUrls[0], aDates[0]):
+            return "Updated starter deck information available"
+        return None
+
+    def do_update(self):
+        """Download the starter decks, if requested."""
+        sPrefsValue = self.get_config_item('show starters')
+        # Only check if we're meant to show the starters
+        if sPrefsValue.lower() != 'yes':
+            return None
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'starters', fErrorHandler=gui_error_handler)
+
+        if self._check_for_starters_to_download(aUrls[0], aDates[0]):
+            # Check to see if cards are available
+            bExcludeDemoDecks = False
+            bExcludeStorylineDecks = False
+            try:
+                _oSkip = IRarityPair(('White Wolf 2003 Demo', 'Demo'))
+            except SQLObjectNotFound:
+                bExcludeDemoDecks = True
+            try:
+                _oSkip = IRarityPair(('Nergal Storyline', 'Storyline'))
+            except SQLObjectNotFound:
+                bExcludeStorylineDecks = True
+            try:
+                oHolder = IPhysicalCardSet("White Wolf Starter Decks")
+            except SQLObjectNotFound:
+                # No info, so download everything we can
+                oHolder = None
+            if oHolder:
+                # We assume missing Holders are due to user choice, so we
+                # try to honour those. People can always use the explicit
+                # download option to recover accidental deletions
+                if not bExcludeDemoDecks:
+                    try:
+                        _oSkip = IPhysicalCardSet("White Wolf Demo Decks")
+                    except SQLObjectNotFound:
+                        bExcludeDemoDecks = True
+                if not bExcludeStorylineDecks:
+                    try:
+                        _oSkip = IPhysicalCardSet("White Wolf Storyline Decks")
+                    except SQLObjectNotFound:
+                        bExcludeStorylineDecks = True
+            oFile = urlopen_with_timeout(aUrls[0],
+                                         fErrorHandler=gui_error_handler)
+            if oFile:
+                sData = progress_fetch_data(oFile, None, aHashes[0])
+            else:
+                sData = None
+            if not sData:
+                do_complaint_error('Unable to access zipfile data')
+            elif not self._unzip_file(sData, bExcludeStorylineDecks,
+                                      bExcludeDemoDecks):
+                do_complaint_error('Unable to successfully unzip zipfile')
+
+    def _check_for_starters_to_download(self, sUrl, sDate):
+        """Check for any decks we need to download."""
+        if not sUrl:
+            return False
+        # Check if we need to download this url
+        try:
+            oHolder = IPhysicalCardSet("White Wolf Starter Decks")
+        except SQLObjectNotFound:
+            # No starters, so assume we need to download
+            return True
+        # Existing TWDA entry, so check dates
+        try:
+            oUrlDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
+        except ValueError:
+            oUrlDate = None
+        sUpdated = "Date Updated:"
+        oDeckDate = None
+        # pylint: disable=E1101
+        # Pyprotocols confuses pylint
+        if not oHolder.annotations:
+            # No date information, so we assume we need to download
+            return True
+        for sLine in oHolder.annotations.splitlines():
+            if sLine.startswith(sUpdated):
+                sDate = sLine.split(sUpdated)[1][1:11]
+                try:
+                    oDeckDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
+                except ValueError:
+                    pass
+        if oDeckDate is None or oUrlDate is None:
+            # Unable to extract the dates correctly, so we treat this as
+            # something to replace
+            return True
+        elif oDeckDate < oUrlDate:
+            # Url is newer, so we replace
+            return True
+        return False
 
     def setup(self):
         """1st time setup tasks"""
@@ -273,7 +380,7 @@ class StarterInfoPlugin(SutekhPlugin):
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Importing Starters")
         oLogger = Logger('Read zip file')
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
         dList = oFile.get_all_entries()
         # Check that we match starter regex
         bOK = False
@@ -298,13 +405,13 @@ class StarterInfoPlugin(SutekhPlugin):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
-                self.reload_pcs_list()
+                self._reload_pcs_list()
                 oProgressDialog.destroy()
                 return False  # Error
         # Cleanup
-        self._clean_empty(oFile.get_all_entries(), aExistingList)
+        clean_empty(oFile.get_all_entries(), aExistingList)
         self._clean_removed(sRemovedInfo)
-        self.reload_pcs_list()
+        self._reload_pcs_list()
         oProgressDialog.destroy()
         return True
 
@@ -385,29 +492,6 @@ class StarterInfoPlugin(SutekhPlugin):
                     # FIXME: Prompt in this case
                     continue
                 delete_physical_card_set(sName)
-
-    # pylint: disable=R0201
-    # Method for consistency with _unzip methods
-    def _clean_empty(self, aMyList, aExistingList):
-        """Remove any newly created sets in that have no cards AND no
-           children"""
-        for sName in aMyList:
-            if sName in aExistingList:
-                continue  # Not a card set we added
-            try:
-                oCS = IPhysicalCardSet(sName)
-            except SQLObjectNotFound:
-                # set not there, so skip
-                continue
-            # pylint: disable=E1101
-            # QLObject + PyProtocols confuses pylint
-            if has_children(oCS):
-                continue
-            if len(oCS.cards) > 0:
-                continue  # has cards
-            delete_physical_card_set(sName)
-
-    # pylint: enable=R0201
 
     def _toggle_starter(self, oToggle):
         """Toggle the show info flag"""
@@ -496,5 +580,6 @@ class StarterInfoPlugin(SutekhPlugin):
             oCardTextBuf.labelled_list('Preconstructed Decks',
                                        dInfo['Starters'], 'starters')
         oCardTextBuf.set_cur_iter(oTempIter)
+
 
 plugin = StarterInfoPlugin

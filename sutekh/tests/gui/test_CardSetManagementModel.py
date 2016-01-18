@@ -7,7 +7,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseObjects import PhysicalCardSet
-from sutekh.core import Filters
+from sutekh.base.core import BaseFilters
 from sutekh.base.gui.CardSetManagementModel import CardSetManagementModel
 
 
@@ -61,7 +61,7 @@ class CardSetManagementModelTests(SutekhTest):
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'),
                          (0, 1, 0))
         # Test filtering
-        oFilter = Filters.CardSetNameFilter('Child 2')
+        oFilter = BaseFilters.CardSetNameFilter('Child 2')
         self.assertEqual(oModel.get_card_set_iterator(oFilter).count(), 3)
         oModel.selectfilter = oFilter
         oModel.applyfilter = True
@@ -81,7 +81,7 @@ class CardSetManagementModelTests(SutekhTest):
         self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), (0, 1))
         self.assertEqual(oModel.get_path_from_name('Card Set 1'), (0, 0, 1))
 
-        oFilter = Filters.CardSetNameFilter('Child 2 Branch')
+        oFilter = BaseFilters.CardSetNameFilter('Child 2 Branch')
         self.assertEqual(oModel.get_card_set_iterator(oFilter).count(), 1)
         oModel.selectfilter = oFilter
         oModel.applyfilter = True

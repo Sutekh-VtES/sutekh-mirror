@@ -187,6 +187,14 @@ class BaseOpeningDraw(BasePlugin):
     MAXSIZE = 500
     COLUMN_WIDTH = 450
 
+    sMenuName = "Simulate opening hand"
+
+    sHelpCategory = "card_sets:analysis"
+
+    # Subclasses should override this to provide game
+    # specific details
+    sHelpText = """Simulates the opening hand"""
+
     # pylint: disable=W0142
     # **magic OK here
     def __init__(self, *args, **kwargs):
@@ -197,16 +205,16 @@ class BaseOpeningDraw(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oCardDraw = gtk.MenuItem("Simulate opening hand")
+        oCardDraw = gtk.MenuItem(self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it"""
         sDiagName = "Opening Hand"
-        if not self.check_cs_size(sDiagName, self.MAXSIZE):
+        if not self._check_cs_size(sDiagName, self.MAXSIZE):
             return
 
         if not self._get_cards():

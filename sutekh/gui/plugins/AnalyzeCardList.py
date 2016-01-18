@@ -25,15 +25,7 @@ from sutekh.base.gui.GuiUtils import wrap
 from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 
-try:
-    THIRD_ED = IExpansion('Third Edition')
-    JYHAD = IExpansion('Jyhad')
-except SQLObjectNotFound, oExcDetails:
-    # log exception at same level as plugin errors (verbose)
-    logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
-    # Turn exception into a ImportError, so plugin is just disabled
-    raise ImportError('Unable to load the required expansions')
-ODD_BACKS = (None, THIRD_ED, JYHAD)
+ODD_BACKS = set()
 
 PDF_SETS = set()
 
@@ -78,10 +70,30 @@ def _disc_sort_key(tData):
     return (-tData[1][1], -tData[1][2], tData[0].fullname)
 
 
+def _load_odd_backs():
+    """Cache info about the non-standard card backs."""
+    ODD_BACKS.clear()
+    try:
+        oThirdEd = IExpansion('Third Edition')
+        oJyhad = IExpansion('Jyhad')
+        ODD_BACKS.add(oThirdEd)
+        ODD_BACKS.add(oJyhad)
+        ODD_BACKS.add(None)
+    except SQLObjectNotFound, oExcDetails:
+        # log exception at same level as plugin errors (verbose)
+        logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
+
+
 def _load_pdf_sets():
     """Cache the sets from the VEKN pdf expansions"""
     PDF_SETS.clear()
-    for sSet in ['Danse Macabre']:
+    for sSet in ['Danse Macabre', 'The Unaligned',
+                 # Storyline reward cards are an annoying scattering of
+                 # promo dates
+                 'Promo-20150211', 'Promo-20150212', 'Promo-20150213',
+                 'Promo-20150214', 'Promo-20150216', 'Promo-20150217',
+                 'Promo-20150218', 'Promo-20150219', 'Promo-20150220',
+                 'Promo-20150221']:
         try:
             oSet = IExpansion(sSet)
             PDF_SETS.add(oSet)
@@ -279,6 +291,9 @@ def _split_into_crypt_lib(aPhysCards):
 def _check_same(aPhysCards):
     """Check that all the crypt cards and all the library cards have the
        same backs"""
+    if not ODD_BACKS:
+        # Error importing the expansions, so complain
+        return False
     aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
     dCrypt = _get_back_counts(aCrypt)
     dLib = _get_back_counts(aLib)
@@ -410,15 +425,36 @@ class AnalyzeCardList(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
+    sMenuName = "Analyze Deck"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """This tool examines a card set and displays various
+                   statistics about it which are intended to give you
+                   some indication of how the card set will operate as
+                   a deck.
+
+                   It displays several tabs, each of which summarises
+                   different aspects of the card set. The first tab
+                   summarises some basic information about the entire set.
+                   The second tab implements Legbiter's Happy Family
+                   analysis for the card set. The remaining tabs
+                   consider specific card types.
+
+                   The happy family implementation allows you either to
+                   select the number of disciplines to use, or to select
+                   the disciplines to consider manually."""
+
     def __init__(self, *args, **kwargs):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
         _load_pdf_sets()
+        _load_odd_backs()
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
-        oAnalyze = gtk.MenuItem("Analyze Deck")
+        oAnalyze = gtk.MenuItem(self.sMenuName)
         oAnalyze.connect("activate", self.activate)
         oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
         oAnalyzeRT.connect("activate", self.activate_rt)
@@ -440,7 +476,7 @@ class AnalyzeCardList(SutekhPlugin):
     # a long function, and there's no benefit to splitting it up further
     def activate_heart(self, bRapid=False):
         """Create the actual dialog, and populate it"""
-        if not self.check_cs_size('Analyze Deck', 500):
+        if not self._check_cs_size('Analyze Deck', 500):
             return
         oDlg = NotebookDialog("Analysis of Card List", self.parent,
                               gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -642,17 +678,19 @@ class AnalyzeCardList(SutekhPlugin):
 
     def _prepare_main(self, bRapid):
         """Setup the main notebook display"""
-        oCS = self.get_card_set()
+        oCS = self._get_card_set()
 
         sTitleText = ("Analysis Results for :\n\t\t<b>%(name)s</b>\n"
                       "\t\tby <i>%(author)s</i>\n" % {
-                          'name': self.escape(self.view.sSetName),
-                          'author': self.escape(oCS.author),
+                          'name': self._escape(self.view.sSetName),
+                          'author': self._escape(oCS.author),
                       })
         # We wrap the description in a scrollable widget, since it
         # can be very, very long (Matt Morgan's TWDA entries, for
         # example)
-        sDesc = self.escape(oCS.comment)
+        sDesc = self._escape(oCS.comment)
+        if not sDesc:
+            sDesc = "<i>No description</i>"
         oDesc = wrap(sDesc)
         oScrolledBox = gtk.VBox(False, 1)
         oDescTitle = gtk.Label()
@@ -1158,6 +1196,11 @@ class AnalyzeCardList(SutekhPlugin):
     def _process_backs(self, aPhysCards):
         """Run some heuristic tests to see if cards are 'of sufficiently
            mixed card type'"""
+        if not ODD_BACKS:
+            # Error importing the expansions, so complain
+            return ("Failed to import all the expansion information\n"
+                    "Unable to accurately analyze if this deck requires"
+                    "sleeves")
         aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
         dCrypt = _get_back_counts(aCrypt)
         dLib = _get_back_counts(aLib)

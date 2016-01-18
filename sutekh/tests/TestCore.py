@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# _iterdump():
-#   Copyright 2008 Python Software Foundation; All Rights Reserved
-# Remainder:
-#   Copyright 2007 Simon Cross <hodgestar@gmail.com>
+# Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
 """Base for Sutekh test cases"""

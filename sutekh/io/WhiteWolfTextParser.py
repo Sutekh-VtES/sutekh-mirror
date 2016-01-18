@@ -36,13 +36,15 @@ def _find_sect_and_title(aLines):
     # Card text for vampires is either Sect attributes. or Sect.
     sSect = None
     sTitle = None
+    # We access this a fair amount, hence the local cache
+    sLowerLine = aLines[0].lower()
     if aLines[0].find('Camarilla') != -1:
         sSect = 'Camarilla'
-        if aLines[0].find('Camarilla primogen') != -1:
+        if sLowerLine.find('camarilla primogen') != -1:
             sTitle = 'Primogen'
-        elif aLines[0].find('Camarilla Prince of') != -1:
+        elif sLowerLine.find('camarilla prince of') != -1:
             sTitle = 'Prince'
-        elif aLines[0].find('Justicar') != -1:
+        elif sLowerLine.find('justicar') != -1:
             # Since Justicar titles are of the form
             # 'Camarilla <Clan> Justicar'
             oJusticar = re.compile(r'Camarilla [A-Z][a-z]* Justicar')
@@ -51,8 +53,8 @@ def _find_sect_and_title(aLines):
         # Inner circle my be either Camariila Inner Circle or
         # Camarilla Clan Inner Circle
         # Hopefully this will go away sometime
-        elif aLines[0].find('Inner Circle') != -1:
-            if aLines[0].find('Camarilla Inner Circle') != -1:
+        elif sLowerLine.find('inner circle') != -1:
+            if sLowerLine.find('camarilla inner circle') != -1:
                 sTitle = 'Inner Circle'
             else:
                 oInnerCircle = re.compile(
@@ -61,15 +63,15 @@ def _find_sect_and_title(aLines):
                     sTitle = 'Inner Circle'
     elif aLines[0].find('Sabbat') != -1:
         sSect = 'Sabbat'
-        if aLines[0].find('Sabbat Archbishop of') != -1:
+        if sLowerLine.find('sabbat archbishop of') != -1:
             sTitle = 'Archbishop'
-        elif aLines[0].find('Sabbat bishop') != -1:
+        elif sLowerLine.find('sabbat bishop') != -1:
             sTitle = 'Bishop'
-        elif aLines[0].find('Sabbat priscus') != -1:
+        elif sLowerLine.find('sabbat priscus') != -1:
             sTitle = 'Priscus'
-        elif aLines[0].find('Sabbat cardinal') != -1:
+        elif sLowerLine.find('sabbat cardinal') != -1:
             sTitle = 'Cardinal'
-        elif aLines[0].find('Sabbat regent') != -1:
+        elif sLowerLine.find('sabbat regent') != -1:
             sTitle = 'Regent'
     elif aLines[0].find('Independent') != -1:
         sSect = 'Independent'
@@ -117,7 +119,7 @@ def _find_sect_and_title(aLines):
             pass
     elif aLines[0].find('Laibon') != -1:
         sSect = 'Laibon'
-        if aLines[0].find('Laibon magaji') != -1:
+        if sLowerLine.find('laibon magaji') != -1:
             sTitle = 'Magaji'
     return sSect, sTitle
 

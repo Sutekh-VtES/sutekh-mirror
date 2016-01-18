@@ -22,7 +22,7 @@ class BaseExportCSV(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oExport = gtk.MenuItem("Export to CSV")
         oExport.connect("activate", self.make_dialog)
@@ -53,7 +53,7 @@ class BaseExportCSV(BasePlugin):
         # pylint: disable=E1101
         # SQLObject methods confuse pylint
         if sFileName is not None:
-            oCardSet = self.get_card_set()
+            oCardSet = self._get_card_set()
             if not oCardSet:
                 return
             oWriter = WriteCSV(bIncHeader, bIncExpansion)

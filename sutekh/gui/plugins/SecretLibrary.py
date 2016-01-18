@@ -6,7 +6,6 @@
 """Plugin for interacting with the Secret Library website."""
 
 import gtk
-import urllib2
 import urllib
 import StringIO
 import re
@@ -222,15 +221,19 @@ class SecretLibrary(SutekhPlugin):
 
     SL_API_URL = "http://www.secretlibrary.info/api.php"
 
-    try:
-        ILLEGAL = IKeyword('not for legal play')
-    except SQLObjectNotFound, oExcDetails:
-        logging.warn("Illegal keyword missing (%s).", oExcDetails, exc_info=1)
-        ILLEGAL = None
+    def __init__(self, oCardListView, oCardListModel, cModelType):
+        try:
+            self.oIllegal = IKeyword('not for legal play')
+        except SQLObjectNotFound, oExcDetails:
+            logging.warn("Illegal keyword missing (%s).", oExcDetails,
+                         exc_info=1)
+            self.oIllegal = None
+        super(SecretLibrary, self).__init__(oCardListView, oCardListModel,
+                                            cModelType)
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
 
         if self.model is None:
@@ -368,8 +371,8 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
         oParser = SLDeckParser()
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probably a timeout we've already complained about,
             # so we just bail out of this
@@ -390,8 +393,8 @@ class SecretLibrary(SutekhPlugin):
         sData = urllib.urlencode(dData)
         oParser = SLInventoryParser()
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
@@ -408,7 +411,7 @@ class SecretLibrary(SutekhPlugin):
 
     def _export_deck(self, sApiUrl, dData):
         """Export a card set to the Secret Library as a deck."""
-        oCardSet = self.get_card_set()
+        oCardSet = self._get_card_set()
 
         dData['title'] = oCardSet.name
         dData['author'] = oCardSet.author
@@ -417,8 +420,8 @@ class SecretLibrary(SutekhPlugin):
 
         sData = urllib.urlencode(dData)
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
@@ -436,8 +439,8 @@ class SecretLibrary(SutekhPlugin):
 
         sData = urllib.urlencode(dData)
 
-        oReq = urllib2.Request(url=sApiUrl, data=sData)
-        fReq = urlopen_with_timeout(oReq, fErrorHandler=gui_error_handler)
+        fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
+                                    sData=sData)
         if not fReq:
             # Probable timeout
             return
@@ -451,7 +454,7 @@ class SecretLibrary(SutekhPlugin):
     def _exclude(self, oAbsCard):
         """Secret Library does not support storyline cards yet, so
            exclude them"""
-        if self.ILLEGAL not in oAbsCard.keywords:
+        if self.oIllegal not in oAbsCard.keywords:
             # Excluded cards are all not legal for play
             return False
         for oPair in oAbsCard.rarity:

@@ -67,6 +67,15 @@ produces.
 # pylint: enable=C0103
 
 
+def _make_link(sName):
+    """Helper function to generate a sensible html link
+       from the menu name."""
+    sLinkTag = sName.lower()
+    for sChar in [',', '(', ')', ' ', '-']:
+        sLinkTag = sLinkTag.replace(sChar, '')
+    return sLinkTag
+
+
 class FilterGroup(object):
     """Fake filter for Filter Group help."""
 
@@ -195,7 +204,81 @@ def _load_textile(sTextilePath):
     return aLines
 
 
-def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
+def _process_plugins(aLines, aPlugins):
+    """Add help text for plugins to the textile data."""
+    # Find all the possible tags
+    dTags = {}
+    for sLine in aLines:
+        if sLine.startswith(':'):
+            # check type
+            if ':list:' in sLine or ':numbered:' in sLine or ':text:' in sLine:
+                sTag = sLine.split(':', 3)[3].strip()
+                if sTag not in dTags:
+                    dTags[sTag] = {':list:': [], ':numbered:': [],
+                                   ':text:': []}
+            else:
+                print "Unknown Tag type %s" % sLine
+    if dTags:
+        # Only replace stuff if we have tags, otherwise silently skip all this
+        for cPlugin in aPlugins:
+            sPluginCat = cPlugin.get_help_category()
+            if sPluginCat is None:
+                # No docs, so skip
+                continue
+            if sPluginCat not in dTags:
+                print "%s has unrecognised plugin help category: %s" % (
+                    cPlugin, sPluginCat)
+                continue
+            # Construct the tags
+            sName = cPlugin.get_help_menu_entry()
+            sLinkTag = _make_link(sName)
+            sText = cPlugin.get_help_list_text()
+            dTags[sPluginCat][':list:'].append(
+                '*listlevel* "%s":#%s %s' % (sName, sLinkTag, sText))
+            sText = cPlugin.get_help_numbered_text()
+            dTags[sPluginCat][':numbered:'].append(
+                '#numlevel# "%s":#%s %s' % (sName, sLinkTag, sText))
+            sText = cPlugin.get_help_text()
+            dTags[sPluginCat][':text:'].append(
+                'hlevel(#%s). %s\n\n%s\n\n' % (sLinkTag, sName, sText))
+        # replace tags
+        for iCnt, sLine in enumerate(aLines):
+            if sLine.startswith(':') and (':list:' in sLine
+                                          or ':numbered:' in sLine
+                                          or ':text:' in sLine):
+                _sHead, _sSkipType, sLevel, sTag = sLine.split(':', 3)
+                sTag = sTag.strip()
+                iLevel = int(sLevel)
+                # XXX: Should we sort here to ensure predictable ordering,
+                # rather than relying on import order?
+                for sType, aData in dTags[sTag].items():
+                    sFullTag = '%s%d:%s' % (sType, iLevel, sTag)
+                    if sType in sLine:
+                        sData = '\n'.join(aData)
+                        if sType == ':list:':
+                            sData = sData.replace('*listlevel*',
+                                                  '*' * iLevel)
+                        elif sType == ':numbered:':
+                            sData = sData.replace('#numlevel#',
+                                                  '#' * iLevel)
+                        elif sType == ':text:':
+                            sData = sData.replace('hlevel(',
+                                                  'h%d(' % iLevel)
+                        aLines[iCnt] = sLine.replace(sFullTag, sData)
+                if not aLines[iCnt].strip():
+                    # Empty line, to avoid textile trying to turn it into
+                    # an element
+                    # Note that we only want to strip empty lines, since the
+                    # whitespace around non-empty lines matters.
+                    aLines[iCnt] = ''
+                    # XXX: Should there be a way to silence this?
+                    print 'Unused tag %s' % sTag
+    # This is a terrible idea, but works
+    sText = ''.join(aLines)
+    return sText.split('\n')
+
+
+def convert(sTextileDir, sHtmlDir, cAppInfo, aPlugins, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
     # pylint: disable=R0914
     # R0914: Reducing the number of variables won't help clarity
@@ -212,7 +295,9 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
 
         aLines = _load_textile(sTextilePath)
 
-        fHtml.write(textile2html(''.join(aLines), dContext, fProcessText))
+        aLines = _process_plugins(aLines, aPlugins)
+
+        fHtml.write(textile2html('\n'.join(aLines), dContext, fProcessText))
 
         fHtml.close()
 
@@ -223,7 +308,7 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, fProcessText):
                 print '\n'.join([x.err for x in aErrors])
 
 
-def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
+def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
     """Convert textile files to markdown syntax."""
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
@@ -233,6 +318,8 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, fProcessText):
         fMarkdown = open(sMarkdownPath, "wb")
 
         aLines = _load_textile(sTextilePath)
+
+        aLines = _process_plugins(aLines, aPlugins)
 
         fMarkdown.write(textile2markdown(aLines, fProcessText))
 

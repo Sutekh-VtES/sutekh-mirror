@@ -19,10 +19,11 @@ from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
                                           do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, has_children,
+                                               find_children, clean_empty,
+                                               get_current_card_sets,
                                                check_cs_exists)
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data
+from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data, HashError
 from sutekh.io.DataPack import find_all_data_packs, DOC_URL
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
@@ -142,6 +143,27 @@ class TWDAInfoPlugin(SutekhPlugin):
         'twda configured': 'option("Yes", "No", "Unasked", default="Unasked")',
     }
 
+    sMenuName = "Find TWDA decks containing"
+
+    sHelpCategory = "card_sets:analysis"
+
+    sHelpText = """If you have downloaded the database of tournament winning
+                   decks, this allows you to search the tournament winning
+                   deck archive for decks containing specific combinations of
+                   cards.
+
+                   You can either search for all the selected cards or for
+                   those that contain at least 1 of the selected cards.
+
+                   The results are grouped by year, and list the number of
+                   matching card found in each listed deck. The matching
+                   decks can be opened as new panes by choosing the
+                   "Open cardset" option.
+
+                   The results dialog in not modal, so it's possible to
+                   examine the opened card sets closely without closing
+                   the search results."""
+
     # pylint: disable=W0142
     # ** magic OK here
     def __init__(self, *args, **kwargs):
@@ -154,7 +176,7 @@ class TWDAInfoPlugin(SutekhPlugin):
 
            Adds the menu item to the analyze menu.
            """
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         if self.model is None:
             # Add entry to the data download menu
@@ -162,7 +184,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             oDownload.connect('activate', self.do_download)
             return ('Data Downloads', oDownload)
         # Add entries to the analyze list
-        oTWDMenu = gtk.MenuItem('Find TWDA decks containing ... ')
+        oTWDMenu = gtk.MenuItem(self.sMenuName + ' ... ')
         oSubMenu = gtk.Menu()
         oTWDMenu.set_submenu(oSubMenu)
         self.oAllTWDA = gtk.MenuItem("ALL selected cards")
@@ -183,25 +205,17 @@ class TWDAInfoPlugin(SutekhPlugin):
         """Disconnect the database listeners"""
         super(TWDAInfoPlugin, self).cleanup()
 
-    def _get_selected_cards(self):
-        """Extract selected cards from the selection."""
-        dSelected = self.view.process_selection()
-        aAbsCards = []
-        for sCardName in dSelected:
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
-            oCard = IAbstractCard(sCardName)
-            aAbsCards.append(oCard)
-
-        return aAbsCards
-
     def find_twda(self, _oWidget, sMode):
         """Find decks which match the given search"""
-        aAbsCards = self._get_selected_cards()
+        # Only want the distinct cards - numbers are unimportant
+        aAbsCards = set(self._get_selected_abs_cards())
         if not aAbsCards:
             do_complaint_error('Need to select some cards for this plugin')
             return
-
+        if len(aAbsCards) > 20:
+            do_complaint_error('Too many cards selected (%d). Please select '
+                               'no more than 20 cards' % len(aAbsCards))
+            return
         aCardFilters = []
         iTotCards = len(aAbsCards)
         for oCard in aAbsCards:
@@ -246,17 +260,16 @@ class TWDAInfoPlugin(SutekhPlugin):
 
         oDlg.set_default_size(700, 600)
         oDlg.show_all()
-        oDlg.run()
-        oDlg.destroy()
+        oDlg.show()
 
     def _fill_dlg(self, dCardSets, sMatchText):
         """Add info about the card sets to the dialog"""
         oDlg = NotebookDialog("TWDA matches", self.parent,
-                              gtk.DIALOG_MODAL |
                               gtk.DIALOG_DESTROY_WITH_PARENT,
                               (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         aParents = set([oCS.parent.name for oCS in dCardSets])
         dPages = {}
+        oDlg.connect('response', lambda dlg, but: dlg.destroy())
         # We create tabs for each year, and then list card
         # sets below them
         for sName in sorted(aParents):
@@ -290,8 +303,9 @@ class TWDAInfoPlugin(SutekhPlugin):
         # pylint: disable=E1101
         # gtk confuses pylint
         oDlg = SutekhDialog("No TWDA matches", self.parent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            gtk.DIALOG_DESTROY_WITH_PARENT,
                             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oDlg.connect('response', lambda dlg, but: dlg.destroy())
         oLabel = gtk.Label("No decks found statisfying %s" % sMatchText)
         oDlg.vbox.pack_start(oLabel)
         return oDlg
@@ -299,7 +313,7 @@ class TWDAInfoPlugin(SutekhPlugin):
     def _open_card_set(self, _oButton, oCS):
         """Wrapper around open_cs to handle being called directly from a
            gtk widget"""
-        self.open_cs(oCS.name)
+        self._open_cs(oCS.name)
 
     def check_enabled(self):
         """check for TWD decks in the database and disable menu if not"""
@@ -351,29 +365,61 @@ class TWDAInfoPlugin(SutekhPlugin):
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
             if oDialog.is_url():
-                aUrls, aDates, _aHashes = oDialog.get_url_data()
+                aUrls, aDates, aHashes = oDialog.get_url_data()
                 if not aUrls:
                     do_complaint_error('Unable to access TWD data')
-                elif not self._get_decks(aUrls, aDates):
+                elif not self._get_decks(aUrls, aDates, aHashes):
                     do_complaint_error(
                         'Unable to successfully download TWD data')
+                else:
+                    # Successful download, so we're configured
+                    self.set_config_item('twda configured', 'Yes')
             else:
-                self._unzip_twda_file(oDialog.get_file_data())
+                if self._unzip_twda_file(oDialog.get_file_data()):
+                    # Success, so we're configured
+                    self.set_config_item('twda configured', 'Yes')
         # cleanup
         oDialog.destroy()
 
-    def _get_decks(self, aUrls, aDates):
-        """Unzip a file containing the decks."""
+    def check_for_updates(self):
+        """Check for any updates at startup."""
+        sPrefsValue = self.get_config_item('twda configured')
+        if sPrefsValue.lower() != 'yes':
+            return None
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'twd', fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # Timeout means we skip trying anything
+            return None
+        aToUnzip, _aToReplace = self._get_decks_to_download(aUrls, aDates,
+                                                            aHashes)
+        if aToUnzip:
+            aMessages = ["The following TWDA updates are available: "]
+            for _sUrl, sTWDA, _sHash in aToUnzip:
+                aMessages.append("<b>%s</b>" % sTWDA)
+            return '\n'.join(aMessages)
+        return None
+
+    def do_update(self):
+        """Handle the 'download stuff' respone from the startup check"""
+        sPrefsValue = self.get_config_item('twda configured')
+        if sPrefsValue.lower() != 'yes':
+            return
+        aUrls, aDates, aHashes = find_all_data_packs(
+            'twd', fErrorHandler=gui_error_handler)
+        if not self._get_decks(aUrls, aDates, aHashes):
+            do_complaint_error('Unable to successfully download TWD data')
+
+    def _get_decks_to_download(self, aUrls, aDates, aHashes):
+        """Check for any decks we need to download."""
         aToUnzip = []
         aToReplace = []
-        aZipHolders = []
-        iZipCount = 0
 
         # pylint: disable=E1101
         # Pyprotocols confuses pylint
-        for sUrl, sDate in zip(aUrls, aDates):
+        for sUrl, sDate, sHash in zip(aUrls, aDates, aHashes):
             if not sUrl:
-                return False
+                return False, False
             # Check if we need to download this url
             # This is a bit crude, but works because we control the format
             sZipName = sUrl.split('/')[-1]
@@ -384,7 +430,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 oHolder = IPhysicalCardSet(sTWDA)
             except SQLObjectNotFound:
                 # New TWDA holder, so add it to the list
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 continue
             # Existing TWDA entry, so check dates
             try:
@@ -404,12 +450,58 @@ class TWDAInfoPlugin(SutekhPlugin):
             if oTWDDate is None or oUrlDate is None:
                 # Unable to extract the dates correctly, so we treat this as
                 # something to replace
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 aToReplace.append(sTWDA)
             elif oTWDDate < oUrlDate:
                 # Url is newer, so we replace
-                aToUnzip.append((sUrl, sTWDA))
+                aToUnzip.append((sUrl, sTWDA, sHash))
                 aToReplace.append(sTWDA)
+        return aToUnzip, aToReplace
+
+    def _get_decks(self, aUrls, aDates, aHashes):
+        """Unzip a file containing the decks."""
+        iZipCount = 0
+        aZipHolders = []
+        aToUnzip, aToReplace = self._get_decks_to_download(aUrls, aDates,
+                                                           aHashes)
+        if not aToUnzip:
+            return False
+        # We download everything first, so we don't delete card sets which
+        # fail to download.
+        oLogHandler = BinnedCountLogHandler()
+        oProgressDialog = ProgressDialog()
+        oProgressDialog.set_description("Downloading TWDA data")
+        oLogger = Logger('Download zip files')
+        oLogger.addHandler(oLogHandler)
+        oLogHandler.set_dialog(oProgressDialog)
+        oLogHandler.set_tot_bins(len(aToUnzip))
+        oProgressDialog.show()
+        # We sort the list of urls to download for cosmetic reasons
+        for sUrl, sTWDA, sHash in sorted(aToUnzip, key=lambda x: x[1]):
+            oFile = urlopen_with_timeout(sUrl,
+                                         fErrorHandler=gui_error_handler)
+            oProgressDialog.set_description('Downloading %s' % sTWDA)
+            try:
+
+                sData = fetch_data(oFile, sHash=sHash,
+                                   oLogHandler=oLogHandler,
+                                   fErrorHandler=gui_error_handler)
+            except HashError:
+                do_complaint_error("Checksum failed for %s\nSkipping"
+                                   % sTWDA)
+                # Don't delete this, since we're not replacing it
+                aToReplace.remove(sTWDA)
+                continue
+            oZipFile = ZipFileWrapper(StringIO(sData))
+            aZipHolders.append(oZipFile)
+            iZipCount += len(oZipFile.get_all_entries())
+            oLogHandler.inc_cur_bin()
+        oProgressDialog.destroy()
+
+        # Bomb out if we're going to end up doing nothing
+        if len(aZipHolders) == 0:
+            return False
+
         # Delete all TWDA entries in the holders we replace
         # We do this to handle card sets being removed from the TWDA
         # correctly
@@ -419,6 +511,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 continue
             if oCS.parent.name in aToReplace:
                 aToRemove.append(oCS.name)
+        aOpenSets = []
         if aToRemove:
             oOldConn = sqlhub.processConnection
             oTrans = oOldConn.transaction()
@@ -433,36 +526,23 @@ class TWDAInfoPlugin(SutekhPlugin):
             oLogHandler.set_dialog(oProgressDialog)
             oProgressDialog.show()
             for sName in aToRemove:
+                # We close any open card sets to avoid issues with
+                # holding open references to the deleted card sets
+                for oFrame in self.parent.find_cs_pane_by_set_name(sName):
+                    oFrame.close_frame()
+                    # We will open as many copies as we closed.
+                    # We lose the minimised to toolbar status, though
+                    aOpenSets.append(sName)
                 delete_physical_card_set(sName)
                 oLogger.info('deleted %s', sName)
+            self._reload_pcs_list()
             oProgressDialog.destroy()
 
             oTrans.commit(close=True)
             sqlhub.processConnection = oOldConn
 
-        oLogHandler = BinnedCountLogHandler()
-        oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Downloading TWDA data")
-        oLogger = Logger('Download zip files')
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_tot_bins(len(aToUnzip))
-        oProgressDialog.show()
-        # We sort the list of urls to download for cosmetic reasons
-        for sUrl, sTWDA in sorted(aToUnzip, key=lambda x: x[1]):
-            oFile = urlopen_with_timeout(sUrl,
-                                         fErrorHandler=gui_error_handler)
-            oProgressDialog.set_description('Downloading %s' % sTWDA)
-            sData = fetch_data(oFile, oLogHandler=oLogHandler,
-                               fErrorHandler=gui_error_handler)
-            oZipFile = ZipFileWrapper(StringIO(sData))
-            aZipHolders.append(oZipFile)
-            iZipCount += len(oZipFile.get_all_entries())
-            oLogHandler.inc_cur_bin()
-        oProgressDialog.destroy()
-
         oLogHandler = SutekhCountLogHandler()
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Adding TWDA Data")
         oLogger = Logger('Read zip file')
@@ -478,8 +558,11 @@ class TWDAInfoPlugin(SutekhPlugin):
                 return False
             aCSList.extend(oZipFile.get_all_entries().keys())
         oProgressDialog.destroy()
-        self._clean_empty(aCSList, aExistingList)
-        self.reload_pcs_list()
+        clean_empty(aCSList, aExistingList)
+        # Reopen any card sets we closed
+        for sName in aOpenSets:
+            self._open_cs(sName, False)
+        self._reload_pcs_list()
         return True
 
     def _unzip_twda_file(self, oFile):
@@ -488,7 +571,8 @@ class TWDAInfoPlugin(SutekhPlugin):
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Importing TWDA Data")
         oLogger = Logger('Read zip file')
-        aExistingList = [x.name for x in PhysicalCardSet.select()]
+        aExistingList = get_current_card_sets()
+        oProgressDialog = ProgressDialog()
         dList = oFile.get_all_entries()
         # Check that we match holder regex
         bOK = False
@@ -514,8 +598,8 @@ class TWDAInfoPlugin(SutekhPlugin):
             oProgressDialog.destroy()
             return False
         # Cleanup
-        self._clean_empty(oFile.get_all_entries().keys(), aExistingList)
-        self.reload_pcs_list()
+        clean_empty(oFile.get_all_entries().keys(), aExistingList)
+        self._reload_pcs_list()
         oProgressDialog.destroy()
         return True
 
@@ -530,7 +614,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
-                self.reload_pcs_list()
+                self._reload_pcs_list()
                 return False  # Error
         return True
 
@@ -586,27 +670,5 @@ class TWDAInfoPlugin(SutekhPlugin):
         sqlhub.processConnection = oOldConn
         return True
 
-    # pylint: disable=R0201
-    # Method for consistency with _unzip methods
-    def _clean_empty(self, aMyList, aExistingList):
-        """Remove any newly created sets in that have no cards AND no
-           children"""
-        for sName in aMyList:
-            if sName in aExistingList:
-                continue  # Not a card set we added
-            try:
-                oCS = IPhysicalCardSet(sName)
-            except SQLObjectNotFound:
-                # set not there, so skip
-                continue
-            # pylint: disable=E1101
-            # QLObject + PyProtocols confuses pylint
-            if has_children(oCS):
-                continue
-            if len(oCS.cards) > 0:
-                continue  # has cards
-            delete_physical_card_set(sName)
-
-    # pylint: enable=R0201
 
 plugin = TWDAInfoPlugin

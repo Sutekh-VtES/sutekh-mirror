@@ -147,6 +147,31 @@ class ArdbInfo(object):
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
 
+    def _format_crypt_line(self, oCard, iCount):
+        """Create a dictionary with the basic elements of a crypt card line,
+           handling clan, capacity and advanced status consistently."""
+        dLine = {'count': iCount}
+        if len(oCard.creed) > 0:
+            dLine['clan'] = "%s (Imbued)" % \
+                [x.name for x in oCard.creed][0]
+            dLine['capacity'] = oCard.life
+        else:
+            dLine['clan'] = [x.name for x in oCard.clan][0]
+            dLine['capacity'] = oCard.capacity
+        dLine['name'] = oCard.name
+        dLine['adv'] = '   '
+        if oCard.level is not None:
+            dLine['name'] = dLine['name'].replace(' (Advanced)', '')
+            dLine['adv'] = 'Adv'
+        dLine['title'] = '   '
+        if len(oCard.title):
+            dLine['title'] = [oC.name for oC in oCard.title][0]
+            dLine['title'] = dLine['title'].replace('Independent with ',
+                                                    '')[:12]
+        dLine['group'] = int(oCard.group)
+
+        return dLine
+
     def _get_cap_key(self, oCard):
         """Get a capacity or life value for the card, with sensible
            defaults for None.
@@ -158,6 +183,13 @@ class ArdbInfo(object):
             return -oCard.life
         # Shouldn't happen, but ensure we sort last
         return 1
+
+    def _crypt_sort_key(self, tItem):
+        """Sort the vampire dictionary in ARDB's ordering.
+
+           We sort inversely by count, then capacity,
+           then normally by card name."""
+        return (-tItem[1][0], self._get_cap_key(tItem[0]), tItem[0].name)
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""

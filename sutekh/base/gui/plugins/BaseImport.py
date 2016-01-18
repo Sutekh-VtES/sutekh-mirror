@@ -60,7 +60,7 @@ class BaseImport(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Import' Menu"""
-        if not self.check_versions() or not self.check_model_type():
+        if not self._check_versions() or not self._check_model_type():
             return None
         oImport = gtk.MenuItem("Import Card Set in other formats")
         oImport.connect("activate", self.make_dialog)

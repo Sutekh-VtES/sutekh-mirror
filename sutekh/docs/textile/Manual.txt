@@ -8,10 +8,8 @@ h2. Contents
 # "Important Concepts":#concepts
 # "Main Window":#main
 ## "File":#main_file
-### "Backup":#backup
 ### "Import CSV file":#import_csv
-### "Import ARDB or ELDB file":#import_ardb
-### "Import card sets from zip file":#import_zip
+:numbered:3:card_list:file
 ## "Pane Actions":#main_pane_actions
 ## "Rulebook":#rulebook
 ## "Keyboard Shortcuts":#keyboard
@@ -45,24 +43,18 @@ h2. Contents
 ## "List filters":#list
 # "Analysis Tools":#analysis
 ## "Cluster Cards":#cluster
-## "Clan Discipline Stats":#stats
-## "Expansion Stats":#exp_stats
-## "Compare with another Card Set":#compare
-## "Analyze Deck":#analyze_deck
-## "Test Card Set Independence":#test_cs_indep
-## "Find similiar crypt cards":#find_crypt
-## "Simulate Opening Hand":#opening_hand
-## "Card draw probabilities":#draw_prob
+:numbered:2:card_list:analysis
+:numbered:2:card_sets:analysis
 # "Profiles":#profiles
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
 ## "White Wolf Card List Profile Options":#ww_profile
 ### "Card Grouping":#grouping
-### "Extra Columns -- card sets":#columns
+:numbered:3:card_sets:profile
 ## "Card Set Profile Options":#cardset_profile
 ### "The Different Profiles":#different_profiles
 ## "CardSet List Profile Options":#cs_profile
-### "Extra Columns -- card set list":#cs_columns
+:numbered:3:card_set_list:profile
 
 h2(#intro). Introduction
 
@@ -117,8 +109,6 @@ h3(#main_file). File
 
 The file menu has the following options.
 
-* _Backup_: Save or restore backups of the database, discussed further in the \
-"Backup":#backup section.
 * _Import Card Set_: Import a card set from a existing file. The following \
 file types are supported:
 ** _Load Card Set from File_: Load a card set saved in Sutekh's XML file \
@@ -127,11 +117,7 @@ format.
 "Import a card set from a comma-separated value file":#import_csv, as \
 produced by a spreadsheet. You can select the columns for card set, number \
 and expansion.
-** _Import ARDB or ELDB Card Set_: "Import a file":#import_ardb \
-saved by either ARDB or FELDB. You may specify the correct type of file as \
-well as the file name.
-** _Import Card Sets from zip file_: Select \
-"card sets from a zip file":#import_zip to import.
+:list:2:card_list:file
 * _Data Downloads_: This submenu allows you to update data from the various \
 external sources Sutekh uses.
 ** _Import new White Wolf Card List and rulings_: Update the \
@@ -173,25 +159,6 @@ to edit or delete the various pane profiles
 If Sutekh encounters an unknown card when importing card sets, it will prompt
 you to identify it using the "Card Lookup Dialog":#lookup.
 
-h4(#backup). Backup
-
-This allows you either to save or to restore a full backup of the current
-database. The backup is saved as a zip file, and is independent of the
-database back-end which Sutekh uses. Consequently, the backup can also be used
-to transfer the complete state between different databases.
-
-There are two options offered:
-
-* _Save a Full Backup_: Save the current state (card sets and their contents) \
-to the specified zip file.
-* _Restore a Full Backup_: Import all the card sets from the specified zip \
-file. Note that restoring a backup will replace anything currently in the \
-database with the contents of the backup.
-
-You can save a backup at any time. Sutekh will ask you whether you would like to
-save a backup when you initiate certain actions, such as updating the White Wolf
-card list.
-
 h4(#import_csv). Import CSV file
 
 This allows you to import card sets stored as a comma-separated file, a format
@@ -203,35 +170,7 @@ the columns and their contents.
 If Sutekh cannot correctly interpret a name or expansion, it will prompt you to
 resolve the situation using the "Card Lookup Dialog":#lookup.
 
-h4(#import_ardb). Import ARDB or ELDB file
-
-This allows you to import files produced by ARDB, JOL, Lackey CCG or FELDB.
-While Sutekh will attempt to identify the file format automatically, this isn't
-always reliable, so you have the option of specifying the format manually.
-
-For some types of file, such as ARDB inventories, you will also need to specify
-a card set name for the imported file.
-
-If the name of the card set clashes with an existing name, you will
-be asked to rename the imported card set or cancel the import.
-
-If no cards are found in the card set, the card set will not be created.
-
-h4(#import_zip). Import card sets from zip file
-
-This option allows you to select some or all of the Sutekh Card Sets included
-in a zip file (such as those produced by backups) and import them into the card
-set. Unlike restoring a backup, this does not replace any existing card sets
-automatically.
-
-After selecting the zip file, you will be asked to select the card sets to
-import from the list of card sets in the zip file. If any of the card sets share
-the same name as an existing card set, you will be asked either to rename the
-card set, or skip importing that card set.
-
-If a card set to be imported has a parent card set, and that set cannot be
-found, the card set will be imported with no parent set.
-
+:text:4:card_list:file
 
 
 h3(#main_pane_actions). Pane Actions
@@ -345,17 +284,14 @@ The filter menu has three options:
 * _Specify Filter_: Specify the filter to apply to the card list. See the \
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
-* _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter. The new card set will be opened automatically and \
-will be set editable.
+:list:1:card_list:filter
 
 h3(#ww_analyze). Analyze
 
 The following analysis options are available for White Wolf Card List:
 
-* "Clan Discipline Stats":#stats
-* "Expansion Stats":#exp_stats
 * "Cluster Cards":#cluster
+:list:1:card_list:analysis
 
 h2(#card_text). Card Text
 
@@ -525,9 +461,7 @@ The filter menu has three options:
 * _Specify Filter_: Specify the filter to apply to the card list. See the \
 "Card Filters":#card_filters section.
 * _Apply Filter_: Toggle whether the filter is currently applied to the list.
-* _Create Card Set From Filter_: Create a new card set containing the results \
-of the current filter. The new card set will be opened automatically and \
-will be set editable.
+:list:1:card_list:filter
 
 When editing a card set, the display is always updated according to the active
 filter (i.e. if the filter is being applied). This does mean that, when adding
@@ -538,17 +472,14 @@ appear and disappear due to the changing counts.
 Since complex filters may be expensive to evaluate, editing card sets with
 a filter active will be slow in some cases.
 
+:text:4:card_list:filter
+
 h3(#cardsets_analyze). Analyze
 
 The following analysis options are available for card sets:
 
-* "Analyze Deck":#analyze_deck
-* "Find similar crypt cards":#find_crypt
-* "Card draw probabilities":#draw_prob
 * "Cluster Cards":#cluster
-* "Compare with another Card Set":#compare
-* "Simulate Opening Hand":#opening_hand
-* "Test Card Set Independence":#test_indep
+:list:1:card_sets:analysis
 
 h3(#cardsets_keyboard). Keyboard Shortcuts
 
@@ -924,144 +855,9 @@ which clusters correspond to the created card sets. The third column shows how
 many cards are present in each cluster, and the last lists the property
 values of the cluster center (property values of zero are omitted).
 
+:text:3:card_list:analysis
 
-h3(#stats). Clan Discipline Stats
-
-This shows an analysis of all the different clans in the White Wolf
-card list. For each clan, it displays the total number of vampires in the clan,
-the sum of the vampires' capacities, and the most common disciplines. It also
-shows the score for the disciplines, and various stats about how the disciplines
-are distributed.
-
-You can expand the tree view to show the details for each legal grouping
-combination.
-
-The score is intended to give you some indication of how common
-disciplines are within the clan. Vampires without a discipline score 0 for that
-discipline, vampires with the inferior discipline score 1 and vampires
-with the superior discipline score 2.
-
-Note that this will only include cards not legal for tournament play (such as
-banned cards or storyline only cards) if the current profile for the white wolf
-card list shows those cards.
-
-
-h3(#exp_stats). Expansion Stats
-
-This lists some statistics about the different expansions and rarities.
-
-For each expansion, this lists the number of cards of each rarity. It also
-notes which cards are found only in the preconstructed decks for that expansion
-if needed. For each rarity, the individual cards are list, grouped according
-to the current grouping of the white wolf card list.
-
-Note that this will only include cards not legal for tournament play (such as
-banned cards or storyline only cards) if the current profile for the white wolf
-card list shows those cards.
-
-
-h3(#compare). Compare with another Card Set
-
-This tool compares the current card set with a different card set. It displays
-which cards are common to both card sets, and lists the unique cards in each
-card set.
-
-By default, the tool considers the expansions of cards, and considers all cards
-with the same name with different expansions as different.  You can change
-this behaviour using the _Ignore Expansions_ checkbox when selecting a card set
-for comparison. If selected, all cards of with the same name are considered
-the same, regardless of expansion.
-
-The display of the results uses the same grouping as the card set.
-
-You can create card sets from each list of results using the 'Create Card Set
-from this list' button.
-
-
-h3(#analyze_deck). Analyze Deck
-
-This tool examines a card set and displays various statistics about it which
-are intended to give you some indication of how the card set will operate as a
-deck.
-
-It displays several tabs, each of which summarises different aspects
-of the card set. The first tab summarises some basic information about the
-entire set. The second tab implements Legbiter's Happy Family analysis for
-the card set. The remaining tabs consider specific card types.
-
-The happy family implementation allows you either to select the number of
-disciplines to use, or to select the disciplines to consider manually.
-
-
-h3(#find_crypt). Find similiar crypt cards
-
-This allows you to find crypt cards that are similar to the current selected
-crypt card. It will search for cards in a compatible grouping that share
-the specified number of disciplines or virtues with the selected crypt card.
-
-More complex queries are possible by frist filtering the card set and then
-using the 'Only match cards visible in this pane' option to restrict the
-results of the crypt card search to match the filter.
-
-h3(#test_indep). Test Card Set Independence
-
-This tool tests the current card set against other card sets with the same
-parent, and considers whether there are enough cards in the parent card set to
-simultaneously construct all the selected sets. Multiple decks can be selected
-from the list of card sets.
-
-You can test the current card set against all sets with the same parent which
-are marked as _In Use_ by checking the _Test against all card sets marked as in use_
-checkbox when selecting decks for comparison. This checkbox overrides any
-selected entries in the list.
-
-By default the independence test is strict and checks whether the parent set
-contains enough cards to build all the selected child sets with exactly the
-card expansions specified. A less strict check which ignores expansions may
-be selected by checking _Ignore card expansions_.
-
-The first tab of the results displays the full list of cards of which there is a
-shortage in the parent card set. For each selected set which includes any of
-these cards, the list of cards relevant to that set is shown in a separate tab.
-
-h3(#opening_hand). Simulate Opening Hand
-
-This tool treats the card set as a completed deck, and displays the
-expected distribution of cards in the opening hand and crypt. It is intended
-to give you some idea of how the deck will work in practice. In addition,
-you can generate example opening hands and crypts by clicking the
-_Draw sample hand_ button.
-
-h3(#draw_prob). Card draw probabilities
-
-This tool displays the probabilities of drawing the selected cards from the
-library or the crypt. Unlike the _simulate opening hand_ tool, this
-displays results for longer sequences of card draws.
-
-The first row of the table shows the probabilities of drawing a single card in
-the selected list. Sub-rows show the individual probabilities for each possible
-combination of selected cards. The second row shows the probabilities of
-drawing all possible combinations of two selected cards, etc..
-
-Each probability cell in the table displays two values: the probability of
-drawing at least that combination of cards, and the probability of drawing
-exactly that combination of cards (shown in brackets).
-
-The tool has the following settings:
-
-* _columns in table_: Set the number of draws shown in the table. You must \
-specify a number from one to eight (the default is eight). The first column \
-shows the probabilities of drawing the given cards in your opening hand or \
-crypt draw. Subsequent columns show the total probabilities of drawing the \
-cards after you have drawn the number of extra cards shown in the column \
-header.
-* _step between columns_: Set the number of cards drawn between columns. You \
-must specify a number from one to ten (the default is one).
-* _cards of interest_: Set the number of rows in the table. You must specify \
-a number from one to the total number of cards selected.
-
-The selected changes are only applied when you press the the _recalculate table_
-button.
+:text:3:card_sets:analysis
 
 h2(#profiles). Profiles
 
@@ -1096,11 +892,10 @@ You can set the following options for the white wolf card list in the profile:
 * _Column mode_: This controls how information in the extra columns is \
 displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
-* _Extra columns_: Select which extra columns of data are shown. See the \
-"Extra Columns (card sets)":#columns section for more details.
 * _Extra levels_: Controls whether the card expansions are listed.
 * _Group by_: Controls how the cards are grouped together. See the \
 "Card Grouping":#grouping section for more details.
+:list:1:card_sets:profile
 * _Filter_: Specify a saved "filter":#filters that is always applied when \
 this profile is selected.
 * _Hide cards not legal for tournament play_: Controls whether cards flagged \
@@ -1151,40 +946,7 @@ in the *Action Modifier* and *Combat* groups.
 * _Artist_: Group the cards by their artists.
 * _Keyword_: Group the cards by the keywords associated with them.
 
-h4(#columns). Extra Columns (card sets)
-
-By default, Sutekh only shows card names in the White Wolf Card List, and card
-names and card counts in other card set card lists.  You can select additional
-columns to display as part of the pane profile.
-
-The possible extra columns are:
-
-* _Clans and Creeds:_ Show the Clans or Creeds listed on the card.
-* _Group:_ Show the group number for the card.
-* _Disciplines and Virtues:_ Show the Disciplines or Virtues listed on the card.
-* _Card Type:_ Show the card type.
-* _Expansions:_ Show the expansions in which the card has been printed.
-* _Capacity or Life:_ Show the capacity associated with the card, or \
-its life.
-* _Sect_: Show the Sect associated with the card.
-* _Title_: Show the political titles listed on the card, if it is a crypt \
-card.  Titles listed on library cards will not be shown.
-* _Card Text_: Show the text printed on the card.
-* _Cost_: Show the cost of the card, together with the cost type.
-
-You can sort the display by a particular column by clicking on the column
-header. Click on the same header repeatedly to toggle between ascending and
-descending order.
-
-Cards which have equal values within the column selected for sorting are further
-sorted by the card name. Because the different cost types aren't comparable, if
-you choose to sort by cost, cards will be grouped by cost type first and sorted
-within those types.
-
-If you have downloaded the icons from the White Wolf site, you will be able to
-toggle the display between the _Show Icons and Names_, _Show Text only_ and
-_Show Icons only_ options using the combo box. This setting will
-affect all selected columns that can use icons.
+:text:4:card_sets:profile
 
 h3(#cardset_profile). Card Set Profile Options
 
@@ -1202,8 +964,7 @@ in this card set.
 * _Column mode_: This controls how information in the extra columns is \
 displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
-* _Extra columns_: Select which extra columns of data are shown. See the \
-"Extra Columns (card sets)":#columns section for more details.
+:list:1:card_sets:profile
 * _Extra levels_: Specify what additional information is displayed below the \
 card names in the tree. The options are:
 ** _Show No Children_: Display nothing below the card name.
@@ -1261,22 +1022,6 @@ h3(#cs_profile). CardSet List Profile Options
 
 The following options can be set for the card set list profile
 
-* _Extra columns_: Select which extra columns of data are shown. See the \
-"Extra Columns (card set list)":#cs_columns section for more details.
+:list:1:card_set_list:profile
 
-h4(#cs_columns). Extra Columns (card set list)
-
-Only card set names are shown in the card set list by default as well.  You can
-select additional columns to display as part of the card set list profile.
-
-The possible extra columns are:
-
-* _Author_: Show the card set author.
-* _Description_: Show the card set description.
-* _Total cards_: Show the total number of cards in the card set.
-* _Crypt_: Show the number of crypt cards in the card set.
-* _Library_: Show the number of library cards in the card set.
-* _All Children_: Show the number of child card sets each card set has
-* _In-Use Children_: Show the number of child card sets marked as in use.
-
-The display can be sorted on these columns by clicking on the column headers.
+:text:4:card_set_list:profile

@@ -97,12 +97,14 @@ class BaseConfigFile(object):
         fConfigSpec = pkg_resources.resource_stream(__name__,
                                                     "baseconfigspec.ini")
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
-                                file_error=True, list_values=False)
+                                file_error=True, list_values=False,
+                                encoding='utf8')
 
         fAppConfigSpec = self._get_app_configspec_file()
         if fAppConfigSpec:
             oAppConfigSpec = ConfigObj(fAppConfigSpec, raise_errors=True,
-                                       file_error=True, list_values=False)
+                                       file_error=True, list_values=False,
+                                       encoding='utf8')
             # Merge overrides from the application
             oConfigSpec.merge(oAppConfigSpec)
 
@@ -133,7 +135,8 @@ class BaseConfigFile(object):
 
         self._oConfigSpec = oConfigSpec
         self._oConfig = ConfigObj(self._sFileName, configspec=oConfigSpec,
-                                  indent_type='    ')
+                                  indent_type='    ',
+                                  encoding='utf8')
         # We do this before validation, so validation will flag errors
         # for us
         self.update_filter_list()
