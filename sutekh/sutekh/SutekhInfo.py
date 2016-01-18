@@ -111,10 +111,13 @@ class SutekhInfo(object):
                 'General Public License (LGPL)',
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 3'),
-        'PyProtocols': (
-            'License :: OSI Approved :: Zope Public License',
-            'http://www.zope.org/Resources/ZPL',
-            'Version 2.1'),
+        'singledispath': (
+            # While the functools.singledispatch part of the
+            # python 3 is under the Python license, the
+            # python 2 backport is relicensed to MIT
+            'License :: OSI Approved :: MIT License',
+            'https://bitbucket.org/ambv/singledispatch',
+            'MIT License'),
         'ply': (
             # Note: ply changes to BSD license in version 3.2
             'License :: OSI Approved :: GNU Library or Lesser '
