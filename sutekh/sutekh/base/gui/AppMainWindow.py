@@ -310,7 +310,7 @@ class AppMainWindow(MultiPaneWindow):
                 if bDoReloadPCS:
                     self.reload_pcs_list()
                 return oPane
-            except RuntimeError, oExp:
+            except RuntimeError as oExp:
                 do_exception_complaint("Unable to open Card Set %s\n"
                                        "Error: %s" % (sName, oExp))
         return None

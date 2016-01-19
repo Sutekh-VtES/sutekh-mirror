@@ -89,7 +89,7 @@ class BaseGuiDBManager(object):
                 try:
                     self._read_data(aFiles, oProgressDialog)
                     oProgressDialog.destroy()
-                except IOError, oErr:
+                except IOError as oErr:
                     do_exception_complaint("Failed to read cardlists.\n\n%s\n"
                                            "Aborting import." % oErr)
                     oProgressDialog.destroy()
@@ -128,7 +128,7 @@ class BaseGuiDBManager(object):
             # we do want to catch all exceptions here
             try:
                 self.save_backup(sBackupFile, oProgressDialog)
-            except Exception, oErr:
+            except Exception as oErr:
                 do_exception_complaint("Failed to write backup.\n\n%s\n"
                                        "Not touching the database further."
                                        % oErr)
@@ -141,7 +141,7 @@ class BaseGuiDBManager(object):
         sqlhub.processConnection = oTempConn
         try:
             self._read_data(aFiles, oProgressDialog)
-        except IOError, oErr:
+        except IOError as oErr:
             # Failed to read one of the card lists, so clean up and abort
             do_exception_complaint("Failed to read cardlists.\n\n%s\n"
                                    "Aborting import." % oErr)
@@ -233,7 +233,7 @@ class BaseGuiDBManager(object):
                 sMesg = "Unable to create memory copy!\nUpgrade Failed."
                 logging.warn('\n'.join([sMesg] + aMessages))
                 do_complaint_error_details(sMesg, "\n".join(aMessages))
-        except UnknownVersion, oErr:
+        except UnknownVersion as oErr:
             oProgressDialog.destroy()
             do_exception_complaint("Upgrade Failed. %s" % oErr)
         return False

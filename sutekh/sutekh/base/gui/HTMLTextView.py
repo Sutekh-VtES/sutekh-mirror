@@ -736,7 +736,7 @@ class HTMLViewDialog(SutekhDialog):
             # we really do want all the exceptions
             try:
                 fInput = self._fLinkLoader(sFile)
-            except Exception, _oExp:
+            except Exception as _oExp:
                 sError = self._sError % {'missing': sUrl}
                 fInput = StringIO(sError)
                 sPos = None

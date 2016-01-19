@@ -40,12 +40,12 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
         oReq.add_data(sData)
     try:
         return urllib2.urlopen(oReq)
-    except urllib2.URLError, oExp:
+    except urllib2.URLError as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
         else:
             raise
-    except socket.timeout, oExp:
+    except socket.timeout as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
         else:
@@ -96,13 +96,13 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
                 sData = None
             else:
                 sData = oFile.read()
-    except urllib2.URLError, oExp:
+    except urllib2.URLError as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
             sData = None
         else:
             raise
-    except socket.timeout, oExp:
+    except socket.timeout as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
             sData = None

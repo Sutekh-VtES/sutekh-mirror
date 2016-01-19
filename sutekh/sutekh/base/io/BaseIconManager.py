@@ -54,7 +54,7 @@ class BaseIconManager(object):
             fOut = open(sFullFilename, 'wb')
             fOut.write(oUrl.read())
             fOut.close()
-        except HTTPError, oErr:
+        except HTTPError as oErr:
             print 'Unable to download %s: Error %s' % (sUrl, oErr)
         oLogger.info('Processed %s' % sFileName)
 

@@ -117,5 +117,5 @@ class ARDBXMLInvParser(object):
         try:
             for sLine in fIn:
                 oParser.feed(sLine)
-        except ParseError, oExp:
+        except ParseError as oExp:
             raise IOError('Not an XML file: %s' % oExp)

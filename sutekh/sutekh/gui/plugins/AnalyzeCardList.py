@@ -79,7 +79,7 @@ def _load_odd_backs():
         ODD_BACKS.add(oThirdEd)
         ODD_BACKS.add(oJyhad)
         ODD_BACKS.add(None)
-    except SQLObjectNotFound, oExcDetails:
+    except SQLObjectNotFound as oExcDetails:
         # log exception at same level as plugin errors (verbose)
         logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
 
