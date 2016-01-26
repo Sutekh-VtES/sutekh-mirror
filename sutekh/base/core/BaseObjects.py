@@ -36,7 +36,7 @@ def passthrough(oObj):
     return oObj
 
 
-# Base adapters 
+# Base adapters
 
 @singledispatch
 def IAbstractCard(oUnknown):
@@ -96,6 +96,7 @@ def IRuling(oUnknown):
 def IArtist(oUnknown):
     """The base for artist adaption"""
     fail_adapt(oUnknown, 'Artist')
+
 
 @singledispatch
 def IKeyword(oUnknown):
@@ -536,6 +537,7 @@ IRarityPair.register(tuple, RarityPairAdapter.lookup)
 
 IAbstractCard.register(AbstractCard, passthrough)
 
+
 @IAbstractCard.register(basestring)
 def abstract_card_from_string(sName):
     # pylint: disable=E1101
@@ -573,6 +575,7 @@ def keyword_from_string(sKeyword):
 
 
 IArtist.register(Keyword, passthrough)
+
 
 @IArtist.register(basestring)
 def artist_from_string(sArtistName):

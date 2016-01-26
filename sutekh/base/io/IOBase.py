@@ -87,7 +87,7 @@ class BaseXMLParser(object):
         """Read the XML tree from the file-like object fIn"""
         try:
             self._oTree = parse(fIn)
-        except ParseError, oExp:
+        except ParseError as oExp:
             raise IOError('Not an XML file: %s' % oExp)
         self._convert_tree(oHolder)
 

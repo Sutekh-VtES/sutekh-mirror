@@ -204,7 +204,7 @@ def write_cs_to_file(oCardSet, oWriter, sFileName):
         # The user has OK'd us overwriting everything
         fOut = open(sFileName, 'w')
         oWriter.write(fOut, CardSetWrapper(oCardSet))
-    except Exception, oExp:
+    except Exception as oExp:
         sMsg = ("Writing the card set failed with the following error:\n"
                 "%s\nAborting" % oExp)
         do_exception_complaint(sMsg)
@@ -242,7 +242,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     # we really do want all the exceptions
     try:
         oParser.parse(fIn, oHolder)
-    except Exception, oExp:
+    except Exception as oExp:
         sMsg = ("Reading the card set failed with the following error:\n"
                 "%s\n The file is probably not in the format the Parser"
                 " expects.\nAborting" % oExp)
@@ -288,12 +288,12 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
                     " import:\n%s" % "\n".join(aWarnings))
             logging.warn(sMsg)
             do_complaint(sMsg, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
-    except RuntimeError, oExp:
+    except RuntimeError as oExp:
         sMsg = ("Creating the card set failed with the following error:\n"
                 "%s\nAborting" % oExp)
         do_exception_complaint(sMsg)
         return
-    except LookupFailed, oExp:
+    except LookupFailed as oExp:
         return
 
     if oMainWindow.find_cs_pane_by_set_name(oHolder.name):

@@ -292,7 +292,7 @@ class BaseZipImport(BasePlugin):
                     # Already open, so update to changes
                     update_open_card_sets(self.parent, oCardSetHolder.name)
                 self._reload_pcs_list()
-            except Exception, oException:
+            except Exception as oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
                                                                 oException)
                 do_exception_complaint(sMsg)

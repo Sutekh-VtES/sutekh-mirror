@@ -115,7 +115,7 @@ class BaseBackup(BasePlugin):
             # pylint: enable=E1102
             oFile.do_dump_all_to_zip(oLogHandler)
             oProgressDialog.destroy()
-        except Exception, oException:
+        except Exception as oException:
             oProgressDialog.destroy()
             sMsg = "Failed to write backup.\n\n%s" % oException
             do_exception_complaint(sMsg)
@@ -174,7 +174,7 @@ class BaseBackup(BasePlugin):
                 self.parent.restore_editable_panes(aEditable)
             # pylint: disable=W0703
             # we really do want all the exceptions
-            except Exception, oException:
+            except Exception as oException:
                 # Undo effects of prepare for
                 self.parent.update_to_new_db()
                 oProgressDialog.destroy()

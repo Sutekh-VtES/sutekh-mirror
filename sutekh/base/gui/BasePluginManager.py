@@ -75,7 +75,7 @@ class BasePluginManager(object):
             try:
                 mPlugin = __import__("%s.%s" % (self.sPluginDir, sPluginName),
                                      None, None, [aPlugins])
-            except ImportError, oExp:
+            except ImportError as oExp:
                 logging.warn("Failed to load plugin %s (%s).",
                              sPluginName, oExp, exc_info=1)
                 continue
@@ -83,7 +83,7 @@ class BasePluginManager(object):
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
-            except AttributeError, oExp:
+            except AttributeError as oExp:
                 logging.warn("Plugin module %s appears not to contain a"
                              " plugin (%s).", sPluginName, oExp, exc_info=1)
                 continue

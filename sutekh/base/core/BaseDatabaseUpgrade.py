@@ -434,7 +434,7 @@ class BaseDBUpgradeManager(object):
         try:
             if not self.check_can_read_old_database(oOrigConn):
                 return (False, ["Unable to read database"])
-        except UnknownVersion, oExp:
+        except UnknownVersion as oExp:
             raise oExp
         oLogger = Logger('read Old DB')
         if oLogHandler:
@@ -455,7 +455,7 @@ class BaseDBUpgradeManager(object):
                                                 oLogger, oVer)
                 else:
                     (bOK, aNewMessages) = fCopy(oOrigConn, oTrans, oVer)
-            except SQLObjectNotFound, oExp:
+            except SQLObjectNotFound as oExp:
                 bOK = False
                 aNewMessages = ['Unable to copy %s: Error %s' % (sName, oExp)]
             else:
@@ -500,7 +500,7 @@ class BaseDBUpgradeManager(object):
                         fCopy(oOrigConn, oTrans, oLogger)
                     else:
                         fCopy(oOrigConn, oTrans)
-            except SQLObjectNotFound, oExp:
+            except SQLObjectNotFound as oExp:
                 bRes = False
                 aMessages.append('Unable to copy %s: Aborting with error: %s'
                                  % (sName, oExp))

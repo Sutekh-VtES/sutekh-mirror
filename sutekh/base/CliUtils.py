@@ -92,7 +92,7 @@ def do_print_card(sCardName, fPrintCard, sEncoding):
         # E1103: PyProtocols magic confuses pylint
         try:
             oCard = IAbstractCard(sCardName)
-        except UnicodeDecodeError, oErr:
+        except UnicodeDecodeError as oErr:
             if sEncoding != 'ascii':
                 # Are there better choices than --print-encoding?
                 oCard = IAbstractCard(sCardName.decode(sEncoding))

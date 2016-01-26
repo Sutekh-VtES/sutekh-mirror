@@ -61,6 +61,6 @@ class CSVParser(object):
         for aRow in oIter:
             try:
                 self._process_row(aRow)
-            except ValueError, oExp:
+            except ValueError as oExp:
                 raise ValueError("Line %d in CSV file could not be parsed"
                                  " (%s)" % (oCsvFile.line_num, oExp))

@@ -58,7 +58,7 @@ def save_config(oConfig):
     """Handle writing the config file and complaining if it fails."""
     try:
         oConfig.write()
-    except IOError, oExp:
+    except IOError as oExp:
         sMesg = ('Unable to write the configuration file\n'
                  'Error was: %s' % oExp)
         do_exception_complaint(sMesg)

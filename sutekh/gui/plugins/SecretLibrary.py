@@ -224,7 +224,7 @@ class SecretLibrary(SutekhPlugin):
     def __init__(self, oCardListView, oCardListModel, cModelType):
         try:
             self.oIllegal = IKeyword('not for legal play')
-        except SQLObjectNotFound, oExcDetails:
+        except SQLObjectNotFound as oExcDetails:
             logging.warn("Illegal keyword missing (%s).", oExcDetails,
                          exc_info=1)
             self.oIllegal = None
