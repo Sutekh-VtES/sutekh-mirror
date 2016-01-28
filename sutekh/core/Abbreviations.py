@@ -178,6 +178,7 @@ class Expansions(AbbreviationLookup):
     dKeys = {
         # Ordinary expansions
         'Anarchs': [],
+        'Anarchs Unbound': ['AU'],
         'Ancient Hearts': ['AH'],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work

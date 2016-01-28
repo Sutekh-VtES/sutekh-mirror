@@ -1,3 +1,7 @@
+28 Jan 2016
+ * Backport support for the 'Anarchs Unbound' expansion.
+   - Fix parser to detect the anarch keyword correctly for the new cards.
+
 18 Jan 2016
  * Backport fix to make title parsing code more robust against case variations
  * Backport fix for bug when creating a card set after comparings sets ignoring

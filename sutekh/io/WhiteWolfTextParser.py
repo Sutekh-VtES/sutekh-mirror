@@ -144,7 +144,8 @@ class CardDict(dict):
             'seraph': re.compile('Sabbat\. Black Hand(\.)? Seraph'),
             'infernal': re.compile('[.:] Infernal\.'),
             'red list': re.compile('\. Red List:'),
-            'anarch': re.compile('\. Anarch:|\. Anarch Baron'),
+            'anarch': re.compile('\. Anarch:|\. Anarch Baron|'
+                                 'Independent anarch[:\.]'),
             'scarce': re.compile('[.:] Scarce.'),
             'sterile': re.compile('[.:] Sterile.'),
             # Need the } to handle some of the errata'd cards
