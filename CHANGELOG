@@ -1,3 +1,16 @@
+28 Jan 2016
+ * Add support for the 'Anarchs Unbound' expansion.
+   - Fix parser to detect the anarch keyword correctly for the new cards.
+   - Update card images plugin to fetch images from correct location.
+   - Update the merged vampire plugin to account for the new crypt cards.
+
+19 Jan 2016
+ * Standardise on the modern try..except syntax
+
+18 Jan 2016
+ * Update license information to account for the pyprotocols / singledispatch
+   change
+
 15 Jan 2016
  * Replaced PyProtocols-based adapters with singledispatch-base
    adapter
