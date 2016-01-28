@@ -136,8 +136,17 @@ class FakeCard(object):
             self.text = self.text.replace(
                 '{NOT FOR LEGAL PLAY} +1 bleed. +1 stealth.',
                 '+1 bleed. +1 stealth. {NOT FOR LEGAL PLAY}')
+        elif self.name == 'Appolonius (Merged)':
+            self.title = [ITitle('Baron')]
+            self.text = self.text.replace(
+                'Baron of London', 'Independent anarch Baron of London')
         elif self.name == 'Batsheva (Merged)':
             self.keywords.append(IKeyword('2 strength'))
+        elif self.name == 'Boss Callihan (Merged)':
+            self.title = [ITitle('Baron')]
+            self.text = self.text.replace('. Baron of New York.', '.')
+            self.text = self.text.replace(
+                'Independent anarch:', 'Independent anarch Baron of New York:')
         elif self.name == 'Brunhilde (EC 2013) (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Anarch Baron of Stockholm', '.')
@@ -153,6 +162,12 @@ class FakeCard(object):
         elif self.name == 'Count Germaine (Merged)':
             self.text = 'Independent. ' + self.text
             self.keywords.append(IKeyword('anarch'))
+        elif self.name == 'Danielle Diron (Merged)':
+            self.title = [ITitle('Baron')]
+            self.text = self.text.replace('. Baron of Berlin.', '.')
+            self.text = self.text.replace(' Danielle has 1 vote (titled).', '')
+            self.text = self.text.replace(
+                'Independent anarch:', 'Independent anarch Baron of Berlin:')
         elif self.name == 'Dominique (Merged)':
             self.text = self.text.replace(
                 '. Independent Anarch Baron of Paris.', '')
@@ -175,6 +190,14 @@ class FakeCard(object):
             # remove duplicate restriction
             self.text = self.text.replace(' Ferox cannot commit diablerie.',
                                           '')
+        elif self.name == 'Gengis (Merged)':
+            self.discipline.remove(IDisciplinePair(('Auspex', 'inferior')))
+            self.discipline.append(IDisciplinePair(('Auspex', 'superior')))
+            self.discipline.remove(IDisciplinePair(('Celerity', 'inferior')))
+            self.discipline.append(IDisciplinePair(('Celerity', 'superior')))
+            self.text = self.text.replace(
+                '. Gengis gets +1 level of Auspex [aus] and Celerity [cel].',
+                '')
         elif self.name == 'Helena (Merged)':
             # Fix disciplines
             self.discipline.remove(IDisciplinePair(('Daimoinon', 'inferior')))
@@ -187,6 +210,11 @@ class FakeCard(object):
         elif self.name == 'Ivan Krenyenko (Merged)':
             self.text = self.text.replace('. +1 strength.', '. +2 strength')
             self.keywords.append(IKeyword('3 strength'))
+        elif self.name == 'Javier Montoya (Merged)':
+            self.title = [ITitle('Baron')]
+            self.text = self.text.replace('. Baron of Barcelona.', '.')
+            self.text = self.text.replace(
+                'Independent anarch:', 'Independent anarch Baron of Barcelona:')
         elif self.name == 'Jeremy MacNeil (Merged)':
             self.text = self.text.replace(' Anarch Baron of Los Angeles.', '')
             self.text = self.text.replace(
@@ -210,11 +238,24 @@ class FakeCard(object):
             self.text = self.text.replace(' Lambach has 2 votes (titled).', '')
             self.text = self.text.replace(
                 'Independent:', 'Independent. Lambach has 2 votes ((titled).')
+        elif self.name == 'Louis Fortier (Merged)':
+            self.discipline.remove(IDisciplinePair(('Dominate', 'inferior')))
+            self.discipline.append(IDisciplinePair(('Dominate', 'superior')))
+            self.discipline.remove(IDisciplinePair(('Presence', 'inferior')))
+            self.discipline.append(IDisciplinePair(('Presence', 'superior')))
+            self.text = self.text.replace(
+                ': Louis gets +1 level of Dominate [dom] and Presence [pre].',
+                '')
         elif self.name == 'Lucita (Merged)':
             self.title = [ITitle('Archbishop')]
             self.text = self.text.replace(' Archbishop of Aragon.', '')
             self.text = self.text.replace('Sabbat:',
                                           'Sabbat Archbishop of Aragon:')
+        elif self.name == 'Maldavis (Merged)':
+            self.title = [ITitle('Baron')]
+            self.text = self.text.replace('. Baron of Chicago.', '')
+            self.text = self.text.replace(
+                'Independent anarch:', 'Independent Anarch Baron of Chicago:')
         elif self.name == 'Maria Stone (Merged)':
             self.discipline.remove(IDisciplinePair(('Spiritus', 'inferior')))
             self.discipline.append(IDisciplinePair(('Spiritus', 'superior')))

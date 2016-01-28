@@ -23,7 +23,7 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
 
 
 # We try lackeyccg for images from these sets
-LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu', 'promo')
+LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu', 'promo', 'au')
 
 
 class CardImageFrame(BaseImageFrame):
