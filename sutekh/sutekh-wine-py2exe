@@ -38,12 +38,18 @@ fi
 # pygtk all in one installer places GTK under PythonX/Lib/site-packages/gtk-2.0/runtime/
 # so a symlink is required in that case.
 
+# Later debian packages don't link winepath as it's own command
+WINEPATH=`which winepath`
+if [ "x$WINEPATH" = "x" ]; then
+   WINEPATH="wine winepath.exe"
+fi
+
 WINE_WIN_PYTHON=`wine python -u -c "import os, sys; print os.path.dirname(sys.executable)"`
 WINE_WIN_SYS32="C:/windows/system32"
 WINE_WIN_GTK="C:/GTK"
-WINE_PYTHON=`winepath "${WINE_WIN_PYTHON}"`
-WINE_SYS32=`winepath "${WINE_WIN_SYS32}"`
-WINE_GTK=`winepath "${WINE_WIN_GTK}"`
+WINE_PYTHON=`${WINEPATH} "${WINE_WIN_PYTHON}"`
+WINE_SYS32=`${WINEPATH} "${WINE_WIN_SYS32}"`
+WINE_GTK=`${WINEPATH} "${WINE_WIN_GTK}"`
 PY_DLL=`wine python -u -c "import sys; print 'python%d%d.dll' % (sys.version_info[0], sys.version_info[1])"`
 
 # Sanitize build environment
