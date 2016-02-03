@@ -1,3 +1,9 @@
+03 Feb 2016
+ * Backport deb build tweak from trunk.
+
+31 Jan 2016
+ * Backport windows build fix from trunk.
+
 28 Jan 2016
  * Backport support for the 'Anarchs Unbound' expansion.
    - Fix parser to detect the anarch keyword correctly for the new cards.
