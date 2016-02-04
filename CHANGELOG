@@ -1,4 +1,8 @@
 03 Feb 2016
+ * Fix a bug where images would only be downloaded if using different images for
+   each expansion.
+
+03 Feb 2016
  * Add support for wily to deb build script.
 
 31 Jan 2016

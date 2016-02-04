@@ -223,7 +223,7 @@ class BaseImageFrame(BasicFrame):
 
     def _convert_expansion(self, sExpansionName):
         """Convert the Full Expansion name into the abbreviation needed."""
-        raise NotImplementedError("Implement _convert_expansions")
+        raise NotImplementedError("Implement _convert_expansion")
 
     def _set_expansion_info(self, sCardName):
         """Set the expansion info."""
@@ -265,7 +265,10 @@ class BaseImageFrame(BasicFrame):
 
     def _convert_cardname_to_path(self):
         """Convert sCardName to the form used by the card image list"""
-        sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
+        if not self._bShowExpansions:
+            sCurExpansionPath = ''
+        else:
+            sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
         aFilenames = self._norm_cardname()
         aFullFileNames = []
         for sFilename in aFilenames:

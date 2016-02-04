@@ -55,7 +55,7 @@ class CardImageFrame(BaseImageFrame):
 
     def _convert_expansion(self, sExpansionName):
         """Convert the Full Expansion name into the abbreviation needed."""
-        if sExpansionName == '' or not self._bShowExpansions:
+        if sExpansionName == '':
             return ''
         # pylint: disable=E1101
         # pylint doesn't pick up IExpansion methods correctly
