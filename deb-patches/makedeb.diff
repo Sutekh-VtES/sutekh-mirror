@@ -6,8 +6,8 @@ Index: stdeb.cfg
  [Sutekh]
  # The librsvg2-common dependency is to ensure that the gdk-pixbuf loader for
  # SVG images is installed
--Depends: librsvg2-common, python-gtk2, python-configobj, python-ply, python-protocols, python-keyring
-+Depends: librsvg2-common, python-gtk2, python-sqlobject, python-configobj, python-ply, python-protocols, python-keyring
+-Depends: librsvg2-common, python-gtk2, python-configobj, python-ply, python-singledispatch, python-keyring
++Depends: librsvg2-common, python-gtk2, python-sqlobject, python-configobj, python-ply, python-singledispatch, python-keyring
  Copyright-File: COPYRIGHT
 Index: sutekh/SutekhInfo.py
 ===================================================================
@@ -19,6 +19,6 @@ Index: sutekh/SutekhInfo.py
      INSTALL_REQUIRES = [
 -        'SQLObject >= 0.9.0, < 1.7',  # fetching the dev version requires svn
 -                           # (which is a bit crazy as an install requirement)
-         'PyProtocols',
+         'singledispatch',
          'ply',
          'configobj',
