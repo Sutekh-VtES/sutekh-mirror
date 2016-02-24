@@ -9,9 +9,10 @@
 """Base classes and constants for configuation management."""
 
 from configobj import ConfigObj, flatten_errors
-from validate import Validator, is_option, is_list
+from validate import Validator, is_option, is_list, VdtTypeError
 from .MessageBus import MessageBus, CONFIG_MSG
 import pkg_resources
+import datetime
 
 # Type definitions
 CARDSET = 'Card Set'
@@ -26,6 +27,15 @@ DEF_PROFILE_FILTER = 'No profile filter'
 def is_option_list(sValue, *aOptions):
     """Validator function for option_list configspec type."""
     return [is_option(sMem, *aOptions) for sMem in is_list(sValue)]
+
+
+def is_date_format(sValue):
+    """Validator function to check for date format."""
+    try:
+        oDate = datetime.datetime.strptime(sValue, '%Y-%m-%d').date()
+    except ValueError:
+        raise VdtTypeError(sValue)
+    return oDate
 
 
 class BaseConfigFile(object):
@@ -45,6 +55,7 @@ class BaseConfigFile(object):
 
     dCustomConfigTypes = {
         'option_list': is_option_list,
+        'date': is_date_format,
     }
 
     # Subclasses should specify the correct thing here
@@ -797,3 +808,12 @@ class BaseConfigFile(object):
     def get_socket_timeout(self):
         """Get the timeout config value"""
         return self._oConfig['main']['socket timeout']
+
+    def get_last_update_date(self):
+        """Get the last update date as a date object."""
+        return self._oConfig['main']['last cardlist update']
+
+    def set_last_update_date(self, oDate):
+        """Set the last update date."""
+        sDate = oDate.strftime('%Y-%m-%d')
+        self._oConfig['main']['last cardlist update'] = sDate
