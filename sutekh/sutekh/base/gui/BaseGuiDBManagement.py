@@ -7,6 +7,7 @@
 
 import gtk
 import logging
+import datetime
 from sqlobject import sqlhub, connectionForURI
 from .DBUpgradeDialog import DBUpgradeDialog
 from .ProgressDialog import (ProgressDialog,
@@ -112,7 +113,7 @@ class BaseGuiDBManager(object):
         oFile.do_dump_all_to_zip(oLogHandler)
         oProgressDialog.set_complete()
 
-    def refresh_card_list(self):
+    def refresh_card_list(self, oUpdateDate=None):
         """Handle grunt work of refreshing the card lists"""
         # pylint: disable=R0914
         # We're juggling lots of different bits of state, so we use a lot
@@ -185,6 +186,13 @@ class BaseGuiDBManager(object):
         # to ensure we handle the caches correctly
         self._oWin.update_to_new_db()
         self._oWin.restore_editable_panes(aEditable)
+        # Set the last update date
+        if not oUpdateDate:
+            # No date given, so set the last update date to today
+            oUpdateDate = datetime.date.today()
+        # XXX: This currently relies on the config being saved on
+        # exit. Should we try commit this to file immediately?
+        self._oWin.config_file.set_last_update_date(oUpdateDate)
         return True
 
     def do_db_upgrade(self, aLowerTables, aHigherTables):
