@@ -815,5 +815,6 @@ class BaseConfigFile(object):
 
     def set_last_update_date(self, oDate):
         """Set the last update date."""
-        sDate = oDate.strftime('%Y-%m-%d')
-        self._oConfig['main']['last cardlist update'] = sDate
+        # str(oDate) will call oDate.isoformat(), so this will
+        # serialise to the format we expect.
+        self._oConfig['main']['last cardlist update'] = oDate
