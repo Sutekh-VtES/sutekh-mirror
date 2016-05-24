@@ -41,6 +41,16 @@ def write_string(oWriter, oPCSet):
     return oString
 
 
+class ZipEntryProxy(StringIO, object):
+    """A proxy that provides a suitable open method so
+       these can be passed to the card reading routines."""
+
+    def open(self):
+        """Reset to the start of the file."""
+        self.seek(0)
+        return self
+
+
 class BaseZipFileWrapper(object):
     """The zip file wrapper.
 
