@@ -69,12 +69,12 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses will implement this
         raise NotImplementedError
 
-    def do_refresh_card_list(self):
+    def do_refresh_card_list(self, oUpdateDate=None, aFiles=None):
         """Handle reloading the card list via the database manager object."""
         # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
-        oDBManager.refresh_card_list()
+        oDBManager.refresh_card_list(oUpdateDate, aFiles)
 
     # pylint: disable=W0201
     # We define attributes here, since this is called after database checks

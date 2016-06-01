@@ -8,9 +8,16 @@
 
 import gtk
 import logging
+import datetime
+import zipfile
+from StringIO import StringIO
 from sqlobject import SQLObjectNotFound
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.WwUrls import WW_CARDLIST_DATAPACK
+from sutekh.io.DataPack import find_all_data_packs
+from sutekh.base.io.UrlOps import urlopen_with_timeout, HashError
+from sutekh.base.io.BaseZipFileWrapper import ZipEntryProxy
 from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.gui.AboutDialog import SutekhAboutDialog
@@ -20,8 +27,11 @@ from sutekh.gui.GuiDBManagement import GuiDBManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.base.gui.SutekhDialog import do_complaint
+from sutekh.base.gui.SutekhDialog import do_complaint, do_complaint_error
 from sutekh.base.gui.AppMainWindow import AppMainWindow
+from sutekh.base.gui.GuiUtils import save_config
+from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
+from sutekh.base.gui.UpdateDialog import UpdateDialog
 
 
 class SutekhMainWindow(AppMainWindow):
@@ -74,6 +84,8 @@ class SutekhMainWindow(AppMainWindow):
 
         self._do_app_setup(oConfig, oCardTextPane, oIconManager,
                            oPluginManager)
+        # Check for updated card list
+        self.check_updated_cardlist()
 
     def _create_app_menu(self):
         """Create the main application menu."""
@@ -114,3 +126,53 @@ class SutekhMainWindow(AppMainWindow):
     def show_manual(self):
         """Show the HTML Manual"""
         self._do_html_dialog("Manual.html")
+
+    def check_updated_cardlist(self):
+        """Check if an updated cardlist is available"""
+        aUrls, aDates, aHashes = find_all_data_packs(
+            WW_CARDLIST_DATAPACK, fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # probable timeout, so bail
+            return
+        oCLDate = datetime.datetime.strptime(aDates[0], '%Y-%m-%d').date()
+        oLastDate = self.config_file.get_last_update_date()
+        if oLastDate < oCLDate:
+            # There has been a cardlist update, so query the user
+            oDlg = UpdateDialog(["CardList and Rulings"])
+            iResponse = oDlg.run()
+            oDlg.destroy()
+            if iResponse != gtk.RESPONSE_OK:
+                return
+            # Get the datapack and unzip the files
+            oFile = urlopen_with_timeout(aUrls[0],
+                                         fErrorHandler=gui_error_handler)
+            try:
+                sData = progress_fetch_data(oFile, sHash=aHashes[0],
+                                            sDesc="Downloading datapack")
+            except HashError:
+                do_complaint_error("Checksum failed for cardlist.\n"
+                                   "Aborting update")
+                return
+            # Extract the individual files from the datapack
+            oZipFile = zipfile.ZipFile(StringIO(sData), 'r')
+            aNames = oZipFile.namelist()
+            aFiles = []
+            # Order required for GuiDBManagement
+            for sName in ['cardlist.txt', 'extra_list.txt',
+                          'expansiondates.csv', 'rulings.html']:
+                if sName not in aNames:
+                    do_complaint_error("Datapack is missing %s" % sName)
+                    return
+                oFile = ZipEntryProxy(oZipFile.read(sName))
+                if sName == 'extra_list.txt':
+                    aFiles.append(oFile)
+                else:
+                    aFiles.append([oFile])
+            # We set the updated date to the value from the datapack, rather
+            # than the current time, to protect against local clock issues
+            # making things wierd.
+            self.do_refresh_card_list(oCLDate, aFiles)
+            # Saving immediately to ensure we record the update seems
+            # the safest thing to do here, although it's different from
+            # how we usually treat the config file.
+            save_config(self.config_file)

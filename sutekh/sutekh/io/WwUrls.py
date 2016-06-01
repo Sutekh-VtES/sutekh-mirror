@@ -7,6 +7,8 @@
    """
 
 #WW_CARDLIST_URL = "http://www.vekn.net/images/stories/downloads/cardlist.txt"
+WW_CARDLIST_DATAPACK = "cardlist"
+
 WW_CARDLIST_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
                    "raw/tip/CardList/cardlist-data/cardlist.txt")
 

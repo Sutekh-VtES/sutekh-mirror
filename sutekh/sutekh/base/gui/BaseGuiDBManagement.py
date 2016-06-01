@@ -113,14 +113,20 @@ class BaseGuiDBManager(object):
         oFile.do_dump_all_to_zip(oLogHandler)
         oProgressDialog.set_complete()
 
-    def refresh_card_list(self, oUpdateDate=None):
+    def refresh_card_list(self, oUpdateDate=None, aFiles=None):
         """Handle grunt work of refreshing the card lists"""
         # pylint: disable=R0914
         # We're juggling lots of different bits of state, so we use a lot
         # of variables
         aEditable = self._oWin.get_editable_panes()
         dOldMap = get_cs_id_name_table()
-        aFiles, sBackupFile = self._get_names(False)
+        if not aFiles:
+            aFiles, sBackupFile = self._get_names(False)
+        else:
+            # XXX: Is this wise? We don't want to have the user
+            # click through dialog after dialog, but should
+            # we present this option anyway?
+            sBackupFile = None
         if not aFiles:
             return False  # Nothing happened
         oProgressDialog = ProgressDialog()
