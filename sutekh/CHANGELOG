@@ -1,3 +1,15 @@
+02 Jun 2016
+ * Change to using print_function everywhere (work towards eventual python3 support)
+
+01 Jun 2016
+ * Finish datapack support for card list updates
+
+22 May 2016
+ * Fix bug with the handling of the date in the config file
+
+26 April 2016
+ * Add support for saving the cardlist update date in the config file
+
 03 Feb 2016
  * Fix a bug where images would only be downloaded if using different images for
    each expansion.
