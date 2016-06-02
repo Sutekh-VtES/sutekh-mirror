@@ -84,8 +84,6 @@ class SutekhMainWindow(AppMainWindow):
 
         self._do_app_setup(oConfig, oCardTextPane, oIconManager,
                            oPluginManager)
-        # Check for updated card list
-        self.check_updated_cardlist()
 
     def _create_app_menu(self):
         """Create the main application menu."""
