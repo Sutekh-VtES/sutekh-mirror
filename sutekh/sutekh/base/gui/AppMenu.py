@@ -87,6 +87,16 @@ class AppMenu(SutekhMenu):
         """Add the File Preferences menu"""
         self._dMenus["File Preferences"] = oPrefsMenu
 
+        oCheckForUpdates = gtk.CheckMenuItem('Check for Cardlist updates'
+                                             ' on startup')
+        oCheckForUpdates.set_inconsistent(False)
+        if self._oConfig.get_check_for_updates():
+            oCheckForUpdates.set_active(True)
+        else:
+            oCheckForUpdates.set_active(False)
+        oCheckForUpdates.connect('activate', self.do_toggle_check_for_updates)
+        oPrefsMenu.add(oCheckForUpdates)
+
         oNameDisplay = gtk.CheckMenuItem(
             'Use "something ..., the" name display')
         oNameDisplay.set_inconsistent(False)
@@ -315,6 +325,11 @@ class AppMenu(SutekhMenu):
         bChoice = not self._oConfig.get_save_on_exit()
         self._oConfig.set_save_on_exit(bChoice)
         # gtk can handle the rest for us
+
+    def do_toggle_check_for_updates(self, _oWidget):
+        """Toggle the 'Check for Updates on startup' option"""
+        bChoice = not self._oConfig.get_check_for_updates()
+        self._oConfig.set_check_for_updates(bChoice)
 
     def do_toggle_save_precise_pos(self, _oWidget):
         """Toggle save precise pane positions option"""

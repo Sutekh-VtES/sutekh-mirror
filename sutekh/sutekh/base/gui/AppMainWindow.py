@@ -260,7 +260,6 @@ class AppMainWindow(MultiPaneWindow):
             if sMsg:
                 aMessages.append(sMsg)
                 aUpdatePlugins.append(oPlugin)
-        # FIXME: Check for cardlist updates as well
         if aMessages:
             # prompt the user
             oDialog = UpdateDialog(aMessages)
@@ -270,6 +269,10 @@ class AppMainWindow(MultiPaneWindow):
                 return
             for oPlugin in aUpdatePlugins:
                 oPlugin.do_update()
+
+        if self._oConfig.get_check_for_updates():
+            # Check for updated card list
+            self.check_updated_cardlist()
 
     # Pane manipulation functions
 
@@ -560,3 +563,9 @@ class AppMainWindow(MultiPaneWindow):
         for oPane in self.aClosedFrames:
             save_pane_to_config(iNum, oPane, self._oConfig, False, True, -1)
             iNum += 1
+
+    def check_updated_cardlist(self):
+        """Check for cardlist updates if supported."""
+        # Subclasses will implement this
+        raise NotImplementedError("Implement check_updated_cardlist")
+

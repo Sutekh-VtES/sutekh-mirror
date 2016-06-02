@@ -755,6 +755,14 @@ class BaseConfigFile(object):
         """Set the 'save on exit' option."""
         self._oConfig['main']['save on exit'] = bSaveOnExit
 
+    def get_check_for_updates(self):
+        """Query the 'check for updates on startup' option."""
+        return self._oConfig['main']['check for updates on startup']
+
+    def set_check_for_updates(self, bCheck):
+        """Query the 'check for updates on startup' option."""
+        self._oConfig['main']['check for updates on startup'] = bCheck
+
     def get_save_precise_pos(self):
         """Query the 'save pane sizes' option."""
         return self._oConfig['main']['save pane sizes']
