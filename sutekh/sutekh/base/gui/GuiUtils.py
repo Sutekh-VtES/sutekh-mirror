@@ -5,6 +5,8 @@
 # GPL - see COPYING for details
 """Various helpful functions that are generic enough to belong in base.gui"""
 
+from __future__ import print_function
+
 import os
 import gtk
 from .SutekhDialog import (do_complaint_error, do_exception_complaint,
@@ -15,7 +17,7 @@ def prepare_gui(sName):
     """Handle all the checks needed to ensure we can run the gui."""
     # Print nice complaint if not under a windowing system
     if gtk.gdk.screen_get_default() is None:
-        print "Unable to find windowing system. Aborting"
+        print("Unable to find windowing system. Aborting")
         return False
 
     # check minimum pygtk version

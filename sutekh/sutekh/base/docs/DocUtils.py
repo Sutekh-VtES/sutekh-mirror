@@ -7,6 +7,8 @@
 
 """Useful utilities for generating HTML documentation"""
 
+from __future__ import print_function
+
 import textile
 import os
 import glob
@@ -217,7 +219,7 @@ def _process_plugins(aLines, aPlugins):
                     dTags[sTag] = {':list:': [], ':numbered:': [],
                                    ':text:': []}
             else:
-                print "Unknown Tag type %s" % sLine
+                print("Unknown Tag type %s" % sLine)
     if dTags:
         # Only replace stuff if we have tags, otherwise silently skip all this
         for cPlugin in aPlugins:
@@ -226,8 +228,8 @@ def _process_plugins(aLines, aPlugins):
                 # No docs, so skip
                 continue
             if sPluginCat not in dTags:
-                print "%s has unrecognised plugin help category: %s" % (
-                    cPlugin, sPluginCat)
+                print("%s has unrecognised plugin help category: %s" % (
+                    cPlugin, sPluginCat))
                 continue
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
@@ -272,7 +274,7 @@ def _process_plugins(aLines, aPlugins):
                     # whitespace around non-empty lines matters.
                     aLines[iCnt] = ''
                     # XXX: Should there be a way to silence this?
-                    print 'Unused tag %s' % sTag
+                    print('Unused tag %s' % sTag)
     # This is a terrible idea, but works
     sText = ''.join(aLines)
     return sText.split('\n')
@@ -304,8 +306,8 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, aPlugins, fProcessText):
         if tidy is not None:
             aErrors = tidy.parse(sHtmlPath).get_errors()
             if aErrors:
-                print 'tidy reports the following errors for %s' % sHtmlPath
-                print '\n'.join([x.err for x in aErrors])
+                print('tidy reports the following errors for %s' % sHtmlPath)
+                print('\n'.join([x.err for x in aErrors]))
 
 
 def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
@@ -383,8 +385,8 @@ def make_filter_txt(sDir, aFilters):
                 try:
                     sInput, sRest = oFilter.helptext.split('\n', 1)
                 except ValueError:
-                    print 'Failed to extract filter details'
-                    print oFilter.keyword, oFilter.helptext
+                    print('Failed to extract filter details')
+                    print(oFilter.keyword, oFilter.helptext)
 
                 aOutput.append('*Parameters:* %s\n\n' % sInput)
                 aOutput.append(sRest)
@@ -403,16 +405,16 @@ def make_filter_txt(sDir, aFilters):
                 aOutput.append(sText)
                 aOutput.append('\n')
             else:
-                print 'Unrecognised Keyword in template %s: %s' % (sBasename,
-                                                                   sKeyword)
+                print('Unrecognised Keyword in template %s: %s' % (sBasename,
+                                                                   sKeyword))
 
         fTextile.write(''.join(aOutput))
 
     if 'Filter_Group' in dFilters:
         del dFilters['Filter_Group']
     if dFilters:
-        print 'The following filters have no entry in the templates.'
-        print dFilters.keys()
+        print('The following filters have no entry in the templates.')
+        print(dFilters.keys())
 
 
 def cleanup(sDir):
