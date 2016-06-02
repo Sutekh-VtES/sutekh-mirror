@@ -50,6 +50,8 @@ class ConfigSutekhTest(SutekhTest):
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
         self.oConfig.set_plugin_key('TWDAInfoPlugin', 'twda configured', 'No')
         self.oConfig.set_icon_path(self.sPluginDir)
+        # Disable checking for updates
+        self.oConfig.set_check_for_updates(False)
         # Needed so validate doesn't remove our settings later
         self.oConfig.check_writeable()  # Make sure we do write the config file
         self.oConfig.write()
