@@ -108,7 +108,7 @@ def main():
     if not oConn.tableExists('abstract_card') or \
             not oConn.tableExists('physical_map'):
         oDBManager = GuiDBManager(oMainWindow)
-        if not oDBManager.initialize_db():
+        if not oDBManager.initialize_db(oConfig):
             return 1
 
     aTables = [VersionTable] + TABLE_LIST

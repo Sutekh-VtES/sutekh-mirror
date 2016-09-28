@@ -18,6 +18,7 @@ from ..core.DBUtility import flush_cache
 from .SutekhDialog import (do_complaint_buttons, do_complaint,
                            do_complaint_warning, do_exception_complaint,
                            do_complaint_error_details)
+from .GuiUtils import save_config
 from ..core.BaseObjects import PhysicalCardSet
 from ..core.DBUtility import get_cs_id_name_table
 
@@ -74,8 +75,11 @@ class BaseGuiDBManager(object):
                 return False
         return True
 
-    def initialize_db(self):
-        """Initialise the database if it doesn't exist"""
+    def initialize_db(self, oConfig):
+        """Initialise the database if it doesn't exist."""
+        # The config file is passed in as a parameter becasuse this can be
+        # called before the window is setup completely, so we may not have
+        # access to the config file via the main window.
         iRes = do_complaint_buttons(
             "The database doesn't seem to be properly initialised",
             gtk.MESSAGE_ERROR,
@@ -99,6 +103,14 @@ class BaseGuiDBManager(object):
                 return False
         # Create the Physical Card Collection card set
         PhysicalCardSet(name='My Collection', parent=None)
+        # Set the update date to today, so we don't prompt the user immediately
+        # for a new update after we've started.
+        # This may introduce clock issues, but matches the behaviour for when
+        # the user manually refreshes the card list, rather than auto updating
+        oConfig.set_last_update_date(datetime.date.today())
+        # We have to save, since the re-validation after the plugins will reload
+        # the file
+        save_config(oConfig)
         return True
 
     def save_backup(self, sBackupFile, oProgressDialog):
@@ -196,9 +208,11 @@ class BaseGuiDBManager(object):
         if not oUpdateDate:
             # No date given, so set the last update date to today
             oUpdateDate = datetime.date.today()
-        # XXX: This currently relies on the config being saved on
-        # exit. Should we try commit this to file immediately?
         self._oWin.config_file.set_last_update_date(oUpdateDate)
+        # Saving immediately to ensure we record the update seems
+        # the safest thing to do here, although it's different from
+        # how we usually treat the config file.
+        save_config(self._oWin.config_file)
         return True
 
     def do_db_upgrade(self, aLowerTables, aHigherTables):

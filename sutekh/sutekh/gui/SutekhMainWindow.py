@@ -29,7 +29,6 @@ from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.CardTextFrame import CardTextFrame
 from sutekh.base.gui.SutekhDialog import do_complaint, do_complaint_error
 from sutekh.base.gui.AppMainWindow import AppMainWindow
-from sutekh.base.gui.GuiUtils import save_config
 from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.UpdateDialog import UpdateDialog
 
@@ -170,7 +169,3 @@ class SutekhMainWindow(AppMainWindow):
             # than the current time, to protect against local clock issues
             # making things wierd.
             self.do_refresh_card_list(oCLDate, aFiles)
-            # Saving immediately to ensure we record the update seems
-            # the safest thing to do here, although it's different from
-            # how we usually treat the config file.
-            save_config(self.config_file)
