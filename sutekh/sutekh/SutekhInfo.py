@@ -51,8 +51,8 @@ class SutekhInfo(object):
         PEOPLE['Adrianna'],
     ]
 
-    SOURCEFORGE_URL = 'http://sourceforge.net/projects/sutekh/'
-    PYPI_URL = 'http://pypi.python.org/pypi/Sutekh/'
+    SOURCEFORGE_URL = 'https://sourceforge.net/projects/sutekh/'
+    PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = 'GPL'
     LICENSE_TEXT = resource_string(__name__, 'COPYING')
