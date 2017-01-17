@@ -10,7 +10,11 @@ collection in sync."""
 
 from sqlobject.events import (Signal, listen, RowUpdateSignal,
                               RowDestroySignal, RowCreatedSignal)
-from sqlobject.include.pydispatch import dispatcher
+try:
+    from pydispatch import dispatcher
+except ImportError:
+    # Missing pydispatch, so try the pre 3.0 SQLObject location
+    from sqlobject.include.pydispatch import dispatcher
 from .BaseObjects import PhysicalCardSet
 
 
