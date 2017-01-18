@@ -420,7 +420,9 @@ pasting the deck into a web browser and so forth.
 * _Generate random groups of cards_: Show groups of random cards from the \
 card set (after applying the current filter). This is useful for generating \
 random groups of cards to use as prize support.
+:list:1:card_sets:actions
 
+:text:4:card_sets:actions
 
 h3(#cardsets_edit). Edit
 
