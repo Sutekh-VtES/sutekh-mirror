@@ -233,6 +233,9 @@ def _process_plugins(aLines, aPlugins):
                 continue
             # Construct the tags
             sName = cPlugin.get_help_menu_entry()
+            if not sName:
+                print("%s has no Help menu entry - Skipped" % cPlugin)
+                continue
             sLinkTag = _make_link(sName)
             sText = cPlugin.get_help_list_text()
             dTags[sPluginCat][':list:'].append(
