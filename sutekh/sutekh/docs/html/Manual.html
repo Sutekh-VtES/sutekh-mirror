@@ -6,9 +6,9 @@
     <title>Sutekh Manual</title>
 </head>
 <body>
-	<h1>Manual for Sutekh 0.9.2</h1>
+	<h1>Manual for Sutekh 0.9.3</h1>
 
-	<p><img src="sutekh-icon.png" title="Sutekh Icon" alt="Sutekh Icon" /></p>
+	<p><img alt="Sutekh Icon" src="sutekh-icon.png" title="Sutekh Icon" /></p>
 
 	<h2>Contents</h2>
 
@@ -16,88 +16,88 @@
 		<li><a href="#intro">Introduction</a></li>
 		<li><a href="#concepts">Important Concepts</a></li>
 		<li><a href="#main">Main Window</a>
-	<ol>
-		<li><a href="#main_file">File</a>
-	<ol>
-		<li><a href="#import_csv">Import <span class="caps">CSV</span> file</a></li>
-		<li><a href="#backup">Backup</a> </li>
-		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a> </li>
-		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> </li>
-	</ol></li>
-		<li><a href="#main_pane_actions">Pane Actions</a></li>
-		<li><a href="#rulebook">Rulebook</a></li>
-		<li><a href="#keyboard">Keyboard Shortcuts</a></li>
-		<li><a href="#minimize_panes">Minimizing Panes</a></li>
-		<li><a href="#refresh">Refreshing the White Wolf Card List</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#main_file">File</a>
+			<ol>
+				<li><a href="#import_csv">Import <span class="caps">CSV</span> file</a></li>
+				<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
+				<li><a href="#backup">Backup</a></li>
+				<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
+			</ol></li>
+			<li><a href="#main_pane_actions">Pane Actions</a></li>
+			<li><a href="#rulebook">Rulebook</a></li>
+			<li><a href="#keyboard">Keyboard Shortcuts</a></li>
+			<li><a href="#minimize_panes">Minimizing Panes</a></li>
+			<li><a href="#refresh">Refreshing the White Wolf Card List</a></li>
+		</ol></li>
 		<li><a href="#ww">White Wolf Card List</a>
-	<ol>
-		<li><a href="#ww_actions">Actions</a></li>
-		<li><a href="#ww_edit">Edit</a></li>
-		<li><a href="#ww_filter">Filter</a></li>
-		<li><a href="#ww_analyze">Analyze</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#ww_actions">Actions</a></li>
+			<li><a href="#ww_edit">Edit</a></li>
+			<li><a href="#ww_filter">Filter</a></li>
+			<li><a href="#ww_analyze">Analyze</a></li>
+		</ol></li>
 		<li><a href="#card_text">Card Text</a></li>
 		<li><a href="#card_image">Card Image</a></li>
 		<li><a href="#card_set_list">Card Set List</a>
-	<ol>
-		<li><a href="#card_set_list_actions">Actions</a></li>
-		<li><a href="#card_set_list_edit">Edit</a></li>
-		<li><a href="#card_set_list_filter">Filter</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#card_set_list_actions">Actions</a></li>
+			<li><a href="#card_set_list_edit">Edit</a></li>
+			<li><a href="#card_set_list_filter">Filter</a></li>
+		</ol></li>
 		<li><a href="#cardsets">Card Sets</a>
-	<ol>
-		<li><a href="#cardsets_actions">Actions</a></li>
-		<li><a href="#cardsets_edit">Edit</a></li>
-		<li><a href="#cardsets_filter">Filter</a></li>
-		<li><a href="#cardsets_analyze">Analyze</a></li>
-		<li><a href="#cardsets_keyboard">Keyboard Shortcuts</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#cardsets_actions">Actions</a></li>
+			<li><a href="#cardsets_edit">Edit</a></li>
+			<li><a href="#cardsets_filter">Filter</a></li>
+			<li><a href="#cardsets_analyze">Analyze</a></li>
+			<li><a href="#cardsets_keyboard">Keyboard Shortcuts</a></li>
+		</ol></li>
 		<li><a href="#dialogs">Other dialogs</a>
-	<ol>
-		<li><a href="#lookup">Card Lookup Dialog</a></li>
-		<li><a href="#searchdialog">Search Dialog</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#lookup">Card Lookup Dialog</a></li>
+			<li><a href="#searchdialog">Search Dialog</a></li>
+		</ol></li>
 		<li><a href="#filters">Filters</a>
-	<ol>
-		<li><a href="#card_filters">Card Filters</a></li>
-		<li><a href="#card_set_filters">Card Set Filters</a></li>
-		<li><a href="#combining">Combining Basic Filters</a></li>
-		<li><a href="#string">String filters</a></li>
-		<li><a href="#list">List filters</a></li>
-	</ol></li>
+		<ol>
+			<li><a href="#card_filters">Card Filters</a></li>
+			<li><a href="#card_set_filters">Card Set Filters</a></li>
+			<li><a href="#combining">Combining Basic Filters</a></li>
+			<li><a href="#string">String filters</a></li>
+			<li><a href="#list">List filters</a></li>
+		</ol></li>
 		<li><a href="#analysis">Analysis Tools</a>
-	<ol>
-		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#expansionstats">Expansion Stats</a> </li>
-		<li><a href="#clandisciplinestats">Clan Discipline Stats</a> </li>
-		<li><a href="#analyzedeck">Analyze Deck</a> </li>
-		<li><a href="#testcardsetindependence">Test Card Set Independence</a> </li>
-		<li><a href="#carddrawprobabilities">Card Draw probabilities</a> </li>
-		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a> </li>
-		<li><a href="#comparewithanothercardset">Compare with another Card Set</a> </li>
-		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a> </li>
-		<li><a href="#simulateopeninghand">Simulate opening hand</a> </li>
-	</ol></li>
+		<ol>
+			<li><a href="#cluster">Cluster Cards</a></li>
+			<li><a href="#expansionstats">Expansion Stats</a></li>
+			<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
+			<li><a href="#analyzedeck">Analyze Deck</a></li>
+			<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+			<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
+			<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+			<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+			<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+			<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
+		</ol></li>
 		<li><a href="#profiles">Profiles</a>
-	<ol>
-		<li><a href="#edit_profile">Edit Profile</a></li>
-		<li><a href="#manage_profile">Managing Profiles</a></li>
-		<li><a href="#ww_profile">White Wolf Card List Profile Options</a>
-	<ol>
-		<li><a href="#grouping">Card Grouping</a></li>
-		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> </li>
-	</ol></li>
-		<li><a href="#cardset_profile">Card Set Profile Options</a>
-	<ol>
-		<li><a href="#different_profiles">The Different Profiles</a></li>
-	</ol></li>
-		<li><a href="#cs_profile">CardSet List Profile Options</a>
-	<ol>
-		<li><a href="#extracolumnscardsetlistview">Extra Columns &#8212; card set list view</a> </li>
-	</ol></li>
-	</ol></li>
-	</ol>
+		<ol>
+			<li><a href="#edit_profile">Edit Profile</a></li>
+			<li><a href="#manage_profile">Managing Profiles</a></li>
+			<li><a href="#ww_profile">White Wolf Card List Profile Options</a>
+			<ol>
+				<li><a href="#grouping">Card Grouping</a></li>
+				<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a></li>
+			</ol></li>
+			<li><a href="#cardset_profile">Card Set Profile Options</a>
+			<ol>
+				<li><a href="#different_profiles">The Different Profiles</a></li>
+			</ol></li>
+			<li><a href="#cs_profile">CardSet List Profile Options</a>
+			<ol>
+				<li><a href="#extracolumnscardsetlistview">Extra Columns &#8212; card set list view</a></li>
+			</ol></li>
+			</ol></li>
+			</ol>
 
 	<h2 id="intro">Introduction</h2>
 
@@ -105,13 +105,25 @@
 
 	<h2 id="concepts">Important Concepts</h2>
 
-	<p>Sutekh is concerned with two different types of objects: <em>Cards</em> and <em>Card Sets</em>.</p>
+	<p>Sutekh is concerned with two different types of objects: <em>Cards</em> and 
+<em>Card Sets</em>.</p>
 
-	<p><em>Cards</em> are the individual cards as described by the official White Wolf card list. Sutekh describes all the relevant properties of each card, such as the clan and discipline requirements, the cost, and the latest card text.</p>
+	<p><em>Cards</em> are the individual cards as described by the official White Wolf 
+card list. Sutekh describes all the relevant properties of each card, 
+such as the clan and discipline requirements, the cost, and the latest 
+card text.</p>
 
-	<p>You can set the expansion to which each specific card belongs. This allows you to distinguish between multiple copies of the same card from different expansions. If the expansion is not set, Sutekh notes this as <strong>Unknown Expansion</strong> in the card set view.</p>
+	<p>You can set the expansion to which each specific card belongs. This 
+allows you to distinguish between multiple copies of the same card from 
+different expansions. If the expansion is not set, Sutekh notes this as 
+<strong>Unknown Expansion</strong> in the card set view.</p>
 
-	<p><em>Card Sets</em> are collections of cards, and describe each card and the number of copies of that card in the collection. Card sets can be related in a parent-child hierarchy. In a typical setup, there is a single card set for the main card collection (usually the <strong>My Collection</strong> card set); and other card sets, which represent constructed decks, are children of this card set &#8212; but many other arrangements are possible.</p>
+	<p><em>Card Sets</em> are collections of cards, and describe each card and the number of 
+copies of that card in the collection. Card sets can be related in a 
+parent-child hierarchy. In a typical setup, there is a single card set for the 
+main card collection (usually the <strong>My Collection</strong> card set); and other card 
+sets, which represent constructed decks, are children of this card set &#8212; but 
+many other arrangements are possible.</p>
 
 	<h2 id="main">Main Window</h2>
 
@@ -127,9 +139,14 @@
 		<li><a href="#cardsets">Card Set</a> panes</li>
 	</ul>
 
-	<p>Each pane may have an associated menu for actions specific to that pane. The main window has a menu for global actions.</p>
+	<p>Each pane may have an associated menu for actions specific to that pane. 
+The main window has a menu for global actions.</p>
 
-	<p>You can easily rearrange panes. You can swap two panes by dragging one onto the other. For most panes, this can be done from any section that won&#8217;t start another drag operation (such as dragging cards), but, so that it is possible to easily select and copy card text, the card text pane can only be dragged by using the pane title.</p>
+	<p>You can easily rearrange panes. You can swap two panes by dragging one onto the 
+other. For most panes, this can be done from any section that won&#8217;t start 
+another drag operation (such as dragging cards), but, so that it is possible 
+to easily select and copy card text, the card text pane can only be dragged by 
+using the pane title.</p>
 
 	<h3 id="main_file">File</h3>
 
@@ -137,47 +154,76 @@
 
 	<ul>
 		<li><em>Import Card Set</em>: Import a card set from a existing file. The following file types are supported:
-	<ul>
-		<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
-		<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
-		<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
-		<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a> </li>
-		<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
-	</ul></li>
+		<ul>
+			<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
+			<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
+			<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
+			<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
+			<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
+		</ul></li>
 		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
-	<ul>
-		<li><em>Import new White Wolf Card List and rulings</em>: Update the database with a new cardlist and/or rulings file. You can either specify local files, or opt to download them from the appropriate websites directly. Sutekh may encounter problems when updating the card list after a new expansion has been published &#8212; this is discussed further in the section <a href="#refresh">Refreshing the White Wolf Card List</a>.</li>
-		<li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the White Wolf website.</li>
-		<li><em>Download starter decks</em>: Download and import a list of the White Wolf preconstructed decks from the sutekh wiki. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the White Wolf Card List</a>), these will be greyed out and automatically excluded.</li>
-		<li><em>Download or Configure Card Images</em>: Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing zip file or directory of images.</li>
-		<li><em>Download Rulebook Files</em>: Download the various files for the <a href="#rulebook">Rulebook</a> menu.</li>
-	</ul></li>
+		<ul>
+			<li><em>Import new White Wolf Card List and rulings</em>: Update the database with a new cardlist and/or rulings file. You can either specify local files, or opt to download them from the appropriate websites directly. Sutekh may encounter problems when updating the card list after a new expansion has been published &#8212; this is discussed further in the section <a href="#refresh">Refreshing the White Wolf Card List</a>.</li>
+			<li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the White Wolf website.</li>
+			<li><em>Download starter decks</em>: Download and import a list of the White Wolf preconstructed decks from the sutekh wiki. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the White Wolf Card List</a>), these will be greyed out and automatically excluded.</li>
+			<li><em>Download or Configure Card Images</em>: Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing zip file or directory of images.</li>
+			<li><em>Download Rulebook Files</em>: Download the various files for the <a href="#rulebook">Rulebook</a> menu.</li>
+		</ul></li>
 		<li><em>Preferences</em>: Manage various preferences.
-	<ul>
-		<li><em>Use &#8220;path of &#8230;, the&#8221; name display</em>: If selected, card names prefixed with &#8220;The&#8221;, &#8220;An&#8221; or &#8220;A&#8221; are displayed and sorted with the prefix at the end.</li>
-		<li><em>Save Pane Set on Exit</em>: Save the pane configuration when Sutekh exits.</li>
-		<li><em>Save Exact Pane Positions</em>: Save the exact pane positions on exit.</li>
-		<li><em>Save Window Size</em>: Save the window size on exit.</li>
-		<li><em>Show Starter Information</em>: If the starter decks have been downloaded into the database, this will add a list the starter decks a card has been published in to the <a href="#card_text">Card Text</a> pane when the card is selected.</li>
-		<li><em>Export to <span class="caps">HTML</span> preferences</em>: Set the destination for the links created in the exported <span class="caps">HTML</span> files.</li>
-	</ul></li>
+		<ul>
+			<li><em>Use &#8220;path of &#8230;, the&#8221; name display</em>: If selected, card names prefixed with &#8220;The&#8221;, &#8220;An&#8221; or &#8220;A&#8221; are displayed and sorted with the prefix at the end.</li>
+			<li><em>Save Pane Set on Exit</em>: Save the pane configuration when Sutekh exits.</li>
+			<li><em>Save Exact Pane Positions</em>: Save the exact pane positions on exit.</li>
+			<li><em>Save Window Size</em>: Save the window size on exit.</li>
+			<li><em>Show Starter Information</em>: If the starter decks have been downloaded into the database, this will add a list the starter decks a card has been published in to the <a href="#card_text">Card Text</a> pane when the card is selected.</li>
+			<li><em>Export to <span class="caps">HTML</span> preferences</em>: Set the destination for the links created in the exported <span class="caps">HTML</span> files.</li>
+		</ul></li>
 		<li><em>Manage Profiles</em>: Bring up the <a href="#manage_profiles">profile management dialog</a> to edit or delete the various pane profiles</li>
 		<li><em>Save Current Pane Set</em>: Save the current configuration of the panes.</li>
 		<li><em>Restore saved configuration</em>: Restore the panes to the saved configuration.</li>
 		<li><em>Quit</em>: Exit Sutekh.</li>
 	</ul>
 
-	<p>If Sutekh encounters an unknown card when importing card sets, it will prompt you to identify it using the <a href="#lookup">Card Lookup Dialog</a>.</p>
+	<p>If Sutekh encounters an unknown card when importing card sets, it will prompt 
+you to identify it using the <a href="#lookup">Card Lookup Dialog</a>.</p>
 
 	<h4 id="import_csv">Import <span class="caps">CSV</span> file</h4>
 
-	<p>This allows you to import card sets stored as a comma-separated file, a format commonly produced by spreadsheets. The file must contain a column with card names and a column with card counts, and can optionally contain a column with expansions. When you importing the file, you must specify the mapping between the columns and their contents.</p>
+	<p>This allows you to import card sets stored as a comma-separated file, a format 
+commonly produced by spreadsheets. The file must contain a column with card 
+names and a column with card counts, and can optionally contain a column with 
+expansions. When you importing the file, you must specify the mapping between 
+the columns and their contents.</p>
 
-	<p>If Sutekh cannot correctly interpret a name or expansion, it will prompt you to resolve the situation using the <a href="#lookup">Card Lookup Dialog</a>.</p>
+	<p>If Sutekh cannot correctly interpret a name or expansion, it will prompt you to 
+resolve the situation using the <a href="#lookup">Card Lookup Dialog</a>.</p>
+
+	<h4 id="importcardsetsfromzipfile">Import Card Set(s) from zip file</h4>
+
+	<p>This option allows you to select some or all of 
+the Card Sets included in a zip file (such as those 
+produced by backups) and import them into the database. 
+Unlike restoring a backup, this does not replace any 
+existing card sets automatically.</p>
+
+	<p>After selecting the zip file, you will be asked to 
+select the card sets to import from the list of card 
+sets in the zip file. If any of the card sets share 
+the same name as an existing card set, you will be 
+asked either to rename the card set, or skip importing 
+that card set.</p>
+
+	<p>If a card set to be imported has a parent card set, and 
+that set cannot be found, the card set will be imported 
+with no parent set.</p>
 
 	<h4 id="backup">Backup</h4>
 
-	<p>This allows you either to save or to restore a full backup of the current database. The backup is saved as a zip file, and is independent of the database back-end used. Consequently, the backup can also be used to transfer the complete state between different databases.</p>
+	<p>This allows you either to save or to restore a full backup 
+of the current database. The backup is saved as a zip file, 
+and is independent of the database back-end used. 
+Consequently, the backup can also be used to transfer 
+the complete state between different databases.</p>
 
 	<p>There are two options offered:</p>
 
@@ -186,29 +232,34 @@
 		<li><em>Restore a Full Backup</em>: Import all the card sets from                    the specified zip file. Note that restoring a backup will                    replace anything currently in the database with the                    contents of the backup.</li>
 	</ul>
 
-	<p>You can save a backup at any time. You will be asked whether you would like to save a backup when you initiate certain actions, such as updating the full card list.</p>
-
-	<h4 id="importcardsetsfromzipfile">Import Card Set(s) from zip file</h4>
-
-	<p>This option allows you to select some or all of the Card Sets included in a zip file (such as those produced by backups) and import them into the database. Unlike restoring a backup, this does not replace any existing card sets automatically.</p>
-
-	<p>After selecting the zip file, you will be asked to select the card sets to import from the list of card sets in the zip file. If any of the card sets share the same name as an existing card set, you will be asked either to rename the card set, or skip importing that card set.</p>
-
-	<p>If a card set to be imported has a parent card set, and that set cannot be found, the card set will be imported with no parent set.</p>
+	<p>You can save a backup at any time. You will be asked 
+whether you would like to save a backup when you 
+initiate certain actions, such as updating the full 
+card list.</p>
 
 	<h4 id="importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</h4>
 
-	<p>This allows you to import files produced by <span class="caps">ARDB</span>, <span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt to identify the file format automatically, this isn&#8217;t always reliable, so you have the option of specifying the format manually.</p>
+	<p>This allows you to import files produced by <span class="caps">ARDB</span>, 
+<span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt 
+to identify the file format automatically, this 
+isn&#8217;t always reliable, so you have the option of 
+specifying the format manually.</p>
 
-	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you will also need to specify a card set name for the imported file.</p>
+	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you 
+will also need to specify a card set name for the 
+imported file.</p>
 
-	<p>If the name of the card set clashes with an existing name, you will be asked to rename the imported card set or cancel the import.</p>
+	<p>If the name of the card set clashes with an existing 
+name, you will be asked to rename the imported card 
+set or cancel the import.</p>
 
-	<p>If no cards are found in the card set, the card set will not be created.</p>
+	<p>If no cards are found in the card set, the card set 
+will not be created.</p>
 
 	<h3 id="main_pane_actions">Pane Actions</h3>
 
-	<p>This menu allows you to manage the panes in Sutekh. The <em>Pane Actions</em> menu has the following options:</p>
+	<p>This menu allows you to manage the panes in Sutekh. The <em>Pane Actions</em> menu 
+has the following options:</p>
 
 	<ul>
 		<li><em>Equalize pane sizes</em>: Rearrange the panes so that each pane has the same width, and panes which are split vertically all have the same height. Pane equalizing may also be triggered using the <strong>&lt;Ctrl&gt;-p</strong> shortcut.</li>
@@ -221,11 +272,15 @@
 
 	<h3 id="rulebook">Rulebook</h3>
 
-	<p>Once you have downloaded the rulebook files, you can open them in a web browser using the <em>Rulebook</em> menu.</p>
+	<p>Once you have downloaded the rulebook files, you 
+can open them in a web browser using the <em>Rulebook</em> menu.</p>
 
-	<p>The available files are copies of the rulebook, the rules reference, the V:<span class="caps">EKN</span> tournament rules, imbued rules and card rulings from the White Wolf site and the <span class="caps">VTES</span> and Imbued FAQ&#8217;s hosted on www.thelasombra.com.</p>
+	<p>The available files are copies of the rulebook, the rules reference, the V:EKN 
+tournament rules, imbued rules and card rulings from the White Wolf site and 
+the <span class="caps">VTES</span> and Imbued <span class="caps">FAQ</span>&#8217;s hosted on www.thelasombra.com.</p>
 
-	<p>To download the files, or update your existing copies, use the _Download Rulebook Files_ item in the <em>Data Downloads</em> submenu.</p>
+	<p>To download the files, or update your existing copies, use the _Download 
+Rulebook Files_ item in the <em>Data Downloads</em> submenu.</p>
 
 	<h3 id="keyboard">Keyboard Shortcuts</h3>
 
@@ -235,25 +290,43 @@
 
 	<p>You can close the currently active pane using the <strong>&lt;Ctrl&gt;-W</strong> shortcut.</p>
 
-	<p>In panes which support filtering, you can activate the filter editing dialog using <strong>&lt;Ctrl&gt;-S</strong> (for &#8220;*S*pecify filter&#8221;), and toggle the current filter on and off using <strong>&lt;Ctrl&gt;-T</strong>.</p>
+	<p>In panes which support filtering, you can activate the filter editing dialog 
+using <strong>&lt;Ctrl&gt;-S</strong> (for &#8220;*S*pecify filter&#8221;), and toggle the current filter 
+on and off using <strong>&lt;Ctrl&gt;-T</strong>.</p>
 
-	<p>The <strong>&lt;Ctrl&gt;&#8212;+</strong> and <strong>&lt;Ctrl&gt;&#8212;-</strong> shortcuts allow you to expand fully or collapse completely the entire tree displayed in a pane.</p>
+	<p>The <strong>&lt;Ctrl&gt;&#8212;+</strong> and <strong>&lt;Ctrl&gt;&#8212;-</strong> shortcuts allow you to expand fully or 
+collapse completely the entire tree displayed in a pane.</p>
 
 	<h3 id="minimize_panes">Minimizing Panes</h3>
 
-	<p>Double-clicking on a pane title will minimize the pane to a toolbar below the main menu. The toolbar is hidden if no frames are currently minimized. Clicking on a pane listed on the toolbar will unminimize it and place to the right of current set of open panes.</p>
+	<p>Double-clicking on a pane title will minimize the pane to a toolbar below the 
+main menu. The toolbar is hidden if no frames are currently minimized. Clicking 
+on a pane listed on the toolbar will unminimize it and place to the right of 
+current set of open panes.</p>
 
 	<h3 id="refresh">Refreshing the White Wolf Card List</h3>
 
-	<p>This allows Sutekh to update the card list to account for new cards, such as promos.</p>
+	<p>This allows Sutekh to update the card list to account for new cards, such 
+as promos.</p>
 
-	<p>Sutekh parses the card list published on the V:<span class="caps">EKN</span> site for information about the cards. When new expansions are published, Sutekh may require an update to interpret major changes to the cardlist, such as new clans or card types. If the expansion does not introduce any significant changes, Sutekh may be able to import the new card list correctly, but may be unable to interpret the new expansion name. If this happens, Sutekh should continue working, but you may need to specify the correct mapping for the expansion when updating the database during your next upgrade.</p>
+	<p>Sutekh parses the card list published on the V:EKN site for 
+information about the cards. When new expansions are published, Sutekh may 
+require an update to interpret major changes to the cardlist, such as 
+new clans or card types. If the expansion does not introduce any significant 
+changes, Sutekh may be able to import the new card list correctly, but may be 
+unable to interpret the new expansion name. If this happens, Sutekh should 
+continue working, but you may need to specify the correct mapping for the 
+expansion when updating the database during your next upgrade.</p>
 
-	<p>The <em>Storyline Card File</em> provides information not included in the official V:<span class="caps">EKN</span> card list. This includes information about the various special storyline cards that have been printed, and also details various special expansions, such as those for the demonstration decks, that have been released.</p>
+	<p>The <em>Storyline Card File</em> provides information not included in the official 
+V:EKN card list. This includes information about the various special storyline 
+cards that have been printed, and also details various special expansions, 
+such as those for the demonstration decks, that have been released.</p>
 
 	<h2 id="ww">White Wolf Card List</h2>
 
-	<p>This pane contains a list of all the cards imported from the official White Wolf card list.</p>
+	<p>This pane contains a list of all the cards imported from the official 
+White Wolf card list.</p>
 
 	<h3 id="ww_actions">Actions</h3>
 
@@ -280,7 +353,7 @@
 	<ul>
 		<li><em>Specify Filter</em>: Specify the filter to apply to the card list. See the <a href="#card_filters">Card Filters</a> section.</li>
 		<li><em>Apply Filter</em>: Toggle whether the filter is currently applied to the list.</li>
-		<li><a href="#cardsetfromfilter">Card Set From Filter</a> </li>
+		<li><a href="#cardsetfromfilter">Card Set From Filter</a></li>
 	</ul>
 
 	<h3 id="ww_analyze">Analyze</h3>
@@ -289,19 +362,25 @@
 
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#expansionstats">Expansion Stats</a> </li>
-		<li><a href="#clandisciplinestats">Clan Discipline Stats</a> </li>
+		<li><a href="#expansionstats">Expansion Stats</a></li>
+		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
 	</ul>
 
 	<h2 id="card_text">Card Text</h2>
 
-	<p>The Card Text Pane displays the text on the card, and any rulings that apply to the card.</p>
+	<p>The Card Text Pane displays the text on the card, and any rulings that apply 
+to the card.</p>
 
-	<p>This will also list other relevant information about the card, such as the card cost, the card type, the disciplines or virtues associated with the card, the clans and creeds associated with the card, vampire titles, sects and groups, capacity and the expansions in which the card was printed.</p>
+	<p>This will also list other relevant information about the card, such as the card 
+cost, the card type, the disciplines or virtues associated with the card, the 
+clans and creeds associated with the card, vampire titles, sects and groups, 
+capacity and the expansions in which the card was printed.</p>
 
 	<h2 id="card_image">Card Images</h2>
 
-	<p>If the card images have been installed, this pane will display the appropriate card image for each pane. By default, all images are resized to fit the pane. You can change this setting by right-clicking on the image.</p>
+	<p>If the card images have been installed, this pane will display the appropriate 
+card image for each pane. By default, all images are resized to fit the pane. 
+You can change this setting by right-clicking on the image.</p>
 
 	<p>The following options are available:</p>
 
@@ -311,17 +390,26 @@
 		<li><em>Show images at original size</em>: All images are shown at the original size of the scan.</li>
 	</ul>
 
-	<p>If there are multiple images for the given card from the different expansions, Sutekh will attempt to display the correct expansion for the selected card. You can cycle through the available expansions either by left-clicking on the image, or by selecting the <em>Show next expansion image</em> and <em>Show previous expansion image</em> options after right-clicking on the frame.</p>
+	<p>If there are multiple images for the given card from the different expansions, 
+Sutekh will attempt to display the correct expansion for the selected card. 
+You can cycle through the available expansions either by left-clicking 
+on the image, or by selecting the <em>Show next expansion image</em> and 
+<em>Show previous expansion image</em> options after right-clicking on the frame.</p>
 
 	<h2 id="card_set_list">Card Set List</h2>
 
-	<p>This pane lists all the card sets which have been defined. The card sets are arranged so that child card sets are listed below their parents.</p>
+	<p>This pane lists all the card sets which have been defined. The card sets are 
+arranged so that child card sets are listed below their parents.</p>
 
-	<p>You can open a card set either by double-clicking on its name, or by dragging the name to an existing pane.</p>
+	<p>You can open a card set either by double-clicking on its name, or by dragging 
+the name to an existing pane.</p>
 
-	<p>You can change the parent of a card set by dragging the card set name onto the new parent&#8217;s name.</p>
+	<p>You can change the parent of a card set by dragging the card set name onto the 
+new parent&#8217;s name.</p>
 
-	<p>You can mark sets either as <em>in use</em> or <em>not in use</em>. This is intended to help you track which cards are currently available for you to use in new card sets.</p>
+	<p>You can mark sets either as <em>in use</em> or <em>not in use</em>. This is intended to 
+help you track which cards are currently available for you to use in new card 
+sets.</p>
 
 	<p>It&#8217;s possible to open multiple copies of a given card set.</p>
 
@@ -359,11 +447,17 @@
 
 	<p>This pane lists the contents of a specific card set.</p>
 
-	<p>The display has several columns. A column for the number of cards, a column for the number of cards in the parent card set (the <strong>parent count column</strong>) and a column for the card name. Extra columns can be enabled as well.</p>
+	<p>The display has several columns. A column for the number of cards, 
+a column for the number of cards in the parent card set (the 
+<strong>parent count column</strong>) and a column for the card name. Extra columns can 
+be enabled as well.</p>
 
-	<p>By default, the card set is sorted on the card name, but it can be sorted by any of the columns.</p>
+	<p>By default, the card set is sorted on the card name, but it can be sorted 
+by any of the columns.</p>
 
-	<p>The parent card column is hidden, and cannot be enabled, if the card set has no parent. By default, the parent count column is hidden if the parent card set is empty, but it can be shown.</p>
+	<p>The parent card column is hidden, and cannot be enabled, if the card set 
+has no parent. By default, the parent count column is hidden if the parent 
+card set is empty, but it can be shown.</p>
 
 	<h3 id="cardsets_actions">Actions</h3>
 
@@ -373,23 +467,47 @@
 		<li><em>Edit Card Set Properties</em>: Change the card set name, author and description, change the parent of the card set, or add annotations to the card set.</li>
 		<li><em>Save Card Set to File</em>: Save the card set to Sutekh&#8217;s <span class="caps">XML</span> format.</li>
 		<li><em>Export Card Set</em>: Export the card set to other file formats. The currently supported options are:
-	<ul>
-		<li><em>CSV</em>: A comma-separated format suitable for importing into spreadsheets</li>
-		<li><em><span class="caps">FELDB</span> file</em>: A file that can be imported into the <span class="caps">FELDB</span> card manager</li>
-		<li><em><span class="caps">ARDB</span> XML</em>: A file that can be imported into the <span class="caps">ARDB</span> card manager</li>
-		<li><em>HTML</em>: A nice <span class="caps">HTML</span> file, similar to that produced by <span class="caps">ARDB</span></li>
-		<li><em><span class="caps">ARDB</span> Text</em>: A text file, similar to that produced by <span class="caps">ARDB</span></li>
-		<li><em>V:<span class="caps">EKN</span> Forum</em>: A version formatted for the V:<span class="caps">EKN</span> forums at vekn.net</li>
-		<li><em>JOL</em>: A text file that can be pasted into the Jyhad Online deck builder</li>
-		<li><em>Lackey CCG</em>: A text file that can be imported into the Lackey <span class="caps">CCG</span> client</li>
-	</ul></li>
+		<ul>
+			<li><em><span class="caps">CSV</span></em>: A comma-separated format suitable for importing into spreadsheets</li>
+			<li><em><span class="caps">FELDB</span> file</em>: A file that can be imported into the <span class="caps">FELDB</span> card manager</li>
+			<li><em><span class="caps">ARDB</span> <span class="caps">XML</span></em>: A file that can be imported into the <span class="caps">ARDB</span> card manager</li>
+			<li><em><span class="caps">HTML</span></em>: A nice <span class="caps">HTML</span> file, similar to that produced by <span class="caps">ARDB</span></li>
+			<li><em><span class="caps">ARDB</span> Text</em>: A text file, similar to that produced by <span class="caps">ARDB</span></li>
+			<li><em>V:EKN Forum</em>: A version formatted for the V:EKN forums at vekn.net</li>
+			<li><em><span class="caps">JOL</span></em>: A text file that can be pasted into the Jyhad Online deck builder</li>
+			<li><em>Lackey <span class="caps">CCG</span></em>: A text file that can be imported into the Lackey <span class="caps">CCG</span> client</li>
+		</ul></li>
 		<li><em>Expand All</em>: Expand all the items in the tree.</li>
 		<li><em>Collapse All</em>: Collapse the tree as far as possible.</li>
 		<li><em>Delete Card Set</em>: Delete the card set from the database.</li>
 		<li><em>Print Card Set</em>: Print the card set.</li>
 		<li><em>Display Card Set in alternative format</em>: Show the card set in some of the formats available via <em>Export Card Set</em>. This is useful for copying and pasting the deck into a web browser and so forth.</li>
 		<li><em>Generate random groups of cards</em>: Show groups of random cards from the card set (after applying the current filter). This is useful for generating random groups of cards to use as prize support.</li>
+		<li><a href="#printcardsetasproxies">Print Card Set as Proxies</a> Print the card set using the images of the cards, for use                   as proxies.</li>
 	</ul>
+
+	<h4 id="printcardsetasproxies">Print Card Set as Proxies</h4>
+
+	<p>If you have downloaded the card images, this allows 
+you to print the card set using the card images for 
+use as proxies.</p>
+
+	<p>If images are available for all the expansions, you can 
+choose to either print the exact expansion specified 
+for the card, or use the latest image for the given card. 
+By default, the most recent card image will be used.</p>
+
+	<p>Cards without an expansion (&#8220;Unspecified Expansion&#8221;) will 
+always be printed using the latest available image.</p>
+
+	<p>If the exact image cannot be found, another image of the 
+card from a different expansion will be used if possible. 
+The plugin will throw an error only if no suitable image 
+can be found.</p>
+
+	<p>This will only print the current filtered view of the 
+card set, which can be used to restict the card printed 
+to only those required.</p>
 
 	<h3 id="cardsets_edit">Edit</h3>
 
@@ -405,7 +523,10 @@
 		<li><em>Take a snapshot of this card set</em>: This creates a copy of the current state of the card set, and appends the current date and time to the name. The newly created card set is a child of the current card set.</li>
 	</ul>
 
-	<p>If the card set is not editable, you cannot make changes to its contents directly. It is still possible for you to change the card set contents by editing the parent card set when the <em>Display Mode</em> -> <em>Show Child Card Sets</em> option is active.</p>
+	<p>If the card set is not editable, you cannot make changes to its contents 
+directly. It is still possible for you to change the card set contents by 
+editing the parent card set when the <em>Display Mode</em> -> <em>Show Child Card Sets</em> 
+option is active.</p>
 
 	<h3 id="cardsets_filter">Filter</h3>
 
@@ -414,16 +535,23 @@
 	<ul>
 		<li><em>Specify Filter</em>: Specify the filter to apply to the card list. See the <a href="#card_filters">Card Filters</a> section.</li>
 		<li><em>Apply Filter</em>: Toggle whether the filter is currently applied to the list.</li>
-		<li><a href="#cardsetfromfilter">Card Set From Filter</a> </li>
+		<li><a href="#cardsetfromfilter">Card Set From Filter</a></li>
 	</ul>
 
-	<p>When editing a card set, the display is always updated according to the active filter (i.e. if the filter is being applied). This does mean that, when adding cards to a card set when a filter is active, not all the new cards may be displayed, and, when using a filter that includes the card count, cards may appear and disappear due to the changing counts.</p>
+	<p>When editing a card set, the display is always updated according to the active 
+filter (i.e. if the filter is being applied). This does mean that, when adding 
+cards to a card set when a filter is active, not all the new cards may be 
+displayed, and, when using a filter that includes the card count, cards may 
+appear and disappear due to the changing counts.</p>
 
-	<p>Since complex filters may be expensive to evaluate, editing card sets with a filter active will be slow in some cases.</p>
+	<p>Since complex filters may be expensive to evaluate, editing card sets with 
+a filter active will be slow in some cases.</p>
 
 	<h4 id="cardsetfromfilter">Card Set From Filter</h4>
 
-	<p>Create a new card set containing the results of the current filter. The new card set will be opened automatically and will be set editable.</p>
+	<p>Create a new card set containing the results 
+of the current filter. The new card set will 
+be opened automatically and will be set editable.</p>
 
 	<h3 id="cardsets_analyze">Analyze</h3>
 
@@ -431,13 +559,13 @@
 
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#analyzedeck">Analyze Deck</a> </li>
-		<li><a href="#testcardsetindependence">Test Card Set Independence</a> </li>
-		<li><a href="#carddrawprobabilities">Card Draw probabilities</a> </li>
-		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a> </li>
-		<li><a href="#comparewithanothercardset">Compare with another Card Set</a> </li>
-		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a> </li>
-		<li><a href="#simulateopeninghand">Simulate opening hand</a> </li>
+		<li><a href="#analyzedeck">Analyze Deck</a></li>
+		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
+		<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
+		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 	</ul>
 
 	<h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
@@ -448,67 +576,124 @@
 
 	<p>You can copy the current selection to the clipboard using <strong>&lt;Ctrl&gt;-C</strong>.</p>
 
-	<p>If the card set is editable, you can delete the current selection using <strong>&lt;Del&gt;</strong> or paste a copied selection into the card set using <strong>&lt;Ctrl&gt;-V</strong>.</p>
+	<p>If the card set is editable, you can delete the current selection using 
+<strong>&lt;Del&gt;</strong> or paste a copied selection into the card set using 
+<strong>&lt;Ctrl&gt;-V</strong>.</p>
 
-	<p>In an editable card set, you can set the count for all the cards in a selection to a number from one to nine by typing the number directly. You can increment and decrement the count for all the cards in a selection using <strong>+</strong> and <strong>-</strong>. If the card set is not editable, these keys have no effect.</p>
+	<p>In an editable card set, you can set the count for all the cards in a selection 
+to a number from one to nine by typing the number directly. You can increment 
+and decrement the count for all the cards in a selection using <strong>+</strong> and <strong>-</strong>. If 
+the card set is not editable, these keys have no effect.</p>
 
 	<h2 id="dialogs">Other Dialogs</h2>
 
 	<h3 id="lookup">Card Lookup Dialog</h3>
 
-	<p>For various reasons, Sutekh may fail to identify a card correctly when importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;, &#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When this happens, Sutekh will prompt you for the correct card.</p>
+	<p>For various reasons, Sutekh may fail to identify a card correctly when 
+importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;, 
+&#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When 
+this happens, Sutekh will prompt you for the correct card.</p>
 
-	<p>The card lookup window displays two lists: the list of all White Wolf cards and the list of unknown cards. Below the unknown card list are options to specify a <a href="#filters">filter</a>, to apply or unapply the filter, to show or hide cards not legal for tournament play or to <a href="#searchdialog">search</a> the card list.</p>
+	<p>The card lookup window displays two lists: the list of all White Wolf cards 
+and the list of unknown cards. Below the unknown card list are options 
+to specify a <a href="#filters">filter</a>, to apply or unapply the filter, to show or 
+hide cards not legal for tournament play or to <a href="#searchdialog">search</a> the card 
+list.</p>
 
-	<p>The unknown card list has two columns &#8212; the name of the unknown card and the currently selected replacement from the White Wolf card list &#8212; and three buttons. Use the first button to replace the card with the currently selected card, the second button to mark the card as ignored, and the last to view a list of reasonable options (Sutekh finds these by applying a filter based on the unknown card name).</p>
+	<p>The unknown card list has two columns &#8212; the name of the unknown card and 
+the currently selected replacement from the White Wolf card list &#8212; and three 
+buttons. Use the first button to replace the card with the currently selected 
+card, the second button to mark the card as ignored, and the last to view a list 
+of reasonable options (Sutekh finds these by applying a filter based on the 
+unknown card name).</p>
 
-	<p>Once you have selected replacements for all unknown cards (or chosen to ignore them), use the OK button to create the card set.</p>
+	<p>Once you have selected replacements for all unknown cards (or chosen to ignore 
+them), use the OK button to create the card set.</p>
 
-	<p>If you choose to cancel, the entire import will be aborted and no card set will be created.</p>
+	<p>If you choose to cancel, the entire import will be aborted and no card set will 
+be created.</p>
 
-	<p>If Sutekh cannot identify an expansion in the file, it will prompt you for the correct replacement. If Sutekh finds an impossible card and expansion combination, it will prompt you to resolve the situation using the card lookup dialog &#8212; but you will have the opportunity to select both the card and the expansion.</p>
+	<p>If Sutekh cannot identify an expansion in the file, it will prompt you for the 
+correct replacement. If Sutekh finds an impossible card and expansion 
+combination, it will prompt you to resolve the situation using the card lookup 
+dialog &#8212; but you will have the opportunity to select both the card and the 
+expansion.</p>
 
 	<h3 id="searchdialog">Search Dialog</h3>
 
 	<p>The search dialog can be used to find specific cards or card sets quickly.</p>
 
-	<p>In the main window, it can be popped up by using the menu item, the <strong>&lt;Ctrl&gt;-F</strong> shortcut, or by starting to type in the window directly.</p>
+	<p>In the main window, it can be popped up by using the menu item, the 
+<strong>&lt;Ctrl&gt;-F</strong> shortcut, or by starting to type in the window directly.</p>
 
-	<p>In the card lookup window, it can be popped up by using the search button, the <strong>&lt;Ctrl&gt;-F</strong>  shortcut, or by starting to type.</p>
+	<p>In the card lookup window, it can be popped up by using the search button, 
+the <strong>&lt;Ctrl&gt;-F</strong>  shortcut, or by starting to type.</p>
 
-	<p>The dialog can be hidden by either pressing the <strong>Escape</strong> key, the <strong>Enter</strong> key, or by clicking outside the search dialog. Note that, to prevent unexpected side-effects, while the search dialog is shown, clicking will only hide the dialog and not effect any else.</p>
+	<p>The dialog can be hidden by either pressing the <strong>Escape</strong> key, the <strong>Enter</strong> key, 
+or by clicking outside the search dialog. Note that, to prevent unexpected 
+side-effects, while the search dialog is shown, clicking will only hide 
+the dialog and not effect any else.</p>
 
-	<p>The search looks to match names starting with the typed text. When multiple cards match, you can easily move between them by using the up or down keys while the search dialog is visible.</p>
+	<p>The search looks to match names starting with the typed text. When multiple 
+cards match, you can easily move between them by using the up or down keys 
+while the search dialog is visible.</p>
 
 	<h2 id="filters">Filters</h2>
 
-	<p>Filtering is one of the most common activities in Sutekh. You can construct complex queries by <a href="#combining">combining</a> various basic filters.</p>
+	<p>Filtering is one of the most common activities in Sutekh. You can construct 
+complex queries by <a href="#combining">combining</a> various basic filters.</p>
 
-	<p>The Filter dialog will display the last used filter for the given pane. You can clear or modify this filter using the <em>Clear Filter</em> button.</p>
+	<p>The Filter dialog will display the last used filter for the given pane. You can 
+clear or modify this filter using the <em>Clear Filter</em> button.</p>
 
-	<p>You can save complex filters for later reuse using the <em>Save</em> button, and recall them using the <em>Load</em> button. When modifying a filter, you can revert to the saved version using the <em>Revert Filter</em> button. A saved filter will include all values currently set for the filter.</p>
+	<p>You can save complex filters for later reuse using the <em>Save</em> button, and recall 
+them using the <em>Load</em> button. When modifying a filter, you can revert to the 
+saved version using the <em>Revert Filter</em> button. A saved filter will include 
+all values currently set for the filter.</p>
 
 	<p>Saved filters can also be used in <a href="#profiles">cardset and cardlist profiles</a>.</p>
 
 	<h3 id="filter_dialog">The Filter Dialog</h3>
 
-	<p>The filter dialog is laid out with 3 panes. The central pane shows the current filter, with any values that have been set so far.</p>
+	<p>The filter dialog is laid out with 3 panes. The central pane shows the current 
+filter, with any values that have been set so far.</p>
 
-	<p>The left hand pane lists all the different possible filter types. Individual filter elements can be dragged from this into the central filter pane, and the filter elements can be re-arranged within the central pane as well. This is mostly useful when using multiple filter groups (see <a href="#combining">Combining Basic Filters</a>).</p>
+	<p>The left hand pane lists all the different possible filter types. Individual 
+filter elements can be dragged from this into the central filter pane, and the 
+filter elements can be re-arranged within the central pane as well. This 
+is mostly useful when using multiple filter groups (see 
+<a href="#combining">Combining Basic Filters</a>).</p>
 
-	<p>When a filter element is selected, the right hand pane allows for the values for that filter element to be selected. This also provides buttons to delete filter elements or values, negate the meaning of the filter element and to temporarily disable filter elements.  Disabled filter elements are not used in the filter, but the values set for the element are preserved. These options are also available from a <strong>Right-Click</strong> context menu.</p>
+	<p>When a filter element is selected, the right hand pane allows for the values 
+for that filter element to be selected. This also provides buttons to delete 
+filter elements or values, negate the meaning of the filter element and to 
+temporarily disable filter elements.  Disabled filter elements are not used in 
+the filter, but the values set for the element are preserved. These options are 
+also available from a <strong>Right-Click</strong> context menu.</p>
 
-	<p>The buttons also have associated keyboard accelerators. Pressing <strong>&lt;Del&gt;</strong> will delete the current filter element, <strong>&lt;Ctrl&gt;-&lt;space&gt;</strong> will disable the current filter element and <strong>&lt;Alt&gt;-&lt;space&gt;</strong> will negate the filter element. <strong>&lt;Tab&gt;</strong> can be used to move between the different elements in the filter dialog. It&#8217;s possible to switch between the two panes (and the filter list elements in a pane) using &lt;Alt&gt;-&lt;left&gt; and &lt;Alt&gt;-&lt;right&gt;.</p>
+	<p>The buttons also have associated keyboard accelerators. Pressing <strong>&lt;Del&gt;</strong> 
+will delete the current filter element, <strong>&lt;Ctrl&gt;-&lt;space&gt;</strong> will 
+disable the current filter element and <strong>&lt;Alt&gt;-&lt;space&gt;</strong> will negate 
+the filter element. <strong>&lt;Tab&gt;</strong> can be used to move between the different 
+elements in the filter dialog. It&#8217;s possible to switch between the two panes 
+(and the filter list elements in a pane) using &lt;Alt&gt;-&lt;left&gt; and 
+&lt;Alt&gt;-&lt;right&gt;.</p>
 
-	<p>Filter values can be dragged from the right-hand pane into any filter of the same type. Filter values can also be dragged between filters of the same type.</p>
+	<p>Filter values can be dragged from the right-hand pane into any filter of the 
+same type. Filter values can also be dragged between filters of the same 
+type.</p>
 
-	<p>The currently selected set of values in the right-hand pane can be pasted into the currently selected filter element using <strong>&lt;Ctrl&gt;-&lt;Enter&gt;</strong>.</p>
+	<p>The currently selected set of values in the right-hand pane can be pasted into 
+the currently selected filter element using <strong>&lt;Ctrl&gt;-&lt;Enter&gt;</strong>.</p>
 
-	<p>Filters and filter values can be removed from the filter by using the buttons, using the context menu, or by dragging filter elements from the left hand pane to the right hand pane.</p>
+	<p>Filters and filter values can be removed from the filter by using the 
+buttons, using the context menu, or by dragging filter elements from the 
+left hand pane to the right hand pane.</p>
 
 	<h3 id="card_filters">Card Filters</h3>
 
-	<p>These filters apply either to the White Wolf card list or a card set. The following basic filters are supported:</p>
+	<p>These filters apply either to the White Wolf card list or a card set. The 
+following basic filters are supported:</p>
 
 	<ul>
 		<li><em>Card Type</em>: Filter on the type of card. You must specify a <a href="#list">list</a> of card types. A card matches if any one of its types matches any type in the list.</li>
@@ -529,7 +714,7 @@
 		<li><em>Artist</em>: Filter on artists who have created art for the card. You must specify a <a href="#list">list</a> of artists. A card matches if any artist in the list has drawn art for any printing of the card.</li>
 		<li><em>Expansion with Rarity</em>: Filter on the expansions and rarities in which the card has been printed. You must specify a <a href="#list">list</a> of expansion and rarity combinations. A card matches if it has been printed in one of the given expansion and rarity combinations. This filter considers all the expansions and rarities in which a card has ever been printed, and ignores the specific physical expansion information on the card. If you want to filter on a card&#8217;s physical expansion information, use the <em>Physical Expansion</em> filter.</li>
 		<li><em>Discipline with Level</em>: Filter on the discipline(s) listed on the card and their levels. You must specify a <a href="#list">list</a> of discipline and level combinations. A crypt card matches if any discipline listed on the card, and its listed level, match any combination in the list. This filter is intended to be used to find vampires &#8212; presently, all library cards which have a discipline requirement have that discipline associated with them at the superior level. This filter treats different levels of the same discipline as different and unrelated disciplines, so a list which contains only the inferior version of a discipline will not match a card which has the superior version of that discipline.</li>
-		<li><em>Physical Expansion</em>: Filter on a card&#8217;s expansion information. You must specify a <a href="#list">list</a> of expansions. A card matches if its listed expansion matches any expansion in the list. This is different from the _Expansion_with_Rarity_ filter, since it ignores rarities, and matches the specific physical expansion of the card, not the list of expansions in which the card has been printed.</li>
+		<li><em>Physical Expansion</em>: Filter on a card&#8217;s expansion information. You must specify a <a href="#list">list</a> of expansions. A card matches if its listed expansion matches any expansion in the list. This is different from the <em>Expansion_with_Rarity</em> filter, since it ignores rarities, and matches the specific physical expansion of the card, not the list of expansions in which the card has been printed.</li>
 		<li><em>Card Sets</em>: You must specify a <a href="#list">list</a> of card sets. A card matches if it belongs to at least one set in the list. This filter matches on name and expansion, so the filter will return as many copies of the card exist in this set, not the same number as in the listed sets.</li>
 		<li><em>In Card Sets In Use</em>: A card matches if it belongs to a card set which is marked as <em>In Use</em> and is a child of the given card set. Like the <em>Card Sets</em> filter, this matches solely on the card name and expansion, and the numbers are those for this card set, not the number in the in use children.</li>
 		<li><em>Card Count</em>: Filter on card count within the current card set or a different card set. You must specify a <a href="#list">list</a> of card counts, and a <a href="#list">list</a> of card sets.  A card matches if it belongs to one of the specified sets, and has a count within that set equal to any count in the list.</li>
@@ -537,15 +722,19 @@
 		<li><em>Filter Group</em>: Add an additional filter group to the filter. See <a href="#combining">Combining Basic Filters</a></li>
 	</ul>
 
-	<p>You can also use these filters in the <a href="#lookup">Card Lookup Dialog</a> during a card set import &#8212; they can assist you in finding matches for unknown cards.</p>
+	<p>You can also use these filters in the <a href="#lookup">Card Lookup Dialog</a> during a card 
+set import &#8212; they can assist you in finding matches for unknown cards.</p>
 
-	<p>Currently, the only way to filter on the properties of a merged vampire, such as different discipline levels, is to filter on the card text.</p>
+	<p>Currently, the only way to filter on the properties of a merged vampire, such as 
+different discipline levels, is to filter on the card text.</p>
 
-	<p>For a more detailed description of these filters, see the  <a href="Card_Filters.html">The Card Filter help</a>.</p>
+	<p>For a more detailed description of these filters, see the  
+<a href="Card_Filters.html">The Card Filter help</a>.</p>
 
 	<h3 id="card_set_filters">Card Set Filters</h3>
 
-	<p>These filters apply to the card set list. The following basic filters are supported.</p>
+	<p>These filters apply to the card set list. The following basic filters are 
+supported.</p>
 
 	<ul>
 		<li><em>Card Set Name</em>: Filter on the card set name. You must specify a <a href="#string">string</a>. A card set matches if the string appears in the card set&#8217;s name. You can use % and _ as <a href="#wildcard">wildcard</a> characters.</li>
@@ -557,13 +746,18 @@
 		<li><em>Filter Group</em>: Add an additional filter group to the filter. See <a href="#combining">Combining Basic Filters</a></li>
 	</ul>
 
-	<p>When Sutekh displays card sets which match a filter, all the direct ancestors of those sets are also displayed even if they do not match the filter themselves, so that the matching sets can be shown in their correct position in the hierarchy.</p>
+	<p>When Sutekh displays card sets which match a filter, all the direct ancestors of 
+those sets are also displayed even if they do not match the filter themselves, 
+so that the matching sets can be shown in their correct position in the 
+hierarchy.</p>
 
-	<p>For a more detailed description of these filters, see the  <a href="Card_Set_Filters.html">The Card Set Filter help</a>.</p>
+	<p>For a more detailed description of these filters, see the  
+<a href="Card_Set_Filters.html">The Card Set Filter help</a>.</p>
 
 	<h3 id="combining">Combining Basic Filters</h3>
 
-	<p>You can combine filters by using filter groups to group the basic filters together.</p>
+	<p>You can combine filters by using filter groups to group the basic filters 
+together.</p>
 
 	<p>A Filter group can be set to any of the following options.</p>
 
@@ -574,39 +768,64 @@
 		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
 
-	<p>Each filter group can also contain further filters groups.  You can thus construct complex queries by nesting multiple filter groups.</p>
+	<p>Each filter group can also contain further filters groups.  You can thus 
+construct complex queries by nesting multiple filter groups.</p>
 
 	<h3 id="string">String filters</h3>
 
-	<p>Several filters check a string which you specify against a particular text property. They will match if the given string is a substring of the property.</p>
+	<p>Several filters check a string which you specify against a particular text 
+property. They will match if the given string is a substring of the 
+property.</p>
 
-	<p>String filters are case-insensitive: for example, if you use the <em>Card Name</em> filter, the string <strong>the</strong> will match both <strong>Weigh the Heart</strong> and <strong>Yuri, The Talon</strong>.</p>
+	<p>String filters are case-insensitive: for example, if you use the <em>Card Name</em> 
+filter, the string <strong>the</strong> will match both <strong>Weigh the Heart</strong> and 
+<strong>Yuri, The Talon</strong>.</p>
 
 	<p>String filters can also use two different wildcard characters:</p>
 
-	<p><strong>_</strong> will match any single character. Thus <strong>a_c</strong> will match both <strong>abc</strong> and <strong>aec</strong>, but not <strong>abdc</strong> or <strong>abd</strong>. <strong>_</strong> will never match the empty string, so <strong>Th_e</strong> will not match <strong>The</strong>, but will match <strong>Thee</strong></p>
+	<p><strong>_</strong> will match any single character. Thus <strong>a_c</strong> will match both <strong>abc</strong> and <strong>aec</strong>, 
+but not <strong>abdc</strong> or <strong>abd</strong>. <strong>_</strong> will never match the empty string, so <strong>Th_e</strong> will 
+not match <strong>The</strong>, but will match <strong>Thee</strong></p>
 
-	<p><strong>%</strong> will match any sequence of characters. So <strong>a%c</strong> will match any of <strong>abc</strong>, <strong>aec</strong> or <strong>abdegfthc</strong>, but not <strong>abdefg</strong>. <strong>%</strong> will also match the empty string, so <strong>Th%e</strong> will match both <strong>The</strong> and <strong>Three</strong>.</p>
+	<p><strong>%</strong> will match any sequence of characters. So <strong>a%c</strong> will match any of <strong>abc</strong>, 
+<strong>aec</strong> or <strong>abdegfthc</strong>, but not <strong>abdefg</strong>. <strong>%</strong> will also match the empty string, so 
+<strong>Th%e</strong> will match both <strong>The</strong> and <strong>Three</strong>.</p>
 
-	<p>Wildcards can be used multiple times in the same filter string. So <strong>a_b%e</strong> will match any of <strong>acbde</strong>, <strong>aebe</strong> or <strong>aebfe</strong>.</p>
+	<p>Wildcards can be used multiple times in the same filter string. So <strong>a_b%e</strong> will 
+match any of <strong>acbde</strong>, <strong>aebe</strong> or <strong>aebfe</strong>.</p>
 
 	<h3 id="list">List filters</h3>
 
-	<p>Several filters check a list of possible options which you specify against some property. They will match if the value of the property matches any item in the given list.</p>
+	<p>Several filters check a list of possible options which you specify against some 
+property. They will match if the value of the property matches any item in the 
+given list.</p>
 
-	<p>Thus, if you use the <em>Clan</em> filter and specify both <strong>Tremere</strong> and <strong>Toreador</strong>, it will match cards which list either of these clans.</p>
+	<p>Thus, if you use the <em>Clan</em> filter and specify both <strong>Tremere</strong> and <strong>Toreador</strong>, it 
+will match cards which list either of these clans.</p>
 
 	<h2 id="analysis">Analysis Tools</h2>
 
 	<h3 id="cluster">Cluster Cards</h3>
 
-	<p>The clustering tool attempts to group cards from a card list into sets (clusters) of cards with similar properties. It is designed to allow you to explore subsets of your cards, and perhaps to look for groups of cards which might provide starting points for deck construction. The clustering tool is currently quite slow, so be patient when waiting for large card lists to be grouped (it will finish eventually).</p>
+	<p>The clustering tool attempts to group cards from a card list into sets 
+(clusters) of cards with similar properties. It is designed to allow you 
+to explore subsets of your cards, and perhaps to look for groups of cards which 
+might provide starting points for deck construction. The clustering tool is 
+currently quite slow, so be patient when waiting for large card lists to be 
+grouped (it will finish eventually).</p>
 
-	<p>When you open the clustering tool, you will be presented with three tabs: <em>Select Columns</em>, <em>Settings</em> and <em>Results</em>.</p>
+	<p>When you open the clustering tool, you will be presented with three tabs: 
+<em>Select Columns</em>, <em>Settings</em> and <em>Results</em>.</p>
 
-	<p>The <em>Select Columns</em> tab is where you select the properties for the tool to consider when grouping the cards. Properties are organised into categories for ease of selection. If you are unsure which properties to select, start by selecting the disciplines and clans which you find the most interesting.</p>
+	<p>The <em>Select Columns</em> tab is where you select the properties for the tool to 
+consider when grouping the cards. Properties are organised into categories for 
+ease of selection. If you are unsure which properties to select, start by 
+selecting the disciplines and clans which you find the most interesting.</p>
 
-	<p>In the <em>Settings</em> tab, you can tweak the clustering algorithm parameters. The tool implements K-means clustering using K-means++ to determine the initial cluster centers, followed by Lloyd&#8217;s method of iteratively refining the clusters. Three parameters can be set:</p>
+	<p>In the <em>Settings</em> tab, you can tweak the clustering algorithm parameters. 
+The tool implements K-means clustering using K-means++ to determine the 
+initial cluster centers, followed by Lloyd&#8217;s method of iteratively refining the 
+clusters. Three parameters can be set:</p>
 
 	<ul>
 		<li><em>Number of iterations</em>: Number of Lloyd refinement steps to perform. Setting more steps makes the clustering take longer, but setting fewer steps may result in a less optimal grouping. Ten steps should be sufficient for most cases.</li>
@@ -614,53 +833,120 @@
 		<li><em>Distance measure</em>: Two distance metrics are currently supported. The Euclidean distance setting clusters using the usual N-dimensional vector space metric. The Sutekh distance metric modifies the Euclidean metric to make property values of -1 (used internally by Sutekh to mark costs of X and the <span class="caps">ANY</span> crypt group) close to all others and values of zero slightly further away than usual. If in doubt, leave the metric set to the Sutekh distance.</li>
 	</ul>
 
-	<p>Once the property columns have been selected and the parameters set, use the <em>Execute</em> button to begin the clustering. When clustering is complete, the <em>Results</em> tab will be populated.</p>
+	<p>Once the property columns have been selected and the parameters set, use the 
+<em>Execute</em> button to begin the clustering. When clustering is complete, the 
+<em>Results</em> tab will be populated.</p>
 
-	<p>The results are presented as a table. Each row corresponds to a cluster of cards. The first column contains checkboxes. Use these to select which clusters to use to create card sets, then click the <em>Make Cards Sets from Selected Clusters</em> button at the bottom of the results. The second column contains the cluster number, which enables you to determine which clusters correspond to the created card sets. The third column shows how many cards are present in each cluster, and the last lists the property values of the cluster center (property values of zero are omitted).</p>
+	<p>The results are presented as a table. Each row corresponds to a cluster of 
+cards. The first column contains checkboxes. Use these to select which clusters 
+to use to create card sets, then click the 
+<em>Make Cards Sets from Selected Clusters</em> button at the bottom of the results. 
+The second column contains the cluster number, which enables you to determine 
+which clusters correspond to the created card sets. The third column shows how 
+many cards are present in each cluster, and the last lists the property 
+values of the cluster center (property values of zero are omitted).</p>
 
 	<h3 id="expansionstats">Expansion Stats</h3>
 
-	<p>This lists some statistics about the different expansions and rarities.</p>
+	<p>This lists some statistics about the different 
+expansions and rarities.</p>
 
-	<p>For each expansion, this lists the number of cards of each rarity. It also notes which cards are found only in the preconstructed decks for that expansion if needed. For each rarity, the individual cards are list, grouped according to the current grouping of the full card list.</p>
+	<p>For each expansion, this lists the number of cards of each 
+rarity. It also notes which cards are found only in the 
+preconstructed decks for that expansion if needed. For each 
+rarity, the individual cards are list, grouped according 
+to the current grouping of the full card list.</p>
 
-	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
+	<p>Note that this will only include cards not legal for 
+tournament play (such as banned cards or storyline only 
+cards) if the current profile for the full card list shows 
+those cards.</p>
 
 	<h3 id="clandisciplinestats">Clan Discipline Stats</h3>
 
-	<p>This shows an analysis of all the different clans in the White Wolf card list. For each clan, it displays the total number of vampires in the clan, the sum of the vampires&#8217; capacities, and the most common disciplines. It also shows the score for the disciplines, and various stats about how the disciplines are distributed.</p>
+	<p>This shows an analysis of all the different clans in the 
+White Wolf card list. For each clan, it displays the total 
+number of vampires in the clan, the sum of the vampires&#8217; 
+capacities, and the most common disciplines. It also shows 
+the score for the disciplines, and various stats about how 
+the disciplines are distributed.</p>
 
-	<p>You can expand the tree view to show the details for each legal grouping combination.</p>
+	<p>You can expand the tree view to show the details for each 
+legal grouping combination.</p>
 
-	<p>The score is intended to give you some indication of how common disciplines are within the clan. Vampires without a discipline score 0 for that discipline, vampires with the inferior discipline score 1 and vampires with the superior discipline score 2.</p>
+	<p>The score is intended to give you some indication of how 
+common disciplines are within the clan. Vampires without 
+a discipline score 0 for that discipline, vampires with 
+the inferior discipline score 1 and vampires with the 
+superior discipline score 2.</p>
 
-	<p>Note that this will only include cards not legal for tournament play (such as banned cards or storyline only cards) if the current profile for the full card list shows those cards.</p>
+	<p>Note that this will only include cards not legal for 
+tournament play (such as banned cards or storyline only 
+cards) if the current profile for the full card list shows 
+those cards.</p>
 
 	<h3 id="analyzedeck">Analyze Deck</h3>
 
-	<p>This tool examines a card set and displays various statistics about it which are intended to give you some indication of how the card set will operate as a deck.</p>
+	<p>This tool examines a card set and displays various 
+statistics about it which are intended to give you 
+some indication of how the card set will operate as 
+a deck.</p>
 
-	<p>It displays several tabs, each of which summarises different aspects of the card set. The first tab summarises some basic information about the entire set. The second tab implements Legbiter&#8217;s Happy Family analysis for the card set. The remaining tabs consider specific card types.</p>
+	<p>It displays several tabs, each of which summarises 
+different aspects of the card set. The first tab 
+summarises some basic information about the entire set. 
+The second tab implements Legbiter&#8217;s Happy Family 
+analysis for the card set. The remaining tabs 
+consider specific card types.</p>
 
-	<p>The happy family implementation allows you either to select the number of disciplines to use, or to select the disciplines to consider manually.</p>
+	<p>The happy family implementation allows you either to 
+select the number of disciplines to use, or to select 
+the disciplines to consider manually.</p>
 
 	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
 
-	<p>This tool tests the current card set against other card sets with the same parent, and considers whether there are enough cards in the parent card set to simultaneously construct all the selected sets. Multiple decks can be selected from the list of card sets.</p>
+	<p>This tool tests the current card set against other card 
+sets with the same parent, and considers whether there 
+are enough cards in the parent card set to simultaneously 
+construct all the selected sets. Multiple decks can be 
+selected from the list of card sets.</p>
 
-	<p>You can test the current card set against all sets with the same parent which are marked as <em>In Use</em> by checking the <em>Test against all card sets marked as in use</em> checkbox when selecting decks for comparison. This checkbox overrides any selected entries in the list.</p>
+	<p>You can test the current card set against all sets with the 
+same parent which are marked as <em>In Use</em> by checking the 
+<em>Test against all card sets marked as in use</em> checkbox when 
+selecting decks for comparison. This checkbox overrides any 
+selected entries in the list.</p>
 
-	<p>By default the independence test is strict and checks whether the parent set contains enough cards to build all the selected child sets with exactly the card expansions specified. A less strict check which ignores expansions may be selected by checking <em>Ignore card expansions</em>.</p>
+	<p>By default the independence test is strict and checks 
+whether the parent set contains enough cards to build all 
+the selected child sets with exactly the card expansions 
+specified. A less strict check which ignores expansions may 
+be selected by checking <em>Ignore card expansions</em>.</p>
 
-	<p>The first tab of the results displays the full list of cards of which there is a shortage in the parent card set. For each selected set which includes any of these cards, the list of cards relevant to that set is shown in a separate tab.</p>
+	<p>The first tab of the results displays the full list of cards 
+of which there is a shortage in the parent card set. For 
+each selected set which includes any of these cards, the 
+list of cards relevant to that set is shown in a separate 
+tab.</p>
 
 	<h3 id="carddrawprobabilities">Card Draw probabilities</h3>
 
-	<p>This tool displays the probabilities of drawing the selected cards from the library or the crypt. Unlike the _simulate opening hand_ tool, this displays results for longer sequences of card draws.</p>
+	<p>This tool displays the probabilities of drawing the selected 
+cards from the library or the crypt. Unlike the _simulate 
+opening hand_ tool, this displays results for longer 
+sequences of card draws.</p>
 
-	<p>The first row of the table shows the probabilities of drawing a single card in the selected list. Sub-rows show the individual probabilities for each possible combination of selected cards. The second row shows the probabilities of drawing all possible combinations of two selected cards, etc..</p>
+	<p>The first row of the table shows the probabilities of 
+drawing a single card in the selected list. Sub-rows show 
+the individual probabilities for each possible combination 
+of selected cards. The second row shows the probabilities of 
+drawing all possible combinations of two selected cards, 
+etc..</p>
 
-	<p>Each probability cell in the table displays two values: the probability of drawing at least that combination of cards, and the probability of drawing exactly that combination of cards (shown in brackets).</p>
+	<p>Each probability cell in the table displays two values: the 
+probability of drawing at least that combination of cards, 
+and the probability of drawing exactly that combination of 
+cards (shown in brackets).</p>
 
 	<p>The tool has the following settings:</p>
 
@@ -670,55 +956,93 @@
 		<li><em>cards of interest</em>: Set the number of rows in the                    table. You must specify a number from one to the total                    number of cards selected.</li>
 	</ul>
 
-	<p>The selected changes are only applied when you press the the <em>recalculate table</em> button.</p>
+	<p>The selected changes are only applied when you press the 
+the <em>recalculate table</em> button.</p>
 
 	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
 
-	<p>This allows you to find crypt cards that are similar to the current selected crypt card. It will search for cards in a compatible grouping that share the specified number of disciplines or virtues with the selected crypt card.</p>
+	<p>This allows you to find crypt cards that are similar to the 
+current selected crypt card. It will search for cards in a 
+compatible grouping that share the specified number of 
+disciplines or virtues with the selected crypt card.</p>
 
-	<p>More complex queries are possible by frist filtering the card set and then using the 'Only match cards visible in this pane&#8217; option to restrict the results of the crypt card search to match the filter.</p>
+	<p>More complex queries are possible by frist filtering the 
+card set and then using the &#8216;Only match cards visible in 
+this pane&#8217; option to restrict the results of the crypt card 
+search to match the filter.</p>
 
 	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
 
-	<p>This tool compares the current card set with a different card set. It displays which cards are common to both card sets, and lists the unique cards in each card set.</p>
+	<p>This tool compares the current card set with a different 
+card set. It displays which cards are common to both card 
+sets, and lists the unique cards in each card set.</p>
 
-	<p>By default, the tool considers the expansions of cards, and considers all cards with the same name with different expansions as different.  You can change this behaviour using the <em>Ignore Expansions</em> checkbox when selecting a card set for comparison. If selected, all cards of with the same name are considered the same, regardless of expansion.</p>
+	<p>By default, the tool considers the expansions of cards, and 
+considers all cards with the same name with different 
+expansions as different.  You can change this behaviour 
+using the <em>Ignore Expansions</em> checkbox when selecting a 
+card set for comparison. If selected, all cards of with the 
+same name are considered the same, regardless of expansion.</p>
 
-	<p>The display of the results uses the same grouping as the card set.</p>
+	<p>The display of the results uses the same grouping as the 
+card set.</p>
 
-	<p>You can create card sets from each list of results using the 'Create Card Set from this list&#8217; button.</p>
+	<p>You can create card sets from each list of results using 
+the &#8216;Create Card Set from this list&#8217; button.</p>
 
 	<h3 id="findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</h3>
 
-	<p>If you have downloaded the database of tournament winning decks, this allows you to search the tournament winning deck archive for decks containing specific combinations of cards.</p>
+	<p>If you have downloaded the database of tournament winning 
+decks, this allows you to search the tournament winning 
+deck archive for decks containing specific combinations of 
+cards.</p>
 
-	<p>You can either search for all the selected cards or for those that contain at least 1 of the selected cards.</p>
+	<p>You can either search for all the selected cards or for 
+those that contain at least 1 of the selected cards.</p>
 
-	<p>The results are grouped by year, and list the number of matching card found in each listed deck. The matching decks can be opened as new panes by choosing the &#8220;Open cardset&#8221; option.</p>
+	<p>The results are grouped by year, and list the number of 
+matching card found in each listed deck. The matching 
+decks can be opened as new panes by choosing the 
+&#8220;Open cardset&#8221; option.</p>
 
-	<p>The results dialog in not modal, so it&#8217;s possible to examine the opened card sets closely without closing the search results.</p>
+	<p>The results dialog in not modal, so it&#8217;s possible to 
+examine the opened card sets closely without closing 
+the search results.</p>
 
 	<h3 id="simulateopeninghand">Simulate opening hand</h3>
 
-	<p>This tool treats the card set as a completed deck, and displays the expected distribution of cards in the opening hand and crypt. It is intended to give you some idea of how the deck will work in practice. In addition, you can generate example opening hands and crypts by clicking the <em>Draw sample hand</em> button.</p>
+	<p>This tool treats the card set as a completed deck, and 
+displays the expected distribution of cards in the opening 
+hand and crypt. It is intended to give you some idea of how 
+the deck will work in practice. In addition, you can 
+generate example opening hands and crypts by clicking the 
+<em>Draw sample hand</em> button.</p>
 
 	<h2 id="profiles">Profiles</h2>
 
 	<h3 id="edit_profile">Editing Profiles</h3>
 
-	<p>The <strong>Edit Profile</strong> dialog is an interface for creating new profiles of the appropriate type, or to adjust the settings of the profile.</p>
+	<p>The <strong>Edit Profile</strong> dialog is an interface for creating new profiles of the 
+appropriate type, or to adjust the settings of the profile.</p>
 
-	<p>New Profiles can be created by selecting the <strong>New Profile</strong> option from the drop down list. Otherwise, the profile to be edited can be selected. Profiles can be renamed by editing the name field.</p>
+	<p>New Profiles can be created by selecting the <strong>New Profile</strong> option from the drop 
+down list. Otherwise, the profile to be edited can be selected. Profiles can 
+be renamed by editing the name field.</p>
 
-	<p>Changes are only applied if the <strong>Save and Close</strong> option is chosen. The changes are applied to all panes used the edited profile.  Cancel discards all changes made.</p>
+	<p>Changes are only applied if the <strong>Save and Close</strong> option is chosen. The changes 
+are applied to all panes used the edited profile.  Cancel discards all changes 
+made.</p>
 
 	<h3 id="manage_profile">Managing Profiles</h3>
 
 	<p>The Profile Management dialog is found under the <a href="#main_file">File</a> menu.</p>
 
-	<p>The dialog has tabs for each profile type. You can choose to either edit the selected dialog, in which case the <a href="#edit_profile">Edit Profile</a> dialog is opened with the selected profile, or delete the selected profile.</p>
+	<p>The dialog has tabs for each profile type. You can choose to either edit the 
+selected dialog, in which case the <a href="#edit_profile">Edit Profile</a> dialog 
+is opened with the selected profile, or delete the selected profile.</p>
 
-	<p>If a profile is deleted, any panes or card sets using that profile change to the default profile.</p>
+	<p>If a profile is deleted, any panes or card sets using that profile change 
+to the default profile.</p>
 
 	<h3 id="ww_profile">White Wolf Card List Profile Options</h3>
 
@@ -728,7 +1052,7 @@
 		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable) or to show both.</li>
 		<li><em>Extra levels</em>: Controls whether the card expansions are listed.</li>
 		<li><em>Group by</em>: Controls how the cards are grouped together. See the <a href="#grouping">Card Grouping</a> section for more details.</li>
-		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns (card sets)</strong> section for more details.</li>
+		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns &#8212; card sets</strong> section for more details.</li>
 		<li><em>Filter</em>: Specify a saved <a href="#filters">filter</a> that is always applied when this profile is selected.</li>
 		<li><em>Hide cards not legal for tournament play</em>: Controls whether cards flagged as not legal for tournament play (i.e. banned or storyline only cards) are shown in the list.</li>
 		<li><em>White Wolf Card List Count Mode</em>: By default, the White Wolf card list doesn&#8217;t show a count for cards. This option allows you to choose between the default <em>Don&#8217;t show card counts</em> mode, <em>Show counts for each distinct card</em> and <em>Show counts for each expansion</em>. In <em>Show counts for each distinct card</em>, each distinct card has a count of 1, but expansions aren&#8217;t counted. This can be useful for determining statistics about the cards and so on, While in the <em>how counts for each expansion</em> mode, each printed expansion has a count of 1 (the <em>Unspecified Expansion</em> entries aren&#8217;t counted).</li>
@@ -737,7 +1061,8 @@
 
 	<h4 id="grouping">Card Grouping</h4>
 
-	<p>By default, Sutekh groups the cards into the separate card types.   You can change the grouping as part of the pane profile.</p>
+	<p>By default, Sutekh groups the cards into the separate card types.   You can 
+change the grouping as part of the pane profile.</p>
 
 	<p>The following groupings are available:</p>
 
@@ -761,7 +1086,10 @@
 
 	<h4 id="extracolumnscardsets">Extra Columns &#8212; card sets</h4>
 
-	<p>By default, Sutekh only shows card names in the White Wolf Card List, and card names and card counts in other card set card lists.  You can select additional columns to display as part of the pane profile.</p>
+	<p>By default, Sutekh only shows card names in the White 
+Wolf Card List, and card names and card counts in other 
+card set card lists.  You can select additional columns 
+to display as part of the pane profile.</p>
 
 	<p>The possible extra columns are:</p>
 
@@ -778,11 +1106,21 @@
 		<li><em>Cost</em>: Show the cost of the card, together with the                      cost type.</li>
 	</ul>
 
-	<p>You can sort the display by a particular column by clicking on the column header. Click on the same header repeatedly to toggle between ascending and descending order.</p>
+	<p>You can sort the display by a particular column by clicking 
+on the column header. Click on the same header repeatedly 
+to toggle between ascending and descending order.</p>
 
-	<p>Cards which have equal values within the column selected for sorting are further sorted by the card name. Because the different cost types aren&#8217;t comparable, if you choose to sort by cost, cards will be grouped by cost type first and sorted within those types.</p>
+	<p>Cards which have equal values within the column selected 
+for sorting are further sorted by the card name. Because 
+the different cost types aren&#8217;t comparable, if you choose 
+to sort by cost, cards will be grouped by cost type first 
+and sorted within those types.</p>
 
-	<p>If you have downloaded the icons from the V:<span class="caps">EKN</span> site, you will be able to toggle the display between the <em>Show Icons and Names</em>, <em>Show Text only</em> and <em>Show Icons only</em> options using the combo box. This setting will affect all selected columns that can use icons.</p>
+	<p>If you have downloaded the icons from the V:EKN site, 
+you will be able to toggle the display between the 
+<em>Show Icons and Names</em>, <em>Show Text only</em> and 
+<em>Show Icons only</em> options using the combo box. This setting 
+will affect all selected columns that can use icons.</p>
 
 	<h3 id="cardset_profile">Card Set Profile Options</h3>
 
@@ -790,52 +1128,62 @@
 
 	<ul>
 		<li><em>Cards To Show</em>: Set which cards are displayed. The options are:
-	<ul>
-		<li><em>This Set Only</em>: Show only the cards in this card set.</li>
-		<li><em>Show All Cards</em>: Show all the cards in the White Wolf list. Cards not in this card set will have a count of 0.</li>
-		<li><em>Show all cards in parent card set</em>: Show all the cards in this card set, as well as any cards in the parent card set that are not in this card set.</li>
-		<li><em>Show all cards in child card sets</em>: Show all the cards in this card set, as well as any cards in those child card sets marked as <em>In Use</em> that are not in this card set.</li>
-	</ul></li>
+		<ul>
+			<li><em>This Set Only</em>: Show only the cards in this card set.</li>
+			<li><em>Show All Cards</em>: Show all the cards in the White Wolf list. Cards not in this card set will have a count of 0.</li>
+			<li><em>Show all cards in parent card set</em>: Show all the cards in this card set, as well as any cards in the parent card set that are not in this card set.</li>
+			<li><em>Show all cards in child card sets</em>: Show all the cards in this card set, as well as any cards in those child card sets marked as <em>In Use</em> that are not in this card set.</li>
+		</ul></li>
 		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable) or to show both.</li>
-		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns (card sets)</strong> section for more details.</li>
+		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns &#8212; card sets</strong> section for more details.</li>
 		<li><em>Extra levels</em>: Specify what additional information is displayed below the card names in the tree. The options are:
-	<ul>
-		<li><em>Show No Children</em>: Display nothing below the card name.</li>
-		<li><em>Show Expansions</em>: Show the expansions of the cards, and a card count for each expansion.</li>
-		<li><em>Show Child Card Sets</em>: Show the card counts for child card sets marked as <em>In Use</em>.</li>
-		<li><em>Show Expansions and Child Card Sets</em>: Show expansions, and within each expansion show counts for child card sets marked as <em>In Use</em>.</li>
-		<li><em>Show Child Card Sets and Expansions</em>: Show child card sets marked as <em>In Use</em>, and for each child card set show expansion counts.</li>
-	</ul></li>
+		<ul>
+			<li><em>Show No Children</em>: Display nothing below the card name.</li>
+			<li><em>Show Expansions</em>: Show the expansions of the cards, and a card count for each expansion.</li>
+			<li><em>Show Child Card Sets</em>: Show the card counts for child card sets marked as <em>In Use</em>.</li>
+			<li><em>Show Expansions and Child Card Sets</em>: Show expansions, and within each expansion show counts for child card sets marked as <em>In Use</em>.</li>
+			<li><em>Show Child Card Sets and Expansions</em>: Show child card sets marked as <em>In Use</em>, and for each child card set show expansion counts.</li>
+		</ul></li>
 		<li><em>Group by</em>: Controls how the cards are grouped together. See the <a href="#grouping">Card Grouping</a> section for more details.</li>
 		<li><em>Hide cards not legal for tournament play</em>: Controls whether cards flagged as not legal for tournament play (i.e. banned or storyline only cards) are shown in the list.</li>
 		<li><em>Show icons for grouping</em>: Controls whether icons are shown with the group name.</li>
 		<li><em>Filter</em>: Specify a saved <a href="#filters">filter</a> that is always applied when this profile is selected.</li>
 		<li><em>Parent Count Mode</em>: Specify how the <em>Parent count</em> column is displayed in card sets with a parent set. The options are:
-	<ul>
-		<li><em>Ignore Parent</em>: Hide the parent count column.</li>
-		<li><em>Parent count</em>: Show only the parent count. If the count for this card set exceeds the parent count, this number is shown in red.</li>
-		<li><em>Parent Minus this set</em>: Show the difference between the parent count and this card set&#8217;s count. If this number is negative, it is shown in red.</li>
-		<li><em>Parent Minus Sets in Use</em>: Show the difference between the parent count and the total count in all the card sets marked as <em>In Use</em>. If this number is negative, it is shown in red.</li>
-	</ul></li>
+		<ul>
+			<li><em>Ignore Parent</em>: Hide the parent count column.</li>
+			<li><em>Parent count</em>: Show only the parent count. If the count for this card set exceeds the parent count, this number is shown in red.</li>
+			<li><em>Parent Minus this set</em>: Show the difference between the parent count and this card set&#8217;s count. If this number is negative, it is shown in red.</li>
+			<li><em>Parent Minus Sets in Use</em>: Show the difference between the parent count and the total count in all the card sets marked as <em>In Use</em>. If this number is negative, it is shown in red.</li>
+		</ul></li>
 		<li><em>Show icons for the grouping</em>: Toggle whether icons are shown for the top level grouping (when available).</li>
 	</ul>
 
 	<h4 id="different_profiles">The Different Profiles</h4>
 
-	<p>The display of a cardset is determined by 3 different profiles. These are the &#8220;local profile&#8221;, the &#8220;pane profile&#8221; and the &#8220;card set profile&#8221;. Any options that aren&#8217;t set by one of these profiles is taken from the <strong>Default profile</strong>.</p>
+	<p>The display of a cardset is determined by 3 different profiles. These are the 
+&#8220;local profile&#8221;, the &#8220;pane profile&#8221; and the &#8220;card set profile&#8221;. Any options 
+that aren&#8217;t set by one of these profiles is taken from the <strong>Default profile</strong>.</p>
 
-	<p>The <strong>cardset profile</strong> is used for any copy of the given card set, when it is first opened. If multiple copies of a card set are open, they all use the same <strong>cardset profile</strong>, and changing this will effect all open copies of the card set.</p>
+	<p>The <strong>cardset profile</strong> is used for any copy of the given card set, when it 
+is first opened. If multiple copies of a card set are open, they all use the 
+same <strong>cardset profile</strong>, and changing this will effect all open copies of the 
+card set.</p>
 
-	<p>The <strong>pane profile</strong> is used to override settings in the <strong>cardset profile</strong> and save them across sessions. Pane profile settings are lost when the specific pane is specifically closed, but, as long as the pane is kept open, they are saved and restored as needed.</p>
+	<p>The <strong>pane profile</strong> is used to override settings in the <strong>cardset profile</strong> and 
+save them across sessions. Pane profile settings are lost when the specific 
+pane is specifically closed, but, as long as the pane is kept open, they 
+are saved and restored as needed.</p>
 
-	<p>The <strong>local profile</strong> is used to set temporary options on the specific pane which override the other profiles. These setting are temporary, and are never saved.</p>
+	<p>The <strong>local profile</strong> is used to set temporary options on the specific pane 
+which override the other profiles. These setting are temporary, and are never 
+saved.</p>
 
 	<h3 id="cs_profile">CardSet List Profile Options</h3>
 
 	<p>The following options can be set for the card set list profile</p>
 
 	<ul>
-		<li><a href="#extracolumnscardsetlistview">Extra Columns &#8212; card set list view</a>  Select which extra columns of data are shown.                    See the <strong>Extra Columns (card set list)</strong> section                    for more details.</li>
+		<li><a href="#extracolumnscardsetlistview">Extra Columns &#8212; card set list view</a>  Select which extra columns of data are shown.                    See the <strong>Extra Columns &#8212; card set list</strong> section                    for more details.</li>
 	</ul>
 
 	<h4 id="extracolumnscardsetlistview">Extra Columns &#8212; card set list view</h4>
