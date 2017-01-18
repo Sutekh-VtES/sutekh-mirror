@@ -3,7 +3,8 @@
 # Copyright 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Based on custom_raw.py from pylint, so the license is
 # GPL v2 or later - see the COPYRIGHT file for details
-# This is tightly tied to pep8, Copyright (C) 2006 Johann C. Rocholl
+# This is tightly tied to pycodestyle (previously pep8)
+# Copyright (C) 2006- Johann C. Rocholl
 # pep8 uses the expat style license (see pep8 package for details)
 # so there's no license conflict
 
@@ -16,12 +17,15 @@
 
 from compat_helper import Base, compat_register
 from pylint.interfaces import IRawChecker
-import pep8
+try:
+    import pycodestyle
+except ImportError:
+    import pep8 as pycodestyle
 
 
 class DummyOptions(object):
-    """Mockup object so we can use pep8 without having it stomp over pylint's
-       argument passing"""
+    """Mockup object so we can use pycondestyle / pep8 without having it stomp
+       over pylint's argument passing"""
 
     # pylint: disable=C0103, R0902
     # Need these names and attributes to monkey-patch pep8
@@ -42,27 +46,28 @@ class DummyOptions(object):
         self.max_line_length = 79
         # Need to do this to initialise counters in later pep8 versions
         if hasattr(pep8, 'BENCHMARK_KEYS'):
-            self.counters = dict.fromkeys(pep8.BENCHMARK_KEYS, 0)
+            self.counters = dict.fromkeys(pycodestyle.BENCHMARK_KEYS, 0)
 
     def fix_checks(self):
         """Setup the check list correctly, after monkey-patching options"""
         # pylint: disable=E1101
-        # We only call this code on versions of pep8 which have find_checks
-        self.physical_checks = pep8.find_checks('physical_line')
-        self.logical_checks = pep8.find_checks('logical_line')
+        # We only call this code on versions of pycodestyle which have
+        # find_checks
+        self.physical_checks = pycodestyle.find_checks('physical_line')
+        self.logical_checks = pycodestyle.find_checks('logical_line')
 
 
 class PEP8Checker(Base):
-    """Run pep8 and report a subset of it's issues."""
+    """Run pycodestyle / pep8 and report a subset of it's issues."""
 
     __implements__ = IRawChecker
 
-    name = 'pep8 checker'
+    name = 'pycodestyle checker'
     # We construct msgs from this later - this allows us to maintain the
-    # mapping between pep8 and pylint easily
+    # mapping between pycodestyle and pylint easily
     mapping = {
         # pylint requires that all messages start with the same first 2
-        # digits, so our numbers aren't related to the pep8 numbers
+        # digits, so our numbers aren't related to the pycodestyle numbers
         'C5701': ("Whitespace before ',',':' or ';'", ['E203']),
         'C5702': ('Extra whitespace around operator',
                   ['E221', 'E222', 'E223', 'E224']),
@@ -99,29 +104,30 @@ class PEP8Checker(Base):
         # msgs is the pylint required name
         self.msgs = {}
         for sPylint, tData in self.mapping.iteritems():
-            sMsg = 'pep8 %s: %s : (position %%d)%%s' % (','.join(tData[1]),
+            sMsg = 'pycodestyle %s: %s : (position %%d)%%s' % (','.join(tData[1]),
                                                         tData[0])
-            sSymbol = 'pep8-%s' % ','.join(tData[1])
+            sSymbol = 'pycodestyle-%s' % ','.join(tData[1])
             self.msgs[sPylint] = (sMsg, sSymbol, sMsg)
         super(PEP8Checker, self).__init__(oLinter)
         # pylint: disable=E1101
         # We guard access to StyleGuide with hasattr
-        if not hasattr(pep8, 'StyleGuide'):
-            # support older pep8 versions
-            pep8.options = DummyOptions()
-            pep8.options.fix_checks()
+        if not hasattr(pycodestyle, 'StyleGuide'):
+            # support older pep9 versions
+            pycodestyle.options = DummyOptions()
+            ppycodestyle.options.fix_checks()
         else:
             # Use pep8 StyleGuide object
-            oGuide = pep8.StyleGuide(parse_argv=False, config_file=False,
-                                     quiet=0, verbose=0, repeat=True,
-                                     doctest=False, testsuite=False,
-                                     show_pep8=False, show_source=False,
-                                     max_line_length=79)
-            pep8.options = oGuide.options
+            oGuide = pycodestyle.StyleGuide(
+                parse_argv=False, config_file=False,
+                quiet=0, verbose=0, repeat=True,
+                doctest=False, testsuite=False,
+                show_pep8=False, show_source=False,
+                max_line_length=79)
+            pycodestyle.options = oGuide.options
         self.oChecker = None
 
     def _transform_error(self, iLineNo, iOffset, sMessage, _oCheck):
-        """Monkey patch pep8's message handling.
+        """Monkey patch pycodestyle's message handling.
 
            This allows us to get the line number as well as the error code"""
         # Split out line number and message text
@@ -143,7 +149,7 @@ class PEP8Checker(Base):
 
     def process_module(self, aStream):
         """process a module."""
-        self.oChecker = pep8.Checker(None)
+        self.oChecker = pycodestyle.Checker(None)
         # Handle recent pylint changes
         if hasattr(aStream, 'file_stream'):
             aStream = aStream.file_stream
