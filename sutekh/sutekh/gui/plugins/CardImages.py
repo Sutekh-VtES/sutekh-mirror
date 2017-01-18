@@ -80,7 +80,7 @@ class CardImageFrame(BaseImageFrame):
     def _make_card_urls(self, _sFullFilename):
         """Return a url pointing to the vtes.pl scan of the image"""
         sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        sFilename = self._norm_cardname()[0]
+        sFilename = self._norm_cardname(self._sCardName)[0]
         if sCurExpansionPath == '' or sFilename == '':
             # Error path, we don't know where to search for the image
             return None
@@ -123,9 +123,9 @@ class CardImageFrame(BaseImageFrame):
             return (sLackeyUrl, sUrl)
         return (sUrl, )
 
-    def _norm_cardname(self):
+    def _norm_cardname(self, sCardName):
         """Normalise the card name"""
-        sFilename = unaccent(self._sCardName)
+        sFilename = unaccent(sCardName)
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
         elif sFilename.startswith('an '):

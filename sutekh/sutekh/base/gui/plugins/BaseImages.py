@@ -13,8 +13,6 @@ import zipfile
 import tempfile
 import urllib2
 import logging
-from sqlobject import SQLObjectNotFound
-from ...core.BaseObjects import IAbstractCard
 from ...io.UrlOps import urlopen_with_timeout
 from ...gui.GuiDataPack import progress_fetch_data, gui_error_handler
 from ..BasePluginManager import BasePlugin
@@ -81,6 +79,19 @@ def image_gui_error_handler(oExp):
     if isinstance(oExp, urllib2.HTTPError) and oExp.code == 404:
         return
     gui_error_handler(oExp)
+
+
+def get_expansion_info(oAbsCard):
+    """Set the expansion info."""
+    bHasInfo = len(oAbsCard.rarity) > 0
+    if bHasInfo:
+        aExp = set([(oP.expansion.name, oP.expansion.releasedate)
+                     for oP in oAbsCard.rarity])  # remove duplicates
+        # Sort by date, newest first
+        aExpansions = [x[0] for x in sorted(aExp, key=lambda x: x[1], reverse=True)]
+        return aExpansions
+    else:
+        return []
 
 
 class CardImagePopupMenu(gtk.Menu):
@@ -225,24 +236,14 @@ class BaseImageFrame(BasicFrame):
         """Convert the Full Expansion name into the abbreviation needed."""
         raise NotImplementedError("Implement _convert_expansion")
 
-    def _set_expansion_info(self, sCardName):
+    def _set_expansion_info(self, oAbsCard):
         """Set the expansion info."""
-        # pylint: disable=E1101
-        # pylint doesn't pick up IAbstractCard methods correctly
-        try:
-            oAbsCard = IAbstractCard(sCardName)
-            bHasInfo = len(oAbsCard.rarity) > 0
-        except SQLObjectNotFound:
-            bHasInfo = False
-        if bHasInfo:
-            aExp = [oP.expansion.name for oP in oAbsCard.rarity]
-            self._aExpansions = sorted(list(set(aExp)))  # remove duplicates
-            self._iExpansionPos = 0
+        self._aExpansions = get_expansion_info(oAbsCard)
+        self._iExpansionPos = 0
+        if self._aExpansions:
             self._sCurExpansion = self._aExpansions[0]
         else:
             self._sCurExpansion = ''
-            self._aExpansions = []
-            self._iExpansionPos = 0
 
     def _redraw(self, bPause):
         """Redraw the current card"""
@@ -259,9 +260,18 @@ class BaseImageFrame(BasicFrame):
         """Return a list of possible urls pointing to a scan of the image"""
         raise NotImplementedError("implement _make_card_urls")
 
-    def _norm_cardname(self):
+    def _norm_cardname(self, sCardName):
         """Normalise the card name"""
         raise NotImplementedError("Implement norm_cardname")
+
+    def _make_paths(self, sCardName, sExpansionPath):
+        """Create the joined list of paths"""
+        aFilenames = self._norm_cardname(sCardName)
+        aFullFilenames = []
+        for sFilename in aFilenames:
+            aFullFilenames.append(os.path.join(self._sPrefsPath,
+                                               sExpansionPath, sFilename))
+        return aFullFilenames
 
     def _convert_cardname_to_path(self):
         """Convert sCardName to the form used by the card image list"""
@@ -269,12 +279,24 @@ class BaseImageFrame(BasicFrame):
             sCurExpansionPath = ''
         else:
             sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        aFilenames = self._norm_cardname()
-        aFullFileNames = []
-        for sFilename in aFilenames:
-            aFullFileNames.append(os.path.join(self._sPrefsPath,
-                                               sCurExpansionPath, sFilename))
-        return aFullFileNames
+        aFullFilenames = self._make_paths(self._sCardName, sCurExpansionPath)
+        return aFullFilenames
+
+    def lookup_filename(self, oPhysCard):
+        """Return the list of possible filenames for use by other plugins"""
+        sExpansionPath = ''
+        sCardName = oPhysCard.abstractCard.canonicalName
+        if self._bShowExpansions:
+            # Only lookup expansions if we have expansion images
+            if oPhysCard.expansion:
+                sExpansionName = oPhysCard.expansion.name
+            else:
+                # No expansion, so find the latest expansion for this card
+                aExpasions = get_expansion_info(oPhysCard.abstractCard)
+                sExpansionName = aExpasions[0]
+            sExpansionPath = self._convert_expansion(sExpansionName)
+        aFullFilenames = self._make_paths(sCardName, sExpansionPath)
+        return aFullFilenames
 
     def _download_image(self, sFullFilename):
         """Attempt to download the image."""
@@ -422,7 +444,7 @@ class BaseImageFrame(BasicFrame):
         if oPhysCard.expansion:
             sExpansionName = oPhysCard.expansion.name
         if sCardName != self._sCardName:
-            self._set_expansion_info(sCardName)
+            self._set_expansion_info(oPhysCard.abstractCard)
             self._sCardName = sCardName
         if len(self._aExpansions) > 0:
             if sExpansionName in self._aExpansions:
