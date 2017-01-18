@@ -1,3 +1,13 @@
+18 Jan 2017
+ * Add "Print Card Set as Proxies" card set
+ * Tweak the output of the "Print Card Set" Plugin
+
+17 Jan 2017
+ * Fix DBSignals to work with sQLObject 3.0
+
+19 Dec 2016
+ * Update pypi.python.org and sourceforge.net links to use https instead of http.
+
 02 Jun 2016
  * Change to using print_function everywhere (work towards eventual python3 support)
 
