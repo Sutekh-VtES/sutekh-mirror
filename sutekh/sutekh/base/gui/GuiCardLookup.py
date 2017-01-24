@@ -588,8 +588,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 iExpID = IExpansion(sNewExpName).id
             except SQLObjectNotFound:
                 iExpID = None
-            except SQLObjectNotFound:
-                iExpID = None
         else:
             iExpID = None
 
