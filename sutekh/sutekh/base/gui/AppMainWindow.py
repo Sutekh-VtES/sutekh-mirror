@@ -6,16 +6,18 @@
 
 """Base class for the application main window."""
 
-import pygtk
-pygtk.require('2.0')
-import gtk
 import logging
 import socket
 from itertools import chain
+
+import pygtk
+pygtk.require('2.0')
+import gtk
 # pylint: disable=E0611
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable=E0611
+
 from ..core.BaseObjects import PhysicalCardSet, PhysicalCard
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
@@ -568,4 +570,3 @@ class AppMainWindow(MultiPaneWindow):
         """Check for cardlist updates if supported."""
         # Subclasses will implement this
         raise NotImplementedError("Implement check_updated_cardlist")
-

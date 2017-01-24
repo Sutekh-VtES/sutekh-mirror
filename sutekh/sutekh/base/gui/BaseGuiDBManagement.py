@@ -5,9 +5,9 @@
 # GPL - see COPYING for details
 """This handles the gui aspects of upgrading the database."""
 
-import gtk
 import logging
 import datetime
+import gtk
 from sqlobject import sqlhub, connectionForURI
 from .DBUpgradeDialog import DBUpgradeDialog
 from .ProgressDialog import (ProgressDialog,
@@ -108,8 +108,8 @@ class BaseGuiDBManager(object):
         # This may introduce clock issues, but matches the behaviour for when
         # the user manually refreshes the card list, rather than auto updating
         oConfig.set_last_update_date(datetime.date.today())
-        # We have to save, since the re-validation after the plugins will reload
-        # the file
+        # We have to save, since the re-validation after the plugins will
+        # reload the file
         save_config(oConfig)
         return True
 
