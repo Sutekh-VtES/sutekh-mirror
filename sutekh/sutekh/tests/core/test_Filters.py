@@ -5,19 +5,18 @@
 
 """Sutekh Filters tests"""
 
+import unittest
+from sqlobject import SQLObjectNotFound
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          IAbstractCard,
                                           PhysicalCard, IPhysicalCard,
                                           Expansion, IExpansion,
-                                          PhysicalCardSet, IPhysicalCard,
+                                          PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
-from sqlobject import SQLObjectNotFound
-import unittest
 
 
 def make_physical_card_sets():
