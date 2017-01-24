@@ -120,7 +120,7 @@ class PrintProxyPlugin(SutekhPlugin):
         elif oRes == gtk.PRINT_OPERATION_RESULT_APPLY:
             self._oSettings = oPrintOp.get_print_settings()
 
-    def begin_print(self, oPrintOp, oContext):
+    def begin_print(self, oPrintOp, _oContext):
         """Set up printing context.
 
            This includes determining pagination and the number of pages.
