@@ -10,11 +10,11 @@ passed in when the dialog is created.
 """
 
 
+import gtk
+import gobject
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 from .PreferenceTable import PreferenceTable
-import gtk
-import gobject
 
 
 class FrameProfileEditor(SutekhDialog):
@@ -98,7 +98,8 @@ class FrameProfileEditor(SutekhDialog):
         else:
             # Evil recursion
             self.destroy()
-            oDlg = FrameProfileEditor(self.__oParent, self.__oConfig)
+            oDlg = FrameProfileEditor(self.__oParent, self.__oConfig,
+                                      self._sType)
             oDlg.run()
 
     def _all_profile_keys(self):
