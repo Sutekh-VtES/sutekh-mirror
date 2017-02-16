@@ -48,8 +48,8 @@ h2. Contents
 # "Profiles":#profiles
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
+:numbered:2:profile:groupby
 ## "White Wolf Card List Profile Options":#ww_profile
-### "Card Grouping":#grouping
 :numbered:3:card_sets:profile
 ## "Card Set Profile Options":#cardset_profile
 ### "The Different Profiles":#different_profiles
@@ -887,6 +887,8 @@ is opened with the selected profile, or delete the selected profile.
 If a profile is deleted, any panes or card sets using that profile change
 to the default profile.
 
+:text:3:profile:groupby
+
 h3(#ww_profile). White Wolf Card List Profile Options
 
 You can set the following options for the white wolf card list in the profile:
@@ -895,8 +897,7 @@ You can set the following options for the white wolf card list in the profile:
 displayed. You can choose to only show test, only show icons (if applicable) \
 or to show both.
 * _Extra levels_: Controls whether the card expansions are listed.
-* _Group by_: Controls how the cards are grouped together. See the \
-"Card Grouping":#grouping section for more details.
+:list:1:profile:groupby
 :list:1:card_sets:profile
 * _Filter_: Specify a saved "filter":#filters that is always applied when \
 this profile is selected.
@@ -913,42 +914,8 @@ in the _how counts for each expansion_ mode, each printed expansion has a \
 count of 1 (the _Unspecified Expansion_ entries aren't counted).
 * _Show icons for grouping_: Controls whether icons are shown with the group name.
 
-h4(#grouping). Card Grouping
-
-By default, Sutekh groups the cards into the separate card types.   You can
-change the grouping as part of the pane profile.
-
-The following groupings are available:
-
-* _Clans and Creeds_: Group cards by the Clan(s) or Creed(s) listed on the \
-card.  The Imbued Creeds are treated as if they were Vampire Clans.
-* _Disciplines and Virtues_: Group cards by the Discipline(s) or Virtue(s) \
-listed on the card. The Imbued Virtues are treated as if they were Vampire \
-Disciplines.
-* _Disciplines (by level)  and Virtues_: Group cards by the Discipline(s) or \
-Virtue(s) listed on the card. This distinguishes between inferior and \
-superior levels of the discipline on vampires, but otherwise is the same \
-as the _Disciplines and Virtues_ grouping.
-* _Crypt or Library_: Split the card list into crypt and library cards.
-* _Card Type_: Group by card type. This is the default grouping. This grouping \
-treats multi-type cards, such as *Action Modifier/Combat* cards as members of \
-both the *Action Modifier* and the *Combat* groups.
-* _Expansion_: Group by the expansions in which the cards have been printed.
-* _Rarity_: Group the cards by the published rarity.
-* _Sect_: Group cards by the Sects listed on the card.
-* _Title_: Group cards by the political titles listed on the card.
-* _Cost_: Group cards by the cost of the card.
-* _Multi Card Type_: Behaves like the _Card Type_ grouping, but treats \
-multi-type cards as members of separate types. Thus *Action Modifier/Combat* \
-will appear as a separate group, and cards of that type will not be listed \
-in the *Action Modifier* and *Combat* groups.
-* _Group_: Group the cards by their crypt group.
-* _Group pairs_: Group cards into pairs of adjacent groups. Cards marked as \
-*Any Group* are considered to belong to all group pairs.
-* _Artist_: Group the cards by their artists.
-* _Keyword_: Group the cards by the keywords associated with them.
-
 :text:4:card_sets:profile
+
 
 h3(#cardset_profile). Card Set Profile Options
 
@@ -978,8 +945,7 @@ _In Use_.
 expansion show counts for child card sets marked as _In Use_.
 ** _Show Child Card Sets and Expansions_: Show child card sets marked \
 as _In Use_, and for each child card set show expansion counts.
-* _Group by_: Controls how the cards are grouped together. See the \
-"Card Grouping":#grouping section for more details.
+:list:1:profile:groupby
 * _Hide cards not legal for tournament play_: Controls whether cards flagged \
 as not legal for tournament play (i.e. banned or storyline only cards) are \
 shown in the list.
