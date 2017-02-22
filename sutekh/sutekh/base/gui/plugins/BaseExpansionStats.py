@@ -151,6 +151,7 @@ class StatsModel(gtk.TreeStore):
         aTopLevel = []
         oExpIter = None
         iTotal = 0
+        dSeenCards = {}
         for sGroup, oGroupIter in sorted(oGrouping):
             oExp = None
             sDate = 'Unknown Date'
@@ -165,6 +166,7 @@ class StatsModel(gtk.TreeStore):
                 sExp, sRarity = 'Promo', None
                 sDate = ''
             if sExp not in aTopLevel:
+                dSeenCards[sExp] = set()
                 oExpIter = self.append(None)
                 self.set(oExpIter, 0, sExp.strip(), 1, sDate)
                 aTopLevel.append(sExp)
@@ -173,9 +175,14 @@ class StatsModel(gtk.TreeStore):
             if sRarity:
                 oIter = self.append(oExpIter)
                 self.set(oIter, 0, sRarity.strip(), 1, sDate)
-                if sRarity.strip() != 'Precon Only':
-                    iTotal += len(aSubCards)
-                    self.set(oExpIter, 2, iTotal)
+                # We don't want to double count cards with multiple
+                # rarities in the total
+                for oCard in aSubCards:
+                    if oCard in dSeenCards[sExp]:
+                        continue
+                    dSeenCards[sExp].add(oCard)
+                    iTotal += 1
+                self.set(oExpIter, 2, iTotal)
             else:
                 oIter = oExpIter
             self.set(oIter, 2, len(aSubCards))
