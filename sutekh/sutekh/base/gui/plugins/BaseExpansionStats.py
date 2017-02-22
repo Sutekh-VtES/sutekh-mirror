@@ -11,7 +11,6 @@ import pango
 import gobject
 from ...core.BaseObjects import (PhysicalCard, AbstractCard,
                                  Expansion, IExpansion)
-from ...core.BaseGroupings import ExpansionRarityGrouping
 from ...core.BaseFilters import NullFilter, make_illegal_filter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
@@ -47,6 +46,9 @@ class BaseExpansionStats(BasePlugin):
                    tournament play (such as banned cards or storyline only
                    cards) if the current profile for the full card list shows
                    those cards."""
+
+    # Subclasses should specify this
+    GROUPING = None
 
     # pylint: disable=W0142
     # **magic OK here
@@ -94,7 +96,8 @@ class BaseExpansionStats(BasePlugin):
         for oChild in self._oStatsVbox.get_children():
             self._oStatsVbox.remove(oChild)
 
-        oView = StatsView(self.model.groupby, self.model.hideillegal)
+        oView = StatsView(self.model.groupby, self.GROUPING,
+                          self.model.hideillegal)
 
         # top align, using viewport to scroll
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
@@ -106,8 +109,8 @@ class StatsView(gtk.TreeView):
     # gtk classes, so we have lots of public methods
     """TreeView used to display expansion stats"""
 
-    def __init__(self, cGrping, bHideIllegal):
-        self._oModel = StatsModel(cGrping, bHideIllegal)
+    def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
+        self._oModel = StatsModel(cGrping, cExpRarityGrping, bHideIllegal)
         self._aLabels = ["Expansion", "Date", "Count"]
 
         super(StatsView, self).__init__(self._oModel)
@@ -128,12 +131,13 @@ class StatsModel(gtk.TreeStore):
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the expansion statistics"""
 
-    def __init__(self, cGrping, bHideIllegal):
+    def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
         # pylint: disable=W0142
         # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
                                          gobject.TYPE_INT)
+        self.cExpRarityGrping = cExpRarityGrping
         self.oLegalFilter = NullFilter()
         if bHideIllegal:
             self.oLegalFilter = make_illegal_filter()
@@ -147,7 +151,7 @@ class StatsModel(gtk.TreeStore):
         self.clear()
 
         aCards = self.oLegalFilter.select(AbstractCard)
-        oGrouping = ExpansionRarityGrouping(aCards)
+        oGrouping = self.cExpRarityGrping(aCards)
         aTopLevel = []
         oExpIter = None
         iTotal = 0

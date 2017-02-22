@@ -89,7 +89,7 @@ class RarityGrouping(IterGrouping):
                                                         fGetCard(x).rarity])
 
 
-class ExpansionRarityGrouping(IterGrouping):
+class BaseExpansionRarityGrouping(IterGrouping):
     """Groups cards by both expansion and rarity."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         def expansion_rarity(oCard):
@@ -101,15 +101,15 @@ class ExpansionRarityGrouping(IterGrouping):
                 else:
                     aExpRarities.append('%s : %s' % (oRarity.expansion.name,
                                                      oRarity.rarity.name))
-                    if oRarity.rarity.name == 'Precon':
-                        # Check if we're precon only
-                        if len([x for x in aRarities if x.expansion.name ==
-                                oRarity.expansion.name]) == 1:
-                            aExpRarities.append('%s : Precon Only' %
-                                                oRarity.expansion.name)
+                self._handle_extra_expansions(oRarity, aRarities, aExpRarities)
             return aExpRarities
-        super(ExpansionRarityGrouping, self).__init__(oIter,
-                                                      expansion_rarity)
+        super(BaseExpansionRarityGrouping, self).__init__(
+            oIter, expansion_rarity)
+
+    def _handle_extra_expansions(self, oRarity, aRarities, aExpRarities):
+        # Hook for subclasses to add extra fake expansion / rarity
+        # combinations
+        pass
 
 
 class ArtistGrouping(IterGrouping):

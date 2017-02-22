@@ -8,7 +8,8 @@
 # Base Grouping Class
 
 from sutekh.core.SutekhObjects import CRYPT_TYPES, SutekhAbstractCard
-from sutekh.base.core.BaseGroupings import IterGrouping, DEF_GET_CARD
+from sutekh.base.core.BaseGroupings import (IterGrouping, DEF_GET_CARD,
+                                            BaseExpansionRarityGrouping)
 
 
 class ClanGrouping(IterGrouping):
@@ -151,3 +152,23 @@ class GroupPairGrouping(IterGrouping):
                 return []
 
         super(GroupPairGrouping, self).__init__(oIter, get_values)
+
+
+class ExpansionRarityGrouping(BaseExpansionRarityGrouping):
+    """Group by expansion and rarity, handling Precon and Demo
+       special cases."""
+
+    DEMO_PRECON = ['Third Edition']
+
+    def _handle_extra_expansions(self, oRarity, aRarities, aExpRarities):
+        sExp = oRarity.expansion.name
+        if oRarity.rarity.name == 'Precon':
+            # Check if we're precon only
+            if len([x for x in aRarities if x.expansion.name == sExp]) == 1:
+                aExpRarities.append('%s : Precon Only' % sExp)
+        elif oRarity.rarity.name == 'Demo' and sExp in self.DEMO_PRECON:
+            # Add case for cards that are Demo & Precon only
+            aNames = [x.rarity.name for x in aRarities
+                      if x.expansion.name == sExp]
+            if len(aNames) == 2 and 'Demo' in aNames and 'Precon' in aNames:
+                aExpRarities.append('%s : Precon and Demo Only' % sExp)

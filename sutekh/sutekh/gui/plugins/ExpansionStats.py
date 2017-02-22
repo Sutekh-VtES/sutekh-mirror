@@ -8,10 +8,13 @@
 
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.plugins.BaseExpansionStats import BaseExpansionStats
+from sutekh.core.Groupings import ExpansionRarityGrouping
 
 
 class ExpansionStats(SutekhPlugin, BaseExpansionStats):
     """Display card counts and stats for each expansion, rarity grouping."""
+
+    GROUPING = ExpansionRarityGrouping
 
 
 plugin = ExpansionStats
