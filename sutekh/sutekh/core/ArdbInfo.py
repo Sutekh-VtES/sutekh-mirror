@@ -91,10 +91,13 @@ class ArdbInfo(object):
         dCryptStats = {
             'size': 0,
             'min': 75,
+            'minsum': 75,
             'max': 0,
+            'maxsum': 0,
             'avg': 0.0,
         }
         dVamps = {}
+        aCaps = []
         for tKey, iCount in dCards.iteritems():
             oCard = tKey[0]
             if is_crypt_card(oCard):
@@ -105,10 +108,12 @@ class ArdbInfo(object):
                 elif oCard.cardtype[0].name == "Imbued":
                     iCap = oCard.life
                 dCryptStats['avg'] += iCap * iCount
-                if iCap > dCryptStats['max']:
-                    dCryptStats['max'] = iCap
-                if iCap < dCryptStats['min']:
-                    dCryptStats['min'] = iCap
+                aCaps.extend([iCap]*iCount)
+        aCaps.sort()
+        dCryptStats['min'] = min(aCaps)
+        dCryptStats['max'] = max(aCaps)
+        dCryptStats['minsum'] = sum(aCaps[:4])
+        dCryptStats['maxsum'] = sum(aCaps[-4:])
         if dCryptStats['size'] > 0:
             dCryptStats['avg'] = round(dCryptStats['avg'] /
                                        dCryptStats['size'], 2)
