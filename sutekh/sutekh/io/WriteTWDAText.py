@@ -81,8 +81,6 @@ class WriteTWDAText(ArdbInfo):
         # Need to include space for capacity (4 spaces) here
         iDiscJust = ((iDiscJust + 11) // 8) * 8
 
-        print iNameJust, iDiscJust, iTitleJust
-
         # Pad with tabs as needed
         for dLine in aCryptLines:
             sCount = '%(count)dx ' % dLine
@@ -90,12 +88,9 @@ class WriteTWDAText(ArdbInfo):
             dLine['name'] += '\t' * iPadding
             iPadding = (iTitleJust - len(dLine['title'])) // 8
             dLine['title'] += '\t' * iPadding
-            print(dLine['name'])
-            print(iTitleJust, len(dLine['title']))
             sDisc = '%(capacity)-3d %(disc)s' % dLine
             iPadding = (iDiscJust - len(sDisc)) // 8
             sDisc += '\t' * iPadding
-            print(iDiscJust, len(sDisc), iPadding)
             dLine['disc'] = sDisc
             sCrypt += "%(count)dx %(name)s\t%(disc)s" \
                     "\t%(title)s\t%(clan)s:%(group)d\n" % dLine
