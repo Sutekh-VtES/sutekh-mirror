@@ -7,9 +7,9 @@
 
    Example deck:
 
-   Deck Name : Followers of Set Preconstructed Deck
-   Author : L. Scott Johnson
-   Description :
+   Deck Name: Followers of Set Preconstructed Deck
+   Author: L. Scott Johnson
+   Description:
    Followers of Set Preconstructed Starter from Lords of the Night.
 
    http://www.white-wolf.com/vtes/index.php?line=Checklist_LordsOfTheNight
@@ -38,9 +38,9 @@ class WriteTWDAText(ArdbInfo):
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an TWDA text file header."""
-        return ("Deck Name : %s\n"
-                "Author : %s\n"
-                "Description :\n%s\n" % (oHolder.name, oHolder.author,
+        return ("Deck Name: %s\n"
+                "Author: %s\n"
+                "Description:\n%s\n" % (oHolder.name, oHolder.author,
                                          oHolder.comment))
     # pylint: enable=R0201
 
@@ -67,6 +67,9 @@ class WriteTWDAText(ArdbInfo):
             if 'Imbued' in dLine['clan']:
                 dLine['clan'].replace(' (Imbued)','')
             dLine['disc'] = self._gen_disciplines(oCard)
+            # Standardise missing disciplines
+            if not dLine['disc']:
+                dLine['disc'] = '-none-'
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
 
@@ -94,6 +97,9 @@ class WriteTWDAText(ArdbInfo):
             dLine['disc'] = sDisc
             sCrypt += "%(count)dx %(name)s\t%(disc)s" \
                     "\t%(title)s\t%(clan)s:%(group)d\n" % dLine
+            # Fix ANY grouping cards
+            if sCrypt.endswith(':-1\n'):
+                sCrypt = sCrypt.replace(':-1', ':ANY')
 
         return sCrypt
 
@@ -123,7 +129,7 @@ class WriteTWDAText(ArdbInfo):
 
             for oCard, iCount in sorted(dCards.iteritems(),
                                         key=lambda x: x[0].name):
-                sLib += " %dx %s\n" % (iCount, oCard.name)
+                sLib += "%dx %s\n" % (iCount, oCard.name)
 
         return sLib
 
