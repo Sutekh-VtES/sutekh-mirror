@@ -90,7 +90,7 @@ class WriteTWDAText(ArdbInfo):
             iPadding = (iNameJust - len(dLine['name']) - len(sCount)) // 8
             dLine['name'] += '\t' * iPadding
             iPadding = (iTitleJust - len(dLine['title'])) // 8
-            dLine['title'] += '\t' * iPadding
+            dLine['title'] = dLine['title'].lower() + '\t' * iPadding
             sDisc = '%(capacity)-3d %(disc)s' % dLine
             iPadding = (iDiscJust - len(sDisc)) // 8
             sDisc += '\t' * iPadding
