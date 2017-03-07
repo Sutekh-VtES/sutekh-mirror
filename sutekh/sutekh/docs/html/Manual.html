@@ -83,9 +83,9 @@
 		<ol>
 			<li><a href="#edit_profile">Edit Profile</a></li>
 			<li><a href="#manage_profile">Managing Profiles</a></li>
+			<li><a href="#cardgroupings">Card Groupings</a></li>
 			<li><a href="#ww_profile">White Wolf Card List Profile Options</a>
 			<ol>
-				<li><a href="#grouping">Card Grouping</a></li>
 				<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a></li>
 			</ol></li>
 			<li><a href="#cardset_profile">Card Set Profile Options</a>
@@ -1044,6 +1044,39 @@ is opened with the selected profile, or delete the selected profile.</p>
 	<p>If a profile is deleted, any panes or card sets using that profile change 
 to the default profile.</p>
 
+	<h3 id="cardgroupings">Card Groupings</h3>
+
+	<p>By default, the cards are grouped into the seperate card                types. You can specify the grouping to use as part of the                pane profile.</p>
+
+	<p>The following groupings are available:</p>
+
+	<ul>
+		<li><em>Artist</em>: Group by Artist</li>
+		<li><em>Card Type</em>: Group by card type. This is the default grouping. This grouping
+       places cards with multiple types in each group to which it belongs.</li>
+		<li><em>Clans and Creeds</em>: Group the cards by clan and/or creed. The Imbued creeds are treated
+       as if they were clans.</li>
+		<li><em>Cost</em>: Group by the Cost of the card.</li>
+		<li><em>Crypt or Library</em>: Group into crypt or library cards</li>
+		<li><em>Disciplines (by level) and Virtues</em>: Group by Discipline or Virtue, distinguishing discipline levels.
+       This distinguishes between inferior and superior levels of the
+       discipline on vampires, but otherwise is the same as the
+       <em>Discipline and Virtues</em> grouping.</li>
+		<li><em>Disciplines and Virtues</em>: Group by Discipline or Virtue. The Imbued Virtues are treated as if
+       they were vampire disciplines.</li>
+		<li><em>Expansion</em>: Group by the expansions in which the cards have been printed.</li>
+		<li><em>Group</em>: Group the cards by their crypt group</li>
+		<li><em>Group pairs</em>: Group cards into pairs of adjacent groups. Cards marked as
+       <strong>Any Group</strong> are considered to belong to all group pairs.</li>
+		<li><em>Keyword</em>: Group by Keyword</li>
+		<li><em>Multi Card Type</em>: Group by card type, but make separate groupings for
+       cards which have multiple types.</li>
+		<li><em>No Grouping</em>: Group everything into a single group named &#8216;All&#8217;.</li>
+		<li><em>Rarity</em>:  Group the cards by the published rarity.</li>
+		<li><em>Sect</em>: Group by Sect</li>
+		<li><em>Title</em>: Group by the political title of the vampire.</li>
+	</ul>
+
 	<h3 id="ww_profile">White Wolf Card List Profile Options</h3>
 
 	<p>You can set the following options for the white wolf card list in the profile:</p>
@@ -1051,37 +1084,12 @@ to the default profile.</p>
 	<ul>
 		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable) or to show both.</li>
 		<li><em>Extra levels</em>: Controls whether the card expansions are listed.</li>
-		<li><em>Group by</em>: Controls how the cards are grouped together. See the <a href="#grouping">Card Grouping</a> section for more details.</li>
+		<li><a href="#cardgroupings">Card Groupings</a> Control how the cards are grouped in the pane.</li>
 		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns &#8212; card sets</strong> section for more details.</li>
 		<li><em>Filter</em>: Specify a saved <a href="#filters">filter</a> that is always applied when this profile is selected.</li>
 		<li><em>Hide cards not legal for tournament play</em>: Controls whether cards flagged as not legal for tournament play (i.e. banned or storyline only cards) are shown in the list.</li>
 		<li><em>White Wolf Card List Count Mode</em>: By default, the White Wolf card list doesn&#8217;t show a count for cards. This option allows you to choose between the default <em>Don&#8217;t show card counts</em> mode, <em>Show counts for each distinct card</em> and <em>Show counts for each expansion</em>. In <em>Show counts for each distinct card</em>, each distinct card has a count of 1, but expansions aren&#8217;t counted. This can be useful for determining statistics about the cards and so on, While in the <em>how counts for each expansion</em> mode, each printed expansion has a count of 1 (the <em>Unspecified Expansion</em> entries aren&#8217;t counted).</li>
 		<li><em>Show icons for grouping</em>: Controls whether icons are shown with the group name.</li>
-	</ul>
-
-	<h4 id="grouping">Card Grouping</h4>
-
-	<p>By default, Sutekh groups the cards into the separate card types.   You can 
-change the grouping as part of the pane profile.</p>
-
-	<p>The following groupings are available:</p>
-
-	<ul>
-		<li><em>Clans and Creeds</em>: Group cards by the Clan(s) or Creed(s) listed on the card.  The Imbued Creeds are treated as if they were Vampire Clans.</li>
-		<li><em>Disciplines and Virtues</em>: Group cards by the Discipline(s) or Virtue(s) listed on the card. The Imbued Virtues are treated as if they were Vampire Disciplines.</li>
-		<li><em>Disciplines (by level)  and Virtues</em>: Group cards by the Discipline(s) or Virtue(s) listed on the card. This distinguishes between inferior and superior levels of the discipline on vampires, but otherwise is the same as the <em>Disciplines and Virtues</em> grouping.</li>
-		<li><em>Crypt or Library</em>: Split the card list into crypt and library cards.</li>
-		<li><em>Card Type</em>: Group by card type. This is the default grouping. This grouping treats multi-type cards, such as <strong>Action Modifier/Combat</strong> cards as members of both the <strong>Action Modifier</strong> and the <strong>Combat</strong> groups.</li>
-		<li><em>Expansion</em>: Group by the expansions in which the cards have been printed.</li>
-		<li><em>Rarity</em>: Group the cards by the published rarity.</li>
-		<li><em>Sect</em>: Group cards by the Sects listed on the card.</li>
-		<li><em>Title</em>: Group cards by the political titles listed on the card.</li>
-		<li><em>Cost</em>: Group cards by the cost of the card.</li>
-		<li><em>Multi Card Type</em>: Behaves like the <em>Card Type</em> grouping, but treats multi-type cards as members of separate types. Thus <strong>Action Modifier/Combat</strong> will appear as a separate group, and cards of that type will not be listed in the <strong>Action Modifier</strong> and <strong>Combat</strong> groups.</li>
-		<li><em>Group</em>: Group the cards by their crypt group.</li>
-		<li><em>Group pairs</em>: Group cards into pairs of adjacent groups. Cards marked as <strong>Any Group</strong> are considered to belong to all group pairs.</li>
-		<li><em>Artist</em>: Group the cards by their artists.</li>
-		<li><em>Keyword</em>: Group the cards by the keywords associated with them.</li>
 	</ul>
 
 	<h4 id="extracolumnscardsets">Extra Columns &#8212; card sets</h4>
@@ -1144,7 +1152,7 @@ will affect all selected columns that can use icons.</p>
 			<li><em>Show Expansions and Child Card Sets</em>: Show expansions, and within each expansion show counts for child card sets marked as <em>In Use</em>.</li>
 			<li><em>Show Child Card Sets and Expansions</em>: Show child card sets marked as <em>In Use</em>, and for each child card set show expansion counts.</li>
 		</ul></li>
-		<li><em>Group by</em>: Controls how the cards are grouped together. See the <a href="#grouping">Card Grouping</a> section for more details.</li>
+		<li><a href="#cardgroupings">Card Groupings</a> Control how the cards are grouped in the pane.</li>
 		<li><em>Hide cards not legal for tournament play</em>: Controls whether cards flagged as not legal for tournament play (i.e. banned or storyline only cards) are shown in the list.</li>
 		<li><em>Show icons for grouping</em>: Controls whether icons are shown with the group name.</li>
 		<li><em>Filter</em>: Specify a saved <a href="#filters">filter</a> that is always applied when this profile is selected.</li>
