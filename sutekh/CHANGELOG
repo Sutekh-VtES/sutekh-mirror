@@ -1,4 +1,27 @@
+07 Mar 2017
+ * Add plugin to import images from VEKN PDF sets, with the option
+   to specify the resolution.
+
+05 Mar 2017
+ * Various improvements to the TWDA exporter.
+
+01 Mar 2017
+ * Add exporter for generating the text format used in the TWDA.
+
+22 Feb 2017
+ * Prevent the expansion stats plugin from double-counting cards printed
+   with multiple rarities.
+
+16 Feb 2017
+ * Rework help text for groupings so it is generated from the grouping
+   doc strings.
+
+09 Feb 2017
+ * Fix a bug with the GuiCardLookup not decoding names correctly.
+
 18 Jan 2017
+ * Fix a bug triggered when both SQLObject 2.x and pydispatch were
+   installed together.
  * Add "Print Card Set as Proxies" card set
  * Tweak the output of the "Print Card Set" Plugin
 
