@@ -66,7 +66,7 @@ h2(#concepts). Important Concepts
 Sutekh is concerned with two different types of objects: _Cards_ and
 _Card Sets_.
 
-_Cards_ are the individual cards as described by the official White Wolf
+_Cards_ are the individual cards as described by the official V:EKN
 card list. Sutekh describes all the relevant properties of each card,
 such as the clan and discipline requirements, the cost, and the latest
 card text.
@@ -126,7 +126,7 @@ local files, or opt to download them from the appropriate websites directly. \
 Sutekh may encounter problems when updating the card list after a new \
 expansion has been published -- this is discussed further in the section \
 "Refreshing the White Wolf Card List":#refresh.
-** _Download VTES icons_: Attempt to download the icons from the White Wolf \
+** _Download VTES icons_: Attempt to download the icons from the V:EKN \
 website.
 ** _Download starter decks_: Download and import a list of the White Wolf \
 preconstructed decks from the sutekh wiki. The zip file also includes the \
@@ -202,7 +202,7 @@ Once you have downloaded the rulebook files, you
 can open them in a web browser using the _Rulebook_ menu.
 
 The available files are copies of the rulebook, the rules reference, the V:EKN
-tournament rules, imbued rules and card rulings from the White Wolf site and
+tournament rules, imbued rules and card rulings from the V:EKN site and
 the VTES and Imbued FAQ's hosted on www.thelasombra.com.
 
 To download the files, or update your existing copies, use the _Download
