@@ -20,14 +20,14 @@ panes:
 * Card Set List
 * My Collection
 
-On subsequent runs, Sutekh will read the list of panes to display from a file.
-You can determine which panes are shown either by explicitly saving the layout
-using *Save current pane set* in *File->Preferences*, or by letting the
-*Save Pane Set on Exit* option save the configuration.
+On subsequent runs, Sutekh will read the list of panes to display from it's
+config file.  You can determine which panes are shown either by explicitly
+saving the layout using *Save current pane set* in *File->Preferences*, or by
+setting the *Save Pane Set on Exit* option save the configuration.
 
 h3. The White Wolf card list
 
-Sutekh maintains a list of all the cards published by White Wolf as the
+Sutekh maintains a list of all the cards published by the V:EKN as the
 _White Wolf Card List_. It lists the cards and the expansions in which each card
 has appeared.
 
