@@ -513,8 +513,8 @@ class BaseCardTextFilter(DirectFilter):
        logic for dealing with specially formatted text."""
     keyword = "CardText"
     description = "Card Text"
-    helptext = "the desired card text to search for (% can be used as a " \
-            "wildcard).\nReturns all cards whose text contains this string."
+    helptext = "the desired card text to search for (% and _ can be used as " \
+            "wildcards).\nReturns all cards whose text contains this string."
     istextentry = True
     types = ('AbstractCard', 'PhysicalCard')
 
@@ -538,9 +538,9 @@ class CardNameFilter(DirectFilter):
     """Filter on the name of the card"""
     keyword = "CardName"
     description = "Card Name"
-    helptext = "the text to be matched against card names (% can be used " \
-            "as a wildcard).\nReturns all cards whose name contains this " \
-            "string"
+    helptext = "the text to be matched against card names (% and _ can be " \
+            "used as wildcards).\nReturns all cards whose name contains " \
+            "this string"
     istextentry = True
     types = ('AbstractCard', 'PhysicalCard')
 
@@ -1044,8 +1044,8 @@ class CardSetNameFilter(DirectFilter):
     keyword = "CardSetName"
     description = "Card Set Name"
     helptext = "the text to be matched against card set names.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+            "% and _ can be used as wildcards.\nReturns all card sets " \
+            "whose name contains the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1069,8 +1069,8 @@ class CardSetDescriptionFilter(DirectFilter):
     keyword = "CardSetDescription"
     description = "Card Set Description"
     helptext = "the text to be matched against card set description.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+            "% and _ can be used as wildcards.\nReturns all card sets " \
+            "containing the given string in the description."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1095,8 +1095,8 @@ class CardSetAuthorFilter(DirectFilter):
     keyword = "CardSetAuthor"
     description = "Card Set Author"
     helptext = "the text to be matched against card set Author.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+            "% and _ can be used as wildcards.\nReturns all card sets "\
+            "whose author includes the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1121,8 +1121,8 @@ class CardSetAnnotationsFilter(DirectFilter):
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
     helptext = "the text to be matched against card set annotations.\n" \
-            "% can be used as a wildcard.\nReturns all card sets where the " \
-            "annotations contrain the given string."
+            "% and _ can be used as wildcards.\nReturns all card sets " \
+            "where the annotations contain the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
