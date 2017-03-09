@@ -73,6 +73,34 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (7, )}
     aModelsSupported = ("MainWindow",)
 
+    sMenuName = "Import VEKN pdf file as card images"
+
+    sHelpCategory = "card_list:downloads"
+
+    sHelpText = """This plugin allows you to import a PDF release from the
+                   V:EKN as images. This is especially useful for ensuring
+                   there are high resolution images available for printing
+                   the card set.
+
+                   The initial dialog allows you to choose a PDF file,
+                   specify which expansion the PDF file corresponds
+                   to and also specify the resolution to use for the
+                   images.
+
+                   The cards will then be extracted from the PDF file, and
+                   then you will be presented with a dialog listing
+                   the cards in the expansion on the left, and showing
+                   the extracted image on the right.
+
+                   You can move between the extracted images using
+                   the *Prev Image* and *Next Image* image buttons.
+                   For each image, you can select a card from the
+                   list and choose *Set image for selected card*
+                   to save the displayed image as the extracted
+                   image for the card. Cards which have already
+                   been choses will be marked with a tick-mark
+                   next to their names."""
+
     def __init__(self, *args, **kwargs):
         super(ImportPDFImagesPlugin, self).__init__(*args, **kwargs)
         self._oImageFrame = None
@@ -83,7 +111,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         if not self._check_versions() or not self._check_model_type():
             return None
 
-        oImport = gtk.MenuItem("Import VEKN pdf file as card images")
+        oImport = gtk.MenuItem(self.sMenuName)
         oImport.connect('activate', self.run_import_dialog)
         return [('Data Downloads', oImport)]
 

@@ -137,6 +137,7 @@ these will be greyed out and automatically excluded.
 ** _Download or Configure Card Images_: Download images of the cards for the \
 "Card Images":#card_image pane, or use an existing zip file or directory of \
 images.
+:list:2:card_list:downloads
 ** _Download Rulebook Files_: Download the various files for the \
 "Rulebook":#rulebook menu.
 * _Preferences_: Manage various preferences.
@@ -172,6 +173,7 @@ resolve the situation using the "Card Lookup Dialog":#lookup.
 
 :text:4:card_list:file
 
+:text:4:card_list:downloads
 
 h3(#main_pane_actions). Pane Actions
 
