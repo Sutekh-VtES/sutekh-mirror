@@ -15,7 +15,7 @@
    http://www.white-wolf.com/vtes/index.php?line=Checklist_LordsOfTheNight
 
    Crypt (12 cards, min=10 max=40 avg=5.84)
-   ---------------------------------------------
+   ----------------------------------------
    2x Nakhthorheb			  10 OBF PRE SER           Follower of Set:4
    2x Renenet                  5 OBF PRE               Follower of Set:4
    ...
@@ -52,10 +52,10 @@ class WriteTWDAText(ArdbInfo):
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
         dCombinedVamps = self._group_sets(dVamps)
 
-        sCrypt = "Crypt (%(size)d cards, min=%(minsum)d, " \
-                "max=%(maxsum)d, avg=%(avg).2f)\n" \
-                "----------------------------------------------------\n" \
-                % dCryptStats
+        sCryptLine = "Crypt (%(size)d cards, min=%(minsum)d, " \
+                     "max=%(maxsum)d, avg=%(avg).2f)" \
+                     % dCryptStats
+        sCrypt = sCryptLine + '\n' + '-' * len(sCryptLine) + '\n'
 
         aCryptLines = []
         iNameJust = 23
