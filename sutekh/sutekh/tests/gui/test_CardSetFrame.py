@@ -200,6 +200,27 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len([x for x in oPCS2.cards if
                               IAbstractCard(x).name == 'Ablative Skin' and
                               IPhysicalCard(x).expansionID is None]), 5)
+        # Test involving top level and sublevel selections
+        # Top level should override the sub selections, as being
+        # most consitent behaviour
+        self._select_cards(oNewFrame, [(u'AK-47', 'Top Level'),
+                                       (u'AK-47', None),
+                                       (u'AK-47', 'Lords of the Night')])
+        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('4'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 10)
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 10)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('1'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 7)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 8)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        oNewFrame.view.key_press(oNewFrame, oEvent)
+        self.assertEqual(len(oPCS2.cards), 7)
         # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
 
