@@ -201,11 +201,13 @@ class CardSetView(CardListView):
            """
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
+        aSkip = set()
         iNewCount = 0
         for oPath in oPathList:
             sCardSet = None
             oIter = oModel.get_iter(oPath)
             oPhysCard = oModel.get_physical_card_from_iter(oIter)
+            oAbsCard = oModel.get_abstract_card_from_iter(oIter)
             iCount = oModel.get_card_count_from_iter(oIter)
             if iChg:
                 iNewCount = max(0, iCount + iChg)
@@ -216,12 +218,16 @@ class CardSetView(CardListView):
             dSelectedData.setdefault(oPhysCard, {})
             iDepth = oModel.iter_depth(oIter)
             if iDepth == 1:
-                # this is treated as selecting all the entries of this card
-                # in this card set
+                # We handle top-level items differently
                 # Remove anything already assigned to this
                 dSelectedData[oPhysCard].clear()
                 dSelectedData[oPhysCard][None] = [iCount, iNewCount]
+                aSkip.add(oAbsCard)
             else:
+                if oAbsCard in aSkip:
+                    # Top level card was selected, so we ignore the
+                    # sub-level items
+                    continue
                 if sCardSet in dSelectedData[oPhysCard]:
                     # We already have this info (for selections via multiple
                     # groups, etc.)
