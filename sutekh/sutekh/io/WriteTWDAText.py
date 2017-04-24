@@ -7,8 +7,8 @@
 
    Example deck:
 
-   Deck Name: Followers of Set Preconstructed Deck
-   Author: L. Scott Johnson
+   Deck Name: Modified Followers of Set Preconstructed Deck
+   Author: An Author
    Description:
    Followers of Set Preconstructed Starter from Lords of the Night.
 
@@ -16,8 +16,10 @@
 
    Crypt (12 cards, min=10 max=40 avg=5.84)
    ----------------------------------------
-   2x Nakhthorheb			  10 OBF PRE SER           Follower of Set:4
-   2x Renenet                  5 OBF PRE               Follower of Set:4
+   2x Nakhthorheb		10 OBF PRE SER                        Follower of Set:4
+   2x Renenet           5 OBF PRE ser                         Follower of Set:4
+   1x Neferu            9 OBF PRE SER THA dom nec   2 votes   Follower of Set:4
+   1x Arcadian, The     8 DOM MYT OBT chi for                 Kiasyd:5
    ...
 
    Library (77 cards)
@@ -26,6 +28,8 @@
      4x Dream World
    ...
    """
+
+from sutekh.base.Utility import move_articles_to_back
 
 from sutekh.core.ArdbInfo import ArdbInfo
 
@@ -70,6 +74,9 @@ class WriteTWDAText(ArdbInfo):
             # Standardise missing disciplines
             if not dLine['disc']:
                 dLine['disc'] = '-none-'
+            # TWDA normalises crypt names to have the articles at the
+            # back, but doesn't care about library cards
+            dLine['name'] = move_articles_to_back(dLine['name'])
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
 
