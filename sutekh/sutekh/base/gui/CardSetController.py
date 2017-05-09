@@ -213,12 +213,20 @@ class CardSetController(object):
             if sExpansionName and sExpansionName != 'None' and \
                     sExpansionName != self.model.sUnknownExpansion:
                 oExp = IExpansion(sExpansionName)
-            oAbsCard = IAbstractCard(sCardName)
-            oPhysCard = IPhysicalCard((oAbsCard, oExp))
-            return oPhysCard
         except SQLObjectNotFound:
-            # Error, so bail
+            # Failed to decode expansion, so bail
             return None
+        # try a couple of different ways of decoding the card, due
+        # to weirdnesses with unicode and case issues
+        for sName in [sCardName.lower(), sCardName.decode('utf8').lower()]:
+            try:
+               oAbsCard = IAbstractCard(sName)
+               oPhysCard = IPhysicalCard((oAbsCard, oExp))
+               return oPhysCard
+            except SQLObjectNotFound:
+                pass
+        # Everything failed, so bail
+        return None
 
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.
