@@ -613,11 +613,11 @@ class CardTextFilter(BaseCardTextFilter):
 
 
 class CardFunctionFilter(DirectFilter):
-    """Filter for various interesting card properties - untap, stealth, etc."""
+    """Filter for various interesting card properties - unlock, stealth, etc."""
     keyword = "CardFunction"
     description = "Card Function"
     helptext = "the chosen function from the list of supported types.\n" \
-            "Functions include roles such as untap or bleed modifier.\n" \
+            "Functions include roles such as unlock or bleed modifier.\n" \
             "Returns all cards matching the given functions."
     islistfilter = True
     types = ('AbstractCard', 'PhysicalCard')
@@ -634,7 +634,7 @@ class CardFunctionFilter(DirectFilter):
 
     __sStealth = 'Stealth action modifiers'
     __sIntercept = 'Intercept reactions'
-    __sUntap = 'Untap reactions (Wake)'
+    __sUnlock = 'Unlock reactions (Wake)'
     __sBounce = 'Bleed redirection reactions (Bounce)'
     __sEnterCombat = 'Enter combat actions (Rush)'
     __sBleedModifier = 'Increased bleed action modifiers'
@@ -649,14 +649,20 @@ class CardFunctionFilter(DirectFilter):
         if self.__sIntercept in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
                                           CardTextFilter('+_ intercept')]))
-        if self.__sUntap in aTypes:
+        if self.__sUnlock in aTypes:
             aFilters.append(FilterAndBox(
                 [CardTypeFilter('Reaction'),
                  FilterOrBox([CardTextFilter('this vampire untaps'),
                               CardTextFilter('this reacting vampire untaps'),
                               CardTextFilter('untap this vampire'),
                               CardTextFilter('untap this reacting vampire'),
-                              CardTextFilter('as though untapped')])
+                              CardTextFilter('as though untapped'),
+                              CardTextFilter('this vampire unlocks'),
+                              CardTextFilter('this reacting vampire unlocks'),
+                              CardTextFilter('unlock this vampire'),
+                              CardTextFilter('unlock this reacting vampire'),
+                              CardTextFilter('as though unlocked')
+                              ])
                 ]))
         if self.__sBounce in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
@@ -686,7 +692,7 @@ class CardFunctionFilter(DirectFilter):
     @classmethod
     def get_values(cls):
         """Values supported by this filter"""
-        aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
+        aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUnlock,
                         cls.__sBounce, cls.__sEnterCombat,
                         cls.__sBleedModifier, cls.__sBleedAction,
                         cls.__sBleedReduction,
