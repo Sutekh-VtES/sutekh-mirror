@@ -70,14 +70,14 @@ Name: Abandoning the Flesh
 Cardtype: Reaction/Combat
 Discipline: Dementation
 Only usable by a vampire being burned. Usable by a vampire in torpor.
-[dem] Remove this vampire from the game instead (diablerie, if any, is still successful), and put this card into play. You may not play this card if you already have an Abandoning the Flesh in play. You may tap this card when a vampire with Dementation is bleeding to give that vampire +1 bleed for the current action.
+[dem] Remove this vampire from the game instead (diablerie, if any, is still successful), and put this card into play. You may not play this card if you already have an Abandoning the Flesh in play. You may lock this card when a vampire with Dementation is bleeding to give that vampire +1 bleed for the current action.
 Artist: Steve Ellis
 
 Name: Abbot
 [Third:U]
 Cardtype: Action
 +1 stealth action. Requires a Sabbat vampire.
-Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.
+Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.
 Artist: John Bridges
 
 Name: Abd al-Rashid
@@ -97,7 +97,7 @@ Clan: Follower of Set
 Group: 5
 Capacity: 5
 Discipline: for nec obf pre ser
-Independent: Abdelsobek can untap a vampire or mummy you control as a +1 stealth action.
+Independent: Abdelsobek can unlock a vampire or mummy you control as a +1 stealth action.
 Artist: Ken Meyer, Jr.
 
 Name: Abebe
@@ -114,7 +114,7 @@ Name: Abjure
 [NoR:R]
 Cardtype: Power
 Virtue: Redemption
-[COMBAT] Tap this imbued before range is determined to end a combat between a monster and a mortal. If the mortal is a minion other than this imbued, you may move a conviction to this imbued from your hand or ash heap.
+[COMBAT] Lock this imbued before range is determined to end a combat between a monster and a mortal. If the mortal is a minion other than this imbued, you may move a conviction to this imbued from your hand or ash heap.
 Artist: Brian LeBlanc
 
 Name: Ablative Skin
@@ -210,7 +210,7 @@ Clan: Toreador
 Group: 2
 Capacity: 11
 Discipline: dom ANI AUS CEL PRE
-Camarilla Inner Circle: Once during your turn, you may tap or untap another ready Toreador. +2 bleed.
+Camarilla Inner Circle: Once during your turn, you may lock or unlock another ready Toreador. +2 bleed.
 Artist: Lawrence Snelly
 
 Name: Alfred Benezri
@@ -240,7 +240,7 @@ Clan: Follower of Set
 Group: 2
 Capacity: 8
 Discipline: pre pro OBF SER
-Independent: Amisa has 2 votes. Amisa can tap a vampire with a capacity above 7 as a (D) action.
+Independent: Amisa has 2 votes. Amisa can lock a vampire with a capacity above 7 as a (D) action.
 Artist: Pete Venters
 
 Name: Anastasz di Zagreb
@@ -279,7 +279,7 @@ Creed: Martyr
 Group: 4
 Life: 6
 Virtue: mar red vis
-Anna may move 2 blood from the blood bank to any vampire as a +1 stealth action. During your untap phase, you may look at the top three cards of your library.
+Anna may move 2 blood from the blood bank to any vampire as a +1 stealth action. During your unlock phase, you may look at the top three cards of your library.
 Artist: Thomas Manning
 
 Name: Anson
@@ -316,7 +316,7 @@ Clan: Gargoyle
 Group: 4
 Capacity: 6
 Discipline: obf pot vis FOR
-Camarilla. Tremere slave: If Cedric successfully blocks a (D) action, he may burn 1 blood when the action ends (after combat, if any) to untap. Flight [FLIGHT].
+Camarilla. Tremere slave: If Cedric successfully blocks a (D) action, he may burn 1 blood when the action ends (after combat, if any) to unlock. Flight [FLIGHT].
 Artist: David Day
 
 Name: Cesewayo
@@ -342,7 +342,7 @@ Creed: Visionary
 Group: 4
 Life: 6
 Virtue: jud mar vis
-Earl gets +1 stealth on actions other than actions to enter combat. During your untap phase, if you control more than two ready imbued, Earl burns 1 conviction [1 CONVICTION].
+Earl gets +1 stealth on actions other than actions to enter combat. During your unlock phase, if you control more than two ready imbued, Earl burns 1 conviction [1 CONVICTION].
 Artist: David Day
 
 Name: Enkidu, The Noah
@@ -352,7 +352,7 @@ Clan: Gangrel antitribu
 Group: 4
 Capacity: 11
 Discipline: for ANI CEL OBF POT PRO
-Sabbat. Red List: Enkidu can enter combat with any minion as a (D) action. If Enkidu successfully performs an action to employ a retainer, he untaps at the end of the turn. He cannot have or use equipment. +2 strength.
+Sabbat. Red List: Enkidu can enter combat with any minion as a (D) action. If Enkidu successfully performs an action to employ a retainer, he unlocks at the end of the turn. He cannot have or use equipment. +2 strength.
 Artist: Mark Nelson
 
 Name: Fidus, The Shrunken Beast
@@ -380,7 +380,7 @@ Clan: Ventrue
 Group: 3
 Capacity: 7
 Discipline: aus for DOM PRE
-Camarilla Primogen: If a younger vampire attempts to block Gracis and fails, tap that vampire at the end of the action.
+Camarilla Primogen: If a younger vampire attempts to block Gracis and fails, lock that vampire at the end of the action.
 Artist: Max Shade Fellwalker
 
 Name: Gypsies
@@ -398,7 +398,7 @@ Cardtype: Ally
 Clan: Ahrimane
 Cost: 4 pool
 Unique werewolf with 3 life. 1 strength, 0 bleed.
-High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your untap phase, he gains 1 life.
+High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your unlock phase, he gains 1 life.
 Artist: Mark Nelson
 
 Name: Inez "Nurse216" Villagrande
@@ -475,7 +475,7 @@ Clan: Abomination
 Group: 2
 Capacity: 6
 Discipline: pot pre OBF PRO
-Independent: During your master phase, discard a master card or tap Pariah. Pariah cannot take undirected actions other than hunting. He can enter combat with any minion as a (D) action. +1 strength. Scarce. Sterile.
+Independent: During your master phase, discard a master card or lock Pariah. Pariah cannot take undirected actions other than hunting. He can enter combat with any minion as a (D) action. +1 strength. Scarce. Sterile.
 Artist: Richard Thomas
 
 Name: Paris Opera House
@@ -485,7 +485,7 @@ Clan: Daughter of Cacophony
 Cost: 2 pool
 Burn Option
 Master: unique location.
-Tap to give a Daughter of Cacophony you control +1 stealth. Tap this card and a Daughter of Cacophony you control to give any minion +1 stealth.
+Lock to give a Daughter of Cacophony you control +1 stealth. Lock this card and a Daughter of Cacophony you control to give any minion +1 stealth.
 Artist: William O'Connor
 
 Name: Park Hunting Ground
@@ -494,7 +494,7 @@ Cardtype: Master
 Clan: Ravnos
 Cost: 2 pool
 Master: unique location. Hunting ground.
-During your untap phase, you may move 1 blood from the blood bank to a ready vampire you control. A vampire can gain blood from only one Hunting Ground card each turn.
+During your unlock phase, you may move 1 blood from the blood bank to a ready vampire you control. A vampire can gain blood from only one Hunting Ground card each turn.
 Artist: Pete Venters; Sam Araya
 
 Name: The Path of Blood
@@ -520,7 +520,7 @@ Cardtype: Master
 Clan: Lasombra
 Cost: 2 pool
 Master: unique location. Hunting ground.
-During your untap phase, you may move 1 blood from the bank to a ready vampire you control. A vampire can gain blood from only one hunting ground card each turn.
+During your unlock phase, you may move 1 blood from the bank to a ready vampire you control. A vampire can gain blood from only one hunting ground card each turn.
 Artist: John Scotello; Melissa Uran
 
 Name: Predator's Communion
@@ -529,7 +529,7 @@ Cardtype: Reaction
 Discipline: Abombwe
 [abo] [REFLEX] Cancel a frenzy card played on this vampire as it is played.
 [abo] +1 intercept. Only usable when a vampire is acting.
-[ABO] Only usable by a tapped vampire when a vampire is acting. This reacting vampire untaps.
+[ABO] Only usable by a locked vampire when a vampire is acting. This reacting vampire unlocks.
 Artist: David Day
 
 Name: Protracted Investment
@@ -615,7 +615,7 @@ Clan: Harbinger of Skulls
 Cost: 1 pool
 Burn Option
 Master: location.
-Tap to burn two cards from the top of your prey's library.
+Lock to burn two cards from the top of your prey's library.
 Artist: William O'Connor
 
 Name: Two Wrongs
@@ -650,7 +650,7 @@ Discipline: Valeren / Auspex
 
 [aus] Reduce a bleed against you by 1.
 [val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action.
-[VAL] Reduce a bleed against you by 2, or tap to reduce a bleed against any Methuselah by 2.
+[VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.
 Artist: Kari Christensen
 
 Name: Anarch Railroad
@@ -658,14 +658,14 @@ Name: Anarch Railroad
 Cardtype: Master
 Cost: 2 pool
 Master: unique location.
-Tap to give an anarch +1 stealth for the current action.
+Lock to give an anarch +1 stealth for the current action.
 Artist: Joel Biske
 
 Name: Anarch Revolt
 [Jyhad:U, VTES:U, CE:U, Anarchs:PAB2, KMW:PAn, Third:U]
 Cardtype: Master
 Master.
-Put this card in play. A Methuselah who does not control a ready anarch burns 1 pool during his or her untap phase. Any vampire can call a referendum to burn this card as a +1 stealth political action.
+Put this card in play. A Methuselah who does not control a ready anarch burns 1 pool during his or her unlock phase. Any vampire can call a referendum to burn this card as a +1 stealth political action.
 Artist: Pete Venters; Steve Prescott
 
 Name: Anarch Railroad

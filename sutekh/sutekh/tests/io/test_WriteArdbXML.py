@@ -94,7 +94,7 @@ When this vampire successfully hunts, he or she gains 1 additional blood.</text>
       <set>Third</set>
       <type>Action</type>
       <text>+1 stealth action. Requires a Sabbat vampire.
-Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
+Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
     </card><card count="2" databaseID="14">
       <name>Abombwe</name>
       <set>LoB</set>
