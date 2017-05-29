@@ -111,7 +111,7 @@ def _find_sect_and_title(aLines):
         # pylint: disable=W0704
         # error isn't fatal, so ignoring it is fine
         try:
-            oBaronTitle = re.compile(r'Anarch Baron of')
+            oBaronTitle = re.compile(r'[aA]narch Baron of')
             oMatch = oBaronTitle.search(aLines[0])
             if oMatch is not None:
                 sTitle = 'Baron'
@@ -146,7 +146,8 @@ class CardDict(dict):
         'seraph': re.compile(r'Sabbat\. Black Hand(\.)? Seraph'),
         'infernal': re.compile(r'[.:] Infernal\.'),
         'red list': re.compile(r'\. Red List:'),
-        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|Independent anarch[:\.]'),
+        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|'
+                              'Independent anarch[:\.]|Independent anarch Baron'),
         'scarce': re.compile(r'[.:] Scarce.'),
         'sterile': re.compile(r'[.:] Sterile.'),
         # Need the } to handle some of the errata'd cards
