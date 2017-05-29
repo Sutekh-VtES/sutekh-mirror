@@ -223,6 +223,16 @@ Discipline: aus dom PRE THA
 Sabbat bishop: Alfred gets -1 strength in combat with an ally.
 Artist: Quinton Hoover
 
+Name: Alabástrom
+[Anthology:1]
+Cardtype: Vampire
+Clan: Gargoyle
+Group: 6
+Capacity: 7
+Discipline: aus cel for POT VIS
+Independent anarch: If Alabástrom is ready during your turn, you can unlock another ready Gargoyle you control. Flight [FLIGHT].
+Artist: Ginés Quiñonero
+
 Name: Ambrogino Giovanni
 [FN:U2]
 Cardtype: Vampire
@@ -291,6 +301,13 @@ Capacity: 8
 Discipline: aus dom CEL PRE
 Camarilla Prince of Seattle: If Anson is ready during your master phase, you get two master phase actions (instead of one).
 Artist: Mark Tedin
+
+Name: Ashur Tablets
+[KoT:C, Anthology:3]
+Cardtype: Master
+Master.
+Put this card in play. If you control three copies, remove all copies in play (even controlled by other Methuselahs) from the game to gain 3 pool and choose up to thirteen cards from your ash heap. Move one of those cards to your hand and shuffle the others into your library.
+Artist: Sandra Chang;Ginés Quiñonero
 
 Name: Bravo
 [Gehenna:C]

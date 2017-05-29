@@ -43,6 +43,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Agent of Power",
         u"Aire of Elation",
         u"Akram",
+        u"Alabástrom",
         u"Alan Sovereign",
         u"Alan Sovereign (Advanced)",
         u"Alexandra",
@@ -55,6 +56,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
         u"Anson",
+        u"Ashur Tablets",
         u"Bravo",
         u"Bronwen",
         u"Cedric",
@@ -107,6 +109,7 @@ class WhiteWolfParserTests(SutekhTest):
         aCards = sorted(list(AbstractCard.select()), key=lambda oC: oC.name)
 
         # Check card names
+        self.assertEqual(len(aCards), len(self.aExpectedCards))
         self.assertEqual([oC.name for oC in aCards], self.aExpectedCards)
 
         # Check Magnum
@@ -128,10 +131,12 @@ class WhiteWolfParserTests(SutekhTest):
         oCommon = IRarity('Common')
         oJyhad = IExpansion('Jyhad')
         oVTES = IExpansion('VTES')
+        oAnthology = IExpansion('Anthology')
 
         self.assertTrue(oCommon in [oP.rarity for oP in o44.rarity])
         self.assertTrue(oJyhad in [oP.expansion for oP in o44.rarity])
         self.assertTrue(oVTES in [oP.expansion for oP in o44.rarity])
+        self.assertTrue(oAnthology not in [oP.expansion for oP in o44.rarity])
 
         self.assertTrue(IRarityPair(('VTES', 'Common')) in o44.rarity)
 
@@ -179,6 +184,11 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(oRuling.text.startswith("Cannot use his special"))
         self.assertTrue(oRuling.text.endswith("uncontrolled region."))
         self.assertEqual(oRuling.code, "[LSJ 19990215]")
+
+        # Check Ashur Tablets
+        oAshur = IAbstractCard('Ashur Tablets')
+        self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
+        self.assertTrue(IRarityPair(('Anthology', 'Anthology')) in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
