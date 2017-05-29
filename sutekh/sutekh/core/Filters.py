@@ -661,7 +661,9 @@ class CardFunctionFilter(DirectFilter):
                               CardTextFilter('this reacting vampire unlocks'),
                               CardTextFilter('unlock this vampire'),
                               CardTextFilter('unlock this reacting vampire'),
-                              CardTextFilter('as though unlocked')
+                              CardTextFilter('as though unlocked'),
+                              CardTextFilter('vampire wakes'),
+                              CardTextFilter('minion wakes'),
                               ])
                 ]))
         if self.__sBounce in aTypes:
