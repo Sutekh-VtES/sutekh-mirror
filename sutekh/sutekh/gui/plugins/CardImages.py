@@ -97,6 +97,9 @@ class CardImageFrame(BaseImageFrame):
             sCurExpansionPath = 'dd'
         elif sCurExpansionPath == 'third':
             sCurExpansionPath = '3e'
+        if sCurExpansionPath == 'tenth' and sFilename == 'carltonvanwyk.jpg':
+            # point to pre-Antology card name
+            sFilename = 'carltonvanwykhunter.jpg'
         sUrl = 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
             sCurExpansionPath, sFilename)
         if sCurExpansionPath in LACKEY_IMAGES:
