@@ -253,6 +253,12 @@ class AppMainWindow(MultiPaneWindow):
     def check_for_updates(self):
         """Check for updated data from plugins or updated cardlists
            and so forth."""
+        # Check for cardlist updates before other updates, to avoid
+        # ordering issues
+        if self._oConfig.get_check_for_updates():
+            # Check for updated card list
+            self.check_updated_cardlist()
+
         # FIXME: We should probably add a config option so people can
         # skip this if desirable.
         aMessages = []
@@ -272,9 +278,6 @@ class AppMainWindow(MultiPaneWindow):
             for oPlugin in aUpdatePlugins:
                 oPlugin.do_update()
 
-        if self._oConfig.get_check_for_updates():
-            # Check for updated card list
-            self.check_updated_cardlist()
 
     # Pane manipulation functions
 
