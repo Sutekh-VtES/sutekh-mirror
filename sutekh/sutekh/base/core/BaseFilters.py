@@ -1043,8 +1043,8 @@ class CardSetNameFilter(DirectFilter):
     """Filters on Card Set Name"""
     keyword = "CardSetName"
     description = "Card Set Name"
-    helptext = "the text to be matched against card set names.\n" \
-            "% and _ can be used as wildcards.\nReturns all card sets " \
+    helptext = "the text to be matched against card set names. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
             "whose name contains the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
@@ -1068,8 +1068,8 @@ class CardSetDescriptionFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Description"""
     keyword = "CardSetDescription"
     description = "Card Set Description"
-    helptext = "the text to be matched against card set description.\n" \
-            "% and _ can be used as wildcards.\nReturns all card sets " \
+    helptext = "the text to be matched against card set description. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
             "containing the given string in the description."
     istextentry = True
     types = ('PhysicalCardSet',)
@@ -1094,8 +1094,8 @@ class CardSetAuthorFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Author"""
     keyword = "CardSetAuthor"
     description = "Card Set Author"
-    helptext = "the text to be matched against card set Author.\n" \
-            "% and _ can be used as wildcards.\nReturns all card sets "\
+    helptext = "the text to be matched against card set Author. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets "\
             "whose author includes the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
@@ -1120,8 +1120,8 @@ class CardSetAnnotationsFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Annotations"""
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
-    helptext = "the text to be matched against card set annotations.\n" \
-            "% and _ can be used as wildcards.\nReturns all card sets " \
+    helptext = "the text to be matched against card set annotations. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
             "where the annotations contain the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
