@@ -331,6 +331,37 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
         fMarkdown.close()
 
 
+def add_single_filter(aOutput, iTocIndex, sKeyword, oFilter):
+    sDesc = oFilter.description
+    sLink = sKeyword.lower()
+
+    aOutput.insert(iTocIndex, '## "%s":#%s\n' %
+                   (sDesc, sLink))
+    iTocIndex += 1
+
+    aOutput.append('h3(#%s). %s\n\n' % (sLink, sDesc))
+
+    try:
+        sInput, sRest = oFilter.helptext.split('\n', 1)
+        aOutput.append('*Parameters:* %s\n\n' % sInput)
+        aOutput.append(sRest)
+    except ValueError:
+        print('Failed to extract filter details')
+        print(oFilter.keyword, oFilter.helptext)
+
+    aOutput.append('\n\n')
+    return iTocIndex
+
+
+def add_filters(aOutput, iTocIndex, dFilters):
+    """Add the appropriate list of filtes"""
+    for sKeyword in sorted(dFilters):
+        # Generate toc entry
+        oFilter = dFilters[sKeyword]
+        iTocIndex = add_single_filter(aOutput, iTocIndex, sKeyword, oFilter)
+    return iTocIndex
+
+
 def make_filter_txt(sDir, aFilters):
     """Convert base filters into the approriate textile files"""
     # pylint: disable=R0914, R0915, R0912
@@ -345,10 +376,13 @@ def make_filter_txt(sDir, aFilters):
         'Navigation': FILTER_NAVIGATION,
     }
 
-    dFilters = {}
-    dFilters['Filter_Group'] = FilterGroup
+    dCardSetFilters = {}
+    dCardFilters = {}
     for oFilter in aFilters:
-        dFilters[oFilter.keyword] = oFilter
+        if 'PhysicalCardSet' in oFilter.types:
+            dCardSetFilters[oFilter.keyword] = oFilter
+        else:
+            dCardFilters[oFilter.keyword] = oFilter
 
     for sTemplatePath in glob.glob(os.path.join(sDir, "*.tmpl")):
         sBasename = os.path.basename(sTemplatePath)
@@ -372,30 +406,12 @@ def make_filter_txt(sDir, aFilters):
                 # We're going to insert new toc entries here
                 iTocIndex = len(aOutput)
                 continue
-            elif sKeyword in dFilters:
-                oFilter = dFilters[sKeyword]
-
-                # Generate toc entry
-                sDesc = oFilter.description
-                sLink = sKeyword.lower()
-
-                aOutput.insert(iTocIndex, '## "%s":#%s\n' %
-                               (sDesc, sLink))
-                iTocIndex += 1
-
-                aOutput.append('h3(#%s). %s\n\n' % (sLink, sDesc))
-
-                try:
-                    sInput, sRest = oFilter.helptext.split('\n', 1)
-                except ValueError:
-                    print('Failed to extract filter details')
-                    print(oFilter.keyword, oFilter.helptext)
-
-                aOutput.append('*Parameters:* %s\n\n' % sInput)
-                aOutput.append(sRest)
-                aOutput.append('\n')
-                if sKeyword != 'Filter_Group':
-                    del dFilters[sKeyword]
+            elif sKeyword == 'Filter_Group':
+                iTocIndex = add_single_filter(aOutput, iTocIndex, sKeyword, FilterGroup)
+            elif sKeyword == 'card_filters_long':
+                iTocIndex = add_filters(aOutput, iTocIndex, dCardFilters)
+            elif sKeyword == 'card_set_filters_long':
+                iTocIndex = add_filters(aOutput, iTocIndex, dCardSetFilters)
             elif sKeyword in dSections:
                 sText = dSections[sKeyword]
                 # Generate toc entry
@@ -412,12 +428,6 @@ def make_filter_txt(sDir, aFilters):
                                                                    sKeyword))
 
         fTextile.write(''.join(aOutput))
-
-    if 'Filter_Group' in dFilters:
-        del dFilters['Filter_Group']
-    if dFilters:
-        print('The following filters have no entry in the templates.')
-        print(dFilters.keys())
 
 
 def cleanup(sDir):

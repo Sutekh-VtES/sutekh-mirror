@@ -16,29 +16,29 @@
 		<li><a href="#elements">Filter Elements</a>
 		<ol>
 			<li><a href="#filter_group">Filter Group</a></li>
+			<li><a href="#artist">Artist</a></li>
+			<li><a href="#capacity">Capacity</a></li>
+			<li><a href="#cardcount">Card Count</a></li>
+			<li><a href="#cardfunction">Card Function</a></li>
 			<li><a href="#cardname">Card Name</a></li>
 			<li><a href="#cardtext">Card Text</a></li>
 			<li><a href="#cardtype">Card Type</a></li>
-			<li><a href="#clan">Clan</a></li>
-			<li><a href="#creed">Creed</a></li>
-			<li><a href="#cardfunction">Card Function</a></li>
-			<li><a href="#cardcount">Card Count</a></li>
-			<li><a href="#capacity">Capacity</a></li>
-			<li><a href="#life">Life</a></li>
-			<li><a href="#group">Group</a></li>
 			<li><a href="#card_sets">Card Sets</a></li>
-			<li><a href="#setsinuse">In the &#8216;In Use&#8217; children of</a></li>
-			<li><a href="#title">Title</a></li>
+			<li><a href="#clan">Clan</a></li>
 			<li><a href="#cost">Cost</a></li>
 			<li><a href="#costtype">Cost Type</a></li>
-			<li><a href="#keyword">Keyword</a></li>
-			<li><a href="#virtue">Virtue</a></li>
-			<li><a href="#sect">Sect</a></li>
-			<li><a href="#artist">Artist</a></li>
-			<li><a href="#physicalexpansion">Physical Expansion</a></li>
+			<li><a href="#creed">Creed</a></li>
 			<li><a href="#discipline">Discipline</a></li>
 			<li><a href="#discipline_with_level">Discipline with Level</a></li>
 			<li><a href="#expansion_with_rarity">Expansion with Rarity</a></li>
+			<li><a href="#group">Group</a></li>
+			<li><a href="#keyword">Keyword</a></li>
+			<li><a href="#life">Life</a></li>
+			<li><a href="#physicalexpansion">Physical Expansion</a></li>
+			<li><a href="#sect">Sect</a></li>
+			<li><a href="#setsinuse">In the &#8216;In Use&#8217; children of</a></li>
+			<li><a href="#title">Title</a></li>
+			<li><a href="#virtue">Virtue</a></li>
 		</ol></li>
 		<li><a href="#note">Notes</a></li>
 	</ol>
@@ -81,6 +81,31 @@ produces.</p>
 		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
 
+	<h3 id="artist">Artist</h3>
+
+	<p><strong>Parameters:</strong> a list of artists</p>
+
+	<p>Returns all cards where one or more of the specified artists has created art for the card.</p>
+
+	<h3 id="capacity">Capacity</h3>
+
+	<p><strong>Parameters:</strong> a list of capacities.</p>
+
+	<p>Returns all cards of the selected capacities</p>
+
+	<h3 id="cardcount">Card Count</h3>
+
+	<p><strong>Parameters:</strong> a list of card numbers from a chosen card set (filters on number of cards in the Card Set).</p>
+
+	<p>Returns a list of cards that have the chosen counts in the given card set.</p>
+
+	<h3 id="cardfunction">Card Function</h3>
+
+	<p><strong>Parameters:</strong> the chosen function from the list of supported types.</p>
+
+	<p>Functions include roles such as unlock or bleed modifier. 
+Returns all cards matching the given functions.</p>
+
 	<h3 id="cardname">Card Name</h3>
 
 	<p><strong>Parameters:</strong> the text to be matched against card names (% and _ can be used as wildcards).</p>
@@ -99,67 +124,17 @@ produces.</p>
 
 	<p>Returns all cards of the given types</p>
 
-	<h3 id="clan">Clan</h3>
-
-	<p><strong>Parameters:</strong> a list of clans</p>
-
-	<p>Returns all cards which require or are of the specified clans</p>
-
-	<h3 id="creed">Creed</h3>
-
-	<p><strong>Parameters:</strong> a list of creeds.</p>
-
-	<p>Returns all cards requiring or of the selected creeds</p>
-
-	<h3 id="cardfunction">Card Function</h3>
-
-	<p><strong>Parameters:</strong> the chosen function from the list of supported types.</p>
-
-	<p>Functions include roles such as unlock or bleed modifier. 
-Returns all cards matching the given functions.</p>
-
-	<h3 id="cardcount">Card Count</h3>
-
-	<p><strong>Parameters:</strong> a list of card numbers from a chosen card set (filters on number of cards in the Card Set).</p>
-
-	<p>Returns a list of cards that have the chosen counts in the given card set.</p>
-
-	<h3 id="capacity">Capacity</h3>
-
-	<p><strong>Parameters:</strong> a list of capacities.</p>
-
-	<p>Returns all cards of the selected capacities</p>
-
-	<h3 id="life">Life</h3>
-
-	<p><strong>Parameters:</strong> a list of life values.</p>
-
-	<p>Returns allies (both library and crypt cards) and retainers with the selected life. 
-For cases where the life varies, only the base value for life is used.</p>
-
-	<h3 id="group">Group</h3>
-
-	<p><strong>Parameters:</strong> a list of groups.</p>
-
-	<p>Returns all cards belonging to the listed group.</p>
-
 	<h3 id="card_sets">Card Sets</h3>
 
 	<p><strong>Parameters:</strong> a list of card sets names</p>
 
 	<p>Selects cards in the specified sets.</p>
 
-	<h3 id="setsinuse">In the &#8216;In Use&#8217; children of</h3>
+	<h3 id="clan">Clan</h3>
 
-	<p><strong>Parameters:</strong> list of card sets</p>
+	<p><strong>Parameters:</strong> a list of clans</p>
 
-	<p>Selects cards in the Card Sets marked as in use that are children of the given card sets.</p>
-
-	<h3 id="title">Title</h3>
-
-	<p><strong>Parameters:</strong> a list of titles.</p>
-
-	<p>Returns all cards with the selected titles.</p>
+	<p>Returns all cards which require or are of the specified clans</p>
 
 	<h3 id="cost">Cost</h3>
 
@@ -173,35 +148,11 @@ For cases where the life varies, only the base value for life is used.</p>
 
 	<p>Returns cards requiring the selected cost types.</p>
 
-	<h3 id="keyword">Keyword</h3>
+	<h3 id="creed">Creed</h3>
 
-	<p><strong>Parameters:</strong> a list of keywords</p>
+	<p><strong>Parameters:</strong> a list of creeds.</p>
 
-	<p>Returns all cards where one or more of the specified keywords is associated with the card.</p>
-
-	<h3 id="virtue">Virtue</h3>
-
-	<p><strong>Parameters:</strong> a list of virtues.</p>
-
-	<p>Returns all cards requiring or having the selected virtues</p>
-
-	<h3 id="sect">Sect</h3>
-
-	<p><strong>Parameters:</strong> a list of sects.</p>
-
-	<p>Returns all cards belonging to the given sects</p>
-
-	<h3 id="artist">Artist</h3>
-
-	<p><strong>Parameters:</strong> a list of artists</p>
-
-	<p>Returns all cards where one or more of the specified artists has created art for the card.</p>
-
-	<h3 id="physicalexpansion">Physical Expansion</h3>
-
-	<p><strong>Parameters:</strong> a list of expansions.</p>
-
-	<p>Selects cards with their expansion set to the chosen expansions.</p>
+	<p>Returns all cards requiring or of the selected creeds</p>
 
 	<h3 id="discipline">Discipline</h3>
 
@@ -220,6 +171,55 @@ For cases where the life varies, only the base value for life is used.</p>
 	<p><strong>Parameters:</strong> a list of expansions and rarities (each element specified as an expansion with associated rarity).</p>
 
 	<p>Returns all matching cards.</p>
+
+	<h3 id="group">Group</h3>
+
+	<p><strong>Parameters:</strong> a list of groups.</p>
+
+	<p>Returns all cards belonging to the listed group.</p>
+
+	<h3 id="keyword">Keyword</h3>
+
+	<p><strong>Parameters:</strong> a list of keywords</p>
+
+	<p>Returns all cards where one or more of the specified keywords is associated with the card.</p>
+
+	<h3 id="life">Life</h3>
+
+	<p><strong>Parameters:</strong> a list of life values.</p>
+
+	<p>Returns allies (both library and crypt cards) and retainers with the selected life. 
+For cases where the life varies, only the base value for life is used.</p>
+
+	<h3 id="physicalexpansion">Physical Expansion</h3>
+
+	<p><strong>Parameters:</strong> a list of expansions.</p>
+
+	<p>Selects cards with their expansion set to the chosen expansions.</p>
+
+	<h3 id="sect">Sect</h3>
+
+	<p><strong>Parameters:</strong> a list of sects.</p>
+
+	<p>Returns all cards belonging to the given sects</p>
+
+	<h3 id="setsinuse">In the &#8216;In Use&#8217; children of</h3>
+
+	<p><strong>Parameters:</strong> list of card sets</p>
+
+	<p>Selects cards in the Card Sets marked as in use that are children of the given card sets.</p>
+
+	<h3 id="title">Title</h3>
+
+	<p><strong>Parameters:</strong> a list of titles.</p>
+
+	<p>Returns all cards with the selected titles.</p>
+
+	<h3 id="virtue">Virtue</h3>
+
+	<p><strong>Parameters:</strong> a list of virtues.</p>
+
+	<p>Returns all cards requiring or having the selected virtues</p>
 
 	<h2 id="note">Notes</h2>
 

@@ -16,12 +16,12 @@
 		<li><a href="#elements">Filter Elements</a>
 		<ol>
 			<li><a href="#filter_group">Filter Group</a></li>
-			<li><a href="#cardsetname">Card Set Name</a></li>
-			<li><a href="#cardsetdescription">Card Set Description</a></li>
-			<li><a href="#cardsetauthor">Card Set Author</a></li>
-			<li><a href="#cardsetannotations">Card Set Annotations</a></li>
-			<li><a href="#parentcardset">Parent Card Set</a></li>
 			<li><a href="#cssetsinuse">Card Set Marked as in Use</a></li>
+			<li><a href="#cardsetannotations">Card Set Annotations</a></li>
+			<li><a href="#cardsetauthor">Card Set Author</a></li>
+			<li><a href="#cardsetdescription">Card Set Description</a></li>
+			<li><a href="#cardsetname">Card Set Name</a></li>
+			<li><a href="#parentcardset">Parent Card Set</a></li>
 		</ol></li>
 		</ol>
 
@@ -63,44 +63,40 @@ produces.</p>
 		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
 
-	<h3 id="cardsetname">Card Set Name</h3>
+	<h3 id="cssetsinuse">Card Set Marked as in Use</h3>
 
-	<p><strong>Parameters:</strong> the text to be matched against card set names.</p>
+	<p><strong>Parameters:</strong> This filter takes no parameters</p>
 
-	<p>% and _ can be used as wildcards. 
-Returns all card sets whose name contains the given string.</p>
-
-	<h3 id="cardsetdescription">Card Set Description</h3>
-
-	<p><strong>Parameters:</strong> the text to be matched against card set description.</p>
-
-	<p>% and _ can be used as wildcards. 
-Returns all card sets containing the given string in the description.</p>
-
-	<h3 id="cardsetauthor">Card Set Author</h3>
-
-	<p><strong>Parameters:</strong> the text to be matched against card set Author.</p>
-
-	<p>% and _ can be used as wildcards. 
-Returns all card sets whose author includes the given string.</p>
+	<p>Selects those Card Sets  in the Card Set List that are marked as in use.</p>
 
 	<h3 id="cardsetannotations">Card Set Annotations</h3>
 
-	<p><strong>Parameters:</strong> the text to be matched against card set annotations.</p>
+	<p><strong>Parameters:</strong> the text to be matched against card set annotations. (% and _ can be used as wildcards.)</p>
 
-	<p>% and _ can be used as wildcards. 
-Returns all card sets where the annotations contain the given string.</p>
+	<p>Returns all card sets where the annotations contain the given string.</p>
+
+	<h3 id="cardsetauthor">Card Set Author</h3>
+
+	<p><strong>Parameters:</strong> the text to be matched against card set Author. (% and _ can be used as wildcards.)</p>
+
+	<p>Returns all card sets whose author includes the given string.</p>
+
+	<h3 id="cardsetdescription">Card Set Description</h3>
+
+	<p><strong>Parameters:</strong> the text to be matched against card set description. (% and _ can be used as wildcards.)</p>
+
+	<p>Returns all card sets containing the given string in the description.</p>
+
+	<h3 id="cardsetname">Card Set Name</h3>
+
+	<p><strong>Parameters:</strong> the text to be matched against card set names. (% and _ can be used as wildcards.)</p>
+
+	<p>Returns all card sets whose name contains the given string.</p>
 
 	<h3 id="parentcardset">Parent Card Set</h3>
 
 	<p><strong>Parameters:</strong> a list names of the parent card sets.</p>
 
 	<p>Returns all card sets with one of the selected card sets as a parent.</p>
-
-	<h3 id="cssetsinuse">Card Set Marked as in Use</h3>
-
-	<p><strong>Parameters:</strong> This filter takes no parameters</p>
-
-	<p>Selects those Card Sets  in the Card Set List that are marked as in use.</p>
 </body>
 </html>
