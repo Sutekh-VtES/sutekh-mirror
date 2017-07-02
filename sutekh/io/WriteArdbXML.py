@@ -54,7 +54,10 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
     def _ardb_lib_card(self, oCardElem, oAbsCard, sSet):
         """Fill in name and set for a library card"""
         oNameElem = SubElement(oCardElem, 'name')
-        oNameElem.text = canonical_to_csv(oAbsCard.name)
+        sName = oAbsCard.name
+        if sName == 'Carlton Van Wyk':
+            sName = 'Carlton Van Wyk (Hunter)'
+        oNameElem.text = canonical_to_csv(sName)
         oSetElem = SubElement(oCardElem, 'set')
         oSetElem.text = sSet
 

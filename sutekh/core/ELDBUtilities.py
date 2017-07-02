@@ -34,6 +34,9 @@ def norm_name(oCard):
     """Transform a card name to the ELDB equivalent"""
     sName = oCard.name
     sType = oCard.cardtype[0].name
+    # Convert Carlton back to ELDB format
+    if sName == u'Carlton Van Wyk':
+        sName = u'Carlton Van Wyk (Hunter)'
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "(ADV)")
     # Handle annoying ELDB special cases
