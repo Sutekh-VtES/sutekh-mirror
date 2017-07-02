@@ -316,6 +316,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                             'replace')
 
                 try:
+                    # Special case to handle the card rename in the Anthology
+                    # set
+                    if sName == 'carlton van wyk (hunter)':
+                        sName = 'carlton van wyk'
                     # Use IAbstractCard to cover more variations
                     oAbs = IAbstractCard(sName.encode('utf8'))
                     dCards[sName] = oAbs
