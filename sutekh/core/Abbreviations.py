@@ -248,6 +248,7 @@ class Rarities(AbbreviationLookup):
         'Rare': ['R', 'R1', 'R2', 'R3'],
         'Vampire': ['V', 'V1', 'V2', 'V3'],
         'Tenth': ['A', 'B'],
+        'Anthology': ['1', '2', '3', '4'],
         'BSC': ['X'],
         'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
             'PO3'],
