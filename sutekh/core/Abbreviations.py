@@ -180,6 +180,7 @@ class Expansions(AbbreviationLookup):
         'Anarchs': [],
         'Anarchs Unbound': ['AU'],
         'Ancient Hearts': ['AH'],
+        'Anthology': [],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
         'Black Hand': ['BH', 'Blackhand'],
