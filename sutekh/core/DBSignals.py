@@ -11,7 +11,11 @@ collection in sync."""
 
 from sqlobject.events import Signal, listen, RowUpdateSignal, \
         RowDestroySignal, RowCreatedSignal
-from sqlobject.include.pydispatch import dispatcher
+try:
+    from sqlobject.include.pydispatch import dispatcher
+except ImportError:
+    # Missing pydispatch, so try the 3.0 SQLObject location
+    from pydispatch import dispatcher
 from sutekh.core.SutekhObjects import PhysicalCardSet
 
 
