@@ -2,6 +2,7 @@
  * Backport the Baron title parsing code from trunk
  * Backport updated "Mixed deck" logic from trunk
  * Backport 'Unlock' text support for FunctionFilter
+ * Backport debian package build fixes
 
 01 Jul 2017
  * Backport support for the 'Anthology' expansion.
