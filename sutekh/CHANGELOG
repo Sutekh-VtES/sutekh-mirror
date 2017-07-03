@@ -1,3 +1,24 @@
+03 Jul 2017
+ * Add 'Anarchs Unbound' to the list of PDF sets
+
+07 Jun 2017
+ * Include Anthology set in the Mixed Card back checks
+ * Automatically generate the list of filters in the Filter help pages
+
+29 May 2017
+ * Add support for Anthology expansion and rarity
+ * Add Anthology test data and update test cases
+ * Handle Carlton rename when downloading card images
+ * Add 'wake' keyword to FunctionFilter
+ * Fix parsing of the Baron title
+
+10 May 2017
+ * Update test data to use lock/unlock wording
+ * Update FunctionFilter to use handle lock/unlock wording
+
+24 Apr 2017
+ * Fix TWDA export handling of vampire names
+
 19 Apr 2017
  * Tweak undo stack to always use the exact card removed or
    added, to avoid the case where deleting and then undo'ing
