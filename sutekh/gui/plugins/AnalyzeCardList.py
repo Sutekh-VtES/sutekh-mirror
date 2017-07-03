@@ -30,7 +30,7 @@ except SQLObjectNotFound, oExcDetails:
     logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
     # Turn exception into a ImportError, so plugin is just disabled
     raise ImportError('Unable to load the required expansions')
-ODD_BACKS = (None, THIRD_ED, JYHAD)
+ODD_BACKS = {}
 
 PDF_SETS = set()
 
@@ -75,12 +75,36 @@ def _disc_sort_cmp(oTuple1, oTuple2):
 def _load_pdf_sets():
     """Cache the sets from the VEKN pdf expansions"""
     PDF_SETS.clear()
-    for sSet in ['Danse Macabre']:
+    for sSet in ['Danse Macabre', 'The Unaligned',
+                 'Anarchs Unbound',
+                 # Storyline reward cards are an annoying scattering of
+                 # promo dates
+                 'Promo-20150211', 'Promo-20150212', 'Promo-20150213',
+                 'Promo-20150214', 'Promo-20150216', 'Promo-20150217',
+                 'Promo-20150218', 'Promo-20150219', 'Promo-20150220',
+                 'Promo-20150221',
+                 ]:
         try:
             oSet = IExpansion(sSet)
             PDF_SETS.add(oSet)
         except SQLObjectNotFound:
             pass
+
+
+def _load_odd_backs():
+    """Cache info about the non-standard card backs."""
+    ODD_BACKS.clear()
+    try:
+        aThirdEd = set([IExpansion('Third Edition')])
+        aJyhad = set([IExpansion('Jyhad')])
+        aVEKNPrinted = set([IExpansion('Anthology')])
+        ODD_BACKS['Third Edition'] = aThirdEd
+        ODD_BACKS['Jyhad'] = aJyhad
+        ODD_BACKS['VEKN Printed Set'] = aVEKNPrinted
+        ODD_BACKS['Unknown'] = set([None])
+    except SQLObjectNotFound as oExcDetails:
+        # log exception at same level as plugin errors (verbose)
+        logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
 
 
 def _format_card_line(sString, sTrailer, iNum, iLibSize):
@@ -257,7 +281,15 @@ def _get_back_counts(aPhysCards):
         if oKey in PDF_SETS:
             oKey = 'PDF'
         elif oKey not in ODD_BACKS:
-            oKey = 'Other'
+            bOther = True
+            for sName, oSet in ODD_BACKS.items():
+                if oKey in oSet:
+                    oKey = sName
+                    bOther = False
+                    break
+            if bOther:
+                # Fell through without a match
+                oKey = 'Other'
         dCounts.setdefault(oKey, 0)
         dCounts[oKey] += 1
     return dCounts
@@ -315,14 +347,12 @@ def _percentage_backs(dCards, iSize, fPer, sType):
        small"""
     sText = ""
     bOK = True
-    for oExp in dCards:
-        fThisPer = float(dCards[oExp]) / float(iSize) * 100
-        if hasattr(oExp, 'name'):
-            sName = oExp.name
-        else:
-            sName = oExp
-        sText += "%d %s backs (%2.1f%% of the %s).\n" % (dCards[oExp], sName,
-                fThisPer, sType.lower())
+    for sGroupName in dCards:
+        fThisPer = float(dCards[sGroupName]) / float(iSize) * 100
+        sText += "%d %s backs (%2.1f%% of the %s).\n" % (dCards[sGroupName],
+                                                         sGroupName,
+                                                         fThisPer,
+                                                         sType.lower())
         if fThisPer < fPer:
             sText += "Group of cards with the same back that's smaller" \
                     " than %2.1f%% of the %s.\n" % (fPer, sType.lower())
@@ -337,13 +367,16 @@ def _group_backs(dCards, aCards, iNum):
     dCardsByExp = {}
     bOK = True
     sText = ""
-    for oExp in dCards:
-        if oExp != 'Other':
-            dCardsByExp[oExp] = [oCard for oCard in aCards if
-                    oCard.expansion == oExp]
+    aAllOdd = set()
+    for aExps in ODD_BACKS.values():
+        aAllOdd.update(aExps)
+    for sGrpName in dCards:
+        if sGrpName != 'Other':
+            dCardsByExp[sGrpName] = [oCard for oCard in aCards if
+                                     oCard.expansion in ODD_BACKS[sGrpName]]
         else:
-            dCardsByExp[oExp] = [oCard for oCard in aCards if
-                    oCard.expansion not in ODD_BACKS]
+            dCardsByExp[sGrpName] = [oCard for oCard in aCards if
+                                     oCard.expansion not in aAllOdd]
     for oExp, aExpCards in dCardsByExp.iteritems():
         # For each expansion, count number of distinct cards
         aNames = set([x.abstractCard.name for x in aExpCards])
@@ -415,6 +448,7 @@ class AnalyzeCardList(SutekhPlugin):
     def __init__(self, *args, **kwargs):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
         _load_pdf_sets()
+        _load_odd_backs()
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
