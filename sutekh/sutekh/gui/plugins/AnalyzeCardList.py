@@ -90,6 +90,7 @@ def _load_pdf_sets():
     """Cache the sets from the VEKN pdf expansions"""
     PDF_SETS.clear()
     for sSet in ['Danse Macabre', 'The Unaligned',
+                 'Anarchs Unbound',
                  # Storyline reward cards are an annoying scattering of
                  # promo dates
                  'Promo-20150211', 'Promo-20150212', 'Promo-20150213',
