@@ -1,5 +1,6 @@
 03 Jul 2017
  * Add 'Anarchs Unbound' to the list of PDF sets
+ * Various fixes to the debian package build script
 
 07 Jun 2017
  * Include Anthology set in the Mixed Card back checks
