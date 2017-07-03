@@ -1,10 +1,12 @@
-Sutekh 0.8.1 (2012-02-20)
+Sutekh 0.8.9 (2017-07-03)
 -------------------------
 
-Sutekh 0.8.1 is a minor update and bugfix release for Sutekh 0.8. In
-particular, Sutekh 0.8.1 fixes a critical issue with updating the card
-list from the vekn.net website caused by a change in the character
-encoding used by vekn.net.
+Sutekh 0.8.9 is a minor update and bugfix release for Sutekh 0.8. In
+particular, Sutekh 0.8.9 fixes a issue with not parsing the Baron
+title correctly in the latest cardlist.
+
+This is a bug fix to the recent Sutekh 0.8.8 release which added support
+for the 'Anthology' set.
 
 Instructions for installing Sutekh can be found at:
 
@@ -22,36 +24,26 @@ Known Issues
 
 * No known issues at this stage.
 
-Notable Improvements since 0.8.0
+Notable Improvements since 0.8.8
 --------------------------------
 
-* Support for the change in character encoding on vekn.net web pages.
+* Fix the parsing of the Baron title.
 
-Changelog since 0.8.0
+Notable Improvements since 0.8.7
+--------------------------------
+
+* Full support for "Anthology" expansion
+
+Changelog since 0.8.6
 ---------------------
 
-19 Feb 2012
- * Backport rulebook typo fix and first time dialog size fix (r3009)
+03 Jul 2017
+ * Backport the Baron title parsing code from trunk
+ * Backport updated "Mixed deck" logic from trunk
+ * Backport 'Unlock' text support for FunctionFilter
 
-12 Feb 2012
- * Backport first time starter run fix (r3003)
-
-29 Jan 2012
- * Backport WM hint fix for progress dialog (r2985)
-
-13 Jan 2012
- * Backport unicode input handling in filters fix (r2983)
-
-10 Jan 2012
- * Backport typo fix from trunk (r2694)
-
-05 Jan 2012
- * Merge fix for chaged vekn.net encoding issue (r2977)
-
-09 Dec 2011
- * Merge card images aspect ratio fix (r2969)
-
-14 Oct 2011
- * backport fix for bug with creating card sets from the comparison plugin
-   when no expansion is set for a card from trunk
-   - r2958 & r2959
+01 Jul 2017
+ * Backport support for the 'Anthology' expansion.
+ * Add special handling for the rename of "Carlton Van Wyk (Hunter)" to
+   "Carlton Van Wyk" when importing existing card sets and updating
+   the database.
