@@ -58,7 +58,7 @@ make_deb () {
     fi
 
     # build source tarball and .dsc
-    py2dsc -z "$SUITE" -x "$EXTRA_CFG" $PATCHFILE "$SDIST_FILE"
+    py2dsc -z "$SUITE" -x "$EXTRA_CFG" -m "$SIGNER" $PATCHFILE "$SDIST_FILE" 
 
     # build .changes file (see https://github.com/astraw/stdeb/issues/37)
     cd deb_dist/sutekh-${DEB_VERSION}
