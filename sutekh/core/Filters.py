@@ -1091,7 +1091,7 @@ class CardFunctionFilter(DirectFilter):
 
     __sStealth = 'Stealth action modifiers'
     __sIntercept = 'Intercept reactions'
-    __sUntap = 'Untap reactions (Wake)'
+    __sUnlock = 'Unlock reactions (Wake)'
     __sBounce = 'Bleed redirection reactions (Bounce)'
     __sEnterCombat = 'Enter combat actions (Rush)'
     __sBleedModifier = 'Increased bleed action modifiers'
@@ -1106,13 +1106,21 @@ class CardFunctionFilter(DirectFilter):
         if self.__sIntercept in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
                 CardTextFilter('+_ intercept')]))
-        if self.__sUntap in aTypes:
+        if self.__sUnlock in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
                 FilterOrBox([CardTextFilter('this vampire untaps'),
                     CardTextFilter('this reacting vampire untaps'),
                     CardTextFilter('untap this vampire'),
                     CardTextFilter('untap this reacting vampire'),
-                    CardTextFilter('as though untapped')])]))
+                    CardTextFilter('as though untapped'),
+                    CardTextFilter('this vampire unlocks'),
+                    CardTextFilter('this reacting vampire unlocks'),
+                    CardTextFilter('unlock this vampire'),
+                    CardTextFilter('unlock this reacting vampire'),
+                    CardTextFilter('as though unlocked'),
+                    CardTextFilter('vampire wakes'),
+                    CardTextFilter('minion wakes'),
+                    ])]))
         if self.__sBounce in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
                 CardTextFilter('is now bleeding')]))
@@ -1138,7 +1146,7 @@ class CardFunctionFilter(DirectFilter):
     @classmethod
     def get_values(cls):
         """Values supported by this filter"""
-        aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUntap,
+        aVals = sorted([cls.__sStealth, cls.__sIntercept, cls.__sUnlock,
             cls.__sBounce, cls.__sEnterCombat, cls.__sBleedModifier,
             cls.__sBleedAction, cls.__sBleedReduction,
             ])
