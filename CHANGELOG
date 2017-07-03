@@ -1,3 +1,14 @@
+03 Jul 2017
+ * Backport the Baron title parsing code from trunk
+ * Backport updated "Mixed deck" logic from trunk
+ * Backport 'Unlock' text support for FunctionFilter
+
+01 Jul 2017
+ * Backport support for the 'Anthology' expansion.
+ * Add special handling for the rename of "Carlton Van Wyk (Hunter)" to
+   "Carlton Van Wyk" when importing existing card sets and updating
+   the database.
+
 03 Feb 2016
  * Backport deb build tweak from trunk.
 
