@@ -22,7 +22,7 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 DOWNLOAD_IMAGES)
 
 # Base url for downloading the images from
-SUTEKH_IMAGE_SITE = 'https://sutekh.drnlm.org/'
+SUTEKH_IMAGE_SITE = 'https://sutekh.drnlm.org'
 
 
 class CardImageFrame(BaseImageFrame):
@@ -129,9 +129,9 @@ class ImageConfigDialog(BaseImageConfigDialog):
                                        'cardimages plugin</b>\n'
                                        'The card images plugin can now '
                                        'download missing images from '
-                                       '%s.\nDo you wish to enable '
-                                       'this (you will not be prompted '
-                                       'again)?' % SUTEKH_IMAGE_SITE)
+                                       'sutekh.vtes.za.net.\nDo you wish to '
+                                       'enable this (you will not be prompted '
+                                       'again)?' )
             self.vbox.pack_start(self.oDescLabel, False, False)
             self.vbox.pack_start(self.oDownload, False, False)
             self.set_size_request(400, 200)
