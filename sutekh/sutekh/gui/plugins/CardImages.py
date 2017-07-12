@@ -19,7 +19,8 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImagePlugin,
                                                 check_file, unaccent,
                                                 CARD_IMAGE_PATH,
-                                                DOWNLOAD_IMAGES)
+                                                DOWNLOAD_IMAGES,
+                                                DOWNLOAD_EXPANSIONS)
 
 # Base url for downloading the images from
 SUTEKH_IMAGE_SITE = 'https://sutekh.drnlm.org'
@@ -38,6 +39,11 @@ class CardImageFrame(BaseImageFrame):
 
     def _have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""
+        # Config, if set to download, overrides the current state
+        oConfig = self._config_download_expansions()
+        if oConfig is not None:
+            return oConfig
+        # Config isn't set for downloads, so check the current state
         if sTestPath == '':
             sTestFile = os.path.join(self._sPrefsPath, 'bh', 'acrobatics.jpg')
         else:
@@ -46,6 +52,12 @@ class CardImageFrame(BaseImageFrame):
 
     def _check_test_file(self, sTestPath=''):
         """Test if acrobatics.jpg exists"""
+        # If we're configured to download images, we assume everythings
+        # kosher, since we check that the directory exists when configuring
+        # things
+        if self._config_download_images():
+            return True
+        # Downloads not set, so the state on disk matters
         if sTestPath == '':
             sTestFile = os.path.join(self._sPrefsPath, 'acrobatics.jpg')
         else:
@@ -78,14 +90,26 @@ class CardImageFrame(BaseImageFrame):
 
     def _make_card_urls(self, _sFullFilename):
         """Return a url pointing to the scan of the image"""
-        sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
         sFilename = self._norm_cardname(self._sCardName)[0]
-        if sCurExpansionPath == '' or sFilename == '':
-            # Error path, we don't know where to search for the image
+        if sFilename == '':
+            # Error out - we don't know where to look
             return None
-        sUrl = '%s/cardimages/%s/%s' % (SUTEKH_IMAGE_SITE, sCurExpansionPath,
-                                        sFilename)
-        return (sUrl, )
+        if self._bShowExpansions:
+            # Only try download the current expansion
+            aUrlExps = [self._convert_expansion(self._sCurExpansion)]
+        else:
+            # Try all the expansions, latest to oldest
+            aUrlExps = [self._convert_expansion(x) for x in self._aExpansions]
+        aUrls = []
+        for sCurExpansionPath in aUrlExps:
+            if sCurExpansionPath == '':
+                # Error path, we don't know where to search for the image
+                return None
+            sUrl = '%s/cardimages/%s/%s' % (SUTEKH_IMAGE_SITE,
+                                            sCurExpansionPath,
+                                            sFilename)
+            aUrls.append(sUrl)
+        return aUrls
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
@@ -174,7 +198,7 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
         """Handle the response from the config dialog"""
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
-            oFile, bDir, bDownload = oDialog.get_data()
+            oFile, bDir, bDownload, bDownloadExpansions = oDialog.get_data()
             if bDir:
                 # New directory
                 if self._accept_path(oFile):
@@ -192,6 +216,9 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
                 do_complaint_error('Unable to configure card images plugin')
             # Update download option
             self.set_config_item(DOWNLOAD_IMAGES, bDownload)
+            self.set_config_item(DOWNLOAD_EXPANSIONS, bDownloadExpansions)
+            # Reset expansions settings if needed
+            self.image_frame.check_images()
         # get rid of the dialog
         oDialog.destroy()
 

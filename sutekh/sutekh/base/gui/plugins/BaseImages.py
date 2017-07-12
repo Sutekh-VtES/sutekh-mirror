@@ -19,7 +19,8 @@ from ..BasePluginManager import BasePlugin
 from ..ProgressDialog import ProgressDialog
 from ..MessageBus import MessageBus, CARD_TEXT_MSG
 from ..BasicFrame import BasicFrame
-from ..SutekhDialog import SutekhDialog, do_complaint_buttons
+from ..SutekhDialog import (SutekhDialog, do_complaint_buttons,
+                            do_complaint_error)
 from ..AutoScrolledWindow import AutoScrolledWindow
 from ...Utility import prefs_dir, ensure_dir_exists
 from ..FileOrUrlWidget import FileOrDirOrUrlWidget
@@ -33,6 +34,7 @@ RATIO = (225, 300)
 # Config Key Constants
 DOWNLOAD_IMAGES = 'download images'
 CARD_IMAGE_PATH = 'card image path'
+DOWNLOAD_EXPANSIONS = 'download expansion images'
 
 
 def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
@@ -205,7 +207,7 @@ class BaseImageFrame(BasicFrame):
         self._sCardName = ''
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
-        self._dUrlCache = {}
+        self._aFailedUrls = set()
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -223,6 +225,28 @@ class BaseImageFrame(BasicFrame):
         MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
         super(BaseImageFrame, self).cleanup(bQuit)
+
+    def _config_download_images(self):
+        """Check if we are configured to download images.
+
+           Helper function to be used in sub-classes.
+           If downloads are supported, return the
+           the config option, otherwise return false."""
+        if self._oImagePlugin.DOWNLOAD_SUPPORTED:
+            return self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)
+        return False
+
+    def _config_download_expansions(self):
+        """Check if we are configured to download expansions.
+
+           Helper function to be used in sub-classes.
+           Logic is that, if downloads are supported, take
+           the config option, otherwise return None, to indicate that
+           downloads aren't supported."""
+        if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
+                self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)):
+            return self._oImagePlugin.get_config_item(DOWNLOAD_EXPANSIONS)
+        return None
 
     def _have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image subdirs"""
@@ -303,16 +327,17 @@ class BaseImageFrame(BasicFrame):
         aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
             return False
+        print(aUrls, sFullFilename)
         for sUrl in aUrls:
-            if sUrl not in self._dUrlCache:
+            if sUrl not in self._aFailedUrls:
                 logging.info('Trying %s as source for %s',
                              sUrl, sFullFilename)
                 oFile = urlopen_with_timeout(
                     sUrl, fErrorHandler=image_gui_error_handler,
                     dHeaders=self._dReqHeaders)
             else:
-                oFile = self._dUrlCache[sUrl]
-            self._dUrlCache[sUrl] = oFile
+                # Skip this url, since it's already failed
+                break
             if oFile:
                 # Ensure the directory exists, for expansions we
                 # haven't encountered before
@@ -327,10 +352,11 @@ class BaseImageFrame(BasicFrame):
                     oOutFile.write(sImgData)
                     oOutFile.close()
                     logging.info('Using image data from %s', sUrl)
+                    # We remove this from the url cache
                 else:
                     logging.info('Invalid image data from %s', sUrl)
                     # Got bogus data, so skip this in future
-                    self._dUrlCache[sUrl] = None
+                    self._aFailedUrls.append(sUrl)
                 # Don't attempt to follow other urls
                 break
         return True
@@ -567,11 +593,21 @@ class BaseImageConfigDialog(SutekhDialog):
             self.oDownload = gtk.CheckButton(
                 'Download missing images from %s?' % self.sImgDownloadSite)
             bCurrentDownload = oImagePlugin.get_config_item(DOWNLOAD_IMAGES)
+            self.oDownloadExpansions = gtk.CheckButton(
+                'Download images for each expansion?')
+            bDownloadExpansions = oImagePlugin.get_config_item(
+                DOWNLOAD_EXPANSIONS)
             if bCurrentDownload is None:
                 # Handle 'not in the config file' issues
                 bCurrentDownload = False
+                bDownloadExpansions = False
             self.oDownload.set_active(bCurrentDownload)
+            self.oDownload.connect('toggled', self._enable_exp)
+            self.oDownloadExpansions.set_active(bDownloadExpansions)
+            if not bCurrentDownload:
+                self.oDownloadExpansions.set_sensitive(False)
             self.vbox.pack_start(self.oDownload, False, False)
+            self.vbox.pack_start(self.oDownloadExpansions, False, False)
         else:
             self.oDownload = None
         self.set_size_request(400, 200)
@@ -583,16 +619,24 @@ class BaseImageConfigDialog(SutekhDialog):
         sFile, _bUrl, bDir = self.oChoice.get_file_or_dir_or_url()
         if self.oDownload:
             bDownload = self.oDownload.get_active()
+            bDownloadExpansions = self.oDownloadExpansions.get_active()
         else:
             bDownload = False
+            bDownloadExpansions = False
         if bDir:
             # Just return the name the user chose
-            return sFile, True, bDownload
+            return sFile, True, bDownload, bDownloadExpansions
         if sFile:
             oOutFile = tempfile.TemporaryFile()
             self.oChoice.get_binary_data(oOutFile)
-            return oOutFile, False, bDownload
-        return None, None, bDownload
+        else:
+            oOutFile = None
+            return oOutFile, False, bDownload, bDownloadExpansions
+        return None, None, bDownload, bDownloadExpansions
+
+    def _enable_exp(self, oButton):
+        """Enable or disable the 'Expansion images' button as required."""
+        self.oDownloadExpansions.set_sensitive(oButton.get_active())
 
 
 class BaseImagePlugin(BasePlugin):
@@ -625,7 +669,10 @@ class BaseImagePlugin(BasePlugin):
     def update_config(cls):
         """Add a download option if the plugin supports it."""
         if cls.DOWNLOAD_SUPPORTED:
+            # We flag download images with None so we can do first time
+            # config off that
             cls.dGlobalConfig[DOWNLOAD_IMAGES] = 'boolean(default=None)'
+            cls.dGlobalConfig[DOWNLOAD_EXPANSIONS] = 'boolean(default=False)'
 
     def init_image_frame(self):
         """Setup the image frame."""
@@ -725,6 +772,33 @@ class BaseImagePlugin(BasePlugin):
     def _accept_path(self, sTestPath):
         """Check if the path from user is OK."""
         if sTestPath is not None:
+            # Test if path exists
+            if not os.path.exists(sTestPath):
+                iQuery = do_complaint_buttons(
+                    "Folder does not exist. Really use it?\n"
+                    "(Answering yes will create the folder)",
+                    gtk.MESSAGE_QUESTION,
+                    (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                     gtk.STOCK_NO, gtk.RESPONSE_NO))
+                if iQuery == gtk.RESPONSE_NO:
+                    # Treat as cancelling
+                    return False
+                ensure_dir_exists(sTestPath)
+                # We know it doesn't have images, but as we've been
+                # told to create it by the user, we assume they know
+                # what they're doing and they intend to download images
+                # into it
+                return True
+            elif not os.path.isdir(sTestPath):
+                # Exists, but not a directory, so this is a fatal
+                # error
+                # This in general shouldn't happen, because we usually
+                # check the path from the file widget, but we don't want
+                # to assume that's the case for all users of this helper
+                do_complaint_error(
+                    "%s is not a folder. Please choose a path for"
+                    " the images" % sTestPath)
+                return False
             # Test if path has images
             if not self.image_frame.check_images(sTestPath):
                 iQuery = do_complaint_buttons(
