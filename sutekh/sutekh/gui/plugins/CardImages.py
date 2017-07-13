@@ -174,6 +174,13 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
 
     _cImageFrame = CardImageFrame
 
+    @classmethod
+    def update_config(cls):
+        super(CardImagePlugin, cls).update_config()
+        # We default to download expansions is true, since that matches
+        # the zip file we provide from sutekh.vtes.za.net
+        cls.dGlobalConfig[DOWNLOAD_EXPANSIONS] = 'boolean(default=True)'
+
     def setup(self):
         """Prompt the user to download/setup images the first time"""
         sPrefsPath = self.get_config_item(CARD_IMAGE_PATH)
