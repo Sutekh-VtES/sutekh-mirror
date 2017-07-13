@@ -23,7 +23,7 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 DOWNLOAD_EXPANSIONS)
 
 # Base url for downloading the images from
-SUTEKH_IMAGE_SITE = 'https://sutekh.drnlm.org'
+SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
 
 
 class CardImageFrame(BaseImageFrame):
@@ -36,6 +36,11 @@ class CardImageFrame(BaseImageFrame):
        """
 
     APP_NAME = SutekhInfo.NAME
+
+    # Cloudflare doesn't like the urllib2 default
+    _dReqHeaders = {
+        'User-Agent': 'Sutekh Image Plugin'
+    }
 
     def _have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""
