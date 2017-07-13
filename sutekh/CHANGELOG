@@ -1,3 +1,14 @@
+13 Jul 2017
+ * Update CardImages downloader to work with Cloudflare's limitations.
+ * Tweak config option defaults.
+
+12 Jul 2017
+ * Make the choice between downloading images for each expansion or only
+   one image per abstract card a config option.
+
+11 Jul 2017
+ * Point CardImages plugin at a different source for images.
+
 03 Jul 2017
  * Add 'Anarchs Unbound' to the list of PDF sets
  * Various fixes to the debian package build script
