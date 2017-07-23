@@ -370,7 +370,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                     do_complaint_error('Unable to access TWD data')
                 elif not self._get_decks(aUrls, aDates, aHashes):
                     do_complaint_error(
-                        'Unable to successfully download TWD data')
+                        "Didn't find any TWD data to download")
                 else:
                     # Successful download, so we're configured
                     self.set_config_item('twda configured', 'Yes')
@@ -408,7 +408,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         aUrls, aDates, aHashes = find_all_data_packs(
             'twd', fErrorHandler=gui_error_handler)
         if not self._get_decks(aUrls, aDates, aHashes):
-            do_complaint_error('Unable to successfully download TWD data')
+            do_complaint_error("Didn't find any TWD data to download")
 
     def _get_decks_to_download(self, aUrls, aDates, aHashes):
         """Check for any decks we need to download."""
