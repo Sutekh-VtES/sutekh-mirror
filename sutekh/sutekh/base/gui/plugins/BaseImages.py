@@ -327,7 +327,6 @@ class BaseImageFrame(BasicFrame):
         aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
             return False
-        print(aUrls, sFullFilename)
         for sUrl in aUrls:
             if sUrl not in self._aFailedUrls:
                 logging.info('Trying %s as source for %s',
