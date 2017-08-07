@@ -51,8 +51,9 @@ class CardListView(FilteredView):
         # Key combination for searching
 
         # Drag and Drop
-        aTargets = [('STRING', 0, 0),      # second 0 means TARGET_STRING
-                    ('text/plain', 0, 0)]  # and here
+        # Trailing 0 means TARGET_STRING
+        aTargets = [('STRING', gtk.TARGET_SAME_APP, 0),
+                    ('text/plain', gtk.TARGET_SAME_APP, 0)]
 
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                              aTargets,

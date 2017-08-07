@@ -17,8 +17,8 @@ import gobject
 import gtk
 import pango
 
-DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
-NO_DRAG_TARGET = [("No Drag", 0, 0)]
+DRAG_TARGETS = [('STRING', gtk.TARGET_SAME_APP, 0),
+                ('text/plain', gtk.TARGET_SAME_APP, 0)]
 # Filters we pad values for to sort nicely
 PAD_FILTERS = set(('Capacity', 'CardCount: Count'))
 LIST_TYPES = set((FilterBoxItem.LIST, FilterBoxItem.LIST_FROM))

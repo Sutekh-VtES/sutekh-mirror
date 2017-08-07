@@ -22,7 +22,8 @@ class BasicFrame(gtk.Frame):
        setting the active hint.
        """
 
-    aDragTargets = [('STRING', 0, 0), ('text/plain', 0, 0)]
+    aDragTargets = [('STRING', gtk.TARGET_SAME_APP, 0),
+                    ('text/plain', gtk.TARGET_SAME_APP, 0)]
 
     _cModelType = None
 
