@@ -11,6 +11,8 @@ import gtk
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCard,
                                           IAbstractCard)
 from sutekh.base.tests.TestUtils import make_card
+from sutekh.base.gui.BaseConfigFile import CARDSET
+from sutekh.base.gui.CardSetListModel import EXTRA_LEVEL_OPTION
 
 
 class TestCardSetFrame(GuiSutekhTest):
@@ -22,7 +24,16 @@ class TestCardSetFrame(GuiSutekhTest):
     # I prefer to have these as methods
 
     def _select_cards(self, oFrame, aCards):
-        """Find cards by name and expansion in the frame and select them"""
+        """Find cards by name and extra levels in the frame and select them"""
+        def do_level_select(oSelection, oModel, tBase, oIter, aCards):
+            """Handle the selection logic for the current level"""
+            sVal = oModel.get_name_from_iter(oIter)
+            if sVal == oModel.sUnknownExpansion:
+                sVal = None
+            if tBase + (sVal, ) in aCards:
+                oPath = oModel.get_path(oIter)
+                oSelection.select_path(oPath)
+            return sVal
         oModel = oFrame.view.get_model()
         oSelection = oFrame.view.get_selection()
         oFrame.view.expand_all()  # needed so we can select deeper entries
@@ -34,19 +45,18 @@ class TestCardSetFrame(GuiSutekhTest):
             oCardIter = oModel.iter_children(oIter)
             while oCardIter:
                 # Loop over expansions
-                sName = oModel.get_name_from_iter(oCardIter)
-                if (sName, 'Top Level') in aCards:
-                    oPath = oModel.get_path(oCardIter)
-                    oSelection.select_path(oPath)
-                oExpIter = oModel.iter_children(oCardIter)
-                while oExpIter:
-                    sExp = oModel.get_name_from_iter(oExpIter)
-                    if sExp == oModel.sUnknownExpansion:
-                        sExp = None
-                    if (sName, sExp) in aCards:
-                        oPath = oModel.get_path(oExpIter)
-                        oSelection.select_path(oPath)
-                    oExpIter = oModel.iter_next(oExpIter)
+                sName = do_level_select(oSelection, oModel, (), oCardIter,
+                                        aCards)
+                oSecondIter = oModel.iter_children(oCardIter)
+                while oSecondIter:
+                    sSecond = do_level_select(oSelection, oModel, (sName, ),
+                                              oSecondIter, aCards)
+                    oThirdIter = oModel.iter_children(oSecondIter)
+                    while oThirdIter:
+                        do_level_select(oSelection, oModel, (sName, sSecond),
+                                        oThirdIter, aCards)
+                        oThirdIter = oModel.iter_next(oThirdIter)
+                    oSecondIter = oModel.iter_next(oSecondIter)
                 oCardIter = oModel.iter_next(oCardIter)
             oIter = oModel.iter_next(oIter)
 
@@ -118,6 +128,9 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame = self.oWin.add_new_physical_card_set('Test Set 1', True)
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
+        # Check we've pasted the right cards
+        self.assertTrue(make_card(u'AK-47', None) in oPCS2.cards)
+        self.assertTrue(make_card(u'AK-47', u'Lords of the Night') in oPCS2.cards)
         # Select cards in new card set and change numbers
         self._select_cards(oNewFrame, [(u'AK-47', None),
                                        (u'AK-47', u'Lords of the Night')])
@@ -173,8 +186,8 @@ class TestCardSetFrame(GuiSutekhTest):
                               IAbstractCard(x).name == 'Alexandra']), 5)
         # Tests involving the top level selection
         oFrame = oWWList
-        self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
-                                    (u'Ablative Skin', 'Top Level')])
+        self._select_cards(oFrame, [(u'AK-47', ),
+                                    (u'Ablative Skin', )])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 11)
@@ -183,13 +196,13 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len([x for x in oPCS2.cards if
                               IAbstractCard(x).name == 'AK-47']), 4)
         aCardNames = [oCard.abstractCard.name for oCard in oPCS2.cards]
-        self._select_cards(oNewFrame, [(sName, 'Top Level') for sName in
+        self._select_cards(oNewFrame, [(sName, ) for sName in
                                        aCardNames])
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
         oFrame = oMyColl
-        self._select_cards(oFrame, [(u'AK-47', 'Top Level'),
-                                    (u'Ablative Skin', 'Top Level')])
+        self._select_cards(oFrame, [(u'AK-47', ),
+                                    (u'Ablative Skin', )])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 7)
@@ -203,7 +216,7 @@ class TestCardSetFrame(GuiSutekhTest):
         # Test involving top level and sublevel selections
         # Top level should override the sub selections, as being
         # most consitent behaviour
-        self._select_cards(oNewFrame, [(u'AK-47', 'Top Level'),
+        self._select_cards(oNewFrame, [(u'AK-47', ),
                                        (u'AK-47', None),
                                        (u'AK-47', 'Lords of the Night')])
         oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
@@ -238,6 +251,158 @@ class TestCardSetFrame(GuiSutekhTest):
         oFrame.reload()
         aExp2 = self.get_expanded(oFrame.view)
         self.assertEqual(aExp1, aExp2)  # But reload has retained the new state
+
+    def test_paste_form_card_set(self):
+        """Test selecting and pasting with the different display modes"""
+        # pylint: disable=R0915, R0914
+        # R0915, R0914: Want a long, sequential test case to minimise
+        # repeated setups, so it has lots of lines + variables
+        # Add card sets needed for the tests
+        # pylint: disable=E1101
+        # PyProtocols confuses pylint
+
+        def clear_cardset(oPCS, oFrame):
+            """Clear the cards from a card set and reload the model"""
+            for oCard in oPCS.cards:
+                oPCS.removePhysicalCard(oCard)
+            oFrame.view.get_model().load()
+
+        oCollSet = PhysicalCardSet(name='My Collection')
+        oTest1 = PhysicalCardSet(name='Test Set 1',
+                                parent=oCollSet,
+                                inuse=True)
+        # Add some cards
+        aCards = [
+            ('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
+            ('AK-47', 'Lords of the Night'),
+            ('AK-47', 'Lords of the Night'),
+            ('Anna "Dictatrix11" Suljic', 'NoR'),
+            ('Ablative Skin', 'Sabbat')
+        ] + [('Alexandra', 'CE'), ('Alexandra', None),
+             ('Ablative Skin', None)] * 5
+        aPhysCards = []
+        for sName, sExp in aCards:
+            oCard = make_card(sName, sExp)
+            aPhysCards.append(oCard)
+        for oCard in aPhysCards:
+            oCollSet.addPhysicalCard(oCard.id)
+            oCollSet.syncUpdate()
+        oAKLotN = make_card(u'AK-47', u'Lords of the Night')
+        oAKNone = make_card(u'AK-47', None)
+        oAblative = make_card(u'Ablative Skin', None)
+        oAlex = make_card(u'Alexandra', u'CE')
+        for oCard in [oAKLotN, oAKLotN, oAKLotN,
+                      oAKNone, oAKNone,
+                      make_card(u'Ablative Skin', 'Sabbat'),
+                      oAblative, oAblative, oAblative, oAblative, oAblative,
+                      oAlex, oAlex, oAlex]:
+            oTest1.addPhysicalCard(oCard.id)
+            oTest1.syncUpdate()
+        self.oWin.setup(self.oConfig)
+        # Remove the unneeded panes
+        for oPane in self.oWin.aOpenFrames[:]:
+            if oPane.title in ('Card Text', 'Card Set List', 'Full Card List'):
+                self.oWin.remove_frame(oPane)
+            if oPane.title == 'My Collection':
+                oMyColl = oPane
+        # Create the test profile and use it to set "My Collection"
+        # to 'No Children'
+        self.oConfig.set_profile_option(CARDSET, "test",
+                                        EXTRA_LEVEL_OPTION, "none")
+        self.oConfig.set_profile(CARDSET, oMyColl.view.get_model().cardset_id,
+                                 'test')
+        self.oWin.do_all_queued_reloads()
+        # Create a new set to paste into
+        oTest2 = PhysicalCardSet(name='Test Set 2')
+        oCS2Frame = self.oWin.add_new_physical_card_set('Test Set 2', True)
+        # Select 2 cards and paste them
+        self._select_cards(oMyColl, [(u'AK-47', ),
+                                     (u'Ablative Skin', )])
+        oMyColl.view.copy_selection()
+        oCS2Frame.view.do_paste()
+        # 3 x AK + 6 x Ablative
+        self.assertEqual(len(oTest2.cards), 9)
+        # Selecting these should match the expansions in My Collection
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKLotN]), 2)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKNone]), 1)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAblative]), 5)
+        self.assertTrue(make_card(u'Ablative Skin', 'Sabbat') in oTest2.cards)
+        # Remove cards from test card set
+        clear_cardset(oTest2, oCS2Frame)
+        self.assertEqual(len(oTest2.cards), 0)
+        # Change mode to expansions
+        self.oConfig.set_profile_option(CARDSET, "test",
+                                        EXTRA_LEVEL_OPTION, "expansions")
+        self.oWin.do_all_queued_reloads()
+        self._select_cards(oMyColl, [(u'AK-47', u'Lords of the Night'),
+                                     (u'Ablative Skin', ),
+                                     (u'Alexandra', u'Camarilla Edition')])
+        oMyColl.view.copy_selection()
+        oCS2Frame.view.do_paste()
+        # 2 x AK + 6 x Ablative + 5 x Alexandra
+        self.assertEqual(len(oTest2.cards), 13)
+        self.assertTrue(make_card(u'Ablative Skin', 'Sabbat') in oTest2.cards)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKLotN]), 2)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAblative]), 5)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAlex]), 5)
+        clear_cardset(oTest2, oCS2Frame)
+        self.assertEqual(len(oTest2.cards), 0)
+        # Change mode to card sets
+        self.oConfig.set_profile_option(CARDSET, "test",
+                                        EXTRA_LEVEL_OPTION, "card sets")
+        self.oWin.do_all_queued_reloads()
+        oMyColl.view.get_model().load()
+        self._select_cards(oMyColl, [(u'AK-47', u'Test Set 1'),
+                                     (u'Ablative Skin', ),
+                                     (u'Alexandra', u'Test Set 1')])
+        oMyColl.view.copy_selection()
+        oCS2Frame.view.do_paste()
+        # 5 x AK + 6 x Ablative + 3 x Alexandra
+        self.assertEqual(len(oTest2.cards), 14)
+        self.assertTrue(make_card(u'Ablative Skin', 'Sabbat') in oTest2.cards)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKLotN]), 3)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKNone]), 2)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAblative]), 5)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAlex]), 3)
+        clear_cardset(oTest2, oCS2Frame)
+        self.assertEqual(len(oTest2.cards), 0)
+        # Change mode to card sets & expansions
+        self.oConfig.set_profile_option(CARDSET, "test",
+                                        EXTRA_LEVEL_OPTION,
+                                        "card sets then expansions")
+        self.oWin.do_all_queued_reloads()
+        self._select_cards(oMyColl, [(u'AK-47', u'Test Set 1',
+                                      u'Lords of the Night'),
+                                     (u'Ablative Skin', ),
+                                     (u'Alexandra', u'Test Set 1')])
+        oMyColl.view.copy_selection()
+        oCS2Frame.view.do_paste()
+        # 3 x AK + 6 x Ablative + 3 x Alexandra
+        self.assertEqual(len(oTest2.cards), 12)
+        self.assertTrue(make_card(u'Ablative Skin', 'Sabbat') in oTest2.cards)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKLotN]), 3)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAblative]), 5)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAlex]), 3)
+
+        clear_cardset(oTest2, oCS2Frame)
+        self.assertEqual(len(oTest2.cards), 0)
+        # Change mode to expansions & card sets
+        self.oConfig.set_profile_option(CARDSET, "test",
+                                        EXTRA_LEVEL_OPTION,
+                                        "expansions then card sets")
+        self.oWin.do_all_queued_reloads()
+        self._select_cards(oMyColl, [(u'AK-47', u'Lords of the Night'),
+                                     (u'Ablative Skin', ),
+                                     (u'Alexandra', u'Camarilla Edition',
+                                      u'Test Set 1')])
+        oMyColl.view.copy_selection()
+        oCS2Frame.view.do_paste()
+        # 2 x AK + 6 x Ablative + 3 x Alexandra
+        self.assertEqual(len(oTest2.cards), 11)
+        self.assertTrue(make_card(u'Ablative Skin', 'Sabbat') in oTest2.cards)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAKLotN]), 2)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAblative]), 5)
+        self.assertEqual(len([x for x in oTest2.cards if x == oAlex]), 3)
 
 
 if __name__ == "__main__":
