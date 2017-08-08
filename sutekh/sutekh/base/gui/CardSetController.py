@@ -13,9 +13,8 @@ from .CardSetView import CardSetView
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 from ..core.DBSignals import send_changed_signal
 from ..core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
-                                IAbstractCard, PhysicalCard,
-                                MapPhysicalCardToPhysicalCardSet,
-                                IExpansion, IPhysicalCard)
+                                PhysicalCard,
+                                MapPhysicalCardToPhysicalCardSet)
 from ..core.CardSetUtilities import delete_physical_card_set
 
 
@@ -204,30 +203,6 @@ class CardSetController(object):
         """Ask the view to restore the state"""
         self.view.restore_iter_state(aIters, dStates)
 
-    def _get_card(self, sCardName, sExpansionName):
-        """Convert card name & Expansion to PhsicalCard.
-
-           Help for add_paste_data."""
-        oExp = None
-        try:
-            if sExpansionName and sExpansionName != 'None' and \
-                    sExpansionName != self.model.sUnknownExpansion:
-                oExp = IExpansion(sExpansionName)
-        except SQLObjectNotFound:
-            # Failed to decode expansion, so bail
-            return None
-        # try a couple of different ways of decoding the card, due
-        # to weirdnesses with unicode and case issues
-        for sName in [sCardName.lower(), sCardName.decode('utf8').lower()]:
-            try:
-               oAbsCard = IAbstractCard(sName)
-               oPhysCard = IPhysicalCard((oAbsCard, oExp))
-               return oPhysCard
-            except SQLObjectNotFound:
-                pass
-        # Everything failed, so bail
-        return None
-
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.
 
@@ -239,12 +214,7 @@ class CardSetController(object):
             return False
         if aSources[0] in ("Phys", PhysicalCardSet.sqlmeta.table):
             # Add the cards, Count Matters
-            for iCount, sCardName, sExpansion in aCards:
-                # Use None to indicate this card set
-                oPhysCard = self._get_card(sCardName, sExpansion)
-                if not oPhysCard:
-                    # error, so skip this. (Warn user?)
-                    continue
+            for iCount, oPhysCard in aCards:
                 if aSources[0] == "Phys":
                     # Only ever add 1 when dragging from physical card list
                     self.add_card(oPhysCard, None, False)

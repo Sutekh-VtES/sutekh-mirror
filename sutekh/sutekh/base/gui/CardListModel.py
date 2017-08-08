@@ -479,10 +479,9 @@ class CardListModel(gtk.TreeStore):
             return self.get_all_from_iter(oIter)
         return None, None, None, None
 
-    def get_child_entries_from_path(self, oPath):
+    def get_child_entries_from_iter(self, oIter):
         """Return a list of (sExpansion, iCount) pairs for the children of
            this path"""
-        oIter = self.get_iter(oPath)
         aChildren = []
         iDepth = self.iter_depth(oIter)
         if iDepth != 1:
@@ -490,9 +489,9 @@ class CardListModel(gtk.TreeStore):
             return aChildren
         oChildIter = self.iter_children(oIter)
         while oChildIter:
-            sExpansion = self.get_value(oChildIter, 0)
+            oPhysCard = self.get_value(oChildIter, 9)
             iCount = self.get_value(oChildIter, 1)
-            aChildren.append((sExpansion, iCount))
+            aChildren.append((oPhysCard, iCount))
             oChildIter = self.iter_next(oChildIter)
         return aChildren
 

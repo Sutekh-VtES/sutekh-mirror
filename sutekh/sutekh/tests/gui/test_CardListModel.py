@@ -6,7 +6,9 @@
 """Tests the Card List Model"""
 
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
-from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard
+from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
+                                          IAbstractCard, IPhysicalCard,
+                                          IExpansion)
 from sutekh.base.core import BaseFilters
 from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
 from sutekh.core.Groupings import CryptLibraryGrouping
@@ -157,18 +159,23 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(tAll[1], oModel.sUnknownExpansion)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 2)
-        self.assertEqual(oModel.get_child_entries_from_path(oPath), [])
+        oIter = oModel.get_iter(oPath)
+        self.assertEqual(oModel.get_child_entries_from_iter(oIter), [])
         oPath = '0:0'  # First card
         self.assertEqual(oModel.get_exp_name_from_path(oPath), None)
         self.assertEqual(oModel.get_inc_dec_flags_from_path(oPath),
                          (False, False))
+        oIter = oModel.get_iter(oPath)
         tAll = oModel.get_all_from_path(oPath)
         self.assertEqual(tAll[0], u'Aabbt Kindred')
         self.assertEqual(tAll[1], None)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 1)
-        self.assertEqual(oModel.get_child_entries_from_path(oPath),
-                         [(oModel.sUnknownExpansion, 0), ('Final Nights', 0)])
+        oAbbt = IAbstractCard(u'Aabbt Kindred')
+        oFirst = IPhysicalCard((oAbbt, None))
+        oSecond = IPhysicalCard((oAbbt, IExpansion('Final Nights')))
+        self.assertEqual(oModel.get_child_entries_from_iter(oIter),
+                         [(oFirst, 0), (oSecond, 0)])
 
         oListener.bLoadCalled = False
         # Test MessageBus clear does the right thing

@@ -508,6 +508,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             # pylint: disable=E1101
             # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
+        oAlex = make_card('Alexandra', 'CE')
         oModel.load()
         self.assertEqual(oListener.iCnt, 2)
         # Only Vampires added
@@ -521,13 +522,13 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                         {'Camarilla Edition': 1})
+                         {oAlex.id: 1})
         self.assertEqual(oModel.get_drag_info_from_path('0:0:0'),
-                         (u"Alexandra", "Camarilla Edition", 1, 2))
+                         (oAlex.abstractCard.id, oAlex.id, 1, 2))
         self.assertEqual(oModel.get_drag_info_from_path('0:0'),
-                         (u"Alexandra", None, 1, 1))
+                         (oAlex.abstractCard.id, None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
-                         (None, None, 2, 0))
+                         (None, None, None, 0))
         # pylint: disable=W0212
         # we need to access this protected methods
         oModel._change_level_mode(NO_SECOND_LEVEL)
@@ -537,7 +538,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(self._count_second_level(oModel), 0)
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                         {'Camarilla Edition': 1})
+                         {oAlex.id: 1})
         self._cleanup_models([oModel])
 
     def test_db_listeners(self):

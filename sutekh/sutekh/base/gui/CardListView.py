@@ -9,6 +9,7 @@
 import gtk
 from .FilteredView import FilteredView
 from .FilterDialog import FilterDialog
+from ..core.BaseObjects import PhysicalCard, IPhysicalCard, AbstractCard
 
 
 class CardListView(FilteredView):
@@ -98,41 +99,45 @@ class CardListView(FilteredView):
     def process_selection(self):
         """Create a dictionary from the selection.
 
-           Entries are of the form sCardName : {sExpansion1 : iCount1, ... }
+           Entries are of the form oAbsId : {oPhysId: iCount1, ... }
            for use in drag-'n drop and elsewhere.
+
+           We use ids to avoid various encoding issues
            """
         oModel, aPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in aPathList:
-            sCardName, sExpansion, iCount, iDepth = \
-                oModel.get_all_from_path(oPath)
+            oIter = oModel.get_iter(oPath)
+            iDepth = oModel.iter_depth(oIter)
             if iDepth == 0:
                 # Skip top level items, since they're meaningless for the
                 # selection
                 continue
+            oAbsCard = oModel.get_abstract_card_from_iter(oIter)
+            oPhysCard = oModel.get_physical_card_from_iter(oIter)
+            iCount = oModel.get_card_count_from_iter(oIter)
             # if a card is selected, then it's children (which are
             # the expansions) which are selected are ignored, since
             # We always treat this as all cards selected
-            dSelectedData.setdefault(sCardName, {})
+            dSelectedData.setdefault(oAbsCard.id, {})
             if iDepth == 1:
                 # Remove anything already assigned to this,
                 # since parent overrides all
-                dSelectedData[sCardName].clear()
-                aChildren = oModel.get_child_entries_from_path(oPath)
+                dSelectedData[oAbsCard.id].clear()
+                aChildren = oModel.get_child_entries_from_iter(oIter)
                 if len(aChildren) != 1:
                     # If there's more than 1 child, just go with unknown,
                     # as only sensible default
-                    dSelectedData[sCardName]['None'] = iCount
+                    dSelectedData[oAbsCard.id][-1] = iCount
                 else:
                     # Otherwise, use the child, so filtering on
                     # physical expansion works as expected.
-                    sExpansion, iCount = aChildren[0]
-                    dSelectedData[sCardName][sExpansion] = iCount
-
+                    oChildCard, iCount = aChildren[0]
+                    dSelectedData[oAbsCard.id][oChildCard.id] = iCount
             else:
-                if 'None' in dSelectedData[sCardName]:
+                if -1 in dSelectedData[oAbsCard.id]:
                     continue
-                dSelectedData[sCardName][sExpansion] = iCount
+                dSelectedData[oAbsCard.id][oPhysCard.id] = iCount
         return dSelectedData
 
     def get_selection_as_string(self):
@@ -146,12 +151,12 @@ class CardListView(FilteredView):
         # Create selection data structure
         # Need to bung everything into a string, alas
         sSelectData = self.sDragPrefix
-        for sCardName in dSelectedData:
-            for sExpansion, iCount in dSelectedData[sCardName].iteritems():
-                sSelectData += '\n%(count)d\n%(name)s\n%(expansion)s' % {
+        for oAbsCardID in dSelectedData:
+            for oPhysCardId, iCount in dSelectedData[oAbsCardID].iteritems():
+                sSelectData += '\n%(count)d x  %(abscard)d x %(physcard)d' % {
                     'count': iCount,
-                    'name': sCardName,
-                    'expansion': sExpansion,
+                    'abscard': oAbsCardID,
+                    'physcard': oPhysCardId,
                 }
         return sSelectData
 
@@ -160,24 +165,28 @@ class CardListView(FilteredView):
 
     def split_selection_data(self, sSelectionData):
         """Helper function to subdivide selection string into bits again"""
-        # Construct list of (iCount, sCardName, sExpansion) tuples
-        def true_expansion(sExpand):
+        # Construct list of (iCount, oPhysCard) tuples
+        def true_card(iPhysCardID, oAbsCard):
             """Convert back from the 'None' placeholder in the string"""
             # The logic goes that, if the user has dragged the top level cards,
             # Then either all the cards are going to be copied, or there is
             # no expansion info, so the expansion might as well be none.
-            if sExpand == 'None':
-                return None
+            if iPhysCardID == -1:
+                return IPhysicalCard((oAbsCard, None))
             else:
-                return sExpand
+                return PhysicalCard.get(iPhysCardID)
 
         sSource, aLines = \
             super(CardListView, self).split_selection_data(sSelectionData)
         if sSource in ("None", "Basic Pane:", "Card Set:"):
             # Not cards that were dragged, so just return
             return sSource, aLines
-        aCardInfo = zip([int(x) for x in aLines[1::3]], aLines[2::3],
-                        [true_expansion(x) for x in aLines[3::3]])
+        aCardInfo = []
+        for sLine in aLines[1:]:
+            iCount, iAbsID, iPhysID = [int(x) for x in sLine.split(' x ')]
+            oAbsCard = AbstractCard.get(iAbsID)
+            oPhysCard = true_card(iPhysID, oAbsCard)
+            aCardInfo.append((iCount, oPhysCard))
         return sSource, aCardInfo
 
     # pylint: disable=R0913

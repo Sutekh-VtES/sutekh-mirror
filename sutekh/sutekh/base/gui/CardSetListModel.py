@@ -466,7 +466,7 @@ class CardSetCardListModel(CardListModel):
         iDepth = self.iter_depth(oIter)
         if iDepth == 0:
             # Top Level item, so no info at all
-            return None, None, None
+            return None, None, None, iDepth
         sCardName = self.get_card_name_from_iter(oIter)
         sExpName = None
         sCardSetName = None
@@ -511,23 +511,24 @@ class CardSetCardListModel(CardListModel):
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 0:
-            sName = None
+            return None, None, None, iDepth
         else:
-            sName = self.get_card_name_from_iter(oIter)
+            oAbsID = self.get_abstract_card_from_iter(oIter).id
         if iDepth < 2:
-            sExpansion = None
+            oPhysID = None
         elif iDepth == 2 and (self._iExtraLevelsMode == SHOW_EXPANSIONS
                               or self._iExtraLevelsMode == EXP_AND_CARD_SETS):
-            sExpansion = self.get_value(oIter, 0)
+            oPhysID = self.get_physical_card_from_iter(oIter).id
         elif iDepth == 2 and (self._iExtraLevelsMode == SHOW_CARD_SETS or
                               self._iExtraLevelsMode == CARD_SETS_AND_EXP):
-            sExpansion = None
+            oPhysID = None
         elif iDepth == 3 and self._iExtraLevelsMode == EXP_AND_CARD_SETS:
-            sExpansion = self.get_name_from_iter(self.iter_parent(oIter))
+            oPhysID = self.get_physical_card_from_iter(
+                self.iter_parent(oIter)).id
         elif iDepth == 3 and self._iExtraLevelsMode == CARD_SETS_AND_EXP:
-            sExpansion = self.get_value(oIter, 0)
+            oPhysID = self.get_physical_card_from_iter(oIter).id
         iCount = self.get_value(oIter, 1)
-        return sName, sExpansion, iCount, iDepth
+        return oAbsID, oPhysID, iCount, iDepth
 
     def get_drag_child_info(self, oPath):
         """Get the expansion information for the card at oPath.
@@ -547,9 +548,9 @@ class CardSetCardListModel(CardListModel):
             oChildIter = self.iter_children(oIter)
             while oChildIter:
                 oChildPath = self.get_path(oChildIter)
-                _sCardName, sExpansion, iCount, iDepth = \
+                _oAbsCardID, oPhysCardID, iCount, _iDepth = \
                     self.get_drag_info_from_path(oChildPath)
-                dResult[sExpansion] = iCount
+                dResult[oPhysCardID] = iCount
                 oChildIter = self.iter_next(oChildIter)
         elif iDepth == 1:
             # Need to get expansion info from the database
@@ -560,17 +561,16 @@ class CardSetCardListModel(CardListModel):
             # Pyprotocols confuses pylint
             for oCard in oCardIter:
                 oPhysCard = IPhysicalCard(oCard)
-                sExpansion = IExpansionName(oPhysCard)
-                dResult.setdefault(sExpansion, 0)
-                dResult[sExpansion] += 1
+                dResult.setdefault(oPhysCard.id, 0)
+                dResult[oPhysCard.id] += 1
         elif self._iExtraLevelsMode == CARD_SETS_AND_EXP:
             # can read info from the model
             oChildIter = self.iter_children(oIter)
             while oChildIter:
                 oChildPath = self.get_path(oChildIter)
-                _sCardName, sExpansion, iCount, iDepth = \
+                _oAbsCardID, oPhysCardID, iCount, _iDepth = \
                     self.get_drag_info_from_path(oChildPath)
-                dResult[sExpansion] = iCount
+                dResult[oPhysCardID] = iCount
                 oChildIter = self.iter_next(oChildIter)
         else:
             # Need to get the cards in the specified card set
@@ -582,10 +582,9 @@ class CardSetCardListModel(CardListModel):
             for oCard in oCSFilter.select(self.cardclass):
                 # pylint: disable=E1101, E1103
                 # Pyprotocols confuses pylint
-                oPhysCard = IPhysicalCard(oCard)
-                sExpansion = IExpansionName(oPhysCard)
-                dResult.setdefault(sExpansion, 0)
-                dResult[sExpansion] += 1
+                oPhysCardID = IPhysicalCard(oCard).id
+                dResult.setdefault(oPhysCardID, 0)
+                dResult[oPhysCardID] += 1
         return dResult
 
     def _init_expansions(self, dExpanInfo, oAbsCard):
