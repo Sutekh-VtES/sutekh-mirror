@@ -329,12 +329,29 @@ class MapAbstractCardToKeyword(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     keywordIndex = DatabaseIndex(keyword, unique=False)
 
+
+class LookupHints(SQLObject):
+
+    # This is a collection of lookup hints for use in various
+    # places.
+    # The domain field is used to indicate which domain the lookup
+    # will be used for, while the (lookup, value) are the lookup
+    # pairs
+
+    tableversion = 1
+
+    domain = UnicodeCol(length=MAX_ID_LENGTH)
+    lookup = UnicodeCol()
+    value = UnicodeCol()
+
+
 # pylint: enable=W0232, R0902, W0201, C0103
 
 # List of Tables to be created, dropped, etc.
 
 BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
                    Rarity, RarityPair, CardType, Ruling, Artist, Keyword,
+                   LookupHints,
                    # Mapping tables from here on out
                    MapPhysicalCardToPhysicalCardSet,
                    MapAbstractCardToRarityPair,
