@@ -250,7 +250,7 @@ class BaseGuiDBManager(object):
                 iRes = oDialog.run()
                 oDialog.destroy()
                 if iRes == gtk.RESPONSE_OK:
-                    return self._do_commit_db(oLogHandler, oTempConn)
+                    return self._do_commit_db(oLogHandler, oTempConn, aMessages)
                 elif iRes == 1:
                     # Try running with the upgraded database
                     sqlhub.processConnection = oTempConn
@@ -266,7 +266,7 @@ class BaseGuiDBManager(object):
             do_exception_complaint("Upgrade Failed. %s" % oErr)
         return False
 
-    def _do_commit_db(self, oLogHandler, oTempConn):
+    def _do_commit_db(self, oLogHandler, oTempConn, aOldMessages):
         """Handle committing the memory copy to the actual DB"""
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Commiting changes")
@@ -275,10 +275,19 @@ class BaseGuiDBManager(object):
             oTempConn, oLogHandler)
         oProgressDialog.destroy()
         if bOK:
-            sMesg = "Changes Commited\n"
+            if aOldMessages:
+                # Redisplay the messages from the database upgrade, so they
+                # aren't forgetten about
+                sMesg = 'Messages from Database Upgrade are:\n'
+                for sStr in aOldMessages:
+                    sMesg += '<b>%s</b>\n' % sStr
+                sMesg += "\nChanges Commited\n"
+            else:
+                sMesg = "Changes Commited\n"
             if len(aMessages) > 0:
-                sMesg += '\n'.join(["Messages reported are:"] +
-                                   aMessages)
+                sMesg += "Messages from commiting changes are:"
+                for sStr in aMessages:
+                    sMesg += '<b>%s</b>\n' % sStr
             else:
                 sMesg += "Everything seems to have gone smoothly."
             do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
