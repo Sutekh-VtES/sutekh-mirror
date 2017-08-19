@@ -66,6 +66,14 @@ class ACLLookupView(PhysicalCardView):
                 oModel.get_all_from_path(oPath)
         return sNewName, ''
 
+    def get_selected_abstract_card(self):
+        """Return the actual abstract card selected."""
+        oAbsCard = None
+        oModel, aSelection = self.get_selection().get_selected_rows()
+        for oPath in aSelection:
+            oAbsCard = oModel.get_abstract_card_from_path(oPath)
+        return oAbsCard
+
     def cleanup(self):
         """Call model cleanup to remove listeners, etc."""
         self._oModel.cleanup()

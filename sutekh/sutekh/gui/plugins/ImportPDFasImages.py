@@ -25,7 +25,7 @@ from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_complaint_error)
 from sutekh.base.gui.SutekhFileWidget import SutekhFileWidget
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
-from sutekh.base.gui.GuiCardLookup import ACLLookupView, NO_CARD
+from sutekh.base.gui.GuiCardLookup import ACLLookupView
 from sutekh.base.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.base.Utility import ensure_dir_exists
 
@@ -158,10 +158,12 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         iXPos, iYPos = 0, 0
         for sName in aExpansions:
             if self._oFirstBut:
-                oBut = gtk.RadioButton(self._oFirstBut, sName)
+                oBut = gtk.RadioButton(self._oFirstBut, sName,
+                                       use_underline=False)
             else:
                 # No first button
-                self._oFirstBut = gtk.RadioButton(None, sName, False)
+                self._oFirstBut = gtk.RadioButton(None, sName,
+                                                  use_underline=False)
                 self._oFirstBut.set_sensitive(True)
                 oBut = self._oFirstBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -200,6 +202,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
             for oBut in self._oFirstBut.get_group():
                 if oBut.get_active():
                     sName = oBut.get_label()
+                    print(sName)
                     if sName != 'Promo':
                         aExp = [IExpansion(sName)]
                     else:
@@ -305,11 +308,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oCurPage.render(oPageContext)
 
     def save_img(self, _oBut, oDrawArea, oAbsView, aExp):
-        sCardName, _ = oAbsView.get_selected_card()
-        if sCardName == NO_CARD:
+        # Get the card from the model, to avoid encoding issues
+        oAbsCard = oAbsView.get_selected_abstract_card()
+        if oAbsCard is None:
             do_complaint_error("No Card selected")
             return
-        oAbsCard = IAbstractCard(sCardName)
         sFileName = None
         for oExp in aExp:
             try:
