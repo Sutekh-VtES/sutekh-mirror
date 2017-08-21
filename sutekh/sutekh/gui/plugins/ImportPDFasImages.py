@@ -15,8 +15,7 @@ import os
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, Expansion,
-                                          IExpansion, IPhysicalCard,
-                                          IAbstractCard)
+                                          IExpansion, IPhysicalCard)
 from sutekh.base.core.BaseFilters import MultiExpansionFilter
 from sutekh.base.gui.plugins.BaseImages import check_file
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -236,6 +235,9 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._iXPos, self._iYPos = 0, 0
         self._oPageImg = None
 
+        self._iXOffset, self._iYOffset = 0, 0
+        self._iXSize, self._iYSize = CARD_DIM
+
         self._load_page()
 
         oHBox = gtk.HBox()
@@ -254,7 +256,50 @@ class ImportPDFImagesPlugin(SutekhPlugin):
 
         oDrawArea.connect('expose_event', self._draw_pdf_section)
 
+        # Import manipulation button area
+        oOffsetBox = gtk.HBox()
+
+        oXOffAdj = gtk.Adjustment(lower=-CARD_DIM[0] // 2,
+                                  upper=CARD_DIM[0] // 2,
+                                  step_incr=1, value=0)
+        oYOffAdj = gtk.Adjustment(lower=-CARD_DIM[1] // 2,
+                                  upper=CARD_DIM[1] // 2,
+                                  step_incr=1, value=0)
+
+        self._oXOffset = gtk.SpinButton(oXOffAdj)
+        self._oXOffset.set_value(0)
+        self._oYOffset = gtk.SpinButton(oYOffAdj)
+        self._oYOffset.set_value(0)
+
+        oOffsetBox.pack_start(gtk.Label("Horizontal Offset : "), False, False)
+        oOffsetBox.pack_start(self._oXOffset, False, False)
+        oOffsetBox.pack_start(gtk.Label("Vertical Offset : "), False, False)
+        oOffsetBox.pack_start(self._oYOffset, False, False)
+
+        oScaleBox = gtk.HBox()
+
+        oXScaleAdj = gtk.Adjustment(lower=10,
+                                    upper=CARD_DIM[0] + 100,
+                                    step_incr=1, value=CARD_DIM[0])
+        oYScaleAdj = gtk.Adjustment(lower=10, upper=CARD_DIM[1] + 100,
+                                    step_incr=1, value=CARD_DIM[1])
+        self._oXScale = gtk.SpinButton(oXScaleAdj)
+        self._oXScale.set_value(CARD_DIM[0])
+        self._oYScale = gtk.SpinButton(oYScaleAdj)
+        self._oYScale.set_value(CARD_DIM[1])
+
+        oScaleBox.pack_start(gtk.Label("Horizontal Size : "), False, False)
+        oScaleBox.pack_start(self._oXScale, False, False)
+        oScaleBox.pack_start(gtk.Label("Vertical Size : "), False, False)
+        oScaleBox.pack_start(self._oYScale, False, False)
+
+        oApplyButton = gtk.Button('Apply offsets')
+        oApplyButton.connect('pressed', self._update_offsets, oDrawArea)
+        oVBox.pack_start(oOffsetBox, False, False)
+        oVBox.pack_start(oScaleBox, False, False)
+        oVBox.pack_start(oApplyButton, False, False)
         oVBox.pack_start(AutoScrolledWindow(oDrawArea, True), True, True)
+
         self._oNextButton = gtk.Button('Next Image')
         self._oNextButton.connect('pressed', self.chg_img, oDrawArea, +1)
         self._oPrevButton = gtk.Button('Prev Image')
@@ -269,7 +314,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oButtonBox.pack_start(oSaveButton, False, False)
         oVBox.pack_start(oButtonBox, False, False)
 
-        oImportDialog.set_size_request(350 + 2 * CARD_DIM[0], 650)
+        oImportDialog.set_size_request(350 + self._iScale * CARD_DIM[0], 650)
 
         oImportDialog.show_all()
         oImportDialog.run()
@@ -286,12 +331,23 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oContext.rectangle(0, 0, iW, iH)
         oContext.fill()
         if self._oPageImg:
-            x = (START[0] + self._iXPos * CARD_DIM[0]) * self._iScale
-            y = (START[1] + self._iYPos * CARD_DIM[1]) * self._iScale
+            x = START[0] + self._iXOffset + self._iXPos * CARD_DIM[0]
+            x = x * self._iScale
+            y = START[1] + self._iYOffset + self._iYPos * CARD_DIM[1]
+            y = y * self._iScale
             oContext.set_source_surface(self._oPageImg, -x, -y)
             oContext.rectangle(0, 0, self._iScale * CARD_DIM[0],
                                self._iScale * CARD_DIM[1])
             oContext.fill()
+
+    def _update_offsets(self, _oBut, oDrawArea):
+        """Update the offsets and reload the pdf image."""
+        self._iXOffset = self._oXOffset.get_value()
+        self._iYOffset = self._oYOffset.get_value()
+        self._iXSize = self._oXScale.get_value()
+        self._iYSize = self._oYScale.get_value()
+        self._load_page()
+        self._draw_pdf_section(oDrawArea, None)
 
     def _load_page(self):
         oCurPage = self._oDocument.get_page(self._iCurPageNo)
@@ -299,7 +355,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         iW, iH = self._iScale * int(fWidth), self._iScale * int(fHeight)
         self._oPageImg = cairo.ImageSurface(cairo.FORMAT_ARGB32, iW, iH)
         oPageContext = cairo.Context(self._oPageImg)
-        oPageContext.scale(self._iScale, self._iScale)
+        # We scale the input pdf so that (self._iXSize, self._iYSize) sections
+        # are scaled to requested output size
+        fXScale = self._iScale * float(CARD_DIM[0]) / self._iXSize
+        fYScale = self._iScale * float(CARD_DIM[1]) / self._iYSize
+        oPageContext.scale(fXScale, fYScale)
         # Fill background with white
         oPageContext.set_source_rgb(1, 1, 1)
         oPageContext.rectangle(0, 0, iW, iH)
