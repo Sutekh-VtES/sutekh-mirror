@@ -1,3 +1,22 @@
+21 Aug 2017
+ * Add buttons to tweak the parameters used in the Import PDF plugin.
+
+19 Aug 2017
+ * Use the abstract card directly in the Import PDF plugin to avoid encoding
+   issues.
+
+09 Aug 2017
+ * Redisplay warnings from the database upgrade after committing the changes
+   to the database.
+
+08 Aug 2017
+ * Add more tests for drag-n-drop code.
+ * Rework drag-n-drop code to use AbstractCard and PhysicalCard ids.
+
+23 Jul 2017
+ * Tweak error message on manual card list import to better explain the
+   'already up to date' case.
+
 13 Jul 2017
  * Update CardImages downloader to work with Cloudflare's limitations.
  * Tweak config option defaults.
