@@ -201,7 +201,6 @@ class ImportPDFImagesPlugin(SutekhPlugin):
             for oBut in self._oFirstBut.get_group():
                 if oBut.get_active():
                     sName = oBut.get_label()
-                    print(sName)
                     if sName != 'Promo':
                         aExp = [IExpansion(sName)]
                     else:
