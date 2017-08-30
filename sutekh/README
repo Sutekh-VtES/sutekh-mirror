@@ -6,16 +6,16 @@ Requirements
 
 The Python modules required are:
 
-* SQLObject [ http://cheeseshop.python.org/pypi/SQLObject, version 0.9.0
+* SQLObject [ https://pypi.org/project/sqlobject/, version 0.9.0
   or later]
-* singledispatch [ https://pypi.python.org/pypi/singledispatch/ ]
-* PLY (for parsing the query language) [ http://www.dabeaz.com/ply/ ]
+* singledispatch [ https://pypi.org/project/singledispatch/ ]
+* PLY (for parsing the query language) [ https://pypi.org/project/ply/ ]
 * sqlite (or the module for whatever database one plans to use)
-* PyGtk (for the GUI) [ http://cheeseshop.python.org/pypi/PyGTK ]
+* PyGtk (for the GUI) [ https://pypi.org/project/pygtk/ ]
 * librsvg2 for the sutekh icon
-* configobj to manage the config file
+* configobj to manage the config file [ https://pypi.org/project/configobj/ ]
 * keyring so the secret library plugin can store credentials in the system
-  keyring
+  keyring [ https://pypi.org/project/keyring/ ]
 
 Sutekh can download the official cardlist and rulings. If you have limited
 connectivity, you will need to download the official cardlist from
@@ -35,7 +35,7 @@ to load the WW cardlist the first time you run Sutekh. These instructions
 cover the command line tool sutekh-cli, while help for the gui can be found
 either by using the help menu, or in sutekh/docs/html/
 
-To get started, run:
+To get started with sutekh-cli, run:
 
 ::
 
@@ -116,15 +116,17 @@ Download:
    - https://pypi.python.org/pypi/setuptools/5.3
  * PyGTK all in one installer
    - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygtk/2.24/pygtk-all-in-one-2.24.2.win32-py2.7.msi
- * PyProtocols
-   - http://peak.telecommunity.com/dist/PyProtocols-0.9.3.zip
-     (Use python.exe setup.py install --skip-build if you don't have a compiler
-      to build the c-extension)
  * Sutekh
 
 And install Python, then Setuptools, then PyGTK.
 
-Run easy_install PyProtocols-1.0a0-py2.5-win32.egg (easy_install is in <python install dir>/Scripts).
+Then use easy_install or pip to install the other dependencies:
+ * SQLObject
+ * singledispath
+ * confiobj
+ * ply
+ * keyring
+
 Run easy_install <Sutekh Egg File>.
 
 Run <python install dir>/Scripts/sutekh
@@ -332,7 +334,7 @@ textile2html.py script to convert it to HTML for display in the gui.
 
 [1] http://textile.thresholdstate.com/
 
-[2] http://pypi.python.org/pypi/textile
+[2] https://pypi.org/project/textile/
 
 Testing Sutekh
 ==============
