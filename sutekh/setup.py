@@ -75,6 +75,7 @@ setup   (   # Metadata
             name = SutekhInfo.NAME,
             version = SutekhInfo.VERSION_STR,
             description = SutekhInfo.DESCRIPTION,
+            long_description = open('README', 'r').read(),
 
             author = SutekhInfo.AUTHOR_NAME,
             author_email = SutekhInfo.AUTHOR_EMAIL,
