@@ -336,14 +336,19 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         for sName, sNewName in dUnknownCards.items():
             if sNewName is None:
                 continue
-            try:
-                # pylint: disable-msg=E1101
-                # SQLObject methods confuse pylint
-                oAbs = AbstractCard.byCanonicalName(
-                        sNewName.encode('utf8').lower())
-                # pylint: enable-msg=E1101
-                dUnknownCards[sName] = oAbs
-            except SQLObjectNotFound:
+            bSuccess = False
+            for sTry in [sNewName.encode('utf8').lower(), sNewName.lower(),
+                         sNewName.decode('utf8').lower()]:
+                try:
+                    # pylint: disable-msg=E1101
+                    # SQLObject methods confuse pylint
+                    oAbs = AbstractCard.byCanonicalName(sTry)
+                    dUnknownCards[sName] = oAbs
+                    bSuccess = True
+                    break
+                except SQLObjectNotFound:
+                    pass
+            if not bSuccess:
                 raise RuntimeError("Unexpectedly encountered missing"
                         " abstract card '%s'." % sNewName)
 
@@ -647,6 +652,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oIter = oModel.get_iter_root()
             while not oIter is None:
                 sName, sNewName = oModel.get(oIter, 1, 2)
+                sName = sName.decode('utf-8')
                 if sNewName != NO_CARD:
                     dUnknownCards[sName] = sNewName
                 oIter = oModel.iter_next(oIter)
