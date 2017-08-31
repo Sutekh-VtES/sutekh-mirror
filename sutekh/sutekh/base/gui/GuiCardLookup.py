@@ -475,6 +475,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # GtK returns encoded strings - see get_name_from_iter in
                 # CardListModel
                 sNewFullName = sNewFullName.decode('utf-8')
+                sFullName = sFullName.decode('utf-8')
                 sName, sExpName = oReplacementView.parse_card_name(sFullName)
 
                 sNewName, sNewExpName = \
