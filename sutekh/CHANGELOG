@@ -1,3 +1,13 @@
+31 Aug 2017
+ * Add 'Create Card Set' button to the Test Independence plugin, so it's
+   easy to print missing cards using the "Print as Proxies" plugin.
+ * Fix a bug in the GuiCardLookup when dealing with fixing expansions
+   and cards with accented characters.
+
+28 Aug 2017
+ * Use abstract cards directly in the GuiCardLookup, to avoid
+   some encoding issues.
+
 21 Aug 2017
  * Add buttons to tweak the parameters used in the Import PDF plugin.
 
