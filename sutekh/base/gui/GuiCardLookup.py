@@ -66,6 +66,14 @@ class ACLLookupView(PhysicalCardView):
                 oModel.get_all_from_path(oPath)
         return sNewName, ''
 
+    def get_selected_abstract_card(self):
+        """Return the actual abstract card selected."""
+        oAbsCard = None
+        oModel, aSelection = self.get_selection().get_selected_rows()
+        for oPath in aSelection:
+            oAbsCard = oModel.get_abstract_card_from_path(oPath)
+        return oAbsCard
+
     def cleanup(self):
         """Call model cleanup to remove listeners, etc."""
         self._oModel.cleanup()
@@ -473,6 +481,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # CardListModel
                 sFullName = sFullName.decode('utf-8')
                 sNewFullName = sNewFullName.decode('utf-8')
+                sFullName = sFullName.decode('utf-8')
                 sName, sExpName = oReplacementView.parse_card_name(sFullName)
 
                 sNewName, sNewExpName = \

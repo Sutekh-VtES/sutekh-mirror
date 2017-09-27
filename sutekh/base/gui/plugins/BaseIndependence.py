@@ -8,13 +8,14 @@
 
 import gtk
 from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
-                                 IAbstractCard)
+                                 IAbstractCard, IPhysicalCard)
 from ...core.BaseFilters import ParentCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..CardSetsListView import CardSetsListView
 from ..SutekhDialog import (SutekhDialog, NotebookDialog,
                             do_complaint, do_complaint_error)
 from ..AutoScrolledWindow import AutoScrolledWindow
+from ..GuiCardSetFunctions import create_card_set
 
 
 # helper functions and classes
@@ -97,7 +98,11 @@ class BaseIndependence(BasePlugin):
                    of which there is a shortage in the parent card set. For
                    each selected set which includes any of these cards, the
                    list of cards relevant to that set is shown in a separate
-                   tab."""
+                   tab.
+                   
+                   The full list of cards has a 'Create Card Set' button,
+                   which can be used to create a card set containing the
+                   specific cards listed."""
 
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
@@ -224,9 +229,17 @@ class BaseIndependence(BasePlugin):
                                                             sExpansion,
                                                             oInfo.iCount,
                                                             iCount))
-        oResultDlg.add_widget_page(
-            AutoScrolledWindow(_make_align_list(aParentList), True),
+
+        oPage = gtk.VBox(False)
+        oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList),
+                         True), True)
+        oButton = gtk.Button('Create Card Set from this list')
+        oButton.connect('clicked', self.create_card_set,
+                        dMissing)
+        oPage.pack_start(oButton, False)
+        oResultDlg.add_widget_page(oPage,
             'Missing from %s' % self._escape(oParentCS.name), bMarkup=True)
+
         for sCardSet, aMsgs in dFormatted.iteritems():
             oResultDlg.add_widget_page(
                 AutoScrolledWindow(_make_align_list(aMsgs), True),
@@ -258,3 +271,22 @@ class BaseIndependence(BasePlugin):
         else:
             sMessage = "No cards missing from %s" % oParentCS.name
             do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+
+    def create_card_set(self, _oButton, dMissing):
+        """Create a card set from the card list"""
+        sCSName = create_card_set(self.parent)
+        if not sCSName:
+            return  # User cancelled, so skip out
+        oCardSet = IPhysicalCardSet(sCSName)
+        # Turn data into a list of cards to add
+        aCards = []
+        for oCard, oInfo in dMissing.iteritems():
+            if not hasattr(oCard, 'expansion'):
+                # Dealing with abstract cards in the list
+                oPhysCard = IPhysicalCard((oCard, None))
+            else:
+                oPhysCard = oCard
+            for x in range(oInfo.iCount):
+                aCards.append(oPhysCard)
+        self._commit_cards(oCardSet, aCards)
+        self._open_cs(sCSName)

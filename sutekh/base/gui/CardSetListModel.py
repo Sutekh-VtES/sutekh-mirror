@@ -30,7 +30,8 @@ from ..Utility import move_articles_to_back
 from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from ..core.DBSignals import (listen_changed, disconnect_changed,
                               listen_row_destroy, listen_row_update,
-                              disconnect_row_destroy,
+                              listen_row_created,
+                              disconnect_row_destroy, disconnect_row_created,
                               disconnect_row_update)
 from .BaseConfigFile import CARDSET, FRAME
 from .MessageBus import MessageBus
@@ -189,7 +190,8 @@ class CardSetCardListModel(CardListModel):
         # Add database listeners
         listen_changed(self.card_changed, PhysicalCardSet)
         listen_row_update(self.card_set_changed, PhysicalCardSet)
-        listen_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        listen_row_destroy(self.card_set_deleted_created, PhysicalCardSet)
+        listen_row_created(self.card_set_deleted_created, PhysicalCardSet)
         # We don't listen for card set creation, since newly created card
         # sets aren't inuse. If that changes, we'll need to add an additional
         # signal listen here
@@ -226,7 +228,8 @@ class CardSetCardListModel(CardListModel):
            deleted, but the objects are still around."""
         disconnect_changed(self.card_changed, PhysicalCardSet)
         disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-        disconnect_row_destroy(self.card_set_deleted, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_deleted_created, PhysicalCardSet)
+        disconnect_row_created(self.card_set_deleted_created, PhysicalCardSet)
         MessageBus.clear(self)
         super(CardSetCardListModel, self).cleanup()
 
@@ -1371,6 +1374,15 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['full child card list'] = None
                 if self.changes_with_children():
                     self._try_queue_reload()
+            elif oCardSet.inuse and 'name' in dChanges:
+                # Card set is being renamed, so we need to reload
+                # to get entries in the model correct
+                self._dCache['child filters'] = None
+                self._dCache['all children filter'] = None
+                self._dCache['set map'] = None
+                self._dCache['full child card list'] = None
+                if self.changes_with_children():
+                    self._try_queue_reload()
         elif 'parentID' in dChanges and \
                 dChanges['parentID'] == self._oCardSet.id and \
                 oCardSet.inuse:
@@ -1401,17 +1413,15 @@ class CardSetCardListModel(CardListModel):
                 if self.changes_with_siblings():
                     self._try_queue_reload()
 
-    # _fPostFuncs is passed by SQLObject 0.10, but not by 0.9, so we need to
-    # sipport both
-    def card_set_deleted(self, oCardSet, _fPostFuncs=None):
-        """Listen for card set removal events.
+    def card_set_deleted_created(self, oCardSet, _dKW=None, _fPostFuncs=None):
+        """Listen for card set addition & removal events.
 
            Needed if child card sets are deleted, for instance.
            """
         # pylint: disable=E1101, E1103
         # Pyprotocols confuses pylint
         if self.is_child(oCardSet):
-            # inuse child card set going, so we need to reload
+            # inuse child card set added or removed, so we need to reload
             self._dCache['child filters'] = None
             self._dCache['all children filter'] = None
             self._dCache['set map'] = None
@@ -1419,14 +1429,15 @@ class CardSetCardListModel(CardListModel):
             if self.changes_with_children():
                 self._try_queue_reload()
         if self.is_sibling(oCardSet):
-            # inuse sibling card set going away while this affects display,
+            # inuse sibling card sets cahnging while this affects display,
             # so reload
             self._dCache['sibling filter'] = None
             self._dCache['full sibling card list'] = None
             if self.changes_with_siblings():
                 self._try_queue_reload()
-        # Other card set deletions don't need to be watched here, since the
-        # fiddling on parents should generate changed signals for us.
+        # Other card set deletions and creations don't need to be watched
+        # here, since the fiddling on parents should generate changed
+        # signals for us.
 
     def card_changed(self, oCardSet, oPhysCard, iChg):
         """Listen on card changes.
