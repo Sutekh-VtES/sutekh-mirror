@@ -23,6 +23,9 @@
    ...
 
    Library (77 cards)
+   Master (3)
+     2x Barrens, The
+     1x Sudden Reversal
    Action (20)
      2x Blithe Acceptance
      4x Dream World
@@ -136,7 +139,7 @@ class WriteTWDAText(ArdbInfo):
 
             for oCard, iCount in sorted(dCards.iteritems(),
                                         key=lambda x: x[0].name):
-                sLib += "%dx %s\n" % (iCount, oCard.name)
+                sLib += "%dx %s\n" % (iCount, move_articles_to_back(oCard.name))
 
         return sLib
 
