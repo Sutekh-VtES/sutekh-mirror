@@ -1,3 +1,17 @@
+19 Oct 2017
+ * Add count of trifle masters to TWDA format, ARDB text format and the
+   VEKN forum format.
+
+10 Oct 2017
+ * Tweak the output of the TWDA format to better match current behaviour
+
+12 Sep 2017
+ * Fix some issues around showing child card sets counts in the card set view:
+   - Update the count and views correctly when a in-use child is directly
+     created
+   - Fix issues with the cache getting out of sync when renaming
+     in-use child card sets
+
 31 Aug 2017
  * Add 'Create Card Set' button to the Test Independence plugin, so it's
    easy to print missing cards using the "Print as Proxies" plugin.
