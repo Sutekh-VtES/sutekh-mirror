@@ -37,7 +37,7 @@ A test comment
  2x [url=http://www.secretlibrary.info/?lib=AK-47]AK-47[/url]
  1x [url=http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor]Aaron's Feeding Razor[/url]
 
-[b][u]Master [3][/u][/b]
+[b][u]Master [3] (2 trifles)[/u][/b]
  2x [url=http://www.secretlibrary.info/?lib=Abombwe]Abombwe[/url]
  1x [url=http://www.secretlibrary.info/?lib=Path+of+Blood,+The]The Path of Blood[/url]
 

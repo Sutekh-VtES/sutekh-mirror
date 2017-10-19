@@ -133,7 +133,18 @@ class WriteVEKNForum(ArdbInfo):
             dCards = dTypes[sTypeString]
             iTotal = sum(dCards.values())
 
-            sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
+            if sTypeString == 'Master':
+                iTrifles = self._count_trifles(dLib)
+                if iTrifles > 1:
+                    sLib += "[b][u]%s [%d] (%d trifles)[/u][/b]\n" % (
+                            sTypeString, iTotal, iTrifles)
+                elif iTrifles == 1:
+                    sLib += "[b][u]%s [%d] (%d trifle)[/u][/b]\n" % (
+                            sTypeString, iTotal, iTrifles)
+                else:
+                    sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
+            else:
+                sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
 
             for oCard, iCount in sorted(dCards.iteritems(),
                                         key=lambda x: x[0].name):

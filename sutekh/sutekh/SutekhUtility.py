@@ -100,6 +100,16 @@ def is_vampire(oAbsCard):
     return oAbsCard.cardtype[0].name == 'Vampire'
 
 
+# Utility tests for other cards
+def is_trifle(oAbsCard):
+    """Test if a card is a trifle master card"""
+    if oAbsCard.cardtype[0].name == "Master":
+        for oKeyword in oAbsCard.keywords:
+            if oKeyword.keyword == 'trifle':
+                return True
+    return False
+
+
 # Helper functions for the io routines
 def monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""

@@ -51,6 +51,13 @@ class WriteTWDAText(ArdbInfo):
                                          oHolder.comment))
     # pylint: enable=R0201
 
+    def _crypt_sort_key(self, tItem):
+        """Sort the crypt cards.
+
+           We override the base class so we can sort by the modified name."""
+        return (-tItem[1][0], self._get_cap_key(tItem[0]),
+                move_articles_to_back(Item[0].name))
+
     def _gen_crypt(self, dCards):
         """Generate an TWDA text file crypt description.
 
@@ -135,12 +142,24 @@ class WriteTWDAText(ArdbInfo):
             dCards = dTypes[sTypeString]
             iTotal = sum(dCards.values())
 
-            sLib += "%s (%d)\n" % (sTypeString, iTotal)
+            if sTypeString == 'Master':
+                iTrifles = self._count_trifles(dLib)
+                if iTrifles > 1:
+                    sLib += "%s (%d, %d trifles)\n" % (sTypeString,
+                                                       iTotal, iTrifles)
+                elif iTrifles == 1:
+                    sLib += "%s (%d, %d trifles)\n" % (sTypeString,
+                                                       iTotal, iTrifles)
+                else:
+                    sLib += "%s (%d)\n" % (sTypeString, iTotal)
+            else:
+                sLib += "%s (%d)\n" % (sTypeString, iTotal)
 
-            for oCard, iCount in sorted(dCards.iteritems(),
-                                        key=lambda x: x[0].name):
-                sLib += "%dx %s\n" % (iCount, move_articles_to_back(oCard.name))
-
+            for oCard, iCount in sorted(
+                    dCards.iteritems(),
+                    key=lambda x: move_articles_to_back(x[0].name)):
+                sLib += "%dx %s\n" % (iCount,
+                                      move_articles_to_back(oCard.name))
         return sLib
 
     def write(self, fOut, oHolder):
