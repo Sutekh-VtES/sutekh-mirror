@@ -56,7 +56,7 @@ class WriteTWDAText(ArdbInfo):
 
            We override the base class so we can sort by the modified name."""
         return (-tItem[1][0], self._get_cap_key(tItem[0]),
-                move_articles_to_back(Item[0].name))
+                move_articles_to_back(tItem[0].name))
 
     def _gen_crypt(self, dCards):
         """Generate an TWDA text file crypt description.
