@@ -39,7 +39,7 @@ Equipment [7]
  2x AK-47
  1x Aaron's Feeding Razor
 
-Master [3]
+Master [3] (2 trifles)
  2x Abombwe
  1x The Path of Blood
 

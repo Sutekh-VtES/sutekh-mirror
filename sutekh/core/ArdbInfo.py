@@ -11,7 +11,7 @@
 
 from sutekh.base.core.BaseObjects import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import is_crypt_card
+from sutekh.SutekhUtility import is_crypt_card, is_trifle
 
 
 def escape_ardb_expansion_name(oExpansion):
@@ -85,6 +85,15 @@ class ArdbInfo(object):
             dTypes[sTypeString].setdefault(oCard, 0)
             dTypes[sTypeString][oCard] += iCount
         return dTypes
+
+    def _count_trifles(self, dCards):
+        """Given the result of _extract_library, count the trifles."""
+        iCount = 0
+        for tKey, iNum in dCards.iteritems():
+            oCard = tKey[0]
+            if is_trifle(oCard):
+                iCount += iNum
+        return iCount
 
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
