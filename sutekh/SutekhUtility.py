@@ -19,7 +19,7 @@ from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
 from sutekh.base.core.DBUtility import flush_cache
 
 
-def read_white_wolf_list(aWwFiles, oLogHandler=None):
+def read_white_wolf_list(oFile, oLogHandler=None):
     """Parse in a new White Wolf cardlist
 
        aWwList is a list of objects with a .open() method (e.g.
@@ -29,15 +29,16 @@ def read_white_wolf_list(aWwFiles, oLogHandler=None):
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = WhiteWolfTextParser(oLogHandler)
-    for oFile in aWwFiles:
+    try:
         fIn = oFile.open()
         oParser.parse(fIn)
+        sqlhub.processConnection.commit(close=True)
+    finally:
         fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+        sqlhub.processConnection = oOldConn
 
 
-def read_rulings(aRulings, oLogHandler=None):
+def read_rulings(oFile, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
        aRulings is a list of objects with a .open() method (e.g. a
@@ -47,16 +48,17 @@ def read_rulings(aRulings, oLogHandler=None):
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
     oParser = RulingParser(oLogHandler)
-    for oFile in aRulings:
+    try:
         fIn = oFile.open()
         for sLine in fIn:
             oParser.feed(sLine)
+        sqlhub.processConnection.commit(close=True)
+    finally:
         fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+        sqlhub.processConnection = oOldConn
 
 
-def read_exp_date_list(aDateFiles, oLogHandler=None):
+def read_exp_date_list(oDateFile, oLogHandler=None):
     """Read the expansion date information from the given file.
 
        aDateFiles is a list of objects with a .open() method (e.g. a
@@ -65,13 +67,14 @@ def read_exp_date_list(aDateFiles, oLogHandler=None):
     flush_cache()
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
-    oParser = ExpDateCSVParser(oLogHandler)
-    for oFile in aDateFiles:
-        fIn = oFile.open()
+    try:
+        oParser = ExpDateCSVParser(oLogHandler)
+        fIn = oDateFile.open()
         oParser.parse(fIn)
+        sqlhub.processConnection.commit(close=True)
+    finally:
         fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+        sqlhub.processConnection = oOldConn
 
 
 def gen_temp_dir():

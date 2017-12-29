@@ -281,11 +281,10 @@ def main_with_args(aTheArgs):
         read_rulings([EncodedFile(oOpts.ruling_file)], oLogHandler)
 
     if oOpts.fetch:
-        read_white_wolf_list([EncodedFile(WW_CARDLIST_URL, True)], oLogHandler)
-        aRulings = [EncodedFile(sUrl, True) for sUrl in WW_RULINGS_URL]
-        read_rulings(aRulings, oLogHandler)
-        read_white_wolf_list([EncodedFile(EXTRA_CARD_URL, True)], oLogHandler)
-        read_exp_date_list([EncodedFile(EXP_DATE_URL, True)], oLogHandler)
+        read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
+        read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
+        read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
+        read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
 
     if oOpts.read_physical_cards_from is not None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)

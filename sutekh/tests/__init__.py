@@ -25,8 +25,8 @@ def create_db():
     sRulings = create_pkg_tmp_file(TEST_RULINGS)
 
     oLogHandler = make_null_handler()
-    read_white_wolf_list([EncodedFile(sCardList)], oLogHandler)
-    read_rulings([EncodedFile(sRulings)], oLogHandler)
+    read_white_wolf_list(EncodedFile(sCardList), oLogHandler)
+    read_rulings(EncodedFile(sRulings), oLogHandler)
 
     os.remove(sRulings)
     os.remove(sCardList)
