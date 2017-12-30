@@ -4,8 +4,6 @@
 # GPL - see COPYING for details
 """This handles the gui aspects of upgrading the database."""
 
-from sqlobject import sqlhub
-
 from sutekh.base.gui.BaseGuiDBManagement import (BaseGuiDBManager,
                                                  DataFileReader)
 from sutekh.base.gui.GuiDataPack import gui_error_handler
@@ -26,7 +24,7 @@ CardListReader = DataFileReader(sName="cardlist.txt",
                                 bRequired=True,
                                 bCountLogger=False,
                                 fReader=read_white_wolf_list,
-                                )
+                               )
 
 ExtraCardReader = DataFileReader(sName="extra_list.txt",
                                  sUrl=EXTRA_CARD_URL,
@@ -35,7 +33,7 @@ ExtraCardReader = DataFileReader(sName="extra_list.txt",
                                  bRequired=False,
                                  bCountLogger=False,
                                  fReader=read_white_wolf_list,
-                                 )
+                                )
 
 RulingsReader = DataFileReader(sName="rulings.html",
                                sUrl=WW_RULINGS_URL,
@@ -44,7 +42,7 @@ RulingsReader = DataFileReader(sName="rulings.html",
                                bRequired=False,
                                bCountLogger=False,
                                fReader=read_rulings,
-                               )
+                              )
 
 ExpDateReader = DataFileReader(sName="expansiondates.csv",
                                sUrl=EXP_DATE_URL,
@@ -54,7 +52,7 @@ ExpDateReader = DataFileReader(sName="expansiondates.csv",
                                bRequired=False,
                                bCountLogger=True,
                                fReader=read_exp_date_list,
-                               )
+                              )
 
 
 class GuiDBManager(BaseGuiDBManager):
@@ -67,7 +65,7 @@ class GuiDBManager(BaseGuiDBManager):
 
     bDisplayZip = True
 
-    tReaders=(CardListReader, ExtraCardReader, RulingsReader, ExpDateReader)
+    tReaders = (CardListReader, ExtraCardReader, RulingsReader, ExpDateReader)
 
     def __init__(self, oWin):
         super(GuiDBManager, self).__init__(oWin, DBUpgradeManager)

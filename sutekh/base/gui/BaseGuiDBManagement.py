@@ -105,7 +105,7 @@ class BaseGuiDBManager(object):
     def read_zip_file(self, oZipDetails, sHash):
         """open (Downlaoding it if required) a zip file and split it into
            the required bits.
-           
+
            We provide a parameter for hashes, so it can be used when a
            hash is available."""
         aReaderNames = [x.sName for x in self.tReaders]
@@ -371,7 +371,8 @@ class BaseGuiDBManager(object):
                 iRes = oDialog.run()
                 oDialog.destroy()
                 if iRes == gtk.RESPONSE_OK:
-                    return self._do_commit_db(oLogHandler, oTempConn, aMessages)
+                    return self._do_commit_db(oLogHandler, oTempConn,
+                                              aMessages)
                 elif iRes == 1:
                     # Try running with the upgraded database
                     sqlhub.processConnection = oTempConn

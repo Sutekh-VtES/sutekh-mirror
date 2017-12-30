@@ -15,11 +15,12 @@ from .SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 
 
 WidgetHolder = namedtuple('WidgetHolder', ['oAlign', 'oFileWidget',
-                                         'oUrlButton', 'sUrl'])
+                                           'oUrlButton', 'sUrl'])
 
 Result = namedtuple('Result', ['bIsUrl', 'sName'])
 
 COMBINED_ZIP = 'Combined Zip File'
+
 
 def make_alignment(oLabel, oFileButton, oUseButton=None):
     """Helper function for constructing the import dialog"""
@@ -69,12 +70,13 @@ class DataFilesDialog(SutekhDialog):
             oFileButton.add_filter_with_pattern(*oReader.tPattern)
             if oReader.sUrl:
                 oUrlButton = gtk.CheckButton(
-                        "Use default url (from %s)" % get_domain(oReader.sUrl))
-                oFileAlign = make_alignment(oFileLabel, oFileButton, oUrlButton)
+                    "Use default url (from %s)" % get_domain(oReader.sUrl))
+                oFileAlign = make_alignment(oFileLabel, oFileButton,
+                                            oUrlButton)
             else:
                 oUrlButton = None
                 oFileAlign = make_alignment(oFileLabel, oFileButton)
-            self._dFileWidgets[oReader.sName] = WidgetHolder(oFileAlign, 
+            self._dFileWidgets[oReader.sName] = WidgetHolder(oFileAlign,
                                                              oFileButton,
                                                              oUrlButton,
                                                              oReader.sUrl)
@@ -189,7 +191,8 @@ class DataFilesDialog(SutekhDialog):
             self.oBackupFileLabel.set_text("(None)")
 
     def hide_zip_toggled(self, _oWidget):
-        """Update status if user toggles the 'show individual files' checkbox"""
+        """Update status if user toggles the 'show individual files'
+           checkbox"""
         bHideZip = self._oHideZip.get_active()
         for sName, oWidgets in self._dFileWidgets.items():
             oAlign = oWidgets.oAlign
