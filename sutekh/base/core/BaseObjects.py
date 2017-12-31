@@ -10,6 +10,8 @@
 
 """The base database definitions and pyprotocols adapters"""
 
+import logging
+
 from .CachedRelatedJoin import CachedRelatedJoin
 from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
 from ..Utility import move_articles_to_front
@@ -555,21 +557,48 @@ IRarityPair.register(tuple, RarityPairAdapter.lookup)
 IAbstractCard.register(AbstractCard, passthrough)
 
 
-@IAbstractCard.register(basestring)
-def abstract_card_from_string(sName):
-    # pylint: disable=E1101
-    # SQLObject confuses pylint
-    try:
-        oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-    except SQLObjectNotFound:
-        # Correct for common variations
-        sNewName = move_articles_to_front(sName)
-        if sNewName != sName:
-            oCard = AbstractCard.byCanonicalName(
-                sNewName.encode('utf8').lower())
-        else:
-            raise
-    return oCard
+class CardNameLookupAdapter(Adapter):
+    """Adapter for card name string -> AbstractCard"""
+
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+        # Fill in values from LookupHints
+        for oLookup in LookupHints.select():
+            if oLookup.domain == 'CardNames':
+                try:
+                    oCard = AbstractCard.byCanonicalName(
+                        oLookup.value.encode('utf8').lower())
+                    cls.__dCache[oLookup.lookup] = oCard
+                except SQLObjectNotFound:
+                    # Possible error in the lookup data - warn about it, but
+                    # we don't want to fail here.
+                    logging.warn("Unable to create %s mapping (%s -> %s", 
+                                 oLookup.domain, oLookup.lookup, oLookup.value)
+
+    @classmethod
+    def lookup(cls, sName):
+        oCard = cls.__dCache.get(sName, None)
+        if oCard is None:
+            try:
+                oCard = AbstractCard.byCanonicalName(
+                    sName.encode('utf8').lower())
+                cls.__dCache[sName] = oCard
+            except SQLObjectNotFound:
+                # Correct for common variations
+                sNewName = move_articles_to_front(sName)
+                if sNewName != sName:
+                    oCard = AbstractCard.byCanonicalName(
+                        sNewName.encode('utf8').lower())
+                    cls.__dCache[sNewName] = oCard
+                else:
+                    raise
+        return oCard
+
+
+IAbstractCard.register(basestring, CardNameLookupAdapter.lookup)
 
 
 IRuling.register(Ruling, passthrough)
