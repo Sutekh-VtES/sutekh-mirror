@@ -11,10 +11,11 @@ from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.core.SutekhObjects import TABLE_LIST
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
-                              EXP_DATE_URL, WW_CARDLIST_DATAPACK)
+                              EXP_DATE_URL, LOOKUP_DATA_URL,
+                              WW_CARDLIST_DATAPACK)
 from sutekh.io.DataPack import find_data_pack
 from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
-                                  read_exp_date_list)
+                                  read_exp_date_list, read_lookup_data)
 
 
 CardListReader = DataFileReader(sName="cardlist.txt",
@@ -54,6 +55,16 @@ ExpDateReader = DataFileReader(sName="expansiondates.csv",
                                fReader=read_exp_date_list,
                               )
 
+LookupDataReader = DataFileReader(sName="Lookup.csv",
+                                  sUrl=LOOKUP_DATA_URL,
+                                  sDescription="Lookup Data File",
+                                  tPattern=('CSV files', ['*csv']),
+                                  bRequired=False,
+                                  bCountLogger=True,
+                                  fReader=read_lookup_data,
+                                 )
+
+
 
 class GuiDBManager(BaseGuiDBManager):
     """Handle the GUI aspects of upgrading the database or reloading the
@@ -65,7 +76,8 @@ class GuiDBManager(BaseGuiDBManager):
 
     bDisplayZip = True
 
-    tReaders = (CardListReader, ExtraCardReader, RulingsReader, ExpDateReader)
+    tReaders = (LookupDataReader, CardListReader, ExtraCardReader,
+                RulingsReader, ExpDateReader)
 
     def __init__(self, oWin):
         super(GuiDBManager, self).__init__(oWin, DBUpgradeManager)
