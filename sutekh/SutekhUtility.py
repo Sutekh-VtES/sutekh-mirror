@@ -43,10 +43,10 @@ def read_rulings(oFile, oLogHandler=None):
     safe_parser(oFile, oParser)
 
 
-def read_exp_date_list(oDateFile, oLogHandler=None):
+def read_exp_date_list(oFile, oLogHandler=None):
     """Read the expansion date information from the given file.
 
-       oDateFile is an object with a .open() method (e.g. a
+       oFile is an object with a .open() method (e.g. a
        sutekh.base.io.EncodedFile.EncodedFile)
        """
     oParser = ExpDateCSVParser(oLogHandler)
