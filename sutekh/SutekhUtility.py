@@ -20,6 +20,7 @@ from sutekh.core.SutekhObjects import CRYPT_TYPES
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
+from sutekh.io.LookupCSVParser import LookupCSVParser
 
 
 def read_white_wolf_list(oFile, oLogHandler=None):
@@ -49,6 +50,16 @@ def read_exp_date_list(oDateFile, oLogHandler=None):
        sutekh.base.io.EncodedFile.EncodedFile)
        """
     oParser = ExpDateCSVParser(oLogHandler)
+    safe_parser(oFile, oParser)
+
+
+def read_lookup_data(oFile, oLogHandler=None):
+    """Read the lookup data information from the given file.
+
+       oFile is an object with a .open() method (e.g. a
+       sutekh.base.io.EncodedFile.EncodedFile)
+       """
+    oParser = LookupCSVParser(oLogHandler)
     safe_parser(oFile, oParser)
 
 
