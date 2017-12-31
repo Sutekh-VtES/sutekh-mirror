@@ -7,7 +7,10 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
+from sqlobject import sqlhub
+
 from ..Utility import pretty_xml, norm_xml_quotes
+from ..core.DBUtility import flush_cache
 from xml.etree.ElementTree import parse, tostring
 # pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
@@ -128,3 +131,27 @@ class BaseXMLWriter(CardSetWriter):
         # Standardise quotes
         sData = norm_xml_quotes(sData)
         fOut.write(sData)
+
+
+def safe_parser(oFile, oParser):
+    """Wrap the logic for parsing files, to ensure we
+       handle transactions and error conditions consistently.
+       
+       oFile is an object with a .open() method (e.g. EncodedFile).
+       oParser is an object with a parse() method that takes an
+       open file object."""
+    flush_cache()
+    fIn = None
+    oOldConn = sqlhub.processConnection
+    sqlhub.processConnection = oOldConn.transaction()
+    try:
+        fIn = oFile.open()
+        oParser.parse(fIn)
+        sqlhub.processConnection.commit(close=True)
+    finally:
+        # We use the fIn check so we don't swallow any exceptions raised
+        # by open failing
+        if fIn:
+            fIn.close()
+        # Always restore connection
+        sqlhub.processConnection = oOldConn
