@@ -136,7 +136,7 @@ class BaseXMLWriter(CardSetWriter):
 def safe_parser(oFile, oParser):
     """Wrap the logic for parsing files, to ensure we
        handle transactions and error conditions consistently.
-       
+
        oFile is an object with a .open() method (e.g. EncodedFile).
        oParser is an object with a parse() method that takes an
        open file object."""

@@ -14,13 +14,13 @@ from sqlobject import sqlhub
 from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.base.io.IOBase import safe_parser
+from sutekh.base.io.LookupCSVParser import LookupCSVParser
 
 from sutekh.core.SutekhObjects import CRYPT_TYPES
 
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
-from sutekh.io.LookupCSVParser import LookupCSVParser
 
 
 def read_white_wolf_list(oFile, oLogHandler=None):

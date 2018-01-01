@@ -575,7 +575,7 @@ class CardNameLookupAdapter(Adapter):
                 except SQLObjectNotFound:
                     # Possible error in the lookup data - warn about it, but
                     # we don't want to fail here.
-                    logging.warn("Unable to create %s mapping (%s -> %s", 
+                    logging.warn("Unable to create %s mapping (%s -> %s",
                                  oLookup.domain, oLookup.lookup, oLookup.value)
 
     @classmethod

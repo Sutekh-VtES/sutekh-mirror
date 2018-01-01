@@ -13,7 +13,7 @@ import datetime
 from logging import Logger
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import LookupHints
+from ..core.BaseObjects import LookupHints
 
 
 class LookupCSVParser(object):

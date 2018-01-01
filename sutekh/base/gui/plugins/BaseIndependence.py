@@ -99,7 +99,7 @@ class BaseIndependence(BasePlugin):
                    each selected set which includes any of these cards, the
                    list of cards relevant to that set is shown in a separate
                    tab.
-                   
+
                    The full list of cards has a 'Create Card Set' button,
                    which can be used to create a card set containing the
                    specific cards listed."""
