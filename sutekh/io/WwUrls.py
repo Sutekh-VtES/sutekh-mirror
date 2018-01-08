@@ -22,4 +22,4 @@ EXP_DATE_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
                 "raw/tip/ExpansionDates/expansion-data/expansiondates.csv")
 
 LOOKUP_DATA_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                   "raw/tip/Lookups/Lookup.csv")
+                   "raw/tip/Lookups/lookup.csv")

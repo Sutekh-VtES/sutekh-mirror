@@ -55,7 +55,7 @@ ExpDateReader = DataFileReader(sName="expansiondates.csv",
                                fReader=read_exp_date_list,
                               )
 
-LookupDataReader = DataFileReader(sName="Lookup.csv",
+LookupDataReader = DataFileReader(sName="lookup.csv",
                                   sUrl=LOOKUP_DATA_URL,
                                   sDescription="Lookup Data File",
                                   tPattern=('CSV files', ['*csv']),
