@@ -44,7 +44,8 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
-                              EXTRA_CARD_URL, EXP_DATE_URL)
+                              EXTRA_CARD_URL, EXP_DATE_URL,
+                              LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -288,6 +289,7 @@ def main_with_args(aTheArgs):
         read_rulings(EncodedFile(oOpts.ruling_file), oLogHandler)
 
     if oOpts.fetch:
+        read_lookup_data(EncodedFile(LOOKUP_DATA_URL, True), oLogHandler)
         read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
         read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
         read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
