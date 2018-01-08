@@ -13,7 +13,7 @@
 
 # pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
-# WhizzardObjects. We want to keep all the database upgrade stuff together.
+# BaseObjects. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
 # pylint: disable=E0611

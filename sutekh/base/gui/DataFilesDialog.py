@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# Dialog for handling loading of Dune cardlist and rulings
-# Copyright 2014 Neil Muller <drnlmuller+thufir@gmail.com>
+# Dialog for handling loading of cardlist, rulings and other such
+# files
+# Copyright 2014-2018 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """File selection dialog for choosing cardlist and rulings files"""
@@ -50,7 +51,7 @@ class DataFilesDialog(SutekhDialog):
     def __init__(self, oParent, tReaders, bDisplayZip, sZippedUrl,
                  bDisableBackup):
         super(DataFilesDialog, self).__init__(
-            "Choose Dune Files", oParent,
+            "Choose CardList Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
              gtk.RESPONSE_CANCEL))
