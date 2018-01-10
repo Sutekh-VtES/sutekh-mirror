@@ -154,31 +154,31 @@ class BaseDBUpgradeManager(object):
                          " information."]
             # Rarity
             for oObj in Rarity.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="Rarity",
+                _oEntry = LookupHints(domain="Rarities",
                                       lookup=oObj.name,
                                       value=oObj.name,
                                       connection=oTrans)
                 if oObj.name != oObj.shortname:
-                    _oEntry = LookupHints(domain="Rarity",
-                                          lookup=oObj.name,
-                                          value=oObj.shortname,
+                    _oEntry = LookupHints(domain="Rarities",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
                                           connection=oTrans)
             # CardType
             for oObj in CardType.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="CardType",
+                _oEntry = LookupHints(domain="CardTypes",
                                       lookup=oObj.name,
                                       value=oObj.name,
                                       connection=oTrans)
             # Expansion
             for oObj in Expansion.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="Expansion",
+                _oEntry = LookupHints(domain="Expansions",
                                       lookup=oObj.name,
                                       value=oObj.name,
                                       connection=oTrans)
                 if oObj.name != oObj.shortname:
-                    _oEntry = LookupHints(domain="Expansion",
-                                          lookup=oObj.name,
-                                          value=oObj.shortname,
+                    _oEntry = LookupHints(domain="Expansions",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
                                           connection=oTrans)
         else:
             return (False, ["Unknown Version for LookupHints"])
