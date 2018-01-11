@@ -6,9 +6,10 @@
 """Base classes for the app specific XML card set parsers and writers.
    """
 
+from xml.etree.ElementTree import Element, SubElement
+
 from .IOBase import BaseXMLParser, BaseXMLWriter
 from ..core.BaseObjects import MAX_ID_LENGTH
-from xml.etree.ElementTree import Element, SubElement
 
 
 class BaseCardXMLParser(BaseXMLParser):

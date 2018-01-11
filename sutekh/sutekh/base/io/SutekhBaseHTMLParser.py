@@ -107,6 +107,12 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
     def handle_entityref(self, sName):
         pass
 
+    def parse(self, fOpenFile):
+        """Wrapper around feed to provide a consistent interface with
+           other parsers."""
+        for sLine in fOpenFile:
+            self.feed(sLine)
+
 
 # Parser with loggin
 class LoggingHTMLParser(SutekhBaseHTMLParser):

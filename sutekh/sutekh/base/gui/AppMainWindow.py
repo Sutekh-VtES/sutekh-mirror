@@ -278,7 +278,6 @@ class AppMainWindow(MultiPaneWindow):
             for oPlugin in aUpdatePlugins:
                 oPlugin.do_update()
 
-
     # Pane manipulation functions
 
     def get_pane_ids(self):

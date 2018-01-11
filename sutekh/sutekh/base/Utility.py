@@ -13,8 +13,9 @@ import os
 import re
 import sys
 import logging
-from sqlobject import sqlhub
 import urlparse
+
+from sqlobject import sqlhub
 
 
 def gen_temp_file(sBaseName, sDir):

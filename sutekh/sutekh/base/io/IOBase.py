@@ -7,7 +7,6 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
-from ..Utility import pretty_xml, norm_xml_quotes
 from xml.etree.ElementTree import parse, tostring
 # pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
@@ -15,13 +14,14 @@ try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
-
 # pylint: enable=E0611, F0401
 
+from sqlobject import sqlhub
 
-# pylint: disable=R0921, R0922
-# These may be referenced elsewhere, and mainly exist as interface
-# documentation, rather than genuine base classes
+from ..Utility import pretty_xml, norm_xml_quotes
+from ..core.DBUtility import flush_cache
+
+
 class CardSetParser(object):
     """Parent class for card set parsers.
 
@@ -128,3 +128,27 @@ class BaseXMLWriter(CardSetWriter):
         # Standardise quotes
         sData = norm_xml_quotes(sData)
         fOut.write(sData)
+
+
+def safe_parser(oFile, oParser):
+    """Wrap the logic for parsing files, to ensure we
+       handle transactions and error conditions consistently.
+
+       oFile is an object with a .open() method (e.g. EncodedFile).
+       oParser is an object with a parse() method that takes an
+       open file object."""
+    flush_cache()
+    fIn = None
+    oOldConn = sqlhub.processConnection
+    sqlhub.processConnection = oOldConn.transaction()
+    try:
+        fIn = oFile.open()
+        oParser.parse(fIn)
+        sqlhub.processConnection.commit(close=True)
+    finally:
+        # We use the fIn check so we don't swallow any exceptions raised
+        # by open failing
+        if fIn:
+            fIn.close()
+        # Always restore connection
+        sqlhub.processConnection = oOldConn

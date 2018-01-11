@@ -27,7 +27,8 @@ import sutekh.core.Filters
 # pylint: enable=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
-                                  format_text, read_exp_date_list)
+                                  format_text, read_exp_date_list,
+                                  read_lookup_data)
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
@@ -43,7 +44,8 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
-                              EXTRA_CARD_URL, EXP_DATE_URL)
+                              EXTRA_CARD_URL, EXP_DATE_URL,
+                              LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -70,6 +72,9 @@ def parse_options(aArgs):
     oOptParser.add_option("--date-file", type="string", dest="date_file",
                           default=None, help="CSV file to read expansion "
                                              "release date info from.")
+    oOptParser.add_option("--lookup-data-file", type="string",
+                          dest="lookup_file", default=None,
+                          help="CSV file to read useful lookup data from.")
     oOptParser.add_option("-c", "--refresh-tables", action="store_true",
                           dest="refresh_tables", default=False,
                           help="Drop (if possible) and recreate database "
@@ -269,23 +274,26 @@ def main_with_args(aTheArgs):
             return 1
 
     if oOpts.ww_file is not None:
-        read_white_wolf_list([EncodedFile(oOpts.ww_file)], oLogHandler)
+        read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler)
 
     if oOpts.extra_file is not None:
-        read_white_wolf_list([EncodedFile(oOpts.extra_file)], oLogHandler)
+        read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
 
     if oOpts.date_file is not None:
-        read_exp_date_list([EncodedFile(oOpts.date_file)], oLogHandler)
+        read_exp_date_list(EncodedFile(oOpts.date_file), oLogHandler)
+
+    if oOpts.lookup_file is not None:
+        read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
 
     if oOpts.ruling_file is not None:
-        read_rulings([EncodedFile(oOpts.ruling_file)], oLogHandler)
+        read_rulings(EncodedFile(oOpts.ruling_file), oLogHandler)
 
     if oOpts.fetch:
-        read_white_wolf_list([EncodedFile(WW_CARDLIST_URL, True)], oLogHandler)
-        aRulings = [EncodedFile(sUrl, True) for sUrl in WW_RULINGS_URL]
-        read_rulings(aRulings, oLogHandler)
-        read_white_wolf_list([EncodedFile(EXTRA_CARD_URL, True)], oLogHandler)
-        read_exp_date_list([EncodedFile(EXP_DATE_URL, True)], oLogHandler)
+        read_lookup_data(EncodedFile(LOOKUP_DATA_URL, True), oLogHandler)
+        read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
+        read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
+        read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
+        read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
 
     if oOpts.read_physical_cards_from is not None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)

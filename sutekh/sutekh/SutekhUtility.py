@@ -11,67 +11,56 @@
 import re
 from sqlobject import sqlhub
 
+from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
+from sutekh.base.core.DBUtility import flush_cache
+from sutekh.base.io.IOBase import safe_parser
+from sutekh.base.io.LookupCSVParser import LookupCSVParser
+
 from sutekh.core.SutekhObjects import CRYPT_TYPES
+
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
 from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
-from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
-from sutekh.base.core.DBUtility import flush_cache
 
 
-def read_white_wolf_list(aWwFiles, oLogHandler=None):
+def read_white_wolf_list(oFile, oLogHandler=None):
     """Parse in a new White Wolf cardlist
 
-       aWwList is a list of objects with a .open() method (e.g.
-       sutekh.base.io.EncodedFile.EncodedFile's)
+       oFile is an object with a .open() method (e.g.
+       sutekh.base.io.EncodedFile.EncodedFile)
        """
-    flush_cache()
-    oOldConn = sqlhub.processConnection
-    sqlhub.processConnection = oOldConn.transaction()
     oParser = WhiteWolfTextParser(oLogHandler)
-    for oFile in aWwFiles:
-        fIn = oFile.open()
-        oParser.parse(fIn)
-        fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+    safe_parser(oFile, oParser)
 
 
-def read_rulings(aRulings, oLogHandler=None):
+def read_rulings(oFile, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
-       aRulings is a list of objects with a .open() method (e.g. a
+       oFil is an object with a .open() method (e.g. a
        sutekh.base.io.EncodedFile.EncodedFile)
        """
-    flush_cache()
-    oOldConn = sqlhub.processConnection
-    sqlhub.processConnection = oOldConn.transaction()
     oParser = RulingParser(oLogHandler)
-    for oFile in aRulings:
-        fIn = oFile.open()
-        for sLine in fIn:
-            oParser.feed(sLine)
-        fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+    safe_parser(oFile, oParser)
 
 
-def read_exp_date_list(aDateFiles, oLogHandler=None):
+def read_exp_date_list(oFile, oLogHandler=None):
     """Read the expansion date information from the given file.
 
-       aDateFiles is a list of objects with a .open() method (e.g. a
+       oFile is an object with a .open() method (e.g. a
        sutekh.base.io.EncodedFile.EncodedFile)
        """
-    flush_cache()
-    oOldConn = sqlhub.processConnection
-    sqlhub.processConnection = oOldConn.transaction()
     oParser = ExpDateCSVParser(oLogHandler)
-    for oFile in aDateFiles:
-        fIn = oFile.open()
-        oParser.parse(fIn)
-        fIn.close()
-    sqlhub.processConnection.commit(close=True)
-    sqlhub.processConnection = oOldConn
+    safe_parser(oFile, oParser)
+
+
+def read_lookup_data(oFile, oLogHandler=None):
+    """Read the lookup data information from the given file.
+
+       oFile is an object with a .open() method (e.g. a
+       sutekh.base.io.EncodedFile.EncodedFile)
+       """
+    oParser = LookupCSVParser(oLogHandler)
+    safe_parser(oFile, oParser)
 
 
 def gen_temp_dir():

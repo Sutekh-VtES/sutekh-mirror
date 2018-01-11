@@ -5,31 +5,39 @@
 
 """This is the sutekh test suite"""
 
-from sutekh.core.SutekhObjects import TABLE_LIST
-from sutekh.base.core.BaseObjects import VersionTable
-from sutekh.SutekhUtility import read_white_wolf_list, read_rulings
-from sutekh.base.core.DBUtility import refresh_tables
-from sutekh.tests.TestData import TEST_CARD_LIST, TEST_RULINGS
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
-from sutekh.base.io.EncodedFile import EncodedFile
-from sqlobject import sqlhub, connectionForURI
 import os
+
+from sqlobject import sqlhub, connectionForURI
+
+from sutekh.base.core.BaseObjects import VersionTable
+from sutekh.base.core.DBUtility import refresh_tables
+from sutekh.base.io.EncodedFile import EncodedFile
+from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
+
+from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
+                                  read_lookup_data)
+from sutekh.core.SutekhObjects import TABLE_LIST
+from sutekh.tests.TestData import (TEST_CARD_LIST, TEST_RULINGS,
+                                   TEST_LOOKUP_LIST)
+from sutekh.tests.TestCore import SutekhTest
 
 
 def create_db():
     """Create the database"""
     assert refresh_tables(TABLE_LIST, sqlhub.processConnection)
 
+    sLookupData = create_pkg_tmp_file(TEST_LOOKUP_LIST)
     sCardList = create_pkg_tmp_file(TEST_CARD_LIST)
     sRulings = create_pkg_tmp_file(TEST_RULINGS)
 
     oLogHandler = make_null_handler()
-    read_white_wolf_list([EncodedFile(sCardList)], oLogHandler)
-    read_rulings([EncodedFile(sRulings)], oLogHandler)
+    read_lookup_data(EncodedFile(sLookupData), oLogHandler)
+    read_white_wolf_list(EncodedFile(sCardList), oLogHandler)
+    read_rulings(EncodedFile(sRulings), oLogHandler)
 
     os.remove(sRulings)
     os.remove(sCardList)
+    os.remove(sLookupData)
 
 
 def setup_package():

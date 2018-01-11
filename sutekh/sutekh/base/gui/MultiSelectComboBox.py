@@ -5,8 +5,10 @@
 
 """Generic multiselect combobox for use in FilterEditor (and elsewhere)"""
 
-import gtk
 import sys
+
+import gtk
+
 from .AutoScrolledWindow import AutoScrolledWindow
 from .ScrolledList import ScrolledListView
 

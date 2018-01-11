@@ -13,18 +13,21 @@
 
 # pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
-# WhizzardObjects. We want to keep all the database upgrade stuff together.
+# BaseObjects. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
+
+from logging import Logger
 
 # pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 # pylint: enable=E0611
-from logging import Logger
+
 from .BaseObjects import (PhysicalCard, AbstractCard,
                           PhysicalCardSet, Expansion,
                           Rarity, RarityPair, CardType,
-                          Ruling, Keyword, Artist)
+                          Ruling, Keyword, Artist,
+                          LookupHints)
 from .DBUtility import flush_cache, refresh_tables
 from .BaseDBManagement import UnknownVersion
 from .DatabaseVersion import DatabaseVersion
@@ -58,12 +61,14 @@ class BaseDBUpgradeManager(object):
         'AbstractCard': (AbstractCard, (AbstractCard.tableversion,)),
         'PhysicalCard': (PhysicalCard, (PhysicalCard.tableversion,)),
         'PhysicalCardSet': (PhysicalCardSet, (PhysicalCardSet.tableversion,)),
+        'LookupHints': (LookupHints, (-1, LookupHints.tableversion,)),
     }
 
     # List of functions for upgrading databases
     # Subclasses should extend this list as needed
     # (probably inserting before the copy_old_abstract_card entry)
     COPY_OLD_DB = [
+        ('_copy_old_lookup_hints', 'LookupHints table', False),
         ('_copy_old_rarity', 'Rarity table', False),
         ('_copy_old_expansion', 'Expansion table', False),
         ('_copy_old_card_type', 'CardType table', False),
@@ -79,6 +84,7 @@ class BaseDBUpgradeManager(object):
     # functions to copy database without upgrading
     # Subclasses should extend this as needed
     COPY_DB = [
+        ('_copy_lookup_hints', 'LookupHints table', False),
         ('_copy_rarity', 'Rarity table', False),
         ('_copy_expansion', 'Expansion table', False),
         ('_copy_card_type', 'CardType table', False),
@@ -126,6 +132,60 @@ class BaseDBUpgradeManager(object):
         for oObj in Rarity.select(connection=oOrigConn):
             _oCopy = Rarity(id=oObj.id, name=oObj.name,
                             shortname=oObj.shortname, connection=oTrans)
+
+    def _copy_old_lookup_hints(self, oOrigConn, oTrans, oVer):
+        """Copy rarity table, upgrading versions as needed"""
+        if oVer.check_tables_and_versions([LookupHints],
+                                          [LookupHints.tableversion],
+                                          oOrigConn):
+            self._copy_lookup_hints(oOrigConn, oTrans)
+        else:
+            return self._upgrade_lookup_hints(oOrigConn, oTrans, oVer)
+        return (True, [])
+
+    def _upgrade_lookup_hints(self, oOrigConn, oTrans, oVer):
+        """Upgrade lookup hints table"""
+        if oVer.check_tables_and_versions([LookupHints], [-1], oOrigConn):
+            # We're upgrading from no lookup hints table to having one.
+            # We populate the table with the some initial data for
+            # database backed abbrevation lookups, but this will
+            # be incomplete.
+            # Subclasses should extend this to cover other
+            # database backed lookups.
+            aMessages = ["Incomplete information to fill the LookupHints"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+            # Rarity
+            for oObj in Rarity.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="Rarities",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+                if oObj.name != oObj.shortname:
+                    _oEntry = LookupHints(domain="Rarities",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
+                                          connection=oTrans)
+            # CardType
+            for oObj in CardType.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="CardTypes",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+            # Expansion
+            for oObj in Expansion.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="Expansions",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+                if oObj.name != oObj.shortname:
+                    _oEntry = LookupHints(domain="Expansions",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
+                                          connection=oTrans)
+        else:
+            return (False, ["Unknown Version for LookupHints"])
+        return (True, aMessages)
 
     def _copy_old_rarity(self, oOrigConn, oTrans, oVer):
         """Copy rarity table, upgrading versions as needed"""
@@ -203,6 +263,18 @@ class BaseDBUpgradeManager(object):
         """Upgrade rulings"""
         # default is to fail. Subclasses should override this
         return (False, ["Unknown Ruling Version"])
+
+    def _copy_lookup_hints(self, oOrigConn, oTrans):
+        """Copy RairtyPair, assuming versions match"""
+        for oObj in LookupHints.select(connection=oOrigConn):
+            # Force for SQLObject >= 0.11.4
+            # pylint: disable=W0212
+            # Need to access _connect here
+            oObj._connection = oOrigConn
+            # pylint: enable=W0212
+            _oCopy = LookupHints(id=oObj.id, domain=oObj.domain,
+                                 lookup=oObj.lookup, value=oObj.value,
+                                 connection=oTrans)
 
     def _copy_rarity_pair(self, oOrigConn, oTrans):
         """Copy RairtyPair, assuming versions match"""

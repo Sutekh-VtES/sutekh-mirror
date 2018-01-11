@@ -6,9 +6,11 @@
 
 """Widget for displaying the card text for the given card."""
 
+import logging
+
 import gtk
 import pango
-import logging
+
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 
 

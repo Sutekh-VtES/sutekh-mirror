@@ -10,6 +10,12 @@
 
 # Note - Yvette & Aire of Elation are deliberately duplicated, so we ensure
 # that duplicates in the cardlist are handled properly
+
+TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
+CardNames,Anastaszdi Zagreb,Anastasz di Zagreb
+CardNames,"Pier 13","Pier 13, Port of Baltimore"
+"""
+
 TEST_CARD_LIST = """
 Name: .44 Magnum
 [Jyhad:C, VTES:C, Sabbat:C, SW:PB, CE:PTo3, LoB:PO3]

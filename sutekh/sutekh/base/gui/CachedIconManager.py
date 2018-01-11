@@ -5,9 +5,11 @@
 
 """Icon manager which returns gtk pixmaps for the icons and caches lookups."""
 
+import os
+
 import gtk
 import gobject
-import os
+
 from ..io.BaseIconManager import BaseIconManager
 from .ProgressDialog import ProgressDialog, SutekhCountLogHandler
 

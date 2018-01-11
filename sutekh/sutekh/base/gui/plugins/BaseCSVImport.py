@@ -5,9 +5,11 @@
 
 """plugin for managing CSV file imports"""
 
-import gtk
 import csv
+
+import gtk
 import gobject
+
 from ...core.BaseObjects import PhysicalCardSet
 from ...io.CSVParser import CSVParser
 from ..BasePluginManager import BasePlugin
