@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# Copyright 2017 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2017, 2018 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
 """Parse data into the lookup from a CSV file.
