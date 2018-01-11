@@ -5,8 +5,6 @@
 
 """Test cases for the CardSetUtilities functions"""
 
-import unittest
-
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseObjects import IAbstractCard
 
@@ -31,6 +29,3 @@ class LookupTests(SutekhTest):
         # Odd cases
         self.assertEqual(oCard, IAbstractCard("THE PATH OF bLOOD"))
         self.assertEqual(oCard, IAbstractCard("the paTH oF bLOOD"))
-
-
-

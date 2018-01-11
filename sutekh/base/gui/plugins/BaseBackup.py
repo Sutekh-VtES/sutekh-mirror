@@ -4,8 +4,10 @@
 # GPL - see COPYING for details
 """Plugin to wrap zipfile backup and restore methods"""
 
-import gtk
 import os
+
+import gtk
+
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_warning, do_exception_complaint
 from ..SutekhFileWidget import ZipFileDialog

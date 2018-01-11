@@ -6,13 +6,13 @@
 
 """classes needed for the progress dialog"""
 
-import gtk
 # pylint: disable=W0402
 # we need data from the string module
 import string
 # pylint: enable=W0402
 from logging import Handler
 
+import gtk
 
 class SutekhLogHandler(Handler, object):
     """Base class for loggers to talk to the dialog"""

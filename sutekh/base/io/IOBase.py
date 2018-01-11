@@ -7,10 +7,6 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
-from sqlobject import sqlhub
-
-from ..Utility import pretty_xml, norm_xml_quotes
-from ..core.DBUtility import flush_cache
 from xml.etree.ElementTree import parse, tostring
 # pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
@@ -18,13 +14,14 @@ try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
-
 # pylint: enable=E0611, F0401
 
+from sqlobject import sqlhub
 
-# pylint: disable=R0921, R0922
-# These may be referenced elsewhere, and mainly exist as interface
-# documentation, rather than genuine base classes
+from ..Utility import pretty_xml, norm_xml_quotes
+from ..core.DBUtility import flush_cache
+
+
 class CardSetParser(object):
     """Parent class for card set parsers.
 

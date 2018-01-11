@@ -16,11 +16,13 @@
 # BaseObjects. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
+from logging import Logger
+
 # pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 # pylint: enable=E0611
-from logging import Logger
+
 from .BaseObjects import (PhysicalCard, AbstractCard,
                           PhysicalCardSet, Expansion,
                           Rarity, RarityPair, CardType,
@@ -133,7 +135,8 @@ class BaseDBUpgradeManager(object):
 
     def _copy_old_lookup_hints(self, oOrigConn, oTrans, oVer):
         """Copy rarity table, upgrading versions as needed"""
-        if oVer.check_tables_and_versions([LookupHints], [LookupHints.tableversion],
+        if oVer.check_tables_and_versions([LookupHints],
+                                          [LookupHints.tableversion],
                                           oOrigConn):
             self._copy_lookup_hints(oOrigConn, oTrans)
         else:
