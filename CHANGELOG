@@ -1,3 +1,14 @@
+11 Jan 2018
+ * Add a lookup hints table for handling misnamed cards more easily
+   - Add the required auto-upgrade logical to the database
+   - Rework the CardName adapter to try lookup names in this table
+   - Add parser to read the lookup data from a CSV file
+ * Restructure the code around reading new card lists to be easier to
+   extend
+ * Add support for reloading the card list from a zip file, rather than
+   just individual files.
+ * Reworked parser routines to handle error conditions more consistently
+
 19 Oct 2017
  * Add count of trifle masters to TWDA format, ARDB text format and the
    VEKN forum format.
