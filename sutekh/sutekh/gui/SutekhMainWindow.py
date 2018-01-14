@@ -6,20 +6,32 @@
 
 """Main window for Sutekh."""
 
-import gtk
 import logging
 import datetime
 import zipfile
 from StringIO import StringIO
+
+import gtk
+
 from sqlobject import SQLObjectNotFound
+
+from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.DBUtility import flush_cache
+
+from sutekh.base.io.UrlOps import urlopen_with_timeout, HashError
+from sutekh.base.io.BaseZipFileWrapper import ZipEntryProxy
+
+from sutekh.base.gui.AppMainWindow import AppMainWindow
+from sutekh.base.gui.GuiDataPack import gui_error_handler
+from sutekh.base.gui.SutekhDialog import do_complaint, do_complaint_error
+from sutekh.base.gui.UpdateDialog import UpdateDialog
+
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
+
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 from sutekh.io.WwUrls import WW_CARDLIST_DATAPACK
 from sutekh.io.DataPack import find_all_data_packs
-from sutekh.base.io.UrlOps import urlopen_with_timeout, HashError
-from sutekh.base.io.BaseZipFileWrapper import ZipEntryProxy
-from sutekh.base.core.BaseObjects import IAbstractCard
-from sutekh.base.core.DBUtility import flush_cache
+
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.PluginManager import PluginManager
@@ -27,10 +39,6 @@ from sutekh.gui.GuiDBManagement import GuiDBManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.base.gui.SutekhDialog import do_complaint, do_complaint_error
-from sutekh.base.gui.AppMainWindow import AppMainWindow
-from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
-from sutekh.base.gui.UpdateDialog import UpdateDialog
 
 
 class SutekhMainWindow(AppMainWindow):
@@ -140,32 +148,4 @@ class SutekhMainWindow(AppMainWindow):
             oDlg.destroy()
             if iResponse != gtk.RESPONSE_OK:
                 return
-            # Get the datapack and unzip the files
-            oFile = urlopen_with_timeout(aUrls[0],
-                                         fErrorHandler=gui_error_handler)
-            try:
-                sData = progress_fetch_data(oFile, sHash=aHashes[0],
-                                            sDesc="Downloading datapack")
-            except HashError:
-                do_complaint_error("Checksum failed for cardlist.\n"
-                                   "Aborting update")
-                return
-            # Extract the individual files from the datapack
-            oZipFile = zipfile.ZipFile(StringIO(sData), 'r')
-            aNames = oZipFile.namelist()
-            aFiles = []
-            # Order required for GuiDBManagement
-            for sName in ['cardlist.txt', 'extra_list.txt',
-                          'expansiondates.csv', 'rulings.html']:
-                if sName not in aNames:
-                    do_complaint_error("Datapack is missing %s" % sName)
-                    return
-                oFile = ZipEntryProxy(oZipFile.read(sName))
-                if sName == 'extra_list.txt':
-                    aFiles.append(oFile)
-                else:
-                    aFiles.append([oFile])
-            # We set the updated date to the value from the datapack, rather
-            # than the current time, to protect against local clock issues
-            # making things wierd.
-            self.do_refresh_card_list(oCLDate, aFiles)
+            self.do_refresh_from_zip_url(oCLDate, aUrls[0], aHashes[0])

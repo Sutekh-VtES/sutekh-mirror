@@ -29,6 +29,7 @@ from .MessageBus import MessageBus, DATABASE_MSG
 from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import do_complaint_error_details, do_exception_complaint
 from .UpdateDialog import UpdateDialog
+from .DataFilesDialog import Result
 
 
 class AppMainWindow(MultiPaneWindow):
@@ -71,12 +72,21 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses will implement this
         raise NotImplementedError
 
-    def do_refresh_card_list(self, oUpdateDate=None, aFiles=None):
+    def do_refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Handle reloading the card list via the database manager object."""
         # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
-        oDBManager.refresh_card_list(oUpdateDate, aFiles)
+        oDBManager.refresh_card_list(oUpdateDate, dFiles)
+
+    def do_refresh_from_zip_url(self, oUpdateDate, sUrl, sHash=None):
+        """Refresh the card list from the given zip file url"""
+        # pylint: disable=E1102
+        # subclasses will provide a callable cDBManager
+        oDBManager = self._cDBManager(self)
+        oZipDetails = Result(sName=sUrl, bIsUrl=True)
+        dFiles = oDBManager.read_zip_file(oZipDetails, sHash)
+        oDBManager.refresh_card_list(oUpdateDate, dFiles)
 
     # pylint: disable=W0201
     # We define attributes here, since this is called after database checks
