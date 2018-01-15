@@ -77,7 +77,7 @@ class AppMainWindow(MultiPaneWindow):
         # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
-        oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        return oDBManager.refresh_card_list(oUpdateDate, dFiles)
 
     def do_refresh_from_zip_url(self, oUpdateDate, sUrl, sHash=None):
         """Refresh the card list from the given zip file url"""
@@ -86,7 +86,7 @@ class AppMainWindow(MultiPaneWindow):
         oDBManager = self._cDBManager(self)
         oZipDetails = Result(sName=sUrl, bIsUrl=True)
         dFiles = oDBManager.read_zip_file(oZipDetails, sHash)
-        oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        return oDBManager.refresh_card_list(oUpdateDate, dFiles)
 
     # pylint: disable=W0201
     # We define attributes here, since this is called after database checks

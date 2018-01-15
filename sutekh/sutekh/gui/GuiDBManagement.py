@@ -99,10 +99,10 @@ class GuiDBManager(BaseGuiDBManager):
     def initialize_db(self, oConfig):
         """Setup zip file url before calling the base class method"""
         self._get_zip_url()
-        super(GuiDBManager, self).initialize_db(oConfig)
+        return super(GuiDBManager, self).initialize_db(oConfig)
 
     def refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Setup zip file before calling the base class method"""
         if not dFiles:
             self._get_zip_url()
-        super(GuiDBManager, self).refresh_card_list(oUpdateDate, dFiles)
+        return super(GuiDBManager, self).refresh_card_list(oUpdateDate, dFiles)
