@@ -9,6 +9,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 from itertools import chain
 
 from .MainToolbar import MainToolbar
@@ -41,6 +42,9 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = None
 
         self._oBusyCursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
+
+        # Flag to block calling reloads during a refresh process
+        self._bBlockReload = False
 
     def _setup_vbox(self):
         """Setup the intial vbox and connect the key_press event"""
@@ -76,8 +80,26 @@ class MultiPaneWindow(gtk.Window):
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.reload()
 
+    def _block_reload(self):
+        """Prevent queued reloads triggering do to scheduling wierdness"""
+        self._bBlockReload = True
+
+    def _unblock_reload(self):
+        """Re-enable reload behaviour"""
+        self._bBlockReload = False
+
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
+        if self._bBlockReload:
+            # We can't reload right now, so punt this down the road a bit
+            # We schedule a bit further in the future than the BasicFrame 
+            # initial queue, since we know we're already busy with stuff.
+            #
+            # This workaround avoids triggering "database locked" erros
+            # when updating sqlite DBs on some systems, but it's a good
+            # idea to avoid reloading during a update on any system.
+            gobject.timeout_add(100, self.do_all_queued_reloads)
+            return
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.do_queued_reload()
 

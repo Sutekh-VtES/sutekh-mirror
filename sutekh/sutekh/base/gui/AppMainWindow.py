@@ -76,8 +76,11 @@ class AppMainWindow(MultiPaneWindow):
         """Handle reloading the card list via the database manager object."""
         # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
+        self._block_reload()
         oDBManager = self._cDBManager(self)
-        return oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        bRet = oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        self._unblock_reload()
+        return bRet
 
     def do_refresh_from_zip_url(self, oUpdateDate, sUrl, sHash=None):
         """Refresh the card list from the given zip file url"""
