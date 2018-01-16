@@ -8,8 +8,9 @@
 """Given a list of Abstract Cards in a set, write a XML file compatable with
    the Anarch Revolt Deck Builder's XML inventory format."""
 
-from sutekh.io.WriteArdbXML import WriteArdbXML
 from xml.etree.ElementTree import Element, SubElement
+
+from sutekh.io.WriteArdbXML import WriteArdbXML
 
 
 class WriteArdbInvXML(WriteArdbXML):

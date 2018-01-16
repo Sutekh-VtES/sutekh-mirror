@@ -160,7 +160,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
                                        'download missing images from '
                                        'sutekh.vtes.za.net.\nDo you wish to '
                                        'enable this (you will not be prompted '
-                                       'again)?' )
+                                       'again)?')
             self.vbox.pack_start(self.oDescLabel, False, False)
             self.vbox.pack_start(self.oDownload, False, False)
             self.set_size_request(400, 200)

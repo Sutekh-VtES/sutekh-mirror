@@ -13,9 +13,10 @@ import tempfile
 import os
 import sys
 import StringIO
+from logging import FileHandler
+
 import gtk
 from nose import SkipTest
-from logging import FileHandler
 
 from ..core.BaseObjects import (IAbstractCard, IPhysicalCard,
                                 IExpansion)

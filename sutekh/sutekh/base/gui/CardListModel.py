@@ -6,9 +6,11 @@
 
 """The gtk.TreeModel for the card lists."""
 
+import logging
+
 import gtk
 import gobject
-import logging
+
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter, CachedFilter,
                                 make_illegal_filter)
@@ -16,8 +18,8 @@ from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseObjects import (IAbstractCard,
                                 PhysicalCard, IPhysicalCard,
                                 IExpansionName, ExpansionNameAdapter)
-from ..Utility import move_articles_to_back
 from ..core.FilterParser import FilterParser
+from ..Utility import move_articles_to_back
 from .BaseConfigFile import FULL_CARDLIST
 from .SutekhDialog import do_exception_complaint
 from .MessageBus import MessageBus, CONFIG_MSG

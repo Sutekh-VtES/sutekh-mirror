@@ -8,8 +8,16 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
+import unittest
+
 from sutekh.base.tests.TestUtils import make_card
+from sutekh.base.core.DBSignals import send_changed_signal
+from sutekh.base.core import BaseFilters
+from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
+                                            ExpansionGrouping,
+                                            RarityGrouping, NullGrouping)
+from sutekh.base.core.BaseObjects import (PhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
 from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               EXTRA_LEVEL_OPTION,
@@ -27,19 +35,13 @@ from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               MINUS_SETS_IN_USE, CHILD_CARDS,
                                               IGNORE_PARENT, PARENT_COUNT,
                                               MINUS_THIS_SET, THIS_SET_ONLY)
-from sutekh.base.core import BaseFilters
+# Needed to reduce speed impact of Grouping tests
+from sutekh.base.gui.MessageBus import MessageBus
+
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.Groupings import (CryptLibraryGrouping,
                                    DisciplineGrouping, ClanGrouping)
-from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
-                                            ExpansionGrouping,
-                                            RarityGrouping, NullGrouping)
-from sutekh.base.core.BaseObjects import (PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
-# Needed to reduce speed impact of Grouping tests
-from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.base.core.DBSignals import send_changed_signal
-from sutekh.base.gui.MessageBus import MessageBus
-import unittest
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 
 class CardSetListener(object):

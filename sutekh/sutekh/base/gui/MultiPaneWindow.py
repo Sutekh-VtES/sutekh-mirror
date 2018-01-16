@@ -7,6 +7,8 @@
 """Multi-pane window."""
 
 import pygtk
+# pylint: disable=wrong-import-position
+# This needs to be before we import gtk
 pygtk.require('2.0')
 import gtk
 import gobject
@@ -14,6 +16,7 @@ from itertools import chain
 
 from .MainToolbar import MainToolbar
 from .BasicFrame import BasicFrame
+# pylint: enable=wrong-import-position
 
 
 class MultiPaneWindow(gtk.Window):
@@ -92,7 +95,7 @@ class MultiPaneWindow(gtk.Window):
         """Do any deferred reloads from the database signal handlers."""
         if self._bBlockReload:
             # We can't reload right now, so punt this down the road a bit
-            # We schedule a bit further in the future than the BasicFrame 
+            # We schedule a bit further in the future than the BasicFrame
             # initial queue, since we know we're already busy with stuff.
             #
             # This workaround avoids triggering "database locked" erros

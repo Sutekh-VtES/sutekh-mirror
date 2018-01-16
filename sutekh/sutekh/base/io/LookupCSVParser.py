@@ -9,9 +9,7 @@
    Domain,Lookup Name,Desired Name."""
 
 import csv
-import datetime
 from logging import Logger
-from sqlobject import SQLObjectNotFound
 
 from ..core.BaseObjects import LookupHints
 
@@ -40,4 +38,4 @@ class LookupCSVParser(object):
             # pylint: disable=E1101
             # E1101 - avoid SQLObject method not detected problems
             oLookup.syncUpdate()
-            self.oLogger.info('Added Lookup : (%s, %s)' % (sDomain, sLookup))
+            self.oLogger.info('Added Lookup : (%s, %s)', sDomain, sLookup)

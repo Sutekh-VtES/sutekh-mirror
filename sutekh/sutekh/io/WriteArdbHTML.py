@@ -6,12 +6,14 @@
 """Export a card set to HTML."""
 
 import time
+from xml.etree.ElementTree import Element, SubElement, tostring
+
 from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.Utility import pretty_xml, norm_xml_quotes
+
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import monger_url, secret_library_url
-from sutekh.base.Utility import pretty_xml, norm_xml_quotes
-from xml.etree.ElementTree import Element, SubElement, tostring
 
 # Style used by the HTML file
 HTML_STYLE = """

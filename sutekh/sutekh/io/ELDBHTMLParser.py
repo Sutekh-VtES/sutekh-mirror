@@ -21,9 +21,10 @@
    """
 # pylint: enable=C0301
 
+import re
+
 from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
                                                  HolderState)
-import re
 
 
 # State Classes

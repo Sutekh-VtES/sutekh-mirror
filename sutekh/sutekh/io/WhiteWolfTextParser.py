@@ -8,8 +8,10 @@
 """Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
-from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
+
+from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
+
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
@@ -147,7 +149,7 @@ class CardDict(dict):
         'infernal': re.compile(r'[.:] Infernal\.'),
         'red list': re.compile(r'\. Red List:'),
         'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|'
-                              'Independent anarch[:\.]|Independent anarch Baron'),
+            r'Independent anarch[:\.]|Independent anarch Baron'),
         'scarce': re.compile(r'[.:] Scarce.'),
         'sterile': re.compile(r'[.:] Sterile.'),
         # Need the } to handle some of the errata'd cards

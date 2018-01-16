@@ -9,16 +9,19 @@
 
 """Routines for manipulating XML Files"""
 
+import os
+
+from sqlobject import SQLObjectNotFound
+
+from sutekh.base.Utility import gen_temp_file, safe_filename
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder, CardSetWrapper
 from sutekh.base.core.CardLookup import DEFAULT_LOOKUP
-from sutekh.base.Utility import gen_temp_file, safe_filename
+
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sqlobject import SQLObjectNotFound
-import os
 
 
 def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):

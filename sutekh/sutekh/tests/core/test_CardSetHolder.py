@@ -5,13 +5,15 @@
 
 """Test cases for the CardSetHolder functions, and some CardLookup stuff"""
 
-from sutekh.tests.TestCore import SutekhTest
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
 from sutekh.base.core.BaseObjects import (IPhysicalCardSet, IExpansion,
                                           MapPhysicalCardToPhysicalCardSet,
                                           IAbstractCard)
 from sutekh.base.core import BaseFilters
-import unittest
+
+from sutekh.tests.TestCore import SutekhTest
 
 
 class CardSetHolderTests(SutekhTest):

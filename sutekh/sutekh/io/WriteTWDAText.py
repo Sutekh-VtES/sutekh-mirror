@@ -48,7 +48,7 @@ class WriteTWDAText(ArdbInfo):
         return ("Deck Name: %s\n"
                 "Author: %s\n"
                 "Description:\n%s\n" % (oHolder.name, oHolder.author,
-                                         oHolder.comment))
+                                        oHolder.comment))
     # pylint: enable=R0201
 
     def _crypt_sort_key(self, tItem):
@@ -79,7 +79,7 @@ class WriteTWDAText(ArdbInfo):
                                              key=self._crypt_sort_key):
             dLine = self._format_crypt_line(oCard, iCount)
             if 'Imbued' in dLine['clan']:
-                dLine['clan'].replace(' (Imbued)','')
+                dLine['clan'].replace(' (Imbued)', '')
             dLine['disc'] = self._gen_disciplines(oCard)
             # Standardise missing disciplines
             if not dLine['disc']:

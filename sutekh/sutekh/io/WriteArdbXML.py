@@ -8,11 +8,12 @@
 """Given a list of Abstract Cards in a set, write a XML file compatable with
    the Anarch Revolt Deck Builder."""
 
+import time
+from xml.etree.ElementTree import Element, SubElement
+
 from sutekh.base.Utility import move_articles_to_back
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.base.io.IOBase import BaseXMLWriter
-import time
-from xml.etree.ElementTree import Element, SubElement
 
 
 class WriteArdbXML(ArdbInfo, BaseXMLWriter):

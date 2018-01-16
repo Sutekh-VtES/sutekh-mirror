@@ -5,15 +5,18 @@
 
 """Test parts of the filter editor dialog"""
 
-from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
+
 import gtk
+
 from sutekh.base.core.FilterParser import FilterParser
+from sutekh.base.core.BaseObjects import AbstractCard
 from sutekh.base.gui.FilterModelPanes import (FilterModelPanes,
                                               FilterEditorToolbar, ENTER_KEYS)
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.CardSetsListView import CardSetsListView
-from sutekh.base.core.BaseObjects import AbstractCard
+
+from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
 
 class DummyDialog(gtk.Dialog):

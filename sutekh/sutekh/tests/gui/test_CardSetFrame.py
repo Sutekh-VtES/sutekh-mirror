@@ -5,14 +5,17 @@
 
 """Test parts of the card set controller-view-model interactions"""
 
-from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 import unittest
+
 import gtk
+
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCard,
                                           IAbstractCard)
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.gui.BaseConfigFile import CARDSET
 from sutekh.base.gui.CardSetListModel import EXTRA_LEVEL_OPTION
+
+from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
 
 class TestCardSetFrame(GuiSutekhTest):
