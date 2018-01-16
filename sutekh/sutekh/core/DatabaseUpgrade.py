@@ -327,7 +327,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                           value=oObj.name,
                                           connection=oTrans)
         else:
-            return super(self, BaseDBUpgradeManager)._upgrade_lookup_hints(
+            return super(DBUpgradeManager, self)._upgrade_lookup_hints(
                     oOrigConn, oTrans, oVer)
         return (True, aMessages)
 
