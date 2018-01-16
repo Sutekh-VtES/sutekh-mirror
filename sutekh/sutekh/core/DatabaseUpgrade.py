@@ -23,7 +23,8 @@ from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
 # pylint: enable=E0611
 from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
                                           PhysicalCardSet, Expansion,
-                                          RarityPair,
+                                          RarityPair, LookupHints,
+                                          Rarity, CardType,
                                           MAX_ID_LENGTH)
 from sutekh.core.SutekhObjects import (SutekhAbstractCard, Clan, Virtue,
                                        Discipline, Creed, DisciplinePair,
@@ -288,6 +289,48 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         else:
             return (False, ["Unknown Expansion Version"])
         return (True, aMessages)
+
+    def _upgrade_lookup_hints(self, oOrigConn, oTrans, oVer):
+        """Create lookup hints table in the case of v3 Expansion data"""
+        aMessages = []
+        if (oVer.check_tables_and_versions([Expansion], [3], oOrigConn) and
+                oVer.check_tables_and_versions([LookupHints], [-1], oOrigConn)):
+            aMessages = ["Incomplete information to fill the LookupHints"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+            # Rarity
+            for oObj in Rarity.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="Rarities",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+                if oObj.name != oObj.shortname:
+                    _oEntry = LookupHints(domain="Rarities",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
+                                          connection=oTrans)
+            # CardType
+            for oObj in CardType.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="CardTypes",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+            # Expansion
+            for oObj in Expansion_v3.select(connection=oOrigConn):
+                _oEntry = LookupHints(domain="Expansions",
+                                      lookup=oObj.name,
+                                      value=oObj.name,
+                                      connection=oTrans)
+                if oObj.name != oObj.shortname:
+                    _oEntry = LookupHints(domain="Expansions",
+                                          lookup=oObj.shortname,
+                                          value=oObj.name,
+                                          connection=oTrans)
+        else:
+            return super(self, BaseDBUpgradeManager)._upgrade_lookup_hints(
+                    oOrigConn, oTrans, oVer)
+        return (True, aMessages)
+
 
     def _copy_discipline(self, oOrigConn, oTrans):
         """Copy Discipline, assuming versions match"""
