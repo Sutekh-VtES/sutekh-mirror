@@ -11,6 +11,8 @@ import socket
 from itertools import chain
 
 import pygtk
+# pylint: disable=wrong-import-position
+# This check needs to be before we import gtk
 pygtk.require('2.0')
 import gtk
 # pylint: disable=E0611
@@ -18,7 +20,8 @@ import gtk
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable=E0611
 
-from ..core.BaseObjects import PhysicalCardSet, PhysicalCard
+from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, VersionTable
+from ..core.DatabaseVersion import DatabaseVersion
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
 from .CardSetFrame import CardSetFrame
@@ -30,6 +33,7 @@ from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import do_complaint_error_details, do_exception_complaint
 from .UpdateDialog import UpdateDialog
 from .DataFilesDialog import Result
+# pylint: enable=wrong-import-position
 
 
 class AppMainWindow(MultiPaneWindow):
@@ -71,6 +75,33 @@ class AppMainWindow(MultiPaneWindow):
         """Verify that the database is correctly populated"""
         # Subclasses will implement this
         raise NotImplementedError
+
+    def do_db_checks(self, oConn, oConfig, bIgnoreVersionCheck=False):
+        """Test basic database sanity and version status"""
+        # Test on some tables where we specify the table name
+        # pylint: disable=E1102
+        # subclasses will provide a callable cDBManager
+        oDBManager = self._cDBManager(self)
+        if not oConn.tableExists('abstract_card') or \
+                not oConn.tableExists('physical_map'):
+            if not oDBManager.initialize_db(oConfig):
+                return False
+
+        aTables = [VersionTable] + oDBManager.aTables
+        aVersions = []
+
+        for oTable in aTables:
+            aVersions.append(oTable.tableversion)
+
+        oVer = DatabaseVersion()
+
+        if not oVer.check_tables_and_versions(aTables, aVersions) and \
+                not bIgnoreVersionCheck:
+            aLowerTables, aHigherTables = oVer.get_bad_tables(aTables,
+                                                              aVersions)
+            if not oDBManager.do_db_upgrade(aLowerTables, aHigherTables):
+                return False
+        return True
 
     def do_refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Handle reloading the card list via the database manager object."""
@@ -319,8 +350,6 @@ class AppMainWindow(MultiPaneWindow):
                                        bStartEditable=False):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
-            # pylint: disable=W0704
-            # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName, bStartEditable,
                                      self._cPCSWriter)

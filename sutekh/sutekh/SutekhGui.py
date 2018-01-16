@@ -9,22 +9,25 @@ import logging
 import sys
 import optparse
 import os
+
+from sqlobject import sqlhub, connectionForURI
+
+# pylint: disable=wrong-import-position
 # This is annoying, but needs to be set to before gtk is imported to
 # work with Ubuntu's later unity-gtk2-module approach to moving
 # menus around
 os.environ["UBUNTU_MENUPROXY"] = "0"
-from sqlobject import sqlhub, connectionForURI
-from sutekh.base.core.BaseObjects import VersionTable
-from sutekh.core.SutekhObjects import TABLE_LIST
+
 from sutekh.base.Utility import (prefs_dir, ensure_dir_exists, sqlite_uri,
                                  setup_logging)
-from sutekh.gui.SutekhMainWindow import SutekhMainWindow
-from sutekh.base.core.DatabaseVersion import DatabaseVersion
-from sutekh.gui.ConfigFile import ConfigFile
-from sutekh.gui.GuiDBManagement import GuiDBManager
 from sutekh.base.gui.SutekhDialog import exception_handler
 from sutekh.base.gui.GuiUtils import prepare_gui, load_config, save_config
+
 from sutekh.SutekhInfo import SutekhInfo
+
+from sutekh.gui.SutekhMainWindow import SutekhMainWindow
+from sutekh.gui.ConfigFile import ConfigFile
+# pylint: enable=wrong-import-position
 
 
 def parse_options(aArgs):
@@ -104,27 +107,8 @@ def main():
     # construct Window
     oMainWindow = SutekhMainWindow()
 
-    # Test on some tables where we specify the table name
-    if not oConn.tableExists('abstract_card') or \
-            not oConn.tableExists('physical_map'):
-        oDBManager = GuiDBManager(oMainWindow)
-        if not oDBManager.initialize_db(oConfig):
-            return 1
-
-    aTables = [VersionTable] + TABLE_LIST
-    aVersions = []
-
-    for oTable in aTables:
-        aVersions.append(oTable.tableversion)
-
-    oVer = DatabaseVersion()
-
-    if not oVer.check_tables_and_versions(aTables, aVersions) and \
-            not oOpts.ignore_db_version:
-        aLowerTables, aHigherTables = oVer.get_bad_tables(aTables, aVersions)
-        oDBManager = GuiDBManager(oMainWindow)
-        if not oDBManager.do_db_upgrade(aLowerTables, aHigherTables):
-            return 1
+    if not oMainWindow.do_db_checks(oConn, oConfig, oOpts.ignore_db_version):
+        return 1
 
     _oRootLogger = setup_logging(oOpts.verbose, oOpts.sErrFile)
 
