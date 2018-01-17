@@ -116,7 +116,7 @@ class BaseGuiDBManager(object):
                 sData = progress_fetch_data(oFile, sHash=sHash,
                                             sDesc="Downloading zipfile")
             except HashError:
-                do_complaint_error("Checksum failed for zipfile.\n",
+                do_complaint_error("Checksum failed for zipfile.\n"
                                    "Aborting")
                 return None
         else:
