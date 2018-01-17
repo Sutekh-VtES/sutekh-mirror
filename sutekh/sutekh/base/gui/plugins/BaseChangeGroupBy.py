@@ -68,8 +68,6 @@ class BaseGroupBy(BasePlugin):
         cls.dPerPaneConfig[cls.GROUP_BY] = ('option(%s, default="Card Type")' %
                                             sOptions)
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(BaseGroupBy, self).__init__(*aArgs, **kwargs)
         self._oFirstBut = None  # placeholder for the radio group

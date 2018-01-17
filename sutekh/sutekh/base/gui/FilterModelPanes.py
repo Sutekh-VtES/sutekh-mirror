@@ -6,16 +6,17 @@
 
 """Handle the panes for the filter editor"""
 
+import gobject
+import gtk
+import pango
+
+from ..core.FilterParser import get_filters_for_type
+from ..core.FilterBox import (FilterBoxItem, FilterBoxModel,
+                              BOXTYPE, BOXTYPE_ORDER)
 from .AutoScrolledWindow import AutoScrolledWindow
 from .ScrolledList import ScrolledList
 from .CustomDragIconView import CustomDragIconView
 from .CardSetsListView import CardSetsListView
-from ..core.FilterParser import get_filters_for_type
-from ..core.FilterBox import (FilterBoxItem, FilterBoxModel,
-                              BOXTYPE, BOXTYPE_ORDER)
-import gobject
-import gtk
-import pango
 
 DRAG_TARGETS = [('STRING', gtk.TARGET_SAME_APP, 0),
                 ('text/plain', gtk.TARGET_SAME_APP, 0)]

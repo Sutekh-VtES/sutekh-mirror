@@ -98,8 +98,6 @@ class RandomPromoSelector(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(RandomPromoSelector, self).__init__(*args, **kwargs)
 

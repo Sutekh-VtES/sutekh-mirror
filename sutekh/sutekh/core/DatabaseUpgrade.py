@@ -294,7 +294,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         """Create lookup hints table in the case of v3 Expansion data"""
         aMessages = []
         if (oVer.check_tables_and_versions([Expansion], [3], oOrigConn) and
-                oVer.check_tables_and_versions([LookupHints], [-1], oOrigConn)):
+                oVer.check_tables_and_versions([LookupHints],
+                                                [-1], oOrigConn)):
             aMessages = ["Incomplete information to fill the LookupHints"
                          " table. You will need to reimport the cardlist"
                          " information."]
@@ -328,9 +329,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                           connection=oTrans)
         else:
             return super(DBUpgradeManager, self)._upgrade_lookup_hints(
-                    oOrigConn, oTrans, oVer)
+                oOrigConn, oTrans, oVer)
         return (True, aMessages)
-
 
     def _copy_discipline(self, oOrigConn, oTrans):
         """Copy Discipline, assuming versions match"""
@@ -477,8 +477,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _make_abs_card(self, oOldCard, oTrans):
         """Copy SutekhAbstractCard, assuming versions match"""
-        # pylint: disable=E1101, R0912
-        # E1101 - SQLObject confuses pylint
+        # pylint: disable=R0912
         # R0912 - need the branches for this
         oCardCopy = SutekhAbstractCard(
             id=oOldCard.id, canonicalName=oOldCard.canonicalName,
@@ -508,8 +507,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
-        # pylint: disable=E1101, R0912, R0915
-        # E1101 - SQLObject confuses pylint
+        # pylint: disable=R0912, R0915
         # R0912 - need the branches for this
         # R0915 - This is long, but needs to be to handle all the cases
         # Postgres 9's default ordering may not be by id, which causes issues
@@ -646,8 +644,6 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
-        # pylint: disable=E1101, E1103
-        # SQLObject confuses pylint
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
                                           [6, PhysicalCard.tableversion],

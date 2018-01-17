@@ -166,8 +166,6 @@ class StarterInfoPlugin(SutekhPlugin):
     oStarterRegex = re.compile(r'^\[(.*)\] (.*) Starter')
     oDemoRegex = re.compile(r'^\[(.*)\] (.*) Demo Deck')
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(StarterInfoPlugin, self).__init__(*args, **kwargs)
         self.oToggle = None

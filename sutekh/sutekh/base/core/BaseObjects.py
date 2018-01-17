@@ -33,7 +33,9 @@ from .CachedRelatedJoin import CachedRelatedJoin
 def fail_adapt(oUnknown, sCls):
     """Generic failed to adapt handler"""
     raise NotImplementedError("Can't adapt %r to %s" % (oUnknown, sCls))
-    # This to work around pylint's return checked
+    # pylint: disable=unreachable
+    # We know this is unreachable, but this is to work around
+    # pylint's return checker for the base adapters
     return oUnknown
 
 
@@ -42,6 +44,7 @@ def passthrough(oObj):
     return oObj
 
 # Base adapters
+
 
 @singledispatch
 def IAbstractCard(oUnknown):
@@ -392,8 +395,6 @@ class BaseObjectMaker(object):
                 dKw['shortname'] = cAbbreviation.shortname(sObj)
             if bFullname:
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
-            # pylint: disable=W0142
-            # ** magic OK here
             return cObjClass(**dKw)
 
     def make_card_type(self, sType):
@@ -570,6 +571,8 @@ class CardNameLookupAdapter(Adapter):
         for oLookup in LookupHints.select():
             if oLookup.domain == 'CardNames':
                 try:
+                    # pylint: disable=no-member
+                    # SQLObject confuses pylint
                     oCard = AbstractCard.byCanonicalName(
                         oLookup.value.encode('utf8').lower())
                     cls.__dCache[oLookup.lookup] = oCard
@@ -583,6 +586,8 @@ class CardNameLookupAdapter(Adapter):
     def lookup(cls, sName):
         oCard = cls.__dCache.get(sName, None)
         if oCard is None:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             try:
                 oCard = AbstractCard.byCanonicalName(
                     sName.encode('utf8').lower())
@@ -608,6 +613,8 @@ IRuling.register(Ruling, passthrough)
 @IRuling.register(tuple)
 def ruling_from_tuple(tData):
     """Convert a (text, code) tuple to a ruling object."""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     sText, _sCode = tData
     return Ruling.byText(sText.encode('utf8'))
 
@@ -618,6 +625,8 @@ IKeyword.register(Keyword, passthrough)
 @IKeyword.register(basestring)
 def keyword_from_string(sKeyword):
     """Adapter for string -> Keyword"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return Keyword.byKeyword(sKeyword.encode('utf8'))
 
 
@@ -627,6 +636,8 @@ IArtist.register(Keyword, passthrough)
 @IArtist.register(basestring)
 def artist_from_string(sArtistName):
     """Adapter for string -> Artist"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
 
@@ -636,6 +647,8 @@ IPhysicalCardSet.register(PhysicalCardSet, passthrough)
 @IPhysicalCardSet.register(basestring)
 def phys_card_set_from_string(sName):
     """Adapter for string -> PhysicalCardSet"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return PhysicalCardSet.byName(sName.encode('utf8'))
 
 
@@ -739,8 +752,8 @@ class PhysicalCardAdapter(Adapter):
         cls.__dCache = {}
         # pre-populate cache with mappings to commonly used
         # physical card with None expansion.
-        # pylint: disable=E1101
-        # SQLObject confuses pylint
+        # pylint: disable=singleton-comparison
+        # The '== None' is required for constructing the select statement
         try:
             for oPhysicalCard in PhysicalCard.select(
                     PhysicalCard.q.expansion == None):

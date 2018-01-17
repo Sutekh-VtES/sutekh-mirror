@@ -64,8 +64,6 @@ class BaseCardSetParser(BaseCardXMLParser):
         oRoot = self._oTree.getroot()
         oHolder.name = oRoot.attrib['name'][:MAX_ID_LENGTH]
         oHolder.inuse = False
-        # pylint: disable=W0704
-        # exceptions does enough for us
         try:
             oHolder.author = oRoot.attrib['author']
         except KeyError:
@@ -80,7 +78,6 @@ class BaseCardSetParser(BaseCardXMLParser):
                 oHolder.inuse = True
         except KeyError:
             pass
-        # pylint: enable=W0704
 
         if 'parent' in oRoot.attrib:
             oHolder.parent = oRoot.attrib['parent']

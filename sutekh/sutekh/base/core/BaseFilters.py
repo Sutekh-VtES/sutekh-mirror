@@ -13,20 +13,22 @@
 
 """Define all the filters provided in sutekh"""
 
+# pylint: disable=W0402
+# We need string.punctation for best_guess_filter
+import string
+# pylint: enable=W0402
+
+from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
+                       IN as SQLOBJ_IN)
+from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
+                                  SQLTrueClause as TRUE)
+
 from .BaseObjects import (AbstractCard, IAbstractCard, IPhysicalCardSet,
                           IRarityPair, IExpansion, ICardType,
                           IRarity, CardType, Expansion, RarityPair,
                           PhysicalCardSet, PhysicalCard,
                           MapPhysicalCardToPhysicalCardSet,
                           Artist, Keyword, IArtist, IKeyword)
-from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
-                       IN as SQLOBJ_IN)
-from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
-                                  SQLTrueClause as TRUE)
-# pylint: disable=W0402
-# We need string.punctation for best_guess_filter
-import string
-# pylint: enable=W0402
 
 # Compability Patches
 
@@ -130,8 +132,7 @@ class FilterBox(Filter, list):
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
 
-    # pylint: disable=W0142, W0212
-    # W0142 - *magic is needed by SQLObject
+    # pylint: disable=W0212
     # W0212 - we intentinally access protected members
     def _get_expression(self):
         """Combine filters with AND"""
@@ -141,8 +142,7 @@ class FilterAndBox(FilterBox):
 class FilterOrBox(FilterBox):
     """OR a list of filters."""
 
-    # pylint: disable=W0142, W0212
-    # W0142 - *magic is needed by SQLObject
+    # pylint: disable=W0212
     # W0212 - we intentinally access protected members
     def _get_expression(self):
         """Combine filters with OR"""
@@ -711,8 +711,6 @@ class CardSetMultiCardCountFilter(DirectFilter):
         aValues = [str(x) for x in range(0, 31)] + ['>30']
         return (aValues, aCardSets)
 
-    # pylint: disable=W0142
-    # *magic is needed by SQLObject
     def _get_expression(self):
         # We duplicate subselect logic here, rather than letting the database
         # handle it, because mysql handles this case very poorly, resulting in

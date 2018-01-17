@@ -47,8 +47,6 @@ class BaseCardListCount(BasePlugin):
     TOT_FORMAT = ''
     TOT_TOOLTIP = ''
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseCardListCount, self).__init__(*args, **kwargs)
 
@@ -65,7 +63,6 @@ class BaseCardListCount(BasePlugin):
         if self._check_versions() and self._check_model_type():
             MessageBus.subscribe(self.model, 'load', self.load)
         self.perpane_config_updated()
-    # pylint: enable=W0142
 
     def cleanup(self):
         """Remove the listener"""

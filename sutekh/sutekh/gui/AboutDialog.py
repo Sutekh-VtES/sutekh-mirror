@@ -16,8 +16,6 @@ import gtk
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)
 

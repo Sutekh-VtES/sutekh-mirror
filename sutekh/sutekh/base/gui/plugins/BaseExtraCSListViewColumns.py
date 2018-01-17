@@ -56,8 +56,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     dCardSetListConfig = {}
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExtraCSListViewColumns, self).__init__(*args, **kwargs)
 
@@ -66,7 +64,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
             listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
             listen_changed(self.card_changed, PhysicalCardSet)
-    # pylint: enable=W0142
 
     def cleanup(self):
         """Disconnect the database listeners"""

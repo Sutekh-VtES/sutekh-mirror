@@ -407,8 +407,6 @@ class MergedVampirePlugin(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = ("MainWindow",)
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(MergedVampirePlugin, self).__init__(*args, **kwargs)
         self._oMerged = make_markup_button(

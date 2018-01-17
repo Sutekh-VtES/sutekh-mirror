@@ -655,8 +655,6 @@ class BaseImagePlugin(BasePlugin):
     _sMenuFlag = BaseImageFrame.sMenuFlag
     _cImageFrame = BaseImageFrame
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseImagePlugin, self).__init__(*args, **kwargs)
         self.oImageFrame = None

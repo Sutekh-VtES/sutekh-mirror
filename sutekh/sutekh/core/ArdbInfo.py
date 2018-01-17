@@ -49,8 +49,6 @@ class ArdbInfo(object):
 
     def _get_cards(self, oCardIter):
         """Create the dictionary of cards given the list of cards"""
-        # pylint: disable=E1101
-        # SQLObject methods confuse pylint
         dDict = {}
         for oCard in oCardIter:
             oPhysCard = IPhysicalCard(oCard)
@@ -207,8 +205,6 @@ class ArdbInfo(object):
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
-        # pylint: disable=E1101
-        # IAbstractCard confuses pylint
         if oPhysCard.expansion:
             oExpansion = oPhysCard.expansion
         else:

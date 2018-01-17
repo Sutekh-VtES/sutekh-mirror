@@ -50,9 +50,6 @@ class ImportExportBase(SutekhDialog):
                     aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
 
-        # pylint: disable=E1101
-        # pylint doesn't pick up vbox methods correctly
-
         self.vbox.set_spacing(10)
 
         oDescLabel = gtk.Label()
@@ -474,8 +471,6 @@ class SecretLibrary(SutekhPlugin):
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:
-            # pylint: disable=E1101
-            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):
                 continue
@@ -489,8 +484,6 @@ class SecretLibrary(SutekhPlugin):
         oLibraryIter = self.model.get_card_iterator(oLibraryFilter)
 
         for oCard in oLibraryIter:
-            # pylint: disable=E1101
-            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):
                 continue

@@ -95,8 +95,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
            calls callback(length, *args) when the length is first computed
            or changes
            """
-        # pylint: disable=W0142
-        # *magic required here
         if sValue.endswith('%'):
             fFrac = float(sValue[:-1]) / 100
             if bFontRelative:
@@ -300,8 +298,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Insert text into the TextBuffer"""
         aTags = self._get_style_tags()
         if aTags:
-            # pylint: disable=W0142
-            # * magic required
             self._oTextBuf.insert_with_tags(self._oIter, sText, *aTags)
         else:
             self._oTextBuf.insert(self._oIter, sText)
@@ -329,8 +325,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
                                fFrac, fCallback, args):
         """call the required callback function when the size allocation
            changes."""
-        # pylint: disable=W0142
-        # *magic required here
         fCallback(oAllocation.width * fFrac, *args)
 
     # pylint: enable=R0913

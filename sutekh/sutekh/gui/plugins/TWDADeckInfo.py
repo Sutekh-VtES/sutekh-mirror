@@ -167,8 +167,6 @@ class TWDAInfoPlugin(SutekhPlugin):
                    examine the opened card sets closely without closing
                    the search results."""
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(TWDAInfoPlugin, self).__init__(*args, **kwargs)
         self.oAllTWDA = None

@@ -186,8 +186,6 @@ class BaseZipFileWrapper(object):
             oHolder = CachedCardSetHolder()
             parse_string(oParser, oData, oHolder)
             if bReparent:
-                # pylint: disable=E1103
-                # SQLObject confuses pylint
                 oHolder.parent = 'My Collection'
             oHolder.create_pcs(oCardLookup, dLookupCache)
             self._aWarnings.extend(oHolder.get_warnings())

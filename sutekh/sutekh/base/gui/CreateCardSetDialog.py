@@ -143,8 +143,6 @@ class CreateCardSetDialog(SutekhDialog):
                 self.sName = self.sName.replace(">", ")")
                 if self.sName != self.sOrigName:
                     # check if card set exists
-                    # pylint: disable=W0704
-                    # doing nothing is correct here
                     try:
                         IPhysicalCardSet(self.sName)
                         do_complaint_error('Chosen Card Set Name is'

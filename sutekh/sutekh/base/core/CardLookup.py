@@ -10,8 +10,6 @@ from sqlobject import SQLObjectNotFound
 from .BaseObjects import IPhysicalCard, IExpansion, IAbstractCard
 
 
-# pylint: disable=R0922
-# We inherit from these classes elsewhere
 class LookupFailed(Exception):
     """Raised when an AbstractCard lookup fails completed.
        """
@@ -105,8 +103,6 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oAbs = dNameCards[sName]
             if oAbs is not None:
                 for sExpansionName in dCardExpansions[sName]:
-                    # pylint: disable=W0704
-                    # Do nothing exception correct here
                     try:
                         iCnt = dCardExpansions[sName][sExpansionName]
                         oExpansion = dNameExps[sExpansionName]

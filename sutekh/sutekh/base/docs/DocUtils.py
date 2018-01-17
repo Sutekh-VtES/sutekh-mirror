@@ -9,10 +9,11 @@
 
 from __future__ import print_function
 
-import textile
 import os
 import glob
 import re
+
+import textile
 
 # pylint: disable=C0103
 # we ignore our usual naming conventions here
@@ -332,6 +333,7 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
 
 
 def add_single_filter(aOutput, iTocIndex, sKeyword, oFilter):
+    """Add a single filter's help text to the file"""
     sDesc = oFilter.description
     sLink = sKeyword.lower()
 
@@ -354,7 +356,7 @@ def add_single_filter(aOutput, iTocIndex, sKeyword, oFilter):
 
 
 def add_filters(aOutput, iTocIndex, dFilters):
-    """Add the appropriate list of filtes"""
+    """Add the appropriate list of filters"""
     for sKeyword in sorted(dFilters):
         # Generate toc entry
         oFilter = dFilters[sKeyword]
@@ -407,7 +409,8 @@ def make_filter_txt(sDir, aFilters):
                 iTocIndex = len(aOutput)
                 continue
             elif sKeyword == 'Filter_Group':
-                iTocIndex = add_single_filter(aOutput, iTocIndex, sKeyword, FilterGroup)
+                iTocIndex = add_single_filter(aOutput, iTocIndex,
+                                              sKeyword, FilterGroup)
             elif sKeyword == 'card_filters_long':
                 iTocIndex = add_filters(aOutput, iTocIndex, dCardFilters)
             elif sKeyword == 'card_set_filters_long':

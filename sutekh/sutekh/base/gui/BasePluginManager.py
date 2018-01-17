@@ -9,12 +9,14 @@
 import os
 import glob
 import logging
-from gobject import markup_escape_text
-import gtk
-import zipimport
-import zipfile
 import re
+import zipfile
+import zipimport
+
+import gtk
+from gobject import markup_escape_text
 from sqlobject import sqlhub
+
 from ..core.DatabaseVersion import DatabaseVersion
 from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME

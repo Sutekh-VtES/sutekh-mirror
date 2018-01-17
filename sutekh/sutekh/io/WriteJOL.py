@@ -35,8 +35,6 @@ class WriteJOL(object):
     # pylint: enable=R0201
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
-        # pylint: disable=E1101
-        # pyprotocols confuses pylint
         dCards = {'Crypt': {}, 'Library': {}}
         sResult = ""
         for oCard in oHolder.cards:

@@ -22,8 +22,6 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             oJoin.flush_cache()
        """
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(SOCachedRelatedJoin, self).__init__(*aArgs, **kwargs)
         self._dJoinCache = {}

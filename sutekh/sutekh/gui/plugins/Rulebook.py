@@ -96,8 +96,6 @@ class RulebookPlugin(SutekhPlugin):
         'rulebook path': 'string(default=None)',
     }
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(RulebookPlugin, self).__init__(*args, **kwargs)
         self._oRulebookDlg = None

@@ -42,6 +42,7 @@ SCALES = {
 
 
 class ImportView(ACLLookupView):
+    """View to display the page from the PDF"""
 
     def __init__(self, oParent, oConfig, aExp):
         super(ImportView, self).__init__(oParent, oConfig)
@@ -62,7 +63,7 @@ class ImportView(ACLLookupView):
 
     def set_selected_used(self):
         """Set the selected card to used."""
-        oModel, aSelection = self.get_selection().get_selected_rows()
+        _oModel, aSelection = self.get_selection().get_selected_rows()
         for oPath in aSelection:
             oIter = self._oModel.get_iter(oPath)
             self._oModel.set(oIter, 3, True)
@@ -224,6 +225,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
 
     def do_import(self, sFile, aExp):
         """Do the actual import of the PDF file"""
+        # pylint: disable=no-member
+        # poppler & glib confuse pylint
         try:
             self._oDocument = poppler.document_new_from_file(
                     "file://" + sFile, None)
@@ -355,6 +358,9 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._draw_pdf_section(oDrawArea, None)
 
     def _load_page(self):
+        """Load the page to a cairo surface"""
+        # pylint: disable=no-member
+        # cairo confuses pylint
         oCurPage = self._oDocument.get_page(self._iCurPageNo)
         fWidth, fHeight = oCurPage.get_size()
         iW, iH = self._iScale * int(fWidth), self._iScale * int(fHeight)

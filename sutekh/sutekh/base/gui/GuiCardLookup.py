@@ -636,7 +636,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
             oIter = oModel.append(None)
             # second 1 is the dummy card count
-            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess, 3, iWeight, 4, oCard)
+            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess, 3, iWeight,
+                       4, oCard)
 
         oUnknownDialog.vbox.show_all()
         oAbsCardView.load()

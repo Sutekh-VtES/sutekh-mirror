@@ -119,8 +119,6 @@ def get_database_url():
     """Return the database url, with the password stripped out if
        needed"""
     sDBuri = sqlhub.processConnection.uri()
-    # pylint: disable=E1103
-    # pylint doesn't like the SpiltResult named tuple
     tParsed = urlparse.urlsplit(sDBuri)
     if tParsed.password:
         tCombined = (tParsed.scheme,

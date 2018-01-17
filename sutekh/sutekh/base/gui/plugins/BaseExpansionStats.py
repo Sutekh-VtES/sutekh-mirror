@@ -50,8 +50,6 @@ class BaseExpansionStats(BasePlugin):
     # Subclasses should specify this
     GROUPING = None
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExpansionStats, self).__init__(*args, **kwargs)
         self._oStatsVbox = None
@@ -132,8 +130,6 @@ class StatsModel(gtk.TreeStore):
     """TreeStore to hold the data about the expansion statistics"""
 
     def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
-        # pylint: disable=W0142
-        # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
                                          gobject.TYPE_INT)

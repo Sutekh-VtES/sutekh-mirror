@@ -59,8 +59,6 @@ class WriteSLDeck(object):
         """Process the card set, creating the lines as needed"""
         # Add the header information
         sResult = self._gen_header(oHolder)
-        # pylint: disable=E1101
-        # pyprotocols confuses pylint
         dCards = {'Crypt': {}, 'Library': {}}
         for oCard in oHolder.cards:
             oAbsCard = IAbstractCard(oCard)

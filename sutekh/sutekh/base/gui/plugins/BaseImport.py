@@ -48,8 +48,6 @@ class BaseImport(BasePlugin):
         # are sorted alphabetically
     }
 
-    # pylint: disable=W0142
-    # ** magic OK
     def __init__(self, *aArgs, **kwargs):
         super(BaseImport, self).__init__(*aArgs, **kwargs)
         self.oUri = None

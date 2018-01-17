@@ -46,8 +46,6 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
                    generate example opening hands and crypts by clicking the
                    _Draw sample hand_ button."""
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(OpeningHandSimulator, self).__init__(*args, **kwargs)
         self.dCardTypes = {}

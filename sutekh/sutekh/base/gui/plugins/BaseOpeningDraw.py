@@ -197,8 +197,6 @@ class BaseOpeningDraw(BasePlugin):
     # specific details
     sHelpText = """Simulates the opening hand"""
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseOpeningDraw, self).__init__(*args, **kwargs)
         self.iCurHand = 0

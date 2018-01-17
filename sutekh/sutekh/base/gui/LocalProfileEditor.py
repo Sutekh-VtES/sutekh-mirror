@@ -71,7 +71,8 @@ class LocalProfileEditor(SutekhDialog):
         else:
             # Evil recursion
             self.destroy()
-            oDlg = LocalProfileEditor(self.__oParent, self.__oConfig)
+            oDlg = LocalProfileEditor(self.__oParent, self.__oConfig,
+                                      self.__sFrame, self.__sCardSet)
             oDlg.run()
 
     def _repopulate_options(self):

@@ -110,7 +110,7 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    # pylint: disable=W0201, W0142
+    # pylint: disable=W0201
     def build(self, **kwargs):
         """Create the lexer object.
 

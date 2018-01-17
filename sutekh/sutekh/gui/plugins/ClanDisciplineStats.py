@@ -55,8 +55,6 @@ class ClanDisciplineStats(SutekhPlugin):
                    cards) if the current profile for the full card list shows
                    those cards."""
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(ClanDisciplineStats, self).__init__(*args, **kwargs)
         self._oStatsVbox = None
@@ -195,8 +193,6 @@ class StatsModel(gtk.TreeStore):
     """TreeStore to hold the data about the clan statistics"""
 
     def __init__(self, bHideIllegal):
-        # pylint: disable=W0142
-        # We need the * magic here
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
                                          gobject.TYPE_INT,

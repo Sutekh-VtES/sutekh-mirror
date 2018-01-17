@@ -36,13 +36,9 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 
         self._oIter = None
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def tag_text(self, *aArgs, **kwargs):
         """Inset the text (possibly with tags) at the current position"""
         self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
-
-    # pylint: enable=W0142
 
     # Methods for adding new tags to the buffer
 

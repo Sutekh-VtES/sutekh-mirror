@@ -25,8 +25,6 @@ class IdentifyXMLFile(BaseIdXMLFile):
         """Process the ElementTree to identify the XML file type."""
         self._clear_id_results()
         oRoot = oTree.getroot()
-        # pylint: disable=E1101
-        # SQLObject classes confuse pylint
         if oRoot.tag == 'abstractcardset':
             # only present in legacy backups
             self._sType = 'AbstractCardSet'

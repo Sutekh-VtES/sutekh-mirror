@@ -33,8 +33,6 @@ class ClusterCardList(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = (PhysicalCard, PhysicalCardSet)
 
-    # pylint: disable=W0142
-    # ** magic OK
     def __init__(self, *args, **kwargs):
         super(ClusterCardList, self).__init__(*args, **kwargs)
         # pylint: disable=C0103
@@ -51,8 +49,6 @@ class ClusterCardList(SutekhPlugin):
         self._oAutoNumClusters = None
         self._oNumClustersSpin = None
         self._oNumIterSpin = None
-
-    # pylint: enable=W0142
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""

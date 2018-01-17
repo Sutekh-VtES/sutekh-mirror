@@ -617,7 +617,8 @@ class CardTextFilter(BaseCardTextFilter):
 
 
 class CardFunctionFilter(DirectFilter):
-    """Filter for various interesting card properties - unlock, stealth, etc."""
+    """Filter for various interesting card properties - unlock,
+       stealth, etc."""
     keyword = "CardFunction"
     description = "Card Function"
     helptext = "the chosen function from the list of supported types.\n" \
@@ -668,7 +669,7 @@ class CardFunctionFilter(DirectFilter):
                               CardTextFilter('as though unlocked'),
                               CardTextFilter('vampire wakes'),
                               CardTextFilter('minion wakes'),
-                              ])
+                             ])
                 ]))
         if self.__sBounce in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
