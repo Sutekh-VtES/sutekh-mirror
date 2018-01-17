@@ -33,82 +33,81 @@ from .CachedRelatedJoin import CachedRelatedJoin
 def fail_adapt(oUnknown, sCls):
     """Generic failed to adapt handler"""
     raise NotImplementedError("Can't adapt %r to %s" % (oUnknown, sCls))
+    # This to work around pylint's return checked
+    return oUnknown
 
 
 def passthrough(oObj):
     """Passthrough adapter for calling Ixxx() on an object of type xxx"""
     return oObj
 
-
 # Base adapters
 
 @singledispatch
 def IAbstractCard(oUnknown):
     """Default AbstractCard adapter"""
-    fail_adapt(oUnknown, 'AbstractCard')
+    return fail_adapt(oUnknown, 'AbstractCard')
 
 
 @singledispatch
 def IPhysicalCard(oUnknown):
     """Default PhysicalCard adapter"""
-    fail_adapt(oUnknown, 'PhysicalCard')
+    return fail_adapt(oUnknown, 'PhysicalCard')
 
 
 @singledispatch
 def IPhysicalCardSet(oUnknown):
     """Default PhysicalCardSet adapter"""
-    fail_adapt(oUnknown, 'PhysicalCardSet')
+    return fail_adapt(oUnknown, 'PhysicalCardSet')
 
 
 @singledispatch
 def IRarityPair(oUnknown):
     """Default RarityPair adapter"""
-    fail_adapt(oUnknown, 'RarityPair')
+    return fail_adapt(oUnknown, 'RarityPair')
 
 
 @singledispatch
 def IExpansion(oUnknown):
     """Default Expansion adapter"""
-    fail_adapt(oUnknown, 'Expansion')
+    return fail_adapt(oUnknown, 'Expansion')
 
 
 @singledispatch
 def IExpansionName(oUnknown):
     """Default Expansion Name adapter"""
-    fail_adapt(oUnknown, 'ExpansionName')
+    return fail_adapt(oUnknown, 'ExpansionName')
 
 
 @singledispatch
 def IRarity(oUnknown):
     """Default Rarirty adapter"""
-    fail_adapt(oUnknown, 'Rarity')
+    return fail_adapt(oUnknown, 'Rarity')
 
 
 @singledispatch
 def ICardType(oUnknown):
     """Default CardType adapter"""
-    fail_adapt(oUnknown, 'CardType')
+    return fail_adapt(oUnknown, 'CardType')
 
 
 @singledispatch
 def IRuling(oUnknown):
     """Default Ruling adapter"""
-    fail_adapt(oUnknown, 'Ruling')
+    return fail_adapt(oUnknown, 'Ruling')
 
 
 @singledispatch
 def IArtist(oUnknown):
     """The base for artist adaption"""
-    fail_adapt(oUnknown, 'Artist')
+    return fail_adapt(oUnknown, 'Artist')
 
 
 @singledispatch
 def IKeyword(oUnknown):
     """The base for keyword adaption"""
-    fail_adapt(oUnknown, 'Keyword')
+    return fail_adapt(oUnknown, 'Keyword')
 
-
-# pylint: enable=C0321
 # Table Objects
 
 # pylint: disable=W0232, R0902, W0201, C0103
