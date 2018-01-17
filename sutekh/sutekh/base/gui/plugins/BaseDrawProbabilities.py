@@ -5,8 +5,10 @@
 # GPL - see COPYING for details
 """Calculate probabilities for drawing the current selection."""
 
-import gtk
 from copy import copy
+
+import gtk
+
 from ...core.BaseObjects import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,

@@ -5,22 +5,24 @@
 
 """Useful utilities for managing card sets that need to access the gui"""
 
-import gtk
 import datetime
 import logging
+
+import gtk
+
 from ..core.CardSetHolder import CardSetHolder, CardSetWrapper
-from .SutekhDialog import (do_complaint_warning, do_complaint,
-                           do_complaint_error, do_exception_complaint)
 from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
 from ..core.CardLookup import LookupFailed
-from .CreateCardSetDialog import CreateCardSetDialog
-from .SutekhFileWidget import ExportDialog
-from .RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
 from ..core.CardSetUtilities import (delete_physical_card_set, find_children,
                                      has_children, detect_loop,
                                      get_loop_names, break_loop,
                                      check_cs_exists)
 from ..Utility import safe_filename
+from .CreateCardSetDialog import CreateCardSetDialog
+from .SutekhFileWidget import ExportDialog
+from .RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
+from .SutekhDialog import (do_complaint_warning, do_complaint,
+                           do_complaint_error, do_exception_complaint)
 
 
 def reparent_card_set(oCardSet, oNewParent):

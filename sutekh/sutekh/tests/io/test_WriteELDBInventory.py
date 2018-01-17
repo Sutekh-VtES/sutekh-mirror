@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an ELDB Inventory"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.io.WriteELDBInventory import WriteELDBInventory
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-import unittest
 
 EXPECTED = """"ELDB - Inventory"
 "Anastasz di Zagreb",0,0,"","Crypt"

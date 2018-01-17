@@ -6,8 +6,10 @@
 
 """base classes for views."""
 
-import gtk
 import unicodedata
+
+import gtk
+
 from .CustomDragIconView import CustomDragIconView
 
 

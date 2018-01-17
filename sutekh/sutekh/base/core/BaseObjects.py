@@ -12,9 +12,8 @@
 
 import logging
 
-from .CachedRelatedJoin import CachedRelatedJoin
-from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
-from ..Utility import move_articles_to_front
+from singledispatch import singledispatch
+
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
@@ -23,7 +22,10 @@ from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
 from sqlobject.inheritance import InheritableSQLObject
 # pylint: enable=E0611
 
-from singledispatch import singledispatch
+from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
+
+from ..Utility import move_articles_to_front
+from .CachedRelatedJoin import CachedRelatedJoin
 
 
 # Adaption helper functions

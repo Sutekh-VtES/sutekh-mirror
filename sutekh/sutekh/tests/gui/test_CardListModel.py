@@ -5,16 +5,18 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
+import unittest
+
 from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
                                           IAbstractCard, IPhysicalCard,
                                           IExpansion)
 from sutekh.base.core import BaseFilters
 from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
-from sutekh.core.Groupings import CryptLibraryGrouping
 from sutekh.base.gui.CardListModel import CardListModel
 from sutekh.base.gui.MessageBus import MessageBus
-import unittest
+
+from sutekh.core.Groupings import CryptLibraryGrouping
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 
 class TestListener(object):

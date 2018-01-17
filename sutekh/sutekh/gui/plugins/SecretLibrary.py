@@ -5,26 +5,29 @@
 
 """Plugin for interacting with the Secret Library website."""
 
-import gtk
 import urllib
 import StringIO
 import re
-import keyring
 import logging
+
+import gtk
+import keyring
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhInfo import SutekhInfo
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard, \
-    IKeyword
+
 from sutekh.base.Utility import move_articles_to_back
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
+                                          IKeyword)
 from sutekh.base.core.BaseFilters import FilterNot
+from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
+from sutekh.base.gui.GuiCardSetFunctions import import_cs
+from sutekh.base.gui.GuiDataPack import gui_error_handler
+
+from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.Filters import CryptCardFilter
 from sutekh.io.SLDeckParser import SLDeckParser
 from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.io.SLInventoryParser import SLInventoryParser
-from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
-from sutekh.base.gui.GuiCardSetFunctions import import_cs
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.GuiDataPack import gui_error_handler
 
 
 def canonical_to_sl(sName):

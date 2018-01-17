@@ -8,11 +8,13 @@
 
 """Base classes and constants for configuation management."""
 
+import datetime
+
+import pkg_resources
 from configobj import ConfigObj, flatten_errors
 from validate import Validator, is_option, is_list, VdtTypeError
+
 from .MessageBus import MessageBus, CONFIG_MSG
-import pkg_resources
-import datetime
 
 # Type definitions
 CARDSET = 'Card Set'

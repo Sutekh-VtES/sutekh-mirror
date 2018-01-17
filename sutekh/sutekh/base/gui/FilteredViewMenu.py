@@ -6,8 +6,9 @@
 
 """Base class for the pane menus"""
 
-from .SutekhMenu import SutekhMenu
 import gtk
+
+from .SutekhMenu import SutekhMenu
 
 
 class FilteredViewMenu(SutekhMenu):

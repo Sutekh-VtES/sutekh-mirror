@@ -5,6 +5,14 @@
 
 """Adds info about the TWDA decks cards are found in"""
 
+import re
+import datetime
+from logging import Logger
+from StringIO import StringIO
+
+import gtk
+from sqlobject import sqlhub, SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet,
                                           IPhysicalCardSet, PhysicalCard,
@@ -12,31 +20,26 @@ from sutekh.base.core.BaseObjects import (PhysicalCardSet,
 from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
                                           SpecificCardFilter,
                                           MultiPhysicalCardSetMapFilter)
-from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.ProgressDialog import (ProgressDialog,
-                                            SutekhCountLogHandler)
-from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
-                                          do_exception_complaint,
-                                          do_complaint_error)
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                find_children, clean_empty,
                                                get_current_card_sets,
                                                check_cs_exists)
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data, HashError
-from sutekh.io.DataPack import find_all_data_packs, DOC_URL
+from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
+                                          do_exception_complaint,
+                                          do_complaint_error)
+from sutekh.base.gui.ProgressDialog import (ProgressDialog,
+                                            SutekhCountLogHandler)
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.SutekhFileWidget import add_filter
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.GuiDataPack import gui_error_handler
-import re
-import gtk
-import datetime
-from logging import Logger
-from StringIO import StringIO
-from sqlobject import sqlhub, SQLObjectNotFound
+
+from sutekh.io.DataPack import find_all_data_packs, DOC_URL
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class BinnedCountLogHandler(SutekhCountLogHandler):

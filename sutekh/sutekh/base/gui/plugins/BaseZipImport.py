@@ -4,10 +4,12 @@
 # GPL - see COPYING for details
 """Plugin to import selected card sets from a zip file"""
 
-import gtk
-import gobject
 import os
 from logging import Logger
+
+import gtk
+import gobject
+
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,
                             do_exception_complaint)

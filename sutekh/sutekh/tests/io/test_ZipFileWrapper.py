@@ -5,6 +5,14 @@
 
 """Test the Zip File Wrapper"""
 
+import unittest
+import zipfile
+
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set
+from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
+
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     get_phys_cards)
@@ -12,12 +20,6 @@ from sutekh.tests.io.test_AbstractCardSetParser import (ACS_EXAMPLE_1,
                                                         ACS_EXAMPLE_2)
 from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
-from sutekh.base.core.CardSetUtilities import delete_physical_card_set
-import unittest
-import zipfile
 
 
 class ZipFileWrapperTest(SutekhTest):
@@ -154,8 +156,8 @@ class ZipFileWrapperTest(SutekhTest):
         oZipFile.close()
 
         # Check it loads correctly
-        oZipFile = ZipFileWrapper(sTempFileName)
-        oZipFile.do_restore_from_zip(oLogHandler=oHandler)
+        oZipWrapper = ZipFileWrapper(sTempFileName)
+        oZipWrapper.do_restore_from_zip(oLogHandler=oHandler)
         self.assertEqual(oHandler.fTot, 4)
 
         oMyCollection = IPhysicalCardSet("My Collection")

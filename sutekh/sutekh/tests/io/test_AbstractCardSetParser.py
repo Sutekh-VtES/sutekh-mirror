@@ -5,18 +5,20 @@
 
 """Test the Abstract Card Set parser"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.tests.TestUtils import make_card
+import unittest
+import os
+from StringIO import StringIO
+
 from sutekh.base.core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core.CardSetHolder import CardSetHolder
+from sutekh.base.tests.TestUtils import make_card
+
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.XmlFileHandling import AbstractCardSetXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     ABSTRACT_CARDS)
-import unittest
-import os
-from StringIO import StringIO
+from sutekh.tests.TestCore import SutekhTest
 
 ACS_EXAMPLE_1 = ('<abstractcardset author="A test author" '
                  'comment="A test comment" name="Test Set 1" '

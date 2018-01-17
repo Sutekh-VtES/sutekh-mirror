@@ -15,13 +15,15 @@
    http://www.jabber.org/jeps/jep-0071.html .
    """
 
-import gobject
-import pango
-import gtk
 import re
 import warnings
 import HTMLParser
 from cStringIO import StringIO
+
+import gtk
+import gobject
+import pango
+
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 

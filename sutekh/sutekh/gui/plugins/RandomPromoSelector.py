@@ -9,12 +9,15 @@ For example, this is useful for generating sets of promos to
 hand out at a tournament.
 """
 
-import gtk
 from random import shuffle
+
+import gtk
+
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import SutekhDialog
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
+
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class RandomPromoDialog(SutekhDialog):

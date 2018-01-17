@@ -6,12 +6,14 @@
 """Test Writing a card set to an TWDA bbcode file"""
 
 import time
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetWrapper
+
 from sutekh.io.WriteTWDAText import WriteTWDAText
 from sutekh.SutekhInfo import SutekhInfo
-import unittest
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 TWDA_EXPECTED_1 = """Deck Name: Test Set 1
 Author: A test author

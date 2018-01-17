@@ -5,13 +5,16 @@
 
 """Test the PhysicalCardSet object handling"""
 
-from sutekh.tests.TestCore import SutekhTest
+import unittest
+
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
-from sqlobject import SQLObjectNotFound
-import unittest
+
+from sutekh.tests.TestCore import SutekhTest
 
 ABSTRACT_CARDS = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
 CARD_EXPANSIONS = [

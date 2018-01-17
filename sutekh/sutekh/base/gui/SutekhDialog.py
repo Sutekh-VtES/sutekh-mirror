@@ -8,14 +8,16 @@
 
 """Dialog wrapper and functions for Sutekh"""
 
-import gtk
 import logging
 import sys
 import traceback
+
+import gtk
 from gobject import markup_escape_text
 
-from ..Utility import get_database_url
 from sutekh.SutekhInfo import SutekhInfo as AppInfo
+
+from ..Utility import get_database_url
 
 
 class SutekhDialog(gtk.Dialog):

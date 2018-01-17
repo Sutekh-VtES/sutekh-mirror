@@ -5,6 +5,14 @@
 
 """Adds info about the starter decks cards are found in"""
 
+import re
+import datetime
+from logging import Logger
+from StringIO import StringIO
+
+import gtk
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet,
                                           IPhysicalCardSet, IRarityPair)
@@ -15,31 +23,26 @@ from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
                                         disconnect_row_destroy,
                                         disconnect_row_update,
                                         disconnect_row_created)
-from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
+                                               find_children, has_children,
+                                               check_cs_exists, clean_empty,
+                                               get_current_card_sets)
+from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhCountLogHandler)
 from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_exception_complaint,
                                           do_complaint_error)
-from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, has_children,
-                                               check_cs_exists, clean_empty,
-                                               get_current_card_sets)
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.base.io.UrlOps import urlopen_with_timeout
-from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
                                                  update_open_card_sets)
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhFileWidget import add_filter
-import re
-import gtk
-import datetime
-from logging import Logger
-from StringIO import StringIO
-from sqlobject import SQLObjectNotFound
+
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
+from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class StarterConfigDialog(SutekhDialog):

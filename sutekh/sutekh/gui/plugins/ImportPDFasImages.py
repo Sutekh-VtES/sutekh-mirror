@@ -6,19 +6,18 @@
 """Splits a VEKN pdf file into pieces and adds them to the card images
    as a set of expansion images"""
 
+import os
+
 import gtk
 import glib
 import cairo
 import poppler
-import os
-
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, Expansion,
                                           IExpansion, IPhysicalCard)
 from sutekh.base.core.BaseFilters import MultiExpansionFilter
 from sutekh.base.gui.plugins.BaseImages import check_file
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_complaint_buttons,
                                           do_complaint_error)
@@ -27,6 +26,8 @@ from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.GuiCardLookup import ACLLookupView
 from sutekh.base.gui.CellRendererSutekhButton import CellRendererSutekhButton
 from sutekh.base.Utility import ensure_dir_exists
+
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 START = (36, 50)
@@ -68,6 +69,8 @@ class ImportView(ACLLookupView):
 
 
 class ImportPDFImagesPlugin(SutekhPlugin):
+    """Plugin to split a VEKN card set PDF into images for use
+       with the CardImages plugin."""
 
     dTableVersions = {PhysicalCardSet: (7, )}
     aModelsSupported = ("MainWindow",)
@@ -220,8 +223,10 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self.oDlg.destroy()
 
     def do_import(self, sFile, aExp):
+        """Do the actual import of the PDF file"""
         try:
-            self._oDocument = poppler.document_new_from_file("file://" + sFile, None)
+            self._oDocument = poppler.document_new_from_file(
+                    "file://" + sFile, None)
         except glib.GError:
             do_complaint_error("Unable to parse the PDF file: %s" % sFile)
             return
@@ -251,7 +256,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oVBox = gtk.VBox()
         oHBox.pack_start(oVBox, True, True)
         oDrawArea = gtk.DrawingArea()
-        oDrawArea.set_size_request(self._iScale * CARD_DIM[0], self._iScale * CARD_DIM[1])
+        oDrawArea.set_size_request(self._iScale * CARD_DIM[0],
+                                   self._iScale * CARD_DIM[1])
 
         oDrawArea.connect('expose_event', self._draw_pdf_section)
 
@@ -367,6 +373,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oCurPage.render(oPageContext)
 
     def save_img(self, _oBut, oDrawArea, oAbsView, aExp):
+        """Save the image we extracted from the PDF."""
         # Get the card from the model, to avoid encoding issues
         oAbsCard = oAbsView.get_selected_abstract_card()
         if oAbsCard is None:
@@ -414,6 +421,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self.chg_img(None, oDrawArea, +1)
 
     def chg_img(self, _oBut, oDrawArea, iChg):
+        """Change to the next / prev image in the PDF."""
         iOldPage = iNewPage = self._iCurPageNo
         iYPos = self._iYPos
         iXPos = self._iXPos + iChg
@@ -442,12 +450,12 @@ class ImportPDFImagesPlugin(SutekhPlugin):
             self._load_page()
         # Force redraw
         if (self._iCurPageNo == self._iNumPages - 1 and
-            self._iXPos == 2 and self._iYPos == 2):
+                self._iXPos == 2 and self._iYPos == 2):
             self._oNextButton.set_sensitive(False)
         else:
             self._oNextButton.set_sensitive(True)
         if (self._iCurPageNo == 0 and
-            self._iXPos == 0 and self._iYPos == 0):
+                self._iXPos == 0 and self._iYPos == 0):
             self._oPrevButton.set_sensitive(False)
         else:
             self._oPrevButton.set_sensitive(True)

@@ -5,24 +5,26 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
-import gtk
-import gobject
-import unicodedata
-import os
-import zipfile
-import tempfile
-import urllib2
 import logging
+import os
+import tempfile
+import unicodedata
+import urllib2
+import zipfile
+
+import gobject
+import gtk
+
 from ...io.UrlOps import urlopen_with_timeout
-from ...gui.GuiDataPack import progress_fetch_data, gui_error_handler
+from ...Utility import prefs_dir, ensure_dir_exists
 from ..BasePluginManager import BasePlugin
 from ..ProgressDialog import ProgressDialog
 from ..MessageBus import MessageBus, CARD_TEXT_MSG
+from ..GuiDataPack import progress_fetch_data, gui_error_handler
 from ..BasicFrame import BasicFrame
 from ..SutekhDialog import (SutekhDialog, do_complaint_buttons,
                             do_complaint_error)
 from ..AutoScrolledWindow import AutoScrolledWindow
-from ...Utility import prefs_dir, ensure_dir_exists
 from ..FileOrUrlWidget import FileOrDirOrUrlWidget
 from ..SutekhFileWidget import add_filter
 

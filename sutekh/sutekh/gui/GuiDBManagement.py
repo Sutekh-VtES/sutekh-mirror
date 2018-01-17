@@ -65,7 +65,6 @@ LookupDataReader = DataFileReader(sName="lookup.csv",
                                  )
 
 
-
 class GuiDBManager(BaseGuiDBManager):
     """Handle the GUI aspects of upgrading the database or reloading the
        card lists."""

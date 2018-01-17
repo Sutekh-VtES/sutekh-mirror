@@ -5,12 +5,14 @@
 
 """Test Writing a card set to an ARDB deck XML file"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetWrapper
+
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ARDBTextParser import ARDBTextParser
-import unittest
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 # This doesn't match the ARDB export for the same card set, due to
 # the outstanding issues in the Export implementation

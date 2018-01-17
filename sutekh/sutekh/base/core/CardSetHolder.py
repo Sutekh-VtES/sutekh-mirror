@@ -6,9 +6,10 @@
 """Holder for card set (Abstract or Physical) data before it is committed
    to a database."""
 
+from sqlobject import SQLObjectNotFound, sqlhub
+
 from .CardLookup import DEFAULT_LOOKUP
 from .BaseObjects import PhysicalCardSet
-from sqlobject import SQLObjectNotFound, sqlhub
 
 
 class CardSetHolder(object):

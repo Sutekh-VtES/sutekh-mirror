@@ -6,12 +6,14 @@
 """Test Writing a card set to an VEKN bbcode file"""
 
 import time
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetWrapper
+
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
 from sutekh.SutekhInfo import SutekhInfo
-import unittest
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 VEKN_EXPECTED_1 = """[size=18][b]Deck Name : Test Set 1[/b][/size]
 [b][u]Author :[/u][/b] A test author

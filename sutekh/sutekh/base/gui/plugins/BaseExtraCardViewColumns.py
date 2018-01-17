@@ -4,10 +4,11 @@
 # GPL - see COPYING for details
 """Display extra columns in the tree view"""
 
-from ...core.BaseObjects import PhysicalCard, PhysicalCardSet
-from .BaseExtraColumns import BaseExtraColumns
-from ..CellRendererIcons import SHOW_TEXT_ONLY
 from sqlobject import SQLObjectNotFound
+
+from ...core.BaseObjects import PhysicalCard, PhysicalCardSet
+from ..CellRendererIcons import SHOW_TEXT_ONLY
+from .BaseExtraColumns import BaseExtraColumns
 
 
 class BaseExtraCardViewColumns(BaseExtraColumns):

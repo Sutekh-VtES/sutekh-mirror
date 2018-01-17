@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an CSV file"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+from sutekh.base.io.WriteCSV import WriteCSV
+
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.io.WriteCSV import WriteCSV
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-import unittest
 
 EXPECTED_1 = """"Card Name", "Expansion", "Number"
 ".44 Magnum", "Jyhad", 1

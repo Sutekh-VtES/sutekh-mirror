@@ -9,6 +9,8 @@
 
 """The gtk.TreeModel for the card set lists."""
 
+import gtk
+
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter,
                                 PhysicalCardSetFilter,
@@ -26,16 +28,15 @@ from ..core.BaseObjects import (PhysicalCard, IAbstractCard,
                                 IPhysicalCardSet,
                                 PhysicalCardSet,
                                 IExpansionName)
-from ..Utility import move_articles_to_back
-from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from ..core.DBSignals import (listen_changed, disconnect_changed,
                               listen_row_destroy, listen_row_update,
                               listen_row_created,
                               disconnect_row_destroy, disconnect_row_created,
                               disconnect_row_update)
+from ..Utility import move_articles_to_back
+from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from .BaseConfigFile import CARDSET, FRAME
 from .MessageBus import MessageBus
-import gtk
 
 # consts for the different modes we need (iExtraLevelsMode)
 NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \

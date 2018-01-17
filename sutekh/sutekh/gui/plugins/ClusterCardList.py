@@ -5,17 +5,20 @@
 
 """Plugin to find clusters in the card lists."""
 
-import gtk
 import random
 import math
+
+import gtk
+
 from sutekh.base.core.BaseObjects import (PhysicalCard,
                                           PhysicalCardSet,
                                           IPhysicalCard)
 from sutekh.base.core.CardSetUtilities import check_cs_exists
-from sutekh.core.CardListTabulator import CardListTabulator
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.SutekhDialog import NotebookDialog, do_complaint_error
+
+from sutekh.core.CardListTabulator import CardListTabulator
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class ClusterCardList(SutekhPlugin):

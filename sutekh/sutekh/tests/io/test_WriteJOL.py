@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an JOL file"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteJOL import WriteJOL
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteJOL import WriteJOL
-import unittest
 
 EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)

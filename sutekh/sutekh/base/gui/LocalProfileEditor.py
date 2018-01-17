@@ -8,11 +8,12 @@
 """This handles editing the local profile editor, (for temporary options)"""
 
 
+import gtk
+
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 from .PreferenceTable import PreferenceTable
 from .BaseConfigFile import FRAME
-import gtk
 
 
 class LocalProfileEditor(SutekhDialog):

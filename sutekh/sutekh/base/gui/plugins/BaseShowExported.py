@@ -6,14 +6,16 @@
 """Plugin for displaying the exported version of a card set in a gtk.TextView.
    Intended to make cutting and pasting easier."""
 
-import gtk
 import StringIO
+
+import gtk
+
 from ...core.BaseObjects import PhysicalCardSet
 from ...core.CardSetHolder import CardSetWrapper
+from ...io.WriteCSV import WriteCSV
 from ..BasePluginManager import BasePlugin
 from ..AutoScrolledWindow import AutoScrolledWindow
 from ..SutekhDialog import SutekhDialog
-from ...io.WriteCSV import WriteCSV
 
 
 class BaseShowExported(BasePlugin):

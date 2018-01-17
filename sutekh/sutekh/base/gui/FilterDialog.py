@@ -7,14 +7,15 @@
 
 """Allow the user to specify a filter."""
 
+import gtk
+import gobject
+
+from ..core import FilterParser
 from .SutekhDialog import (SutekhDialog, do_complaint_error,
                            do_complaint_buttons)
-from ..core import FilterParser
 from .BaseConfigFile import FULL_CARDLIST, CARDSET, DEF_PROFILE_FILTER
 from .MessageBus import MessageBus, CONFIG_MSG
 from .FilterEditor import FilterEditor
-import gtk
-import gobject
 
 
 class FilterDialog(SutekhDialog):

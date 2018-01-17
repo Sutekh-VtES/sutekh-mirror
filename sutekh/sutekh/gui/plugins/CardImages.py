@@ -5,13 +5,13 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
-import gtk
 import os
 import logging
+
+import gtk
 from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import IExpansion
-from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
@@ -21,6 +21,9 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 CARD_IMAGE_PATH,
                                                 DOWNLOAD_IMAGES,
                                                 DOWNLOAD_EXPANSIONS)
+
+from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.SutekhInfo import SutekhInfo
 
 # Base url for downloading the images from
 SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'

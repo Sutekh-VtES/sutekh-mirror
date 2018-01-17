@@ -18,12 +18,9 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.base.core.DBUtility import flush_cache
 
-from sutekh.base.io.UrlOps import urlopen_with_timeout, HashError
-from sutekh.base.io.BaseZipFileWrapper import ZipEntryProxy
-
 from sutekh.base.gui.AppMainWindow import AppMainWindow
 from sutekh.base.gui.GuiDataPack import gui_error_handler
-from sutekh.base.gui.SutekhDialog import do_complaint, do_complaint_error
+from sutekh.base.gui.SutekhDialog import do_complaint
 from sutekh.base.gui.UpdateDialog import UpdateDialog
 
 from sutekh.core.SutekhObjectCache import SutekhObjectCache

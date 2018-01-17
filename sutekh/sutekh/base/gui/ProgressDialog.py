@@ -14,6 +14,7 @@ from logging import Handler
 
 import gtk
 
+
 class SutekhLogHandler(Handler, object):
     """Base class for loggers to talk to the dialog"""
     # We explicitly inherit from object, since Handler is a classic class

@@ -5,10 +5,12 @@
 # GPL - see COPYING for details
 """Simulate the opening hand draw."""
 
-import gtk
-import gobject
 from copy import copy
 from random import choice
+
+import gobject
+import gtk
+
 from ...core.BaseObjects import PhysicalCardSet, IAbstractCard
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog

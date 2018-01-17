@@ -5,15 +5,18 @@
 
 """Test the white wolf card reader"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
-                                       ICreed, IVirtue)
+import unittest
+
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
                                           IPhysicalCard, ICardType,
                                           IExpansion, IRarity, IRarityPair,
                                           IArtist, IKeyword)
-from sqlobject import SQLObjectNotFound
-import unittest
+
+from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
+                                       ICreed, IVirtue)
+from sutekh.tests.TestCore import SutekhTest
 
 
 class WhiteWolfParserTests(SutekhTest):
@@ -188,7 +191,8 @@ class WhiteWolfParserTests(SutekhTest):
         # Check Ashur Tablets
         oAshur = IAbstractCard('Ashur Tablets')
         self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
-        self.assertTrue(IRarityPair(('Anthology', 'Anthology')) in oAshur.rarity)
+        self.assertTrue(IRarityPair(('Anthology', 'Anthology'))
+                        in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():

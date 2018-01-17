@@ -10,20 +10,23 @@
 
 """Display interesting statistics and properties of the card set."""
 
-import gtk
 import logging
+
+import gtk
 from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
                                           IPhysicalCard, IExpansion, IKeyword)
-from sutekh.core.SutekhObjects import CRYPT_TYPES
 from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
                                           KeywordFilter)
-from sutekh.core.Abbreviations import Titles
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import NotebookDialog
 from sutekh.base.gui.GuiUtils import wrap
 from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
+
+from sutekh.core.SutekhObjects import CRYPT_TYPES
+from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.core.Abbreviations import Titles
 
 ODD_BACKS = {}
 
