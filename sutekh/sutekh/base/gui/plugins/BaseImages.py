@@ -90,9 +90,10 @@ def get_expansion_info(oAbsCard):
     bHasInfo = len(oAbsCard.rarity) > 0
     if bHasInfo:
         aExp = set([(oP.expansion.name, oP.expansion.releasedate)
-                     for oP in oAbsCard.rarity])  # remove duplicates
+                    for oP in oAbsCard.rarity])  # remove duplicates
         # Sort by date, newest first
-        aExpansions = [x[0] for x in sorted(aExp, key=lambda x: x[1], reverse=True)]
+        aExpansions = [x[0] for x in sorted(aExp,
+                                            key=lambda x: x[1], reverse=True)]
         return aExpansions
     else:
         return []
@@ -357,7 +358,7 @@ class BaseImageFrame(BasicFrame):
                 else:
                     logging.info('Invalid image data from %s', sUrl)
                     # Got bogus data, so skip this in future
-                    self._aFailedUrls.append(sUrl)
+                    self._aFailedUrls.add(sUrl)
                 # Don't attempt to follow other urls
                 break
         return True

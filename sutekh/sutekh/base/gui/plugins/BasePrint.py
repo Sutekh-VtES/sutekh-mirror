@@ -198,10 +198,12 @@ class BasePrint(BasePlugin):
             aMarkup.append("  <b>Comment</b>: %s" % self._escape(oCS.comment))
             aMarkup.append("")
         if oCS.annotations:
-            aMarkup.append("  <b>Annotations</b>: %s" % self._escape(oCS.annotations))
+            aMarkup.append("  <b>Annotations</b>: %s" %
+                           self._escape(oCS.annotations))
             aMarkup.append("")
-        # Add a line to separate the cards from the header
-        aMarkup.append("          <s>                                          </s>")
+        # Add a line to separate the cards from the header using strikethrough
+        aMarkup.append("          <s>"
+                       "                                          </s>")
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)

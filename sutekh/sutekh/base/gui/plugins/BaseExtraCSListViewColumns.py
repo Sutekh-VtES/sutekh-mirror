@@ -6,19 +6,20 @@
 # GPL - see COPYING for details
 """Display extra columns in the tree view"""
 
+from sqlobject import SQLObjectNotFound
 import pango
+
 from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
                                  MapPhysicalCardToPhysicalCardSet)
-from ..CellRendererIcons import SHOW_TEXT_ONLY
 from ...core.DBSignals import (listen_row_destroy, listen_row_update,
                                listen_row_created, listen_changed,
                                disconnect_changed,
                                disconnect_row_destroy,
                                disconnect_row_update,
                                disconnect_row_created)
+from ..CellRendererIcons import SHOW_TEXT_ONLY
 from .BaseExtraColumns import (BaseExtraColumns, get_number,
                                format_number)
-from sqlobject import SQLObjectNotFound
 
 
 class BaseExtraCSListViewColumns(BaseExtraColumns):

@@ -232,13 +232,14 @@ class BaseIndependence(BasePlugin):
 
         oPage = gtk.VBox(False)
         oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList),
-                         True), True)
+                                            True), True)
         oButton = gtk.Button('Create Card Set from this list')
         oButton.connect('clicked', self.create_card_set,
                         dMissing)
         oPage.pack_start(oButton, False)
-        oResultDlg.add_widget_page(oPage,
-            'Missing from %s' % self._escape(oParentCS.name), bMarkup=True)
+        oResultDlg.add_widget_page(
+            oPage, 'Missing from %s' % self._escape(oParentCS.name),
+            bMarkup=True)
 
         for sCardSet, aMsgs in dFormatted.iteritems():
             oResultDlg.add_widget_page(
@@ -286,7 +287,7 @@ class BaseIndependence(BasePlugin):
                 oPhysCard = IPhysicalCard((oCard, None))
             else:
                 oPhysCard = oCard
-            for x in range(oInfo.iCount):
+            for _iCardCnt in range(oInfo.iCount):
                 aCards.append(oPhysCard)
         self._commit_cards(oCardSet, aCards)
         self._open_cs(sCSName)
