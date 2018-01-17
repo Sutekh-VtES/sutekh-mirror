@@ -89,12 +89,14 @@ class GuiDBManager(BaseGuiDBManager):
         # We ignore the hash, because we can't be certain that the zip
         # file we read is the one in the url, since we allow people to
         # load one from file.
-        sUrl, _sHash = find_data_pack(WW_CARDLIST_DATAPACK,
-                                      fErrorHandler=gui_error_handler)
+        sUrl, sHash = find_data_pack(WW_CARDLIST_DATAPACK,
+                                     fErrorHandler=gui_error_handler)
         if not sUrl:
             self.sZippedUrl = None
+            self.sHash = None
         else:
             self.sZippedUrl = sUrl
+            self.sHash = sHash
 
     def initialize_db(self, oConfig):
         """Setup zip file url before calling the base class method"""

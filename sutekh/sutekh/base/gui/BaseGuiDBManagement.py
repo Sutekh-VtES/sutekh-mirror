@@ -67,6 +67,8 @@ class BaseGuiDBManager(object):
     bDisplayZip = False
     # Url for zip file containing the combined data
     sZippedUrl = None
+    # Hash for zip url if applicable
+    sHash = None
     # List of database tables to reload when importing
     aTables = []
 
@@ -93,7 +95,7 @@ class BaseGuiDBManager(object):
         dFiles = {}
         # Check for zipped file case
         if COMBINED_ZIP in dChoices:
-            dFiles = self.read_zip_file(dChoices[COMBINED_ZIP], None)
+            dFiles = self.read_zip_file(dChoices[COMBINED_ZIP], self.sHash)
         else:
             # Handle the files individually
             for sName, oResult in dChoices.items():
