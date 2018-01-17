@@ -85,8 +85,8 @@ class TestCardSetFrame(GuiSutekhTest):
         # repeated setups, so it has lots of lines + variables
 
         # Add card sets needed for the tests
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
+        # pylint: disable=unsupported-membership-test, not-an-iterable
+        # Checks on RelatedJoins confuse pyline
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',
                                 parent=oPhysCardSet)
@@ -133,7 +133,8 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len(oPCS2.cards), 2)
         # Check we've pasted the right cards
         self.assertTrue(make_card(u'AK-47', None) in oPCS2.cards)
-        self.assertTrue(make_card(u'AK-47', u'Lords of the Night') in oPCS2.cards)
+        self.assertTrue(make_card(u'AK-47', u'Lords of the Night')
+                        in oPCS2.cards)
         # Select cards in new card set and change numbers
         self._select_cards(oNewFrame, [(u'AK-47', None),
                                        (u'AK-47', u'Lords of the Night')])
@@ -261,8 +262,8 @@ class TestCardSetFrame(GuiSutekhTest):
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         # Add card sets needed for the tests
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
+        # pylint: disable=unsupported-membership-test, not-an-iterable
+        # Checks on RelatedJoins confuse pyline
 
         def clear_cardset(oPCS, oFrame):
             """Clear the cards from a card set and reload the model"""
@@ -272,8 +273,8 @@ class TestCardSetFrame(GuiSutekhTest):
 
         oCollSet = PhysicalCardSet(name='My Collection')
         oTest1 = PhysicalCardSet(name='Test Set 1',
-                                parent=oCollSet,
-                                inuse=True)
+                                 parent=oCollSet,
+                                 inuse=True)
         # Add some cards
         aCards = [
             ('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),

@@ -33,8 +33,6 @@ class DatabaseUpgradeTests(SutekhTest):
         oMyCollection.author = "test author"
 
         oPCS1 = PhysicalCardSet(name="PCS1", parent=oMyCollection)
-        # pylint: disable=E1101
-        # SQLObject confuses pylint
 
         oPC = make_card(".44 magnum", "Jyhad")
         oMyCollection.addPhysicalCard(oPC)

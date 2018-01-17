@@ -22,8 +22,6 @@ class TestIdentifyXMLFile(SutekhTest):
 
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
         # test IO
         sExample = make_example_pcxml()
 

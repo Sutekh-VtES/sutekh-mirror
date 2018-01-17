@@ -24,8 +24,6 @@ LAST_WRITER_VERSION = "1.0"
 
 def make_example_pcxml():
     """Create the example XML File"""
-    # pylint: disable=E1101
-    # E1101: SQLObject + PyProtocols magic confuses pylint
     oPC = make_card(ABSTRACT_CARDS[0], None)
 
     sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
@@ -42,9 +40,6 @@ class PhysicalCardTests(SutekhTest):
 
     def test_physical(self):
         """Test physical card handling"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-
         # test IO
         sExample = make_example_pcxml()
         oParser = PhysicalCardParser()

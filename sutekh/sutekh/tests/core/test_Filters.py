@@ -39,8 +39,6 @@ def make_physical_card_sets():
         [('Yvette, The Hopeless', 'BSC')]
     ]
     aPCSs = []
-    # pylint: disable=E1101
-    # sqlobject confuses pylint
     for iCnt, tData in enumerate(aCardSets):
         sName, sAuthor, sComment, bInUse = tData
         if bInUse:
@@ -82,8 +80,6 @@ class FilterTests(SutekhTest):
 
         aPhysicalCards = []
         for sName in aExpectedNames:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             oAbs = IAbstractCard(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
@@ -473,8 +469,6 @@ class FilterTests(SutekhTest):
         ]
 
         for tTest in aExpansionTests:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             oFilter, aExpectedCards = self._physical_test(tTest)
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
             self.assertEqual(aCards, aExpectedCards,
@@ -587,8 +581,6 @@ class FilterTests(SutekhTest):
                                  oFilter, aCardSets, aExpectedSets))
 
         # Test data for the Specific card filters
-        # pylint: disable=E1101
-        # sqlobject confuses pylint
         oAbsAK = IAbstractCard('ak-47')
         oExp = IExpansion('LotN')
         oPhysAK = IPhysicalCard((oAbsAK, oExp))
@@ -714,8 +706,6 @@ class FilterTests(SutekhTest):
         ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSNumberTests:
-            # pylint: disable=E1101
-            # pyprotocols confuses pylint
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             aCSCards = [IAbstractCard(x).name for x in
                         oFullFilter.select(

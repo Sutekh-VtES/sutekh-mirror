@@ -5,13 +5,15 @@
 
 """Test Writing a card set to an ARDB deck XML file"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteArdbXML import WriteArdbXML
-from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteArdbXML import WriteArdbXML
+from sutekh.SutekhInfo import SutekhInfo
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 # pylint: disable=W0511, C0301
 # W0511 - this is not a actual TODO item

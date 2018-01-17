@@ -50,8 +50,6 @@ def make_set_1():
        Function as this is also used in the io tests.
        """
 
-    # pylint: disable=E1101
-    # E1101: SQLObject + PyProtocols magic confuses pylint
     aAddedPhysCards = get_phys_cards()
     oPhysCardSet1 = PhysicalCardSet(name=CARD_SET_NAMES[0])
     oPhysCardSet1.comment = 'A test comment'
@@ -71,8 +69,7 @@ class PhysicalCardSetTests(SutekhTest):
 
     def test_physical_card_set(self):
         """Test physical card set object"""
-        # pylint: disable=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
@@ -127,13 +124,18 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(oPhysCardSet3, oPhysCardSet4)
 
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oPhysCardSet5 = PhysicalCardSet.byName(CARD_SET_NAMES[1])
         self.assertEqual(oPhysCardSet2, oPhysCardSet5)
 
         # Check Deletion
 
+        # pylint: disable=not-an-iterable
+        # SQLOBject confuses pylint
         for oCard in oPhysCardSet3.cards:
             oPhysCardSet3.removePhysicalCard(oCard.id)
+        # pylint: enable=not-an-iterable
 
         self.assertEqual(len(oPhysCardSet3.cards), 0)
         PhysicalCardSet.delete(oPhysCardSet3.id)
@@ -145,6 +147,7 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertRaises(SQLObjectNotFound, PhysicalCardSet.byName,
                           CARD_SET_NAMES[1])
+        # pylint: enable=no-member
 
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(

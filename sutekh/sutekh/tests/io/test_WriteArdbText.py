@@ -81,12 +81,15 @@ class ArdbTextWriterTests(SutekhTest):
         aCards = oHolder.get_cards()
         dSetCards = {}
         # Reformat cards in deck to match holder
+        # pylint: disable=not-an-iterable
+        # SQLObject confuses pylint
         for sName in [x.abstractCard.name for x in oPhysCardSet1.cards]:
             # We truncate Inez here to match the writer output
             if sName.startswith('Inez'):
                 sName = sName[:18]
             dSetCards.setdefault(sName, 0)
             dSetCards[sName] += 1
+        # pylint: enable=not-an-iterable
 
         for sName, iCnt in dSetCards.iteritems():
             self.failUnless((sName, iCnt) in aCards)

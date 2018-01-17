@@ -5,9 +5,10 @@
 
 """Test case for ARDB text parser"""
 
+import unittest
+
 from sutekh.io.ARDBTextParser import ARDBTextParser
 from sutekh.tests.TestCore import SutekhTest
-import unittest
 
 ARDB_TEXT_EXAMPLE_1 = """
 Deck Name : Test Deck

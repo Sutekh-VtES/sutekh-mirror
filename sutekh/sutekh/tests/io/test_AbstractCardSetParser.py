@@ -44,9 +44,6 @@ class AbstractCardSetParserTest(SutekhTest):
 
     def test_abstract_cs_parser(self):
         """Test abstract card set parser"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-
         # Support for everything except reading has been removed.
         # It is expected that reading in an ACS will create an
         # equivalent PCS.

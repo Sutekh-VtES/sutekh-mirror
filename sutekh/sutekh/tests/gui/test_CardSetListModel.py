@@ -269,8 +269,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # pylint: disable=E1101, R0914
-        # E1101: SQLObjext confuses pylint
+        # pylint: disable=R0914
         # R0914: several local variables, as we test a number of conditions
         dModelInfo = {}
         for oModel in aModels:
@@ -507,8 +506,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oAlex = make_card('Alexandra', 'CE')
         oModel.load()
@@ -642,8 +639,6 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _setup_simple(self):
         """Convenience method for setting up a single card set for tests"""
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
         oPCS = PhysicalCardSet(name=self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
@@ -735,8 +730,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable=E1101
-                    # E1101: SQLObjext confuses pylint
                     for oCard in aCardsToAdd:
                         oPCS.addPhysicalCard(oCard.id)
                         oPCS.syncUpdate()
@@ -796,8 +789,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable=E1101, E1103
-                    # E1101: SQLObjext confuses pylint
                     for oCS in (oEmptyPCS, oChildPCS, oGrandChildPCS, oPCS):
                         for oCard in aCardsToAdd:
                             oCS.addPhysicalCard(oCard.id)
@@ -839,14 +830,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
 
@@ -859,16 +846,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildPCS.syncUpdate()
         return oGrandChildPCS
 
     def _setup_relationships(self):
         """Convenience method to setup a card set hierarchy for test cases"""
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
         aCards, oPCS, oChildPCS = self._setup_parent_child()
         oChildPCS.inuse = True
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
@@ -951,8 +934,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
         oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
                                           parent=oChildPCS)
@@ -963,8 +944,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101, E1103
-            # PyProtocols confuses pylint
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             if sName == 'Aire of Elation':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
@@ -1102,8 +1081,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oModel = self._get_model(self.aNames[0])
         # Test filter which selects nothing works
@@ -1168,8 +1145,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oModel.bEditable = False
         oModel.load()
@@ -1230,8 +1205,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
@@ -1262,8 +1235,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
@@ -1300,8 +1271,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':

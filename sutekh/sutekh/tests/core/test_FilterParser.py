@@ -44,8 +44,6 @@ class FilterParserTests(SutekhTest):
     def _get_physical_names(self, oPCSFilter, oFilter):
         """Combine a card set filter with the filter and return the card
            names"""
-        # pylint: disable=E1101
-        # pyprotocols confuses pylinta
         oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
         aNames = [IAbstractCard(x).name for x in
                   oFullFilter.select(
@@ -412,8 +410,6 @@ class FilterParserTests(SutekhTest):
         ]
 
         for oPCSFilter, sFilter, oEquivFilter in aPCSNumberTests:
-            # pylint: disable=E1101
-            # pyprotocols confuses pylinta
             oFilter = self._parse_filter(sFilter)
             aExpectedCards = self._get_physical_names(oPCSFilter, oEquivFilter)
             aCSCards = self._get_physical_names(oPCSFilter, oFilter)
