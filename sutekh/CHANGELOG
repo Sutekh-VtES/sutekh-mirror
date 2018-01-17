@@ -1,6 +1,7 @@
 17 Jan 2018
  * Fix bug in handling hash errors for cardlist zip file
  * Also check hash when manually downloading cardlist zip file
+ * Fix bug in handling failing urls in CardImages plugin
 
 16 Jan 2018
  * Refactor initial database initialisation checks
