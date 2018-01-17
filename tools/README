@@ -37,3 +37,6 @@ whitespace_eol.py - A plugin for pylint which warns about whitespace at the
 pyprotocols_interface.py - A plugin so pylint will recognise the PyProtocols
           advise statemt as implementing an Interface. This aims to cover
           the usage in Sutekh, and thus isn't very general.
+
+skip_sqlobject_constructors - A plugin that skips the parameter checks for
+          SQLObject classes. This is fairly specific to Sutekh.
