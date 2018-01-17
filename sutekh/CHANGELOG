@@ -1,3 +1,21 @@
+17 Jan 2018
+ * Fix bug in handling hash errors for cardlist zip file
+ * Also check hash when manually downloading cardlist zip file
+
+16 Jan 2018
+ * Refactor initial database initialisation checks
+ * Fix bug with upgrading 0.8 databases
+
+15 Jan 2018
+ * Prevent running the card set reloads too early when updating the
+   cardlist
+ * Fix some bugs with the initial database creation caused by the
+   cardlist refactoring (dropped return values)
+
+14 Jan 2018
+ * Use common card list reading code for the start card list update
+   checks as well.
+
 11 Jan 2018
  * Add a lookup hints table for handling misnamed cards more easily
    - Add the required auto-upgrade logical to the database
