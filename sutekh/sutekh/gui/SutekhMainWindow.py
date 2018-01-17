@@ -8,8 +8,6 @@
 
 import logging
 import datetime
-import zipfile
-from StringIO import StringIO
 
 import gtk
 

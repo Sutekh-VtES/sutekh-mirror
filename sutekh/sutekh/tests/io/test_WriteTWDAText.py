@@ -11,7 +11,6 @@ import unittest
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 
 from sutekh.io.WriteTWDAText import WriteTWDAText
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 

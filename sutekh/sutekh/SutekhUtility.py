@@ -9,10 +9,8 @@
 """Misc functions needed in various places in Sutekh."""
 
 import re
-from sqlobject import sqlhub
 
 from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
-from sutekh.base.core.DBUtility import flush_cache
 from sutekh.base.io.IOBase import safe_parser
 from sutekh.base.io.LookupCSVParser import LookupCSVParser
 
