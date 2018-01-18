@@ -137,10 +137,10 @@ class WriteVEKNForum(ArdbInfo):
                 iTrifles = self._count_trifles(dLib)
                 if iTrifles > 1:
                     sLib += "[b][u]%s [%d] (%d trifles)[/u][/b]\n" % (
-                            sTypeString, iTotal, iTrifles)
+                        sTypeString, iTotal, iTrifles)
                 elif iTrifles == 1:
                     sLib += "[b][u]%s [%d] (%d trifle)[/u][/b]\n" % (
-                            sTypeString, iTotal, iTrifles)
+                        sTypeString, iTotal, iTrifles)
                 else:
                     sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
             else:

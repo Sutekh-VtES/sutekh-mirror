@@ -73,7 +73,7 @@ class SutekhCardFilter(Filter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
+        # E1101 - avoid SQLObject method not detected problems
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id == self._oMapTable.q.id)]
 
@@ -84,8 +84,6 @@ class ClanFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sClan):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = IClan(sClan).id
         self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
@@ -101,8 +99,6 @@ class MultiClanFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aClans):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [IClan(x).id for x in aClans]
         self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
@@ -119,8 +115,6 @@ class DisciplineFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sDiscipline):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [oP.id for oP in IDiscipline(sDiscipline).pairs]
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
@@ -136,8 +130,6 @@ class MultiDisciplineFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDisciplines):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         oPairs = []
         for sDis in aDisciplines:
             oPairs += IDiscipline(sDis).pairs
@@ -157,8 +149,6 @@ class DisciplineLevelFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, tDiscLevel):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         sDiscipline, sLevel = tDiscLevel
         sLevel = sLevel.lower()
         assert sLevel in ('inferior', 'superior')
@@ -181,8 +171,6 @@ class MultiDisciplineLevelFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aDiscLevels):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = []
         if isinstance(aDiscLevels[0], basestring):
             aValues = split_list(aDiscLevels)
@@ -219,8 +207,6 @@ class CryptCardFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [ICardType(x).id for x in CRYPT_TYPES]
         self._oMapTable = make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
@@ -231,8 +217,6 @@ class SectFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sSect):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = ISect(sSect).id
         self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
@@ -248,8 +232,6 @@ class MultiSectFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aSects):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [ISect(x).id for x in aSects]
         self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
@@ -266,8 +248,6 @@ class TitleFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sTitle):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = ITitle(sTitle).id
         self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
@@ -282,8 +262,6 @@ class MultiTitleFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aTitles):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [ITitle(x).id for x in aTitles]
         self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
@@ -300,8 +278,6 @@ class CreedFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCreed):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = ICreed(sCreed).id
         self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
@@ -317,8 +293,6 @@ class MultiCreedFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCreeds):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [ICreed(x).id for x in aCreeds]
         self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
@@ -335,8 +309,6 @@ class VirtueFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sVirtue):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = IVirtue(sVirtue).id
         self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
@@ -352,8 +324,6 @@ class MultiVirtueFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aVirtues):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [IVirtue(x).id for x in aVirtues]
         self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
@@ -494,6 +464,8 @@ class MultiCostFilter(SutekhCardFilter):
         return [str(x) for x in range(0, iMax + 1)] + ['X']
 
     def _get_expression(self):
+        # pylint: disable=singleton-comparison
+        # == None syntax needed by SQLObject
         if self.__bZeroCost:
             if self.__aCost:
                 return OR(IN(self._oMapTable.q.cost, self.__aCost),

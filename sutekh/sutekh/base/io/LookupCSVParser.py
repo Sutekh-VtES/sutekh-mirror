@@ -18,8 +18,6 @@ class LookupCSVParser(object):
     """Parse lookup info from a CSV file and add the required
        LookupHints entries to the database."""
 
-    # pylint: disable=R0913
-    # we may need all these arguments for some files
     def __init__(self, oLogHandler):
         self.oLogger = Logger('lookup data parser')
         if oLogHandler is not None:
@@ -35,7 +33,5 @@ class LookupCSVParser(object):
         for sDomain, sLookup, sValue in aRows:
             oLookup = LookupHints(domain=sDomain, lookup=sLookup,
                                   value=sValue)
-            # pylint: disable=E1101
-            # E1101 - avoid SQLObject method not detected problems
             oLookup.syncUpdate()
             self.oLogger.info('Added Lookup : (%s, %s)', sDomain, sLookup)

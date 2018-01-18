@@ -32,13 +32,13 @@ def flush_cache(bMakeCache=True):
     """Flush all the object caches - needed before importing new card lists
        and such"""
     for oJoin in AbstractCard.sqlmeta.joins:
-        if type(oJoin) is SOCachedRelatedJoin:
+        if isinstance(oJoin, SOCachedRelatedJoin):
             oJoin.flush_cache()
     # pylint: disable=E1101
     # AbstractCard confuses pylint
     for oChild in AbstractCard.__subclasses__():
         for oJoin in oChild.sqlmeta.joins:
-            if type(oJoin) is SOCachedRelatedJoin:
+            if isinstance(oJoin, SOCachedRelatedJoin):
                 oJoin.flush_cache()
     if bMakeCache:
         make_adapter_caches()
@@ -47,13 +47,13 @@ def flush_cache(bMakeCache=True):
 def init_cache():
     """Initiliase the cached join tables."""
     for oJoin in AbstractCard.sqlmeta.joins:
-        if type(oJoin) is SOCachedRelatedJoin:
+        if isinstance(oJoin, SOCachedRelatedJoin):
             oJoin.init_cache()
     # pylint: disable=E1101
     # AbstractCard confuses pylint
     for oChild in AbstractCard.__subclasses__():
         for oJoin in oChild.sqlmeta.joins:
-            if type(oJoin) is SOCachedRelatedJoin:
+            if isinstance(oJoin, SOCachedRelatedJoin):
                 oJoin.init_cache()
     make_adapter_caches()
 

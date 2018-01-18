@@ -307,7 +307,7 @@ class BaseOpeningDraw(BasePlugin):
         def change_hand(oVBox, oNewHand, oDetailBox):
             """Replace the existing widget in oVBox with oNewHand."""
             for oChild in oVBox.get_children():
-                if type(oChild) is gtk.VBox:
+                if isinstance(oChild, gtk.VBox):
                     oVBox.remove(oChild)
             oVBox.pack_start(oNewHand, False, False)
             if oDetailBox:

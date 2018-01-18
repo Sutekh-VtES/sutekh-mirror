@@ -179,8 +179,6 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
-            # pylint: disable=E1101
-            # SQLObject confuses pylint
             if not oPhysCard:
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)

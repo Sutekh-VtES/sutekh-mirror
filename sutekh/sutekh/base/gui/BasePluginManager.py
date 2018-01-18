@@ -29,7 +29,7 @@ def submodules(oPackage):
     oLoader = getattr(oPackage, "__loader__", None)
     aModules = set()
 
-    if type(oLoader) is zipimport.zipimporter:
+    if isinstance(oLoader, zipimport.zipimporter):
         # look inside the zip
         oPackageZip = zipfile.ZipFile(oLoader.archive)
         sPrefix = "/".join(oPackage.__name__.split('.')) + "/"

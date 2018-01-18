@@ -12,10 +12,8 @@
 # Base Classes
 class AbbrevMeta(type):
     """Meta class for the abbreviation classes"""
-    # pylint: disable=W0231, C0203
+    # pylint: disable=W0231
     # W0231 - no point in calling type's init
-    # C0203 - pylint's buggy here, see
-    # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
     def __init__(cls, _sName, _aBases, _dDict):
         if cls.dKeys:
             cls.make_lookup()
@@ -31,8 +29,6 @@ class AbbrevMeta(type):
                 cls._dLook[sAlt] = sKey
 
 
-# pylint: disable=E1101
-# meta-class magic with _dLook confuses pylint
 class AbbreviationLookup(object):
     """Base class for specific abbreviation tables."""
     __metaclass__ = AbbrevMeta
@@ -45,6 +41,8 @@ class AbbreviationLookup(object):
     def canonical(cls, sName):
         """Translate a possibly abbreviated name into a canonical one.
            """
+        # pylint: disable=no-member
+        # meta-class magic with _dLook confuses pylint
         return cls._dLook[sName]
 
     @classmethod

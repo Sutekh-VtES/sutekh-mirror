@@ -38,7 +38,7 @@ def make_alignment(oLabel, oFileButton, oUseButton=None):
 
 def get_domain(sUrl):
     """Strip out the domain of the url"""
-    _, sDomain, _, _, _ = urlsplit(sUrl)
+    sDomain = urlsplit(sUrl)[1]
     return sDomain
 
 
@@ -197,6 +197,8 @@ class DataFilesDialog(SutekhDialog):
         bHideZip = self._oHideZip.get_active()
         for sName, oWidgets in self._dFileWidgets.items():
             oAlign = oWidgets.oAlign
+            # pylint: disable=expression-not-assigned
+            # We use the inline syntax for compactness and readablity
             if sName == COMBINED_ZIP:
                 oAlign.hide() if bHideZip else oAlign.show()
             else:

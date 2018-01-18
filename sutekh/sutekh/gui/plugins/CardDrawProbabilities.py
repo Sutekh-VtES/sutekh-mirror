@@ -110,6 +110,8 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
         bCrypt = False
         bLibrary = False
         for oCard in aSelectedCards:
+            # pylint: disable=simplifiable-if-statement
+            # pylint misidentifies this because it misses the loop
             if is_crypt_card(oCard):
                 bCrypt = True
             else:

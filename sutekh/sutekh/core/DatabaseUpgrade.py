@@ -46,6 +46,7 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # W0232 - SQLObject classes don't have user defined __init__
 class AbstractCard_v5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
@@ -96,6 +97,7 @@ class AbstractCard_v5(SQLObject):
 
 class AbstractCard_v6(SQLObject):
     """Table used to upgrade AbstractCard from v6"""
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
@@ -146,6 +148,7 @@ class AbstractCard_v6(SQLObject):
 
 class PhysicalCard_ACv5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta cleass used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
@@ -160,6 +163,7 @@ class PhysicalCard_ACv5(SQLObject):
 
 class PhysicalCard_ACv6(SQLObject):
     """Table used to upgrade AbstractCard from v6"""
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta cleass used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
@@ -175,6 +179,7 @@ class PhysicalCard_ACv6(SQLObject):
 class Expansion_v3(SQLObject):
     """Table used to update Expansion from v3"""
 
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta cleass used to set the correct table"""
         table = Expansion.sqlmeta.table
@@ -188,6 +193,7 @@ class Expansion_v3(SQLObject):
 class RarityPair_Ev3(SQLObject):
     """Table used to update Expansion from v3"""
 
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta cleass used to set the correct table"""
         table = RarityPair.sqlmeta.table
@@ -295,7 +301,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         aMessages = []
         if (oVer.check_tables_and_versions([Expansion], [3], oOrigConn) and
                 oVer.check_tables_and_versions([LookupHints],
-                                                [-1], oOrigConn)):
+                                               [-1], oOrigConn)):
             aMessages = ["Incomplete information to fill the LookupHints"
                          " table. You will need to reimport the cardlist"
                          " information."]

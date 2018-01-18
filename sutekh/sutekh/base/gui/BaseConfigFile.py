@@ -200,7 +200,9 @@ class BaseConfigFile(object):
            config object.
            """
         aErrors = []
-        if oValidationResults == True:
+        # oValidationResults could be a dict or 'True', so we need to
+        # be explicit in this test
+        if oValidationResults is True:
             return aErrors
 
         for (aSections, sKey, _oIgnore) in flatten_errors(self._oConfig,

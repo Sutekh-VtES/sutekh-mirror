@@ -182,10 +182,7 @@ class BaseGuiDBManager(object):
                               ["Attempt to Continue Anyway (This is most"
                                " probably very dangerous)?"])
             iResponse = do_complaint_warning(sMesg)
-            if iResponse == gtk.RESPONSE_OK:
-                return True
-            else:
-                return False
+            return iResponse == gtk.RESPONSE_OK
         return True
 
     def initialize_db(self, oConfig):

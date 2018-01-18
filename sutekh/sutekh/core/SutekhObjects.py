@@ -197,6 +197,7 @@ class Title(SQLObject):
 
 
 class MapAbstractCardToClan(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_clan_map'
 
@@ -210,6 +211,7 @@ class MapAbstractCardToClan(SQLObject):
 
 
 class MapAbstractCardToDisciplinePair(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_discipline_pair_map'
 
@@ -223,6 +225,7 @@ class MapAbstractCardToDisciplinePair(SQLObject):
 
 
 class MapAbstractCardToSect(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_sect_map'
 
@@ -236,6 +239,7 @@ class MapAbstractCardToSect(SQLObject):
 
 
 class MapAbstractCardToTitle(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_title_map'
 
@@ -249,6 +253,7 @@ class MapAbstractCardToTitle(SQLObject):
 
 
 class MapAbstractCardToCreed(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_creed_map'
 
@@ -262,6 +267,7 @@ class MapAbstractCardToCreed(SQLObject):
 
 
 class MapAbstractCardToVirtue(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_virtue_map'
 
