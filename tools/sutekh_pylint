@@ -9,6 +9,8 @@ const-rgx = [_]{0,2}[A-Z0-9_]{1,20}$
 module-rgx = (([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[A-Z][a-zA-Z0-9]+))$
 # sqlmeta is a SQLObject convention, which we need to support
 class-rgx = [A-Z_][a-zA-Z0-9]+$|sqlmeta
+# We support ICamelCase for functions for the adapters
+function-rgx=[a-z_][a-z0-9_]{2,40}$|I[A-Z][A-z0-9]{1,19}$
 # args & kwargs are acceptable names (common in python)
 # plugin is used by all the plugins, so we accept that
 good-names=kwargs, cls, __all__, args, plugin
