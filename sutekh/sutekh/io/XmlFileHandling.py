@@ -36,7 +36,7 @@ def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
 
 class PhysicalCardXmlFile(object):
     """Class for handling PhysicalCard XML Files"""
-    def __init__(self, sFileName=None, sDir=None, oLookup=DEFAULT_LOOKUP):
+    def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
         self.oCardLookup = oLookup
         self.sXmlFile = sFileName
 
