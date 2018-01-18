@@ -45,12 +45,13 @@ class CardSetFrame(CardListFrame):
 
         self.update_name(sName)
 
-    # pylint: disable=W0212
-    # We allow access via these properties
+    # pylint: disable=W0212, C0103
+    # W0212: We allow access via these properties
+    # C0103: different convention for property names
     name = property(fget=lambda self: self._sName, doc="Frame Name")
     cardset_name = property(fget=lambda self: self._oController.view.sSetName,
                             doc="Name of the card set for this frame")
-    # pylint: enable=W0212
+    # pylint: enable=W0212, C0103
 
     def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""

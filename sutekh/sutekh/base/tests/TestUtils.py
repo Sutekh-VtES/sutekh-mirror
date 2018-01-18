@@ -124,10 +124,10 @@ class BaseTestCase(unittest.TestCase):
 
 class DummyHolder(object):
     """Emulate CardSetHolder for test purposes."""
+    # pylint: disable=C0103
+    # placeholder names for CardSetHolder attributes
     def __init__(self):
         self.dCards = {}
-        # pylint: disable=C0103
-        # placeholder names for CardSetHolder attributes
         self.name = ''
         self.comment = ''
         self.author = ''

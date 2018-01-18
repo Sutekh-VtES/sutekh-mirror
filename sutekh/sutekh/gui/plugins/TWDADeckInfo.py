@@ -254,6 +254,8 @@ class TWDAInfoPlugin(SutekhPlugin):
             sMatchText = 'Matching ALL of "%s"' % sCards
 
         # Create a dialog showing the results
+        # pylint: disable=redefined-variable-type
+        # This redefinition is intentional
         if dCardSets:
             oDlg = self._fill_dlg(dCardSets, sMatchText)
         else:
@@ -469,13 +471,13 @@ class TWDAInfoPlugin(SutekhPlugin):
             return False
         # We download everything first, so we don't delete card sets which
         # fail to download.
-        oLogHandler = BinnedCountLogHandler()
+        oBinLogHandler = BinnedCountLogHandler()
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Downloading TWDA data")
         oLogger = Logger('Download zip files')
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_tot_bins(len(aToUnzip))
+        oLogger.addHandler(oBinLogHandler)
+        oBinLogHandler.set_dialog(oProgressDialog)
+        oBinLogHandler.set_tot_bins(len(aToUnzip))
         oProgressDialog.show()
         # We sort the list of urls to download for cosmetic reasons
         for sUrl, sTWDA, sHash in sorted(aToUnzip, key=lambda x: x[1]):
@@ -485,7 +487,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             try:
 
                 sData = fetch_data(oFile, sHash=sHash,
-                                   oLogHandler=oLogHandler,
+                                   oLogHandler=oBinLogHandler,
                                    fErrorHandler=gui_error_handler)
             except HashError:
                 do_complaint_error("Checksum failed for %s\nSkipping"
@@ -496,7 +498,7 @@ class TWDAInfoPlugin(SutekhPlugin):
             oZipFile = ZipFileWrapper(StringIO(sData))
             aZipHolders.append(oZipFile)
             iZipCount += len(oZipFile.get_all_entries())
-            oLogHandler.inc_cur_bin()
+            oBinLogHandler.inc_cur_bin()
         oProgressDialog.destroy()
 
         # Bomb out if we're going to end up doing nothing
@@ -518,13 +520,13 @@ class TWDAInfoPlugin(SutekhPlugin):
             oTrans = oOldConn.transaction()
             sqlhub.processConnection = oTrans
 
-            oLogHandler = SutekhCountLogHandler()
-            oLogHandler.set_total(len(aToRemove))
+            oCntLogHandler = SutekhCountLogHandler()
+            oCntLogHandler.set_total(len(aToRemove))
             oProgressDialog = ProgressDialog()
             oProgressDialog.set_description("Preparing database for TWDA data")
             oLogger = Logger('Deleting decks')
-            oLogger.addHandler(oLogHandler)
-            oLogHandler.set_dialog(oProgressDialog)
+            oLogger.addHandler(oCntLogHandler)
+            oCntLogHandler.set_dialog(oProgressDialog)
             oProgressDialog.show()
             for sName in aToRemove:
                 # We close any open card sets to avoid issues with
@@ -542,14 +544,14 @@ class TWDAInfoPlugin(SutekhPlugin):
             oTrans.commit(close=True)
             sqlhub.processConnection = oOldConn
 
-        oLogHandler = SutekhCountLogHandler()
+        oCntLogHandler = SutekhCountLogHandler()
         aExistingList = get_current_card_sets()
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Adding TWDA Data")
         oLogger = Logger('Read zip file')
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_total(iZipCount)
+        oLogger.addHandler(oCntLogHandler)
+        oCntLogHandler.set_dialog(oProgressDialog)
+        oCntLogHandler.set_total(iZipCount)
         oProgressDialog.show()
         aCSList = []
         for oZipFile in aZipHolders:

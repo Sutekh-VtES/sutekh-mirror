@@ -23,6 +23,8 @@ from sutekh.base.core.BaseFilters import (MultiCardTypeFilter,
 
 class HandDetails(object):
     """Convience class for holding drawn hand details"""
+    # pylint: disable=too-many-arguments
+    # Use all this for showing the results
 
     def __init__(self, dHand, dCrypt, sTypeDetails, sPropDetails,
                  dNextHand, dNextCrypt):

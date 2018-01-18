@@ -260,6 +260,8 @@ class AppMainWindow(MultiPaneWindow):
             oNewFrame = self.add_pane(bVert, iPos)
             oRestored = None
             self.win_focus(None, None, oNewFrame)
+            # pylint: disable=redefined-variable-type
+            # reuse of oRestored is intentional
             if sType == PhysicalCardSet.sqlmeta.table:
                 oRestored = self.replace_with_physical_card_set(sName,
                                                                 oNewFrame,

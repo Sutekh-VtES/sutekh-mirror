@@ -1457,7 +1457,7 @@ class CardSetCardListModel(CardListModel):
                 # this card list can be empty
                 self._dCache['this card list'].append(oPhysCard)
             elif (self._dCache['this card list']
-                    and self.configfilter is None):
+                  and self.configfilter is None):
                 self._dCache['this card list'].remove(oPhysCard)
             if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
                 # This cache may no longer be valid in this case
@@ -2167,7 +2167,7 @@ class CardSetCardListModel(CardListModel):
             if bRemove:
                 self._remove_second_level(oAbsId, sCardSetName)
             elif (tCSKey in self._dAbs2nd3rdLevel2Iter and
-                    sExpName in self._dAbs2nd3rdLevel2Iter[tCSKey]):
+                  sExpName in self._dAbs2nd3rdLevel2Iter[tCSKey]):
                 # Update entry
                 bRemove = False
                 for oIter in self._dAbs2nd3rdLevel2Iter[tCSKey][sExpName]:

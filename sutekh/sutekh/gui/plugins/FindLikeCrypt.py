@@ -137,6 +137,8 @@ class FindLikeVampires(SutekhPlugin):
             self.display_results(dGroups)
     # pylint: enable=W0201
 
+    # pylint: disable=too-many-arguments
+    # need all these arguments to format results nicely
     def _group_cards(self, aCards, iNum, aSubSets, bSuperior, bUseCardSet):
         """Group the cards and return only cards with iNum or more
            instances.
@@ -169,6 +171,7 @@ class FindLikeVampires(SutekhPlugin):
                     dResults.setdefault(make_key(aSet, bSuperior),
                                         []).append(oCard)
         return dResults
+    # pylint: enable=too-many-arguments
 
     def _get_selected_crypt_card(self):
         """Extract selected crypt card from the model."""
@@ -233,6 +236,8 @@ class FindLikeVampires(SutekhPlugin):
         bUseCardSet = oUseCardSet.get_active()
         iNum = int(oComboBox.get_active_text())
         bSuperior = oSuperior and oSuperior.get_active()
+        # pylint: disable=redefined-variable-type
+        # resuse of oDisciplineFilter is intentional
         if bSuperior:
             oDisciplineFilter = MultiDisciplineLevelFilter(
                 [(x.fullname, 'superior') for x in aSuperior])
