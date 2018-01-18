@@ -62,8 +62,6 @@ class CreateCardSetDialog(SutekhDialog):
         self.oInUse = gtk.CheckButton('Mark card Set as In Use')
 
         self.set_default_size(500, 500)
-        # pylint: disable=E1101
-        # gtk methods confuse pylint
         self.vbox.pack_start(oNameLabel, expand=False)
         self.vbox.pack_start(self.oName, expand=False)
         self.vbox.pack_start(oAuthorLabel, expand=False)

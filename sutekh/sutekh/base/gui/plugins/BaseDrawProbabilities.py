@@ -63,6 +63,8 @@ def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
         raise RuntimeError('Invalid input: aFound : %s, aObjects: %s' % (
             ','.join([str(x) for x in aFound]),
             ','.join([str(x) for x in aObjects])))
+    # pylint: disable=too-many-boolean-expressions
+    # We do want to check all of these
     if sum(aFound) < 0 or min(aFound) < 0 or sum(aObjects) < 0 or \
             iTotal <= 0 or iDraws <= 0 or min(aObjects) < 0 or \
             sum(aObjects) > iTotal or iDraws > iTotal:
@@ -73,6 +75,7 @@ def _multi_hyper_prob(aFound, iDraws, aObjects, iTotal):
                                          aFound]),
                                iDraws, ','.join([str(x) for x in aObjects]),
                                iTotal))
+    # pylint: enable=too-many-boolean-expressions
     # Eliminate trivial cases
     if sum(aFound) > iDraws:
         return 0.0
@@ -259,9 +262,6 @@ class BaseDrawProbPlugin(BasePlugin):
         oTitleLabel = gtk.Label('Draw results :')
         oResultsBox = gtk.VBox(False, 2)
         oResultsBox.pack_start(oTitleLabel, False, False)
-
-        # pylint: disable=E1101
-        # pylint doesn't detect gtk methods correctly
 
         oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,
                                                   True))

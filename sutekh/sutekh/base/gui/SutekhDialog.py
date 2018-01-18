@@ -32,8 +32,6 @@ class SutekhDialog(gtk.Dialog):
         """Abuse add_button and action_area to insert a button at the
            head of the list."""
         oButton = self.add_button(sText, iResponse)
-        # pylint: disable=E1101
-        # action_area confuses pylint
         self.action_area.reorder_child(oButton, 0)
 
 
@@ -117,8 +115,6 @@ class DetailDialog(SutekhDialog):
         oExpander.add(oFrame)
         oMessageBox.pack_start(oExpander)
         oHBox.pack_start(oMessageBox)
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(oHBox)
         oExpander.set_expanded(False)
         self.show_all()
@@ -173,8 +169,9 @@ def exception_handler(oType, oValue, oTraceback):
 
 class NotebookDialog(SutekhDialog):
     """Dialog with a notebook widget."""
-    # pylint: disable=R0904
-    # gtk widget, so has many public methods
+    # pylint: disable=R0904, W1001
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
 
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
         super(NotebookDialog, self).__init__(sTitle, oParent, iFlags,
@@ -183,8 +180,6 @@ class NotebookDialog(SutekhDialog):
         self._oNotebook.set_scrollable(True)
         self._oNotebook.popup_enable()
 
-        # pylint: disable=E1101
-        # vbox, action_area confuse pylint
         self.vbox.pack_start(self._oNotebook)
 
     # pylint: disable=W0212

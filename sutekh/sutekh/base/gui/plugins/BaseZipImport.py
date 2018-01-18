@@ -88,8 +88,6 @@ class SelectZipFileContents(SutekhDialog):
 
         # Ask user to select entries to import
         self.oScrolledList = ScrolledList('Available Card Sets', oModel)
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(self.oScrolledList)
         self.oScrolledList.set_size_request(450, 300)
         self.oScrolledList.fill_list(self.dEscapedList)

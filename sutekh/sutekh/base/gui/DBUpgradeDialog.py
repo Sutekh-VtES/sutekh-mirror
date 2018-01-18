@@ -20,8 +20,6 @@ class DBUpgradeDialog(SutekhDialog):
        """
     def __init__(self, aMessages):
         # Create Dialog
-        # pylint: disable=E1101
-        # vbox confuses pylint
         super(DBUpgradeDialog, self).__init__(
             "Memory Copy Created", None,
             gtk.DIALOG_MODAL, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,

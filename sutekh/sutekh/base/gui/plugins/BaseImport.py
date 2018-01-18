@@ -72,8 +72,6 @@ class BaseImport(BasePlugin):
                                  (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.oDlg.vbox.pack_start(gtk.Label("URL:"), expand=False)
 
         self.oUri = gtk.Entry(150)

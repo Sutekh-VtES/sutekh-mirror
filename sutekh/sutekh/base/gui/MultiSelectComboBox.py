@@ -43,8 +43,6 @@ class MultiSelectComboBox(gtk.HBox):
             "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
             gtk.DIALOG_DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
-        # pylint: disable=E1101
-        # action_area, vbox confuses pylint
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(oScrolled)
         self._oDialog.connect('key-press-event', self.__hide_on_return)
@@ -97,8 +95,6 @@ class MultiSelectComboBox(gtk.HBox):
 
         tWinPos = oParent.get_origin()
         # Need coordinates relative to root window
-        # pylint: disable=E1101
-        # allocation confuses pylint
         tButtonPos = (self._oButton.allocation.x, self._oButton.allocation.y)
         tShift = (5, self._oButton.allocation.height)
 

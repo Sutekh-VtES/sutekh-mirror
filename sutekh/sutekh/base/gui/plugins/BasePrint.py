@@ -18,8 +18,6 @@ NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
 def _card_expansion_details(oCard, iMode):
     """Get the expansion for the name"""
-    # pylint: disable=E1101
-    # SQLObject & PyPrototocols confuses pylint
     oPhysCard = IPhysicalCard(oCard)
     if oPhysCard.expansion:
         if iMode == SHORT_LINE:
@@ -219,8 +217,6 @@ class BasePrint(BasePlugin):
             dCardInfo = {}
             dExpInfo = {}
             for oCard in oGroupIter:
-                # pylint: disable=E1101
-                # pyprotocols confuses pylint
                 oAbsCard = IAbstractCard(oCard)
                 dCardInfo.setdefault(oAbsCard.name, 0)
                 dCardInfo[oAbsCard.name] += 1

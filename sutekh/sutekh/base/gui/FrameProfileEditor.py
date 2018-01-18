@@ -47,8 +47,6 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.connect("changed", self._selector_changed)
         self.__oSelectorCombo.connect("notify::popup-shown",
                                       self._selector_opened)
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
 
         aOptions = []

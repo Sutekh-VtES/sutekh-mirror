@@ -78,8 +78,6 @@ class BaseExpansionStats(BasePlugin):
 
         self._oStatsVbox = gtk.VBox(False, 0)
 
-        # pylint: disable=E1101
-        # vbox methods not seen
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)
         oDlg.show_all()
@@ -157,8 +155,6 @@ class StatsModel(gtk.TreeStore):
             sDate = 'Unknown Date'
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
-                # pylint: disable=E1101
-                # pyprotocols confuses pylint
                 oExp = IExpansion(sExp.strip())
                 if oExp.releasedate:
                     sDate = oExp.releasedate.strftime('%Y-%m-%d')
@@ -202,8 +198,6 @@ class StatsModel(gtk.TreeStore):
                             if not oPair.expansion.name.startswith('Promo-'):
                                 continue
                             oExp = oPair.expansion
-                            # pylint: disable=E1103
-                            # pyprotocols confuses pylint
                             if oExp.releasedate:
                                 self.set(oCardIter, 1,
                                          oExp.releasedate.strftime('%Y-%m-%d'))

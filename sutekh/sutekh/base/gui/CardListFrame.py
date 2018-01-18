@@ -12,8 +12,9 @@ from .BasicFrame import BasicFrame
 
 
 class CardListFrame(BasicFrame):
-    # pylint: disable=R0904
-    # gtk.Widget, so lots of public methods
+    # pylint: disable=R0904, W1001
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Base class for all the Card Lists.
 
        Provide common methods and basic parameters common to all the

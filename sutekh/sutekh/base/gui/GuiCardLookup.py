@@ -442,9 +442,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             sInfo, "The following card and expansion combinations could not "
             "be found:")
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
-
         oPhysCardView = PCLLookupView(oUnknownDialog, self._oConfig)
         oReplacementView = self._fill_dialog(oHBox, oPhysCardView)
         oModel = oReplacementView.get_model()
@@ -506,8 +503,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
 
@@ -526,8 +521,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
            dialog."""
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oViewWin = AutoScrolledWindow(oView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
@@ -588,8 +581,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     def _lookup_new_phys_card(self, oAbsCard, sNewExpName):
         """Lookup the physical card, given the correct name + expansion
            name."""
-        # pylint: disable=E1101
-        # SQLObject + pyprotocols confuse pylint
         if sNewExpName is not None:
             try:
                 iExpID = IExpansion(sNewExpName).id
@@ -614,8 +605,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # we use lots of variables for clarity
         oUnknownDialog, oHBox = self._create_dialog(
             sInfo, "The following card names could not be found")
-        # pylint: disable=E1101
-        # vbox confuses pylint
 
         oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
         oReplacementView = self._fill_dialog(oHBox, oAbsCardView)
@@ -685,9 +674,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             "OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
-
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
 
         oButtonBox = gtk.VBox()
@@ -752,8 +738,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             "Cards with unknown expansion %s" % sName, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oLabel = gtk.Label(sCardText)
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
         oCardDialog.set_size_request(300, 400)
@@ -764,8 +748,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     @staticmethod
     def _popup_exp(_oButton, oSelector):
         """Popup the list of cards from the selected replacement expansion"""
-        # pylint: disable=E1101
-        # vbox & SQLObject confuse pylint
         sNewName = oSelector.get_active_text()
         if sNewName == 'No Expansion' or sNewName is None:
             # No cards to show, so do nothing

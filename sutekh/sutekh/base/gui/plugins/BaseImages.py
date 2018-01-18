@@ -158,9 +158,10 @@ class CardImagePopupMenu(gtk.Menu):
 
 
 class BaseImageFrame(BasicFrame):
-    # pylint: disable=R0904, R0902
-    # R0904 - can't not trigger these warning with pygtk
+    # pylint: disable=R0902, R0904, W1001
     # R0902 - we need to keep quite a lot of internal state
+    # R0904 - can't not trigger these warning with pygtk
+    # W1001: gtk widgets aren't old-style, despite pylint's opinion
     """Frame which displays the image.
 
        We wrap a gtk.Image in an EventBox (for focus & DnD events)
@@ -386,8 +387,6 @@ class BaseImageFrame(BasicFrame):
                 self.oExpansionLabel.set_markup(
                     '<i>Image from expansion : </i> %s' % self._sCurExpansion)
                 self.oExpansionLabel.show()
-                # pylint: disable=E1101
-                # pylint doesn't pick up allocation methods correctly
                 iHeightOffset = self.oExpansionLabel.allocation.height + 2
             else:
                 self.oExpansionLabel.hide()  # config changes can cause this
@@ -584,8 +583,6 @@ class BaseImageConfigDialog(SutekhDialog):
             "Choose location for images file", "Choose image directory",
             sDefaultDir, dUrls)
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable=E1101
-        # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(self.oDescLabel, False, False)
         if not bFirstTime:
             # Set to the null choice

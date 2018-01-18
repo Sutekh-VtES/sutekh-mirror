@@ -105,8 +105,6 @@ class BaseConfigFile(object):
 
     def validate(self):
         """Validate a configuration object."""
-        # pylint: disable=E1101
-        # pkg_resources confuses pylint here
         fConfigSpec = pkg_resources.resource_stream(__name__,
                                                     "baseconfigspec.ini")
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,

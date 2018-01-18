@@ -58,8 +58,6 @@ class BaseCSVImport(BasePlugin):
         oLabel = gtk.Label()
         oLabel.set_markup("<b>Select CSV File ...</b>")
         oLabel.set_alignment(0.0, 0.5)
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.oDlg.vbox.pack_start(oLabel, padding=5)
 
         self.oFileChooser = SutekhFileButton(self.parent, "Select a CSV File")

@@ -202,6 +202,8 @@ def setup_logging(bVerbose, sErrFile=None):
         oRootLogger.setLevel(logging.DEBUG)
         bSkipVerbose = False
         if sErrFile:
+            # pylint: disable=redefined-variable-type
+            # We intend to redfine oLogHandler on the error path
             try:
                 oLogHandler = logging.FileHandler(sErrFile)
                 oRootLogger.addHandler(oLogHandler)

@@ -156,6 +156,8 @@ class BaseGuiDBManager(object):
         for oReader in self.tReaders:
             if oReader.sName not in dFiles:
                 continue
+            # pylint: disable=redefined-variable-type
+            # This redefinition is delibrate
             if oReader.bCountLogger:
                 oLogHandler = SutekhCountLogHandler()
             else:

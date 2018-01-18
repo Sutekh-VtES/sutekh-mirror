@@ -85,8 +85,6 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         aCards = []
         for sName in aNames:
             if sName:
-                # pylint: disable=E1101
-                # SQLObject confuses pylint
                 try:
                     oAbs = IAbstractCard(sName)
                     aCards.append(oAbs)

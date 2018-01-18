@@ -183,6 +183,8 @@ class FilterYaccParser(object):
     def p_filterpart_var(self, p):
         """filterpart : FILTERTYPE IN VARIABLE
                       | FILTERTYPE NOT IN VARIABLE"""
+        # pylint: disable=redefined-variable-type
+        # redefition of oResult is intentional
         if len(p) == 4:
             sVarName = p[3]
             oResult = FilterPartNode(p[1], None, sVarName)
@@ -663,12 +665,10 @@ class BinOpNode(OperatorNode):
         elif oRightFilter is None:
             return oLeftFilter
         if self.oOp == 'and':
-            oFilter = FilterAndBox([oLeftFilter, oRightFilter])
+            return FilterAndBox([oLeftFilter, oRightFilter])
         elif self.oOp == 'or':
-            oFilter = FilterOrBox([oLeftFilter, oRightFilter])
-        else:
-            raise RuntimeError('Unknown operator in AST')
-        return oFilter
+            return FilterOrBox([oLeftFilter, oRightFilter])
+        raise RuntimeError('Unknown operator in AST')
 
     def get_type(self):
         """Get the type of the filter - intersection of the children's types"""

@@ -22,9 +22,10 @@ from .BasicFrame import BasicFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=R0902, R0904, W1001
     # R0902 - we need to keep a lot of state, so many instance attributes
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_border_width(2)
@@ -598,8 +599,6 @@ class MultiPaneWindow(gtk.Window):
     def set_busy_cursor(self):
         """Set the window cursor to indicate busy status"""
         # This needs to be on the top level widget, so has to be here
-        # pylint: disable=E1101
-        # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:
             self.window.set_cursor(self._oBusyCursor)
@@ -609,8 +608,6 @@ class MultiPaneWindow(gtk.Window):
 
     def restore_cursor(self):
         """Restore the ordinary cursor"""
-        # pylint: disable=E1101
-        # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:
             self.window.set_cursor(None)

@@ -17,8 +17,9 @@ from .GuiCardSetFunctions import export_cs
 
 
 class CardSetMenu(CardListMenu):
-    # pylint: disable=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable=R0904, W1001
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Card Set Menu.
 
        Provide the usual menu options, and implement several of the
@@ -133,8 +134,6 @@ class CardSetMenu(CardListMenu):
 
     def _edit_properties(self, _oWidget):
         """Popup the Edit Properties dialog to change card set properties."""
-        # pylint: disable=E1101
-        # sqlobject confuses pylint
         self._oController.edit_properties(self)
 
     def update_card_set_menu(self, oCardSet):

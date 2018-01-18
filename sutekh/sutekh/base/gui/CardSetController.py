@@ -23,8 +23,6 @@ class CardSetController(object):
     _sFilterType = 'PhysicalCard'
 
     def __init__(self, sName, oMainWindow, oFrame, bStartEditable):
-        # pylint: disable=E1101, E1103
-        # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._aUndoList = collections.deque([], 50)
         self._aRedoList = collections.deque([], 50)
@@ -63,8 +61,6 @@ class CardSetController(object):
         """Returns the specific PhysicalCard that was successfully removed
            (which can differ from the card passed by the user)
            or None is if the operation failed."""
-        # pylint: disable=E1101, E1103
-        # SQLObject +Pyprotocol methods confuse pylint
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)
@@ -116,8 +112,6 @@ class CardSetController(object):
     def add_card(self, oPhysCard, sCardSetName, bAddUndo=True):
         """Returns the exact PhysicalCard that was successfully added,
            or None if the operation failed."""
-        # pylint: disable=E1101, E1103
-        # SQLObject + PyProtocols methods confuse pylint
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)
@@ -178,8 +172,6 @@ class CardSetController(object):
     def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
-        # pylint: disable=E1101
-        # sqlobject confuses pylint
         if check_ok_to_delete(self.__oPhysCardSet):
             self._oMainWindow.config_file.clear_cardset_profile(
                 self.model.cardset_id)  # Remove profile entry

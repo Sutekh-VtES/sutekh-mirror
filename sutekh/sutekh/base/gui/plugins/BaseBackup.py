@@ -130,8 +130,6 @@ class BaseBackup(BasePlugin):
 
         oWarning = gtk.Label()
         oWarning.set_markup("<b>This will delete all existing Card Sets</b>")
-        # pylint: disable=E1101
-        # plint doesn't pick up vbox methods correctly
         oDlg.vbox.pack_start(oWarning, expand=False)
         oDlg.vbox.reorder_child(oWarning, 0)
         oDlg.show_all()

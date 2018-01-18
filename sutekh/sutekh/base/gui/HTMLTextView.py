@@ -666,8 +666,6 @@ class HTMLViewDialog(SutekhDialog):
         super(HTMLViewDialog, self).__init__('Help', oParent,
                                              oButtons=(gtk.STOCK_CLOSE,
                                                        gtk.RESPONSE_CLOSE))
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oDirButtons = gtk.HButtonBox()
         self._oBackButton = gtk.Button(stock=gtk.STOCK_GO_BACK)
         self._oBackButton.connect('pressed', self._go_back)

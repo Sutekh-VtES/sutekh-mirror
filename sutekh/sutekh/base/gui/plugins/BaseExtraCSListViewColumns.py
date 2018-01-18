@@ -117,8 +117,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             # Cache lookups, so we don't hit the database so hard when
             # sorting
             if sCardSetName not in self._dCache:
-                # pylint: disable=E1101
-                # pylint + AbstractCard method wierdness
                 self._dCache[sCardSetName] = {}
                 self._dCache[sCardSetName]['Card Set'] = \
                     IPhysicalCardSet(sCardSetName)

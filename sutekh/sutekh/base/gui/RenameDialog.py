@@ -50,8 +50,6 @@ class RenameDialog(SutekhDialog):
         self.oEntry.connect("activate", self.handle_response, RENAME)
         self.connect("response", self.handle_response)
 
-        # pylint: disable=E1101
-        # pylint misses vbox methods
         self.vbox.pack_start(oLabel)
         self.vbox.pack_start(self.oEntry)
         self.show_all()

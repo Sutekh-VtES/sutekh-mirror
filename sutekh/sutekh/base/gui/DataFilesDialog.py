@@ -136,8 +136,6 @@ class DataFilesDialog(SutekhDialog):
             self._oHideZip.connect("toggled", self.hide_zip_toggled)
             self._oHideZip.show()
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(self.oBackupFileButton)
         self.vbox.pack_start(self.oBackupFileLabel)
         self.oBackupFileLabel.show()
