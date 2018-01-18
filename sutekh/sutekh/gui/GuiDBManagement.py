@@ -18,51 +18,51 @@ from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
                                   read_exp_date_list, read_lookup_data)
 
 
-CardListReader = DataFileReader(sName="cardlist.txt",
-                                sUrl=WW_CARDLIST_URL,
-                                sDescription="Official Card List",
-                                tPattern=('TXT files', ['*.txt']),
-                                bRequired=True,
+CARD_LIST_READER = DataFileReader(sName="cardlist.txt",
+                                  sUrl=WW_CARDLIST_URL,
+                                  sDescription="Official Card List",
+                                  tPattern=('TXT files', ['*.txt']),
+                                  bRequired=True,
+                                  bCountLogger=False,
+                                  fReader=read_white_wolf_list,
+                                 )
+
+EXTRA_CARD_READER = DataFileReader(sName="extra_list.txt",
+                                   sUrl=EXTRA_CARD_URL,
+                                   sDescription="Additional Card List",
+                                   tPattern=('TXT files', ['*.txt']),
+                                   bRequired=False,
+                                   bCountLogger=False,
+                                   fReader=read_white_wolf_list,
+                                  )
+
+RULINGS_READER = DataFileReader(sName="rulings.html",
+                                sUrl=WW_RULINGS_URL,
+                                sDescription="Official Rulings File",
+                                tPattern=('HTML files', ['*.html', '*htm']),
+                                bRequired=False,
                                 bCountLogger=False,
-                                fReader=read_white_wolf_list,
+                                fReader=read_rulings,
                                )
 
-ExtraCardReader = DataFileReader(sName="extra_list.txt",
-                                 sUrl=EXTRA_CARD_URL,
-                                 sDescription="Additional Card List",
-                                 tPattern=('TXT files', ['*.txt']),
+EXP_DATA_READER = DataFileReader(sName="expansiondates.csv",
+                                 sUrl=EXP_DATE_URL,
+                                 sDescription="Expansion Release "
+                                              "Date File",
+                                 tPattern=('CSV files', ['*csv']),
                                  bRequired=False,
-                                 bCountLogger=False,
-                                 fReader=read_white_wolf_list,
+                                 bCountLogger=True,
+                                 fReader=read_exp_date_list,
                                 )
 
-RulingsReader = DataFileReader(sName="rulings.html",
-                               sUrl=WW_RULINGS_URL,
-                               sDescription="Official Rulings File",
-                               tPattern=('HTML files', ['*.html', '*htm']),
-                               bRequired=False,
-                               bCountLogger=False,
-                               fReader=read_rulings,
-                              )
-
-ExpDateReader = DataFileReader(sName="expansiondates.csv",
-                               sUrl=EXP_DATE_URL,
-                               sDescription="Expansion Release "
-                                            "Date File",
-                               tPattern=('CSV files', ['*csv']),
-                               bRequired=False,
-                               bCountLogger=True,
-                               fReader=read_exp_date_list,
-                              )
-
-LookupDataReader = DataFileReader(sName="lookup.csv",
-                                  sUrl=LOOKUP_DATA_URL,
-                                  sDescription="Lookup Data File",
-                                  tPattern=('CSV files', ['*csv']),
-                                  bRequired=False,
-                                  bCountLogger=True,
-                                  fReader=read_lookup_data,
-                                 )
+LOOKUP_DATA_READER = DataFileReader(sName="lookup.csv",
+                                    sUrl=LOOKUP_DATA_URL,
+                                    sDescription="Lookup Data File",
+                                    tPattern=('CSV files', ['*csv']),
+                                    bRequired=False,
+                                    bCountLogger=True,
+                                    fReader=read_lookup_data,
+                                   )
 
 
 class GuiDBManager(BaseGuiDBManager):
@@ -75,8 +75,8 @@ class GuiDBManager(BaseGuiDBManager):
 
     bDisplayZip = True
 
-    tReaders = (LookupDataReader, CardListReader, ExtraCardReader,
-                RulingsReader, ExpDateReader)
+    tReaders = (LOOKUP_DATA_READER, CARD_LIST_READER, EXTRA_CARD_READER,
+                RULINGS_READER, EXP_DATA_READER)
 
     def __init__(self, oWin):
         super(GuiDBManager, self).__init__(oWin, DBUpgradeManager)

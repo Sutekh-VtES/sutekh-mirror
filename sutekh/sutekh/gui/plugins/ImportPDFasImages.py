@@ -72,6 +72,10 @@ class ImportView(ACLLookupView):
 class ImportPDFImagesPlugin(SutekhPlugin):
     """Plugin to split a VEKN card set PDF into images for use
        with the CardImages plugin."""
+    # pylint: disable=attribute-defined-outside-init
+    # We define a bunch of attributes outside of __init__, since there's
+    # no benefit to defining them earlier, and the plugin entry point ensures
+    # it will be safe.
 
     dTableVersions = {PhysicalCardSet: (7, )}
     aModelsSupported = ("MainWindow",)
@@ -229,7 +233,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         # poppler & glib confuse pylint
         try:
             self._oDocument = poppler.document_new_from_file(
-                    "file://" + sFile, None)
+                "file://" + sFile, None)
         except glib.GError:
             do_complaint_error("Unable to parse the PDF file: %s" % sFile)
             return
@@ -333,17 +337,17 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         iWidth, iHeight = oDrawArea.window.get_size()
         self._render_pdf(oContext, iWidth, iHeight)
 
-    def _render_pdf(self, oContext, iW, iH):
+    def _render_pdf(self, oContext, iWidth, iHeight):
         """Render the card on the given cairo context"""
         oContext.set_source_rgb(0, 0, 0)
-        oContext.rectangle(0, 0, iW, iH)
+        oContext.rectangle(0, 0, iWidth, iHeight)
         oContext.fill()
         if self._oPageImg:
-            x = START[0] + self._iXOffset + self._iXPos * CARD_DIM[0]
-            x = x * self._iScale
-            y = START[1] + self._iYOffset + self._iYPos * CARD_DIM[1]
-            y = y * self._iScale
-            oContext.set_source_surface(self._oPageImg, -x, -y)
+            iPageX = START[0] + self._iXOffset + self._iXPos * CARD_DIM[0]
+            iPageX = iPageX * self._iScale
+            iPageY = START[1] + self._iYOffset + self._iYPos * CARD_DIM[1]
+            iPageY = iPageY * self._iScale
+            oContext.set_source_surface(self._oPageImg, -iPageX, -iPageY)
             oContext.rectangle(0, 0, self._iScale * CARD_DIM[0],
                                self._iScale * CARD_DIM[1])
             oContext.fill()
@@ -363,8 +367,10 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         # cairo confuses pylint
         oCurPage = self._oDocument.get_page(self._iCurPageNo)
         fWidth, fHeight = oCurPage.get_size()
-        iW, iH = self._iScale * int(fWidth), self._iScale * int(fHeight)
-        self._oPageImg = cairo.ImageSurface(cairo.FORMAT_ARGB32, iW, iH)
+        iWidth = self._iScale * int(fWidth)
+        iHeight = self._iScale * int(fHeight)
+        self._oPageImg = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                            iWidth, iHeight)
         oPageContext = cairo.Context(self._oPageImg)
         # We scale the input pdf so that (self._iXSize, self._iYSize) sections
         # are scaled to requested output size
@@ -373,7 +379,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oPageContext.scale(fXScale, fYScale)
         # Fill background with white
         oPageContext.set_source_rgb(1, 1, 1)
-        oPageContext.rectangle(0, 0, iW, iH)
+        oPageContext.rectangle(0, 0, iWidth, iHeight)
         oPageContext.fill()
         # Paint in the pdf page
         oCurPage.render(oPageContext)
