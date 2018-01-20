@@ -25,6 +25,7 @@ from sutekh.base.gui.GuiDataPack import gui_error_handler
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.core.Filters import CryptCardFilter
 from sutekh.io.SLDeckParser import SLDeckParser
+from sutekh.io.WriteSLDeck import SL_FIXES
 from sutekh.io.DataPack import urlopen_with_timeout
 from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -32,6 +33,8 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 def canonical_to_sl(sName):
     """Convert a canonical card name to a Secret Library name."""
+    if sName in SL_FIXES:
+        sName = SL_FIXES[sName]
     sName = move_articles_to_back(sName)
     return sName.encode('latin1')
 

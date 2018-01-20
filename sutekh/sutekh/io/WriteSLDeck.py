@@ -26,6 +26,12 @@ from sutekh.base.Utility import move_articles_to_back
 from sutekh.SutekhUtility import is_crypt_card
 
 
+# Variations between SL names and the official card list
+SL_FIXES = {
+    'Carlton Van Wyk': 'Carlton Van Wyk (Hunter)',
+}
+
+
 class WriteSLDeck(object):
     """Create a string in SL import format representing a card set."""
 
@@ -34,6 +40,8 @@ class WriteSLDeck(object):
 
     def _escape(self, sName):
         """Escape the card name to SL's requirements"""
+        if sName in SL_FIXES:
+            sName = SL_FIXES[sName]
         sName = move_articles_to_back(sName)
         sName = sName.replace('(Advanced)', '(Adv)')
         sName = sName.replace('"', '')
