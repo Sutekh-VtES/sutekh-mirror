@@ -202,7 +202,7 @@ def _iterdump(connection):
     # Using the original naming convention
 
     cu = connection.cursor()
-    # yield('BEGIN TRANSACTION;')
+    # yield 'BEGIN TRANSACTION;'
 
     # sqlite_master table contains the SQL CREATE statements for the database.
     q = """
@@ -217,9 +217,9 @@ def _iterdump(connection):
     # due to matching original naming
     for table_name, _type, sql in schema_res.fetchall():
         if table_name == 'sqlite_sequence':
-            yield('DELETE FROM sqlite_sequence;')
+            yield 'DELETE FROM sqlite_sequence;'
         elif table_name == 'sqlite_stat1':
-            yield('ANALYZE sqlite_master;')
+            yield 'ANALYZE sqlite_master;'
         elif table_name.startswith('sqlite_'):
             continue
         # NOTE: Virtual table support not implemented
@@ -231,7 +231,7 @@ def _iterdump(connection):
         #        qtable,
         #        sql.replace("''"))
         else:
-            yield('%s;' % sql)
+            yield '%s;' % sql
 
         # Build the insert statement for each row of the current table
         res = cu.execute("PRAGMA table_info('%s')" % table_name)
@@ -241,7 +241,7 @@ def _iterdump(connection):
         q += ")' FROM '%(tbl_name)s'"
         query_res = cu.execute(q % {'tbl_name': table_name})
         for row in query_res:
-            yield("%s;" % row[0])
+            yield "%s;" % row[0]
     # pylint: enable=W0612
 
     # Now when the type is 'index', 'trigger', or 'view'
@@ -255,10 +255,10 @@ def _iterdump(connection):
     # pylint: disable=W0612
     # see above
     for _name, _type, sql in schema_res.fetchall():
-        yield('%s;' % sql)
+        yield '%s;' % sql
     # pylint: enable=W0612
 
-    # yield('COMMIT;')
+    # yield 'COMMIT;'
 
 
 class FailFile(object):
