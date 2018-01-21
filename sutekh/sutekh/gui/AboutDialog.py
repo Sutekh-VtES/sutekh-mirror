@@ -5,10 +5,12 @@
 
 """Simple about dialog for Sutekh"""
 
+import gtk
+
+from sutekh.base.Utility import get_database_url
+
 from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.base.Utility import get_database_url
-import gtk
 
 
 # pylint: disable=R0904

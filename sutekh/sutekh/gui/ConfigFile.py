@@ -8,8 +8,9 @@
 
 """Configuration handling for the Sutekh GUI."""
 
-from sutekh.base.gui.BaseConfigFile import BaseConfigFile
 import pkg_resources
+
+from sutekh.base.gui.BaseConfigFile import BaseConfigFile
 
 
 class ConfigFile(BaseConfigFile):

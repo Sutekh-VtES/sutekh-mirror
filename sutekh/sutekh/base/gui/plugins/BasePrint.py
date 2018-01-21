@@ -64,7 +64,7 @@ class BasePrint(BasePlugin):
         """In response to the menu choice, do the actual print operation."""
         oPrintOp = gtk.PrintOperation()
 
-        if not self._oSettings is None:
+        if self._oSettings is not None:
             oPrintOp.set_print_settings(self._oSettings)
 
         oPrintOp.connect("begin-print", self.begin_print)

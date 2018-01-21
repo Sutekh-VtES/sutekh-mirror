@@ -5,10 +5,11 @@
 
 """Base for Sutekh test cases"""
 
+from sqlobject import sqlhub
+
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.core.BaseObjects import PHYSICAL_SET_LIST
 from sutekh.base.tests.TestUtils import BaseTestCase
-from sqlobject import sqlhub
 
 
 class SutekhTest(BaseTestCase):

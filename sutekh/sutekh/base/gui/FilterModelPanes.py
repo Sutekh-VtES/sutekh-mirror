@@ -693,7 +693,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         iIndex = -1
         while oChild:
             oNext = self.iter_next(oChild)
-            if not self.get_path(oChild) == self.get_path(oCurIter):
+            if self.get_path(oChild) != self.get_path(oCurIter):
                 self.remove(oChild)
             else:
                 iIndex = iPos

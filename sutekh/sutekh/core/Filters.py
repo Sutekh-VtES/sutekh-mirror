@@ -13,12 +13,10 @@
 
 """Define all the filters provided in sutekh"""
 
+from sqlobject.sqlbuilder import LEFTJOINOn
+from sqlobject import SQLObjectNotFound, OR, LIKE, func
+
 from sutekh.base.core.BaseObjects import AbstractCard, ICardType
-from sutekh.core.SutekhObjects import (SutekhAbstractCard,
-                                       ICreed, IVirtue, IClan, IDiscipline,
-                                       ITitle, ISect, Clan, Discipline, Title,
-                                       Creed, Virtue, Sect, IDisciplinePair,
-                                       CRYPT_TYPES)
 # pylint: disable=unused-import
 # We want sutekh.core.Filters to import all the filters elsewhere,
 # so we import filters we don't use here
@@ -55,8 +53,11 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
                                           split_list, make_table_alias)
 # pylint: enable=unused-import
 
-from sqlobject.sqlbuilder import LEFTJOINOn
-from sqlobject import SQLObjectNotFound, OR, LIKE, func
+from sutekh.core.SutekhObjects import (SutekhAbstractCard,
+                                       ICreed, IVirtue, IClan, IDiscipline,
+                                       ITitle, ISect, Clan, Discipline, Title,
+                                       Creed, Virtue, Sect, IDisciplinePair,
+                                       CRYPT_TYPES)
 
 
 class SutekhCardFilter(Filter):

@@ -56,7 +56,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
     # sorting
     def _get_data_card_type(self, oCard, bGetIcons=True):
         """Return the card type"""
-        if not oCard is None:
+        if oCard is not None:
             aTypes = [x.name for x in oCard.cardtype]
             aTypes.sort()
             aIcons = []
@@ -77,7 +77,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
 
     def _get_data_expansions(self, oCard, bGetIcons=True):
         """get expansion info"""
-        if not oCard is None:
+        if oCard is not None:
             aExp = [oP.expansion.shortname + "(" + oP.rarity.name + ")" for
                     oP in oCard.rarity]
             aExp.sort()
@@ -95,7 +95,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
 
     def _get_data_card_text(self, oCard, bGetIcons=True):
         """Get the card's card text."""
-        if not oCard is None:
+        if oCard is not None:
             aTexts = [oCard.text.replace("\n", " ")]
             aIcons = []
             if bGetIcons:

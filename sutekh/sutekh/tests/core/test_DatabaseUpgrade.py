@@ -6,16 +6,19 @@
 """Test database upgrading"""
 
 import sys
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.tests.TestUtils import make_null_handler, make_card
-from sutekh.tests import create_db
-from sutekh.core.DatabaseUpgrade import DBUpgradeManager
+
+from sqlobject import sqlhub, connectionForURI
+
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
 from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
                                           IAbstractCard,
                                           IPhysicalCardSet)
-from sqlobject import sqlhub, connectionForURI
+from sutekh.base.tests.TestUtils import make_null_handler, make_card
+
+from sutekh.core.DatabaseUpgrade import DBUpgradeManager
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests import create_db
 
 
 class DatabaseUpgradeTests(SutekhTest):
