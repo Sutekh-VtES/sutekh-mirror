@@ -9,6 +9,7 @@ import datetime
 import logging
 
 import gtk
+from sqlobject import sqlhub
 
 from ..core.CardSetHolder import CardSetHolder, CardSetWrapper
 from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
@@ -16,11 +17,13 @@ from ..core.CardLookup import LookupFailed
 from ..core.CardSetUtilities import (delete_physical_card_set, find_children,
                                      has_children, detect_loop,
                                      get_loop_names, break_loop,
-                                     check_cs_exists)
+                                     get_current_card_sets,
+                                     clean_empty, check_cs_exists)
 from ..Utility import safe_filename
 from .CreateCardSetDialog import CreateCardSetDialog
 from .SutekhFileWidget import ExportDialog
 from .RenameDialog import RenameDialog, PROMPT, RENAME, REPLACE
+from .ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from .SutekhDialog import (do_complaint_warning, do_complaint,
                            do_complaint_error, do_exception_complaint)
 
@@ -84,7 +87,7 @@ def create_card_set(oMainWindow):
     if sName:
         if check_cs_exists(sName):
             do_complaint_error("Card Set %s already exists." % sName)
-            return None
+            return None, None
         sAuthor = oDialog.get_author()
         sComment = oDialog.get_comment()
         oParent = oDialog.get_parent()
@@ -150,7 +153,7 @@ def get_import_name(oHolder, iClashMode=PROMPT):
     return oHolder, aChildren
 
 
-def update_open_card_sets(oMainWindow, sSetName):
+def update_open_card_sets(sSetName, oMainWindow):
     """Update open copies of the card set sSetName to database changes
        (from imports, etc.)"""
     for oFrame in oMainWindow.find_cs_pane_by_set_name(sSetName):
@@ -318,3 +321,151 @@ def break_existing_loops():
                 gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
             # We break the loop, and let the user fix things,
             # rather than try and be too clever
+
+
+def _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
+                  aExcluded):
+    """Helper function for unzip_list that handles a step of the unzip
+       process inside an SQL transaction."""
+    oOldConn = sqlhub.processConnection
+    oTrans = oOldConn.transaction()
+    sqlhub.processConnection = oTrans
+    for sName, tInfo in dList.items():
+        sFilename, _bIgnore, sParentName = tInfo
+        if aExcluded:
+            if sName in aExcluded or sParentName in aExcluded:
+                # Ignore these decks
+                oLogger.info('Read %s' % sName)
+                continue
+        if sParentName is not None and sParentName in dList:
+            # Do have a parent to look at later, so skip for now
+            dRemaining[sName] = tInfo
+            continue
+        elif sParentName is not None:
+            if not check_cs_exists(sParentName):
+                # Missing parent, so it the file is invalid
+                return False
+        # pylint: disable=W0703
+        # we really do want all the exceptions
+        try:
+            oHolder = oZipFile.read_single_card_set(sFilename)
+            oLogger.info('Read %s' % sName)
+            if not oHolder.name:
+                # We skip this card set
+                continue
+            # We unconditionally delete the card set if it already
+            # exists, as being the most sensible default
+            aChildren = []
+            if check_cs_exists(oHolder.name):
+                # pylint: disable=E1101, E1103
+                # pyprotocols confuses pylint
+                oCS = IPhysicalCardSet(oHolder.name)
+                aChildren = find_children(oCS)
+                # Ensure we restore with the correct parent
+                # if it differs from the holder parent
+                # FIXME: Should we inform the user about this?
+                if oCS.parent:
+                    oHolder.parent = oCS.parent.name
+                delete_physical_card_set(oHolder.name)
+            oHolder.create_pcs(oMainWindow.cardLookup)
+            reparent_all_children(oHolder.name, aChildren)
+            if oMainWindow.find_cs_pane_by_set_name(oHolder.name):
+                update_open_card_sets(oHolder.name, oMainWindow)
+        except Exception as oException:
+            sMsg = "Failed to import card set %s.\n\n%s" % (
+                sName, oException)
+            do_exception_complaint(sMsg)
+            oTrans.commit(close=True)
+            sqlhub.processConnection = oOldConn
+            return False
+    oTrans.commit(close=True)
+    sqlhub.processConnection = oOldConn
+    return True
+
+
+def remove_decks_in_transaction(aToDelete, oMainWindow):
+    """Remove an list of decks in a single transaction."""
+    if not aToDelete:
+        return []
+
+    aOpenSets = []
+    oOldConn = sqlhub.processConnection
+    oTrans = oOldConn.transaction()
+    sqlhub.processConnection = oTrans
+    oCntLogHandler = SutekhCountLogHandler()
+    oProgressDialog = ProgressDialog()
+    oProgressDialog.set_description("Deleting obselete card sets")
+    oCntLogHandler.set_total(len(aToDelete))
+    oLogger = logging.Logger('Deleting decks')
+    oLogger.addHandler(oCntLogHandler)
+    oCntLogHandler.set_dialog(oProgressDialog)
+    oProgressDialog.show()
+    for sName in aToDelete:
+        if not check_cs_exists(sName):
+            # No point in doing work for card sets that aren't in the db
+            continue
+        # We close any open card sets to avoid issues with
+        # holding open references to the deleted card sets
+        for oFrame in oMainWindow.find_cs_pane_by_set_name(sName):
+            oFrame.close_frame()
+            # If we recreate this card set, we want to open as many copies as
+            # we closed. We lose some state, such as minimized status, though.
+            aOpenSets.append(sName)
+        delete_physical_card_set(sName)
+        oLogger.info('deleted %s', sName)
+    oTrans.commit(close=True)
+    sqlhub.processConnection = oOldConn
+    oMainWindow.reload_pcs_list()
+    oProgressDialog.destroy()
+    return aOpenSets
+
+
+def reopen_card_sets(aOpenSets, oMainWindow):
+    """Reopen card sets we closed earlier if they exist in the
+       updated database."""
+    for sName in aOpenSets:
+        if check_cs_exists(sName):
+            oMainWindow.add_new_physical_card_set(sName, False)
+    oMainWindow.reload_pcs_list()
+
+
+def unzip_files_into_db(aZipFiles, sProgDesc, oMainWindow, aToDelete,
+                        aExcluded=None):
+    """Unzip cardsets from the zip files into an existing database, ensuring
+       we unzip parents before their children."""
+    aExistingList = get_current_card_sets()
+    # Cleanup database before we unzip anything
+    aOpenSets = remove_decks_in_transaction(aToDelete, oMainWindow)
+    iZipTotal = 0
+    for oZipFile in aZipFiles:
+        iZipTotal += len(oZipFile.get_all_entries())
+    oProgressDialog = ProgressDialog()
+    oProgressDialog.set_description(sProgDesc)
+    oCntLogHandler = SutekhCountLogHandler()
+    oLogger = logging.Logger('Read zip file')
+    oLogger.addHandler(oCntLogHandler)
+    oCntLogHandler.set_dialog(oProgressDialog)
+    oCntLogHandler.set_total(iZipTotal)
+    oProgressDialog.show()
+    aCSList = []
+    for oZipFile in aZipFiles:
+        bDone = False
+        dList = oZipFile.get_all_entries()
+        while not bDone:
+            dRemaining = {}
+            if _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
+                             aExcluded):
+                bDone = len(dRemaining) == 0
+                dList = dRemaining
+            else:
+                # Things have gone awry, so we do the minimum to ensure the gui
+                # is in a sensible state.
+                oMainWindow.reload_pcs_list()
+                oProgressDialog.destroy()
+                # Error out
+                return False
+        aCSList.extend(oZipFile.get_all_entries().keys())
+    clean_empty(aCSList, aExistingList)
+    oProgressDialog.destroy()
+    reopen_card_sets(aOpenSets, oMainWindow)
+    return True

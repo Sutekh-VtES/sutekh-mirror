@@ -7,7 +7,6 @@
 
 import re
 import datetime
-from logging import Logger
 from StringIO import StringIO
 
 import gtk
@@ -23,19 +22,11 @@ from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
                                         disconnect_row_destroy,
                                         disconnect_row_update,
                                         disconnect_row_created)
-from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, has_children,
-                                               check_cs_exists, clean_empty,
-                                               get_current_card_sets)
 from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
-from sutekh.base.gui.ProgressDialog import (ProgressDialog,
-                                            SutekhCountLogHandler)
 from sutekh.base.gui.SutekhDialog import (SutekhDialog,
-                                          do_exception_complaint,
                                           do_complaint_error)
-from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
-                                                 update_open_card_sets)
+from sutekh.base.gui.GuiCardSetFunctions import unzip_files_into_db
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhFileWidget import add_filter
@@ -43,6 +34,23 @@ from sutekh.base.gui.SutekhFileWidget import add_filter
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.gui.PluginManager import SutekhPlugin
+
+
+def _get_cs_to_remove(oZipFile):
+    """Handle card sets that are marked as removed in the starter
+       info file."""
+    sRemovedInfo = oZipFile.get_info_file('removed_decks.txt')
+    if not sRemovedInfo:
+        # No removed info, so skip
+        return []
+    aToDelete = []
+    for sLine in sRemovedInfo.splitlines():
+        if sLine.startswith('#'):
+            # Ignore comment
+            continue
+        sName = sLine.strip()
+        aToDelete.append(sName)
+    return aToDelete
 
 
 class StarterConfigDialog(SutekhDialog):
@@ -367,22 +375,8 @@ class StarterInfoPlugin(SutekhPlugin):
 
     def _unzip_file(self, sData, bExcludeStoryDecks, bExcludeDemoDecks):
         """Unzip a file containing the decks."""
-        bResult = False
         oZipFile = ZipFileWrapper(StringIO(sData))
-        bResult = self._unzip_heart(oZipFile, bExcludeStoryDecks,
-                                    bExcludeDemoDecks)
-        self._aStarters = []
-        return bResult
-
-    def _unzip_heart(self, oFile, bExcludeStoryDecks, bExcludeDemoDecks):
-        """Heart of the reading loop - ensure we read parents before
-           children, and correct for renames that occur."""
-        oLogHandler = SutekhCountLogHandler()
-        oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Importing Starters")
-        oLogger = Logger('Read zip file')
-        aExistingList = get_current_card_sets()
-        dList = oFile.get_all_entries()
+        dList = oZipFile.get_all_entries()
         # Check that we match starter regex
         bOK = False
         for sName in dList:
@@ -391,34 +385,8 @@ class StarterInfoPlugin(SutekhPlugin):
                 bOK = True
                 break
         if not bOK:
-            oProgressDialog.destroy()
             return False  # No starters in zip file
-        sRemovedInfo = oFile.get_info_file('removed_decks.txt')
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_total(len(dList))
-        oProgressDialog.show()
-        bDone = False
-        while not bDone:
-            dRemaining = {}
-            if self._unzip_list(oFile, dList, oLogger, dRemaining,
-                                bExcludeStoryDecks, bExcludeDemoDecks):
-                bDone = len(dRemaining) == 0
-                dList = dRemaining
-            else:
-                self._reload_pcs_list()
-                oProgressDialog.destroy()
-                return False  # Error
-        # Cleanup
-        clean_empty(oFile.get_all_entries(), aExistingList)
-        self._clean_removed(sRemovedInfo)
-        self._reload_pcs_list()
-        oProgressDialog.destroy()
-        return True
 
-    def _unzip_list(self, oZipFile, dList, oLogger, dRemaining,
-                    bExcludeStoryDecks, bExcludeDemoDecks):
-        """Extract the files left in the list."""
         if bExcludeStoryDecks and bExcludeDemoDecks:
             aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
         elif bExcludeStoryDecks:
@@ -427,72 +395,11 @@ class StarterInfoPlugin(SutekhPlugin):
             aExcluded = ["White Wolf Demo Decks"]
         else:
             aExcluded = []
-        for sName, tInfo in dList.iteritems():
-            sFilename, _bIgnore, sParentName = tInfo
-            if sName in aExcluded or sParentName in aExcluded:
-                # Ignore these decks
-                oLogger.info('Read %s' % sName)
-                continue
-            if sParentName is not None and sParentName in dList:
-                # Do have a parent to look at later, so skip for now
-                dRemaining[sName] = tInfo
-                continue
-            elif sParentName is not None:
-                if not check_cs_exists(sParentName):
-                    # Missing parent, so it the file is invalid
-                    return False
-            # pylint: disable=W0703
-            # we really do want all the exceptions
-            try:
-                oHolder = oZipFile.read_single_card_set(sFilename)
-                oLogger.info('Read %s' % sName)
-                if not oHolder.name:
-                    # We skip this card set
-                    continue
-                # We unconditionally delete the card set if it already
-                # exists, as being the most sensible default
-                aChildren = []
-                if check_cs_exists(oHolder.name):
-                    # pylint: disable=E1101, E1103
-                    # pyprotocols confuses pylint
-                    oCS = IPhysicalCardSet(oHolder.name)
-                    aChildren = find_children(oCS)
-                    # Ensure we restore with the correct parent
-                    if oCS.parent:
-                        oHolder.parent = oCS.parent.name
-                    else:
-                        oHolder.parent = None
-                    delete_physical_card_set(oHolder.name)
-                oHolder.create_pcs(self.cardlookup)
-                reparent_all_children(oHolder.name, aChildren)
-                if self.parent.find_cs_pane_by_set_name(oHolder.name):
-                    # Already open, so update to changes
-                    update_open_card_sets(self.parent, oHolder.name)
-            except Exception as oException:
-                sMsg = "Failed to import card set %s.\n\n%s" % (sName,
-                                                                oException)
-                do_exception_complaint(sMsg)
-                return False
-        return True
 
-    def _clean_removed(self, sRemovedInfo):
-        """Handle card sets that are marked as removed in the starter
-           info file."""
-        if not sRemovedInfo:
-            # No removed info, so skip
-            return
-        for sLine in sRemovedInfo.splitlines():
-            if sLine.startswith('#'):
-                # Ignore comment
-                continue
-            sName = sLine.strip()
-            if check_cs_exists(sName):
-                # Removed deck still present in the database, so delete it
-                oCS = IPhysicalCardSet(sName)
-                if has_children(oCS):
-                    # FIXME: Prompt in this case
-                    continue
-                delete_physical_card_set(sName)
+        aToDelete = _get_cs_to_remove(oZipFile)
+
+        return unzip_files_into_db([oZipFile], "Adding Starter Decks",
+                                   self.parent, aToDelete, aExcluded)
 
     def _toggle_starter(self, oToggle):
         """Toggle the show info flag"""

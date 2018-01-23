@@ -11,7 +11,7 @@ from logging import Logger
 from StringIO import StringIO
 
 import gtk
-from sqlobject import sqlhub, SQLObjectNotFound
+from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseObjects import (PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet,
@@ -20,18 +20,12 @@ from sutekh.base.core.BaseObjects import (PhysicalCardSet,
 from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
                                           SpecificCardFilter,
                                           MultiPhysicalCardSetMapFilter)
-from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
-                                               find_children, clean_empty,
-                                               get_current_card_sets,
-                                               check_cs_exists)
 from sutekh.base.io.UrlOps import urlopen_with_timeout, fetch_data, HashError
 from sutekh.base.gui.SutekhDialog import (SutekhDialog, NotebookDialog,
-                                          do_exception_complaint,
                                           do_complaint_error)
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhCountLogHandler)
-from sutekh.base.gui.GuiCardSetFunctions import (reparent_all_children,
-                                                 update_open_card_sets)
+from sutekh.base.gui.GuiCardSetFunctions import unzip_files_into_db
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.SutekhFileWidget import add_filter
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -463,7 +457,6 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def _get_decks(self, aUrls, aDates, aHashes):
         """Unzip a file containing the decks."""
-        iZipCount = 0
         aZipHolders = []
         aToUnzip, aToReplace = self._get_decks_to_download(aUrls, aDates,
                                                            aHashes)
@@ -497,7 +490,6 @@ class TWDAInfoPlugin(SutekhPlugin):
                 continue
             oZipFile = ZipFileWrapper(StringIO(sData))
             aZipHolders.append(oZipFile)
-            iZipCount += len(oZipFile.get_all_entries())
             oBinLogHandler.inc_cur_bin()
         oProgressDialog.destroy()
 
@@ -508,74 +500,18 @@ class TWDAInfoPlugin(SutekhPlugin):
         # Delete all TWDA entries in the holders we replace
         # We do this to handle card sets being removed from the TWDA
         # correctly
-        aToRemove = []
+        aToDelete = []
         for oCS in list(PhysicalCardSet.select()):
             if not oCS.parent:
                 continue
             if oCS.parent.name in aToReplace:
-                aToRemove.append(oCS.name)
-        aOpenSets = []
-        if aToRemove:
-            oOldConn = sqlhub.processConnection
-            oTrans = oOldConn.transaction()
-            sqlhub.processConnection = oTrans
+                aToDelete.append(oCS.name)
 
-            oCntLogHandler = SutekhCountLogHandler()
-            oCntLogHandler.set_total(len(aToRemove))
-            oProgressDialog = ProgressDialog()
-            oProgressDialog.set_description("Preparing database for TWDA data")
-            oLogger = Logger('Deleting decks')
-            oLogger.addHandler(oCntLogHandler)
-            oCntLogHandler.set_dialog(oProgressDialog)
-            oProgressDialog.show()
-            for sName in aToRemove:
-                # We close any open card sets to avoid issues with
-                # holding open references to the deleted card sets
-                for oFrame in self.parent.find_cs_pane_by_set_name(sName):
-                    oFrame.close_frame()
-                    # We will open as many copies as we closed.
-                    # We lose the minimised to toolbar status, though
-                    aOpenSets.append(sName)
-                delete_physical_card_set(sName)
-                oLogger.info('deleted %s', sName)
-            self._reload_pcs_list()
-            oProgressDialog.destroy()
-
-            oTrans.commit(close=True)
-            sqlhub.processConnection = oOldConn
-
-        oCntLogHandler = SutekhCountLogHandler()
-        aExistingList = get_current_card_sets()
-        oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Adding TWDA Data")
-        oLogger = Logger('Read zip file')
-        oLogger.addHandler(oCntLogHandler)
-        oCntLogHandler.set_dialog(oProgressDialog)
-        oCntLogHandler.set_total(iZipCount)
-        oProgressDialog.show()
-        aCSList = []
-        for oZipFile in aZipHolders:
-            if not self._unzip_single_file(oZipFile, oLogger):
-                # Abort on errors
-                oProgressDialog.destroy()
-                return False
-            aCSList.extend(oZipFile.get_all_entries().keys())
-        oProgressDialog.destroy()
-        clean_empty(aCSList, aExistingList)
-        # Reopen any card sets we closed
-        for sName in aOpenSets:
-            self._open_cs(sName, False)
-        self._reload_pcs_list()
-        return True
+        return unzip_files_into_db(aZipHolders, "Adding TWDA Data",
+                                   self.parent, aToDelete)
 
     def _unzip_twda_file(self, oFile):
         """Unzip a single zip file containing all the TWDA entries"""
-        oLogHandler = SutekhCountLogHandler()
-        oProgressDialog = ProgressDialog()
-        oProgressDialog.set_description("Importing TWDA Data")
-        oLogger = Logger('Read zip file')
-        aExistingList = get_current_card_sets()
-        oProgressDialog = ProgressDialog()
         dList = oFile.get_all_entries()
         # Check that we match holder regex
         bOK = False
@@ -585,93 +521,12 @@ class TWDAInfoPlugin(SutekhPlugin):
                 bOK = True
                 break
         if not bOK:
-            oProgressDialog.destroy()
             return False  # No TWDA holders in zip file
-        oLogger.addHandler(oLogHandler)
-        oLogHandler.set_dialog(oProgressDialog)
-        oLogHandler.set_total(len(dList))
-        oProgressDialog.show()
         # delete all existing TWDA decks
         # We do this to handle card sets being removed from the TWDA
         # correctly
-        aDecks = self._get_twda_names()
-        for sName in aDecks:
-            delete_physical_card_set(sName)
-        if not self._unzip_single_file(oFile, oLogger):
-            oProgressDialog.destroy()
-            return False
-        # Cleanup
-        clean_empty(oFile.get_all_entries().keys(), aExistingList)
-        self._reload_pcs_list()
-        oProgressDialog.destroy()
-        return True
-
-    def _unzip_single_file(self, oFile, oLogger):
-        """Heart of the reading loop - ensure we read parents before
-           children, and correct for renames that occur."""
-        dList = oFile.get_all_entries()
-        bDone = False
-        while not bDone:
-            dRemaining = {}
-            if self._unzip_list(oFile, dList, oLogger, dRemaining):
-                bDone = len(dRemaining) == 0
-                dList = dRemaining
-            else:
-                self._reload_pcs_list()
-                return False  # Error
-        return True
-
-    def _unzip_list(self, oZipFile, dList, oLogger, dRemaining):
-        """Extract the files left in the list."""
-        oOldConn = sqlhub.processConnection
-        oTrans = oOldConn.transaction()
-        sqlhub.processConnection = oTrans
-        for sName, tInfo in dList.iteritems():
-            sFilename, _bIgnore, sParentName = tInfo
-            if sParentName is not None and sParentName in dList:
-                # Do have a parent to look at later, so skip for now
-                dRemaining[sName] = tInfo
-                continue
-            elif sParentName is not None:
-                if not check_cs_exists(sParentName):
-                    # Missing parent, so it the file is invalid
-                    return False
-            # pylint: disable=W0703
-            # we really do want all the exceptions
-            try:
-                oHolder = oZipFile.read_single_card_set(sFilename)
-                oLogger.info('Read %s' % sName)
-                if not oHolder.name:
-                    # We skip this card set
-                    continue
-                # We unconditionally delete the card set if it already
-                # exists, as being the most sensible default
-                aChildren = []
-                if check_cs_exists(oHolder.name):
-                    # pylint: disable=E1101, E1103
-                    # pyprotocols confuses pylint
-                    oCS = IPhysicalCardSet(oHolder.name)
-                    aChildren = find_children(oCS)
-                    # Ensure we restore with the correct parent
-                    # if it differs from the holder parent
-                    if oCS.parent:
-                        oHolder.parent = oCS.parent.name
-                    delete_physical_card_set(oHolder.name)
-                oHolder.create_pcs(self.cardlookup)
-                reparent_all_children(oHolder.name, aChildren)
-                if self.parent.find_cs_pane_by_set_name(oHolder.name):
-                    # Already open, so update to changes
-                    update_open_card_sets(self.parent, oHolder.name)
-            except Exception as oException:
-                sMsg = "Failed to import card set %s.\n\n%s" % (
-                    sName, oException)
-                do_exception_complaint(sMsg)
-                oTrans.commit(close=True)
-                sqlhub.processConnection = oOldConn
-                return False
-        oTrans.commit(close=True)
-        sqlhub.processConnection = oOldConn
-        return True
-
+        aToDelete = self._get_twda_names()
+        return unzip_files_into_db([oFile], "Adding TWDA Data", self.parent,
+                                   aToDelete)
 
 plugin = TWDAInfoPlugin

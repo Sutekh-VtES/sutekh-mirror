@@ -290,7 +290,7 @@ class BaseZipImport(BasePlugin):
                 reparent_all_children(oCardSetHolder.name, aChildren)
                 if self.parent.find_cs_pane_by_set_name(oCardSetHolder.name):
                     # Already open, so update to changes
-                    update_open_card_sets(self.parent, oCardSetHolder.name)
+                    update_open_card_sets(oCardSetHolder.name, self.parent)
                 self._reload_pcs_list()
             except Exception as oException:
                 sMsg = "Failed to import card set %s.\n\n%s" % (sName,
