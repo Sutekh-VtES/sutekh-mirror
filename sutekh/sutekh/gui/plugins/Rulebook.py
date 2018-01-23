@@ -226,7 +226,7 @@ class RulebookPlugin(SutekhPlugin):
                 if sData:
                     oRawFile = StringIO.StringIO(sData)
                     oZipFile = zipfile.ZipFile(oRawFile, 'r')
-                    self._unpack_zipfile_with_progress_bar(oZipFile)
+                    self._unpack_zip_with_prog_bar(oZipFile)
                 # else is the error path, but we'll have already shown
                 # a complaint (timeout, etc), so just do nothing
             except Exception:
@@ -239,7 +239,7 @@ class RulebookPlugin(SutekhPlugin):
         # get rid of the dialog
         oConfigDialog.destroy()
 
-    def _unpack_zipfile_with_progress_bar(self, oZipFile):
+    def _unpack_zip_with_prog_bar(self, oZipFile):
         """Unpack the contenst of the zip file showing progress as we go."""
         oLogHandler = SutekhCountLogHandler()
         oProgressDialog = ProgressDialog()
