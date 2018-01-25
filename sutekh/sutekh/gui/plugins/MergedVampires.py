@@ -404,6 +404,9 @@ class FakeCard(object):
 
 class MergedVampirePlugin(SutekhPlugin):
     """Plugin providing access to starter deck info."""
+    # pylint: disable=R0902
+    # Need all these instance variables to track the plugin state
+    # across the differ parts of showing the base, adv & merged vamps
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = ("MainWindow",)
 

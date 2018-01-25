@@ -358,7 +358,7 @@ def _group_backs(dCards, aCards, iNum):
     """Check for that cards of a single back don't belong to too few different
        card groups"""
     # No more than 2 distinct vampires of in a group of common backs
-    dCardsByExp = {}
+    aCardsByExp = []
     bOK = True
     sText = ""
     aAllOdd = set()
@@ -366,12 +366,12 @@ def _group_backs(dCards, aCards, iNum):
         aAllOdd.update(aExps)
     for sGrpName in dCards:
         if sGrpName != 'Other':
-            dCardsByExp[sGrpName] = [oCard for oCard in aCards if
-                                     oCard.expansion in ODD_BACKS[sGrpName]]
+            aCardsByExp.append([oCard for oCard in aCards if
+                                oCard.expansion in ODD_BACKS[sGrpName]])
         else:
-            dCardsByExp[sGrpName] = [oCard for oCard in aCards if
-                                     oCard.expansion not in aAllOdd]
-    for oExp, aExpCards in dCardsByExp.iteritems():
+            aCardsByExp.append([oCard for oCard in aCards if
+                                oCard.expansion not in aAllOdd])
+    for aExpCards in aCardsByExp:
         # For each expansion, count number of distinct cards
         aNames = set([x.abstractCard.name for x in aExpCards])
         if len(aNames) < iNum:
@@ -380,9 +380,9 @@ def _group_backs(dCards, aCards, iNum):
             sText += "\t" + ", ".join(aNames) + "\n"
             bOK = False
     if not bOK:
-        return sText, dCardsByExp
+        return sText, aCardsByExp
     else:
-        return None, dCardsByExp
+        return None, aCardsByExp
 
 
 class DisciplineNumberSelect(gtk.HBox):
@@ -463,40 +463,8 @@ class AnalyzeCardList(SutekhPlugin):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
         _load_pdf_sets()
         _load_odd_backs()
-
-    def get_menu_item(self):
-        """Register on the 'Analyze' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-        oAnalyze = gtk.MenuItem(self.sMenuName)
-        oAnalyze.connect("activate", self.activate)
-        oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
-        oAnalyzeRT.connect("activate", self.activate_rt)
-        return [('Analyze', oAnalyze), ('Analyze', oAnalyzeRT)]
-
-    def activate(self, _oWidget):
-        """Activate for non RT analysis"""
-        self.activate_heart(False)
-
-    def activate_rt(self, _oWidget):
-        """Activate for non RT analysis"""
-        self.activate_heart(True)
-
-    # pylint: disable=W0201, R0915
-    # W0201 - We define a lot of class variables here, because a) this is the
-    # plugin entry point, and, b) they need to reflect the current CardSet,
-    # so they can't be filled properly in __init__
-    # R0915 - This is responsible for filling the whole notebook, so quite
-    # a long function, and there's no benefit to splitting it up further
-    def activate_heart(self, bRapid=False):
-        """Create the actual dialog, and populate it"""
-        if not self._check_cs_size('Analyze Deck', 500):
-            return
-        oDlg = NotebookDialog("Analysis of Card List", self.parent,
-                              gtk.DIALOG_DESTROY_WITH_PARENT,
-                              (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
-        dConstruct = {
+        # dictionary of individual analysis pages
+        self._dConstruct = {
             'Vampire': self._process_vampire,
             'Imbued': self._process_imbued,
             'Combat': self._process_combat,
@@ -516,6 +484,40 @@ class AnalyzeCardList(SutekhPlugin):
             'Mixed Card Backs': self._process_backs,
         }
 
+    def get_menu_item(self):
+        """Register on the 'Analyze' Menu"""
+        if not self._check_versions() or not self._check_model_type():
+            return None
+        oAnalyze = gtk.MenuItem(self.sMenuName)
+        oAnalyze.connect("activate", self.activate)
+        oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
+        oAnalyzeRT.connect("activate", self.activate_rt)
+        return [('Analyze', oAnalyze), ('Analyze', oAnalyzeRT)]
+
+    def activate(self, _oWidget):
+        """Activate for non RT analysis"""
+        self.activate_heart(False)
+
+    def activate_rt(self, _oWidget):
+        """Activate for non RT analysis"""
+        self.activate_heart(True)
+
+    # pylint: disable=W0201, R0912, R0914, R0915
+    # W0201 - We define a lot of class variables here, because a) this is the
+    # plugin entry point, and, b) they need to reflect the current CardSet,
+    # so they can't be filled properly in __init__
+    # R0915, R0912, R0914 - This is responsible for filling the whole
+    # notebook, so quite a long function with several branches and variables,
+    # and there's no benefit to splitting it up further
+    def activate_heart(self, bRapid=False):
+        """Create the actual dialog, and populate it"""
+        if not self._check_cs_size('Analyze Deck', 500):
+            return
+        oDlg = NotebookDialog("Analysis of Card List", self.parent,
+                              gtk.DIALOG_DESTROY_WITH_PARENT,
+                              (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
+
         self.dTypeNumbers = {}
         dCardLists = {}
 
@@ -523,28 +525,26 @@ class AnalyzeCardList(SutekhPlugin):
                          self.model.get_card_iterator(None)]
         aAllCards = _get_abstract_cards(aAllPhysCards)
 
-        for sCardType in dConstruct:
+        for sCardType in self._dConstruct:
             if sCardType not in SPECIAL:
-                oFilter = CardTypeFilter(sCardType)
                 dCardLists[sCardType] = _get_abstract_cards(
-                    self.model.get_card_iterator(oFilter))
+                    self.model.get_card_iterator(CardTypeFilter(sCardType)))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
             elif sCardType == 'Multirole':
                 # Multirole values start empty, and are filled in later
                 dCardLists[sCardType] = []
                 self.dTypeNumbers[sCardType] = 0
             elif sCardType == 'Not Tournament Legal Cards':
-                oFilter = FilterNot(self.model.oLegalFilter)
                 dCardLists[sCardType] = _get_abstract_cards(
-                    self.model.get_card_iterator(oFilter))
+                    self.model.get_card_iterator(
+                        FilterNot(self.model.oLegalFilter)))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
                 if bRapid:
                     try:
                         for sType in [RT_BANNED, RT_WATCHLIST]:
-                            oKeyword = IKeyword(sType)
-                            oFilter = KeywordFilter(oKeyword)
                             dCardLists[sType] = _get_abstract_cards(
-                                self.model.get_card_iterator(oFilter))
+                                self.model.get_card_iterator(
+                                    KeywordFilter(IKeyword(sType))))
                             self.dTypeNumbers[sType] = \
                                 len(dCardLists[sType])
                     except SQLObjectNotFound:
@@ -584,11 +584,11 @@ class AnalyzeCardList(SutekhPlugin):
                         sorted(SPECIAL))
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
-                fProcess = dConstruct[sCardType]
+                fProcess = self._dConstruct[sCardType]
                 oDlg.add_widget_page(wrap(fProcess(dCardLists[sCardType])),
                                      sCardType)
         if bRapid:
-            fProcess = dConstruct['Not Tournament Legal Cards']
+            fProcess = self._dConstruct['Not Tournament Legal Cards']
             for sType in [RT_BANNED, RT_WATCHLIST]:
                 if self.dTypeNumbers[sType]:
                     oDlg.add_widget_page(wrap(fProcess(dCardLists[sType],
@@ -607,7 +607,7 @@ class AnalyzeCardList(SutekhPlugin):
         oDlg.notebook.set_current_page(0)
         oDlg.run()
 
-    # pylint: enable=W0201, R0915
+    # pylint: enable=W0201, R0912, R0915
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
         """Extract the relevant statistics about the crypt from the lists
@@ -690,6 +690,10 @@ class AnalyzeCardList(SutekhPlugin):
                 self.dLibStats['discipline'].setdefault(sDisc, 0)
                 self.dLibStats['discipline'][sDisc] += 1
 
+    # pylint: disable=R0912
+    # R0912 - We need to check all these cases to present a sensible
+    # summary - there isn't a benefir to splitting these into different
+    # functions
     def _prepare_main(self, bRapid):
         """Setup the main notebook display"""
         oCS = self._get_card_set()
@@ -781,6 +785,7 @@ class AnalyzeCardList(SutekhPlugin):
                           ' constructed tournaments</span>\n')
 
         return wrap(sTitleText), oScrolledBox, wrap(sMainText)
+    # pylint: enable=R0912
 
     def _process_library(self):
         """Create a notebook for the basic library card overview"""
@@ -1160,7 +1165,7 @@ class AnalyzeCardList(SutekhPlugin):
                                           'Crypt')
         if sAddText:
             sText += sAddText
-        sAddText, _dCryptByExp = _group_backs(dCrypt, aCrypt, 3)
+        sAddText, _aCryptByExp = _group_backs(dCrypt, aCrypt, 3)
         if sAddText:
             sText += sAddText
             bOK = False
@@ -1183,11 +1188,11 @@ class AnalyzeCardList(SutekhPlugin):
         sAddText, bOK = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
         if sAddText:
             sText += sAddText
-        sAddText, dLibByExp = _group_backs(dLib, aLib, 5)
+        sAddText, aLibByExp = _group_backs(dLib, aLib, 5)
         if sAddText:
             sText += sAddText
             bOK = False
-        for aExpCards in dLibByExp.itervalues():
+        for aExpCards in aLibByExp:
             # if a single back contains less than 3 types of library card
             aAllTypes = set()
             for oCard in aExpCards:
