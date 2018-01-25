@@ -259,8 +259,11 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable=W0212
-        # we need to access protected methods
+        # pylint: disable=W0212, R0101, R0912, R0914
+        # W0212 - We need to access protected methods
+        # R0101 - We need all these blocks to cover all the cases
+        # R0912, R0914 - covering all the cases requires we track a lot
+        #                of state
         for oModel in aModels:
             # Ensure we start with a clean cache
             oController = DummyCardSetController()

@@ -83,7 +83,10 @@ class CardListModelTests(ConfigSutekhTest):
                          PhysicalCard.select().count())
         self.assertEqual(count_top_level(oModel), 2)
         # Test card type
+        # pylint: disable=redefined-variable-type
+        # This is delibrate
         oModel.selectfilter = BaseFilters.CardTypeFilter('Vampire')
+        # pylint: enable=redefined-variable-type
         oModel.applyfilter = True
         oModel.load()
         self.assertEqual(count_top_level(oModel), 1)
