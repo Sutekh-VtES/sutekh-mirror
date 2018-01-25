@@ -1,3 +1,7 @@
+20 Jan 2018
+ * Add helper method so we export renamed cards like Carlton Van Wyk to
+   SL correctly again.
+
 17 Jan 2018
  * Fix bug in handling hash errors for cardlist zip file
  * Also check hash when manually downloading cardlist zip file
