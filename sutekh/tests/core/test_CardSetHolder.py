@@ -5,13 +5,15 @@
 
 """Test cases for the CardSetHolder functions, and some CardLookup stuff"""
 
-from sutekh.tests.TestCore import SutekhTest
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
 from sutekh.base.core.BaseObjects import (IPhysicalCardSet, IExpansion,
                                           MapPhysicalCardToPhysicalCardSet,
                                           IAbstractCard)
 from sutekh.base.core import BaseFilters
-import unittest
+
+from sutekh.tests.TestCore import SutekhTest
 
 
 class CardSetHolderTests(SutekhTest):
@@ -21,8 +23,7 @@ class CardSetHolderTests(SutekhTest):
 
     def test_basic(self):
         """Basic card set holder tests."""
-        # pylint: disable=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {
@@ -164,8 +165,7 @@ class CardSetHolderTests(SutekhTest):
 
     def test_cache(self):
         """Cached card set holder tests."""
-        # pylint: disable=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # Everything is in the database, so should be no problems
         dSet1 = {

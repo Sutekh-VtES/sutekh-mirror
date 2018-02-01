@@ -5,6 +5,8 @@
 
 """Manage the icons from the WW site"""
 
+from __future__ import print_function
+
 import os
 from logging import Logger
 from urllib2 import urlopen, HTTPError
@@ -55,7 +57,7 @@ class BaseIconManager(object):
             fOut.write(oUrl.read())
             fOut.close()
         except HTTPError as oErr:
-            print 'Unable to download %s: Error %s' % (sUrl, oErr)
+            print('Unable to download %s: Error %s' % (sUrl, oErr))
         oLogger.info('Processed %s' % sFileName)
 
     def download_icons(self, oLogHandler=None):

@@ -5,9 +5,10 @@
 
 """Test case for ELDB HTML parser"""
 
+import unittest
+
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.tests.TestCore import SutekhTest
-import unittest
 
 ELDB_HTML_EXAMPLE_1 = """<HTML>
 <HEAD>

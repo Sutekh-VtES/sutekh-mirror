@@ -18,8 +18,6 @@ NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
 def _card_expansion_details(oCard, iMode):
     """Get the expansion for the name"""
-    # pylint: disable=E1101
-    # SQLObject & PyPrototocols confuses pylint
     oPhysCard = IPhysicalCard(oCard)
     if oPhysCard.expansion:
         if iMode == SHORT_LINE:
@@ -66,7 +64,7 @@ class BasePrint(BasePlugin):
         """In response to the menu choice, do the actual print operation."""
         oPrintOp = gtk.PrintOperation()
 
-        if not self._oSettings is None:
+        if self._oSettings is not None:
             oPrintOp.set_print_settings(self._oSettings)
 
         oPrintOp.connect("begin-print", self.begin_print)
@@ -192,10 +190,18 @@ class BasePrint(BasePlugin):
         oCS = self._get_card_set()
 
         aMarkup = []
-        aMarkup.append("<u>%s</u>" % self._escape(oCS.name))
-        aMarkup.append("  Author: %s" % self._escape(oCS.author))
-        aMarkup.append("  Comment: %s" % self._escape(oCS.comment))
-        aMarkup.append("  Annotations: %s" % self._escape(oCS.annotations))
+        aMarkup.append("<big><b><u>%s</u></b></big>" % self._escape(oCS.name))
+        aMarkup.append("  <b>Author</b>: %s" % self._escape(oCS.author))
+        if oCS.comment:
+            aMarkup.append("  <b>Comment</b>: %s" % self._escape(oCS.comment))
+            aMarkup.append("")
+        if oCS.annotations:
+            aMarkup.append("  <b>Annotations</b>: %s" %
+                           self._escape(oCS.annotations))
+            aMarkup.append("")
+        # Add a line to separate the cards from the header using strikethrough
+        aMarkup.append("          <s>"
+                       "                                          </s>")
         aMarkup.append("")
 
         oCardIter = self.model.get_card_iterator(None)
@@ -207,22 +213,22 @@ class BasePrint(BasePlugin):
             if sGroup is None:
                 sGroup = '<< None >>'
 
-            aMarkup.append("<u>%s:</u>" % (self._escape(sGroup),))
-
+            iCnt = 0
             dCardInfo = {}
             dExpInfo = {}
             for oCard in oGroupIter:
-                # pylint: disable=E1101
-                # pyprotocols confuses pylint
                 oAbsCard = IAbstractCard(oCard)
                 dCardInfo.setdefault(oAbsCard.name, 0)
                 dCardInfo[oAbsCard.name] += 1
+                iCnt += 1
                 if self._iPrintExpansions != NO_EXPANSION:
                     dExpInfo.setdefault(oAbsCard.name, {})
                     sExp = _card_expansion_details(oCard,
                                                    self._iPrintExpansions)
                     dExpInfo[oAbsCard.name].setdefault(sExp, 0)
                     dExpInfo[oAbsCard.name][sExp] += 1
+
+            aMarkup.append("<u>%s:</u> (%d)" % (self._escape(sGroup), iCnt))
 
             # Fill in Cards
             for sCardName, iCnt in sorted(dCardInfo.items()):

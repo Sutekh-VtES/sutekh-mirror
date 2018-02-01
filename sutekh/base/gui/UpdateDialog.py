@@ -17,8 +17,6 @@ class UpdateDialog(SutekhDialog):
        are available."""
     def __init__(self, aMessages):
         # Create Dialog
-        # pylint: disable=E1101
-        # vbox confuses pylint
         super(UpdateDialog, self).__init__(
             "Updates available", None,
             gtk.DIALOG_MODAL, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,

@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an ELDB deck"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-import unittest
 
 EXPECTED_1 = """"Test Set 1"
 "A test author"

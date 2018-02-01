@@ -5,25 +5,25 @@
 
 """Test PhysicalCard handling"""
 
-from sutekh.tests.TestCore import SutekhTest
+import unittest
+import os
+from StringIO import StringIO
+
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder
+
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.XmlFileHandling import PhysicalCardXmlFile
 from sutekh.tests.core.test_PhysicalCardSet import ABSTRACT_CARDS
-import unittest
-import os
-from StringIO import StringIO
+from sutekh.tests.TestCore import SutekhTest
 
 LAST_WRITER_VERSION = "1.0"
 
 
 def make_example_pcxml():
     """Create the example XML File"""
-    # pylint: disable=E1101
-    # E1101: SQLObject + PyProtocols magic confuses pylint
     oPC = make_card(ABSTRACT_CARDS[0], None)
 
     sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
@@ -40,9 +40,6 @@ class PhysicalCardTests(SutekhTest):
 
     def test_physical(self):
         """Test physical card handling"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
-
         # test IO
         sExample = make_example_pcxml()
         oParser = PhysicalCardParser()

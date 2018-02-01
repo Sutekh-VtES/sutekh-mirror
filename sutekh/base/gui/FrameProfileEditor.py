@@ -10,11 +10,11 @@ passed in when the dialog is created.
 """
 
 
+import gtk
+import gobject
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 from .PreferenceTable import PreferenceTable
-import gtk
-import gobject
 
 
 class FrameProfileEditor(SutekhDialog):
@@ -47,8 +47,6 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.connect("changed", self._selector_changed)
         self.__oSelectorCombo.connect("notify::popup-shown",
                                       self._selector_opened)
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(self.__oSelectorCombo, expand=False)
 
         aOptions = []
@@ -98,7 +96,8 @@ class FrameProfileEditor(SutekhDialog):
         else:
             # Evil recursion
             self.destroy()
-            oDlg = FrameProfileEditor(self.__oParent, self.__oConfig)
+            oDlg = FrameProfileEditor(self.__oParent, self.__oConfig,
+                                      self._sType)
             oDlg.run()
 
     def _all_profile_keys(self):

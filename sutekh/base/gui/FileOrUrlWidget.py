@@ -5,8 +5,10 @@
 
 """Widget for loading a file either from a URL or a local file."""
 
-import gtk
 import os.path
+
+import gtk
+
 from ..io.EncodedFile import EncodedFile
 from ..io.UrlOps import urlopen_with_timeout
 from .SutekhFileWidget import SutekhFileButton

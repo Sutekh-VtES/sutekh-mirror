@@ -5,10 +5,12 @@
 # GPL - see COPYING for details
 """Simulate the opening hand draw."""
 
-import gtk
-import gobject
 from copy import copy
 from random import choice
+
+import gobject
+import gtk
+
 from ...core.BaseObjects import PhysicalCardSet, IAbstractCard
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
@@ -195,8 +197,6 @@ class BaseOpeningDraw(BasePlugin):
     # specific details
     sHelpText = """Simulates the opening hand"""
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseOpeningDraw, self).__init__(*args, **kwargs)
         self.iCurHand = 0
@@ -231,8 +231,6 @@ class BaseOpeningDraw(BasePlugin):
         oShowButton = gtk.Button('draw sample hands')
         oShowButton.connect('clicked', self._fill_dialog)
 
-        # pylint: disable=E1101
-        # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oShowButton, False, False)
 
         oDialog.show_all()
@@ -278,8 +276,6 @@ class BaseOpeningDraw(BasePlugin):
                                gtk.DIALOG_MODAL |
                                gtk.DIALOG_DESTROY_WITH_PARENT)
         # We need to have access to the back button
-        # pylint: disable=E1101
-        # pylint doesn't see vbox + action_area methods
         oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
         oDialog.action_area.pack_start(gtk.VSeparator(), expand=True)
         oBackButton = oDialog.add_button(gtk.STOCK_GO_BACK, self.BACK)
@@ -307,7 +303,7 @@ class BaseOpeningDraw(BasePlugin):
         def change_hand(oVBox, oNewHand, oDetailBox):
             """Replace the existing widget in oVBox with oNewHand."""
             for oChild in oVBox.get_children():
-                if type(oChild) is gtk.VBox:
+                if isinstance(oChild, gtk.VBox):
                     oVBox.remove(oChild)
             oVBox.pack_start(oNewHand, False, False)
             if oDetailBox:

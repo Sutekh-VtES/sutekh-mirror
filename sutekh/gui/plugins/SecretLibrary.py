@@ -5,30 +5,36 @@
 
 """Plugin for interacting with the Secret Library website."""
 
-import gtk
 import urllib
 import StringIO
 import re
-import keyring
 import logging
+
+import gtk
+import keyring
 from sqlobject import SQLObjectNotFound
-from sutekh.SutekhInfo import SutekhInfo
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard, \
-    IKeyword
+
 from sutekh.base.Utility import move_articles_to_back
+from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
+                                          IKeyword)
 from sutekh.base.core.BaseFilters import FilterNot
-from sutekh.core.Filters import CryptCardFilter
-from sutekh.io.SLDeckParser import SLDeckParser
-from sutekh.io.DataPack import urlopen_with_timeout
-from sutekh.io.SLInventoryParser import SLInventoryParser
 from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.base.gui.GuiCardSetFunctions import import_cs
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.GuiDataPack import gui_error_handler
+
+from sutekh.SutekhInfo import SutekhInfo
+from sutekh.core.Filters import CryptCardFilter
+from sutekh.io.SLDeckParser import SLDeckParser
+from sutekh.io.WriteSLDeck import SL_FIXES
+from sutekh.io.DataPack import urlopen_with_timeout
+from sutekh.io.SLInventoryParser import SLInventoryParser
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 def canonical_to_sl(sName):
     """Convert a canonical card name to a Secret Library name."""
+    if sName in SL_FIXES:
+        sName = SL_FIXES[sName]
     sName = move_articles_to_back(sName)
     return sName.encode('latin1')
 
@@ -46,9 +52,6 @@ class ImportExportBase(SutekhDialog):
     def _setup_vbox(self, sTitlePhrase, sSourcePhrase, aDeckWidgets,
                     aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
-
-        # pylint: disable=E1101
-        # pylint doesn't pick up vbox methods correctly
 
         self.vbox.set_spacing(10)
 
@@ -471,8 +474,6 @@ class SecretLibrary(SutekhPlugin):
         oCryptIter = self.model.get_card_iterator(oCryptFilter)
 
         for oCard in oCryptIter:
-            # pylint: disable=E1101
-            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):
                 continue
@@ -486,8 +487,6 @@ class SecretLibrary(SutekhPlugin):
         oLibraryIter = self.model.get_card_iterator(oLibraryFilter)
 
         for oCard in oLibraryIter:
-            # pylint: disable=E1101
-            # E1101: PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if self._exclude(oAbsCard):
                 continue

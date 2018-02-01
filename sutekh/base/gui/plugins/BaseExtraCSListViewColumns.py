@@ -6,19 +6,20 @@
 # GPL - see COPYING for details
 """Display extra columns in the tree view"""
 
+from sqlobject import SQLObjectNotFound
 import pango
+
 from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
                                  MapPhysicalCardToPhysicalCardSet)
-from ..CellRendererIcons import SHOW_TEXT_ONLY
 from ...core.DBSignals import (listen_row_destroy, listen_row_update,
                                listen_row_created, listen_changed,
                                disconnect_changed,
                                disconnect_row_destroy,
                                disconnect_row_update,
                                disconnect_row_created)
+from ..CellRendererIcons import SHOW_TEXT_ONLY
 from .BaseExtraColumns import (BaseExtraColumns, get_number,
                                format_number)
-from sqlobject import SQLObjectNotFound
 
 
 class BaseExtraCSListViewColumns(BaseExtraColumns):
@@ -55,8 +56,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     dCardSetListConfig = {}
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExtraCSListViewColumns, self).__init__(*args, **kwargs)
 
@@ -65,7 +64,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
             listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
             listen_changed(self.card_changed, PhysicalCardSet)
-    # pylint: enable=W0142
 
     def cleanup(self):
         """Disconnect the database listeners"""
@@ -119,8 +117,6 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             # Cache lookups, so we don't hit the database so hard when
             # sorting
             if sCardSetName not in self._dCache:
-                # pylint: disable=E1101
-                # pylint + AbstractCard method wierdness
                 self._dCache[sCardSetName] = {}
                 self._dCache[sCardSetName]['Card Set'] = \
                     IPhysicalCardSet(sCardSetName)

@@ -61,8 +61,6 @@ class BaseExtraColumns(BasePlugin):
         'Show Text only': SHOW_TEXT_ONLY,
     }
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(BaseExtraColumns, self).__init__(*args, **kwargs)
         self._dCols = {}
@@ -82,7 +80,6 @@ class BaseExtraColumns(BasePlugin):
 
         if self._check_versions() and self._check_model_type():
             self.perpane_config_updated()
-    # pylint: enable=W0142
 
     @classmethod
     def fix_config(cls, dConfig):

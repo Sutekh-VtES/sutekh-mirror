@@ -5,13 +5,15 @@
 
 """Test Writing a card set to an ARDB inventory XML file"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
-from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
+from sutekh.SutekhInfo import SutekhInfo
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 # pylint: disable=W0511, C0301
 # W0511 - this is not a actual TODO item
@@ -27,11 +29,11 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="42" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="44" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
-    </vampire><vampire databaseID="63" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="65" have="1" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -52,10 +54,10 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="14" have="2" need="0" spare="0">
       <name>Abombwe</name>
       <set>LoB</set>
-    </card><card databaseID="60" have="1" need="0" spare="0">
+    </card><card databaseID="62" have="1" need="0" spare="0">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
-    </card><card databaseID="52" have="1" need="0" spare="0">
+    </card><card databaseID="54" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
     </card>

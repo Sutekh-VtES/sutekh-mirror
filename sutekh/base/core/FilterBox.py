@@ -39,20 +39,20 @@ class FilterBoxModel(list):
         self.bDisabled = False
         self.oVarNameMaker = oVarNameMaker
 
-        if type(oAST) is FilterNode:
+        if isinstance(oAST, FilterNode):
             oAST = oAST.oExpression
 
-        if type(oAST) is BinOpNode:
+        if isinstance(oAST, BinOpNode):
             self.sBoxType = oAST.oOp
             self._init_binop(oAST)
-        elif type(oAST) is NotOpNode and \
-                type(oAST.oSubExpression) is BinOpNode:
+        elif (isinstance(oAST, NotOpNode) and
+              isinstance(oAST.oSubExpression, BinOpNode)):
             self.bNegate = True
             self.sBoxType = oAST.oSubExpression.oOp
             self._init_binop(oAST.oSubExpression)
-        elif type(oAST) is FilterPartNode or \
-                type(oAST) is NotOpNode and \
-                type(oAST.oSubExpression) is FilterPartNode:
+        elif (isinstance(oAST, FilterPartNode) or
+              isinstance(oAST, NotOpNode) and
+              isinstance(oAST.oSubExpression, FilterPartNode)):
             self.sBoxType = self.AND
             self.append(FilterBoxItem(oAST, self.oVarNameMaker))
         elif oAST is None:
@@ -74,16 +74,17 @@ class FilterBoxModel(list):
     def _init_binop(self, oBinOp):
         """Create the correct box entries for a BinOpNode in the AST."""
         for oChild in (oBinOp.oLeft, oBinOp.oRight):
-            if type(oChild) is BinOpNode and oChild.oOp == oBinOp.oOp:
+            if isinstance(oChild, BinOpNode) and oChild.oOp == oBinOp.oOp:
                 self._init_binop(oChild)
-            elif type(oChild) is BinOpNode:
+            elif isinstance(oChild, BinOpNode):
                 self.append(FilterBoxModel(oChild, self.sFilterType,
                                            self.oVarNameMaker))
-            elif type(oChild) is NotOpNode and \
-                    type(oChild.oSubExpression) is BinOpNode:
+            elif (isinstance(oChild, NotOpNode) and
+                  isinstance(oChild.oSubExpression, BinOpNode)):
                 self.append(FilterBoxModel(oChild, self.sFilterType,
                                            self.oVarNameMaker))
-            elif type(oChild) in (NotOpNode, FilterPartNode):
+            elif (isinstance(oChild, NotOpNode) or
+                  isinstance(oChild, FilterPartNode)):
                 self.append(FilterBoxItem(oChild, self.oVarNameMaker))
             else:
                 raise ValueError("FilterBoxModel encountered unsupported AST"
@@ -120,7 +121,7 @@ class FilterBoxModel(list):
                 oAST = BinOpNode(oAST, self.sBoxType, oChild)
 
         if self.bNegate and oAST is not None:
-            oAST = NotOpNode(oAST)
+            return NotOpNode(oAST)
 
         return oAST
 
@@ -204,13 +205,13 @@ class FilterBoxItem(object):
     NONE, ENTRY, LIST, LIST_FROM = range(4)
 
     def __init__(self, oAST, oVarNameMaker=None):
-        if type(oAST) is NotOpNode:
+        if isinstance(oAST, NotOpNode):
             self.bNegated = True
             oAST = oAST.oSubExpression
         else:
             self.bNegated = False
 
-        assert type(oAST) is FilterPartNode
+        assert isinstance(oAST, FilterPartNode)
 
         self.bDisabled = False
 
@@ -324,7 +325,7 @@ class FilterBoxItem(object):
         oAST = FilterPartNode(self.sFilterName, None,
                               self.sVariableName)
         if self.bNegated:
-            oAST = NotOpNode(oAST)
+            return NotOpNode(oAST)
         return oAST
 
     def get_text(self):

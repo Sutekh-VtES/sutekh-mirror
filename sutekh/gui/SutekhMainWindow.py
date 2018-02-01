@@ -6,13 +6,27 @@
 
 """Main window for Sutekh."""
 
-import gtk
 import logging
+import datetime
+
+import gtk
+
 from sqlobject import SQLObjectNotFound
-from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+
 from sutekh.base.core.BaseObjects import IAbstractCard
 from sutekh.base.core.DBUtility import flush_cache
+
+from sutekh.base.gui.AppMainWindow import AppMainWindow
+from sutekh.base.gui.GuiDataPack import gui_error_handler
+from sutekh.base.gui.SutekhDialog import do_complaint
+from sutekh.base.gui.UpdateDialog import UpdateDialog
+
+from sutekh.core.SutekhObjectCache import SutekhObjectCache
+
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.WwUrls import WW_CARDLIST_DATAPACK
+from sutekh.io.DataPack import find_all_data_packs
+
 from sutekh.gui.AboutDialog import SutekhAboutDialog
 from sutekh.gui.MainMenu import MainMenu
 from sutekh.gui.PluginManager import PluginManager
@@ -20,8 +34,6 @@ from sutekh.gui.GuiDBManagement import GuiDBManager
 from sutekh.gui import SutekhIcon
 from sutekh.gui.GuiIconManager import GuiIconManager
 from sutekh.gui.CardTextFrame import CardTextFrame
-from sutekh.base.gui.SutekhDialog import do_complaint
-from sutekh.base.gui.AppMainWindow import AppMainWindow
 
 
 class SutekhMainWindow(AppMainWindow):
@@ -114,3 +126,21 @@ class SutekhMainWindow(AppMainWindow):
     def show_manual(self):
         """Show the HTML Manual"""
         self._do_html_dialog("Manual.html")
+
+    def check_updated_cardlist(self):
+        """Check if an updated cardlist is available"""
+        aUrls, aDates, aHashes = find_all_data_packs(
+            WW_CARDLIST_DATAPACK, fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # probable timeout, so bail
+            return
+        oCLDate = datetime.datetime.strptime(aDates[0], '%Y-%m-%d').date()
+        oLastDate = self.config_file.get_last_update_date()
+        if oLastDate < oCLDate:
+            # There has been a cardlist update, so query the user
+            oDlg = UpdateDialog(["CardList and Rulings"])
+            iResponse = oDlg.run()
+            oDlg.destroy()
+            if iResponse != gtk.RESPONSE_OK:
+                return
+            self.do_refresh_from_zip_url(oCLDate, aUrls[0], aHashes[0])

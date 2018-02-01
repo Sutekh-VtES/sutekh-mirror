@@ -6,14 +6,14 @@
 
 """Base class for the pane menus"""
 
-from .SutekhMenu import SutekhMenu
 import gtk
+
+from .SutekhMenu import SutekhMenu
 
 
 class FilteredViewMenu(SutekhMenu):
-    # pylint: disable=R0904, R0922
+    # pylint: disable=R0904
     # R0904 - gtk.Widget, so many public methods
-    # R0922 - we use this in other files
     """Base class for individual FilteredView menus
 
        This provides handling for enabling and disabling the menus

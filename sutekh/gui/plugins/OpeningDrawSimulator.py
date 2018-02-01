@@ -23,6 +23,8 @@ from sutekh.base.core.BaseFilters import (MultiCardTypeFilter,
 
 class HandDetails(object):
     """Convience class for holding drawn hand details"""
+    # pylint: disable=too-many-arguments
+    # Use all this for showing the results
 
     def __init__(self, dHand, dCrypt, sTypeDetails, sPropDetails,
                  dNextHand, dNextCrypt):
@@ -46,8 +48,6 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
                    generate example opening hands and crypts by clicking the
                    _Draw sample hand_ button."""
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(OpeningHandSimulator, self).__init__(*args, **kwargs)
         self.dCardTypes = {}

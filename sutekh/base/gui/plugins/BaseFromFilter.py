@@ -47,8 +47,6 @@ class BaseFromFilter(BasePlugin):
 
     def make_cs_from_filter(self, sCSName):
         """Create the actual PCS."""
-        # pylint: disable=E1101
-        # pylint misses PhysicalCardSet methods
         oCS = IPhysicalCardSet(sCSName)
         aCards = [IPhysicalCard(x) for x in
                   self.model.get_card_iterator(

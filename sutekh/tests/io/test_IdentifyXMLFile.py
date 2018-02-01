@@ -5,13 +5,14 @@
 
 """Test IdentifyXMLFile handling"""
 
-from sutekh.tests.TestCore import SutekhTest
+import unittest
+from StringIO import StringIO
+
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
+from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
-import unittest
-from StringIO import StringIO
 
 
 class TestIdentifyXMLFile(SutekhTest):
@@ -21,8 +22,6 @@ class TestIdentifyXMLFile(SutekhTest):
 
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
         # test IO
         sExample = make_example_pcxml()
 

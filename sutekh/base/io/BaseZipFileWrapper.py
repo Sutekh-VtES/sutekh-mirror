@@ -13,7 +13,9 @@ import zipfile
 import datetime
 from StringIO import StringIO
 from logging import Logger
+
 from sqlobject import sqlhub
+
 from ..core.BaseObjects import PhysicalCardSet, PHYSICAL_SET_LIST
 from ..core.CardLookup import DEFAULT_LOOKUP
 from ..core.CardSetHolder import CachedCardSetHolder, CardSetWrapper
@@ -39,6 +41,16 @@ def write_string(oWriter, oPCSet):
     oString = oFile.getvalue()
     oFile.close()
     return oString
+
+
+class ZipEntryProxy(StringIO, object):
+    """A proxy that provides a suitable open method so
+       these can be passed to the card reading routines."""
+
+    def open(self):
+        """Reset to the start of the file."""
+        self.seek(0)
+        return self
 
 
 class BaseZipFileWrapper(object):
@@ -176,8 +188,6 @@ class BaseZipFileWrapper(object):
             oHolder = CachedCardSetHolder()
             parse_string(oParser, oData, oHolder)
             if bReparent:
-                # pylint: disable=E1103
-                # SQLObject confuses pylint
                 oHolder.parent = 'My Collection'
             oHolder.create_pcs(oCardLookup, dLookupCache)
             self._aWarnings.extend(oHolder.get_warnings())

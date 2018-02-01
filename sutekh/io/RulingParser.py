@@ -8,12 +8,15 @@
 
 import re
 from logging import Logger
+
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
                                                  HTMLStateError, LogState,
                                                  LogStateWithInfo)
 from sutekh.base.core.BaseObjects import IAbstractCard
+
 from sutekh.core.SutekhObjects import SutekhObjectMaker
-from sqlobject import SQLObjectNotFound
 
 
 # Ruling Saver
@@ -55,8 +58,6 @@ class RuleDict(dict):
         sTitle = self._oMasterOut.sub('', sTitle)
         sTitle = self._oCommaThe.sub('', sTitle)
 
-        # pylint: disable=W0704
-        # Skipping SQLObject exceptions is the right thing to do here
         try:
             return IAbstractCard(sTitle)
         except SQLObjectNotFound:

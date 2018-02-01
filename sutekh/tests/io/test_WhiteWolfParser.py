@@ -5,15 +5,18 @@
 
 """Test the white wolf card reader"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
-                                       ICreed, IVirtue)
+import unittest
+
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
                                           IPhysicalCard, ICardType,
                                           IExpansion, IRarity, IRarityPair,
                                           IArtist, IKeyword)
-from sqlobject import SQLObjectNotFound
-import unittest
+
+from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
+                                       ICreed, IVirtue)
+from sutekh.tests.TestCore import SutekhTest
 
 
 class WhiteWolfParserTests(SutekhTest):
@@ -43,6 +46,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Agent of Power",
         u"Aire of Elation",
         u"Akram",
+        u"Alabástrom",
         u"Alan Sovereign",
         u"Alan Sovereign (Advanced)",
         u"Alexandra",
@@ -55,6 +59,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
         u"Anson",
+        u"Ashur Tablets",
         u"Bravo",
         u"Bronwen",
         u"Cedric",
@@ -101,12 +106,12 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic WW list parser tests"""
-        # pylint: disable=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         aCards = sorted(list(AbstractCard.select()), key=lambda oC: oC.name)
 
         # Check card names
+        self.assertEqual(len(aCards), len(self.aExpectedCards))
         self.assertEqual([oC.name for oC in aCards], self.aExpectedCards)
 
         # Check Magnum
@@ -128,10 +133,12 @@ class WhiteWolfParserTests(SutekhTest):
         oCommon = IRarity('Common')
         oJyhad = IExpansion('Jyhad')
         oVTES = IExpansion('VTES')
+        oAnthology = IExpansion('Anthology')
 
         self.assertTrue(oCommon in [oP.rarity for oP in o44.rarity])
         self.assertTrue(oJyhad in [oP.expansion for oP in o44.rarity])
         self.assertTrue(oVTES in [oP.expansion for oP in o44.rarity])
+        self.assertTrue(oAnthology not in [oP.expansion for oP in o44.rarity])
 
         self.assertTrue(IRarityPair(('VTES', 'Common')) in o44.rarity)
 
@@ -179,6 +186,12 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(oRuling.text.startswith("Cannot use his special"))
         self.assertTrue(oRuling.text.endswith("uncontrolled region."))
         self.assertEqual(oRuling.code, "[LSJ 19990215]")
+
+        # Check Ashur Tablets
+        oAshur = IAbstractCard('Ashur Tablets')
+        self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
+        self.assertTrue(IRarityPair(('Anthology', 'Anthology'))
+                        in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
         for oAbs in AbstractCard.select():
@@ -287,7 +300,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oPredComm.canonicalName, u"predator's communion")
         self.assertEqual(oPredComm.name, u"Predator's Communion")
         self.failUnless(oPredComm.text.startswith("[abo] [REFLEX]"))
-        self.failUnless(oPredComm.text.endswith("untaps."))
+        self.failUnless(oPredComm.text.endswith("unlocks."))
         self.assertEqual(oPredComm.group, None)
         self.assertEqual(oPredComm.capacity, None)
         self.assertEqual(oPredComm.cost, None)
@@ -361,7 +374,7 @@ class WhiteWolfParserTests(SutekhTest):
         oAbjure = IAbstractCard("Abjure")
         self.assertEqual(oAbjure.canonicalName, u"abjure")
         self.assertEqual(oAbjure.name, u"Abjure")
-        self.failUnless(oAbjure.text.startswith("[COMBAT] Tap this"))
+        self.failUnless(oAbjure.text.startswith("[COMBAT] Lock this"))
         self.failUnless(oAbjure.text.endswith("or ash heap."))
         self.assertEqual(oAbjure.group, None)
         self.assertEqual(oAbjure.capacity, None)

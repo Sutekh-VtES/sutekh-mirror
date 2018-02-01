@@ -5,6 +5,14 @@
 
 """Test the Zip File Wrapper"""
 
+import unittest
+import zipfile
+
+from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.CardSetUtilities import delete_physical_card_set
+from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
+
+from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     get_phys_cards)
@@ -12,12 +20,6 @@ from sutekh.tests.io.test_AbstractCardSetParser import (ACS_EXAMPLE_1,
                                                         ACS_EXAMPLE_2)
 from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
-from sutekh.io.ZipFileWrapper import ZipFileWrapper
-from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
-from sutekh.base.core.CardSetUtilities import delete_physical_card_set
-import unittest
-import zipfile
 
 
 class ZipFileWrapperTest(SutekhTest):
@@ -27,8 +29,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_zip_file(self):
         """Test zip file handling"""
-        # pylint: disable=E1101, R0915
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915
         # R0915: Want a single test case to avoid re-initialising the database
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
@@ -76,8 +77,11 @@ class ZipFileWrapperTest(SutekhTest):
 
         # Check it loads correctly
         # Destroy some existing data
+        # pylint: disable=not-an-iterable
+        # SQLObject confuses pylint
         aCardSet1 = sorted([x.abstractCard.name for x in oPhysCardSet1.cards])
         aCardSet2 = sorted([x.abstractCard.name for x in oPhysCardSet2.cards])
+        # pylint: enable=not-an-iterable
 
         delete_physical_card_set(oMyCollection.name)
         delete_physical_card_set(oPhysCardSet1.name)
@@ -111,8 +115,6 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_read_single(self):
         """Check read_single_works"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
@@ -139,8 +141,6 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_old_format(self):
         """Test that an old zip file loads correctly"""
-        # pylint: disable=E1101
-        # E1101: SQLObject + PyProtocols magic confuses pylint
         # Create a test zipfile with old data
         sPhysicalCards = make_example_pcxml()
 
@@ -154,8 +154,8 @@ class ZipFileWrapperTest(SutekhTest):
         oZipFile.close()
 
         # Check it loads correctly
-        oZipFile = ZipFileWrapper(sTempFileName)
-        oZipFile.do_restore_from_zip(oLogHandler=oHandler)
+        oZipWrapper = ZipFileWrapper(sTempFileName)
+        oZipWrapper.do_restore_from_zip(oLogHandler=oHandler)
         self.assertEqual(oHandler.fTot, 4)
 
         oMyCollection = IPhysicalCardSet("My Collection")

@@ -9,12 +9,14 @@
 import os
 import glob
 import logging
-from gobject import markup_escape_text
-import gtk
-import zipimport
-import zipfile
 import re
+import zipfile
+import zipimport
+
+import gtk
+from gobject import markup_escape_text
 from sqlobject import sqlhub
+
 from ..core.DatabaseVersion import DatabaseVersion
 from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
@@ -27,7 +29,7 @@ def submodules(oPackage):
     oLoader = getattr(oPackage, "__loader__", None)
     aModules = set()
 
-    if type(oLoader) is zipimport.zipimporter:
+    if isinstance(oLoader, zipimport.zipimporter):
         # look inside the zip
         oPackageZip = zipfile.ZipFile(oLoader.archive)
         sPrefix = "/".join(oPackage.__name__.split('.')) + "/"
@@ -393,8 +395,6 @@ class BasePlugin(object):
     def _get_card_set(self):
         """Get the Card Set for this view."""
         if self._cModelType is PhysicalCardSet:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             return self.model.cardset
         return None
 
@@ -404,8 +404,6 @@ class BasePlugin(object):
         if self._cModelType in [PhysicalCardSet, PhysicalCard]:
             _oModel, aSelected = self.view.get_selection().get_selected_rows()
             for oPath in aSelected:
-                # pylint: disable=E1101
-                # pylint doesn't pick up adapter's methods correctly
                 oCard = IAbstractCard(
                     self.model.get_card_name_from_path(oPath))
                 aSelectedCards.append(oCard)

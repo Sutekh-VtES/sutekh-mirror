@@ -8,8 +8,10 @@
 """Text Parser for extracting cards from the online cardlist.txt."""
 
 import re
-from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 from logging import Logger
+
+from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
+
 from sutekh.core.SutekhObjects import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
@@ -78,8 +80,6 @@ def _find_sect_and_title(aLines):
         # Independent titles are on the next line. Of the form
         # 'Name has X vote(s)'
         # Templating change with the Unaligned. Now Independent. X vote(s).
-        # pylint: disable=W0704
-        # error isn't fatal, so ignoring it is fine
         try:
             # Special cases 'The Baron' and 'Ur-Shulgi' mean we don't
             # anchor the regexp
@@ -108,10 +108,8 @@ def _find_sect_and_title(aLines):
         except IndexError:
             pass
         # also check for Baron title
-        # pylint: disable=W0704
-        # error isn't fatal, so ignoring it is fine
         try:
-            oBaronTitle = re.compile(r'Anarch Baron of')
+            oBaronTitle = re.compile(r'[aA]narch Baron of')
             oMatch = oBaronTitle.search(aLines[0])
             if oMatch is not None:
                 sTitle = 'Baron'
@@ -146,7 +144,9 @@ class CardDict(dict):
         'seraph': re.compile(r'Sabbat\. Black Hand(\.)? Seraph'),
         'infernal': re.compile(r'[.:] Infernal\.'),
         'red list': re.compile(r'\. Red List:'),
-        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|Independent anarch[:\.]'),
+        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|'
+                             r'Independent anarch[:\.]|'
+                             r'Independent anarch Baron'),
         'scarce': re.compile(r'[.:] Scarce.'),
         'sterile': re.compile(r'[.:] Sterile.'),
         # Need the } to handle some of the errata'd cards
@@ -485,8 +485,6 @@ class CardDict(dict):
         """Add the life to the card."""
         sLife = self.oWhiteSp.sub(' ', sLife).strip()
         aLife = sLife.split()
-        # pylint: disable=W0704
-        # ignoring the error is the right thing here
         try:
             oCard.life = int(aLife[0], 10)
         except ValueError:
@@ -508,8 +506,6 @@ class CardDict(dict):
         """Add the capacity to the card."""
         sCap = self.oWhiteSp.sub(' ', sCap).strip()
         aCap = sCap.split()
-        # pylint: disable=W0704
-        # ignoring the error is the right thing here
         try:
             oCard.capacity = int(aCap[0], 10)
         except ValueError:

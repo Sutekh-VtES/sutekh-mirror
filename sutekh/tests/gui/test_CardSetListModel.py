@@ -8,8 +8,23 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
+import unittest
+
 from sutekh.base.tests.TestUtils import make_card
+from sutekh.base.tests.GuiTestUtils import (TestListener,
+                                            DummyCardSetController,
+                                            get_all_counts,
+                                            count_second_level,
+                                            count_all_cards,
+                                            reset_modes,
+                                            cleanup_models)
+from sutekh.base.core.DBSignals import send_changed_signal
+from sutekh.base.core import BaseFilters
+from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
+                                            ExpansionGrouping,
+                                            RarityGrouping, NullGrouping)
+from sutekh.base.core.BaseObjects import (PhysicalCardSet,
+                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
 from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               EXTRA_LEVEL_OPTION,
@@ -27,69 +42,11 @@ from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               MINUS_SETS_IN_USE, CHILD_CARDS,
                                               IGNORE_PARENT, PARENT_COUNT,
                                               MINUS_THIS_SET, THIS_SET_ONLY)
-from sutekh.base.core import BaseFilters
-from sutekh.core.Groupings import (CryptLibraryGrouping,
-                                   DisciplineGrouping, ClanGrouping)
-from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
-                                            ExpansionGrouping,
-                                            RarityGrouping, NullGrouping)
-from sutekh.base.core.BaseObjects import (PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
-from sutekh.base.core.DBSignals import send_changed_signal
-from sutekh.base.gui.MessageBus import MessageBus
-import unittest
-
-
-class CardSetListener(object):
-    """Listener used in the test cases."""
-    # pylint: disable=W0231
-    # CardListModelListener has no __init__
-    def __init__(self, oModel):
-        self.bLoadCalled = False
-        self.iCnt = 0
-        MessageBus.subscribe(oModel, 'load', self.load)
-        MessageBus.subscribe(oModel, 'alter_card_count', self.alter_count)
-        MessageBus.subscribe(oModel, 'add_new_card', self.alter_count)
-
-    def load(self, aCards):
-        """Called when the model is loaded."""
-        self.bLoadCalled = True
-        self.iCnt = len(aCards)
-
-    def alter_count(self, _oCard, iChg):
-        """Called when the model alters the card count or adds cards"""
-        self.iCnt += iChg
-
-
-class DummyController(object):
-    """Dummy controller object for config tests"""
-
-    def __init__(self):
-        self.bReload = False
-
-    # pylint: disable=W0212
-    # We allow access via these properties
-
-    view = property(fget=lambda self: self)
-    frame = property(fget=lambda self: self)
-    pane_id = property(fget=lambda self: 10)
-    config_frame_id = property(fget=lambda self: 'pane10')
-
-    # pylint: enable=W0212
-
-    # pylint: disable=R0201, C0111
-    # dummy functions, so they're empty
-
-    def set_parent_count_col_vis(self, _bVal):
-        return
-
-    def reload_keep_expanded(self):
-        return
-
-    def queue_reload(self):
-        self.bReload = True  # For use in listener test cases
+from sutekh.core.Groupings import (CryptLibraryGrouping,
+                                   DisciplineGrouping, ClanGrouping)
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 
 class CardSetListModelTests(ConfigSutekhTest):
@@ -107,70 +64,6 @@ class CardSetListModelTests(ConfigSutekhTest):
     aNames = ['Test 1', 'Test Child 1', 'Test Grand Child', 'Test Sibling',
               'Test Grand Child 2']
 
-    # pylint: disable=R0201
-    # I prefer to have these as methods
-    def _count_second_level(self, oModel):
-        """Count all the second level entries in the model."""
-        iTotal = 0
-        oIter = oModel.get_iter_first()
-        while oIter:
-            oChildIter = oModel.iter_children(oIter)
-            while oChildIter:
-                iTotal += oModel.iter_n_children(oChildIter)
-                oChildIter = oModel.iter_next(oChildIter)
-            oIter = oModel.iter_next(oIter)
-        return iTotal
-
-    def _count_all_cards(self, oModel):
-        """Count all the entries in the model."""
-        iTotal = 0
-        oIter = oModel.get_iter_first()
-        while oIter:
-            iTotal += oModel.iter_n_children(oIter)
-            oIter = oModel.iter_next(oIter)
-        return iTotal
-
-    def _get_all_child_counts(self, oModel, oIter, sName=''):
-        """Recursively descend the children of oIter, getting all the
-           relevant info."""
-        # We use get_value rather than get_name_from_iter, as we're
-        # not worried about the encoding issues here, and it saves time.
-        aList = []
-        oChildIter = oModel.iter_children(oIter)
-        while oChildIter:
-            if sName:
-                sListName = sName + ':' + oModel.get_value(oChildIter, 0)
-            else:
-                sListName = oModel.get_value(oChildIter, 0)
-            # similiarly, we use get_value rather than the count functions
-            # for speed as well
-            aList.append((oModel.get_value(oChildIter, 1),
-                          oModel.get_value(oChildIter, 2), sListName))
-            if oModel.iter_n_children(oChildIter) > 0:
-                oGCIter = oModel.iter_children(oChildIter)
-                # We unroll a level for speed reasons
-                # This is messy - we could easily do this as a recursive call
-                # in all cases, but we hit this function 4 times for almost
-                # every iteration of the test, so sacrificing some readablity
-                # for speed is worthwhile
-                while oGCIter:
-                    sGCName = sListName + ':' + \
-                        oModel.get_value(oGCIter, 0)
-                    if oModel.iter_n_children(oGCIter) > 0:
-                        aList.extend(self._get_all_child_counts(oModel,
-                                                                oGCIter,
-                                                                sGCName))
-                    else:
-                        aList.append((oModel.get_value(oGCIter, 1),
-                                      oModel.get_value(oGCIter, 2), sGCName))
-                    oGCIter = oModel.iter_next(oGCIter)
-            oChildIter = oModel.iter_next(oChildIter)
-        return aList
-
-    def _get_all_counts(self, oModel):
-        """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
-        return sorted(self._get_all_child_counts(oModel, None))
-
     def _check_cache_totals(self, oCS, oModelCache, oModelNoCache, sMode):
         """Reload the models and check the totals match"""
         # pylint: disable=W0212
@@ -181,14 +74,14 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModelNoCache.load()
         tCacheTotals = (
             oModelCache.iter_n_children(None),
-            self._count_all_cards(oModelCache),
-            self._count_second_level(oModelCache))
-        aCacheList = self._get_all_counts(oModelCache)
+            count_all_cards(oModelCache),
+            count_second_level(oModelCache))
+        aCacheList = get_all_counts(oModelCache)
         tNoCacheTotals = (
             oModelNoCache.iter_n_children(None),
-            self._count_all_cards(oModelNoCache),
-            self._count_second_level(oModelNoCache))
-        aNoCacheList = self._get_all_counts(oModelNoCache)
+            count_all_cards(oModelNoCache),
+            count_second_level(oModelNoCache))
+        aNoCacheList = get_all_counts(oModelNoCache)
         self.assertEqual(tCacheTotals, tNoCacheTotals,
                          self._format_error(
                              "Totals for cache and no-cache differ "
@@ -199,24 +92,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                              "Card Lists for cache and no-cache "
                              "differ after %s cards" % sMode,
                              aCacheList, aNoCacheList, oModelCache, oCS))
-
-    def _reset_modes(self, oModel):
-        """Set the model to the minimal state."""
-        # pylint: disable=W0212
-        # we need to access protected methods
-        # The database signal handling means that all CardSetListModels
-        # associated with a card set will update when send_changed_signal is
-        # called, so we reset the model state so these calls will be cheap if
-        # this models is affected when we're not explicitly testing it.
-        oModel._change_parent_count_mode(IGNORE_PARENT)
-        oModel._change_level_mode(NO_SECOND_LEVEL)
-        oModel.bEditable = False
-        oModel._change_count_mode(THIS_SET_ONLY)
-
-    def _cleanup_models(self, aModels):
-        """Utility function to cleanup models signals, etc."""
-        for oModel in aModels:
-            oModel.cleanup()
 
     # pylint: disable=R0913
     # Need all these arguments here
@@ -267,18 +142,17 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # pylint: disable=E1101, R0914
-        # E1101: SQLObjext confuses pylint
+        # pylint: disable=R0914
         # R0914: several local variables, as we test a number of conditions
         dModelInfo = {}
         for oModel in aModels:
-            oListener = CardSetListener(oModel)
+            oListener = TestListener(oModel, False)
             oModel.load()
             tStartTotals = (
                 oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-            aStartList = self._get_all_counts(oModel)
+                count_all_cards(oModel),
+                count_second_level(oModel))
+            aStartList = get_all_counts(oModel)
             dModelInfo[oModel] = [oListener, tStartTotals, aStartList]
         for oCard in self.aPhysCards:
             oPCS.addPhysicalCard(oCard.id)
@@ -287,15 +161,15 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             tAddTotals = (
                 oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-            aAddList = self._get_all_counts(oModel)
+                count_all_cards(oModel),
+                count_second_level(oModel))
+            aAddList = get_all_counts(oModel)
             oModel.load()
             tLoadTotals = (
                 oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-            aLoadList = self._get_all_counts(oModel)
+                count_all_cards(oModel),
+                count_second_level(oModel))
+            aLoadList = get_all_counts(oModel)
             self.assertEqual(tAddTotals, tLoadTotals,
                              self._format_error(
                                  "Totals for inc_card and load differ",
@@ -327,9 +201,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             tDecTotals = (
                 oModel.iter_n_children(None),
-                self._count_all_cards(oModel),
-                self._count_second_level(oModel))
-            aDecList = self._get_all_counts(oModel)
+                count_all_cards(oModel),
+                count_second_level(oModel))
+            aDecList = get_all_counts(oModel)
             # test that we've behaved sanely
             oListener, tStartTotals, aStartList = dModelInfo[oModel]
             self.assertEqual(aDecList, aStartList,
@@ -380,16 +254,19 @@ class CardSetListModelTests(ConfigSutekhTest):
                             oModel._change_parent_count_mode(iParentMode)
                         self._add_remove_cards(oPCS, aModels, dCountInfo)
         for oModel in aModels:
-            self._reset_modes(oModel)
+            reset_modes(oModel)
 
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable=W0212
-        # we need to access protected methods
+        # pylint: disable=W0212, R0101, R0912, R0914
+        # W0212 - We need to access protected methods
+        # R0101 - We need all these blocks to cover all the cases
+        # R0912, R0914 - covering all the cases requires we track a lot
+        #                of state
         for oModel in aModels:
             # Ensure we start with a clean cache
-            oController = DummyController()
+            oController = DummyCardSetController()
             oModel.set_controller(oController)
             oModel._dCache = {}
         for bEditFlag in (False, True):
@@ -427,18 +304,18 @@ class CardSetListModelTests(ConfigSutekhTest):
                         for oModel in aModels:
                             tStartTotals = (
                                 oModel.iter_n_children(None),
-                                self._count_all_cards(oModel),
-                                self._count_second_level(oModel))
-                            aStartList = self._get_all_counts(oModel)
+                                count_all_cards(oModel),
+                                count_second_level(oModel))
+                            aStartList = get_all_counts(oModel)
                             dModelInfo[oModel] = [tStartTotals, aStartList]
                         # get post-reload counts
                         for oModel in aModels:
                             oModel.load()
                             tLoadTotals = (
                                 oModel.iter_n_children(None),
-                                self._count_all_cards(oModel),
-                                self._count_second_level(oModel))
-                            aLoadList = self._get_all_counts(oModel)
+                                count_all_cards(oModel),
+                                count_second_level(oModel))
+                            aLoadList = get_all_counts(oModel)
                             tStartTotals, aStartList = dModelInfo[oModel]
                             self.assertEqual(
                                 aLoadList, aStartList,
@@ -456,7 +333,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oChildPCS.parent = oOldParPCS
                         oChildPCS.syncUpdate()
         for oModel in aModels:
-            self._reset_modes(oModel)
+            reset_modes(oModel)
 
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
@@ -481,8 +358,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oModel.load()
                         tFilterTotals = (
                             oModel.iter_n_children(None),
-                            self._count_all_cards(oModel),
-                            self._count_second_level(oModel))
+                            count_all_cards(oModel),
+                            count_second_level(oModel))
                         self.assertEqual(
                             tFilterTotals, (1, 0, 0),
                             self._format_error(
@@ -495,7 +372,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oListener = CardSetListener(oModel)
+        oListener = TestListener(oModel, False)
         self.assertFalse(oListener.bLoadCalled)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
@@ -505,40 +382,39 @@ class CardSetListModelTests(ConfigSutekhTest):
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
+        oAlex = make_card('Alexandra', 'CE')
         oModel.load()
         self.assertEqual(oListener.iCnt, 2)
         # Only Vampires added
         self.assertEqual(oModel.iter_n_children(None), 1)
         oModel.groupby = NullGrouping
-        self.assertEqual(self._count_all_cards(oModel), 2)
-        self.assertEqual(self._count_second_level(oModel), 2)
+        self.assertEqual(count_all_cards(oModel), 2)
+        self.assertEqual(count_second_level(oModel), 2)
         # These tests need the model to be sorted
         oModel.enable_sorting()
         # Check the drag-n-drop helper
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                         {'Camarilla Edition': 1})
+                         {oAlex.id: 1})
         self.assertEqual(oModel.get_drag_info_from_path('0:0:0'),
-                         (u"Alexandra", "Camarilla Edition", 1, 2))
+                         (oAlex.abstractCard.id, oAlex.id, 1, 2))
         self.assertEqual(oModel.get_drag_info_from_path('0:0'),
-                         (u"Alexandra", None, 1, 1))
+                         (oAlex.abstractCard.id, None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
-                         (None, None, 2, 0))
+                         (None, None, None, 0))
         # pylint: disable=W0212
         # we need to access this protected methods
         oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.load()
         # This should also work for no expansions shown
-        self.assertEqual(self._count_all_cards(oModel), 2)
-        self.assertEqual(self._count_second_level(oModel), 0)
+        self.assertEqual(count_all_cards(oModel), 2)
+        self.assertEqual(count_second_level(oModel), 0)
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
-                         {'Camarilla Edition': 1})
-        self._cleanup_models([oModel])
+                         {oAlex.id: 1})
+        cleanup_models([oModel])
 
     def test_db_listeners(self):
         """Test that the model responds to changes to the card set hierarchy"""
@@ -547,7 +423,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # we need to access protected methods
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oDummy = DummyController()
+        oDummy = DummyCardSetController()
         oModel.set_controller(oDummy)
         oPCS2 = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         # Child tests
@@ -582,7 +458,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oDummy.bReload = False
         oPCS3.inuse = True
         self.assertEqual(oDummy.bReload, False)
-        self._cleanup_models([oModel])
+        cleanup_models([oModel])
 
     def test_config_listener(self):
         """Test that the model responds to the profile changes as expected"""
@@ -591,7 +467,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # we need to access protected methods
         PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oDummy = DummyController()
+        oDummy = DummyCardSetController()
         oModel.set_controller(oDummy)
         sTestValue = list(SHOW_CARD_LOOKUP)[0]
         iTestMode = SHOW_CARD_LOOKUP[sTestValue]
@@ -628,7 +504,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             self.oConfig.set_local_frame_option(oModel.frame_id,
                                                 PARENT_COUNT_MODE, sValue)
             self.assertEqual(oModel._iParentCountMode, iMode)
-        self._cleanup_models([oModel])
+        cleanup_models([oModel])
 
     def _get_model(self, sName):
         """Return a model for the named card set, with the null grouping"""
@@ -639,8 +515,6 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _setup_simple(self):
         """Convenience method for setting up a single card set for tests"""
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
         oPCS = PhysicalCardSet(name=self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
@@ -658,7 +532,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oPCS, [oModel])
         oModel.hideillegal = True
         self._loop_modes(oPCS, [oModel])
-        self._cleanup_models([oModel])
+        cleanup_models([oModel])
 
     def test_groupings(self):
         """Check over various groupings, single card set"""
@@ -672,7 +546,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModel.groupby = cGrouping
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_adding_filter(self):
         """Check adding cards with filters enabled (single card set)"""
@@ -689,7 +563,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModel.applyfilter = True
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_adding_config_filter(self):
         """Check adding cards with config filter enabled (single card set)"""
@@ -707,7 +581,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModel._oConfigFilter = oFilter
             aModels.append(oModel)
         self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_cache_simple(self):
         """Test that the special persistent caches don't affect results"""
@@ -732,8 +606,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable=E1101
-                    # E1101: SQLObjext confuses pylint
                     for oCard in aCardsToAdd:
                         oPCS.addPhysicalCard(oCard.id)
                         oPCS.syncUpdate()
@@ -751,7 +623,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                     self._check_cache_totals(oPCS, oModelCache, oModelNoCache,
                                              'deleting')
 
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_cache_complex(self):
         """Test that the special persistent caches don't affect results with
@@ -793,8 +665,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
-                    # pylint: disable=E1101, E1103
-                    # E1101: SQLObjext confuses pylint
                     for oCS in (oEmptyPCS, oChildPCS, oGrandChildPCS, oPCS):
                         for oCard in aCardsToAdd:
                             oCS.addPhysicalCard(oCard.id)
@@ -819,7 +689,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                                                      oModelNoCache,
                                                      'deleting')
 
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def _setup_parent_child(self):
         """Setup the initial parent and child for relationship tests"""
@@ -836,14 +706,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
 
@@ -856,16 +722,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildPCS.syncUpdate()
         return oGrandChildPCS
 
     def _setup_relationships(self):
         """Convenience method to setup a card set hierarchy for test cases"""
-        # pylint: disable=E1101
-        # PyProtocols confuses pylint
         aCards, oPCS, oChildPCS = self._setup_parent_child()
         oChildPCS.inuse = True
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
@@ -911,7 +773,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oChildPCS.inuse = True
         self._loop_modes(oChildPCS, aModels)
         self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_parent_child_grandchild(self):
         """Test against parent-child-grandchild setup"""
@@ -930,7 +792,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oChildPCS, aModels)
         oGrandChildPCS.inuse = True
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_complex_heirachy(self):
         """Test with siblings in the tree as well"""
@@ -948,8 +810,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oSibPCS.addPhysicalCard(oCard.id)
         oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
                                           parent=oChildPCS)
@@ -960,8 +820,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101, E1103
-            # PyProtocols confuses pylint
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             if sName == 'Aire of Elation':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
@@ -978,7 +836,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes(oChildPCS, aModels)
         oGrandChildPCS.inuse = True
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_final_relationship_state(self):
         """Tests with the final relationship setup"""
@@ -1000,7 +858,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oModel in aModels:
             oModel.hideillegal = True
         self._loop_modes(oPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_relation_grouping(self):
         """Test groupings with complex relationships"""
@@ -1017,7 +875,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.groupby = cGrouping
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_relation_filters(self):
         """Test adding with complex relationships and filters"""
@@ -1036,7 +894,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.applyfilter = True
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_relation_config_filters(self):
         """Test adding with complex relationships and the config filter
@@ -1057,7 +915,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel._oConfigFilter = oFilter
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_rel_filter_cfg_filter(self):
         """Test with complex relationship, a physical config filter
@@ -1079,7 +937,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.applyfilter = True
                 aModels.append(oModel)
         self._loop_modes(oChildPCS, aModels)
-        self._cleanup_models(aModels)
+        cleanup_models(aModels)
 
     def test_filters(self):
         """Test filtering for the card set"""
@@ -1099,8 +957,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
         oModel = self._get_model(self.aNames[0])
         # Test filter which selects nothing works
@@ -1116,8 +972,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (1, 4, 0)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1126,8 +982,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.applyfilter = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (11, 18, 0)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1135,8 +991,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_level_mode(SHOW_EXPANSIONS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (11, 18, 25)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1144,8 +1000,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.bEditable = True
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (11, 18, 48)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1165,14 +1021,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oChildPCS.addPhysicalCard(oCard.id)
         oModel.bEditable = False
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (1, 4, 6)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1180,8 +1034,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_level_mode(SHOW_CARD_SETS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (1, 4, 2)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1189,8 +1043,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_count_mode(CHILD_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
         tExpected = (1, 6, 4)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
@@ -1198,13 +1052,13 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_count_mode(ALL_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
-                   self._count_all_cards(oModel),
-                   self._count_second_level(oModel))
-        tExpected = (1, 31, 4)
+                   count_all_cards(oModel),
+                   count_second_level(oModel))
+        tExpected = (1, 32, 4)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
-        self._cleanup_models([oModel])
+        cleanup_models([oModel])
 
     def test_empty(self):
         """Test corner cases around empty card sets"""
@@ -1227,13 +1081,11 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
                 oGrandChildPCS.addPhysicalCard(oCard.id)
         self._loop_modes(oChildPCS, [oChildModel])
-        self._cleanup_models([oChildModel])
+        cleanup_models([oChildModel])
 
     def test_reparenting_from_none(self):
         """Test corner cases around reparenting card sets.
@@ -1259,8 +1111,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
@@ -1271,7 +1121,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oChildPCS.addPhysicalCard(oCard.id)
         self._loop_modes_reparent(oPCS, oChildPCS,
                                   [oModel, oChildModel, oChild2Model])
-        self._cleanup_models([oModel, oChildModel, oChild2Model])
+        cleanup_models([oModel, oChildModel, oChild2Model])
 
     def test_reparenting_within_tree(self):
         """Test corner cases around reparenting card sets.
@@ -1297,8 +1147,6 @@ class CardSetListModelTests(ConfigSutekhTest):
         ]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
@@ -1309,7 +1157,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oChildPCS.addPhysicalCard(oCard.id)
         self._loop_modes_reparent(oChildPCS, oChild2PCS,
                                   [oModel, oChildModel, oChild2Model])
-        self._cleanup_models([oModel, oChildModel, oChild2Model])
+        cleanup_models([oModel, oChildModel, oChild2Model])
 
 
 if __name__ == "__main__":

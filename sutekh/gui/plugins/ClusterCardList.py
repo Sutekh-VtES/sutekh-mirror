@@ -5,17 +5,20 @@
 
 """Plugin to find clusters in the card lists."""
 
-import gtk
 import random
 import math
+
+import gtk
+
 from sutekh.base.core.BaseObjects import (PhysicalCard,
                                           PhysicalCardSet,
                                           IPhysicalCard)
 from sutekh.base.core.CardSetUtilities import check_cs_exists
-from sutekh.core.CardListTabulator import CardListTabulator
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.SutekhDialog import NotebookDialog, do_complaint_error
+
+from sutekh.core.CardListTabulator import CardListTabulator
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class ClusterCardList(SutekhPlugin):
@@ -30,8 +33,6 @@ class ClusterCardList(SutekhPlugin):
     dTableVersions = {}
     aModelsSupported = (PhysicalCard, PhysicalCardSet)
 
-    # pylint: disable=W0142
-    # ** magic OK
     def __init__(self, *args, **kwargs):
         super(ClusterCardList, self).__init__(*args, **kwargs)
         # pylint: disable=C0103
@@ -48,8 +49,6 @@ class ClusterCardList(SutekhPlugin):
         self._oAutoNumClusters = None
         self._oNumClustersSpin = None
         self._oNumIterSpin = None
-
-    # pylint: enable=W0142
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""

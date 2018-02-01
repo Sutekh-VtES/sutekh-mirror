@@ -8,10 +8,13 @@
 
 """Base classes and constants for configuation management."""
 
-from configobj import ConfigObj, flatten_errors
-from validate import Validator, is_option, is_list
-from .MessageBus import MessageBus, CONFIG_MSG
+import datetime
+
 import pkg_resources
+from configobj import ConfigObj, flatten_errors
+from validate import Validator, is_option, is_list, VdtTypeError
+
+from .MessageBus import MessageBus, CONFIG_MSG
 
 # Type definitions
 CARDSET = 'Card Set'
@@ -26,6 +29,15 @@ DEF_PROFILE_FILTER = 'No profile filter'
 def is_option_list(sValue, *aOptions):
     """Validator function for option_list configspec type."""
     return [is_option(sMem, *aOptions) for sMem in is_list(sValue)]
+
+
+def is_date_format(sValue):
+    """Validator function to check for date format."""
+    try:
+        oDate = datetime.datetime.strptime(sValue, '%Y-%m-%d').date()
+    except ValueError:
+        raise VdtTypeError(sValue)
+    return oDate
 
 
 class BaseConfigFile(object):
@@ -45,6 +57,7 @@ class BaseConfigFile(object):
 
     dCustomConfigTypes = {
         'option_list': is_option_list,
+        'date': is_date_format,
     }
 
     # Subclasses should specify the correct thing here
@@ -92,8 +105,6 @@ class BaseConfigFile(object):
 
     def validate(self):
         """Validate a configuration object."""
-        # pylint: disable=E1101
-        # pkg_resources confuses pylint here
         fConfigSpec = pkg_resources.resource_stream(__name__,
                                                     "baseconfigspec.ini")
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
@@ -187,7 +198,9 @@ class BaseConfigFile(object):
            config object.
            """
         aErrors = []
-        if oValidationResults == True:
+        # oValidationResults could be a dict or 'True', so we need to
+        # be explicit in this test
+        if oValidationResults is True:
             return aErrors
 
         for (aSections, sKey, _oIgnore) in flatten_errors(self._oConfig,
@@ -744,6 +757,14 @@ class BaseConfigFile(object):
         """Set the 'save on exit' option."""
         self._oConfig['main']['save on exit'] = bSaveOnExit
 
+    def get_check_for_updates(self):
+        """Query the 'check for updates on startup' option."""
+        return self._oConfig['main']['check for updates on startup']
+
+    def set_check_for_updates(self, bCheck):
+        """Query the 'check for updates on startup' option."""
+        self._oConfig['main']['check for updates on startup'] = bCheck
+
     def get_save_precise_pos(self):
         """Query the 'save pane sizes' option."""
         return self._oConfig['main']['save pane sizes']
@@ -797,3 +818,13 @@ class BaseConfigFile(object):
     def get_socket_timeout(self):
         """Get the timeout config value"""
         return self._oConfig['main']['socket timeout']
+
+    def get_last_update_date(self):
+        """Get the last update date as a date object."""
+        return self._oConfig['main']['last cardlist update']
+
+    def set_last_update_date(self, oDate):
+        """Set the last update date."""
+        # str(oDate) will call oDate.isoformat(), so this will
+        # serialise to the format we expect.
+        self._oConfig['main']['last cardlist update'] = oDate

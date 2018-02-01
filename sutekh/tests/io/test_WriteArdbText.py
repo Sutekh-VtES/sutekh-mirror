@@ -5,12 +5,14 @@
 
 """Test Writing a card set to an ARDB deck XML file"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+import unittest
+
 from sutekh.base.core.CardSetHolder import CardSetWrapper
+
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ARDBTextParser import ARDBTextParser
-import unittest
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 # This doesn't match the ARDB export for the same card set, due to
 # the outstanding issues in the Export implementation
@@ -39,7 +41,7 @@ Equipment [7]
  2x AK-47
  1x Aaron's Feeding Razor
 
-Master [3]
+Master [3] (2 trifles)
  2x Abombwe
  1x The Path of Blood
 
@@ -79,12 +81,15 @@ class ArdbTextWriterTests(SutekhTest):
         aCards = oHolder.get_cards()
         dSetCards = {}
         # Reformat cards in deck to match holder
+        # pylint: disable=not-an-iterable
+        # SQLObject confuses pylint
         for sName in [x.abstractCard.name for x in oPhysCardSet1.cards]:
             # We truncate Inez here to match the writer output
             if sName.startswith('Inez'):
                 sName = sName[:18]
             dSetCards.setdefault(sName, 0)
             dSetCards[sName] += 1
+        # pylint: enable=not-an-iterable
 
         for sName, iCnt in dSetCards.iteritems():
             self.failUnless((sName, iCnt) in aCards)

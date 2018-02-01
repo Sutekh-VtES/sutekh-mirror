@@ -1,24 +1,39 @@
 # -*- coding: utf-8 -*-
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
-# Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
+# Copyright 2008-2018 Neil Muller <drnlmuller+sutekh@gmail.com>
 # Factored out into base.gui 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 """This handles the gui aspects of upgrading the database."""
 
-import gtk
 import logging
+import datetime
+import zipfile
+from collections import namedtuple
+from StringIO import StringIO
+
+import gtk
 from sqlobject import sqlhub, connectionForURI
-from .DBUpgradeDialog import DBUpgradeDialog
-from .ProgressDialog import (ProgressDialog,
-                             SutekhCountLogHandler)
+
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
 from ..core.DBUtility import flush_cache
+from ..core.BaseObjects import PhysicalCardSet
+from ..core.DBUtility import get_cs_id_name_table, refresh_tables
+
+from ..io.EncodedFile import EncodedFile
+from ..io.UrlOps import urlopen_with_timeout, HashError
+from ..io.BaseZipFileWrapper import ZipEntryProxy
+
+from .DBUpgradeDialog import DBUpgradeDialog
+from .ProgressDialog import (ProgressDialog,
+                             SutekhCountLogHandler,
+                             SutekhHTMLLogHandler)
 from .SutekhDialog import (do_complaint_buttons, do_complaint,
                            do_complaint_warning, do_exception_complaint,
-                           do_complaint_error_details)
-from ..core.BaseObjects import PhysicalCardSet
-from ..core.DBUtility import get_cs_id_name_table
+                           do_complaint_error, do_complaint_error_details)
+from .GuiUtils import save_config
+from .GuiDataPack import gui_error_handler, progress_fetch_data
+from .DataFilesDialog import DataFilesDialog, COMBINED_ZIP
 
 
 def wrapped_read(oFile, fDoRead, sDesc, oProgressDialog, oLogHandler):
@@ -29,8 +44,33 @@ def wrapped_read(oFile, fDoRead, sDesc, oProgressDialog, oLogHandler):
     oProgressDialog.set_complete()
 
 
+# Information about a data file
+# sName and sDescription are used to construct the file dialog
+# sUrl is the download url for the file, if applicable
+# bRequired is True if the file is required for the import to succeed
+# bCountLogger is True if the reader uses the SutekhCountLogHandler
+# if False, SutekhHTMLLogHandler is used.
+# fReader is the function that reads the asociated data file
+DataFileReader = namedtuple('DataFileReader', ['sName', 'sUrl',
+                                               'sDescription',
+                                               'tPattern', 'bRequired',
+                                               'bCountLogger', 'fReader'])
+
+
 class BaseGuiDBManager(object):
     """Base class for handling gui DB Upgrades."""
+    # Tuple about files and associated reader functions and details
+    # We use a tuple so this is ordered, and files will be read from
+    # the first entry to the last
+    tReaders = ()
+    # Control whether to display the option for a combined zip file
+    bDisplayZip = False
+    # Url for zip file containing the combined data
+    sZippedUrl = None
+    # Hash for zip url if applicable
+    sHash = None
+    # List of database tables to reload when importing
+    aTables = []
 
     cZipFileWrapper = None
 
@@ -38,17 +78,94 @@ class BaseGuiDBManager(object):
         self._oWin = oWin
         self._oDatabaseUpgrade = cDatabaseUpgrade()
 
-    def _get_names(self, _bDisableBackup):
+    def _get_names(self, bDisableBackup):
         """Query the user for the files / urls to import.
 
            Returns a list of file names and a backup file name if required.
-           return aFiles, sBackupFile
-           aFiles should be None to skip the import / initialisation."""
-        raise NotImplementedError('Implement _get_names')
+           return dFiles, sBackupFile
+           dFiles should be None to skip the import / initialisation."""
+        # Add the individual file buttons
+        sBackupFile = None
+        oFilesDialog = DataFilesDialog(self._oWin, self.tReaders,
+                                       self.bDisplayZip, self.sZippedUrl,
+                                       bDisableBackup)
+        oFilesDialog.run()
+        dChoices, sBackupFile = oFilesDialog.get_names()
+        oFilesDialog.destroy()
+        dFiles = {}
+        # Check for zipped file case
+        if COMBINED_ZIP in dChoices:
+            dFiles = self.read_zip_file(dChoices[COMBINED_ZIP], self.sHash)
+        else:
+            # Handle the files individually
+            for sName, oResult in dChoices.items():
+                if oResult.sName is not None:
+                    dFiles[sName] = EncodedFile(oResult.sName,
+                                                bUrl=oResult.bIsUrl)
+        return dFiles, sBackupFile
 
-    def _read_data(self, aFiles, oProgressDialog):
+    def read_zip_file(self, oZipDetails, sHash):
+        """open (Downlaoding it if required) a zip file and split it into
+           the required bits.
+
+           We provide a parameter for hashes, so it can be used when a
+           hash is available."""
+        aReaderNames = [x.sName for x in self.tReaders]
+        if oZipDetails.bIsUrl:
+            oFile = urlopen_with_timeout(oZipDetails.sName,
+                                         fErrorHandler=gui_error_handler)
+            try:
+                sData = progress_fetch_data(oFile, sHash=sHash,
+                                            sDesc="Downloading zipfile")
+            except HashError:
+                do_complaint_error("Checksum failed for zipfile.\n"
+                                   "Aborting")
+                return None
+        else:
+            fIn = file(oZipDetails.sName, 'rb')
+            sData = fIn.read()
+            fIn.close()
+        oZipFile = zipfile.ZipFile(StringIO(sData), 'r')
+        aNames = oZipFile.namelist()
+        dFiles = {}
+        for sName in aNames:
+            # We rely on the later checks to catch missing files, but
+            # we only include files we have readers for here
+            if sName in aReaderNames:
+                oFile = ZipEntryProxy(oZipFile.read(sName))
+                dFiles[sName] = oFile
+        if not dFiles:
+            do_complaint_error("Aborting the import."
+                               "No useable files found in the zipfile")
+        return dFiles
+
+    def _read_data(self, dFiles, oProgressDialog):
         """Read the data from the give files / urls."""
-        raise NotImplementedError('Implement _read_data')
+        aMissing = []
+        for oReader in self.tReaders:
+            if oReader.bRequired and oReader.sName not in dFiles:
+                aMissing.append("Missing %s" % oReader.sDescription)
+        if aMissing:
+            # Abort, since we're missing required data
+            do_complaint_error_details("Aborting the import - "
+                                       "Missing required data files",
+                                       "\n".join(aMissing))
+            return False
+        refresh_tables(self.aTables, sqlhub.processConnection)
+        oProgressDialog.reset()
+        for oReader in self.tReaders:
+            if oReader.sName not in dFiles:
+                continue
+            # pylint: disable=redefined-variable-type
+            # This redefinition is delibrate
+            if oReader.bCountLogger:
+                oLogHandler = SutekhCountLogHandler()
+            else:
+                oLogHandler = SutekhHTMLLogHandler()
+            oLogHandler.set_dialog(oProgressDialog)
+            wrapped_read(dFiles[oReader.sName], oReader.fReader,
+                         oReader.sDescription, oProgressDialog, oLogHandler)
+        return True
 
     def copy_to_new_db(self, oOldConn, oTempConn, oProgressDialog,
                        oLogHandler):
@@ -67,14 +184,14 @@ class BaseGuiDBManager(object):
                               ["Attempt to Continue Anyway (This is most"
                                " probably very dangerous)?"])
             iResponse = do_complaint_warning(sMesg)
-            if iResponse == gtk.RESPONSE_OK:
-                return True
-            else:
-                return False
+            return iResponse == gtk.RESPONSE_OK
         return True
 
-    def initialize_db(self):
-        """Initialise the database if it doesn't exist"""
+    def initialize_db(self, oConfig):
+        """Initialise the database if it doesn't exist."""
+        # The config file is passed in as a parameter becasuse this can be
+        # called before the window is setup completely, so we may not have
+        # access to the config file via the main window.
         iRes = do_complaint_buttons(
             "The database doesn't seem to be properly initialised",
             gtk.MESSAGE_ERROR,
@@ -83,11 +200,11 @@ class BaseGuiDBManager(object):
         if iRes != 1:
             return False
         else:
-            aFiles, _sBackup = self._get_names(True)
-            if aFiles is not None:
+            dFiles, _sBackup = self._get_names(True)
+            if dFiles is not None:
                 oProgressDialog = ProgressDialog()
                 try:
-                    self._read_data(aFiles, oProgressDialog)
+                    bRet = self._read_data(dFiles, oProgressDialog)
                     oProgressDialog.destroy()
                 except IOError as oErr:
                     do_exception_complaint("Failed to read cardlists.\n\n%s\n"
@@ -96,9 +213,20 @@ class BaseGuiDBManager(object):
                     return False
             else:
                 return False
-        # Create the Physical Card Collection card set
-        PhysicalCardSet(name='My Collection', parent=None)
-        return True
+        if bRet:
+            # Import successful
+            # Create the Physical Card Collection card set
+            PhysicalCardSet(name='My Collection', parent=None)
+            # Set the update date to today, so we don't prompt the user
+            # immediately for a new update after we've started.
+            # This may introduce clock issues, but matches the behaviour for
+            # when the user manually refreshes the card list, rather than
+            # auto updating
+            oConfig.set_last_update_date(datetime.date.today())
+            # We have to save, since the re-validation after the plugins will
+            # reload the file
+            save_config(oConfig)
+        return bRet
 
     def save_backup(self, sBackupFile, oProgressDialog):
         """Save a backup file, showing a progress dialog"""
@@ -112,15 +240,23 @@ class BaseGuiDBManager(object):
         oFile.do_dump_all_to_zip(oLogHandler)
         oProgressDialog.set_complete()
 
-    def refresh_card_list(self):
+    def refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Handle grunt work of refreshing the card lists"""
-        # pylint: disable=R0914
-        # We're juggling lots of different bits of state, so we use a lot
-        # of variables
+        # pylint: disable=R0914, R0915
+        # R0914: We're juggling lots of different bits of state, so we use a
+        #        lot of variables
+        # R0915: There isn't much benefit to breaking this function up,
+        #        since it's a single process we're managing.
         aEditable = self._oWin.get_editable_panes()
         dOldMap = get_cs_id_name_table()
-        aFiles, sBackupFile = self._get_names(False)
-        if not aFiles:
+        if not dFiles:
+            dFiles, sBackupFile = self._get_names(False)
+        else:
+            # XXX: Is this wise? We don't want to have the user
+            # click through dialog after dialog, but should
+            # we present this option anyway?
+            sBackupFile = None
+        if not dFiles:
             return False  # Nothing happened
         oProgressDialog = ProgressDialog()
         if sBackupFile is not None:
@@ -140,7 +276,7 @@ class BaseGuiDBManager(object):
         oTempConn = connectionForURI("sqlite:///:memory:")
         sqlhub.processConnection = oTempConn
         try:
-            self._read_data(aFiles, oProgressDialog)
+            bRet = self._read_data(dFiles, oProgressDialog)
         except IOError as oErr:
             # Failed to read one of the card lists, so clean up and abort
             do_exception_complaint("Failed to read cardlists.\n\n%s\n"
@@ -149,6 +285,13 @@ class BaseGuiDBManager(object):
             # Restore connection
             sqlhub.processConnection = oOldConn
             # Undo effects of prepare_for_db_update
+            self._oWin.update_to_new_db()
+            return False
+        if not bRet:
+            # Aborted for some other reason, so cleanup as above.
+            # We assume the user has already seen a suitable error dialog.
+            oProgressDialog.destroy()
+            sqlhub.processConnection = oOldConn
             self._oWin.update_to_new_db()
             return False
         # Refresh abstract card view for card lookups
@@ -185,6 +328,15 @@ class BaseGuiDBManager(object):
         # to ensure we handle the caches correctly
         self._oWin.update_to_new_db()
         self._oWin.restore_editable_panes(aEditable)
+        # Set the last update date
+        if not oUpdateDate:
+            # No date given, so set the last update date to today
+            oUpdateDate = datetime.date.today()
+        self._oWin.config_file.set_last_update_date(oUpdateDate)
+        # Saving immediately to ensure we record the update seems
+        # the safest thing to do here, although it's different from
+        # how we usually treat the config file.
+        save_config(self._oWin.config_file)
         return True
 
     def do_db_upgrade(self, aLowerTables, aHigherTables):
@@ -222,7 +374,8 @@ class BaseGuiDBManager(object):
                 iRes = oDialog.run()
                 oDialog.destroy()
                 if iRes == gtk.RESPONSE_OK:
-                    return self._do_commit_db(oLogHandler, oTempConn)
+                    return self._do_commit_db(oLogHandler, oTempConn,
+                                              aMessages)
                 elif iRes == 1:
                     # Try running with the upgraded database
                     sqlhub.processConnection = oTempConn
@@ -238,7 +391,7 @@ class BaseGuiDBManager(object):
             do_exception_complaint("Upgrade Failed. %s" % oErr)
         return False
 
-    def _do_commit_db(self, oLogHandler, oTempConn):
+    def _do_commit_db(self, oLogHandler, oTempConn, aOldMessages):
         """Handle committing the memory copy to the actual DB"""
         oProgressDialog = ProgressDialog()
         oProgressDialog.set_description("Commiting changes")
@@ -247,10 +400,19 @@ class BaseGuiDBManager(object):
             oTempConn, oLogHandler)
         oProgressDialog.destroy()
         if bOK:
-            sMesg = "Changes Commited\n"
+            if aOldMessages:
+                # Redisplay the messages from the database upgrade, so they
+                # aren't forgetten about
+                sMesg = 'Messages from Database Upgrade are:\n'
+                for sStr in aOldMessages:
+                    sMesg += '<b>%s</b>\n' % sStr
+                sMesg += "\nChanges Commited\n"
+            else:
+                sMesg = "Changes Commited\n"
             if len(aMessages) > 0:
-                sMesg += '\n'.join(["Messages reported are:"] +
-                                   aMessages)
+                sMesg += "Messages from commiting changes are:"
+                for sStr in aMessages:
+                    sMesg += '<b>%s</b>\n' % sStr
             else:
                 sMesg += "Everything seems to have gone smoothly."
             do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)

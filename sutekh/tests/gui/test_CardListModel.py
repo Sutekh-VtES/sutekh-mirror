@@ -5,77 +5,29 @@
 
 """Tests the Card List Model"""
 
-from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
-from sutekh.base.core.BaseObjects import PhysicalCard, AbstractCard
-from sutekh.base.core import BaseFilters
-from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
-from sutekh.core.Groupings import CryptLibraryGrouping
-from sutekh.base.gui.CardListModel import CardListModel
-from sutekh.base.gui.MessageBus import MessageBus
 import unittest
 
+from sutekh.base.tests.GuiTestUtils import (count_second_level,
+                                            count_all_cards,
+                                            count_top_level,
+                                            get_card_names,
+                                            TestListener)
+from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
+                                          IAbstractCard, IPhysicalCard,
+                                          IExpansion)
+from sutekh.base.core import BaseFilters
+from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
+from sutekh.base.gui.CardListModel import CardListModel
+from sutekh.base.gui.MessageBus import MessageBus
 
-class TestListener(object):
-    """Listener used in the test cases."""
-    # pylint: disable=W0231
-    # CardListModelListener has no __init__
-    def __init__(self, oModel):
-        self.bLoadCalled = False
-        self.aCards = []
-        MessageBus.subscribe(oModel, 'load', self.load)
-
-    def load(self, aCards):
-        """Called when the model is loaded."""
-        self.bLoadCalled = True
-        self.aCards = [oCard.abstractCard for oCard in aCards]
+from sutekh.core.Groupings import CryptLibraryGrouping
+from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
     # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
-
-    # pylint: disable=R0201
-    # I prefer to have these as methods
-    def _count_expansions(self, oModel):
-        """Count all the second level entries in the model."""
-        iTotal = 0
-        oIter = oModel.get_iter_first()
-        while oIter:
-            oChildIter = oModel.iter_children(oIter)
-            while oChildIter:
-                iTotal += oModel.iter_n_children(oChildIter)
-                oChildIter = oModel.iter_next(oChildIter)
-            oIter = oModel.iter_next(oIter)
-        return iTotal
-
-    def _count_all_cards(self, oModel):
-        """Count all the card entries in the model."""
-        iTotal = 0
-        oIter = oModel.get_iter_first()
-        while oIter:
-            iTotal += oModel.iter_n_children(oIter)
-            oIter = oModel.iter_next(oIter)
-        return iTotal
-
-    def _count_top_level(self, oModel):
-        """Count all the top level entries in the model."""
-        iTotal = oModel.iter_n_children(None)
-        return iTotal
-
-    def _get_card_names(self, oModel):
-        """Return a set of all the cards listed in the model"""
-        oIter = oModel.get_iter_first()
-        aResults = set()
-        while oIter:
-            oChildIter = oModel.iter_children(oIter)
-            while oChildIter:
-                aResults.add(oModel.get_value(oChildIter, 0))
-                oChildIter = oModel.iter_next(oChildIter)
-            oIter = oModel.iter_next(oIter)
-        return aResults
-
-    # pylint: enable=R0201
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
@@ -85,7 +37,7 @@ class CardListModelTests(ConfigSutekhTest):
         oModel = CardListModel(self.oConfig)
         # We test with illegal cards shown
         oModel.hideillegal = False
-        oListener = TestListener(oModel)
+        oListener = TestListener(oModel, True)
         self.assertFalse(oListener.bLoadCalled)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
@@ -98,50 +50,53 @@ class CardListModelTests(ConfigSutekhTest):
         # Set grouping to None for these tests
         oModel.groupby = NullGrouping
         oModel.load()
-        self.assertEqual(self._count_all_cards(oModel),
+        self.assertEqual(count_all_cards(oModel),
                          AbstractCard.select().count())
-        self.assertEqual(self._count_expansions(oModel),
+        self.assertEqual(count_second_level(oModel),
                          PhysicalCard.select().count())
         # Check without expansions
         oModel.bExpansions = False
         oModel.load()
-        self.assertEqual(self._count_all_cards(oModel),
+        self.assertEqual(count_all_cards(oModel),
                          AbstractCard.select().count())
-        self.assertEqual(self._count_expansions(oModel), 0)
+        self.assertEqual(count_second_level(oModel), 0)
         oModel.bExpansions = True
         oModel.groupby = CryptLibraryGrouping
         oModel.load()
-        self.assertEqual(self._count_all_cards(oModel),
+        self.assertEqual(count_all_cards(oModel),
                          AbstractCard.select().count())
-        self.assertEqual(self._count_expansions(oModel),
+        self.assertEqual(count_second_level(oModel),
                          PhysicalCard.select().count())
-        self.assertEqual(self._count_top_level(oModel), 2)
+        self.assertEqual(count_top_level(oModel), 2)
         # Test filtering
         # Test filter which selects nothing works
         oModel.selectfilter = BaseFilters.CardNameFilter('ZZZZZZZ')
         oModel.applyfilter = True
         oModel.load()
-        self.assertEqual(self._count_top_level(oModel), 1)
-        self.assertEqual(self._count_all_cards(oModel), 0)
+        self.assertEqual(count_top_level(oModel), 1)
+        self.assertEqual(count_all_cards(oModel), 0)
         oModel.applyfilter = False
         oModel.load()
-        self.assertEqual(self._count_all_cards(oModel),
+        self.assertEqual(count_all_cards(oModel),
                          AbstractCard.select().count())
-        self.assertEqual(self._count_expansions(oModel),
+        self.assertEqual(count_second_level(oModel),
                          PhysicalCard.select().count())
-        self.assertEqual(self._count_top_level(oModel), 2)
+        self.assertEqual(count_top_level(oModel), 2)
         # Test card type
+        # pylint: disable=redefined-variable-type
+        # This is delibrate
         oModel.selectfilter = BaseFilters.CardTypeFilter('Vampire')
+        # pylint: enable=redefined-variable-type
         oModel.applyfilter = True
         oModel.load()
-        self.assertEqual(self._count_top_level(oModel), 1)
-        self.assertEqual(self._count_expansions(oModel),
+        self.assertEqual(count_top_level(oModel), 1)
+        self.assertEqual(count_second_level(oModel),
                          oModel.get_card_iterator(
                              oModel.selectfilter).count())
         oModel.groupby = CardTypeGrouping
         oModel.load()
-        self.assertEqual(self._count_top_level(oModel), 1)
-        self.assertEqual(self._count_expansions(oModel),
+        self.assertEqual(count_top_level(oModel), 1)
+        self.assertEqual(count_second_level(oModel),
                          oModel.get_card_iterator(
                              oModel.selectfilter).count())
         # Test path queries
@@ -157,18 +112,23 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(tAll[1], oModel.sUnknownExpansion)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 2)
-        self.assertEqual(oModel.get_child_entries_from_path(oPath), [])
+        oIter = oModel.get_iter(oPath)
+        self.assertEqual(oModel.get_child_entries_from_iter(oIter), [])
         oPath = '0:0'  # First card
         self.assertEqual(oModel.get_exp_name_from_path(oPath), None)
         self.assertEqual(oModel.get_inc_dec_flags_from_path(oPath),
                          (False, False))
+        oIter = oModel.get_iter(oPath)
         tAll = oModel.get_all_from_path(oPath)
         self.assertEqual(tAll[0], u'Aabbt Kindred')
         self.assertEqual(tAll[1], None)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 1)
-        self.assertEqual(oModel.get_child_entries_from_path(oPath),
-                         [(oModel.sUnknownExpansion, 0), ('Final Nights', 0)])
+        oAbbt = IAbstractCard(u'Aabbt Kindred')
+        oFirst = IPhysicalCard((oAbbt, None))
+        oSecond = IPhysicalCard((oAbbt, IExpansion('Final Nights')))
+        self.assertEqual(oModel.get_child_entries_from_iter(oIter),
+                         [(oFirst, 0), (oSecond, 0)])
 
         oListener.bLoadCalled = False
         # Test MessageBus clear does the right thing
@@ -180,36 +140,36 @@ class CardListModelTests(ConfigSutekhTest):
         """Test that the postfix display option works as expected"""
         oModel = CardListModel(self.oConfig)
         oModel.load()
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('Path of Blood, The' in aCards, False)
         self.assertEqual('The Siamese' in aCards, True)
         self.oConfig.set_postfix_the_display(True)
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, False)
         self.assertEqual('Path of Blood, The' in aCards, True)
         self.assertEqual('Siamese, The' in aCards, True)
 
         # Check load works as expected
         oModel.load()
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, False)
         self.assertEqual('Path of Blood, The' in aCards, True)
         self.assertEqual('Siamese, The' in aCards, True)
         self.oConfig.set_postfix_the_display(False)
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
 
     def test_illegal(self):
         """Test that the hide/show illegal cards works as expected"""
         oModel = CardListModel(self.oConfig)
         oModel.load()
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('Dramatic Upheaval' in aCards, False)
         self.assertEqual('Motivated by Gehenna' in aCards, False)
         oModel.hideillegal = False
         oModel.load()
-        aCards = self._get_card_names(oModel)
+        aCards = get_card_names(oModel)
         self.assertEqual('Dramatic Upheaval' in aCards, True)
         self.assertEqual('Motivated by Gehenna' in aCards, True)
 

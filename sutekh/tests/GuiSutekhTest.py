@@ -5,11 +5,13 @@
 
 """Base for Sutekh test cases that use gtk windows"""
 
-from sutekh.base.tests.TestUtils import GuiBaseTest
-from sutekh.tests.TestCore import SutekhTest
 import tempfile
 import os
 import gc
+
+from sutekh.base.tests.TestUtils import GuiBaseTest
+from sutekh.tests.TestCore import SutekhTest
+
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.gui.ConfigFile import ConfigFile
 
@@ -50,6 +52,8 @@ class ConfigSutekhTest(SutekhTest):
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
         self.oConfig.set_plugin_key('TWDAInfoPlugin', 'twda configured', 'No')
         self.oConfig.set_icon_path(self.sPluginDir)
+        # Disable checking for updates
+        self.oConfig.set_check_for_updates(False)
         # Needed so validate doesn't remove our settings later
         self.oConfig.check_writeable()  # Make sure we do write the config file
         self.oConfig.write()

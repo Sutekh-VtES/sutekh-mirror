@@ -6,20 +6,26 @@
 
 """Multi-pane window."""
 
+from itertools import chain
+
 import pygtk
+# pylint: disable=wrong-import-position
+# This needs to be before we import gtk
 pygtk.require('2.0')
 import gtk
-from itertools import chain
+import gobject
 
 from .MainToolbar import MainToolbar
 from .BasicFrame import BasicFrame
+# pylint: enable=wrong-import-position
 
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=R0902, R0904, W1001
     # R0902 - we need to keep a lot of state, so many instance attributes
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_border_width(2)
@@ -41,6 +47,9 @@ class MultiPaneWindow(gtk.Window):
         self._oFocussed = None
 
         self._oBusyCursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
+
+        # Flag to block calling reloads during a refresh process
+        self._bBlockReload = False
 
     def _setup_vbox(self):
         """Setup the intial vbox and connect the key_press event"""
@@ -76,8 +85,26 @@ class MultiPaneWindow(gtk.Window):
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.reload()
 
+    def _block_reload(self):
+        """Prevent queued reloads triggering do to scheduling wierdness"""
+        self._bBlockReload = True
+
+    def _unblock_reload(self):
+        """Re-enable reload behaviour"""
+        self._bBlockReload = False
+
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
+        if self._bBlockReload:
+            # We can't reload right now, so punt this down the road a bit
+            # We schedule a bit further in the future than the BasicFrame
+            # initial queue, since we know we're already busy with stuff.
+            #
+            # This workaround avoids triggering "database locked" erros
+            # when updating sqlite DBs on some systems, but it's a good
+            # idea to avoid reloading during a update on any system.
+            gobject.timeout_add(100, self.do_all_queued_reloads)
+            return
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.do_queued_reload()
 
@@ -572,8 +599,6 @@ class MultiPaneWindow(gtk.Window):
     def set_busy_cursor(self):
         """Set the window cursor to indicate busy status"""
         # This needs to be on the top level widget, so has to be here
-        # pylint: disable=E1101
-        # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:
             self.window.set_cursor(self._oBusyCursor)
@@ -583,8 +608,6 @@ class MultiPaneWindow(gtk.Window):
 
     def restore_cursor(self):
         """Restore the ordinary cursor"""
-        # pylint: disable=E1101
-        # gtk properties confuse pylint here
         # Safe-guard for if we're called while shutting down
         if self.window:
             self.window.set_cursor(None)

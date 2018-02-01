@@ -14,6 +14,7 @@ from sutekh.io.WriteArdbInvXML import WriteArdbInvXML
 from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.io.WriteELDBDeckFile import WriteELDBDeckFile
 from sutekh.io.WriteArdbText import WriteArdbText
+from sutekh.io.WriteTWDAText import WriteTWDAText
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
 
 
@@ -26,6 +27,8 @@ class CardSetExport(SutekhPlugin, BaseCardSetExport):
         'Lackey': (WriteLackeyCCG, 'Export to Lackey CCG format',
                    'lackey.txt'),
         'ARDB Text': (WriteArdbText, 'Export to ARDB Text', 'ardb.txt'),
+        'TWDA Text': (WriteTWDAText, 'Export to text formated used in the'
+                      ' TWDA', 'twda.txt'),
         'vekn.net': (WriteVEKNForum,
                      'BBcode output for the V:EKN Forums', 'vekn.txt'),
         'FELDB Inv': (WriteELDBInventory,

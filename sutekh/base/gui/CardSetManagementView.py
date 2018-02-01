@@ -88,8 +88,6 @@ class CardSetManagementView(CardSetsListView):
             oPath = self.get_path_at_pointer()
             if oPath:
                 sThisName = aData[1]
-                # pylint: disable=W0704
-                # doing nothing on SQLObjectNotFound seems the best choice
                 try:
                     oDraggedCS = IPhysicalCardSet(sThisName)
                     oParentCS = IPhysicalCardSet(

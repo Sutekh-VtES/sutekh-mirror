@@ -6,17 +6,22 @@
 
 """Base class for the application main window."""
 
-import pygtk
-pygtk.require('2.0')
-import gtk
 import logging
 import socket
 from itertools import chain
+
+import pygtk
+# pylint: disable=wrong-import-position
+# This check needs to be before we import gtk
+pygtk.require('2.0')
+import gtk
 # pylint: disable=E0611
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable=E0611
-from ..core.BaseObjects import PhysicalCardSet, PhysicalCard
+
+from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, VersionTable
+from ..core.DatabaseVersion import DatabaseVersion
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
 from .CardSetFrame import CardSetFrame
@@ -27,13 +32,16 @@ from .MessageBus import MessageBus, DATABASE_MSG
 from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import do_complaint_error_details, do_exception_complaint
 from .UpdateDialog import UpdateDialog
+from .DataFilesDialog import Result
+# pylint: enable=wrong-import-position
 
 
 class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=R0902, R0904, W1001
     # R0902 - we need to keep a lot of state, so many instance attributes
+    # R0904 - gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(AppMainWindow, self).__init__()
         self.set_border_width(2)
@@ -69,12 +77,51 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses will implement this
         raise NotImplementedError
 
-    def do_refresh_card_list(self):
-        """Handle reloading the card list via the database manager object."""
+    def do_db_checks(self, oConn, oConfig, bIgnoreVersionCheck=False):
+        """Test basic database sanity and version status"""
+        # Test on some tables where we specify the table name
         # pylint: disable=E1102
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
-        oDBManager.refresh_card_list()
+        if not oConn.tableExists('abstract_card') or \
+                not oConn.tableExists('physical_map'):
+            if not oDBManager.initialize_db(oConfig):
+                return False
+
+        aTables = [VersionTable] + oDBManager.aTables
+        aVersions = []
+
+        for oTable in aTables:
+            aVersions.append(oTable.tableversion)
+
+        oVer = DatabaseVersion()
+
+        if not oVer.check_tables_and_versions(aTables, aVersions) and \
+                not bIgnoreVersionCheck:
+            aLowerTables, aHigherTables = oVer.get_bad_tables(aTables,
+                                                              aVersions)
+            if not oDBManager.do_db_upgrade(aLowerTables, aHigherTables):
+                return False
+        return True
+
+    def do_refresh_card_list(self, oUpdateDate=None, dFiles=None):
+        """Handle reloading the card list via the database manager object."""
+        # pylint: disable=E1102
+        # subclasses will provide a callable cDBManager
+        self._block_reload()
+        oDBManager = self._cDBManager(self)
+        bRet = oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        self._unblock_reload()
+        return bRet
+
+    def do_refresh_from_zip_url(self, oUpdateDate, sUrl, sHash=None):
+        """Refresh the card list from the given zip file url"""
+        # pylint: disable=E1102
+        # subclasses will provide a callable cDBManager
+        oDBManager = self._cDBManager(self)
+        oZipDetails = Result(sName=sUrl, bIsUrl=True)
+        dFiles = oDBManager.read_zip_file(oZipDetails, sHash)
+        return oDBManager.refresh_card_list(oUpdateDate, dFiles)
 
     # pylint: disable=W0201
     # We define attributes here, since this is called after database checks
@@ -213,6 +260,8 @@ class AppMainWindow(MultiPaneWindow):
             oNewFrame = self.add_pane(bVert, iPos)
             oRestored = None
             self.win_focus(None, None, oNewFrame)
+            # pylint: disable=redefined-variable-type
+            # reuse of oRestored is intentional
             if sType == PhysicalCardSet.sqlmeta.table:
                 oRestored = self.replace_with_physical_card_set(sName,
                                                                 oNewFrame,
@@ -251,6 +300,12 @@ class AppMainWindow(MultiPaneWindow):
     def check_for_updates(self):
         """Check for updated data from plugins or updated cardlists
            and so forth."""
+        # Check for cardlist updates before other updates, to avoid
+        # ordering issues
+        if self._oConfig.get_check_for_updates():
+            # Check for updated card list
+            self.check_updated_cardlist()
+
         # FIXME: We should probably add a config option so people can
         # skip this if desirable.
         aMessages = []
@@ -260,7 +315,6 @@ class AppMainWindow(MultiPaneWindow):
             if sMsg:
                 aMessages.append(sMsg)
                 aUpdatePlugins.append(oPlugin)
-        # FIXME: Check for cardlist updates as well
         if aMessages:
             # prompt the user
             oDialog = UpdateDialog(aMessages)
@@ -299,8 +353,6 @@ class AppMainWindow(MultiPaneWindow):
                                        bStartEditable=False):
         """Replace the pane oFrame with the physical card set sName"""
         if oFrame:
-            # pylint: disable=W0704
-            # not doing anything for errors right now
             try:
                 oPane = CardSetFrame(self, sName, bStartEditable,
                                      self._cPCSWriter)
@@ -560,3 +612,8 @@ class AppMainWindow(MultiPaneWindow):
         for oPane in self.aClosedFrames:
             save_pane_to_config(iNum, oPane, self._oConfig, False, True, -1)
             iNum += 1
+
+    def check_updated_cardlist(self):
+        """Check for cardlist updates if supported."""
+        # Subclasses will implement this
+        raise NotImplementedError("Implement check_updated_cardlist")

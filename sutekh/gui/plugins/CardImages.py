@@ -5,13 +5,13 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
-import gtk
 import os
 import logging
+
+import gtk
 from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseObjects import IExpansion
-from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
@@ -19,11 +19,14 @@ from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImagePlugin,
                                                 check_file, unaccent,
                                                 CARD_IMAGE_PATH,
-                                                DOWNLOAD_IMAGES)
+                                                DOWNLOAD_IMAGES,
+                                                DOWNLOAD_EXPANSIONS)
 
+from sutekh.gui.PluginManager import SutekhPlugin
+from sutekh.SutekhInfo import SutekhInfo
 
-# We try lackeyccg for images from these sets
-LACKEY_IMAGES = ('dm', 'vekn_2014_the_returned', 'tu', 'promo', 'au')
+# Base url for downloading the images from
+SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
 
 
 class CardImageFrame(BaseImageFrame):
@@ -37,8 +40,18 @@ class CardImageFrame(BaseImageFrame):
 
     APP_NAME = SutekhInfo.NAME
 
+    # Cloudflare doesn't like the urllib2 default
+    _dReqHeaders = {
+        'User-Agent': 'Sutekh Image Plugin'
+    }
+
     def _have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""
+        # Config, if set to download, overrides the current state
+        oConfig = self._config_download_expansions()
+        if oConfig is not None:
+            return oConfig
+        # Config isn't set for downloads, so check the current state
         if sTestPath == '':
             sTestFile = os.path.join(self._sPrefsPath, 'bh', 'acrobatics.jpg')
         else:
@@ -47,6 +60,12 @@ class CardImageFrame(BaseImageFrame):
 
     def _check_test_file(self, sTestPath=''):
         """Test if acrobatics.jpg exists"""
+        # If we're configured to download images, we assume everythings
+        # kosher, since we check that the directory exists when configuring
+        # things
+        if self._config_download_images():
+            return True
+        # Downloads not set, so the state on disk matters
         if sTestPath == '':
             sTestFile = os.path.join(self._sPrefsPath, 'acrobatics.jpg')
         else:
@@ -78,54 +97,31 @@ class CardImageFrame(BaseImageFrame):
         return sExpName
 
     def _make_card_urls(self, _sFullFilename):
-        """Return a url pointing to the vtes.pl scan of the image"""
-        sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
-        sFilename = self._norm_cardname()[0]
-        if sCurExpansionPath == '' or sFilename == '':
-            # Error path, we don't know where to search for the image
+        """Return a url pointing to the scan of the image"""
+        sFilename = self._norm_cardname(self._sCardName)[0]
+        if sFilename == '':
+            # Error out - we don't know where to look
             return None
-        # Remap paths to point to the vtes.pl equivilents
-        if sCurExpansionPath == 'nergal_storyline':
-            sCurExpansionPath = 'isl'
-        elif sCurExpansionPath == 'anarchs_and_alastors_storyline':
-            sCurExpansionPath = 'aa'
-        elif sCurExpansionPath == 'edens_legacy_storyline':
-            sCurExpansionPath = 'el'
-        elif sCurExpansionPath == 'cultist_storyline':
-            sCurExpansionPath = 'csl'
-        elif sCurExpansionPath == 'white_wolf_2003_demo':
-            sCurExpansionPath = 'dd'
-        elif sCurExpansionPath == 'third':
-            sCurExpansionPath = '3e'
-        sUrl = 'http://nekhomanta.h2.pl/pics/games/vtes/%s/%s' % (
-            sCurExpansionPath, sFilename)
-        if sCurExpansionPath in LACKEY_IMAGES:
-            # Try get the card from lackey first
-            # Strip the "(Mythic storyline)" prefix from the returned cards
-            sFilename2 = None
-            if sCurExpansionPath == 'vekn_2014_the_returned':
-                # Lackey uses 'montaro2' and so forth for the duplicate names
-                # between the 2015 storyline rewards expansion and the actual
-                # storyline cards, but this only applies to some of the card
-                # names, so we need to try all possibilities in the right
-                # order
-                sFilename = sFilename.replace('mythicstoryline', '')
-                sFilename2 = sFilename.replace('.jpg', '2.jpg')
-            sLackeyUrl = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
-                sFilename)
-            if sFilename2:
-                sLackeyUrl2 = 'http://www.lackeyccg.com/vtes/high/cards/%s' % (
-                    sFilename2)
-                return (sLackeyUrl2, sLackeyUrl, sUrl)
-            if sCurExpansionPath == 'promo':
-                # We prefer nekhomanta.h2.pl for older promos
-                return (sUrl, sLackeyUrl)
-            return (sLackeyUrl, sUrl)
-        return (sUrl, )
+        if self._bShowExpansions:
+            # Only try download the current expansion
+            aUrlExps = [self._convert_expansion(self._sCurExpansion)]
+        else:
+            # Try all the expansions, latest to oldest
+            aUrlExps = [self._convert_expansion(x) for x in self._aExpansions]
+        aUrls = []
+        for sCurExpansionPath in aUrlExps:
+            if sCurExpansionPath == '':
+                # Error path, we don't know where to search for the image
+                return None
+            sUrl = '%s/cardimages/%s/%s' % (SUTEKH_IMAGE_SITE,
+                                            sCurExpansionPath,
+                                            sFilename)
+            aUrls.append(sUrl)
+        return aUrls
 
-    def _norm_cardname(self):
+    def _norm_cardname(self, sCardName):
         """Normalise the card name"""
-        sFilename = unaccent(self._sCardName)
+        sFilename = unaccent(sCardName)
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
         elif sFilename.startswith('an '):
@@ -143,9 +139,11 @@ class ImageConfigDialog(BaseImageConfigDialog):
     # R0904 - gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
-    sDefURLId = 'csillagbolcselet.hu'
-    sDefaultUrl = 'http://csillagmag.hu/upload/pictures.zip'
-    sImgDownloadSite = 'vtes.pl'
+    # These two are descriptive, so set them to the final value
+    sDefUrlId = 'sutekh.vtes.za.net'
+    sImgDownloadSite = 'sutekh.vtes.za.net'
+    # Will be changed later
+    sDefaultUrl = '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages.zip')
 
     def __init__(self, oImagePlugin, bFirstTime=False, bDownloadUpgrade=False):
         super(ImageConfigDialog, self).__init__(oImagePlugin, bFirstTime)
@@ -163,8 +161,8 @@ class ImageConfigDialog(BaseImageConfigDialog):
                                        'cardimages plugin</b>\n'
                                        'The card images plugin can now '
                                        'download missing images from '
-                                       'vtes.pl.\nDo you wish to enable '
-                                       'this (you will not be prompted '
+                                       'sutekh.vtes.za.net.\nDo you wish to '
+                                       'enable this (you will not be prompted '
                                        'again)?')
             self.vbox.pack_start(self.oDescLabel, False, False)
             self.vbox.pack_start(self.oDownload, False, False)
@@ -178,6 +176,13 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
     DOWNLOAD_SUPPORTED = True
 
     _cImageFrame = CardImageFrame
+
+    @classmethod
+    def update_config(cls):
+        super(CardImagePlugin, cls).update_config()
+        # We default to download expansions is true, since that matches
+        # the zip file we provide from sutekh.vtes.za.net
+        cls.dGlobalConfig[DOWNLOAD_EXPANSIONS] = 'boolean(default=True)'
 
     def setup(self):
         """Prompt the user to download/setup images the first time"""
@@ -208,7 +213,7 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
         """Handle the response from the config dialog"""
         iResponse = oDialog.run()
         if iResponse == gtk.RESPONSE_OK:
-            oFile, bDir, bDownload = oDialog.get_data()
+            oFile, bDir, bDownload, bDownloadExpansions = oDialog.get_data()
             if bDir:
                 # New directory
                 if self._accept_path(oFile):
@@ -226,6 +231,9 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
                 do_complaint_error('Unable to configure card images plugin')
             # Update download option
             self.set_config_item(DOWNLOAD_IMAGES, bDownload)
+            self.set_config_item(DOWNLOAD_EXPANSIONS, bDownloadExpansions)
+            # Reset expansions settings if needed
+            self.image_frame.check_images()
         # get rid of the dialog
         oDialog.destroy()
 

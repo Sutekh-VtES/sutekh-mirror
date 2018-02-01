@@ -1,3 +1,167 @@
+20 Jan 2018
+ * Add helper method so we export renamed cards like Carlton Van Wyk to
+   SL correctly again.
+
+17 Jan 2018
+ * Fix bug in handling hash errors for cardlist zip file
+ * Also check hash when manually downloading cardlist zip file
+ * Fix bug in handling failing urls in CardImages plugin
+
+16 Jan 2018
+ * Refactor initial database initialisation checks
+ * Fix bug with upgrading 0.8 databases
+
+15 Jan 2018
+ * Prevent running the card set reloads too early when updating the
+   cardlist
+ * Fix some bugs with the initial database creation caused by the
+   cardlist refactoring (dropped return values)
+
+14 Jan 2018
+ * Use common card list reading code for the start card list update
+   checks as well.
+
+11 Jan 2018
+ * Add a lookup hints table for handling misnamed cards more easily
+   - Add the required auto-upgrade logical to the database
+   - Rework the CardName adapter to try lookup names in this table
+   - Add parser to read the lookup data from a CSV file
+ * Restructure the code around reading new card lists to be easier to
+   extend
+ * Add support for reloading the card list from a zip file, rather than
+   just individual files.
+ * Reworked parser routines to handle error conditions more consistently
+
+19 Oct 2017
+ * Add count of trifle masters to TWDA format, ARDB text format and the
+   VEKN forum format.
+
+10 Oct 2017
+ * Tweak the output of the TWDA format to better match current behaviour
+
+12 Sep 2017
+ * Fix some issues around showing child card sets counts in the card set view:
+   - Update the count and views correctly when a in-use child is directly
+     created
+   - Fix issues with the cache getting out of sync when renaming
+     in-use child card sets
+
+31 Aug 2017
+ * Add 'Create Card Set' button to the Test Independence plugin, so it's
+   easy to print missing cards using the "Print as Proxies" plugin.
+ * Fix a bug in the GuiCardLookup when dealing with fixing expansions
+   and cards with accented characters.
+
+28 Aug 2017
+ * Use abstract cards directly in the GuiCardLookup, to avoid
+   some encoding issues.
+
+21 Aug 2017
+ * Add buttons to tweak the parameters used in the Import PDF plugin.
+
+19 Aug 2017
+ * Use the abstract card directly in the Import PDF plugin to avoid encoding
+   issues.
+
+09 Aug 2017
+ * Redisplay warnings from the database upgrade after committing the changes
+   to the database.
+
+08 Aug 2017
+ * Add more tests for drag-n-drop code.
+ * Rework drag-n-drop code to use AbstractCard and PhysicalCard ids.
+
+23 Jul 2017
+ * Tweak error message on manual card list import to better explain the
+   'already up to date' case.
+
+13 Jul 2017
+ * Update CardImages downloader to work with Cloudflare's limitations.
+ * Tweak config option defaults.
+
+12 Jul 2017
+ * Make the choice between downloading images for each expansion or only
+   one image per abstract card a config option.
+
+11 Jul 2017
+ * Point CardImages plugin at a different source for images.
+
+03 Jul 2017
+ * Add 'Anarchs Unbound' to the list of PDF sets
+ * Various fixes to the debian package build script
+
+07 Jun 2017
+ * Include Anthology set in the Mixed Card back checks
+ * Automatically generate the list of filters in the Filter help pages
+
+29 May 2017
+ * Add support for Anthology expansion and rarity
+ * Add Anthology test data and update test cases
+ * Handle Carlton rename when downloading card images
+ * Add 'wake' keyword to FunctionFilter
+ * Fix parsing of the Baron title
+
+10 May 2017
+ * Update test data to use lock/unlock wording
+ * Update FunctionFilter to use handle lock/unlock wording
+
+24 Apr 2017
+ * Fix TWDA export handling of vampire names
+
+19 Apr 2017
+ * Tweak undo stack to always use the exact card removed or
+   added, to avoid the case where deleting and then undo'ing
+   would lose the expansion information.
+
+13 Apr 2017
+ * Fixed a bug where setting a number with both a card and it's
+   expansion items selected would do strange things.
+
+07 Mar 2017
+ * Add plugin to import images from VEKN PDF sets, with the option
+   to specify the resolution.
+
+05 Mar 2017
+ * Various improvements to the TWDA exporter.
+
+01 Mar 2017
+ * Add exporter for generating the text format used in the TWDA.
+
+22 Feb 2017
+ * Prevent the expansion stats plugin from double-counting cards printed
+   with multiple rarities.
+
+16 Feb 2017
+ * Rework help text for groupings so it is generated from the grouping
+   doc strings.
+
+09 Feb 2017
+ * Fix a bug with the GuiCardLookup not decoding names correctly.
+
+18 Jan 2017
+ * Fix a bug triggered when both SQLObject 2.x and pydispatch were
+   installed together.
+ * Add "Print Card Set as Proxies" card set
+ * Tweak the output of the "Print Card Set" Plugin
+
+17 Jan 2017
+ * Fix DBSignals to work with sQLObject 3.0
+
+19 Dec 2016
+ * Update pypi.python.org and sourceforge.net links to use https instead of http.
+
+02 Jun 2016
+ * Change to using print_function everywhere (work towards eventual python3 support)
+
+01 Jun 2016
+ * Finish datapack support for card list updates
+
+22 May 2016
+ * Fix bug with the handling of the date in the config file
+
+26 April 2016
+ * Add support for saving the cardlist update date in the config file
+
 03 Feb 2016
  * Fix a bug where images would only be downloaded if using different images for
    each expansion.

@@ -13,20 +13,22 @@
 
 """Define all the filters provided in sutekh"""
 
+# pylint: disable=W0402
+# We need string.punctation for best_guess_filter
+import string
+# pylint: enable=W0402
+
+from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
+                       IN as SQLOBJ_IN)
+from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
+                                  SQLTrueClause as TRUE)
+
 from .BaseObjects import (AbstractCard, IAbstractCard, IPhysicalCardSet,
                           IRarityPair, IExpansion, ICardType,
                           IRarity, CardType, Expansion, RarityPair,
                           PhysicalCardSet, PhysicalCard,
                           MapPhysicalCardToPhysicalCardSet,
                           Artist, Keyword, IArtist, IKeyword)
-from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
-                       IN as SQLOBJ_IN)
-from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
-                                  SQLTrueClause as TRUE)
-# pylint: disable=W0402
-# We need string.punctation for best_guess_filter
-import string
-# pylint: enable=W0402
 
 # Compability Patches
 
@@ -130,8 +132,7 @@ class FilterBox(Filter, list):
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
 
-    # pylint: disable=W0142, W0212
-    # W0142 - *magic is needed by SQLObject
+    # pylint: disable=W0212
     # W0212 - we intentinally access protected members
     def _get_expression(self):
         """Combine filters with AND"""
@@ -141,8 +142,7 @@ class FilterAndBox(FilterBox):
 class FilterOrBox(FilterBox):
     """OR a list of filters."""
 
-    # pylint: disable=W0142, W0212
-    # W0142 - *magic is needed by SQLObject
+    # pylint: disable=W0212
     # W0212 - we intentinally access protected members
     def _get_expression(self):
         """Combine filters with OR"""
@@ -177,7 +177,7 @@ class FilterNot(Filter):
            negate the results of that.
            """
         # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # SQLObject methods not detected by pylint
         oExpression = self.__oSubFilter._get_expression()
         aJoins = self.__oSubFilter._get_joins()
         if 'AbstractCard' in self.__oSubFilter.types:
@@ -251,15 +251,18 @@ class SingleFilter(Filter):
 
        Sub-class should set self._oMapTable, self._oMapField and self._oId.
        """
-    # pylint: disable=E1101, C0111
-    # E1101 - We expect subclasses to provide _oMapTable and friends
+    # pylint: disable=C0111
     # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id ==
                            self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         return self._oIdField == self._oId
 
 
@@ -270,15 +273,18 @@ class MultiFilter(Filter):
        Sub-class should set self._oMapTable, self._oMapField and self._aIds.
        """
 
-    # pylint: disable=E1101, C0111
-    # E1101 - We expect subclasses to provide _oMapTable and friends
+    # pylint: disable=C0111
     # C0111 - don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id ==
                            self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         return IN(self._oIdField, self._aIds)
 
 
@@ -323,8 +329,6 @@ class ExpansionFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sExpansion):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [oP.id for oP in IExpansion(sExpansion).pairs]
         self._oMapTable = make_table_alias('abs_rarity_pair_map')
         self._oIdField = self._oMapTable.q.rarity_pair_id
@@ -335,8 +339,6 @@ class MultiExpansionFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aExpansions):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         oPairs = []
         for sExp in aExpansions:
             oPairs += IExpansion(sExp).pairs
@@ -352,8 +354,6 @@ class ExpansionRarityFilter(SingleFilter):
     def __init__(self, tExpanRarity):
         """ We use a tuple for Expansion and Rarity here to keep the
             same calling convention as for the Multi Filter"""
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         sExpansion, sRarity = tExpanRarity
         self._oId = IRarityPair((IExpansion(sExpansion), IRarity(sRarity))).id
         self._oMapTable = make_table_alias('abs_rarity_pair_map')
@@ -373,8 +373,6 @@ class MultiExpansionRarityFilter(MultiFilter):
 
     def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = []
         if isinstance(aExpansionRarities[0], basestring):
             aValues = split_list(aExpansionRarities)
@@ -407,8 +405,6 @@ class CardTypeFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCardType):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = ICardType(sCardType).id
         self._oMapTable = make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
@@ -423,8 +419,6 @@ class MultiCardTypeFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCardTypes):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [ICardType(x).id for x in aCardTypes]
         self._oMapTable = make_table_alias('abs_type_map')
         self._oIdField = self._oMapTable.q.card_type_id
@@ -441,8 +435,6 @@ class ArtistFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sArtist):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = IArtist(sArtist).id
         self._oMapTable = make_table_alias('abs_artist_map')
         self._oIdField = self._oMapTable.q.artist_id
@@ -458,8 +450,6 @@ class MultiArtistFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aArtists):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [IArtist(x).id for x in aArtists]
         self._oMapTable = make_table_alias('abs_artist_map')
         self._oIdField = self._oMapTable.q.artist_id
@@ -476,8 +466,6 @@ class KeywordFilter(SingleFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sKeyword):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._oId = IKeyword(sKeyword).id
         self._oMapTable = make_table_alias('abs_keyword_map')
         self._oIdField = self._oMapTable.q.keyword_id
@@ -493,8 +481,6 @@ class MultiKeywordFilter(MultiFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aKeywords):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = [IKeyword(x).id for x in aKeywords]
         self._oMapTable = make_table_alias('abs_keyword_map')
         self._oIdField = self._oMapTable.q.keyword_id
@@ -513,8 +499,8 @@ class BaseCardTextFilter(DirectFilter):
        logic for dealing with specially formatted text."""
     keyword = "CardText"
     description = "Card Text"
-    helptext = "the desired card text to search for (% can be used as a " \
-            "wildcard).\nReturns all cards whose text contains this string."
+    helptext = "the desired card text to search for (% and _ can be used as " \
+            "wildcards).\nReturns all cards whose text contains this string."
     istextentry = True
     types = ('AbstractCard', 'PhysicalCard')
 
@@ -538,9 +524,9 @@ class CardNameFilter(DirectFilter):
     """Filter on the name of the card"""
     keyword = "CardName"
     description = "Card Name"
-    helptext = "the text to be matched against card names (% can be used " \
-            "as a wildcard).\nReturns all cards whose name contains this " \
-            "string"
+    helptext = "the text to be matched against card names (% and _ can be " \
+            "used as wildcards).\nReturns all cards whose name contains " \
+            "this string"
     istextentry = True
     types = ('AbstractCard', 'PhysicalCard')
 
@@ -578,11 +564,11 @@ class PhysicalCardFilter(Filter):
     # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         # This is one of the filters allowed to
         # pass the AbstractCard table as a joining table.
         # The join is needed so filtering on abstract card properties can work
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         oTable = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard,
                            AbstractCard.q.id == oTable.abstract_card_id)]
@@ -655,7 +641,10 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aCounts = []
         # strip whitespace before comparing stuff
         # aCounts may be a single string, so we can't use 'for x in aCounts'
+        # pylint: disable=redefined-variable-type
+        # We intentionally change to a set here
         aCounts = set([x.strip() for x in list(aCounts)])
+        # pylint: enable=redefined-variable-type
         self._oFilters = []
         self._aCardSetIds = aIds
         self._oZeroQuery = None
@@ -711,8 +700,6 @@ class CardSetMultiCardCountFilter(DirectFilter):
         aValues = [str(x) for x in range(0, 31)] + ['>30']
         return (aValues, aCardSets)
 
-    # pylint: disable=W0142
-    # *magic is needed by SQLObject
     def _get_expression(self):
         # We duplicate subselect logic here, rather than letting the database
         # handle it, because mysql handles this case very poorly, resulting in
@@ -722,7 +709,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # correct numbers as we can't create the lists in __init__ since
         # the numbers can change between calls to _get_expression
         # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # SQLObject methods not detected by pylint
         aFinalFilters = []
         oConn = sqlhub.processConnection
         if self._oZeroQuery:
@@ -750,8 +737,6 @@ class PhysicalExpansionFilter(DirectFilter):
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
     def __init__(self, sExpansion):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         if sExpansion is not None:
             self._iId = IExpansion(sExpansion).id
         else:
@@ -776,8 +761,6 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     __sUnspec = '  Unspecified Expansion'
 
     def __init__(self, aExpansions):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self._aIds = []
         self.__bOrUnspec = False
         for sExpansion in aExpansions:
@@ -798,6 +781,8 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     def _get_expression(self):
         oTable = Table('physical_card')
         # None in the IN statement doesn't do the right thing for me
+        # pylint: disable=singleton-comparison
+        # == None syntax required for SQLObject
         if self.__bOrUnspec and self._aIds:
             return OR(IN(oTable.expansion_id, self._aIds),
                       oTable.expansion_id == None)
@@ -814,8 +799,6 @@ class PhysicalCardSetFilter(Filter):
 
     def __init__(self, sName):
         # Select cards belonging to a PhysicalCardSet
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__iCardSetId = IPhysicalCardSet(sName).id
         self.__oTable = Table('physical_map')
 
@@ -856,8 +839,6 @@ class MultiPhysicalCardSetFilter(Filter):
 
     def __init__(self, aNames):
         # Select cards belonging to the PhysicalCardSet
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__aCardSetIds = []
         for sName in aNames:
             try:
@@ -897,17 +878,16 @@ class MultiPhysicalCardSetMapFilter(Filter):
 
     def __init__(self, aNames):
         # Select cards belonging to the PhysicalCardSet
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__aCardSetIds = []
         for sName in aNames:
             self.__aCardSetIds.append(IPhysicalCardSet(sName).id)
         self.__oTable = Table('physical_map')
 
-    # pylint: disable=C0111, E1101
-    # E1101 - avoid SQLObject method not detected problems
+    # pylint: disable=C0111
     # C0111 - don't need docstrings for get_values & _get_joins
     def _get_joins(self):
+        # pylint: disable=E1101
+        # SQLObject methods not detected by pylint
         return [
             LEFTJOINOn(None, PhysicalCard,
                        PhysicalCard.q.id == self.__oTable.physical_card_id),
@@ -967,8 +947,6 @@ class SpecificCardFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, oCard):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__iCardId = IAbstractCard(oCard).id
 
     # pylint: disable=C0111
@@ -984,8 +962,6 @@ class SpecificCardIdFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iCardId):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__iCardId = iCardId
 
     # pylint: disable=C0111
@@ -1001,8 +977,6 @@ class MultiSpecificCardIdFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCardIds):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__aCardIds = aCardIds
 
     # pylint: disable=C0111
@@ -1021,8 +995,6 @@ class SpecificPhysCardIdFilter(DirectFilter):
     types = ('PhysicalCard',)
 
     def __init__(self, iCardId):
-        # pylint: disable=E1101
-        # SQLObject methods not detected by pylint
         self.__iCardId = iCardId
 
     # pylint: disable=C0111
@@ -1043,9 +1015,9 @@ class CardSetNameFilter(DirectFilter):
     """Filters on Card Set Name"""
     keyword = "CardSetName"
     description = "Card Set Name"
-    helptext = "the text to be matched against card set names.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+    helptext = "the text to be matched against card set names. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
+            "whose name contains the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1068,9 +1040,9 @@ class CardSetDescriptionFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Description"""
     keyword = "CardSetDescription"
     description = "Card Set Description"
-    helptext = "the text to be matched against card set description.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+    helptext = "the text to be matched against card set description. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
+            "containing the given string in the description."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1094,9 +1066,9 @@ class CardSetAuthorFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Author"""
     keyword = "CardSetAuthor"
     description = "Card Set Author"
-    helptext = "the text to be matched against card set Author.\n" \
-            "% can be used as a wildcard.\nReturns all card sets containing " \
-            "the given string."
+    helptext = "the text to be matched against card set Author. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets "\
+            "whose author includes the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1120,9 +1092,9 @@ class CardSetAnnotationsFilter(DirectFilter):
     """Base class for CardSet filters on Card Set Annotations"""
     keyword = "CardSetAnnotations"
     description = "Card Set Annotations"
-    helptext = "the text to be matched against card set annotations.\n" \
-            "% can be used as a wildcard.\nReturns all card sets where the " \
-            "annotations contrain the given string."
+    helptext = "the text to be matched against card set annotations. " \
+            "(% and _ can be used as wildcards.)\nReturns all card sets " \
+            "where the annotations contain the given string."
     istextentry = True
     types = ('PhysicalCardSet',)
 
@@ -1186,6 +1158,8 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
     def _get_expression(self):
         # pylint: disable=E1101
         # SQLObject methods not detected by pylint
+        # pylint: disable=singleton-comparison
+        # == True syntax required for SQLObject
         return PhysicalCardSet.q.inuse == True
 
 
@@ -1228,5 +1202,5 @@ def make_illegal_filter():
         oLegalFilter = FilterNot(MultiKeywordFilter(['not for legal play']))
     except SQLObjectNotFound:
         # Fallback to no filter
-        oLegalFilter = NullFilter()
+        return NullFilter()
     return oLegalFilter

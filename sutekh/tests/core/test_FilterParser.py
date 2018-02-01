@@ -6,16 +6,18 @@
 
 """Tests the Filter Parser and FilterBox code"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.tests.core.test_Filters import make_physical_card_sets
+import unittest
+
 from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
                                           PhysicalCard, IAbstractCard,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core import FilterParser, FilterBox
-from sutekh.core import Filters
 from sutekh.base.core.FilterParser import escape, unescape
-import unittest
+
+from sutekh.core import Filters
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.io import test_WhiteWolfParser
+from sutekh.tests.core.test_Filters import make_physical_card_sets
 
 
 class FilterParserTests(SutekhTest):
@@ -42,8 +44,6 @@ class FilterParserTests(SutekhTest):
     def _get_physical_names(self, oPCSFilter, oFilter):
         """Combine a card set filter with the filter and return the card
            names"""
-        # pylint: disable=E1101
-        # pyprotocols confuses pylinta
         oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
         aNames = [IAbstractCard(x).name for x in
                   oFullFilter.select(
@@ -410,8 +410,6 @@ class FilterParserTests(SutekhTest):
         ]
 
         for oPCSFilter, sFilter, oEquivFilter in aPCSNumberTests:
-            # pylint: disable=E1101
-            # pyprotocols confuses pylinta
             oFilter = self._parse_filter(sFilter)
             aExpectedCards = self._get_physical_names(oPCSFilter, oEquivFilter)
             aCSCards = self._get_physical_names(oPCSFilter, oFilter)

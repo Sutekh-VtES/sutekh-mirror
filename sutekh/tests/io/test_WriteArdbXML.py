@@ -5,13 +5,15 @@
 
 """Test Writing a card set to an ARDB deck XML file"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteArdbXML import WriteArdbXML
-from sutekh.SutekhInfo import SutekhInfo
 import unittest
 import time
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteArdbXML import WriteArdbXML
+from sutekh.SutekhInfo import SutekhInfo
+from sutekh.tests.TestCore import SutekhTest
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 # pylint: disable=W0511, C0301
 # W0511 - this is not a actual TODO item
@@ -41,7 +43,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
-    </vampire><vampire count="1" databaseID="42">
+    </vampire><vampire count="1" databaseID="44">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
@@ -50,7 +52,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <capacity>3</capacity>
       <group>4</group>
       <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
-    </vampire><vampire count="1" databaseID="63">
+    </vampire><vampire count="1" databaseID="65">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -94,14 +96,14 @@ When this vampire successfully hunts, he or she gains 1 additional blood.</text>
       <set>Third</set>
       <type>Action</type>
       <text>+1 stealth action. Requires a Sabbat vampire.
-Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
+Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</text>
     </card><card count="2" databaseID="14">
       <name>Abombwe</name>
       <set>LoB</set>
       <type>Master</type>
       <text>Master: Discipline. Trifle.
 Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
-    </card><card count="1" databaseID="60">
+    </card><card count="1" databaseID="62">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
       <cost>3 pool</cost>
@@ -109,7 +111,7 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Ally</type>
       <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
 {Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
-    </card><card count="1" databaseID="52">
+    </card><card count="1" databaseID="54">
       <name>Path of Blood, The</name>
       <set>LotN</set>
       <cost>1 pool</cost>

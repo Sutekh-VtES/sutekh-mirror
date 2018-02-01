@@ -6,19 +6,20 @@
 
 """Handle the panes for the filter editor"""
 
-from .AutoScrolledWindow import AutoScrolledWindow
-from .ScrolledList import ScrolledList
-from .CustomDragIconView import CustomDragIconView
-from .CardSetsListView import CardSetsListView
-from ..core.FilterParser import get_filters_for_type
-from ..core.FilterBox import (FilterBoxItem, FilterBoxModel,
-                              BOXTYPE, BOXTYPE_ORDER)
 import gobject
 import gtk
 import pango
 
-DRAG_TARGETS = [('STRING', 0, 0), ('text/plain', 0, 0)]
-NO_DRAG_TARGET = [("No Drag", 0, 0)]
+from ..core.FilterParser import get_filters_for_type
+from ..core.FilterBox import (FilterBoxItem, FilterBoxModel,
+                              BOXTYPE, BOXTYPE_ORDER)
+from .AutoScrolledWindow import AutoScrolledWindow
+from .ScrolledList import ScrolledList
+from .CustomDragIconView import CustomDragIconView
+from .CardSetsListView import CardSetsListView
+
+DRAG_TARGETS = [('STRING', gtk.TARGET_SAME_APP, 0),
+                ('text/plain', gtk.TARGET_SAME_APP, 0)]
 # Filters we pad values for to sort nicely
 PAD_FILTERS = set(('Capacity', 'CardCount: Count'))
 LIST_TYPES = set((FilterBoxItem.LIST, FilterBoxItem.LIST_FROM))
@@ -692,7 +693,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         iIndex = -1
         while oChild:
             oNext = self.iter_next(oChild)
-            if not self.get_path(oChild) == self.get_path(oCurIter):
+            if self.get_path(oChild) != self.get_path(oCurIter):
                 self.remove(oChild)
             else:
                 iIndex = iPos

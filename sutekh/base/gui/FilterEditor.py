@@ -7,8 +7,9 @@
 
 """Widget for editing filters."""
 
-from .FilterModelPanes import FilterModelPanes, add_accel_to_button
 import gtk
+
+from .FilterModelPanes import FilterModelPanes, add_accel_to_button
 
 
 class FilterEditor(gtk.Alignment):

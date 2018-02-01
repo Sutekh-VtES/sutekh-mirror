@@ -11,7 +11,7 @@
 
 from sutekh.base.core.BaseObjects import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import is_crypt_card
+from sutekh.SutekhUtility import is_crypt_card, is_trifle
 
 
 def escape_ardb_expansion_name(oExpansion):
@@ -49,8 +49,6 @@ class ArdbInfo(object):
 
     def _get_cards(self, oCardIter):
         """Create the dictionary of cards given the list of cards"""
-        # pylint: disable=E1101
-        # SQLObject methods confuse pylint
         dDict = {}
         for oCard in oCardIter:
             oPhysCard = IPhysicalCard(oCard)
@@ -86,15 +84,27 @@ class ArdbInfo(object):
             dTypes[sTypeString][oCard] += iCount
         return dTypes
 
+    def _count_trifles(self, dCards):
+        """Given the result of _extract_library, count the trifles."""
+        iCount = 0
+        for tKey, iNum in dCards.iteritems():
+            oCard = tKey[0]
+            if is_trifle(oCard):
+                iCount += iNum
+        return iCount
+
     def _extract_crypt(self, dCards):
         """Extract the crypt cards from the list."""
         dCryptStats = {
             'size': 0,
             'min': 75,
+            'minsum': 75,
             'max': 0,
+            'maxsum': 0,
             'avg': 0.0,
         }
         dVamps = {}
+        aCaps = []
         for tKey, iCount in dCards.iteritems():
             oCard = tKey[0]
             if is_crypt_card(oCard):
@@ -105,10 +115,12 @@ class ArdbInfo(object):
                 elif oCard.cardtype[0].name == "Imbued":
                     iCap = oCard.life
                 dCryptStats['avg'] += iCap * iCount
-                if iCap > dCryptStats['max']:
-                    dCryptStats['max'] = iCap
-                if iCap < dCryptStats['min']:
-                    dCryptStats['min'] = iCap
+                aCaps.extend([iCap]*iCount)
+        aCaps.sort()
+        dCryptStats['min'] = min(aCaps)
+        dCryptStats['max'] = max(aCaps)
+        dCryptStats['minsum'] = sum(aCaps[:4])
+        dCryptStats['maxsum'] = sum(aCaps[-4:])
         if dCryptStats['size'] > 0:
             dCryptStats['avg'] = round(dCryptStats['avg'] /
                                        dCryptStats['size'], 2)
@@ -193,8 +205,6 @@ class ArdbInfo(object):
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
-        # pylint: disable=E1101
-        # IAbstractCard confuses pylint
         if oPhysCard.expansion:
             oExpansion = oPhysCard.expansion
         else:

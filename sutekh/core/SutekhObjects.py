@@ -10,14 +10,7 @@
 
 """The database definitions and pyprotocols adapters for Sutekh"""
 
-from sutekh.base.core.CachedRelatedJoin import CachedRelatedJoin
-from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
-                                       Titles, Virtues)
-from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
-                                          IAbstractCard, Adapter,
-                                          BASE_TABLE_LIST, MAX_ID_LENGTH,
-                                          StrAdaptMeta, fail_adapt,
-                                          passthrough)
+from singledispatch import singledispatch
 
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
@@ -26,53 +19,59 @@ from sqlobject import (SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        SQLObjectNotFound)
 # pylint: enable=E0611
 
-from singledispatch import singledispatch
+from sutekh.base.core.CachedRelatedJoin import CachedRelatedJoin
+from sutekh.base.core.BaseObjects import (AbstractCard, BaseObjectMaker,
+                                          IAbstractCard, Adapter,
+                                          BASE_TABLE_LIST, MAX_ID_LENGTH,
+                                          StrAdaptMeta, fail_adapt,
+                                          passthrough)
+
+from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
+                                       Titles, Virtues)
 
 
 # Default adapters
 @singledispatch
 def IDisciplinePair(oUnknown):
     """Default DisplincePair adapter"""
-    fail_adapt(oUnknown, 'DisciplinePair')
+    return fail_adapt(oUnknown, 'DisciplinePair')
 
 
 @singledispatch
 def IDiscipline(oUnknown):
     """Default Displince adapter"""
-    fail_adapt(oUnknown, 'Discipline')
+    return fail_adapt(oUnknown, 'Discipline')
 
 
 @singledispatch
 def IClan(oUnknown):
     """Default Clan adapter"""
-    fail_adapt(oUnknown, 'Clan')
+    return fail_adapt(oUnknown, 'Clan')
 
 
 @singledispatch
 def ISect(oUnknown):
     """Default Sect adapter"""
-    fail_adapt(oUnknown, 'Sect')
+    return fail_adapt(oUnknown, 'Sect')
 
 
 @singledispatch
 def ITitle(oUnknown):
     """Default Title adapter"""
-    fail_adapt(oUnknown, 'Title')
+    return fail_adapt(oUnknown, 'Title')
 
 
 @singledispatch
 def ICreed(oUnknown):
     """Default Creed adapter"""
-    fail_adapt(oUnknown, 'Creed')
+    return fail_adapt(oUnknown, 'Creed')
 
 
 @singledispatch
 def IVirtue(oUnknown):
     """Default Virtue adapter"""
-    fail_adapt(oUnknown, 'Virtue')
+    return fail_adapt(oUnknown, 'Virtue')
 
-
-# pylint: enable=C0321
 # Table Objects
 
 # pylint: disable=W0232, R0902, W0201, C0103
@@ -198,6 +197,7 @@ class Title(SQLObject):
 
 
 class MapAbstractCardToClan(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_clan_map'
 
@@ -211,6 +211,7 @@ class MapAbstractCardToClan(SQLObject):
 
 
 class MapAbstractCardToDisciplinePair(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_discipline_pair_map'
 
@@ -224,6 +225,7 @@ class MapAbstractCardToDisciplinePair(SQLObject):
 
 
 class MapAbstractCardToSect(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_sect_map'
 
@@ -237,6 +239,7 @@ class MapAbstractCardToSect(SQLObject):
 
 
 class MapAbstractCardToTitle(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_title_map'
 
@@ -250,6 +253,7 @@ class MapAbstractCardToTitle(SQLObject):
 
 
 class MapAbstractCardToCreed(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_creed_map'
 
@@ -263,6 +267,7 @@ class MapAbstractCardToCreed(SQLObject):
 
 
 class MapAbstractCardToVirtue(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_virtue_map'
 

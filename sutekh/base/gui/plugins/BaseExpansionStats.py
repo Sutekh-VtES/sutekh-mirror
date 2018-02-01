@@ -11,7 +11,6 @@ import pango
 import gobject
 from ...core.BaseObjects import (PhysicalCard, AbstractCard,
                                  Expansion, IExpansion)
-from ...core.BaseGroupings import ExpansionRarityGrouping
 from ...core.BaseFilters import NullFilter, make_illegal_filter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
@@ -48,8 +47,9 @@ class BaseExpansionStats(BasePlugin):
                    cards) if the current profile for the full card list shows
                    those cards."""
 
-    # pylint: disable=W0142
-    # **magic OK here
+    # Subclasses should specify this
+    GROUPING = None
+
     def __init__(self, *args, **kwargs):
         super(BaseExpansionStats, self).__init__(*args, **kwargs)
         self._oStatsVbox = None
@@ -78,8 +78,6 @@ class BaseExpansionStats(BasePlugin):
 
         self._oStatsVbox = gtk.VBox(False, 0)
 
-        # pylint: disable=E1101
-        # vbox methods not seen
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)
         oDlg.show_all()
@@ -94,7 +92,8 @@ class BaseExpansionStats(BasePlugin):
         for oChild in self._oStatsVbox.get_children():
             self._oStatsVbox.remove(oChild)
 
-        oView = StatsView(self.model.groupby, self.model.hideillegal)
+        oView = StatsView(self.model.groupby, self.GROUPING,
+                          self.model.hideillegal)
 
         # top align, using viewport to scroll
         self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
@@ -106,8 +105,8 @@ class StatsView(gtk.TreeView):
     # gtk classes, so we have lots of public methods
     """TreeView used to display expansion stats"""
 
-    def __init__(self, cGrping, bHideIllegal):
-        self._oModel = StatsModel(cGrping, bHideIllegal)
+    def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
+        self._oModel = StatsModel(cGrping, cExpRarityGrping, bHideIllegal)
         self._aLabels = ["Expansion", "Date", "Count"]
 
         super(StatsView, self).__init__(self._oModel)
@@ -128,12 +127,11 @@ class StatsModel(gtk.TreeStore):
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the expansion statistics"""
 
-    def __init__(self, cGrping, bHideIllegal):
-        # pylint: disable=W0142
-        # We need the * magic here
+    def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
         super(StatsModel, self).__init__(gobject.TYPE_STRING,
                                          gobject.TYPE_STRING,
                                          gobject.TYPE_INT)
+        self.cExpRarityGrping = cExpRarityGrping
         self.oLegalFilter = NullFilter()
         if bHideIllegal:
             self.oLegalFilter = make_illegal_filter()
@@ -147,17 +145,16 @@ class StatsModel(gtk.TreeStore):
         self.clear()
 
         aCards = self.oLegalFilter.select(AbstractCard)
-        oGrouping = ExpansionRarityGrouping(aCards)
+        oGrouping = self.cExpRarityGrping(aCards)
         aTopLevel = []
         oExpIter = None
         iTotal = 0
+        dSeenCards = {}
         for sGroup, oGroupIter in sorted(oGrouping):
             oExp = None
             sDate = 'Unknown Date'
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
-                # pylint: disable=E1101
-                # pyprotocols confuses pylint
                 oExp = IExpansion(sExp.strip())
                 if oExp.releasedate:
                     sDate = oExp.releasedate.strftime('%Y-%m-%d')
@@ -165,6 +162,7 @@ class StatsModel(gtk.TreeStore):
                 sExp, sRarity = 'Promo', None
                 sDate = ''
             if sExp not in aTopLevel:
+                dSeenCards[sExp] = set()
                 oExpIter = self.append(None)
                 self.set(oExpIter, 0, sExp.strip(), 1, sDate)
                 aTopLevel.append(sExp)
@@ -173,9 +171,14 @@ class StatsModel(gtk.TreeStore):
             if sRarity:
                 oIter = self.append(oExpIter)
                 self.set(oIter, 0, sRarity.strip(), 1, sDate)
-                if sRarity.strip() != 'Precon Only':
-                    iTotal += len(aSubCards)
-                    self.set(oExpIter, 2, iTotal)
+                # We don't want to double count cards with multiple
+                # rarities in the total
+                for oCard in aSubCards:
+                    if oCard in dSeenCards[sExp]:
+                        continue
+                    dSeenCards[sExp].add(oCard)
+                    iTotal += 1
+                self.set(oExpIter, 2, iTotal)
             else:
                 oIter = oExpIter
             self.set(oIter, 2, len(aSubCards))
@@ -195,8 +198,6 @@ class StatsModel(gtk.TreeStore):
                             if not oPair.expansion.name.startswith('Promo-'):
                                 continue
                             oExp = oPair.expansion
-                            # pylint: disable=E1103
-                            # pyprotocols confuses pylint
                             if oExp.releasedate:
                                 self.set(oCardIter, 1,
                                          oExp.releasedate.strftime('%Y-%m-%d'))

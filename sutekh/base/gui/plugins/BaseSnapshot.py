@@ -4,8 +4,10 @@
 # GPL - see COPYING for details
 """Create a snapshot of the current card set."""
 
-import gtk
 import datetime
+
+import gtk
+
 from ...core.BaseObjects import PhysicalCardSet
 from ...core.CardSetHolder import CardSetHolder
 from ..BasePluginManager import BasePlugin

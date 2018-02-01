@@ -6,9 +6,11 @@
 
 """The gtk.TreeModel for the card lists."""
 
+import logging
+
 import gtk
 import gobject
-import logging
+
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter, CachedFilter,
                                 make_illegal_filter)
@@ -16,8 +18,8 @@ from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseObjects import (IAbstractCard,
                                 PhysicalCard, IPhysicalCard,
                                 IExpansionName, ExpansionNameAdapter)
-from ..Utility import move_articles_to_back
 from ..core.FilterParser import FilterParser
+from ..Utility import move_articles_to_back
 from .BaseConfigFile import FULL_CARDLIST
 from .SutekhDialog import do_exception_complaint
 from .MessageBus import MessageBus, CONFIG_MSG
@@ -33,8 +35,10 @@ HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable=R0904, R0902
-    # inherit a lot of public methods for gtk, need local attributes for state
+    # pylint: disable=R0902, R0904, W1001
+    # R0902: need local attributes for state
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Provides a card list specific API for accessing a gtk.TreeStore."""
     # Use spaces to ensure it sorts first
     # Could possibly be more visually distinct, but users can filter
@@ -333,8 +337,6 @@ class CardListModel(gtk.TreeStore):
         dAbsCards = {}
 
         for oPhysCard in oCardIter:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             if not self.check_card_visible(oPhysCard):
                 continue
             oAbsCard = IAbstractCard(oPhysCard)
@@ -479,10 +481,9 @@ class CardListModel(gtk.TreeStore):
             return self.get_all_from_iter(oIter)
         return None, None, None, None
 
-    def get_child_entries_from_path(self, oPath):
+    def get_child_entries_from_iter(self, oIter):
         """Return a list of (sExpansion, iCount) pairs for the children of
            this path"""
-        oIter = self.get_iter(oPath)
         aChildren = []
         iDepth = self.iter_depth(oIter)
         if iDepth != 1:
@@ -490,9 +491,9 @@ class CardListModel(gtk.TreeStore):
             return aChildren
         oChildIter = self.iter_children(oIter)
         while oChildIter:
-            sExpansion = self.get_value(oChildIter, 0)
+            oPhysCard = self.get_value(oChildIter, 9)
             iCount = self.get_value(oChildIter, 1)
-            aChildren.append((sExpansion, iCount))
+            aChildren.append((oPhysCard, iCount))
             oChildIter = self.iter_next(oChildIter)
         return aChildren
 

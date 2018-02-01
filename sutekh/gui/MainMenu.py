@@ -25,6 +25,8 @@ class MainMenu(AppMenu):
     def _add_download_menu(self, oDownloadMenu):
         """Extend the File Download menu"""
         super(MainMenu, self)._add_download_menu(oDownloadMenu)
+        self.create_menu_item('Check for updated cardlist', oDownloadMenu,
+                              self.check_updated_cardlist)
         self.create_menu_item('Download VTES icons', oDownloadMenu,
                               self.download_icons)
 
@@ -52,3 +54,7 @@ class MainMenu(AppMenu):
     def download_icons(self, _oWidget):
         """Call on the icon manager to download the icons."""
         self._oMainWindow.icon_manager.download_with_progress()
+
+    def check_updated_cardlist(self, _oWidget):
+        """Check for an updated cardlist datapack."""
+        self._oMainWindow.check_updated_cardlist()

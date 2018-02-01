@@ -110,29 +110,29 @@ class CardTextView(BaseCardTextView):
             self._oBuf.labelled_list("Keywords:", aInfo,
                                      "keywords", dIcons)
 
-        if not len(oCard.clan) == 0:
+        if len(oCard.clan) != 0:
             dIcons = self._oIconManager.get_icon_list(oCard.clan)
             self._oBuf.labelled_list("Clan",
                                      [oC.name for oC in oCard.clan],
                                      "clan", dIcons)
 
-        if not len(oCard.creed) == 0:
+        if len(oCard.creed) != 0:
             dIcons = self._oIconManager.get_icon_list(oCard.creed)
             self._oBuf.labelled_list("Creed",
                                      [oC.name for oC in oCard.creed],
                                      "creed", dIcons)
 
-        if not len(oCard.sect) == 0:
+        if len(oCard.sect) != 0:
             self._oBuf.labelled_compact_list("Sect",
                                              [oC.name for oC in oCard.sect],
                                              "sect")
 
-        if not len(oCard.title) == 0:
+        if len(oCard.title) != 0:
             self._oBuf.labelled_compact_list("Title",
                                              [oC.name for oC in oCard.title],
                                              "title")
 
-        if not len(oCard.discipline) == 0:
+        if len(oCard.discipline) != 0:
             aInfo = []
             aInfo.extend(sorted([oP.discipline.name for oP in oCard.discipline
                                  if oP.level != 'superior']))
@@ -142,7 +142,7 @@ class CardTextView(BaseCardTextView):
             self._oBuf.labelled_list("Disciplines", aInfo, "discipline",
                                      dIcons)
 
-        if not len(oCard.virtue) == 0:
+        if len(oCard.virtue) != 0:
             dIcons = self._oIconManager.get_icon_list(oCard.virtue)
             self._oBuf.labelled_list("Virtue",
                                      [oC.name for oC in oCard.virtue],
@@ -152,13 +152,13 @@ class CardTextView(BaseCardTextView):
         self._oBuf.tag_text(format_text(oCard.text),
                             "card_text")
 
-        if not len(oCard.rulings) == 0:
+        if len(oCard.rulings) != 0:
             self._oBuf.tag_text("\n")
             aInfo = [oR.text.replace("\n", " ") + " " + oR.code for oR
                      in oCard.rulings]
             self._oBuf.labelled_list("Rulings", aInfo, "ruling")
 
-        if not len(oCard.rarity) == 0:
+        if len(oCard.rarity) != 0:
             self._oBuf.tag_text("\n")
             dExp = {}
             for oPair in oCard.rarity:

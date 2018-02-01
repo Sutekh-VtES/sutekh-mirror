@@ -6,9 +6,11 @@
 
 """Widget for displaying the card text for the given card."""
 
+import logging
+
 import gtk
 import pango
-import logging
+
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 
 
@@ -17,7 +19,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
        """
 
     # pylint: disable=R0904
-    # gtk.Widget, so many public methods
+    # R0904: gtk.Widget, so many public methods
     def __init__(self):
         super(BaseCardTextBuffer, self).__init__(None)
 
@@ -34,13 +36,9 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 
         self._oIter = None
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def tag_text(self, *aArgs, **kwargs):
         """Inset the text (possibly with tags) at the current position"""
         self.insert_with_tags_by_name(self._oIter, *aArgs, **kwargs)
-
-    # pylint: enable=W0142
 
     # Methods for adding new tags to the buffer
 
@@ -141,8 +139,9 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 class BaseCardTextView(gtk.TextView):
     """Base class for TextView widget which holds the TextBuffer."""
 
-    # pylint: disable=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable=R0904, W1001
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oBuffer, oIconManager):
         super(BaseCardTextView, self).__init__()
         # Can be styled as frame_name.view

@@ -6,12 +6,14 @@
 """Export a card set to HTML."""
 
 import time
+from xml.etree.ElementTree import Element, SubElement, tostring
+
 from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.Utility import pretty_xml, norm_xml_quotes
+
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import monger_url, secret_library_url
-from sutekh.base.Utility import pretty_xml, norm_xml_quotes
-from xml.etree.ElementTree import Element, SubElement, tostring
 
 # Style used by the HTML file
 HTML_STYLE = """
@@ -189,8 +191,6 @@ class WriteArdbHTML(ArdbInfo):
 
     def write(self, fOut, oHolder):
         """Handle the response to the dialog"""
-        # pylint: disable=E1101
-        # SQLObject methods confuse pylint
         oRoot = self._gen_tree(oHolder)
         # We're producing XHTML output, so we need a doctype header
         fOut.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0'
@@ -285,8 +285,6 @@ class WriteArdbHTML(ArdbInfo):
 
     def _add_crypt(self, oBody, dCards):
         """Add the crypt to the file"""
-        # pylint: disable=E1101
-        # PyProtocol methods confuse pylint
         def start_section(oBody, dCards):
             """Format the start of the crypt section"""
             dVamps, dCryptStats = self._extract_crypt(dCards)
@@ -356,8 +354,6 @@ class WriteArdbHTML(ArdbInfo):
 
         def add_row(oTBody, iCount, sName):
             """Add a row to the display table"""
-            # pylint: disable=E1101
-            # IAbstrctCard confuses pylint
             oCard = IAbstractCard(sName)
             oTR = SubElement(oTBody, "tr")
             oTD = SubElement(oTR, "td")
@@ -426,8 +422,6 @@ class WriteArdbHTML(ArdbInfo):
                 _add_span(oListItem, "/".join(aClan), 'requirement')
             # Cost
             if oCard.costtype is not None:
-                # pylint: disable=E1103
-                # SQLObject methods confuse pylint
                 oListItem = SubElement(oList, "li")
                 _add_span(oListItem, 'Cost:', 'label')
                 _add_span(oListItem, "%d %s" % (oCard.cost,
@@ -445,8 +439,6 @@ class WriteArdbHTML(ArdbInfo):
             oTypeHead.attrib["class"] = "libraryttype"
             oTypeHead.text = sType
             for sName in sorted([x[1] for x in aList[1:]]):
-                # pylint: disable=E1101
-                # IAbstrctCard confuses pylint
                 oCard = IAbstractCard(sName)
                 oCardHead = SubElement(oCardText, "h5")
                 oCardHead.attrib["class"] = "cardname"

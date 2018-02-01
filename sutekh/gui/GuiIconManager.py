@@ -5,13 +5,16 @@
 
 """GTK gui icon manager."""
 
-import gtk
 import os
+
+import gtk
+
 from sutekh.base.Utility import prefs_dir, ensure_dir_exists
-from sutekh.io.IconManager import IconManager
-from sutekh.SutekhInfo import SutekhInfo
 from sutekh.base.gui.SutekhDialog import do_complaint
 from sutekh.base.gui.CachedIconManager import CachedIconManager
+
+from sutekh.io.IconManager import IconManager
+from sutekh.SutekhInfo import SutekhInfo
 
 
 class GuiIconManager(CachedIconManager, IconManager):

@@ -105,7 +105,18 @@ class WriteArdbText(ArdbInfo):
             dCards = dTypes[sTypeString]
             iTotal = sum(dCards.values())
 
-            sLib += "%s [%d]\n" % (sTypeString, iTotal)
+            if sTypeString == 'Master':
+                iTrifles = self._count_trifles(dLib)
+                if iTrifles > 1:
+                    sLib += "%s [%d] (%d trifles)\n" % (sTypeString,
+                                                        iTotal, iTrifles)
+                elif iTrifles == 1:
+                    sLib += "%s [%d] (%d trifle)\n" % (sTypeString,
+                                                       iTotal, iTrifles)
+                else:
+                    sLib += "%s [%d]\n" % (sTypeString, iTotal)
+            else:
+                sLib += "%s [%d]\n" % (sTypeString, iTotal)
 
             for oCard, iCount in sorted(dCards.iteritems(),
                                         key=lambda x: x[0].name):

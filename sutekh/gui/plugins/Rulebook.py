@@ -5,22 +5,25 @@
 
 """Downloads rulebook HTML pages and makes them available via the Help menu."""
 
-from sutekh.io.DataPack import DOC_URL, find_data_pack
+import os
+import StringIO
+import webbrowser
+import zipfile
+from logging import Logger
+
+import gtk
+
+from sutekh.base.Utility import prefs_dir, ensure_dir_exists
 from sutekh.base.io.UrlOps import urlopen_with_timeout
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.FileOrUrlWidget import FileOrUrlWidget
 from sutekh.base.gui.GuiDataPack import gui_error_handler, progress_fetch_data
 from sutekh.base.gui.SutekhDialog import SutekhDialog, do_exception_complaint
 from sutekh.base.gui.SutekhFileWidget import add_filter
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhCountLogHandler)
-from sutekh.base.Utility import prefs_dir, ensure_dir_exists
-import gtk
-import os
-import StringIO
-import webbrowser
-import zipfile
-from logging import Logger
+
+from sutekh.io.DataPack import DOC_URL, find_data_pack
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class RulebookConfigDialog(SutekhDialog):
@@ -93,8 +96,6 @@ class RulebookPlugin(SutekhPlugin):
         'rulebook path': 'string(default=None)',
     }
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(RulebookPlugin, self).__init__(*args, **kwargs)
         self._oRulebookDlg = None
@@ -225,7 +226,7 @@ class RulebookPlugin(SutekhPlugin):
                 if sData:
                     oRawFile = StringIO.StringIO(sData)
                     oZipFile = zipfile.ZipFile(oRawFile, 'r')
-                    self._unpack_zipfile_with_progress_bar(oZipFile)
+                    self._unpack_zip_with_prog_bar(oZipFile)
                 # else is the error path, but we'll have already shown
                 # a complaint (timeout, etc), so just do nothing
             except Exception:
@@ -238,7 +239,7 @@ class RulebookPlugin(SutekhPlugin):
         # get rid of the dialog
         oConfigDialog.destroy()
 
-    def _unpack_zipfile_with_progress_bar(self, oZipFile):
+    def _unpack_zip_with_prog_bar(self, oZipFile):
         """Unpack the contenst of the zip file showing progress as we go."""
         oLogHandler = SutekhCountLogHandler()
         oProgressDialog = ProgressDialog()

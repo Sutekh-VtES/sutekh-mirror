@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an Lackey CCG file"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
-import unittest
 
 EXPECTED_1 = """4\t.44 Magnum
 2\tAK-47

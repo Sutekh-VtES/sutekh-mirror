@@ -38,6 +38,29 @@ class BaseGroupBy(BasePlugin):
         'No Grouping': NullGrouping,
     }
 
+    sHelpCategory = 'profile:groupby'
+
+    sMenuName = 'Card Groupings'
+
+    @classmethod
+    def get_help_text(cls):
+        """Construct the help text for the groupings."""
+        aLines = [
+            """By default, the cards are grouped into the seperate card \
+               types. You can specify the grouping to use as part of the \
+               pane profile.""",
+            "", "The following groupings are available:", ""]
+        for sName in sorted(cls.GROUPINGS):
+            cGroup = cls.GROUPINGS[sName]
+            aLines.append('* _%s_: %s' % (sName, cGroup.__doc__))
+        aLines.append("")
+        return '\n'.join(aLines)
+
+    @classmethod
+    def get_help_list_text(cls):
+        """ToC entry."""
+        return "Control how the cards are grouped in the pane."
+
     @classmethod
     def update_config(cls):
         """Add the correct list of options to the config"""
@@ -45,8 +68,6 @@ class BaseGroupBy(BasePlugin):
         cls.dPerPaneConfig[cls.GROUP_BY] = ('option(%s, default="Card Type")' %
                                             sOptions)
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(BaseGroupBy, self).__init__(*aArgs, **kwargs)
         self._oFirstBut = None  # placeholder for the radio group

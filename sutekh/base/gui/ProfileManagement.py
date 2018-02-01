@@ -25,7 +25,7 @@ LABELS = {
 
 class ProfileListStore(gtk.ListStore):
     # pylint: disable=R0904
-    # gtk.Widget, so many public methods
+    # R0904: gtk.Widget, so many public methods
     """Simple list store for profiles widget"""
     def __init__(self):
         super(ProfileListStore, self).__init__(gobject.TYPE_STRING,
@@ -84,8 +84,9 @@ class ProfileListView(gtk.TreeView):
 
 
 class ScrolledProfileList(gtk.Frame):
-    # pylint: disable=R0904
-    # gtk.Widget, so many public methods
+    # pylint: disable=R0904, W1001
+    # R0904: gtk.Widget, so many public methods
+    # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
         super(ScrolledProfileList, self).__init__(None)
@@ -105,9 +106,9 @@ class ScrolledProfileList(gtk.Frame):
 
 class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=R0902, R0904
     # R0902 - we keep a lot of internal state, so many instance variables
+    # R0904 - gtk.Widget, so many public methods
 
     RESPONSE_EDIT = 1
     RESPONSE_DELETE = 2
@@ -128,8 +129,6 @@ class ProfileMngDlg(NotebookDialog):
             self.add_widget_page(oProfileList, LABELS[sType])
             self._dLists[oProfileList] = sType
 
-        # pylint: disable=E1101
-        # action_area confuse pylint
         self.action_area.pack_start(gtk.VSeparator(), expand=True)
 
         self.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)

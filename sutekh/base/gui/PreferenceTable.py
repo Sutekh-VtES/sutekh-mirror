@@ -38,8 +38,6 @@ class PreferenceTable(gtk.Table):
             "yoptions": 0,
         }
         for iRow, oOpt in enumerate(self._aOptions):
-            # pylint: disable=W0142
-            # *args magic OK here
             self.attach(oOpt.oLabel, self.KEY_COL, self.KEY_COL + 1,
                         iRow, iRow + 1, **dAttachOpts)
             self.attach(oOpt.oEntry, self.ENTRY_COL, self.ENTRY_COL + 1,

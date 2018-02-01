@@ -5,11 +5,13 @@
 
 """Test Writing a card set to an ELDB Inventory"""
 
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.WriteELDBInventory import WriteELDBInventory
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.io.WriteELDBInventory import WriteELDBInventory
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-import unittest
 
 EXPECTED = """"ELDB - Inventory"
 "Anastasz di Zagreb",0,0,"","Crypt"
@@ -27,6 +29,7 @@ EXPECTED = """"ELDB - Inventory"
 "Kemintiri (ADV)",0,0,"","Crypt"
 "Predator`s Communion",0,0,"","Library"
 "Abombwe",2,0,"","Library"
+"Alabastrom",0,0,"","Crypt"
 "Alan Sovereign (ADV)",1,0,"","Crypt"
 "Anna 'Dictatrix11' Suljic",0,0,"","Crypt"
 "Gracis Nostinus",0,0,"","Crypt"
@@ -54,6 +57,7 @@ EXPECTED = """"ELDB - Inventory"
 "Ghoul Retainer",0,0,"","Library"
 "Yvette, The Hopeless",0,0,"","Crypt"
 "Anson",0,0,"","Crypt"
+"Ashur Tablets",0,0,"","Library"
 "Earl 'Shaka74' Deams",0,0,"","Crypt"
 "Raven Spy",0,0,"","Library"
 "Pariah",0,0,"","Crypt"

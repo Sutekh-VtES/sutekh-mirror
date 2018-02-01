@@ -8,6 +8,8 @@ SutekhCli.py: command-line interface to much of Sutekh's database
 management functionality
 """
 
+from __future__ import print_function
+
 import sys
 import optparse
 import os
@@ -25,7 +27,8 @@ import sutekh.core.Filters
 # pylint: enable=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
-                                  format_text, read_exp_date_list)
+                                  format_text, read_exp_date_list,
+                                  read_lookup_data)
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
@@ -41,7 +44,8 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
-                              EXTRA_CARD_URL, EXP_DATE_URL)
+                              EXTRA_CARD_URL, EXP_DATE_URL,
+                              LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -68,6 +72,9 @@ def parse_options(aArgs):
     oOptParser.add_option("--date-file", type="string", dest="date_file",
                           default=None, help="CSV file to read expansion "
                                              "release date info from.")
+    oOptParser.add_option("--lookup-data-file", type="string",
+                          dest="lookup_file", default=None,
+                          help="CSV file to read useful lookup data from.")
     oOptParser.add_option("-c", "--refresh-tables", action="store_true",
                           dest="refresh_tables", default=False,
                           help="Drop (if possible) and recreate database "
@@ -160,31 +167,30 @@ def parse_options(aArgs):
 
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
-    # pylint: disable=E1101, R0912
-    # E1101: SQLObject can confuse pylint
+    # pylint: disable=R0912
     # R0912: Several cases to consider, so many branches
     if len(oCard.cardtype) == 0:
-        print 'CardType: Unknown'
+        print('CardType: Unknown')
     else:
-        print 'CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype])
+        print('CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype]))
     if len(oCard.clan) > 0:
-        print 'Clan: %s' % ' / '.join([oC.name for oC in oCard.clan])
+        print('Clan: %s' % ' / '.join([oC.name for oC in oCard.clan]))
     if len(oCard.creed) > 0:
-        print 'Creed: %s' % ' / '.join([oC.name for oC in oCard.creed])
+        print('Creed: %s' % ' / '.join([oC.name for oC in oCard.creed]))
     if oCard.capacity:
-        print 'Capacity: %d' % oCard.capacity
+        print('Capacity: %d' % oCard.capacity)
     if oCard.life:
-        print 'Life: %d' % oCard.life
+        print('Life: %d' % oCard.life)
     if oCard.group:
         if oCard.group == -1:
-            print 'Group: Any'
+            print('Group: Any')
         else:
-            print 'Group: %d' % oCard.group
+            print('Group: %d' % oCard.group)
     if oCard.cost is not None:
         if oCard.cost == -1:
-            print 'Cost: X %s' % oCard.costtype
+            print('Cost: X %s' % oCard.costtype)
         else:
-            print 'Cost: %d %s' % (oCard.cost, oCard.costtype)
+            print('Cost: %d %s' % (oCard.cost, oCard.costtype))
     if len(oCard.discipline) > 0:
         if is_crypt_card(oCard):
             aDisciplines = []
@@ -198,14 +204,14 @@ def print_card_details(oCard, sEncoding):
         else:
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
             sDisciplines = ' / '.join(aDisciplines)
-        print 'Discipline: %s' % sDisciplines
+        print('Discipline: %s' % sDisciplines)
     if len(oCard.virtue) > 0:
         if is_crypt_card(oCard):
-            print 'Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue])
+            print('Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue]))
         else:
-            print 'Virtue: %s' % ' / '.join([oC.fullname for oC in
-                                             oCard.virtue])
-    print format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace'))
+            print('Virtue: %s' % ' / '.join([oC.fullname for oC in
+                                             oCard.virtue]))
+    print(format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace')))
 
 
 def main_with_args(aTheArgs):
@@ -239,7 +245,7 @@ def main_with_args(aTheArgs):
 
     if oOpts.reload:
         if not oOpts.refresh_tables:
-            print "reload should be called with --refresh-tables"
+            print("reload should be called with --refresh-tables")
             return 1
         else:
             sTempdir = gen_temp_dir()
@@ -253,44 +259,47 @@ def main_with_args(aTheArgs):
 
     if oOpts.refresh_ruling_tables:
         if not refresh_tables([Ruling], sqlhub.processConnection):
-            print "refresh failed"
+            print("refresh failed")
             return 1
 
     if oOpts.refresh_tables:
         if not refresh_tables(TABLE_LIST, sqlhub.processConnection):
-            print "refresh failed"
+            print("refresh failed")
             return 1
 
     if oOpts.refresh_physical_card_tables:
         if not refresh_tables(PHYSICAL_LIST, sqlhub.processConnection):
-            print "refresh failed"
+            print("refresh failed")
             return 1
 
     if oOpts.ww_file is not None:
-        read_white_wolf_list([EncodedFile(oOpts.ww_file)], oLogHandler)
+        read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler)
 
     if oOpts.extra_file is not None:
-        read_white_wolf_list([EncodedFile(oOpts.extra_file)], oLogHandler)
+        read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
 
     if oOpts.date_file is not None:
-        read_exp_date_list([EncodedFile(oOpts.date_file)], oLogHandler)
+        read_exp_date_list(EncodedFile(oOpts.date_file), oLogHandler)
+
+    if oOpts.lookup_file is not None:
+        read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
 
     if oOpts.ruling_file is not None:
-        read_rulings([EncodedFile(oOpts.ruling_file)], oLogHandler)
+        read_rulings(EncodedFile(oOpts.ruling_file), oLogHandler)
 
     if oOpts.fetch:
-        read_white_wolf_list([EncodedFile(WW_CARDLIST_URL, True)], oLogHandler)
-        aRulings = [EncodedFile(sUrl, True) for sUrl in WW_RULINGS_URL]
-        read_rulings(aRulings, oLogHandler)
-        read_white_wolf_list([EncodedFile(EXTRA_CARD_URL, True)], oLogHandler)
-        read_exp_date_list([EncodedFile(EXP_DATE_URL, True)], oLogHandler)
+        read_lookup_data(EncodedFile(LOOKUP_DATA_URL, True), oLogHandler)
+        read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
+        read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
+        read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
+        read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
 
     if oOpts.read_physical_cards_from is not None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
         oFile.read()
 
     if oOpts.save_all_css and oOpts.save_cs is not None:
-        print "Can't use --save-cs and --save-all-cs Simulatenously"
+        print("Can't use --save-cs and --save-all-cs Simulatenously")
         return 1
 
     if oOpts.save_all_css:
@@ -314,17 +323,17 @@ def main_with_args(aTheArgs):
             fPrint = StringIO.StringIO()
             oPrinter = WriteArdbText()
             oPrinter.write(fPrint, CardSetWrapper(oCS))
-            print fPrint.getvalue().encode(oOpts.print_encoding,
-                                           'xmlcharrefreplace')
+            print(fPrint.getvalue().encode(oOpts.print_encoding,
+                                           'xmlcharrefreplace'))
         except SQLObjectNotFound:
-            print 'Unable to load card set', oOpts.print_cs
+            print('Unable to load card set', oOpts.print_cs)
             return 1
 
     if oOpts.list_cs:
         if not print_card_list(oOpts.limit_list, oOpts.print_encoding):
             return 1
     elif oOpts.limit_list is not None:
-        print "Can't use limit-list-to without list-cs"
+        print("Can't use limit-list-to without list-cs")
         return 1
 
     if oOpts.filter_string is not None:
@@ -352,7 +361,7 @@ def main_with_args(aTheArgs):
         os.rmdir(sTempdir)
 
     if oOpts.upgrade_db and oOpts.refresh_tables:
-        print "Can't use --upgrade-db and --refresh-tables simulatenously"
+        print("Can't use --upgrade-db and --refresh-tables simulatenously")
         return 1
 
     if oOpts.upgrade_db:

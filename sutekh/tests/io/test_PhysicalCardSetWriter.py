@@ -5,16 +5,18 @@
 
 """Test Writing Card Set handling"""
 
+from StringIO import StringIO
+import unittest
+
+from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
+from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
+from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     get_phys_cards,
                                                     make_set_1)
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
-from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
-from StringIO import StringIO
-import unittest
 
 EXPECTED_1 = ('<physicalcardset author="A test author"'
               ' name="Test Set 1" sutekh_xml_version="1.3">\n'
@@ -97,8 +99,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
     def test_physical_card_set_writer(self):
         """Test physical card set writing"""
-        # pylint: disable=E1101, R0915, R0914
-        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # pylint: disable=R0915, R0914
         # R0915, R0914: Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()

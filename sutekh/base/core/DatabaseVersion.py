@@ -7,6 +7,8 @@
 
 """Versioning support for Sutekh"""
 
+from __future__ import print_function
+
 from sqlobject import sqlhub
 from .BaseObjects import VersionTable
 
@@ -98,9 +100,9 @@ class DatabaseVersion(object):
                                  Version=iTableVersion, connection=oConn)
                 dCache[sTableName] = iTableVersion
         else:
-            print ("Multiple version entries for %s in the database"
-                   % sTableName)
-            print "Giving up. I suggest dumping and reloading everything"
+            print("Multiple version entries for %s in the database"
+                  % sTableName)
+            print("Giving up. I suggest dumping and reloading everything")
             return False
         return True
 
@@ -127,9 +129,9 @@ class DatabaseVersion(object):
                 iTableVersion = oVersion.Version
                 dCache[sName] = iTableVersion
         else:
-            print ("Multiple version entries for %s in the database"
-                   % oTable.sqlmeta.table)
-            print "Giving up. I suggest dumping and reloading everything"
+            print("Multiple version entries for %s in the database"
+                  % oTable.sqlmeta.table)
+            print("Giving up. I suggest dumping and reloading everything")
             # Should this be an exception?
             iTableVersion = -999
         return iTableVersion

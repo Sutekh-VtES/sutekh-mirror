@@ -10,7 +10,15 @@ collection in sync."""
 
 from sqlobject.events import (Signal, listen, RowUpdateSignal,
                               RowDestroySignal, RowCreatedSignal)
-from sqlobject.include.pydispatch import dispatcher
+
+# We need to test in this order, because sqlobject < 3.0 & pydispatch can
+# be installed together, and then importing the system pydispatch will
+# do the wrong thing
+try:
+    from sqlobject.include.pydispatch import dispatcher
+except ImportError:
+    # Missing pydispatch, so try the 3.0 SQLObject location
+    from pydispatch import dispatcher
 from .BaseObjects import PhysicalCardSet
 
 

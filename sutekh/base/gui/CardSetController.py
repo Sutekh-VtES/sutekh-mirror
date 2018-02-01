@@ -13,9 +13,8 @@ from .CardSetView import CardSetView
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 from ..core.DBSignals import send_changed_signal
 from ..core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
-                                IAbstractCard, PhysicalCard,
-                                MapPhysicalCardToPhysicalCardSet,
-                                IExpansion, IPhysicalCard)
+                                PhysicalCard,
+                                MapPhysicalCardToPhysicalCardSet)
 from ..core.CardSetUtilities import delete_physical_card_set
 
 
@@ -24,8 +23,6 @@ class CardSetController(object):
     _sFilterType = 'PhysicalCard'
 
     def __init__(self, sName, oMainWindow, oFrame, bStartEditable):
-        # pylint: disable=E1101, E1103
-        # SQLObject methods confuse pylint
         self._oMainWindow = oMainWindow
         self._aUndoList = collections.deque([], 50)
         self._aRedoList = collections.deque([], 50)
@@ -56,13 +53,14 @@ class CardSetController(object):
     # pylint: enable=R0201
 
     def inc_card(self, oPhysCard, sCardSetName, bAddUndo=True):
-        """Returns True if a card was successfully added, False otherwise."""
+        """Returns the exact PhysicalCard that was successfully added,
+           or None if the operation failed."""
         return self.add_card(oPhysCard, sCardSetName, bAddUndo)
 
     def dec_card(self, oPhysCard, sCardSetName, bAddUndo=True):
-        """Returns True if a card was successfully removed, False otherwise."""
-        # pylint: disable=E1101, E1103
-        # SQLObject +Pyprotocol methods confuse pylint
+        """Returns the specific PhysicalCard that was successfully removed
+           (which can differ from the card passed by the user)
+           or None is if the operation failed."""
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)
@@ -88,7 +86,7 @@ class CardSetController(object):
 
         except SQLObjectNotFound:
             # Bail on error
-            return False
+            return None
 
         for oCard in aPhysCards:
             # Need to remove a single physical card from the mapping table
@@ -103,18 +101,17 @@ class CardSetController(object):
                 send_changed_signal(oThePCS, oCard, -1)
                 if bAddUndo:
                     if sCardSetName:
-                        dOperation = {sCardSetName: [(oPhysCard, 1)]}
+                        dOperation = {sCardSetName: [(oCard, 1)]}
                     else:
-                        dOperation = {self.view.sSetName: [(oPhysCard, 1)]}
+                        dOperation = {self.view.sSetName: [(oCard, 1)]}
                     self._add_undo_operation(dOperation)
-                return True
+                return oCard
         # Got here, so we failed to remove a card
-        return False
+        return None
 
     def add_card(self, oPhysCard, sCardSetName, bAddUndo=True):
-        """Returns True if a card was successfully added, False otherwise."""
-        # pylint: disable=E1101, E1103
-        # SQLObject + PyProtocols methods confuse pylint
+        """Returns the exact PhysicalCard that was successfully added,
+           or None if the operation failed."""
         try:
             if sCardSetName:
                 oThePCS = IPhysicalCardSet(sCardSetName)
@@ -122,7 +119,7 @@ class CardSetController(object):
                 oThePCS = self.__oPhysCardSet
         except SQLObjectNotFound:
             # Any error means we bail
-            return False
+            return None
 
         oThePCS.addPhysicalCard(oPhysCard.id)
         oThePCS.syncUpdate()
@@ -134,7 +131,7 @@ class CardSetController(object):
             else:
                 dOperation = {self.view.sSetName: [(oPhysCard, -1)]}
             self._add_undo_operation(dOperation)
-        return True
+        return oPhysCard
 
     def edit_properties(self, _oMenuWidget):
         """Run the dialog to update the card set properties"""
@@ -175,8 +172,6 @@ class CardSetController(object):
     def delete_card_set(self):
         """Delete this card set from the database."""
         # Check if CardSet is empty
-        # pylint: disable=E1101
-        # sqlobject confuses pylint
         if check_ok_to_delete(self.__oPhysCardSet):
             self._oMainWindow.config_file.clear_cardset_profile(
                 self.model.cardset_id)  # Remove profile entry
@@ -200,22 +195,6 @@ class CardSetController(object):
         """Ask the view to restore the state"""
         self.view.restore_iter_state(aIters, dStates)
 
-    def _get_card(self, sCardName, sExpansionName):
-        """Convert card name & Expansion to PhsicalCard.
-
-           Help for add_paste_data."""
-        oExp = None
-        try:
-            if sExpansionName and sExpansionName != 'None' and \
-                    sExpansionName != self.model.sUnknownExpansion:
-                oExp = IExpansion(sExpansionName)
-            oAbsCard = IAbstractCard(sCardName)
-            oPhysCard = IPhysicalCard((oAbsCard, oExp))
-            return oPhysCard
-        except SQLObjectNotFound:
-            # Error, so bail
-            return None
-
     def add_paste_data(self, sSource, aCards):
         """Helper function for drag+drop and copy+paste.
 
@@ -227,12 +206,7 @@ class CardSetController(object):
             return False
         if aSources[0] in ("Phys", PhysicalCardSet.sqlmeta.table):
             # Add the cards, Count Matters
-            for iCount, sCardName, sExpansion in aCards:
-                # Use None to indicate this card set
-                oPhysCard = self._get_card(sCardName, sExpansion)
-                if not oPhysCard:
-                    # error, so skip this. (Warn user?)
-                    continue
+            for iCount, oPhysCard in aCards:
                 if aSources[0] == "Phys":
                     # Only ever add 1 when dragging from physical card list
                     self.add_card(oPhysCard, None, False)
@@ -258,13 +232,14 @@ class CardSetController(object):
                     # remove cards
                     for _iAttempt in range(iCardCount - iNewCnt):
                         # None as card set indicates this card set
-                        self.dec_card(oPhysCard, sCardSetName, False)
-                        aCards.append((oPhysCard, 1))
+                        oCard = self.dec_card(oPhysCard, sCardSetName, False)
+                        if oCard:
+                            aCards.append((oCard, 1))
                 elif iNewCnt > iCardCount:
                     # add cards
                     for _iAttempt in range(iNewCnt - iCardCount):
-                        self.inc_card(oPhysCard, sCardSetName, False)
-                        aCards.append((oPhysCard, -1))
+                        oCard = self.inc_card(oPhysCard, sCardSetName, False)
+                        aCards.append((oCard, -1))
                 dOperation.setdefault(sCardSetName, [])
                 dOperation[sCardSetName].extend(aCards)
         self._add_undo_operation(dOperation)
@@ -293,7 +268,7 @@ class CardSetController(object):
         self._fix_undo_status()
 
     def redo_edit(self):
-        """Undo the last edit operation"""
+        """Redo the last 'Undone' edit operation"""
         if not self._aRedoList:
             return
         dOperation = self._aRedoList.pop()

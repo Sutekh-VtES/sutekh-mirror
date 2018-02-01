@@ -9,12 +9,15 @@ For example, this is useful for generating sets of promos to
 hand out at a tournament.
 """
 
-import gtk
 from random import shuffle
+
+import gtk
+
 from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import SutekhDialog
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
+
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class RandomPromoDialog(SutekhDialog):
@@ -95,8 +98,6 @@ class RandomPromoSelector(SutekhPlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
 
-    # pylint: disable=W0142
-    # **magic OK here
     def __init__(self, *args, **kwargs):
         super(RandomPromoSelector, self).__init__(*args, **kwargs)
 

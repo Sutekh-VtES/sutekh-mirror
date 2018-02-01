@@ -5,17 +5,18 @@
 
 """Shows the merged version for advanced vampires."""
 
+from sqlobject import SQLObjectNotFound
+
+from sutekh.base.Utility import normalise_whitespace
 from sutekh.base.core.BaseObjects import (PhysicalCardSet,
                                           IKeyword, IAbstractCard)
-from sutekh.core.SutekhObjects import (ITitle, ISect, IDisciplinePair,
-                                       SutekhAbstractCard)
-from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.base.gui.GuiUtils import make_markup_button
 from sutekh.base.gui.SutekhDialog import do_complaint_error
-from sutekh.base.Utility import normalise_whitespace
 
-from sqlobject import SQLObjectNotFound
+from sutekh.core.SutekhObjects import (ITitle, ISect, IDisciplinePair,
+                                       SutekhAbstractCard)
+from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class FakeTitle(object):
@@ -214,7 +215,8 @@ class FakeCard(object):
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Baron of Barcelona.', '.')
             self.text = self.text.replace(
-                'Independent anarch:', 'Independent anarch Baron of Barcelona:')
+                'Independent anarch:',
+                'Independent anarch Baron of Barcelona:')
         elif self.name == 'Jeremy MacNeil (Merged)':
             self.text = self.text.replace(' Anarch Baron of Los Angeles.', '')
             self.text = self.text.replace(
@@ -402,11 +404,12 @@ class FakeCard(object):
 
 class MergedVampirePlugin(SutekhPlugin):
     """Plugin providing access to starter deck info."""
+    # pylint: disable=R0902
+    # Need all these instance variables to track the plugin state
+    # across the differ parts of showing the base, adv & merged vamps
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}
     aModelsSupported = ("MainWindow",)
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *args, **kwargs):
         super(MergedVampirePlugin, self).__init__(*args, **kwargs)
         self._oMerged = make_markup_button(

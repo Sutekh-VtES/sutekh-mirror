@@ -27,8 +27,6 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
         oFilter = PhysicalCardSetFilter(sCardSetName)
         oCardSet = oFilter.select(PhysicalCard)
         for oCard in oCardSet:
-            # pylint: disable=E1101
-            # pylint doesn't see IAbstractCard methods
             oAbsCard = IAbstractCard(oCard)
             if bIgnoreExpansions:
                 oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
@@ -105,8 +103,6 @@ class BaseCompare(BasePlugin):
                             (gtk.STOCK_OK, gtk.RESPONSE_OK,
                              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oCSView = CardSetsListView(None, oDlg)
-        # pylint: disable=E1101
-        # pylint misses vbox methods
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
         oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)

@@ -5,10 +5,12 @@
 
 """Simple about dialog for Sutekh"""
 
+import gtk
+
+from sutekh.base.Utility import get_database_url
+
 from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.base.Utility import get_database_url
-import gtk
 
 
 # pylint: disable=R0904
@@ -16,8 +18,6 @@ import gtk
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
 
-    # pylint: disable=W0142
-    # ** magic OK here
     def __init__(self, *aArgs, **kwargs):
         super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)
 

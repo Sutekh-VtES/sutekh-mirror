@@ -6,12 +6,14 @@
 """Test Writing a card set to an Ardb HTML file"""
 
 import time
+import unittest
+
+from sutekh.base.core.CardSetHolder import CardSetWrapper
+
 from sutekh.SutekhInfo import SutekhInfo
+from sutekh.io.WriteArdbHTML import WriteArdbHTML, HTML_STYLE
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
-from sutekh.base.core.CardSetHolder import CardSetWrapper
-from sutekh.io.WriteArdbHTML import WriteArdbHTML, HTML_STYLE
-import unittest
 
 EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -834,7 +836,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <h5 class="cardname">Abbot</h5>
       <div class="text">
         <p>+1 stealth action. Requires a Sabbat vampire.</p>
-        <p>Put this card on this acting Sabbat vampire and untap him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</p>
+        <p>Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</p>
       </div><h4 class="libraryttype">Ally</h4>
       <h5 class="cardname">Scapelli, The Family "Mechanic"</h5>
       <ul>

@@ -5,19 +5,18 @@
 
 """Sutekh Filters tests"""
 
+import unittest
+from sqlobject import SQLObjectNotFound
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          IAbstractCard,
                                           PhysicalCard, IPhysicalCard,
                                           Expansion, IExpansion,
-                                          PhysicalCardSet, IPhysicalCard,
+                                          PhysicalCardSet,
                                           MapPhysicalCardToPhysicalCardSet)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
-from sqlobject import SQLObjectNotFound
-import unittest
 
 
 def make_physical_card_sets():
@@ -40,8 +39,6 @@ def make_physical_card_sets():
         [('Yvette, The Hopeless', 'BSC')]
     ]
     aPCSs = []
-    # pylint: disable=E1101
-    # sqlobject confuses pylint
     for iCnt, tData in enumerate(aCardSets):
         sName, sAuthor, sComment, bInUse = tData
         if bInUse:
@@ -83,8 +80,6 @@ class FilterTests(SutekhTest):
 
         aPhysicalCards = []
         for sName in aExpectedNames:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             oAbs = IAbstractCard(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
@@ -136,7 +131,7 @@ class FilterTests(SutekhTest):
               u"Enkidu, The Noah", u"Kabede Maru", u"Kemintiri (Advanced)",
               u"Pariah", u"Sha-Ennu"]),
             (Filters.DisciplineFilter('fli'),
-             [u"Cedric", u"Fidus, The Shrunken Beast"]),
+             [u'Alab\xe1strom', u"Cedric", u"Fidus, The Shrunken Beast"]),
             (Filters.MultiDisciplineFilter(['nec', 'qui']),
              [u"Abd al-Rashid", u"Abdelsobek", u"Abebe", u"Akram",
               u"Ambrogino Giovanni", u"Kabede Maru"]),
@@ -192,7 +187,8 @@ class FilterTests(SutekhTest):
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),
              [u"Aabbt Kindred", u"Aaron Bathurst",
               u"Aaron Duggan, Cameron's Toady", u"Abd al-Rashid",
-              u"Abdelsobek", u"Abebe", u"Aeron", u"Alfred Benezri",
+              u"Abdelsobek", u"Abebe", u"Aeron", u'Alab\xe1strom',
+              u"Alfred Benezri",
               u"Ambrogino Giovanni", u"Amisa", u"Angelica, The Canonicus",
               u"Bronwen", u"Enkidu, The Noah", u"Kemintiri (Advanced)",
               u"L\xe1z\xe1r Dobrescu", u"Pariah", u"Sha-Ennu",
@@ -240,11 +236,12 @@ class FilterTests(SutekhTest):
               u"Aaron Duggan, Cameron's Toady", u'Abandoning the Flesh',
               u'Abbot', u'Abd al-Rashid', u'Abdelsobek', u'Abebe', u'Abjure',
               u'Ablative Skin', u'Abombwe', u'Aeron', u"Agent of Power",
-              u'Akram', u'Alan Sovereign', u'Alan Sovereign (Advanced)',
-              u'Alexandra', u'Alfred Benezri', u'Ambrogino Giovanni',
-              u'Amisa', u'Anarch Revolt', u'Anastasz di Zagreb',
-              u'Angelica, The Canonicus', u'Anna "Dictatrix11" Suljic',
-              u'Anson', u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
+              u'Akram', u'Alab\xe1strom', u'Alan Sovereign',
+              u'Alan Sovereign (Advanced)', u'Alexandra', u'Alfred Benezri',
+              u'Ambrogino Giovanni', u'Amisa', u'Anarch Revolt',
+              u'Anastasz di Zagreb', u'Angelica, The Canonicus',
+              u'Anna "Dictatrix11" Suljic', u'Anson', u'Ashur Tablets',
+              u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
               u'Dramatic Upheaval', u'Earl "Shaka74" Deams',
               u"Enkidu, The Noah", u"Fidus, The Shrunken Beast",
               u'Gracis Nostinus', u'Hide the Heart',
@@ -259,11 +256,12 @@ class FilterTests(SutekhTest):
               u"Aaron Duggan, Cameron's Toady", u'Abandoning the Flesh',
               u'Abbot', u'Abd al-Rashid', u'Abdelsobek', u'Abebe', u'Abjure',
               u'Ablative Skin', u'Abombwe', u'Aeron', u"Agent of Power",
-              u'Akram', u'Alan Sovereign', u'Alan Sovereign (Advanced)',
-              u'Alexandra', u'Alfred Benezri', u'Ambrogino Giovanni',
-              u'Amisa', u'Anarch Revolt', u'Anastasz di Zagreb',
-              u'Angelica, The Canonicus', u'Anna "Dictatrix11" Suljic',
-              u'Anson', u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
+              u'Akram', u'Alab\xe1strom', u'Alan Sovereign',
+              u'Alan Sovereign (Advanced)', u'Alexandra', u'Alfred Benezri',
+              u'Ambrogino Giovanni', u'Amisa', u'Anarch Revolt',
+              u'Anastasz di Zagreb', u'Angelica, The Canonicus',
+              u'Anna "Dictatrix11" Suljic', u'Anson', u'Ashur Tablets',
+              u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
               u'Dramatic Upheaval', u'Earl "Shaka74" Deams',
               u"Enkidu, The Noah", u"Fidus, The Shrunken Beast",
               u'Gracis Nostinus', u'Hide the Heart',
@@ -367,7 +365,8 @@ class FilterTests(SutekhTest):
              [u"Abandoning the Flesh", u"Abbot", u"Abjure", u"Ablative Skin",
               u"Abombwe", u"Agent of Power", u"Aire of Elation",
               u"Anarch Railroad", "Anarch Revolt",
-              u'Anna "Dictatrix11" Suljic', u"Bravo", u'Dramatic Upheaval',
+              u'Anna "Dictatrix11" Suljic', u'Ashur Tablets',
+              u"Bravo", u'Dramatic Upheaval',
               u'Earl "Shaka74" Deams', u"Ghoul Retainer", u"Gypsies",
               u"Hide the Heart", u"High Top", u'Inez "Nurse216" Villagrande',
               u'Motivated by Gehenna', u"Necromancy", u"Ossian",
@@ -470,8 +469,6 @@ class FilterTests(SutekhTest):
         ]
 
         for tTest in aExpansionTests:
-            # pylint: disable=E1101
-            # sqlobject confuses pylint
             oFilter, aExpectedCards = self._physical_test(tTest)
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
             self.assertEqual(aCards, aExpectedCards,
@@ -584,8 +581,6 @@ class FilterTests(SutekhTest):
                                  oFilter, aCardSets, aExpectedSets))
 
         # Test data for the Specific card filters
-        # pylint: disable=E1101
-        # sqlobject confuses pylint
         oAbsAK = IAbstractCard('ak-47')
         oExp = IExpansion('LotN')
         oPhysAK = IPhysicalCard((oAbsAK, oExp))
@@ -711,8 +706,6 @@ class FilterTests(SutekhTest):
         ]
 
         for oPCSFilter, oFilter, aExpectedCards in aPCSNumberTests:
-            # pylint: disable=E1101
-            # pyprotocols confuses pylint
             oFullFilter = Filters.FilterAndBox([oPCSFilter, oFilter])
             aCSCards = [IAbstractCard(x).name for x in
                         oFullFilter.select(

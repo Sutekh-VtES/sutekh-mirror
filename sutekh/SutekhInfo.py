@@ -51,8 +51,8 @@ class SutekhInfo(object):
         PEOPLE['Adrianna'],
     ]
 
-    SOURCEFORGE_URL = 'http://sourceforge.net/projects/sutekh/'
-    PYPI_URL = 'http://pypi.python.org/pypi/Sutekh/'
+    SOURCEFORGE_URL = 'https://sourceforge.net/projects/sutekh/'
+    PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = 'GPL'
     LICENSE_TEXT = resource_string(__name__, 'COPYING')
@@ -79,7 +79,7 @@ class SutekhInfo(object):
     ]
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0, < 1.7',  # fetching the dev version requires svn
+        'SQLObject >= 0.9.0, < 3.4',  # fetching the dev version requires svn
                            # (which is a bit crazy as an install requirement)
         'singledispatch',
         'ply',

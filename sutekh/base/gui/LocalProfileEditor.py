@@ -8,11 +8,12 @@
 """This handles editing the local profile editor, (for temporary options)"""
 
 
+import gtk
+
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 from .PreferenceTable import PreferenceTable
 from .BaseConfigFile import FRAME
-import gtk
 
 
 class LocalProfileEditor(SutekhDialog):
@@ -44,8 +45,6 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        # pylint: disable=E1101
-        # vbox confuses pylint
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
                                                 bUseViewport=True))
 
@@ -70,7 +69,8 @@ class LocalProfileEditor(SutekhDialog):
         else:
             # Evil recursion
             self.destroy()
-            oDlg = LocalProfileEditor(self.__oParent, self.__oConfig)
+            oDlg = LocalProfileEditor(self.__oParent, self.__oConfig,
+                                      self.__sFrame, self.__sCardSet)
             oDlg.run()
 
     def _repopulate_options(self):

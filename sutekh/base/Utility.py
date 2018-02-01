@@ -13,8 +13,9 @@ import os
 import re
 import sys
 import logging
-from sqlobject import sqlhub
 import urlparse
+
+from sqlobject import sqlhub
 
 
 def gen_temp_file(sBaseName, sDir):
@@ -118,8 +119,6 @@ def get_database_url():
     """Return the database url, with the password stripped out if
        needed"""
     sDBuri = sqlhub.processConnection.uri()
-    # pylint: disable=E1103
-    # pylint doesn't like the SpiltResult named tuple
     tParsed = urlparse.urlsplit(sDBuri)
     if tParsed.password:
         tCombined = (tParsed.scheme,
@@ -203,6 +202,8 @@ def setup_logging(bVerbose, sErrFile=None):
         oRootLogger.setLevel(logging.DEBUG)
         bSkipVerbose = False
         if sErrFile:
+            # pylint: disable=redefined-variable-type
+            # We intend to redfine oLogHandler on the error path
             try:
                 oLogHandler = logging.FileHandler(sErrFile)
                 oRootLogger.addHandler(oLogHandler)

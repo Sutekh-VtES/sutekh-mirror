@@ -10,9 +10,10 @@
 
 """The base database definitions and pyprotocols adapters"""
 
-from .CachedRelatedJoin import CachedRelatedJoin
-from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
-from ..Utility import move_articles_to_front
+import logging
+
+from singledispatch import singledispatch
+
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
@@ -21,7 +22,10 @@ from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
 from sqlobject.inheritance import InheritableSQLObject
 # pylint: enable=E0611
 
-from singledispatch import singledispatch
+from sutekh.core.Abbreviations import CardTypes, Expansions, Rarities
+
+from ..Utility import move_articles_to_front
+from .CachedRelatedJoin import CachedRelatedJoin
 
 
 # Adaption helper functions
@@ -29,82 +33,84 @@ from singledispatch import singledispatch
 def fail_adapt(oUnknown, sCls):
     """Generic failed to adapt handler"""
     raise NotImplementedError("Can't adapt %r to %s" % (oUnknown, sCls))
+    # pylint: disable=unreachable
+    # We know this is unreachable, but this is to work around
+    # pylint's return checker for the base adapters
+    return oUnknown
 
 
 def passthrough(oObj):
     """Passthrough adapter for calling Ixxx() on an object of type xxx"""
     return oObj
 
-
 # Base adapters
+
 
 @singledispatch
 def IAbstractCard(oUnknown):
     """Default AbstractCard adapter"""
-    fail_adapt(oUnknown, 'AbstractCard')
+    return fail_adapt(oUnknown, 'AbstractCard')
 
 
 @singledispatch
 def IPhysicalCard(oUnknown):
     """Default PhysicalCard adapter"""
-    fail_adapt(oUnknown, 'PhysicalCard')
+    return fail_adapt(oUnknown, 'PhysicalCard')
 
 
 @singledispatch
 def IPhysicalCardSet(oUnknown):
     """Default PhysicalCardSet adapter"""
-    fail_adapt(oUnknown, 'PhysicalCardSet')
+    return fail_adapt(oUnknown, 'PhysicalCardSet')
 
 
 @singledispatch
 def IRarityPair(oUnknown):
     """Default RarityPair adapter"""
-    fail_adapt(oUnknown, 'RarityPair')
+    return fail_adapt(oUnknown, 'RarityPair')
 
 
 @singledispatch
 def IExpansion(oUnknown):
     """Default Expansion adapter"""
-    fail_adapt(oUnknown, 'Expansion')
+    return fail_adapt(oUnknown, 'Expansion')
 
 
 @singledispatch
 def IExpansionName(oUnknown):
     """Default Expansion Name adapter"""
-    fail_adapt(oUnknown, 'ExpansionName')
+    return fail_adapt(oUnknown, 'ExpansionName')
 
 
 @singledispatch
 def IRarity(oUnknown):
     """Default Rarirty adapter"""
-    fail_adapt(oUnknown, 'Rarity')
+    return fail_adapt(oUnknown, 'Rarity')
 
 
 @singledispatch
 def ICardType(oUnknown):
     """Default CardType adapter"""
-    fail_adapt(oUnknown, 'CardType')
+    return fail_adapt(oUnknown, 'CardType')
 
 
 @singledispatch
 def IRuling(oUnknown):
     """Default Ruling adapter"""
-    fail_adapt(oUnknown, 'Ruling')
+    return fail_adapt(oUnknown, 'Ruling')
 
 
 @singledispatch
 def IArtist(oUnknown):
     """The base for artist adaption"""
-    fail_adapt(oUnknown, 'Artist')
+    return fail_adapt(oUnknown, 'Artist')
 
 
 @singledispatch
 def IKeyword(oUnknown):
     """The base for keyword adaption"""
-    fail_adapt(oUnknown, 'Keyword')
+    return fail_adapt(oUnknown, 'Keyword')
 
-
-# pylint: enable=C0321
 # Table Objects
 
 # pylint: disable=W0232, R0902, W0201, C0103
@@ -252,6 +258,8 @@ class Keyword(SQLObject):
 
 
 class MapPhysicalCardToPhysicalCardSet(SQLObject):
+
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'physical_map'
 
@@ -266,6 +274,7 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
 
 
 class MapAbstractCardToRarityPair(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_rarity_pair_map'
 
@@ -279,6 +288,7 @@ class MapAbstractCardToRarityPair(SQLObject):
 
 
 class MapAbstractCardToRuling(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_ruling_map'
 
@@ -292,6 +302,7 @@ class MapAbstractCardToRuling(SQLObject):
 
 
 class MapAbstractCardToCardType(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_type_map'
 
@@ -305,6 +316,7 @@ class MapAbstractCardToCardType(SQLObject):
 
 
 class MapAbstractCardToArtist(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_artist_map'
 
@@ -318,6 +330,7 @@ class MapAbstractCardToArtist(SQLObject):
 
 
 class MapAbstractCardToKeyword(SQLObject):
+    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'abs_keyword_map'
 
@@ -329,12 +342,29 @@ class MapAbstractCardToKeyword(SQLObject):
     abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
     keywordIndex = DatabaseIndex(keyword, unique=False)
 
+
+class LookupHints(SQLObject):
+
+    # This is a collection of lookup hints for use in various
+    # places.
+    # The domain field is used to indicate which domain the lookup
+    # will be used for, while the (lookup, value) are the lookup
+    # pairs
+
+    tableversion = 1
+
+    domain = UnicodeCol(length=MAX_ID_LENGTH)
+    lookup = UnicodeCol()
+    value = UnicodeCol()
+
+
 # pylint: enable=W0232, R0902, W0201, C0103
 
 # List of Tables to be created, dropped, etc.
 
 BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
                    Rarity, RarityPair, CardType, Ruling, Artist, Keyword,
+                   LookupHints,
                    # Mapping tables from here on out
                    MapPhysicalCardToPhysicalCardSet,
                    MapAbstractCardToRarityPair,
@@ -372,8 +402,6 @@ class BaseObjectMaker(object):
                 dKw['shortname'] = cAbbreviation.shortname(sObj)
             if bFullname:
                 dKw['fullname'] = cAbbreviation.fullname(sObj)
-            # pylint: disable=W0142
-            # ** magic OK here
             return cObjClass(**dKw)
 
     def make_card_type(self, sType):
@@ -538,21 +566,52 @@ IRarityPair.register(tuple, RarityPairAdapter.lookup)
 IAbstractCard.register(AbstractCard, passthrough)
 
 
-@IAbstractCard.register(basestring)
-def abstract_card_from_string(sName):
-    # pylint: disable=E1101
-    # SQLObject confuses pylint
-    try:
-        oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-    except SQLObjectNotFound:
-        # Correct for common variations
-        sNewName = move_articles_to_front(sName)
-        if sNewName != sName:
-            oCard = AbstractCard.byCanonicalName(
-                sNewName.encode('utf8').lower())
-        else:
-            raise
-    return oCard
+class CardNameLookupAdapter(Adapter):
+    """Adapter for card name string -> AbstractCard"""
+
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+        # Fill in values from LookupHints
+        for oLookup in LookupHints.select():
+            if oLookup.domain == 'CardNames':
+                try:
+                    # pylint: disable=no-member
+                    # SQLObject confuses pylint
+                    oCard = AbstractCard.byCanonicalName(
+                        oLookup.value.encode('utf8').lower())
+                    cls.__dCache[oLookup.lookup] = oCard
+                except SQLObjectNotFound:
+                    # Possible error in the lookup data - warn about it, but
+                    # we don't want to fail here.
+                    logging.warn("Unable to create %s mapping (%s -> %s",
+                                 oLookup.domain, oLookup.lookup, oLookup.value)
+
+    @classmethod
+    def lookup(cls, sName):
+        oCard = cls.__dCache.get(sName, None)
+        if oCard is None:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
+            try:
+                oCard = AbstractCard.byCanonicalName(
+                    sName.encode('utf8').lower())
+                cls.__dCache[sName] = oCard
+            except SQLObjectNotFound:
+                # Correct for common variations
+                sNewName = move_articles_to_front(sName)
+                if sNewName != sName:
+                    oCard = AbstractCard.byCanonicalName(
+                        sNewName.encode('utf8').lower())
+                    cls.__dCache[sNewName] = oCard
+                else:
+                    raise
+        return oCard
+
+
+IAbstractCard.register(basestring, CardNameLookupAdapter.lookup)
 
 
 IRuling.register(Ruling, passthrough)
@@ -561,6 +620,8 @@ IRuling.register(Ruling, passthrough)
 @IRuling.register(tuple)
 def ruling_from_tuple(tData):
     """Convert a (text, code) tuple to a ruling object."""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     sText, _sCode = tData
     return Ruling.byText(sText.encode('utf8'))
 
@@ -571,6 +632,8 @@ IKeyword.register(Keyword, passthrough)
 @IKeyword.register(basestring)
 def keyword_from_string(sKeyword):
     """Adapter for string -> Keyword"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return Keyword.byKeyword(sKeyword.encode('utf8'))
 
 
@@ -580,6 +643,8 @@ IArtist.register(Keyword, passthrough)
 @IArtist.register(basestring)
 def artist_from_string(sArtistName):
     """Adapter for string -> Artist"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
 
 
@@ -589,6 +654,8 @@ IPhysicalCardSet.register(PhysicalCardSet, passthrough)
 @IPhysicalCardSet.register(basestring)
 def phys_card_set_from_string(sName):
     """Adapter for string -> PhysicalCardSet"""
+    # pylint: disable=no-member
+    # SQLObject confuses pylint
     return PhysicalCardSet.byName(sName.encode('utf8'))
 
 
@@ -692,8 +759,8 @@ class PhysicalCardAdapter(Adapter):
         cls.__dCache = {}
         # pre-populate cache with mappings to commonly used
         # physical card with None expansion.
-        # pylint: disable=E1101
-        # SQLObject confuses pylint
+        # pylint: disable=singleton-comparison
+        # The '== None' is required for constructing the select statement
         try:
             for oPhysicalCard in PhysicalCard.select(
                     PhysicalCard.q.expansion == None):

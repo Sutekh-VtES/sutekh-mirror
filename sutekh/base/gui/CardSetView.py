@@ -147,40 +147,41 @@ class CardSetView(CardListView):
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
         for oPath in oPathList:
-            sCardName, sExpansion, iCount, iDepth = \
+            iAbsID, iPhysID, iCount, iDepth = \
                 oModel.get_drag_info_from_path(oPath)
-            if not sCardName:
+            if not iAbsID:
                 # Not a card in this card set, so we skip
                 continue
-            dSelectedData.setdefault(sCardName, {})
+            dSelectedData.setdefault(iAbsID, {})
             if iDepth == 1:
                 # this is treated as selecting all the children in this
                 # card set
                 # Remove anything already assigned to this
-                dSelectedData[sCardName].clear()
-                for sExpName, iCnt in \
+                dSelectedData[iAbsID].clear()
+                for iPhysID, iCnt in \
                         oModel.get_drag_child_info(oPath).iteritems():
-                    dSelectedData[sCardName][sExpName] = iCnt
-            elif not sExpansion:
-                # If the expansion is none, see if there are interesting
+                    dSelectedData[iAbsID][iPhysID] = iCnt
+            elif not iPhysID:
+                # If the expansion is unknown, see if there are interesting
                 # children
                 # This may well not to the right thing with complex
                 # selections, but it avoids issues when the same card is
                 # selected multiple times because it's in different groupings
                 dChildInfo = oModel.get_drag_child_info(oPath)
                 if dChildInfo:
-                    for sExpName, iCnt in dChildInfo.iteritems():
-                        dSelectedData[sCardName][sExpName] = iCnt
+                    for iPhysID, iCnt in dChildInfo.iteritems():
+                        dSelectedData[iAbsID][iPhysID] = iCnt
                 else:
-                    if sExpansion in dSelectedData[sCardName]:
+                    # Pass through as unknown
+                    if -1 in dSelectedData[iAbsID]:
                         # We already have this info
                         continue
-                    dSelectedData[sCardName][sExpansion] = iCount
+                    dSelectedData[iAbsID][-1] = iCount
             else:
-                if sExpansion in dSelectedData[sCardName]:
+                if iPhysID in dSelectedData[iAbsID]:
                     # We already have this info
                     continue
-                dSelectedData[sCardName][sExpansion] = iCount
+                dSelectedData[iAbsID][iPhysID] = iCount
         return dSelectedData
 
     def _process_edit_selection(self, iSetNewCount=None, iChg=None):
@@ -201,11 +202,13 @@ class CardSetView(CardListView):
            """
         oModel, oPathList = self._oSelection.get_selected_rows()
         dSelectedData = {}
+        aSkip = set()
         iNewCount = 0
         for oPath in oPathList:
             sCardSet = None
             oIter = oModel.get_iter(oPath)
             oPhysCard = oModel.get_physical_card_from_iter(oIter)
+            oAbsCard = oModel.get_abstract_card_from_iter(oIter)
             iCount = oModel.get_card_count_from_iter(oIter)
             if iChg:
                 iNewCount = max(0, iCount + iChg)
@@ -216,12 +219,16 @@ class CardSetView(CardListView):
             dSelectedData.setdefault(oPhysCard, {})
             iDepth = oModel.iter_depth(oIter)
             if iDepth == 1:
-                # this is treated as selecting all the entries of this card
-                # in this card set
+                # We handle top-level items differently
                 # Remove anything already assigned to this
                 dSelectedData[oPhysCard].clear()
                 dSelectedData[oPhysCard][None] = [iCount, iNewCount]
+                aSkip.add(oAbsCard)
             else:
+                if oAbsCard in aSkip:
+                    # Top level card was selected, so we ignore the
+                    # sub-level items
+                    continue
                 if sCardSet in dSelectedData[oPhysCard]:
                     # We already have this info (for selections via multiple
                     # groups, etc.)

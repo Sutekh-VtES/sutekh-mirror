@@ -6,9 +6,10 @@
 """Holder for card set (Abstract or Physical) data before it is committed
    to a database."""
 
+from sqlobject import SQLObjectNotFound, sqlhub
+
 from .CardLookup import DEFAULT_LOOKUP
 from .BaseObjects import PhysicalCardSet
-from sqlobject import SQLObjectNotFound, sqlhub
 
 
 class CardSetHolder(object):
@@ -178,16 +179,12 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
-            # pylint: disable=E1101
-            # SQLObject confuses pylint
             if not oPhysCard:
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
         oPCS.syncUpdate()
 
 
-# pylint: disable=R0921
-# This isn't a abstract base class. It just looks like one to pylint.
 class CardSetWrapper(CardSetHolder):
     """CardSetHolder class which provides a read-only wrapper of a card set."""
 
@@ -244,8 +241,6 @@ class CardSetWrapper(CardSetHolder):
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
         return self._oCS.parent
-
-# pylint: enable=R0921
 
 
 class CachedCardSetHolder(CardSetHolder):

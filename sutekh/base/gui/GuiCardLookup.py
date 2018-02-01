@@ -64,7 +64,16 @@ class ACLLookupView(PhysicalCardView):
         for oPath in aSelection:
             sNewName, _sExpansion, _iCount, _iDepth = \
                 oModel.get_all_from_path(oPath)
-        return sNewName, ''
+            oAbsCard = oModel.get_abstract_card_from_path(oPath)
+        return sNewName, '', oAbsCard
+
+    def get_selected_abstract_card(self):
+        """Return the actual abstract card selected."""
+        oAbsCard = None
+        oModel, aSelection = self.get_selection().get_selected_rows()
+        for oPath in aSelection:
+            oAbsCard = oModel.get_abstract_card_from_path(oPath)
+        return oAbsCard
 
     def cleanup(self):
         """Call model cleanup to remove listeners, etc."""
@@ -90,9 +99,10 @@ class PCLLookupView(PhysicalCardView):
         for oPath in aSelection:
             sNewName, sExpansion, _iCount, _iDepth = \
                 oModel.get_all_from_path(oPath)
+            oAbsCard = oModel.get_abstract_card_from_path(oPath)
         if sExpansion is None:
             sExpansion = ''
-        return sNewName, sExpansion
+        return sNewName, sExpansion, oAbsCard
 
     def cleanup(self):
         """Call model cleanup to remove listeners, etc."""
@@ -117,7 +127,8 @@ class ReplacementTreeView(gtk.TreeView):
         self._dToolTips = {}
 
         oModel = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,
-                               gobject.TYPE_STRING, gobject.TYPE_INT)
+                               gobject.TYPE_STRING, gobject.TYPE_INT,
+                               gobject.TYPE_PYOBJECT)
 
         super(ReplacementTreeView, self).__init__(oModel)
         self.oCardListView = oCardListView
@@ -210,7 +221,7 @@ class ReplacementTreeView(gtk.TreeView):
         oIter = self.oModel.get_iter(oPath)
         sName = self.oModel.get_value(oIter, 1)
 
-        sNewName, sExpansion = self.oCardListView.get_selected_card()
+        sNewName, sExpansion, oAbsCard = self.oCardListView.get_selected_card()
         if sNewName == NO_CARD:
             do_complaint_error("Please select a card")
             return
@@ -222,6 +233,7 @@ class ReplacementTreeView(gtk.TreeView):
 
         self.oModel.set_value(oIter, 2, sReplaceWith)
         self.oModel.set_value(oIter, 3, pango.WEIGHT_NORMAL)
+        self.oModel.set_value(oIter, 4, oAbsCard)
         gobject.timeout_add(1, self._fix_selection, sName)
 
     def _set_ignore(self, _oCell, oPath):
@@ -329,19 +341,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 raise LookupFailed("Lookup of missing cards aborted by the"
                                    " user.")
 
-        for sName, sNewName in dUnknownCards.items():
-            if sNewName is None:
+        for sName, oAbsCard in dUnknownCards.items():
+            if oAbsCard is None:
                 continue
-            try:
-                # pylint: disable=E1101
-                # SQLObject methods confuse pylint
-                oAbs = AbstractCard.byCanonicalName(
-                    sNewName.encode('utf8').lower())
-                # pylint: enable=E1101
-                dUnknownCards[sName] = oAbs
-            except SQLObjectNotFound:
-                raise RuntimeError("Unexpectedly encountered missing"
-                                   " abstract card '%s'." % sNewName)
+            dUnknownCards[sName] = oAbsCard
 
         def new_card(sName):
             """emulate python 2.5's a = x if C else y"""
@@ -439,9 +442,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             sInfo, "The following card and expansion combinations could not "
             "be found:")
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
-
         oPhysCardView = PCLLookupView(oUnknownDialog, self._oConfig)
         oReplacementView = self._fill_dialog(oHBox, oPhysCardView)
         oModel = oReplacementView.get_model()
@@ -453,7 +453,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
-                       3, pango.WEIGHT_BOLD)
+                       3, pango.WEIGHT_BOLD, 4, None)
 
         oUnknownDialog.vbox.show_all()
         oPhysCardView.load()
@@ -468,7 +468,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             # Physical Cards
             oIter = oModel.get_iter_root()
             while oIter is not None:
-                sFullName, sNewFullName = oModel.get(oIter, 1, 2)
+                sFullName, sNewFullName, oAbsCard = oModel.get(oIter, 1, 2, 4)
+                # GtK returns encoded strings - see get_name_from_iter in
+                # CardListModel
+                sNewFullName = sNewFullName.decode('utf-8')
+                sFullName = sFullName.decode('utf-8')
                 sName, sExpName = oReplacementView.parse_card_name(sFullName)
 
                 sNewName, sNewExpName = \
@@ -479,7 +483,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oPhys = self._lookup_new_phys_card(sNewName, sNewExpName)
+                    oPhys = self._lookup_new_phys_card(oAbsCard, sNewExpName)
                     aPhysCards.extend([oPhys] * iCnt)
 
                 oIter = oModel.iter_next(oIter)
@@ -499,8 +503,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        # pylint: disable=E1101
-        # vbox confuses pylint
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
 
@@ -519,8 +521,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     def _fill_dialog(self, oHBox, oView):
         """Handle the view setup and default buttons for the lookup
            dialog."""
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oViewWin = AutoScrolledWindow(oView)
         oViewWin.set_size_request(200, 600)
         oHBox.pack_start(oViewWin, True, True)
@@ -578,23 +578,18 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return oReplacementView
 
-    def _lookup_new_phys_card(self, sNewName, sNewExpName):
+    def _lookup_new_phys_card(self, oAbsCard, sNewExpName):
         """Lookup the physical card, given the correct name + expansion
            name."""
-        # pylint: disable=E1101
-        # SQLObject + pyprotocols confuse pylint
         if sNewExpName is not None:
             try:
                 iExpID = IExpansion(sNewExpName).id
             except SQLObjectNotFound:
                 iExpID = None
-            except SQLObjectNotFound:
-                iExpID = None
         else:
             iExpID = None
 
-        oAbs = AbstractCard.byCanonicalName(sNewName.encode('utf8').lower())
-        oPhys = PhysicalCard.selectBy(abstractCardID=oAbs.id,
+        oPhys = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
                                       expansionID=iExpID).getOne()
         return oPhys
 
@@ -610,8 +605,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         # we use lots of variables for clarity
         oUnknownDialog, oHBox = self._create_dialog(
             sInfo, "The following card names could not be found")
-        # pylint: disable=E1101
-        # vbox confuses pylint
 
         oAbsCardView = ACLLookupView(oUnknownDialog, self._oConfig)
         oReplacementView = self._fill_dialog(oHBox, oAbsCardView)
@@ -624,13 +617,16 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
                 iWeight = pango.WEIGHT_NORMAL
+                oCard = aCards[0]
             else:
                 sBestGuess = NO_CARD
                 iWeight = pango.WEIGHT_BOLD
+                oCard = None
 
             oIter = oModel.append(None)
             # second 1 is the dummy card count
-            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess, 3, iWeight)
+            oModel.set(oIter, 0, 1, 1, sName, 2, sBestGuess, 3, iWeight,
+                       4, oCard)
 
         oUnknownDialog.vbox.show_all()
         oAbsCardView.load()
@@ -644,9 +640,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             # For cards marked as replaced, add them to the Holder
             oIter = oModel.get_iter_root()
             while oIter is not None:
-                sName, sNewName = oModel.get(oIter, 1, 2)
-                if sNewName != NO_CARD:
-                    dUnknownCards[sName] = sNewName
+                sName, oAbsCard = oModel.get(oIter, 1, 4)
+                # GtK returns encoded strings - see get_name_from_iter in
+                # CardListModel
+                sName = sName.decode('utf-8')
+                if oAbsCard is not None:
+                    dUnknownCards[sName] = oAbsCard
                 oIter = oModel.iter_next(oIter)
             return True
         else:
@@ -674,9 +673,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oMesgLabel2 = gtk.Label(
             "OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
-
-        # pylint: disable=E1101
-        # vbox confuses pylint
 
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
 
@@ -742,8 +738,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             "Cards with unknown expansion %s" % sName, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oLabel = gtk.Label(sCardText)
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
         oCardDialog.set_size_request(300, 400)
@@ -754,8 +748,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
     @staticmethod
     def _popup_exp(_oButton, oSelector):
         """Popup the list of cards from the selected replacement expansion"""
-        # pylint: disable=E1101
-        # vbox & SQLObject confuse pylint
         sNewName = oSelector.get_active_text()
         if sNewName == 'No Expansion' or sNewName is None:
             # No cards to show, so do nothing

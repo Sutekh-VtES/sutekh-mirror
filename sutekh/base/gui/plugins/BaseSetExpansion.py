@@ -53,8 +53,6 @@ class BaseSetExpansion(BasePlugin):
                                (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oExpList = ScrolledList('Possible Expansions')
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oDialog.vbox.pack_start(oExpList)
         oExpList.set_size_request(150, 300)
         oExpList.fill_list(sorted(aExpansions))
@@ -79,8 +77,6 @@ class BaseSetExpansion(BasePlugin):
         oCS = self._get_card_set()
         for oCard in self.model.get_card_iterator(
                 self.model.get_current_filter()):
-            # pylint: disable=E1101
-            # PyProtocols confuses pylint
             oAbsCard = IAbstractCard(oCard)
             if oAbsCard.name in dSelected:
                 oPhysCard = IPhysicalCard(oCard)

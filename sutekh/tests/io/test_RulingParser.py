@@ -5,9 +5,11 @@
 
 """Test the Sutekh ruling parser"""
 
-from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.core.BaseObjects import Ruling, IRuling
 import unittest
+
+from sutekh.base.core.BaseObjects import Ruling, IRuling
+
+from sutekh.tests.TestCore import SutekhTest
 
 
 class RulingParserTests(SutekhTest):
@@ -33,8 +35,6 @@ class RulingParserTests(SutekhTest):
         oRuling = aRulings[2]
         self.failUnless(oRuling.text.startswith(u"The AK-47 provides "))
 
-        # pylint: disable=E1101
-        # IRuling confuses pylint
         oRuling = IRuling((aRulings[0].text, aRulings[0].code))
         self.assertEqual(oRuling.code, self.aExpectedRulings[0])
         self.assertNotEqual(oRuling.url, None)

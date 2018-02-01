@@ -15,13 +15,15 @@
    http://www.jabber.org/jeps/jep-0071.html .
    """
 
-import gobject
-import pango
-import gtk
 import re
 import warnings
 import HTMLParser
 from cStringIO import StringIO
+
+import gtk
+import gobject
+import pango
+
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 
@@ -93,8 +95,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
            calls callback(length, *args) when the length is first computed
            or changes
            """
-        # pylint: disable=W0142
-        # *magic required here
         if sValue.endswith('%'):
             fFrac = float(sValue[:-1]) / 100
             if bFontRelative:
@@ -298,8 +298,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Insert text into the TextBuffer"""
         aTags = self._get_style_tags()
         if aTags:
-            # pylint: disable=W0142
-            # * magic required
             self._oTextBuf.insert_with_tags(self._oIter, sText, *aTags)
         else:
             self._oTextBuf.insert(self._oIter, sText)
@@ -327,8 +325,6 @@ class HtmlHandler(HTMLParser.HTMLParser):
                                fFrac, fCallback, args):
         """call the required callback function when the size allocation
            changes."""
-        # pylint: disable=W0142
-        # *magic required here
         fCallback(oAllocation.width * fFrac, *args)
 
     # pylint: enable=R0913
@@ -670,8 +666,6 @@ class HTMLViewDialog(SutekhDialog):
         super(HTMLViewDialog, self).__init__('Help', oParent,
                                              oButtons=(gtk.STOCK_CLOSE,
                                                        gtk.RESPONSE_CLOSE))
-        # pylint: disable=E1101
-        # vbox confuses pylint
         oDirButtons = gtk.HButtonBox()
         self._oBackButton = gtk.Button(stock=gtk.STOCK_GO_BACK)
         self._oBackButton.connect('pressed', self._go_back)
