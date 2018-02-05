@@ -14,8 +14,8 @@ import cairo
 import poppler
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, Expansion,
-                                          IExpansion, IPhysicalCard)
+from sutekh.base.core.BaseTables import PhysicalCardSet, Expansion
+from sutekh.base.core.BaseAdapters import IPhysicalCard, IExpansion
 from sutekh.base.core.BaseFilters import MultiExpansionFilter
 from sutekh.base.gui.plugins.BaseImages import check_file
 from sutekh.base.gui.SutekhDialog import (SutekhDialog,

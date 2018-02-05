@@ -8,7 +8,7 @@
 import gtk
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.plugins.BaseDrawProbabilities import BaseDrawProbPlugin
 

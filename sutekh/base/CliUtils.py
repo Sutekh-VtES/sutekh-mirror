@@ -11,8 +11,9 @@ functions to help the CLI programs
 from __future__ import print_function
 
 from sqlobject import SQLObjectNotFound
-from .core.BaseObjects import (IPhysicalCardSet, IAbstractCard, PhysicalCard,
-                               MapPhysicalCardToPhysicalCardSet)
+from .core.BaseTables import (PhysicalCard,
+                              MapPhysicalCardToPhysicalCardSet)
+from .core.BaseAdapters import IPhysicalCardSet, IAbstractCard
 from .core.BaseFilters import (PhysicalCardSetFilter, FilterAndBox,
                                PhysicalCardFilter)
 from .core.FilterParser import FilterParser

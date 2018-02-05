@@ -6,7 +6,7 @@
 """Utilities and support classes that are useful for testing bits of the
    gui."""
 
-from ..core.BaseObjects import IAbstractCard
+from ..core.BaseAdapters import IAbstractCard
 from ..gui.MessageBus import MessageBus
 from ..gui.CardSetListModel import (IGNORE_PARENT, NO_SECOND_LEVEL,
                                     THIS_SET_ONLY)

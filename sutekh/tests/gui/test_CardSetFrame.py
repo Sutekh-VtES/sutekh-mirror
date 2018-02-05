@@ -9,8 +9,8 @@ import unittest
 
 import gtk
 
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCard,
-                                          IAbstractCard)
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCard, IAbstractCard
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.gui.BaseConfigFile import CARDSET
 from sutekh.base.gui.CardSetListModel import EXTRA_LEVEL_OPTION

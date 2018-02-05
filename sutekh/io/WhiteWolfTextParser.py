@@ -12,7 +12,7 @@ from logging import Logger
 
 from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 
-from sutekh.core.SutekhObjects import SutekhObjectMaker
+from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
 

@@ -9,13 +9,13 @@ import unittest
 
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          IPhysicalCard, ICardType,
-                                          IExpansion, IRarity, IRarityPair,
-                                          IArtist, IKeyword)
+from sutekh.base.core.BaseTables import AbstractCard
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion, IRarity, IRarityPair,
+                                           ICardType, IArtist, IKeyword)
 
-from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
-                                       ICreed, IVirtue)
+from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
+                                        ITitle, ICreed, IVirtue)
 from sutekh.tests.TestCore import SutekhTest
 
 

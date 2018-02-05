@@ -9,7 +9,7 @@
 # pylint: disable=W0402
 # string.digits is OK
 import string
-from sutekh.base.core.BaseObjects import AbstractCard
+from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
 from sutekh.base.io.IOBase import BaseLineParser
 

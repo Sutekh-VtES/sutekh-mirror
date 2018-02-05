@@ -6,7 +6,8 @@
 """Utility functions for dealing with managing the CardSet Objects"""
 
 from sqlobject import SQLObjectNotFound, sqlhub
-from .BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from .BaseTables import PhysicalCardSet
+from .BaseAdapters import IPhysicalCardSet
 
 
 def check_cs_exists(sName):

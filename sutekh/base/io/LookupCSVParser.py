@@ -11,7 +11,7 @@
 import csv
 from logging import Logger
 
-from ..core.BaseObjects import LookupHints
+from ..core.BaseTables import LookupHints
 
 
 class LookupCSVParser(object):

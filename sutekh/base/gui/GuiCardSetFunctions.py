@@ -12,7 +12,8 @@ import gtk
 from sqlobject import sqlhub
 
 from ..core.CardSetHolder import CardSetHolder, CardSetWrapper
-from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
+from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.CardLookup import LookupFailed
 from ..core.CardSetUtilities import (delete_physical_card_set, find_children,
                                      has_children, detect_loop,

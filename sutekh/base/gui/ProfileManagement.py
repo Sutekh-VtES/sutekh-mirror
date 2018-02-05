@@ -9,7 +9,7 @@
 import gtk
 import gobject
 from sqlobject import SQLObjectNotFound
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
 from .SutekhDialog import (NotebookDialog, do_complaint_error,
                            do_complaint_warning)
 from .AutoScrolledWindow import AutoScrolledWindow

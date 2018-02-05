@@ -7,7 +7,8 @@
 
 import gtk
 import gobject
-from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
+from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.BaseFilters import NullFilter
 from .BaseConfigFile import CARDSET_LIST
 

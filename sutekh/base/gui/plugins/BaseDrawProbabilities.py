@@ -9,7 +9,7 @@ from copy import copy
 
 import gtk
 
-from ...core.BaseObjects import PhysicalCardSet
+from ...core.BaseTables import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,
                             do_complaint_warning)

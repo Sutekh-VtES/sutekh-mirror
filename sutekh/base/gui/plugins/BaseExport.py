@@ -6,7 +6,7 @@
 """Plugin for exporting to standard writers"""
 
 import gtk
-from ...core.BaseObjects import PhysicalCardSet
+from ...core.BaseTables import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..GuiCardSetFunctions import export_cs
 

@@ -7,7 +7,8 @@
 
 import unittest
 
-from sutekh.base.core.BaseObjects import Ruling, IRuling
+from sutekh.base.core.BaseTables import Ruling
+from sutekh.base.core.BaseAdapters import IRuling
 
 from sutekh.tests.TestCore import SutekhTest
 

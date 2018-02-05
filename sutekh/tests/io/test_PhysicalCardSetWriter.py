@@ -8,7 +8,8 @@
 from StringIO import StringIO
 import unittest
 
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter

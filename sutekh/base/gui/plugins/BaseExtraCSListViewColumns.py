@@ -9,8 +9,9 @@
 from sqlobject import SQLObjectNotFound
 import pango
 
-from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
-                                 MapPhysicalCardToPhysicalCardSet)
+from ...core.BaseTables import (PhysicalCardSet,
+                                MapPhysicalCardToPhysicalCardSet)
+from ...core.BaseAdapters import IPhysicalCardSet
 from ...core.DBSignals import (listen_row_destroy, listen_row_update,
                                listen_row_created, listen_changed,
                                disconnect_changed,

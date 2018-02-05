@@ -21,7 +21,7 @@
    2 Lib2, The
    """
 
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.Utility import move_articles_to_back
 from sutekh.SutekhUtility import is_crypt_card
 

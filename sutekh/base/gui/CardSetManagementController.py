@@ -6,7 +6,8 @@
 """Controller class the card set list."""
 
 from sqlobject import SQLObjectNotFound
-from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
+from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.CardSetUtilities import delete_physical_card_set
 from .CardSetManagementView import CardSetManagementView
 from .GuiCardSetFunctions import (create_card_set, update_card_set,

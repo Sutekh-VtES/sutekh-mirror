@@ -9,8 +9,9 @@ import unittest
 import os
 from StringIO import StringIO
 
-from sutekh.base.core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (PhysicalCardSet,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder
 from sutekh.base.tests.TestUtils import make_card
 

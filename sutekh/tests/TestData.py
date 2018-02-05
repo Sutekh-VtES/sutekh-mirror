@@ -11,9 +11,96 @@
 # Note - Yvette & Aire of Elation are deliberately duplicated, so we ensure
 # that duplicates in the cardlist are handled properly
 
-TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
+TEST_LOOKUP_LIST = u"""CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
 CardNames,Anastaszdi Zagreb,Anastasz di Zagreb
 CardNames,"Pier 13","Pier 13, Port of Baltimore"
+Expansions,Jyhad,Jyhad
+Expansions,VTES,VTES
+Expansions,Sabbat,Sabbat
+Expansions,Sabbat Wars,Sabbat Wars
+Expansions,SW,Sabbat Wars
+Expansions,Anarchs,Anarchs
+Expansions,Camarilla Edition,Camarilla Edition
+Expansions,CE,Camarilla Edition
+Expansions,Legacy of Blood,Legacy of Blood
+Expansions,LoB,Legacy of Blood
+Expansions,Final Nights,Final Nights
+Expansions,FN,Final Nights
+Expansions,Third Edition,Third Edition
+Expansions,Third,Third Edition
+Expansions,Keepers of Tradition,Keepers of Tradition
+Expansions,KoT,Keepers of Tradition
+Expansions,Heirs to the Blood,Heirs to the Blood
+Expansions,HttB,Heirs to the Blood
+Expansions,Ancient Hearts,Ancient Hearts
+Expansions,AH,Ancient Hearts
+Expansions,Lords of the Night,Lords of the Night
+Expansions,LotN,Lords of the Night
+Expansions,Nights of Reckoning,Nights of Reckoning
+Expansions,NoR,Nights of Reckoning
+Expansions,Gehenna,Gehenna
+Expansions,Bloodlines,Bloodlines
+Expansions,BL,Bloodlines
+Expansions,Black Hand,Black Hand
+Expansions,BH,Black Hand
+Expansions,Dark Sovereigns,Dark Sovereigns
+Expansions,DS,Dark Sovereigns
+Expansions,Kindred Most Wanted,Kindred Most Wanted
+Expansions,KMW,Kindred Most Wanted
+Expansions,BSC,Blood Shadowed Court
+Expansions,Anthology,Anthology
+Expansions,Tenth,Tenth Anniversary
+Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
+Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
+Expansions,ReversePrefix:Promo-,Promo
+rities,Common,Common
+Rarities,C,Common
+Rarities,C1,Common
+Rarities,C2,Common
+Rarities,C3,Common
+Rarities,C\xbd,Common
+Rarities,Precon,Precon
+Rarities,P,Precon
+Rarities,Vampire,Vampire
+Rarities,V,Vampire
+Rarities,V3,Vampire
+Rarities,Uncommon,Uncommon
+Rarities,U,Uncommon
+Rarities,U2,Uncommon
+Rarities,U5,Uncommon
+Rarities,Rare,Rare
+Rarities,R,Rare
+Rarities,R1,Rare
+Rarities,R2,Rare
+Rarities,Not Applicable,Not Applicable
+Rarities,NA,Not Applicable
+Rarities,BSC,BSC
+Rarities,X,BSC
+Rarities,Tenth,Tenth
+Rarities,A,Tenth
+Rarities,B,Tenth
+Rarities,Anthology,Anthology
+Rarities,1,Anthology
+Rarities,3,Anthology
+Rarities,Rules,Rules
+Rarities,Storyline,Storyline
+Rarities,Demo,Demo
+Rarities,Prefix:P,Precon
+CardTypes,Equipment,Equipment
+CardTypes,Action,Action
+CardTypes,Vampire,Vampire
+CardTypes,Reaction,Reaction
+CardTypes,Combat,Combat
+CardTypes,Power,Power
+CardTypes,Master,Master
+CardTypes,Event,Event
+CardTypes,Ally,Ally
+CardTypes,Action Modifier,Action Modifier
+CardTypes,Political Action,Political Action
+CardTypes,Imbued,Imbued
+CardTypes,Retainer,Retainer
+CardTypes,Reflex,Reflex
+CardTypes,Conviction,Conviction
 """
 
 TEST_CARD_LIST = """

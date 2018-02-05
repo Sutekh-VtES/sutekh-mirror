@@ -6,8 +6,8 @@
 """Base class for the generic database object cache."""
 
 
-from .BaseObjects import (AbstractCard, RarityPair, Rarity, CardType,
-                          Expansion, Ruling, PhysicalCard, Keyword, Artist)
+from .BaseTables import (AbstractCard, RarityPair, Rarity, CardType,
+                         Expansion, Ruling, PhysicalCard, Keyword, Artist)
 from .DBUtility import init_cache
 
 

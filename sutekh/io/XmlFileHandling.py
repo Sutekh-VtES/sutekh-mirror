@@ -14,7 +14,8 @@ import os
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import gen_temp_file, safe_filename
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder, CardSetWrapper
 from sutekh.base.core.CardLookup import DEFAULT_LOOKUP
 

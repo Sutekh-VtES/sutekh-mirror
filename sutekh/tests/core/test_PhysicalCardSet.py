@@ -9,8 +9,9 @@ import unittest
 
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (PhysicalCardSet,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 

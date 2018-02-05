@@ -13,10 +13,9 @@ from StringIO import StringIO
 import gtk
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import (PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet,
-                                          IPhysicalCardSet, PhysicalCard,
-                                          IAbstractCard)
+from sutekh.base.core.BaseTables import (PhysicalCardSet, PhysicalCard,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCardSet
 from sutekh.base.core.BaseFilters import (FilterOrBox, FilterAndBox,
                                           SpecificCardFilter,
                                           MultiPhysicalCardSetMapFilter)

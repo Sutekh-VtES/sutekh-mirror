@@ -11,7 +11,8 @@ from StringIO import StringIO
 
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetHolder
 
 from sutekh.io.PhysicalCardParser import PhysicalCardParser

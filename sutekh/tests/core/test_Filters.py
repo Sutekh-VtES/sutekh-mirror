@@ -10,11 +10,11 @@ from sqlobject import SQLObjectNotFound
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          PhysicalCard, IPhysicalCard,
-                                          Expansion, IExpansion,
-                                          PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCard,
+                                         Expansion, PhysicalCardSet,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 

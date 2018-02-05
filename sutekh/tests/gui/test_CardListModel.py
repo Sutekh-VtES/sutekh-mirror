@@ -12,9 +12,9 @@ from sutekh.base.tests.GuiTestUtils import (count_second_level,
                                             count_top_level,
                                             get_card_names,
                                             TestListener)
-from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
-                                          IAbstractCard, IPhysicalCard,
-                                          IExpansion)
+from sutekh.base.core.BaseTables import PhysicalCard, AbstractCard
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion)
 from sutekh.base.core import BaseFilters
 from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
 from sutekh.base.gui.CardListModel import CardListModel
