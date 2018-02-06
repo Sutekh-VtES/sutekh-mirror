@@ -11,7 +11,7 @@
 # Note - Yvette & Aire of Elation are deliberately duplicated, so we ensure
 # that duplicates in the cardlist are handled properly
 
-TEST_LOOKUP_LIST = u"""CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
+TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
 CardNames,Anastaszdi Zagreb,Anastasz di Zagreb
 CardNames,"Pier 13","Pier 13, Port of Baltimore"
 Expansions,Jyhad,Jyhad
@@ -24,6 +24,8 @@ Expansions,Camarilla Edition,Camarilla Edition
 Expansions,CE,Camarilla Edition
 Expansions,Legacy of Blood,Legacy of Blood
 Expansions,LoB,Legacy of Blood
+Expansions,EK,Ebony Kingdom
+Expansions,Ebony Kingdom,Ebony Kingdom
 Expansions,Final Nights,Final Nights
 Expansions,FN,Final Nights
 Expansions,Third Edition,Third Edition
@@ -58,7 +60,7 @@ Rarities,C,Common
 Rarities,C1,Common
 Rarities,C2,Common
 Rarities,C3,Common
-Rarities,C\xbd,Common
+Rarities,C½,Common
 Rarities,Precon,Precon
 Rarities,P,Precon
 Rarities,Vampire,Vampire
@@ -401,6 +403,13 @@ Cardtype: Master
 Master.
 Put this card in play. If you control three copies, remove all copies in play (even controlled by other Methuselahs) from the game to gain 3 pool and choose up to thirteen cards from your ash heap. Move one of those cards to your hand and shuffle the others into your library.
 Artist: Sandra Chang;Ginés Quiñonero
+
+Name: Aye
+[LoB:C, EK:C½]
+Cardtype: Master
+Master: trifle.
+Put this card on a Laibon. This Laibon may lock this card to cancel a Frenzy card p
+Artist: Brad Williams
 
 Name: Bravo
 [Gehenna:C]
