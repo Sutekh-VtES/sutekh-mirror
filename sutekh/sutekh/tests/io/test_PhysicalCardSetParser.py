@@ -180,24 +180,24 @@ class PhysicalCardSetParserTests(SutekhTest):
                 physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[7].id).count(), 0)
+                physicalCardID=aAddedPhysCards[7].id).count(), 2)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 3)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[1].id).count(), 5)
+                physicalCardID=aAddedPhysCards[1].id).count(), 1)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[6].id).count(), 2)
+                physicalCardID=aAddedPhysCards[6].id).count(), 3)
         # Aaron's Feeding razor
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[14].id).count(), 2)
+                physicalCardID=aAddedPhysCards[14].id).count(), 0)
         # Inez
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[12].id).count(), 1)
+                physicalCardID=aAddedPhysCards[12].id).count(), 0)
 
         PhysicalCardSet.delete(oPhysCardSet2.id)
         oFile = PhysicalCardSetXmlFile()
@@ -256,7 +256,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[7].id).count(), 0)
+                physicalCardID=aAddedPhysCards[7].id).count(), 2)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 3)
@@ -265,18 +265,18 @@ class PhysicalCardSetParserTests(SutekhTest):
                 physicalCardID=aAddedPhysCards[0].id).count(), 1)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[1].id).count(), 5)
+                physicalCardID=aAddedPhysCards[1].id).count(), 1)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[6].id).count(), 2)
+                physicalCardID=aAddedPhysCards[6].id).count(), 3)
         # Aaron's Feeding razor
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[14].id).count(), 2)
+                physicalCardID=aAddedPhysCards[14].id).count(), 0)
         # Inez
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[12].id).count(), 1)
+                physicalCardID=aAddedPhysCards[12].id).count(), 0)
 
         self.assertEqual(oPhysCardSet2.annotations, None)
         self.assertEqual(oPhysCardSet3.annotations, 'Some annotations')

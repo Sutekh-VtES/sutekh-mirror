@@ -18,13 +18,16 @@ EXPECTED_1 = """4\t.44 Magnum
 1\tAaron's Feeding Razor
 2\tAbbot
 2\tAbombwe
+3\tAire of Elation
+1\tHide the Heart
 1\tPath of Blood, The
 1\tScapelli, The Family 'Mechanic'
+2\tSwallowed by the Night
 Crypt:
 1\tAbebe
 1\tAlan Sovereign Adv.
 1\tInez ''Nurse216'' Villagrande
-1\tSiamese, The
+2\tSiamese, The
 """
 
 

@@ -24,11 +24,11 @@ LAST_WRITER_VERSION = "1.0"
 
 def make_example_pcxml():
     """Create the example XML File"""
-    oPC = make_card(ABSTRACT_CARDS[0], None)
+    oPC = make_card(ABSTRACT_CARDS[0][0], None)
 
     sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
                 'expansion="None Specified" id="%d" name="%s" /></cards>'
-                % (LAST_WRITER_VERSION, oPC.id, ABSTRACT_CARDS[0]))
+                % (LAST_WRITER_VERSION, oPC.id, ABSTRACT_CARDS[0][0]))
     return sExample
 
 

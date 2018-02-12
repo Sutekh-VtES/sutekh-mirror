@@ -95,6 +95,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Sha-Ennu",
         u"Shade",
         u"Smite",
+        u"Swallowed by the Night",
         u"The Ankara Citadel, Turkey",
         u"The Path of Blood",
         u"The Siamese",

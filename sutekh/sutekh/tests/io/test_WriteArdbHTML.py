@@ -38,13 +38,13 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[4 vampires] Capacity min : 3 max : 7 average : 5.00</span>
+        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
             <tr>
               <td>
-                <span class="tablevalue">1x</span>
+                <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">
                   <a href="http://monger.vekn.org/showvamp.html?NAME=Siamese,%%20The">The Siamese</a>
@@ -114,7 +114,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[13 cards]</span>
+        <span class="stats" id="librarystats">[19 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -127,6 +127,36 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://monger.vekn.org/showcard.html?NAME=Abbot">Abbot</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier</span>
+          <span class="stats">[3]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">3x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Aire%%20of%%20Elation">Aire of Elation</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier/Combat</span>
+          <span class="stats">[2]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">2x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Swallowed%%20by%%20the%%20Night">Swallowed by the Night</a>
                 </span>
               </td>
             </tr>
@@ -172,7 +202,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://monger.vekn.org/showcard.html?NAME=Aaron's%%20Feeding%%20Razor">Aaron's Feeding Razor</a>
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Aaron\'s%%20Feeding%%20Razor">Aaron\'s Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -196,6 +226,21 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://monger.vekn.org/showcard.html?NAME=Path%%20of%%20Blood,%%20The">The Path of Blood</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Reaction</span>
+          <span class="stats">[1]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Hide%%20the%%20Heart">Hide the Heart</a>
                 </span>
               </td>
             </tr>
@@ -231,13 +276,13 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[4 vampires] Capacity min : 3 max : 7 average : 5.00</span>
+        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
             <tr>
               <td>
-                <span class="tablevalue">1x</span>
+                <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">The Siamese</span>
               </td><td />
@@ -299,7 +344,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[13 cards]</span>
+        <span class="stats" id="librarystats">[19 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -311,6 +356,32 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">Abbot</span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier</span>
+          <span class="stats">[3]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">3x</span>
+              </td><td>
+                <span class="tablevalue">Aire of Elation</span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier/Combat</span>
+          <span class="stats">[2]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">2x</span>
+              </td><td>
+                <span class="tablevalue">Swallowed by the Night</span>
               </td>
             </tr>
           </tbody>
@@ -348,7 +419,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               <td>
                 <span class="tablevalue">1x</span>
               </td><td>
-                <span class="tablevalue">Aaron's Feeding Razor</span>
+                <span class="tablevalue">Aaron\'s Feeding Razor</span>
               </td>
             </tr>
           </tbody>
@@ -368,6 +439,19 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">The Path of Blood</span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Reaction</span>
+          <span class="stats">[1]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">Hide the Heart</span>
               </td>
             </tr>
           </tbody>
@@ -402,13 +486,13 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[4 vampires] Capacity min : 3 max : 7 average : 5.00</span>
+        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
             <tr>
               <td>
-                <span class="tablevalue">1x</span>
+                <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?crypt=Siamese,+The">The Siamese</a>
@@ -478,7 +562,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[13 cards]</span>
+        <span class="stats" id="librarystats">[19 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -491,6 +575,36 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Abbot">Abbot</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier</span>
+          <span class="stats">[3]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">3x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Aire+of+Elation">Aire of Elation</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier/Combat</span>
+          <span class="stats">[2]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">2x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Swallowed+by+the+Night">Swallowed by the Night</a>
                 </span>
               </td>
             </tr>
@@ -536,7 +650,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
+                  <a href="http://www.secretlibrary.info/?lib=Aaron\'s+Feeding+Razor">Aaron\'s Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -560,6 +674,21 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Path+of+Blood,+The">The Path of Blood</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Reaction</span>
+          <span class="stats">[1]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Hide+the+Heart">Hide the Heart</a>
                 </span>
               </td>
             </tr>
@@ -595,13 +724,13 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[4 vampires] Capacity min : 3 max : 7 average : 5.00</span>
+        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
             <tr>
               <td>
-                <span class="tablevalue">1x</span>
+                <span class="tablevalue">2x</span>
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?crypt=Siamese,+The">The Siamese</a>
@@ -671,7 +800,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[13 cards]</span>
+        <span class="stats" id="librarystats">[19 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -684,6 +813,36 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Abbot">Abbot</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier</span>
+          <span class="stats">[3]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">3x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Aire+of+Elation">Aire of Elation</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Action Modifier/Combat</span>
+          <span class="stats">[2]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">2x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Swallowed+by+the+Night">Swallowed by the Night</a>
                 </span>
               </td>
             </tr>
@@ -729,7 +888,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
+                  <a href="http://www.secretlibrary.info/?lib=Aaron\'s+Feeding+Razor">Aaron\'s Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -753,6 +912,21 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Path+of+Blood,+The">The Path of Blood</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
+          <span>Reaction</span>
+          <span class="stats">[1]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Hide+the+Heart">Hide the Heart</a>
                 </span>
               </td>
             </tr>
@@ -837,6 +1011,29 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <div class="text">
         <p>+1 stealth action. Requires a Sabbat vampire.</p>
         <p>Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat vampire gets +1 intercept against (D) actions directed at his or her controller. A vampire may have only one Abbot.</p>
+      </div><h4 class="libraryttype">Action Modifier</h4>
+      <h5 class="cardname">Aire of Elation</h5>
+      <ul>
+        <li>
+          <span class="label">Cost:</span>
+          <span class="cost">1 blood</span>
+        </li><li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">PRE</span>
+        </li>
+      </ul><div class="text">
+        <p>You cannot play another action modifier to further increase the bleed for this action.</p>
+        <p>[pre] +1 bleed; +2 bleed if the acting vampire is Toreador. [PRE] +2 bleed; +3 bleed if the acting vampire is Toreador.</p>
+      </div><h4 class="libraryttype">Action Modifier/Combat</h4>
+      <h5 class="cardname">Swallowed by the Night</h5>
+      <ul>
+        <li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">OBF</span>
+        </li>
+      </ul><div class="text">
+        <p>[obf] [ACTION MODIFIER] +1 stealth.</p>
+        <p>[OBF] [COMBAT] Maneuver.</p>
       </div><h4 class="libraryttype">Ally</h4>
       <h5 class="cardname">Scapelli, The Family "Mechanic"</h5>
       <ul>
@@ -869,7 +1066,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       </ul><div class="text">
         <p>Weapon. Gun.</p>
         <p>2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</p>
-      </div><h5 class="cardname">Aaron's Feeding Razor</h5>
+      </div><h5 class="cardname">Aaron\'s Feeding Razor</h5>
       <ul>
         <li>
           <span class="label">Cost:</span>
@@ -895,6 +1092,16 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       </ul><div class="text">
         <p>Unique master.</p>
         <p>Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
+      </div><h4 class="libraryttype">Reaction</h4>
+      <h5 class="cardname">Hide the Heart</h5>
+      <ul>
+        <li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">AUS VAL</span>
+        </li>
+      </ul><div class="text">
+        <p>[aus] Reduce a bleed against you by 1.</p>
+        <p>[val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action. [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.</p>
       </div>
     </div><div>
       <span class="generator">Crafted with : Sutekh [ %s ]. [ DATE ]</span>

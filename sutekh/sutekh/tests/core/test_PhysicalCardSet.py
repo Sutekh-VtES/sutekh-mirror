@@ -16,18 +16,25 @@ from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 
 from sutekh.tests.TestCore import SutekhTest
 
-ABSTRACT_CARDS = ['.44 magnum', 'ak-47', 'abbot', 'abebe', 'abombwe']
+ABSTRACT_CARDS = [('.44 magnum', 3),
+        ('ak-47', 1),
+        ('abbot', 1),
+        ('abebe', 1),
+        ('abombwe', 1)]
 CARD_EXPANSIONS = [
-    ('.44 magnum', 'Jyhad'),
-    ('ak-47', 'LotN'),
-    ('abbot', 'Third Edition'),
-    ('abombwe', 'Legacy of Blood'),
-    ('alan sovereign (advanced)', 'Promo-20051001'),
-    ('the path of blood', 'LotN'),
-    ('the siamese', 'BL'),
-    ('inez "nurse216" villagrande', 'NoR'),
-    ('Scapelli, the Family "Mechanic"', 'DS'),
-    ("Aaron's Feeding Razor", "KoT")
+    ('.44 magnum', 'Jyhad', 1),
+    ('ak-47', 'LotN', 1),
+    ('abbot', 'Third Edition', 1),
+    ('abombwe', 'Legacy of Blood', 1),
+    ('alan sovereign (advanced)', 'Promo-20051001', 1),
+    ('the path of blood', 'LotN', 1),
+    ('the siamese', 'BL', 2),
+    ('inez "nurse216" villagrande', 'NoR', 1),
+    ('Scapelli, the Family "Mechanic"', 'DS', 1),
+    ("Aaron's Feeding Razor", "KoT", 1),
+    ('Swallowed by the Night', 'Third', 2),
+    ('Aire of Elation', 'CE', 3),
+    ('Hide the Heart', 'HttB', 1),
 ]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
@@ -35,12 +42,14 @@ CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 def get_phys_cards():
     """Get Physical Cards for the given lists"""
     aAddedPhysCards = []
-    for sName in ABSTRACT_CARDS:
+    for sName, iCount in ABSTRACT_CARDS:
         oPC = make_card(sName, None)
-        aAddedPhysCards.append(oPC)
-    for sName, sExpansion in CARD_EXPANSIONS:
+        for iNum in range(iCount):
+            aAddedPhysCards.append(oPC)
+    for sName, sExpansion, iCount in CARD_EXPANSIONS:
         oPC = make_card(sName, sExpansion)
-        aAddedPhysCards.append(oPC)
+        for iNum in range(iCount):
+            aAddedPhysCards.append(oPC)
     return aAddedPhysCards
 
 
@@ -56,10 +65,22 @@ def make_set_1():
     oPhysCardSet1.author = 'A test author'
     for oCard in aAddedPhysCards:
         oPhysCardSet1.addPhysicalCard(oCard.id)
-    oPhysCardSet1.addPhysicalCard(aAddedPhysCards[0])
-    oPhysCardSet1.addPhysicalCard(aAddedPhysCards[0])
     oPhysCardSet1.syncUpdate()
     return oPhysCardSet1
+
+
+def make_set_2():
+    """Make a second card set"""
+    aAddedPhysCards = get_phys_cards()
+    oPhysCardSet2 = PhysicalCardSet(name=CARD_SET_NAMES[1])
+    oPhysCardSet2.comment = ('A formatted test comment\nA second line\n'
+                             'A third line')
+    oPhysCardSet2.author = 'A test author'
+    oPhysCardSet2.annotations = 'Some Annotations'
+    for iLoop in range(5, 10):
+        oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
+    oPhysCardSet2.syncUpdate()
+    return oPhysCardSet2
 
 
 class PhysicalCardSetTests(SutekhTest):
@@ -84,8 +105,9 @@ class PhysicalCardSetTests(SutekhTest):
         oPhysCardSet1.syncUpdate()
 
         self.assertEqual(len(oPhysCardSet1.cards), 5)
+        # Because we repeat .44 Magnum 3 times
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
-            physicalCardID=aAddedPhysCards[0].id).count(), 1)
+            physicalCardID=aAddedPhysCards[0].id).count(), 3)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
             physicalCardID=aAddedPhysCards[4].id).count(), 1)
         self.assertEqual(MapPhysicalCardToPhysicalCardSet.selectBy(
@@ -106,7 +128,7 @@ class PhysicalCardSetTests(SutekhTest):
         self.assertEqual(len(oPhysCardSet2.cards), 5)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+                physicalCardID=aAddedPhysCards[0].id).count(), 3)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 2)
@@ -115,7 +137,7 @@ class PhysicalCardSetTests(SutekhTest):
                 physicalCardID=aAddedPhysCards[7].id).count(), 1)
 
         oPhysCardSet3 = make_set_1()
-        self.assertEqual(len(oPhysCardSet3.cards), len(aAddedPhysCards) + 2)
+        self.assertEqual(len(oPhysCardSet3.cards), len(aAddedPhysCards))
 
         self.assertEqual(oPhysCardSet3.name, CARD_SET_NAMES[0])
         self.assertEqual(oPhysCardSet3.comment, 'A test comment')
@@ -151,7 +173,7 @@ class PhysicalCardSetTests(SutekhTest):
 
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
-                physicalCardID=aAddedPhysCards[0].id).count(), 1)
+                physicalCardID=aAddedPhysCards[0].id).count(), 3)
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 1)

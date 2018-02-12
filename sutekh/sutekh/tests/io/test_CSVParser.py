@@ -37,14 +37,15 @@ class TestCSVParser(SutekhTest):
 
             aCards = oHolder.get_cards()
 
-            self.assertEqual(len(aCards), 11)
+            self.assertEqual(len(aCards), 14)
             self.failUnless((".44 Magnum", 4) in aCards)
             self.failUnless(("Abebe", 1) in aCards)
             self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
             self.failUnless(("Aaron's Feeding Razor", 1) in aCards)
             self.failUnless(('Inez "Nurse216" Villagrande', 1) in aCards)
             self.failUnless(('Scapelli, The Family "Mechanic"', 1) in aCards)
-            self.failUnless(("The Siamese", 1) in aCards)
+            self.failUnless(('Swallowed by the Night', 2) in aCards)
+            self.failUnless(("The Siamese", 2) in aCards)
             self.failUnless(("Abbot", 2) in aCards)
 
 if __name__ == "__main__":

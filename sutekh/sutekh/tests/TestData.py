@@ -621,6 +621,14 @@ Discipline: obf tha ANI AUS CHI VIC
 Sabbat regent: Vampires with capacity less than 4 cannot block Sha-Ennu. +2 bleed.
 Artist: Richard Thomas
 
+Name: Swallowed by the Night
+[Third:C]
+Cardtype: Action Modifier/Combat
+Discipline: Obfuscate
+[obf] [ACTION MODIFIER] +1 stealth.
+[OBF] [COMBAT] Maneuver.
+Artist: Thea Maia; Tom Biondillo
+
 Name: The Siamese
 [BL:U2]
 Cardtype: Vampire

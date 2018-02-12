@@ -23,7 +23,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
-  <crypt avg="5.00" max="7" min="3" size="4">
+  <crypt avg="5.40" max="7" min="3" size="5">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -52,7 +52,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <capacity>3</capacity>
       <group>4</group>
       <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
-    </vampire><vampire count="1" databaseID="65">
+    </vampire><vampire count="2" databaseID="66">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -62,7 +62,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="13">
+  </crypt><library size="19">
     <card count="1" databaseID="1">
       <name>.44 Magnum</name>
       <set>Jyhad</set>
@@ -85,7 +85,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
     </card><card count="1" databaseID="6">
-      <name>Aaron's Feeding Razor</name>
+      <name>Aaron\'s Feeding Razor</name>
       <set>KoT</set>
       <cost>1 pool</cost>
       <type>Equipment</type>
@@ -103,6 +103,21 @@ Put this card on this acting Sabbat vampire and unlock him or her. This Sabbat v
       <type>Master</type>
       <text>Master: Discipline. Trifle.
 Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains one level of Abombwe [abo]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Abombwe.</text>
+    </card><card count="3" databaseID="17">
+      <name>Aire of Elation</name>
+      <set>CE</set>
+      <cost>1 blood</cost>
+      <type>Action Modifier</type>
+      <disciplines>PRE</disciplines>
+      <text>You cannot play another action modifier to further increase the bleed for this action.
+[pre] +1 bleed; +2 bleed if the acting vampire is Toreador. [PRE] +2 bleed; +3 bleed if the acting vampire is Toreador.</text>
+    </card><card count="1" databaseID="71">
+      <name>Hide the Heart</name>
+      <set>HttB</set>
+      <type>Reaction</type>
+      <disciplines>AUS VAL</disciplines>
+      <text>[aus] Reduce a bleed against you by 1.
+[val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action. [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.</text>
     </card><card count="1" databaseID="62">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
@@ -111,6 +126,13 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Ally</type>
       <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
 {Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
+    </card><card count="2" databaseID="65">
+      <name>Swallowed by the Night</name>
+      <set>Third</set>
+      <type>Action Modifier/Combat</type>
+      <disciplines>OBF</disciplines>
+      <text>[obf] [ACTION MODIFIER] +1 stealth.
+[OBF] [COMBAT] Maneuver.</text>
     </card><card count="1" databaseID="54">
       <name>Path of Blood, The</name>
       <set>LotN</set>

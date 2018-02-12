@@ -19,25 +19,31 @@ Author: A test author
 Description:
 A test comment
 
-Crypt (4 cards, min=20, max=20, avg=5.00)
+Crypt (5 cards, min=20, max=24, avg=5.40)
 -----------------------------------------
-1x Siamese, The\t\t\t7   PRE SPI ani pro\t   \tAhrimane:2
+2x Siamese, The\t\t\t7   PRE SPI ani pro\t   \tAhrimane:2
 1x Alan Sovereign (ADV)\t\t6   AUS DOM for pre\t   \tVentrue:3
 1x Abebe\t\t\t4   nec obf thn\t\t   \tSamedi:4
 1x Inez "Nurse216" Villagrande\t3   inn\t\t\t   \tInnocent (Imbued):4
 
-Library (13 cards)
+Library (19 cards)
 Master (3, 2 trifles)
 2x Abombwe
 1x Path of Blood, The
 Action (2)
 2x Abbot
+Action Modifier (3)
+3x Aire of Elation
+Action Modifier/Combat (2)
+2x Swallowed by the Night
 Ally (1)
 1x Scapelli, The Family "Mechanic"
 Equipment (7)
 4x .44 Magnum
 2x AK-47
 1x Aaron's Feeding Razor
+Reaction (1)
+1x Hide the Heart
 """
 
 

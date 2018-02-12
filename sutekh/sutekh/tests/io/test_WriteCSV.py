@@ -24,11 +24,14 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
+"Aire of Elation", "Camarilla Edition", 3
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Hide the Heart", "Heirs to the Blood", 1
 "Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
 "Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
+"Swallowed by the Night", "Third Edition", 2
 "The Path of Blood", "Lords of the Night", 1
-"The Siamese", "Bloodlines", 1
+"The Siamese", "Bloodlines", 2
 """
 
 EXPECTED_2 = """".44 Magnum", "Jyhad", 1
@@ -41,11 +44,14 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 "Abebe", "Unknown Expansion", 1
 "Abombwe", "Legacy of Blood", 1
 "Abombwe", "Unknown Expansion", 1
+"Aire of Elation", "Camarilla Edition", 3
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
+"Hide the Heart", "Heirs to the Blood", 1
 "Inez ""Nurse216"" Villagrande", "Nights of Reckoning", 1
 "Scapelli, The Family ""Mechanic""\", "Dark Sovereigns", 1
+"Swallowed by the Night", "Third Edition", 2
 "The Path of Blood", "Lords of the Night", 1
-"The Siamese", "Bloodlines", 1
+"The Siamese", "Bloodlines", 2
 """
 
 
@@ -56,11 +62,14 @@ EXPECTED_3 = """"Card Name", "Number"
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
+"Aire of Elation", 3
 "Alan Sovereign (Advanced)", 1
+"Hide the Heart", 1
 "Inez ""Nurse216"" Villagrande", 1
 "Scapelli, The Family ""Mechanic""\", 1
+"Swallowed by the Night", 2
 "The Path of Blood", 1
-"The Siamese", 1
+"The Siamese", 2
 """
 
 EXPECTED_4 = """".44 Magnum", 4
@@ -69,11 +78,14 @@ EXPECTED_4 = """".44 Magnum", 4
 "Abbot", 2
 "Abebe", 1
 "Abombwe", 2
+"Aire of Elation", 3
 "Alan Sovereign (Advanced)", 1
+"Hide the Heart", 1
 "Inez ""Nurse216"" Villagrande", 1
 "Scapelli, The Family ""Mechanic""\", 1
+"Swallowed by the Night", 2
 "The Path of Blood", 1
-"The Siamese", 1
+"The Siamese", 2
 """
 
 
