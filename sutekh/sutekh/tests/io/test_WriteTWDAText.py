@@ -5,7 +5,6 @@
 
 """Test Writing a card set to an TWDA bbcode file"""
 
-import time
 import unittest
 
 from sutekh.base.core.CardSetHolder import CardSetWrapper
@@ -27,21 +26,27 @@ Crypt (5 cards, min=20, max=24, avg=5.40)
 1x Inez "Nurse216" Villagrande\t3   inn\t\t\t   \tInnocent (Imbued):4
 
 Library (19 cards)
-Master (3, 2 trifles)
+Master (3, 2 trifle)
 2x Abombwe
 1x Path of Blood, The
+
 Action (2)
 2x Abbot
-Action Modifier (3)
-3x Aire of Elation
-Action Modifier/Combat (2)
-2x Swallowed by the Night
+
 Ally (1)
 1x Scapelli, The Family "Mechanic"
+
 Equipment (7)
 4x .44 Magnum
 2x AK-47
 1x Aaron's Feeding Razor
+
+Action Modifier (3)
+3x Aire of Elation
+
+Action Modifier/Combat (2)
+2x Swallowed by the Night
+
 Reaction (1)
 1x Hide the Heart
 """
@@ -56,12 +61,9 @@ class TWDATextWriterTests(SutekhTest):
         """Test TWDA bbcode file writing"""
         oPhysCardSet1 = make_set_1()
 
-        sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())
-
         # Check output
         oWriter = WriteTWDAText()
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
-        sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, TWDA_EXPECTED_1)
 

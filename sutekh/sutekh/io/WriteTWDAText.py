@@ -16,19 +16,31 @@
 
    Crypt (12 cards, min=10 max=40 avg=5.84)
    ----------------------------------------
-   2x Nakhthorheb		10 OBF PRE SER                        Follower of Set:4
-   2x Renenet           5 OBF PRE ser                         Follower of Set:4
-   1x Neferu            9 OBF PRE SER THA dom nec   2 votes   Follower of Set:4
-   1x Arcadian, The     8 DOM MYT OBT chi for                 Kiasyd:5
+   2x Nakhthorheb	10 OBF PRE SER                        Follower of Set:4
+   2x Renenet       5 OBF PRE ser                         Follower of Set:4
+   1x Neferu        9 OBF PRE SER THA dom nec   2 votes   Follower of Set:4
+   1x Arcadian, The 8 DOM MYT OBT chi for                 Kiasyd:5
    ...
 
    Library (77 cards)
    Master (3)
      2x Barrens, The
      1x Sudden Reversal
+
    Action (20)
      2x Blithe Acceptance
      4x Dream World
+
+   Ally (1)
+     1x Carlton Van Wyk
+
+   Equipment (2)
+     2x .44 Magnum
+
+   Political Action (1)
+     1x Parity Shity
+
+   Action Modifier (3)
    ...
    """
 
@@ -36,6 +48,21 @@ from sutekh.base.Utility import move_articles_to_back
 
 from sutekh.core.ArdbInfo import ArdbInfo
 
+
+# Emprically derived from the twd.htm entries
+SECTION_ORDER = ('Master',
+        'Conviction',
+        'Action',
+        'Ally',
+        'Equipment',
+        'Political Action',
+        'Power',
+        'Retainer',
+        'Action Modifier',
+        'Reaction',
+        'Combat',
+        'Event',
+)
 
 class WriteTWDAText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
@@ -84,8 +111,7 @@ class WriteTWDAText(ArdbInfo):
             # Standardise missing disciplines
             if not dLine['disc']:
                 dLine['disc'] = '-none-'
-            # TWDA normalises crypt names to have the articles at the
-            # back, but doesn't care about library cards
+            # TWDA normalises crypt names to have the articles at the back
             dLine['name'] = move_articles_to_back(dLine['name'])
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
@@ -134,32 +160,46 @@ class WriteTWDAText(ArdbInfo):
 
         aSortedTypes = sorted(dTypes)
         # We shuffle master to be the first section
-        if 'Master' in aSortedTypes:
-            aSortedTypes.remove('Master')
-            aSortedTypes.insert(0, 'Master')
 
-        for sTypeString in aSortedTypes:
-            dCards = dTypes[sTypeString]
-            iTotal = sum(dCards.values())
+        aProcessed = set()
 
-            if sTypeString == 'Master':
-                iTrifles = self._count_trifles(dLib)
-                if iTrifles > 1:
-                    sLib += "%s (%d, %d trifles)\n" % (sTypeString,
-                                                       iTotal, iTrifles)
-                elif iTrifles == 1:
-                    sLib += "%s (%d, %d trifles)\n" % (sTypeString,
-                                                       iTotal, iTrifles)
+        for sTypeString in SECTION_ORDER:
+            dCards = {}
+            for sCandidate in aSortedTypes:
+                if sCandidate in aProcessed:
+                    continue
+                if sTypeString == sCandidate:
+                    dCards = dTypes[sCandidate]
+                    aProcessed.add(sCandidate)
+                elif sCandidate.startswith(sTypeString+'/'):
+                    dCards = dTypes[sCandidate]
+                    aProcessed.add(sCandidate)
                 else:
-                    sLib += "%s (%d)\n" % (sTypeString, iTotal)
-            else:
-                sLib += "%s (%d)\n" % (sTypeString, iTotal)
+                    continue
 
-            for oCard, iCount in sorted(
-                    dCards.iteritems(),
-                    key=lambda x: move_articles_to_back(x[0].name)):
-                sLib += "%dx %s\n" % (iCount,
-                                      move_articles_to_back(oCard.name))
+                iTotal = sum(dCards.values())
+
+                if sTypeString == 'Master':
+                    iTrifles = self._count_trifles(dLib)
+                    if iTrifles > 1:
+                        sLib += "%s (%d, %d trifle)\n" % (sTypeString,
+                                                           iTotal, iTrifles)
+                    elif iTrifles == 1:
+                        sLib += "%s (%d, %d trifle)\n" % (sTypeString,
+                                                           iTotal, iTrifles)
+                    else:
+                        sLib += "%s (%d)\n" % (sCandidate, iTotal)
+                else:
+                    # Sections in the library get an extra blank line
+                    sLib += '\n'
+                    sLib += "%s (%d)\n" % (sCandidate, iTotal)
+
+                # library cards are also normalised
+                for oCard, iCount in sorted(
+                        dCards.iteritems(),
+                        key=lambda x: move_articles_to_back(x[0].name)):
+                    sLib += "%dx %s\n" % (iCount,
+                                          move_articles_to_back(oCard.name))
         return sLib
 
     def write(self, fOut, oHolder):
