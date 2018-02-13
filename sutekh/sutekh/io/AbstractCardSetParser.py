@@ -18,7 +18,7 @@
    """
 
 from sutekh.io.BaseSutekhXMLParser import BaseSutekhXMLParser
-from sutekh.base.core.BaseObjects import MAX_ID_LENGTH
+from sutekh.base.core.BaseTables import MAX_ID_LENGTH
 
 
 class AbstractCardSetParser(BaseSutekhXMLParser):

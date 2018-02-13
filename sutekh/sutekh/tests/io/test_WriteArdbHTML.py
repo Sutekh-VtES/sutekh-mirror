@@ -202,7 +202,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://monger.vekn.org/showcard.html?NAME=Aaron\'s%%20Feeding%%20Razor">Aaron\'s Feeding Razor</a>
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Aaron's%%20Feeding%%20Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -419,7 +419,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               <td>
                 <span class="tablevalue">1x</span>
               </td><td>
-                <span class="tablevalue">Aaron\'s Feeding Razor</span>
+                <span class="tablevalue">Aaron's Feeding Razor</span>
               </td>
             </tr>
           </tbody>
@@ -650,7 +650,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://www.secretlibrary.info/?lib=Aaron\'s+Feeding+Razor">Aaron\'s Feeding Razor</a>
+                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -888,7 +888,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">
-                  <a href="http://www.secretlibrary.info/?lib=Aaron\'s+Feeding+Razor">Aaron\'s Feeding Razor</a>
+                  <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
                 </span>
               </td>
             </tr>
@@ -1066,7 +1066,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       </ul><div class="text">
         <p>Weapon. Gun.</p>
         <p>2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</p>
-      </div><h5 class="cardname">Aaron\'s Feeding Razor</h5>
+      </div><h5 class="cardname">Aaron's Feeding Razor</h5>
       <ul>
         <li>
           <span class="label">Cost:</span>

@@ -8,12 +8,12 @@
 
 # Do importing
 
-from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCard,
-                                          PhysicalCardSet, RarityPair,
-                                          Expansion, Rarity, CardType,
-                                          Ruling)
+from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCard,
+                                         PhysicalCardSet, RarityPair,
+                                         Expansion, Rarity, CardType,
+                                         Ruling)
 
-from sutekh.core.SutekhObjects import DisciplinePair, Discipline, Clan
+from sutekh.core.SutekhTables import DisciplinePair, Discipline, Clan
 
 from sutekh.base.core.BaseFilters import (FilterAndBox, FilterOrBox,
                                           CardTypeFilter,

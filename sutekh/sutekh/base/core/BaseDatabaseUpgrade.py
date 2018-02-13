@@ -13,7 +13,7 @@
 
 # pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
-# BaseObjects. We want to keep all the database upgrade stuff together.
+# BaseTables. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
 from logging import Logger
@@ -23,11 +23,11 @@ from logging import Logger
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 # pylint: enable=E0611
 
-from .BaseObjects import (PhysicalCard, AbstractCard,
-                          PhysicalCardSet, Expansion,
-                          Rarity, RarityPair, CardType,
-                          Ruling, Keyword, Artist,
-                          LookupHints)
+from .BaseTables import (PhysicalCard, AbstractCard,
+                         PhysicalCardSet, Expansion,
+                         Rarity, RarityPair, CardType,
+                         Ruling, Keyword, Artist,
+                         LookupHints)
 from .DBUtility import flush_cache, refresh_tables
 from .BaseDBManagement import UnknownVersion
 from .DatabaseVersion import DatabaseVersion

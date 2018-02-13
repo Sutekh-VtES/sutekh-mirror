@@ -43,7 +43,7 @@ A test comment
 [b][u]Equipment [7][/u][/b]
  4x [url=http://www.secretlibrary.info/?lib=.44+Magnum].44 Magnum[/url]
  2x [url=http://www.secretlibrary.info/?lib=AK-47]AK-47[/url]
- 1x [url=http://www.secretlibrary.info/?lib=Aaron\'s+Feeding+Razor]Aaron\'s Feeding Razor[/url]
+ 1x [url=http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor]Aaron's Feeding Razor[/url]
 
 [b][u]Master [3] (2 trifles)[/u][/b]
  2x [url=http://www.secretlibrary.info/?lib=Abombwe]Abombwe[/url]

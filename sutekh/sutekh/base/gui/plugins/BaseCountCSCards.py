@@ -7,7 +7,8 @@
 """Display a running total of the cards in a card set"""
 
 import gtk
-from ...core.BaseObjects import PhysicalCardSet, IAbstractCard
+from ...core.BaseTables import PhysicalCardSet
+from ...core.BaseAdapters import IAbstractCard
 from ..BasePluginManager import BasePlugin
 from ..MessageBus import MessageBus
 

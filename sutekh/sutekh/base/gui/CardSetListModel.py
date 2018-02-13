@@ -22,12 +22,10 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
 # We use the adapters directly, rather than going through PyProtocols
 # because we know the types explicitly, and thus don't need the overhead
 # of PyPrortocols dispatch logic.
-from ..core.BaseObjects import (PhysicalCard, IAbstractCard,
-                                MapPhysicalCardToPhysicalCardSet,
-                                IPhysicalCard,
-                                IPhysicalCardSet,
-                                PhysicalCardSet,
-                                IExpansionName)
+from ..core.BaseTables import (PhysicalCard, PhysicalCardSet,
+                               MapPhysicalCardToPhysicalCardSet)
+from ..core.BaseAdapters import (IPhysicalCard, IPhysicalCardSet,
+                                 IAbstractCard, IExpansionName)
 from ..core.DBSignals import (listen_changed, disconnect_changed,
                               listen_row_destroy, listen_row_update,
                               listen_row_created,

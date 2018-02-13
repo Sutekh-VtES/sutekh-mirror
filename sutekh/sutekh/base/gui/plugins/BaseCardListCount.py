@@ -7,7 +7,8 @@
 """Provide count card options for the full card list"""
 
 import gtk
-from ...core.BaseObjects import PhysicalCard, IAbstractCard
+from ...core.BaseTables import PhysicalCard
+from ...core.BaseAdapters import IAbstractCard
 from ..BasePluginManager import BasePlugin
 from ..MessageBus import MessageBus
 from .BaseCountCSCards import TOTAL

@@ -12,9 +12,9 @@ from .GuiCardSetFunctions import check_ok_to_delete, update_card_set
 from .CardSetView import CardSetView
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 from ..core.DBSignals import send_changed_signal
-from ..core.BaseObjects import (IPhysicalCardSet, PhysicalCardSet,
-                                PhysicalCard,
-                                MapPhysicalCardToPhysicalCardSet)
+from ..core.BaseTables import (PhysicalCardSet, PhysicalCard,
+                               MapPhysicalCardToPhysicalCardSet)
+from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.CardSetUtilities import delete_physical_card_set
 
 

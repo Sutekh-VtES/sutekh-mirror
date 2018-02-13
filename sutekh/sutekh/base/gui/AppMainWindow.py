@@ -20,7 +20,7 @@ import gtk
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable=E0611
 
-from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, VersionTable
+from ..core.BaseTables import PhysicalCardSet, PhysicalCard, VersionTable
 from ..core.DatabaseVersion import DatabaseVersion
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame

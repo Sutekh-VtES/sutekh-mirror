@@ -43,7 +43,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
-    </vampire><vampire count="1" databaseID="44">
+    </vampire><vampire count="1" databaseID="45">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
@@ -52,7 +52,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <capacity>3</capacity>
       <group>4</group>
       <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
-    </vampire><vampire count="2" databaseID="66">
+    </vampire><vampire count="2" databaseID="67">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -85,7 +85,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
     </card><card count="1" databaseID="6">
-      <name>Aaron\'s Feeding Razor</name>
+      <name>Aaron's Feeding Razor</name>
       <set>KoT</set>
       <cost>1 pool</cost>
       <type>Equipment</type>
@@ -111,14 +111,14 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <disciplines>PRE</disciplines>
       <text>You cannot play another action modifier to further increase the bleed for this action.
 [pre] +1 bleed; +2 bleed if the acting vampire is Toreador. [PRE] +2 bleed; +3 bleed if the acting vampire is Toreador.</text>
-    </card><card count="1" databaseID="71">
+    </card><card count="1" databaseID="72">
       <name>Hide the Heart</name>
       <set>HttB</set>
       <type>Reaction</type>
       <disciplines>AUS VAL</disciplines>
       <text>[aus] Reduce a bleed against you by 1.
 [val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action. [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.</text>
-    </card><card count="1" databaseID="62">
+    </card><card count="1" databaseID="63">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
       <cost>3 pool</cost>
@@ -126,14 +126,14 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Ally</type>
       <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
 {Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
-    </card><card count="2" databaseID="65">
+    </card><card count="2" databaseID="66">
       <name>Swallowed by the Night</name>
       <set>Third</set>
       <type>Action Modifier/Combat</type>
       <disciplines>OBF</disciplines>
       <text>[obf] [ACTION MODIFIER] +1 stealth.
 [OBF] [COMBAT] Maneuver.</text>
-    </card><card count="1" databaseID="54">
+    </card><card count="1" databaseID="55">
       <name>Path of Blood, The</name>
       <set>LotN</set>
       <cost>1 pool</cost>

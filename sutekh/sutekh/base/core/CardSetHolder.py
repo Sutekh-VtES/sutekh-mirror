@@ -9,7 +9,7 @@
 from sqlobject import SQLObjectNotFound, sqlhub
 
 from .CardLookup import DEFAULT_LOOKUP
-from .BaseObjects import PhysicalCardSet
+from .BaseTables import PhysicalCardSet
 
 
 class CardSetHolder(object):

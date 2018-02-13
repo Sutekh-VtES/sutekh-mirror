@@ -5,9 +5,9 @@
 """Force all cards which can only belong to 1 expansion to that expansion"""
 
 import gtk
-from ...core.BaseObjects import (PhysicalCardSet,
-                                 MapPhysicalCardToPhysicalCardSet,
-                                 IExpansion, IPhysicalCard, IAbstractCard)
+from ...core.BaseTables import (PhysicalCardSet,
+                                MapPhysicalCardToPhysicalCardSet)
+from ...core.BaseAdapters import IExpansion, IPhysicalCard, IAbstractCard
 from ...core.DBSignals import send_changed_signal
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, do_complaint_error

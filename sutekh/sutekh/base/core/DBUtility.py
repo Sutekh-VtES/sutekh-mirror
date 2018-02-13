@@ -9,22 +9,28 @@
 """Misc functions that influence the database in various ways."""
 
 
-from .BaseObjects import VersionTable, PhysicalCardSet, AbstractCard, Adapter
+from .BaseTables import VersionTable, PhysicalCardSet, AbstractCard
+from .BaseAdapters import Adapter
+from .BaseAbbreviations import DatabaseAbbreviation
 from .DatabaseVersion import DatabaseVersion
 from .CachedRelatedJoin import SOCachedRelatedJoin
 from ..Utility import find_subclasses
 
 
 def make_adapter_caches():
-    """Flush all adapter caches.
+    """Flush all adapter and abbreviation caches.
 
        This assumes that everything that needs to be cached has already
        been imported before make_adapter_caches is called, since this
        uses introspection to find the adapters to cache."""
+
+    aLookupHintsAbbrevs = [x for x in find_subclasses(DatabaseAbbreviation)]
+    for cAbbrev in aLookupHintsAbbrevs:
+        cAbbrev.make_lookup()
+
     aCachedAdapters = [x for x in find_subclasses(Adapter)
                        if hasattr(x, 'make_object_cache')]
     for cAdapter in aCachedAdapters:
-
         cAdapter.make_object_cache()
 
 

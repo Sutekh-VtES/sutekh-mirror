@@ -23,8 +23,8 @@ from sutekh.base.core import BaseFilters
 from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
                                             ExpansionGrouping,
                                             RarityGrouping, NullGrouping)
-from sutekh.base.core.BaseObjects import (PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (PhysicalCardSet,
+                                         MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
 from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
                                               EXTRA_LEVEL_OPTION,

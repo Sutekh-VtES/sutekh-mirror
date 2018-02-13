@@ -9,8 +9,8 @@
 import gtk
 import pango
 import gobject
-from ...core.BaseObjects import (PhysicalCard, AbstractCard,
-                                 Expansion, IExpansion)
+from ...core.BaseTables import PhysicalCard, AbstractCard, Expansion
+from ...core.BaseAdapters import IExpansion
 from ...core.BaseFilters import NullFilter, make_illegal_filter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog

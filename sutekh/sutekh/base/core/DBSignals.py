@@ -19,7 +19,7 @@ try:
 except ImportError:
     # Missing pydispatch, so try the 3.0 SQLObject location
     from pydispatch import dispatcher
-from .BaseObjects import PhysicalCardSet
+from .BaseTables import PhysicalCardSet
 
 
 class ChangedSignal(Signal):

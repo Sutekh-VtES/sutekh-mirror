@@ -6,9 +6,9 @@
 """Compare the contents of two card sets"""
 
 import gtk
-from ...core.BaseObjects import (PhysicalCard, IPhysicalCard,
-                                 PhysicalCardSet, IAbstractCard,
-                                 IPhysicalCardSet)
+from ...core.BaseTables import PhysicalCard, PhysicalCardSet
+from ...core.BaseAdapters import (IPhysicalCard, IAbstractCard,
+                                  IPhysicalCardSet)
 from ...core.BaseFilters import PhysicalCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, NotebookDialog, do_complaint_error

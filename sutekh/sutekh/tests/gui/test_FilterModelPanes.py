@@ -10,7 +10,7 @@ import unittest
 import gtk
 
 from sutekh.base.core.FilterParser import FilterParser
-from sutekh.base.core.BaseObjects import AbstractCard
+from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.gui.FilterModelPanes import (FilterModelPanes,
                                               FilterEditorToolbar, ENTER_KEYS)
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow

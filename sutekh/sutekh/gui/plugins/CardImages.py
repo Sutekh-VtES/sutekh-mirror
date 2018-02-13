@@ -11,7 +11,7 @@ import logging
 import gtk
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import IExpansion
+from sutekh.base.core.BaseAdapters import IExpansion
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,

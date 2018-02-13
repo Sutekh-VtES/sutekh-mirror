@@ -8,7 +8,7 @@
 from sqlobject import sqlhub
 
 from sutekh.base.core.DBUtility import refresh_tables
-from sutekh.base.core.BaseObjects import PHYSICAL_SET_LIST
+from sutekh.base.core.BaseTables import PHYSICAL_SET_LIST
 from sutekh.base.tests.TestUtils import BaseTestCase
 
 

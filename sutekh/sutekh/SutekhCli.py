@@ -17,9 +17,9 @@ import tempfile
 import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
-from sutekh.base.core.BaseObjects import (Ruling, PHYSICAL_LIST,
-                                          IPhysicalCardSet)
-from sutekh.core.SutekhObjects import TABLE_LIST
+from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
+from sutekh.core.SutekhTables import TABLE_LIST
 # pylint: disable=W0611
 # We need this import to ensure we have all the filters imported
 # correctly, even though we don't use it directly

@@ -11,7 +11,7 @@
 import gtk
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from ..core.CardSetUtilities import check_cs_exists
-from ..core.BaseObjects import MAX_ID_LENGTH
+from ..core.BaseTables import MAX_ID_LENGTH
 
 RENAME, REPLACE, PROMPT = 1, 2, 3
 

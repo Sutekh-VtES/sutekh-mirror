@@ -8,9 +8,9 @@
 import unittest
 
 from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
-from sutekh.base.core.BaseObjects import (IPhysicalCardSet, IExpansion,
-                                          MapPhysicalCardToPhysicalCardSet,
-                                          IAbstractCard)
+from sutekh.base.core.BaseAdapters import (IPhysicalCardSet, IExpansion,
+                                           IAbstractCard)
+from sutekh.base.core.BaseTables import MapPhysicalCardToPhysicalCardSet
 from sutekh.base.core import BaseFilters
 
 from sutekh.tests.TestCore import SutekhTest

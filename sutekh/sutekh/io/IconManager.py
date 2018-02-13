@@ -5,13 +5,14 @@
 
 """Manage the icons from the WW site"""
 
-from sutekh.core.SutekhObjects import (Clan, Creed, DisciplinePair,
-                                       Virtue, IDisciplinePair, IVirtue,
-                                       ICreed, IClan)
-from sutekh.base.core.BaseObjects import CardType, ICardType
-from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
+from sutekh.base.core.BaseTables import CardType
+from sutekh.base.core.BaseAdapters import ICardType
 from sutekh.base.core.BaseGroupings import CardTypeGrouping, MultiTypeGrouping
 from sutekh.base.io.BaseIconManager import BaseIconManager
+
+from sutekh.core.SutekhTables import Clan, Creed, DisciplinePair, Virtue
+from sutekh.core.SutekhAdapters import IDisciplinePair, IVirtue, ICreed, IClan
+from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
 
 
 # Utilty functions - convert object to a filename

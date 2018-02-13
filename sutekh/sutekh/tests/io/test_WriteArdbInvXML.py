@@ -29,11 +29,11 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="44" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="45" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
-    </vampire><vampire databaseID="66" have="2" need="0" spare="0">
+    </vampire><vampire databaseID="67" have="2" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -46,7 +46,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <name>AK-47</name>
       <set>LotN</set>
     </card><card databaseID="6" have="1" need="0" spare="0">
-      <name>Aaron\'s Feeding Razor</name>
+      <name>Aaron's Feeding Razor</name>
       <set>KoT</set>
     </card><card databaseID="8" have="2" need="0" spare="0">
       <name>Abbot</name>
@@ -57,16 +57,16 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="17" have="3" need="0" spare="0">
       <name>Aire of Elation</name>
       <set>CE</set>
-    </card><card databaseID="71" have="1" need="0" spare="0">
+    </card><card databaseID="72" have="1" need="0" spare="0">
       <name>Hide the Heart</name>
       <set>HttB</set>
-    </card><card databaseID="62" have="1" need="0" spare="0">
+    </card><card databaseID="63" have="1" need="0" spare="0">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
-    </card><card databaseID="65" have="2" need="0" spare="0">
+    </card><card databaseID="66" have="2" need="0" spare="0">
       <name>Swallowed by the Night</name>
       <set>Third</set>
-    </card><card databaseID="54" have="1" need="0" spare="0">
+    </card><card databaseID="55" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
     </card>

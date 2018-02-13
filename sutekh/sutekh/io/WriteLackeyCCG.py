@@ -21,7 +21,7 @@
 
 import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.Utility import move_articles_to_back
 
 

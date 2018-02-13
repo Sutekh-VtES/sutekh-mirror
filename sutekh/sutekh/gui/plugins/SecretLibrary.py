@@ -15,8 +15,8 @@ import keyring
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import move_articles_to_back
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
-                                          IKeyword)
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IAbstractCard, IKeyword
 from sutekh.base.core.BaseFilters import FilterNot
 from sutekh.base.gui.SutekhDialog import SutekhDialog, do_complaint_error
 from sutekh.base.gui.GuiCardSetFunctions import import_cs

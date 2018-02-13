@@ -15,7 +15,7 @@ from logging import Logger
 from sqlobject import sqlhub
 
 from .CardSetHolder import make_card_set_holder
-from .BaseObjects import PhysicalCardSet
+from .BaseTables import PhysicalCardSet
 
 
 # Utility Exception

@@ -9,7 +9,7 @@
 from xml.etree.ElementTree import Element, SubElement
 
 from .IOBase import BaseXMLParser, BaseXMLWriter
-from ..core.BaseObjects import MAX_ID_LENGTH
+from ..core.BaseTables import MAX_ID_LENGTH
 
 
 class BaseCardXMLParser(BaseXMLParser):

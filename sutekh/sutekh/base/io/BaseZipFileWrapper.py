@@ -16,7 +16,7 @@ from logging import Logger
 
 from sqlobject import sqlhub
 
-from ..core.BaseObjects import PhysicalCardSet, PHYSICAL_SET_LIST
+from ..core.BaseTables import PhysicalCardSet, PHYSICAL_SET_LIST
 from ..core.CardLookup import DEFAULT_LOOKUP
 from ..core.CardSetHolder import CachedCardSetHolder, CardSetWrapper
 from ..core.DBUtility import refresh_tables

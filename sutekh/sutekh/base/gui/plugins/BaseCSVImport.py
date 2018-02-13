@@ -10,7 +10,7 @@ import csv
 import gtk
 import gobject
 
-from ...core.BaseObjects import PhysicalCardSet
+from ...core.BaseTables import PhysicalCardSet
 from ...io.CSVParser import CSVParser
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, do_complaint_error

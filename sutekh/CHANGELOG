@@ -1,3 +1,25 @@
+13 Feb 2018
+ * Protect against early card set reloads when updating the card list at
+   startup.
+ * Restructure how we schedule queued reloads to minimise scheduled multiple
+   copies.
+
+12 Feb 2018
+ * Extend the data used to test the card sets.
+ * Update the order of sections int the TWDA output.
+
+08 Feb 2018
+ * Update "Set to Single Expansion" to work correctly with the changed
+   drag-n-drop and copy-n-paste handling.
+
+05 Feb 2018
+ * Land initial work on using LookupHints table for CardType,
+   Expansion and Rarity information
+ * Split up BaseObjects into BaseTables, BaseObjectMaker and BaseAdapters
+   files
+ * Split up SutekhObjects into SutekhTables, SutekhObjectMaker and
+   SutekhAdapter files.
+
 20 Jan 2018
  * Add helper method so we export renamed cards like Carlton Van Wyk to
    SL correctly again.

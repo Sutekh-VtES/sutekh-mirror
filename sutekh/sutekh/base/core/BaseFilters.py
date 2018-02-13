@@ -23,12 +23,13 @@ from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
 from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
                                   SQLTrueClause as TRUE)
 
-from .BaseObjects import (AbstractCard, IAbstractCard, IPhysicalCardSet,
-                          IRarityPair, IExpansion, ICardType,
-                          IRarity, CardType, Expansion, RarityPair,
-                          PhysicalCardSet, PhysicalCard,
-                          MapPhysicalCardToPhysicalCardSet,
-                          Artist, Keyword, IArtist, IKeyword)
+from .BaseTables import (AbstractCard, CardType, Expansion, RarityPair,
+                         PhysicalCardSet, PhysicalCard, Artist, Keyword,
+                         MapPhysicalCardToPhysicalCardSet)
+from .BaseAdapters import (IAbstractCard, IPhysicalCardSet, IRarityPair,
+                           IExpansion, ICardType, IRarity, IArtist,
+                           IKeyword)
+
 
 # Compability Patches
 

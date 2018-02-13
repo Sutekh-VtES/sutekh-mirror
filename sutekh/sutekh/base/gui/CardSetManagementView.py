@@ -7,7 +7,7 @@
 
 import gtk
 from sqlobject import SQLObjectNotFound
-from ..core.BaseObjects import IPhysicalCardSet
+from ..core.BaseAdapters import IPhysicalCardSet
 from .GuiCardSetFunctions import reparent_card_set
 from .CardSetsListView import CardSetsListView
 from .FilterDialog import FilterDialog

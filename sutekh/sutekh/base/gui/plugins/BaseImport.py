@@ -8,7 +8,7 @@
 
 import gtk
 from ...io.UrlOps import urlopen_with_timeout
-from ...core.BaseObjects import PhysicalCardSet
+from ...core.BaseTables import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
 from ..GuiCardSetFunctions import import_cs

@@ -14,6 +14,72 @@
 TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
 CardNames,Anastaszdi Zagreb,Anastasz di Zagreb
 CardNames,"Pier 13","Pier 13, Port of Baltimore"
+Expansions,Jyhad,Jyhad
+Expansions,VTES,VTES
+Expansions,Sabbat,Sabbat
+Expansions,SW,Sabbat Wars
+Expansions,Anarchs,Anarchs
+Expansions,CE,Camarilla Edition
+Expansions,LoB,Legacy of Blood
+Expansions,EK,Ebony Kingdom
+Expansions,FN,Final Nights
+Expansions,Third,Third Edition
+Expansions,KoT,Keepers of Tradition
+Expansions,HttB,Heirs to the Blood
+Expansions,AH,Ancient Hearts
+Expansions,LotN,Lords of the Night
+Expansions,NoR,Nights of Reckoning
+Expansions,Gehenna,Gehenna
+Expansions,BL,Bloodlines
+Expansions,BH,Black Hand
+Expansions,DS,Dark Sovereigns
+Expansions,KMW,Kindred Most Wanted
+Expansions,BSC,Blood Shadowed Court
+Expansions,Anthology,Anthology
+Expansions,Tenth,Tenth Anniversary
+Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
+Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
+Expansions,ReversePrefix:Promo-,Promo
+Rarities,C,Common
+Rarities,C1,Common
+Rarities,C2,Common
+Rarities,C3,Common
+Rarities,C½,Common
+Rarities,P,Precon
+Rarities,V,Vampire
+Rarities,V3,Vampire
+Rarities,U,Uncommon
+Rarities,U2,Uncommon
+Rarities,U5,Uncommon
+Rarities,R,Rare
+Rarities,R1,Rare
+Rarities,R2,Rare
+Rarities,NA,Not Applicable
+Rarities,BSC,BSC
+Rarities,X,BSC
+Rarities,A,Tenth
+Rarities,B,Tenth
+Rarities,1,Anthology
+Rarities,3,Anthology
+Rarities,Rules,Rules
+Rarities,Storyline,Storyline
+Rarities,Demo,Demo
+Rarities,Prefix:P,Precon
+CardTypes,Equipment,Equipment
+CardTypes,Action,Action
+CardTypes,Vampire,Vampire
+CardTypes,Reaction,Reaction
+CardTypes,Combat,Combat
+CardTypes,Power,Power
+CardTypes,Master,Master
+CardTypes,Event,Event
+CardTypes,Ally,Ally
+CardTypes,Action Modifier,Action Modifier
+CardTypes,Political Action,Political Action
+CardTypes,Imbued,Imbued
+CardTypes,Retainer,Retainer
+CardTypes,Reflex,Reflex
+CardTypes,Conviction,Conviction
 """
 
 TEST_CARD_LIST = """
@@ -314,6 +380,13 @@ Cardtype: Master
 Master.
 Put this card in play. If you control three copies, remove all copies in play (even controlled by other Methuselahs) from the game to gain 3 pool and choose up to thirteen cards from your ash heap. Move one of those cards to your hand and shuffle the others into your library.
 Artist: Sandra Chang;Ginés Quiñonero
+
+Name: Aye
+[LoB:C, EK:C½]
+Cardtype: Master
+Master: trifle.
+Put this card on a Laibon. This Laibon may lock this card to cancel a Frenzy card p
+Artist: Brad Williams
 
 Name: Bravo
 [Gehenna:C]

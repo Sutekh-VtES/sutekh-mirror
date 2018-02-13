@@ -6,8 +6,8 @@
 """Converts a filter into a card set"""
 
 import gtk
-from ...core.BaseObjects import (PhysicalCardSet, PhysicalCard,
-                                 IPhysicalCard, IPhysicalCardSet)
+from ...core.BaseTables import PhysicalCardSet, PhysicalCard
+from ...core.BaseAdapters import IPhysicalCard, IPhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..GuiCardSetFunctions import create_card_set
 

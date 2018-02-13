@@ -6,7 +6,7 @@
 
 from sqlobject import SQLObjectNotFound
 
-from ...core.BaseObjects import PhysicalCard, PhysicalCardSet
+from ...core.BaseTables import PhysicalCard, PhysicalCardSet
 from ..CellRendererIcons import SHOW_TEXT_ONLY
 from .BaseExtraColumns import BaseExtraColumns
 

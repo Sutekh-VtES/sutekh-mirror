@@ -7,8 +7,8 @@
 """Test whether card sets can be constructed independently"""
 
 import gtk
-from ...core.BaseObjects import (PhysicalCardSet, IPhysicalCardSet,
-                                 IAbstractCard, IPhysicalCard)
+from ...core.BaseTables import PhysicalCardSet
+from ...core.BaseAdapters import IPhysicalCardSet, IAbstractCard, IPhysicalCard
 from ...core.BaseFilters import ParentCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..CardSetsListView import CardSetsListView

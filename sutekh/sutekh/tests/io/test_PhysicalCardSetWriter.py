@@ -8,7 +8,8 @@
 from StringIO import StringIO
 import unittest
 
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 
 from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
@@ -27,7 +28,7 @@ EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh
   <card count="3" expansion="None Specified" name=".44 Magnum" />
   <card count="1" expansion="Lords of the Night" name="AK-47" />
   <card count="1" expansion="None Specified" name="AK-47" />
-  <card count="1" expansion="Keepers of Tradition" name="Aaron\'s Feeding Razor" />
+  <card count="1" expansion="Keepers of Tradition" name="Aaron's Feeding Razor" />
   <card count="1" expansion="None Specified" name="Abbot" />
   <card count="1" expansion="Third Edition" name="Abbot" />
   <card count="1" expansion="None Specified" name="Abebe" />

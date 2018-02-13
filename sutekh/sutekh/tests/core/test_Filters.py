@@ -10,11 +10,11 @@ from sqlobject import SQLObjectNotFound
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
-from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          PhysicalCard, IPhysicalCard,
-                                          Expansion, IExpansion,
-                                          PhysicalCardSet,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCard,
+                                         Expansion, PhysicalCardSet,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 
@@ -141,7 +141,7 @@ class FilterTests(SutekhTest):
               u'Smite']),
             (Filters.MultiExpansionFilter(['NoR', 'LoB']),
              [u".44 Magnum", u"Abebe", u"Abjure", u"Abombwe",
-              u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
+              u'Anna "Dictatrix11" Suljic', u"Aye", u"Cedric", u"Cesewayo",
               u'Earl "Shaka74" Deams', u"High Top",
               u'Inez "Nurse216" Villagrande', u"Paris Opera House",
               u"Predator's Communion", u"Rock Cat", u'Smite',
@@ -241,7 +241,7 @@ class FilterTests(SutekhTest):
               u'Ambrogino Giovanni', u'Amisa', u'Anarch Revolt',
               u'Anastasz di Zagreb', u'Angelica, The Canonicus',
               u'Anna "Dictatrix11" Suljic', u'Anson', u'Ashur Tablets',
-              u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
+              u"Aye", u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
               u'Dramatic Upheaval', u'Earl "Shaka74" Deams',
               u"Enkidu, The Noah", u"Fidus, The Shrunken Beast",
               u'Gracis Nostinus', u'Hide the Heart',
@@ -261,7 +261,7 @@ class FilterTests(SutekhTest):
               u'Ambrogino Giovanni', u'Amisa', u'Anarch Revolt',
               u'Anastasz di Zagreb', u'Angelica, The Canonicus',
               u'Anna "Dictatrix11" Suljic', u'Anson', u'Ashur Tablets',
-              u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
+              u"Aye", u'Bravo', u'Bronwen', u'Cedric', u'Cesewayo',
               u'Dramatic Upheaval', u'Earl "Shaka74" Deams',
               u"Enkidu, The Noah", u"Fidus, The Shrunken Beast",
               u'Gracis Nostinus', u'Hide the Heart',
@@ -333,7 +333,7 @@ class FilterTests(SutekhTest):
               u"Political Hunting Ground", u"The Ankara Citadel, Turkey",
               u"The Slaughterhouse"]),
             (Filters.KeywordFilter('trifle'),
-             [u"Abombwe", u"Agent of Power", u"Two Wrongs"]),
+             [u"Abombwe", u"Agent of Power", u"Aye", u"Two Wrongs"]),
             (Filters.KeywordFilter('out-of-turn'),
              [u"Two Wrongs", u"Vox Domini"]),
             (Filters.MultiKeywordFilter(['burn option']),
@@ -366,7 +366,7 @@ class FilterTests(SutekhTest):
               u"Abombwe", u"Agent of Power", u"Aire of Elation",
               u"Anarch Railroad", "Anarch Revolt",
               u'Anna "Dictatrix11" Suljic', u'Ashur Tablets',
-              u"Bravo", u'Dramatic Upheaval',
+              u"Aye", u"Bravo", u'Dramatic Upheaval',
               u'Earl "Shaka74" Deams', u"Ghoul Retainer", u"Gypsies",
               u"Hide the Heart", u"High Top", u'Inez "Nurse216" Villagrande',
               u'Motivated by Gehenna', u"Necromancy", u"Ossian",
@@ -441,7 +441,7 @@ class FilterTests(SutekhTest):
              ['Jyhad']
             ),
             (Filters.PhysicalExpansionFilter('LoB'),
-             ['Abombwe', '.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
+             ['Abombwe', 'Aye','.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
               u"Predator's Communion", u"The Slaughterhouse",
               u"Vox Domini", u"Paris Opera House", u"High Top",
               u"Rock Cat"],
@@ -453,7 +453,7 @@ class FilterTests(SutekhTest):
             ),
             (Filters.MultiPhysicalExpansionFilter(['LoB', 'LotN']),
              ['Abombwe', '.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
-              u"Cedric", u"Cesewayo", u"Kabede Maru",
+              'Aye', u"Cedric", u"Cesewayo", u"Kabede Maru",
               u"Predator's Communion", u"The Path of Blood",
               u"The Slaughterhouse", u"Raven Spy",
               u"Park Hunting Ground", u"Necromancy",

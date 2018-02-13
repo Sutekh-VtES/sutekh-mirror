@@ -13,7 +13,7 @@ import gtk
 
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.core.DBUtility import flush_cache
 
 from sutekh.base.gui.AppMainWindow import AppMainWindow

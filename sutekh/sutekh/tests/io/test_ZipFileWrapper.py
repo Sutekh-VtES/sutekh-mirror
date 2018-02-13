@@ -8,7 +8,8 @@
 import unittest
 import zipfile
 
-from sutekh.base.core.BaseObjects import IPhysicalCardSet, PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 from sutekh.base.gui.ProgressDialog import SutekhCountLogHandler
 

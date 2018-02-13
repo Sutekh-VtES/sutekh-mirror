@@ -7,7 +7,7 @@
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
-from sutekh.core.SutekhObjects import TABLE_LIST
+from sutekh.core.SutekhTables import TABLE_LIST
 
 
 class DatabaseVersionTests(SutekhTest):

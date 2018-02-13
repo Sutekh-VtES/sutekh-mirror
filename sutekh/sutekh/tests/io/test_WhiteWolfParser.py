@@ -9,13 +9,13 @@ import unittest
 
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseObjects import (AbstractCard, IAbstractCard,
-                                          IPhysicalCard, ICardType,
-                                          IExpansion, IRarity, IRarityPair,
-                                          IArtist, IKeyword)
+from sutekh.base.core.BaseTables import AbstractCard
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion, IRarity, IRarityPair,
+                                           ICardType, IArtist, IKeyword)
 
-from sutekh.core.SutekhObjects import (IClan, IDisciplinePair, ISect, ITitle,
-                                       ICreed, IVirtue)
+from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
+                                        ITitle, ICreed, IVirtue)
 from sutekh.tests.TestCore import SutekhTest
 
 
@@ -60,6 +60,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Anna "Dictatrix11" Suljic',
         u"Anson",
         u"Ashur Tablets",
+        u"Aye",
         u"Bravo",
         u"Bronwen",
         u"Cedric",
@@ -580,6 +581,26 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oSmite.cost, 3)
         self.assertEqual(oSmite.costtype, "conviction")
         self.failUnless(oSmite.text.startswith('{Strike:}'))
+
+        # Check we get the rarity for Aye correct
+        oAye = IAbstractCard("Aye")
+        self.assertEqual(oAye.canonicalName, u"aye")
+        oLoB = IExpansion('Legacy of Blood')
+        oEK = IExpansion('EK')
+        # Check some expansion properties while we're here
+        self.assertEqual(oLoB.name, 'Legacy of Blood')
+        self.assertEqual(oLoB.shortname, 'LoB')
+        self.assertEqual(oEK.name, 'Ebony Kingdom')
+        self.assertEqual(oEK.shortname, 'EK')
+        self.assertTrue(oLoB in [oP.expansion for oP in oAye.rarity])
+        self.assertTrue(oEK in [oP.expansion for oP in oAye.rarity])
+        self.assertTrue(oCommon in [oP.rarity for oP in oAye.rarity])
+        # Check that we only got 1 rarity for Aye
+        self.assertEqual(set([oCommon]),
+                         set([oP.rarity for oP in oAye.rarity]))
+
+        self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
+        self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
 
 
 if __name__ == "__main__":

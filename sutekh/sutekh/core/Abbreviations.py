@@ -17,17 +17,6 @@ from sutekh.base.core.BaseAbbreviations import AbbreviationLookup
 # pylint: disable=W0223
 # We don't override all the abstract methods in all the classes
 # this is OK, since we control the use cases
-class CardTypes(AbbreviationLookup):
-    """The standard VtES card types."""
-    dKeys = {
-        'Action': [], 'Action Modifier': [], 'Ally': [],
-        'Combat': [], 'Conviction': [], 'Equipment': [],
-        'Event': [], 'Imbued': [], 'Master': [],
-        'Political Action': [], 'Power': [], 'Reaction': [],
-        'Reflex': [], 'Retainer': [], 'Vampire': [],
-    }
-
-
 class Clans(AbbreviationLookup):
     """Standard names and common abbreviations for the VtES clans."""
     dKeys = {
@@ -121,112 +110,6 @@ class Disciplines(AbbreviationLookup):
     def fullname(cls, sCanonical):
         """Return the full name for the given abbreviation."""
         return cls.dKeys[sCanonical][1]
-
-
-class Expansions(AbbreviationLookup):
-    """Common names and abbreviations for the different expansions."""
-    dKeys = {
-        # Ordinary expansions
-        'Anarchs': [],
-        'Anarchs Unbound': ['AU'],
-        'Ancient Hearts': ['AH'],
-        'Anthology': [],
-        # Blackhand is an abbreviation so reading card sets from old versions
-        # work
-        'Black Hand': ['BH', 'Blackhand'],
-        'Bloodlines': ['BL'],
-        'Blood Shadowed Court': ['BSC'],
-        'Camarilla Edition': ['CE'],
-        'Danse Macabre': ['DM'],
-        'Dark Sovereigns': ['DS'],
-        'Ebony Kingdom': ['EK'],
-        'Final Nights': ['FN'],
-        'Gehenna': [],
-        'Heirs to the Blood': ['HttB'],
-        'Jyhad': [],
-        'Kindred Most Wanted': ['KMW'],
-        'Keepers of Tradition': ['KoT'],
-        'Legacy of Blood': ['LoB'],
-        'Lords of the Night': ['LotN'],
-        'Nights of Reckoning': ['NoR'],
-        'Sabbat': [],
-        'Sabbat Wars': ['SW'],
-        'Sword of Caine': ['SoC'],
-        'Tenth Anniversary': ['Tenth'],
-        'The Unaligned': ['TU'],
-        'Third Edition': ['Third'],
-        'Twilight Rebellion': ['TR'],
-        'VTES': [],
-        # Special cases
-        # The Promo entry is to special-case the AaA cards which
-        # appear with promo entries in the card list
-        'Anarchs and Alastors Storyline': ['Promo-20080810'],
-    }
-
-    @classmethod
-    def canonical(cls, sName):
-        """Return the canonical name of the expansion.
-
-           Treats promo's somewhat specially, since each promo release
-           is essentially it's own unique expansion.
-
-           Unknown expansions are also allowed in order to make it
-           possible to update to a card list that includes expansions
-           not in the list known to the Expansion class."""
-        # pylint: disable=E1101
-        # pylint get's confused here
-        if sName in cls._dLook:
-            return cls._dLook[sName]
-        if sName.startswith('Promo-'):
-            return sName
-        return sName
-
-    @classmethod
-    def shortname(cls, sCanonical):
-        """Return the short name for the given expansion."""
-        if sCanonical.startswith('Promo-'):
-            return 'Promo'
-        if sCanonical in cls.dKeys and cls.dKeys[sCanonical]:
-            return cls.dKeys[sCanonical][0]
-        return sCanonical
-
-
-class Rarities(AbbreviationLookup):
-    """Common strings and abbreviations for the different card rarities."""
-    dKeys = {
-        # EK uses C1/2 for Aye & Orun
-        'Common': ['C', 'C1', 'C2', 'C3', u'C\xbd'],
-        'Uncommon': ['U', 'U1', 'U2', 'U3', 'U5'],
-        'Rare': ['R', 'R1', 'R2', 'R3'],
-        'Vampire': ['V', 'V1', 'V2', 'V3'],
-        'Tenth': ['A', 'B'],
-        'Anthology': ['1', '2', '3', '4'],
-        'BSC': ['X'],
-        'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
-                   'PO3'],
-        'Not Applicable': ['NA'],
-        'Rules': ['Rules'],
-        'Demo': ['Demo'],
-        'Storyline': ['Storyline'],
-    }
-
-    @classmethod
-    def canonical(cls, sName):
-        """Return the canonical name of the rarity."""
-        # pylint: disable=E1101
-        # pylint get's confused here
-        if sName.startswith('P'):
-            return 'Precon'
-        if sName in cls._dLook:
-            return cls._dLook[sName]
-        return 'Unknown'
-
-    @classmethod
-    def shortname(cls, sCanonical):
-        """Return the corresponding short name for the rarity."""
-        if sCanonical in cls.dKeys and cls.dKeys[sCanonical]:
-            return cls.dKeys[sCanonical][0]
-        return sCanonical
 
 
 class Sects(AbbreviationLookup):
