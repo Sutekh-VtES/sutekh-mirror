@@ -194,11 +194,7 @@ class BasicFrame(gtk.Frame):
         """Queue a reload for later - needed so reloads can happen after
            database update signals."""
         self._bNeedReload = True
-        # Add timeout so reload is called in the near future
-        # As we're single threaded, this won't be executred until we're
-        # done with the current main_loop iteration, so it will only
-        # happen after all our current processing.
-        gobject.timeout_add(20, self._oMainWindow.do_all_queued_reloads)
+        self._oMainWindow.queue_reload()
 
     def update_to_new_db(self):
         """Re-associate internal data against the database.
