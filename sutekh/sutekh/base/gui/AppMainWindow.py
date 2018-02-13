@@ -120,8 +120,11 @@ class AppMainWindow(MultiPaneWindow):
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
         oZipDetails = Result(sName=sUrl, bIsUrl=True)
+        self._block_reload()
         dFiles = oDBManager.read_zip_file(oZipDetails, sHash)
-        return oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        bRet = oDBManager.refresh_card_list(oUpdateDate, dFiles)
+        self._unblock_reload()
+        return bRet
 
     # pylint: disable=W0201
     # We define attributes here, since this is called after database checks
