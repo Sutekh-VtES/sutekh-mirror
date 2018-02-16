@@ -102,6 +102,8 @@ def IKeyword(oUnknown):
     return fail_adapt(oUnknown, 'Keyword')
 
 
+# pylint: disable=missing-docstring
+# Not a lot of value to docstrings for these classes and methods
 # Abbreviation lookup based adapters
 class StrAdaptMeta(type):
     """Metaclass for the string adapters."""
@@ -436,5 +438,3 @@ IPhysicalCard.register(tuple, PhysicalCardAdapter.lookup)
 
 
 IPhysicalCard.register(PhysicalCard, passthrough)
-
-# pylint: enable=C0111

@@ -17,11 +17,14 @@ from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 
 from sutekh.tests.TestCore import SutekhTest
 
-ABSTRACT_CARDS = [('.44 magnum', 3),
-        ('ak-47', 1),
-        ('abbot', 1),
-        ('abebe', 1),
-        ('abombwe', 1)]
+ABSTRACT_CARDS = [
+    ('.44 magnum', 3),
+    ('ak-47', 1),
+    ('abbot', 1),
+    ('abebe', 1),
+    ('abombwe', 1)
+]
+
 CARD_EXPANSIONS = [
     ('.44 magnum', 'Jyhad', 1),
     ('ak-47', 'LotN', 1),
@@ -37,6 +40,11 @@ CARD_EXPANSIONS = [
     ('Aire of Elation', 'CE', 3),
     ('Hide the Heart', 'HttB', 1),
 ]
+
+SET_2_ONLY_CARDS = [
+    ('alexandra', 'DS', 1),
+    ('Abandoning the Flesh', 'CE', 1),
+]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
 
@@ -45,11 +53,11 @@ def get_phys_cards():
     aAddedPhysCards = []
     for sName, iCount in ABSTRACT_CARDS:
         oPC = make_card(sName, None)
-        for iNum in range(iCount):
+        for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
     for sName, sExpansion, iCount in CARD_EXPANSIONS:
         oPC = make_card(sName, sExpansion)
-        for iNum in range(iCount):
+        for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
     return aAddedPhysCards
 
@@ -80,6 +88,10 @@ def make_set_2():
     oPhysCardSet2.annotations = 'Some Annotations'
     for iLoop in range(5, 10):
         oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
+    for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
+        oPC = make_card(sName, sExpansion)
+        for _iNum in range(iCount):
+            oPhysCardSet2.addPhysicalCard(oPC.id)
     oPhysCardSet2.syncUpdate()
     return oPhysCardSet2
 

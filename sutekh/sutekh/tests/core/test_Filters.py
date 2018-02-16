@@ -441,7 +441,7 @@ class FilterTests(SutekhTest):
              ['Jyhad']
             ),
             (Filters.PhysicalExpansionFilter('LoB'),
-             ['Abombwe', 'Aye','.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
+             ['Abombwe', 'Aye', '.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
               u"Predator's Communion", u"The Slaughterhouse",
               u"Vox Domini", u"Paris Opera House", u"High Top",
               u"Rock Cat"],

@@ -101,6 +101,8 @@ class CardItem(HolderState):
 
 
 # Parser
+# pylint: disable=abstract-method
+# See comments in base.io.SutekhBaseHTMLParser
 class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
     # pylint: disable=R0904

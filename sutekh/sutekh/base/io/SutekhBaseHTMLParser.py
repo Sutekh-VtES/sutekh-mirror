@@ -76,6 +76,10 @@ class HolderState(BaseState):
 
 
 # Base Parser
+# pylint: disable=abstract-method
+# pylint complains about error not being overridden, but HTMLParser
+# does provide it - the class inheritence structure involved just
+# confuses pylint
 class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
     """Base Parser for the Sutekh HTML parsers"""
 

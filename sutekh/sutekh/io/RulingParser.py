@@ -226,6 +226,8 @@ class InRuleUrl(LogStateWithInfo):
 
 
 # Parser
+# pylint: disable=abstract-method
+# See comments in base.io.SutekhBaseHTMLParser
 class RulingParser(SutekhBaseHTMLParser):
     """Actual Parser for the WW rulings HTML files."""
 

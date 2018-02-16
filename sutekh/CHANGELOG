@@ -1,3 +1,8 @@
+14 Feb 2018
+ * Fix SutekhCli and sutekh.start to properly initialise the database
+   backed adapters when required.
+ * Tweak the formatting of the crypt in the TWDA output.
+
 13 Feb 2018
  * Protect against early card set reloads when updating the card list at
    startup.

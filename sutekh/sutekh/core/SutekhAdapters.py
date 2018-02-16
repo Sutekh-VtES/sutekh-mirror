@@ -17,6 +17,8 @@ from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
                                        Titles, Virtues)
 
 
+# pylint: disable=missing-docstring
+# Not a lot of value to docstrings for these classes and methods
 # Default adapters
 @singledispatch
 def IDisciplinePair(oUnknown):
