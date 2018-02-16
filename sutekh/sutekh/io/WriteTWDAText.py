@@ -50,19 +50,21 @@ from sutekh.core.ArdbInfo import ArdbInfo
 
 
 # Emprically derived from the twd.htm entries
-SECTION_ORDER = ('Master',
-        'Conviction',
-        'Action',
-        'Ally',
-        'Equipment',
-        'Political Action',
-        'Power',
-        'Retainer',
-        'Action Modifier',
-        'Reaction',
-        'Combat',
-        'Event',
+SECTION_ORDER = (
+    'Master',
+    'Conviction',
+    'Action',
+    'Ally',
+    'Equipment',
+    'Political Action',
+    'Power',
+    'Retainer',
+    'Action Modifier',
+    'Reaction',
+    'Combat',
+    'Event',
 )
+
 
 class WriteTWDAText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
@@ -99,7 +101,8 @@ class WriteTWDAText(ArdbInfo):
         sCrypt = sCryptLine + '\n' + '-' * len(sCryptLine) + '\n'
 
         aCryptLines = []
-        iNameJust = 23
+        iCountSpace = 3
+        iNameJust = 8
         iDiscJust = 0
         iTitleJust = 0
         for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
@@ -115,31 +118,55 @@ class WriteTWDAText(ArdbInfo):
             dLine['name'] = move_articles_to_back(dLine['name'])
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
-
+            if iCount > 10:
+                iCountSpace = 4
+            dLine['title'] = dLine['title'].strip()
             iTitleJust = max(iTitleJust, len(dLine['title']))
             aCryptLines.append(dLine)
             if dLine['adv'] == 'Adv':
                 dLine['name'] += ' (ADV)'
-        # Vincent likes tabs. Why, Vincent, why?
-        # Normalise to tabstops
-        iNameJust = ((iNameJust + 7) // 8) * 8 - 1
-        iTitleJust = ((iTitleJust + 7) // 8) * 8 - 1
-        # Need to include space for capacity (4 spaces) here
-        iDiscJust = ((iDiscJust + 11) // 8) * 8
 
-        # Pad with tabs as needed
+        # Vincent likes tabs. Why, Vincent, why?
+        # Capacity position
+        iCapacityPos = iCountSpace + iNameJust + 1
+        # Convert to tabstop positions
+        # we want the last tabstop shorter than the name length, since we
+        # then pad with spaces to the capacity
+        iNameJust = ((iNameJust + iCountSpace - 1) // 8) * 8
+        # Tabstob after disciplines
+        iDiscJust = ((iCapacityPos + 2 + iDiscJust + 7) // 8) * 8
+        # Tabstop after titles
+        if iTitleJust:
+            # Tabstop after titles
+            iTitleJust = ((iDiscJust + iTitleJust + 7) // 8) * 8
+
         for dLine in aCryptLines:
-            sCount = '%(count)dx ' % dLine
-            iPadding = (iNameJust - len(dLine['name']) - len(sCount)) // 8
-            dLine['name'] += '\t' * iPadding
-            iPadding = (iTitleJust - len(dLine['title'])) // 8
-            dLine['title'] = dLine['title'].lower() + '\t' * iPadding
+            if iCountSpace == 3:
+                sCount = '%(count)dx ' % dLine
+            else:
+                sCount = '%(count)2dx ' % dLine
+            iPos = iCountSpace + len(dLine['name'])
+            while iPos < iNameJust:
+                dLine['name'] += '\t'
+                # round pos to the next tabstop
+                iPos = iPos + 8 - (iPos + 8) % 8
+            # Pad out with spaces to capacity position
+            dLine['name'] += ' ' * (iCapacityPos - iPos)
             sDisc = '%(capacity)-3d %(disc)s' % dLine
-            iPadding = (iDiscJust - len(sDisc)) // 8
-            sDisc += '\t' * iPadding
+            iPos = iCapacityPos + len(sDisc)
+            # Always at least 1 tab after disciplines
+            sDisc += '\t'
+            iPos = iPos + 8 - (iPos + 8) % 8
+            while iPos <= iDiscJust:
+                sDisc += '\t'
+                iPos += 8
             dLine['disc'] = sDisc
-            sCrypt += "%(count)dx %(name)s\t%(disc)s" \
-                    "\t%(title)s\t%(clan)s:%(group)d\n" % dLine
+            if iTitleJust:
+                iEndPos = (iTitleJust - len(dLine['title']) - iDiscJust + 7)
+                iPadding = iEndPos // 8
+                dLine['title'] = dLine['title'].lower() + '\t' * iPadding
+            sCrypt += sCount + "%(name)s%(disc)s" \
+                    "%(title)s%(clan)s:%(group)d\n" % dLine
             # Fix ANY grouping cards
             if sCrypt.endswith(':-1\n'):
                 sCrypt = sCrypt.replace(':-1', ':ANY')
@@ -181,12 +208,9 @@ class WriteTWDAText(ArdbInfo):
 
                 if sTypeString == 'Master':
                     iTrifles = self._count_trifles(dLib)
-                    if iTrifles > 1:
+                    if iTrifles:
                         sLib += "%s (%d, %d trifle)\n" % (sTypeString,
-                                                           iTotal, iTrifles)
-                    elif iTrifles == 1:
-                        sLib += "%s (%d, %d trifle)\n" % (sTypeString,
-                                                           iTotal, iTrifles)
+                                                          iTotal, iTrifles)
                     else:
                         sLib += "%s (%d)\n" % (sCandidate, iTotal)
                 else:

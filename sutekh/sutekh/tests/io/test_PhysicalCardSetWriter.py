@@ -8,7 +8,6 @@
 from StringIO import StringIO
 import unittest
 
-from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import IPhysicalCardSet
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 
@@ -51,9 +50,11 @@ A third line</comment>
   <annotations>Some Annotations</annotations>
   <card count="1" expansion="Jyhad" name=".44 Magnum" />
   <card count="1" expansion="Lords of the Night" name="AK-47" />
+  <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" />
   <card count="1" expansion="Third Edition" name="Abbot" />
   <card count="1" expansion="None Specified" name="Abebe" />
   <card count="1" expansion="None Specified" name="Abombwe" />
+  <card count="1" expansion="Dark Sovereigns" name="Alexandra" />
 </physicalcardset>"""
 
 EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.3">
@@ -63,10 +64,13 @@ A third line</comment>
   <annotations>Some Annotations</annotations>
   <card count="1" expansion="Jyhad" name=".44 Magnum" />
   <card count="1" expansion="Lords of the Night" name="AK-47" />
+  <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" />
   <card count="1" expansion="Third Edition" name="Abbot" />
   <card count="1" expansion="None Specified" name="Abebe" />
   <card count="1" expansion="None Specified" name="Abombwe" />
+  <card count="1" expansion="Dark Sovereigns" name="Alexandra" />
 </physicalcardset>"""
+
 # pylint: enable=line-too-long
 
 
