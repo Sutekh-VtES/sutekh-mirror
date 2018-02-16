@@ -29,6 +29,7 @@ from sutekh.base.core.BaseFilters import (FilterAndBox, FilterOrBox,
                                           CardSetDescriptionFilter,
                                           CardSetAuthorFilter,
                                           CardSetAnnotationsFilter)
+from sutekh.base.core.DBUtility import init_cache
 
 from sutekh.core.Filters import (ClanFilter, DisciplineFilter, CardTextFilter,
                                  MultiDisciplineFilter, MultiClanFilter,
@@ -50,6 +51,8 @@ def start(aArgs=['sutekh']):
     """Initialise SQLObject connection and so forth, for working in the
        python interpreter"""
     main_with_args(aArgs)
+    # Also initialise the caches, so adapters, etc work
+    init_cache()
 
 # What we expose to import *
 
