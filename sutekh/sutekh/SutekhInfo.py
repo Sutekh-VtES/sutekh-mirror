@@ -12,7 +12,7 @@ from pkg_resources import resource_string
 
 # pylint: disable=R0903,C0111
 class SutekhInfo(object):
-    VERSION = (0, 9, 3, 'alpha', 0)
+    VERSION = (0, 9, 4, 'alpha', 0)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])
     VERSION_STR = {
         'final': BASE_VERSION_STR,
