@@ -5,9 +5,9 @@
 
 """Create a table (as a list of list) from a list of cards"""
 
-from sutekh.base.core.BaseObjects import (Rarity, Expansion, CardType,
-                                          IAbstractCard)
-from sutekh.core.SutekhObjects import Discipline, Clan
+from sutekh.base.core.BaseTables import Rarity, Expansion, CardType
+from sutekh.base.core.BaseAdapters import IAbstractCard
+from sutekh.core.SutekhTables import Discipline, Clan
 
 
 class CardListTabulator(object):

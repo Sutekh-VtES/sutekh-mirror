@@ -15,9 +15,9 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter, CachedFilter,
                                 make_illegal_filter)
 from ..core.BaseGroupings import CardTypeGrouping
-from ..core.BaseObjects import (IAbstractCard,
-                                PhysicalCard, IPhysicalCard,
-                                IExpansionName, ExpansionNameAdapter)
+from ..core.BaseTables import PhysicalCard
+from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                 IExpansionName, ExpansionNameAdapter)
 from ..core.FilterParser import FilterParser
 from ..Utility import move_articles_to_back
 from .BaseConfigFile import FULL_CARDLIST

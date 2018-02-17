@@ -8,9 +8,10 @@
 
 import unittest
 
-from sutekh.base.core.BaseObjects import (AbstractCard, PhysicalCardSet,
-                                          PhysicalCard, IAbstractCard,
-                                          MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCardSet,
+                                         PhysicalCard,
+                                         MapPhysicalCardToPhysicalCardSet)
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.core import FilterParser, FilterBox
 from sutekh.base.core.FilterParser import escape, unescape
 

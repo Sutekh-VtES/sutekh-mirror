@@ -7,8 +7,9 @@
 
 import gtk
 
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, IAbstractCard,
-                                          IPhysicalCard, IExpansion)
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IExpansion)
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.plugins.BaseImages import get_expansion_info, check_file
 from sutekh.gui.PluginManager import SutekhPlugin

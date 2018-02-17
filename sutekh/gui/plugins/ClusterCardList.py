@@ -10,9 +10,8 @@ import math
 
 import gtk
 
-from sutekh.base.core.BaseObjects import (PhysicalCard,
-                                          PhysicalCardSet,
-                                          IPhysicalCard)
+from sutekh.base.core.BaseTables import PhysicalCard, PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCard
 from sutekh.base.core.CardSetUtilities import check_cs_exists
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.base.gui.SutekhDialog import NotebookDialog, do_complaint_error

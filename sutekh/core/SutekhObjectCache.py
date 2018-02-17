@@ -5,9 +5,9 @@
 
 """Cache various objects used by sutekh to speed up database queries."""
 
-from sutekh.core.SutekhObjects import (SutekhAbstractCard, Clan,
-                                       Discipline, DisciplinePair, Sect,
-                                       Title, Creed, Virtue)
+from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan,
+                                      Discipline, DisciplinePair, Sect,
+                                      Title, Creed, Virtue)
 from sutekh.base.core.ObjectCache import ObjectCache
 
 

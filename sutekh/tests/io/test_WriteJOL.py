@@ -16,14 +16,17 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)
 Inez "Nurse216" Villagrande
-The Siamese
+2xThe Siamese
 
 4x.44 Magnum
 2xAK-47
 Aaron's Feeding Razor
 2xAbbot
 2xAbombwe
+3xAire of Elation
+Hide the Heart
 Scapelli, The Family "Mechanic"
+2xSwallowed by the Night
 The Path of Blood
 """
 

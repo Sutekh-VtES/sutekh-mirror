@@ -8,7 +8,8 @@
 """Sutekh Frame for holding Card Sets"""
 
 from sqlobject import SQLObjectNotFound
-from ..core.BaseObjects import PhysicalCardSet, IPhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
+from ..core.BaseAdapters import IPhysicalCardSet
 from .CardListFrame import CardListFrame
 from .CardSetMenu import CardSetMenu
 from .CardSetController import CardSetController

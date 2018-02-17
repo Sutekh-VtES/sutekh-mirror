@@ -10,7 +10,7 @@
 from __future__ import print_function
 
 from sqlobject import sqlhub
-from .BaseObjects import VersionTable
+from .BaseTables import VersionTable
 
 
 def _get_connection(oConn):

@@ -8,7 +8,7 @@ import datetime
 
 import gtk
 
-from ...core.BaseObjects import PhysicalCardSet
+from ...core.BaseTables import PhysicalCardSet
 from ...core.CardSetHolder import CardSetHolder
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint

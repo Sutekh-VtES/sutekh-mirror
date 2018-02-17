@@ -18,8 +18,7 @@ from logging import FileHandler
 import gtk
 from nose import SkipTest
 
-from ..core.BaseObjects import (IAbstractCard, IPhysicalCard,
-                                IExpansion)
+from ..core.BaseAdapters import IAbstractCard, IPhysicalCard, IExpansion
 
 
 def make_card(sCardName, sExpName):

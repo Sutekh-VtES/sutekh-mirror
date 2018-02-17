@@ -9,7 +9,8 @@
 import gtk
 from .FilteredView import FilteredView
 from .FilterDialog import FilterDialog
-from ..core.BaseObjects import PhysicalCard, IPhysicalCard, AbstractCard
+from ..core.BaseTables import PhysicalCard, AbstractCard
+from ..core.BaseAdapters import IPhysicalCard
 
 
 class CardListView(FilteredView):

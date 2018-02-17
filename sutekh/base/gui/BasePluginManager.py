@@ -18,7 +18,8 @@ from gobject import markup_escape_text
 from sqlobject import sqlhub
 
 from ..core.DatabaseVersion import DatabaseVersion
-from ..core.BaseObjects import PhysicalCardSet, PhysicalCard, IAbstractCard
+from ..core.BaseTables import PhysicalCardSet, PhysicalCard
+from ..core.BaseAdapters import IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
 from .MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
 from .SutekhDialog import do_complaint_warning

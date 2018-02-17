@@ -20,7 +20,7 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>DATE</date>
-  <crypt size="4">
+  <crypt size="5">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
       <name>Abebe</name>
@@ -29,16 +29,16 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="44" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="45" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
-    </vampire><vampire databaseID="65" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="67" have="2" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
     </vampire>
-  </crypt><library size="13">
+  </crypt><library size="19">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
       <set>CE</set>
@@ -54,10 +54,19 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="14" have="2" need="0" spare="0">
       <name>Abombwe</name>
       <set>LoB</set>
-    </card><card databaseID="62" have="1" need="0" spare="0">
+    </card><card databaseID="17" have="3" need="0" spare="0">
+      <name>Aire of Elation</name>
+      <set>CE</set>
+    </card><card databaseID="72" have="1" need="0" spare="0">
+      <name>Hide the Heart</name>
+      <set>HttB</set>
+    </card><card databaseID="63" have="1" need="0" spare="0">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
-    </card><card databaseID="54" have="1" need="0" spare="0">
+    </card><card databaseID="66" have="2" need="0" spare="0">
+      <name>Swallowed by the Night</name>
+      <set>Third</set>
+    </card><card databaseID="55" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
     </card>

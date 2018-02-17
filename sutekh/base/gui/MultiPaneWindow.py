@@ -41,6 +41,7 @@ class MultiPaneWindow(gtk.Window):
         self._oToolbar = None
         self._oMenu = None
         self._oVBox = None
+        self._bQueue = False
 
         self._aHPanes = []
 
@@ -93,6 +94,17 @@ class MultiPaneWindow(gtk.Window):
         """Re-enable reload behaviour"""
         self._bBlockReload = False
 
+    def queue_reload(self):
+        """Queue a reload if we don't already have one queued"""
+        if not self._bQueue:
+            self._bQueue = True
+            # Add timeout so reload is called in the near future
+            # As we're single threaded, this won't be executed until we're
+            # done with the current main_loop iteration.
+            # In most situations, this is will be enough, and we have
+            # additional protections for the complex cases.
+            gobject.timeout_add(30, self.do_all_queued_reloads)
+
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
         if self._bBlockReload:
@@ -100,11 +112,12 @@ class MultiPaneWindow(gtk.Window):
             # We schedule a bit further in the future than the BasicFrame
             # initial queue, since we know we're already busy with stuff.
             #
-            # This workaround avoids triggering "database locked" erros
+            # This workaround avoids triggering "database locked" errors
             # when updating sqlite DBs on some systems, but it's a good
             # idea to avoid reloading during a update on any system.
             gobject.timeout_add(100, self.do_all_queued_reloads)
             return
+        self._bQueue = False
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             oPane.do_queued_reload()
 

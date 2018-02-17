@@ -6,7 +6,7 @@
 """Export a card set to HTML."""
 
 import gtk
-from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import do_complaint_error

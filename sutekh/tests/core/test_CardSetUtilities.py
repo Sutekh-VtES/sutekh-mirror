@@ -7,7 +7,7 @@
 
 import unittest
 
-from sutekh.base.core.BaseObjects import PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                get_loop_names, detect_loop,
                                                find_children, break_loop,

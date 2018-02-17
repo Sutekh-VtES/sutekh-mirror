@@ -8,7 +8,7 @@
 import time
 from xml.etree.ElementTree import Element, SubElement, tostring
 
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.Utility import pretty_xml, norm_xml_quotes
 
 from sutekh.core.ArdbInfo import ArdbInfo

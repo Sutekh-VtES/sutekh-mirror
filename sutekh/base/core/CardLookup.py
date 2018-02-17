@@ -7,7 +7,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-from .BaseObjects import IPhysicalCard, IExpansion, IAbstractCard
+from .BaseAdapters import IPhysicalCard, IExpansion, IAbstractCard
 
 
 class LookupFailed(Exception):

@@ -17,7 +17,7 @@ from sqlobject import sqlhub, connectionForURI
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
 from ..core.DBUtility import flush_cache
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
 from ..core.DBUtility import get_cs_id_name_table, refresh_tables
 
 from ..io.EncodedFile import EncodedFile

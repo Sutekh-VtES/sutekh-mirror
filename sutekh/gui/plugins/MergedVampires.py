@@ -8,14 +8,14 @@
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import normalise_whitespace
-from sutekh.base.core.BaseObjects import (PhysicalCardSet,
-                                          IKeyword, IAbstractCard)
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IAbstractCard, IKeyword
 from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.base.gui.GuiUtils import make_markup_button
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 
-from sutekh.core.SutekhObjects import (ITitle, ISect, IDisciplinePair,
-                                       SutekhAbstractCard)
+from sutekh.core.SutekhTables import SutekhAbstractCard
+from sutekh.core.SutekhAdapters import ITitle, ISect, IDisciplinePair
 from sutekh.gui.PluginManager import SutekhPlugin
 
 

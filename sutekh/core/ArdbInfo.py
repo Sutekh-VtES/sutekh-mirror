@@ -9,7 +9,7 @@
    and such.
    """
 
-from sutekh.base.core.BaseObjects import IAbstractCard, IPhysicalCard
+from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.SutekhUtility import is_crypt_card, is_trifle
 

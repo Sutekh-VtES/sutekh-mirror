@@ -13,7 +13,8 @@ from random import shuffle
 
 import gtk
 
-from sutekh.base.core.BaseObjects import PhysicalCardSet, IAbstractCard
+from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.gui.SutekhDialog import SutekhDialog
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 

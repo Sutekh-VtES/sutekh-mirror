@@ -5,9 +5,9 @@
 """Force all cards which can only belong to 1 expansion to that expansion"""
 
 import gtk
-from ...core.BaseObjects import (PhysicalCardSet, IExpansion,
-                                 IPhysicalCard, IAbstractCard,
-                                 MapPhysicalCardToPhysicalCardSet)
+from ...core.BaseTables import (PhysicalCardSet,
+                                MapPhysicalCardToPhysicalCardSet)
+from ...core.BaseAdapters import IExpansion, IPhysicalCard, IAbstractCard
 from ...core.DBSignals import send_changed_signal
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, do_complaint_error
@@ -78,14 +78,11 @@ class BaseSetExpansion(BasePlugin):
         for oCard in self.model.get_card_iterator(
                 self.model.get_current_filter()):
             oAbsCard = IAbstractCard(oCard)
-            if oAbsCard.name in dSelected:
+            if oAbsCard.id in dSelected:
                 oPhysCard = IPhysicalCard(oCard)
                 if oPhysCard.expansion is oExpansion:
                     continue  # No need to change this
-                if (self.model.sUnknownExpansion in dSelected[oAbsCard.name]
-                        and not oPhysCard.expansion) or \
-                        (oPhysCard.expansion and oPhysCard.expansion.name in
-                         dSelected[oAbsCard.name]):
+                if oPhysCard.id in dSelected[oAbsCard.id]:
                     oNewCard = IPhysicalCard((oAbsCard, oExpansion))
                     # Card in the selection, so replace with changed card
                     MapPhysicalCardToPhysicalCardSet.delete(oCard.id)

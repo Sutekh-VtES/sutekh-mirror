@@ -6,7 +6,7 @@
 """Test cases for the CardSetUtilities functions"""
 
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 
 
 class LookupTests(SutekhTest):

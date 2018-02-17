@@ -7,7 +7,7 @@
 
 # Base Grouping Class
 
-from sutekh.core.SutekhObjects import CRYPT_TYPES, SutekhAbstractCard
+from sutekh.core.SutekhTables import CRYPT_TYPES, SutekhAbstractCard
 from sutekh.base.core.BaseGroupings import (IterGrouping, DEF_GET_CARD,
                                             BaseExpansionRarityGrouping)
 

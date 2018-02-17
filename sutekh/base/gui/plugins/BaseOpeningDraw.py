@@ -11,7 +11,8 @@ from random import choice
 import gobject
 import gtk
 
-from ...core.BaseObjects import PhysicalCardSet, IAbstractCard
+from ...core.BaseTables import PhysicalCardSet
+from ...core.BaseAdapters import IAbstractCard
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
 from ..AutoScrolledWindow import AutoScrolledWindow

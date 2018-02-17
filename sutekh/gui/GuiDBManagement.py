@@ -8,7 +8,7 @@ from sutekh.base.gui.BaseGuiDBManagement import (BaseGuiDBManager,
                                                  DataFileReader)
 from sutekh.base.gui.GuiDataPack import gui_error_handler
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
-from sutekh.core.SutekhObjects import TABLE_LIST
+from sutekh.core.SutekhTables import TABLE_LIST
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
                               EXP_DATE_URL, LOOKUP_DATA_URL,

@@ -8,10 +8,11 @@
 import gtk
 import gobject
 import pango
-from sutekh.base.core.BaseObjects import (PhysicalCardSet, PhysicalCard,
-                                          IAbstractCard, AbstractCard,
-                                          IPhysicalCard, IPhysicalCardSet)
-from sutekh.core.SutekhObjects import SutekhAbstractCard
+from sutekh.base.core.BaseTables import (PhysicalCardSet, PhysicalCard,
+                                         AbstractCard)
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
+                                           IPhysicalCardSet)
+from sutekh.core.SutekhTables import SutekhAbstractCard
 from sutekh.base.core.BaseFilters import CardTypeFilter, FilterAndBox
 from sutekh.core.Filters import (MultiGroupFilter, MultiVirtueFilter,
                                  MultiDisciplineFilter,

@@ -11,7 +11,7 @@ from .CellRendererSutekhButton import CellRendererSutekhButton
 from .CellRendererIcons import CellRendererIcons
 from .CardListView import CardListView
 from .CardSetListModel import CardSetCardListModel
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
 
 NUM_KEYS = {
     gtk.gdk.keyval_from_name('1'): 1,

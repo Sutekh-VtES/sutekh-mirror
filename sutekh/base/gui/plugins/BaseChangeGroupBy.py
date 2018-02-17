@@ -9,7 +9,7 @@ from ...core.BaseGroupings import (CardTypeGrouping, NullGrouping,
                                    ExpansionGrouping, RarityGrouping,
                                    MultiTypeGrouping, ArtistGrouping,
                                    KeywordGrouping)
-from ...core.BaseObjects import PhysicalCard, PhysicalCardSet
+from ...core.BaseTables import PhysicalCard, PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 
 

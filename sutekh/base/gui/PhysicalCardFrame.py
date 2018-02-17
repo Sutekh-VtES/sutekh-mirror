@@ -7,7 +7,7 @@
 
 """Frame which holds the PhysicalCardView"""
 
-from ..core.BaseObjects import PhysicalCard
+from ..core.BaseTables import PhysicalCard
 from .CardListFrame import CardListFrame
 from .PhysicalCardController import PhysicalCardController
 from .PhysicalCardMenu import PhysicalCardMenu

@@ -9,14 +9,14 @@ import os
 
 from sqlobject import sqlhub, connectionForURI
 
-from sutekh.base.core.BaseObjects import VersionTable
+from sutekh.base.core.BaseTables import VersionTable
 from sutekh.base.core.DBUtility import refresh_tables
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
 
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   read_lookup_data)
-from sutekh.core.SutekhObjects import TABLE_LIST
+from sutekh.core.SutekhTables import TABLE_LIST
 from sutekh.tests.TestData import (TEST_CARD_LIST, TEST_RULINGS,
                                    TEST_LOOKUP_LIST)
 from sutekh.tests.TestCore import SutekhTest

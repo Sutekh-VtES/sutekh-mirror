@@ -7,8 +7,8 @@
 
 import gtk
 import pango
-from ...core.BaseObjects import (PhysicalCardSet, IAbstractCard,
-                                 IPhysicalCard)
+from ...core.BaseTables import PhysicalCardSet
+from ...core.BaseAdapters import IAbstractCard, IPhysicalCard
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_error
 

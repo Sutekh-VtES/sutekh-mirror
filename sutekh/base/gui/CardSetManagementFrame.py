@@ -7,7 +7,7 @@
 """Pane for a list of card sets"""
 
 import gtk
-from ..core.BaseObjects import PhysicalCardSet
+from ..core.BaseTables import PhysicalCardSet
 from .BasicFrame import BasicFrame
 from .CardSetManagementController import CardSetManagementController
 from .CardSetManagementMenu import CardSetManagementMenu

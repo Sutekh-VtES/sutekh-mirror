@@ -13,7 +13,7 @@
 
 # pylint: disable=C0302
 # This is a long module, partly because of the duplicated code from
-# SutekhObjects. We want to keep all the database upgrade stuff together.
+# SutekhTables. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
 # pylint: disable=E0611
@@ -21,14 +21,14 @@
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, ForeignKey)
 # pylint: enable=E0611
-from sutekh.base.core.BaseObjects import (PhysicalCard, AbstractCard,
-                                          PhysicalCardSet, Expansion,
-                                          RarityPair, LookupHints,
-                                          Rarity, CardType,
-                                          MAX_ID_LENGTH)
-from sutekh.core.SutekhObjects import (SutekhAbstractCard, Clan, Virtue,
-                                       Discipline, Creed, DisciplinePair,
-                                       Sect, Title, TABLE_LIST)
+from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
+                                         PhysicalCardSet, Expansion,
+                                         RarityPair, LookupHints,
+                                         Rarity, CardType,
+                                         MAX_ID_LENGTH)
+from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Virtue,
+                                      Discipline, Creed, DisciplinePair,
+                                      Sect, Title, TABLE_LIST)
 from sutekh.io.WhiteWolfTextParser import strip_braces
 from sutekh.base.core.BaseDatabaseUpgrade import BaseDBUpgradeManager
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
@@ -37,7 +37,7 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # (arguablely overly) complex trickery to read old databases, and we create a
 # copy in sqlite memory database first, before commiting to the actual DB
 
-# We Need to clone the SQLObject classes in SutekhObjects so we can read
+# We Need to clone the SQLObject classes in SutekhTables so we can read
 # old versions
 
 

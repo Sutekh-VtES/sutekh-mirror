@@ -11,8 +11,8 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from ..core.BaseObjects import (AbstractCard, PhysicalCard, IExpansion,
-                                Expansion, IPhysicalCard, IAbstractCard)
+from ..core.BaseTables import AbstractCard, PhysicalCard, Expansion
+from ..core.BaseAdapters import IAbstractCard, IPhysicalCard, IExpansion
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
                                ExpansionLookup, LookupFailed)
 from ..core.BaseFilters import best_guess_filter

@@ -14,9 +14,9 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.io.SutekhBaseHTMLParser import (SutekhBaseHTMLParser,
                                                  HTMLStateError, LogState,
                                                  LogStateWithInfo)
-from sutekh.base.core.BaseObjects import IAbstractCard
+from sutekh.base.core.BaseAdapters import IAbstractCard
 
-from sutekh.core.SutekhObjects import SutekhObjectMaker
+from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 
 
 # Ruling Saver
@@ -226,6 +226,8 @@ class InRuleUrl(LogStateWithInfo):
 
 
 # Parser
+# pylint: disable=abstract-method
+# See comments in base.io.SutekhBaseHTMLParser
 class RulingParser(SutekhBaseHTMLParser):
     """Actual Parser for the WW rulings HTML files."""
 

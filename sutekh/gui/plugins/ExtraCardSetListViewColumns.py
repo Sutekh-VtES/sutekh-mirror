@@ -7,7 +7,7 @@
 """Display extra columns in the tree view"""
 
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.core.BaseObjects import MapPhysicalCardToPhysicalCardSet
+from sutekh.base.core.BaseTables import MapPhysicalCardToPhysicalCardSet
 from sutekh.base.core.BaseFilters import PhysicalCardSetFilter, FilterAndBox
 from sutekh.core.Filters import CryptCardFilter
 from sutekh.base.gui.plugins.BaseExtraColumns import (get_number,
