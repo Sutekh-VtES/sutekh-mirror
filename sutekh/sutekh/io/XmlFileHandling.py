@@ -109,7 +109,7 @@ class PhysicalCardSetXmlFile(object):
         """Write the given card set to the file"""
         oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            sFileName = safe_filename(sPhysicalCardSetName)
+            sFileName = safe_filename(sPhysicalCardSetName) + '.xml'
             fOut = open(sFileName, 'w')
         else:
             fOut = open(self.sXmlFile, 'w')
