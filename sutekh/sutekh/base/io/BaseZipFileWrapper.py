@@ -17,6 +17,7 @@ from logging import Logger
 from sqlobject import sqlhub
 
 from ..core.BaseTables import PhysicalCardSet, PHYSICAL_SET_LIST
+from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.CardLookup import DEFAULT_LOOKUP
 from ..core.CardSetHolder import CachedCardSetHolder, CardSetWrapper
 from ..core.DBUtility import refresh_tables
@@ -79,7 +80,7 @@ class BaseZipFileWrapper(object):
         self.oZip.close()
         self.oZip = None
 
-    def write_pcs_list_to_zip(self, aPCSList, oLogger):
+    def _write_pcs_list_to_zip(self, aPCSList, oLogger):
         """Write the given list of card sets to the zip file"""
         bClose = False
         tTime = datetime.datetime.now().timetuple()
@@ -234,9 +235,16 @@ class BaseZipFileWrapper(object):
                     oLogHandler.set_total(iTotal)
                 else:
                     oLogHandler.set_total(len(aCSList))
-        aPCSList = self.write_pcs_list_to_zip(aCSList, oLogger)
+        aPCSList = self._write_pcs_list_to_zip(aCSList, oLogger)
         self._close_zip()
         return aPCSList
+
+    def dump_cs_names_to_zip(self, aCSNames, oLogHandler=None):
+        """Utility function to dump a list of CS names to a zip"""
+        aCSList = []
+        for sName in aCSNames:
+            aCSList.append(IPhysicalCardSet(sName))
+        return self.do_dump_list_to_zip(aCSList, oLogHandler)
 
     def get_all_entries(self):
         """Return the list of card sets in the zip file"""
