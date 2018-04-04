@@ -67,5 +67,6 @@ class TestGuessFileParser(SutekhTest):
                                  oHolder1.get_cards(), oHolder2.get_cards(),
                                  oGuessParser.oChosenParser, cCorrectParser))
 
+
 if __name__ == "__main__":
     unittest.main()

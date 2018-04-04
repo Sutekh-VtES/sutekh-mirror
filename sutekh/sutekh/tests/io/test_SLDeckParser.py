@@ -62,5 +62,6 @@ class TestSLDeckParser(SutekhTest):
             "MAY SPAN ON MULTIPLE LINES",
         ]))
 
+
 if __name__ == "__main__":
     unittest.main()

@@ -59,5 +59,6 @@ class TestJOLDeckParser(SutekhTest):
         self.failUnless(("The Path of Blood", 2) in aCards)
         self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
 
+
 if __name__ == "__main__":
     unittest.main()

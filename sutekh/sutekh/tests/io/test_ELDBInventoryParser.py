@@ -48,5 +48,6 @@ class TestELDBInventoryParser(SutekhTest):
         # We don't need to test that the 0,0 entries have been skipped, as
         # that's covered by the len test
 
+
 if __name__ == "__main__":
     unittest.main()

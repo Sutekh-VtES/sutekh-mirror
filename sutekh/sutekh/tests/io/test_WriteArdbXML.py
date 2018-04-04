@@ -165,5 +165,6 @@ class ArdbXMLWriterTests(SutekhTest):
 
         self.assertEqual(sData, EXPECTED_1)
 
+
 if __name__ == "__main__":
     unittest.main()

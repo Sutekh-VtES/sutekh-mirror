@@ -177,5 +177,6 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(oACSCardSet1.parent, None)
         self.assertEqual(oACSCardSet2.parent, None)
 
+
 if __name__ == "__main__":
     unittest.main()

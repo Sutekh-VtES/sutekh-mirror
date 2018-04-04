@@ -736,5 +736,6 @@ class FilterTests(SutekhTest):
                              '%s != expected %s for guess %s' % (
                                  aNames, aExpectedNames, sGuess))
 
+
 if __name__ == "__main__":
     unittest.main()
