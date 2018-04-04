@@ -54,7 +54,7 @@ A third line</comment>
   <card count="1" expansion="Third Edition" name="Abbot" />
   <card count="1" expansion="None Specified" name="Abebe" />
   <card count="1" expansion="None Specified" name="Abombwe" />
-  <card count="1" expansion="Dark Sovereigns" name="Alexandra" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra" />
 </physicalcardset>"""
 
 EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.3">
@@ -68,7 +68,7 @@ A third line</comment>
   <card count="1" expansion="Third Edition" name="Abbot" />
   <card count="1" expansion="None Specified" name="Abebe" />
   <card count="1" expansion="None Specified" name="Abombwe" />
-  <card count="1" expansion="Dark Sovereigns" name="Alexandra" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra" />
 </physicalcardset>"""
 
 # pylint: enable=line-too-long

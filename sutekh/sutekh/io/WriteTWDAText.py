@@ -23,9 +23,10 @@
    ...
 
    Library (77 cards)
-   Master (3)
+   Master (4; 1 trifle)
      2x Barrens, The
      1x Sudden Reversal
+     1x Wash
 
    Action (20)
      2x Blithe Acceptance
@@ -66,6 +67,18 @@ SECTION_ORDER = (
 )
 
 
+def format_avg(fAvg):
+    """The TWDA doesn't want trailing zeros in the average, so we
+       strip those here"""
+    iIntPart = int(fAvg)
+    fFracPart = fAvg - iIntPart
+    sResult = '%d' % iIntPart
+    if fFracPart > 0.001:
+        sFrac = '%.2g' % fFracPart
+        sResult += sFrac[1:]
+    return sResult
+
+
 class WriteTWDAText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
@@ -93,10 +106,11 @@ class WriteTWDAText(ArdbInfo):
            dCards is mapping of (card id, card name) -> card count.
            """
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
+        dCryptStats['formatted_avg'] = format_avg(dCryptStats['avg'])
         dCombinedVamps = self._group_sets(dVamps)
 
         sCryptLine = "Crypt (%(size)d cards, min=%(minsum)d, " \
-                     "max=%(maxsum)d, avg=%(avg).2f)" \
+                     "max=%(maxsum)d, avg=%(formatted_avg)s)" \
                      % dCryptStats
         sCrypt = sCryptLine + '\n' + '-' * len(sCryptLine) + '\n'
 
@@ -209,7 +223,7 @@ class WriteTWDAText(ArdbInfo):
                 if sTypeString == 'Master':
                     iTrifles = self._count_trifles(dLib)
                     if iTrifles:
-                        sLib += "%s (%d, %d trifle)\n" % (sTypeString,
+                        sLib += "%s (%d; %d trifle)\n" % (sTypeString,
                                                           iTotal, iTrifles)
                     else:
                         sLib += "%s (%d)\n" % (sCandidate, iTotal)

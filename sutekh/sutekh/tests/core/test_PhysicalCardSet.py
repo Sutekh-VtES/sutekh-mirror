@@ -11,7 +11,7 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
-from sutekh.base.core.BaseAdapters import IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCardSet
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 
@@ -42,7 +42,7 @@ CARD_EXPANSIONS = [
 ]
 
 SET_2_ONLY_CARDS = [
-    ('alexandra', 'DS', 1),
+    ('alexandra', 'DS', 2),
     ('Abandoning the Flesh', 'CE', 1),
 ]
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
@@ -94,6 +94,28 @@ def make_set_2():
             oPhysCardSet2.addPhysicalCard(oPC.id)
     oPhysCardSet2.syncUpdate()
     return oPhysCardSet2
+
+
+def make_set_3():
+    """Copy of the second card set with Abebe dropped"""
+    aAddedPhysCards = get_phys_cards()
+    oPhysCardSet3 = PhysicalCardSet(name=CARD_SET_NAMES[2])
+
+    oPhysCardSet3.comment = ('A formatted test comment\nA second line\n'
+                             'A third line')
+    oPhysCardSet3.author = 'A test author'
+    oPhysCardSet3.annotations = 'Some Annotations'
+    for iLoop in range(5, 10):
+        oPC = aAddedPhysCards[iLoop]
+        if IAbstractCard(oPC).name == 'Abebe':
+            continue
+        oPhysCardSet3.addPhysicalCard(oPC.id)
+    for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
+        oPC = make_card(sName, sExpansion)
+        for _iNum in range(iCount):
+            oPhysCardSet3.addPhysicalCard(oPC.id)
+    oPhysCardSet3.syncUpdate()
+    return oPhysCardSet3
 
 
 class PhysicalCardSetTests(SutekhTest):
@@ -199,6 +221,7 @@ class PhysicalCardSetTests(SutekhTest):
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
