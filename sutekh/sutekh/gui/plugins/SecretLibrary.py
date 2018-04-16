@@ -222,7 +222,7 @@ class SecretLibrary(SutekhPlugin):
     SL_USER_AGENT = "Sutekh Secret Library Plugin"
     SL_AGENT_VERSION = SutekhInfo.VERSION_STR
 
-    SL_API_URL = "http://www.secretlibrary.info/api.php"
+    SL_API_URL = "https://www.secretlibrary.info/api.php"
 
     def __init__(self, oCardListView, oCardListModel, cModelType):
         try:
