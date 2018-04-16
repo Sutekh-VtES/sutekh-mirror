@@ -341,11 +341,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 raise LookupFailed("Lookup of missing cards aborted by the"
                                    " user.")
 
-        for sName, oAbsCard in dUnknownCards.items():
-            if oAbsCard is None:
-                continue
-            dUnknownCards[sName] = oAbsCard
-
         def new_card(sName):
             """emulate python 2.5's a = x if C else y"""
             if sName in dCards:
@@ -641,9 +636,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oIter = oModel.get_iter_root()
             while oIter is not None:
                 sName, oAbsCard = oModel.get(oIter, 1, 4)
-                # GtK returns encoded strings - see get_name_from_iter in
-                # CardListModel
-                sName = sName.decode('utf-8')
+                if sName not in dUnknownCards:
+                    # GtK sometimes returns encoded strings - see
+                    # get_name_from_iter in CardListModel,
+                    sName = sName.decode('utf-8')
                 if oAbsCard is not None:
                     dUnknownCards[sName] = oAbsCard
                 oIter = oModel.iter_next(oIter)
