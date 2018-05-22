@@ -47,7 +47,7 @@ class CSVParser(object):
         else:
             sExpansionName = None
 
-        self.oCS.add(iCount, sName, sExpansionName)
+        self.oCS.add(iCount, sName, sExpansionName, None)
 
     def parse(self, fIn, oHolder):
         """Process the CSV file line into the CardSetHolder"""

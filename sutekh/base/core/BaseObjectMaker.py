@@ -9,9 +9,10 @@
 from sqlobject import SQLObjectNotFound
 
 from .BaseTables import (CardType, Expansion, Rarity, RarityPair,
-                         PhysicalCard, Ruling, Keyword, Artist)
+                         PhysicalCard, Ruling, Keyword, Artist, Printing)
 from .BaseAdapters import (ICardType, IExpansion, IRarity, IRarityPair,
-                           IPhysicalCard, IRuling, IKeyword, IArtist)
+                           IPhysicalCard, IRuling, IKeyword, IArtist,
+                           IPrinting)
 from .BaseAbbreviations import CardTypes, Expansions, Rarities
 
 
@@ -58,11 +59,17 @@ class BaseObjectMaker(object):
         # doesn't exist?
         raise NotImplementedError
 
-    def make_physical_card(self, oCard, oExp):
+    def make_physical_card(self, oCard, oPrinting):
         try:
-            return IPhysicalCard((oCard, oExp))
+            return IPhysicalCard((oCard, oPrinting))
         except SQLObjectNotFound:
-            return PhysicalCard(abstractCard=oCard, expansion=oExp)
+            return PhysicalCard(abstractCard=oCard, printing=oPrinting)
+
+    def make_default_printing(self, oExp):
+        try:
+            return IPrinting((oExp, None))
+        except SQLObjectNotFound:
+            return Printing(name=None, expansion=oExp)
 
     def make_rarity_pair(self, sExp, sRarity):
         try:

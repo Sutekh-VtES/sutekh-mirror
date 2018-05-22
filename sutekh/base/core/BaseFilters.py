@@ -25,6 +25,7 @@ from sqlobject.sqlbuilder import (Table, Alias, LEFTJOINOn, Select,
 
 from .BaseTables import (AbstractCard, CardType, Expansion, RarityPair,
                          PhysicalCardSet, PhysicalCard, Artist, Keyword,
+                         Printing,
                          MapPhysicalCardToPhysicalCardSet)
 from .BaseAdapters import (IAbstractCard, IPhysicalCardSet, IRarityPair,
                            IExpansion, ICardType, IRarity, IArtist,
@@ -738,17 +739,21 @@ class PhysicalExpansionFilter(DirectFilter):
     # We must be calling this with a PhysicalCardFilter for sensible results,
     # so we don't need any special join magic
     def __init__(self, sExpansion):
+        self._aPrintings = []
         if sExpansion is not None:
-            self._iId = IExpansion(sExpansion).id
-        else:
-            # physical Expansion can explicity be None
-            self._iId = None
+            iId = IExpansion(sExpansion).id
+            # Find all the printings with this ID
+            self._aPrintings = [x.id for x in Printing.selectBy(expansion=iId)]
+
 
     # pylint: disable=C0111
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         oTable = Table('physical_card')
-        return oTable.expansion_id == self._iId
+        if self._aPrintings:
+            return IN(oTable.printing_id, self._aPrintings)
+        # None case
+        return oTable.printing_id == None
 
 
 class MultiPhysicalExpansionFilter(DirectFilter):
@@ -766,7 +771,9 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         self.__bOrUnspec = False
         for sExpansion in aExpansions:
             if sExpansion is not None and sExpansion != self.__sUnspec:
-                self._aIds.append(IExpansion(sExpansion).id)
+                iId = IExpansion(sExpansion).id
+                self._aIds.extend([x.id for x in
+                                   Printing.selectBy(expansion=iId)])
             else:
                 self.__bOrUnspec = True
 
@@ -785,13 +792,13 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         # pylint: disable=singleton-comparison
         # == None syntax required for SQLObject
         if self.__bOrUnspec and self._aIds:
-            return OR(IN(oTable.expansion_id, self._aIds),
-                      oTable.expansion_id == None)
+            return OR(IN(oTable.printing_id, self._aIds),
+                      oTable.printing_id == None)
         elif self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
-            return oTable.expansion_id == None
+            return oTable.printing_id == None
         else:
-            return IN(oTable.expansion_id, self._aIds)
+            return IN(oTable.printing_id, self._aIds)
 
 
 class PhysicalCardSetFilter(Filter):

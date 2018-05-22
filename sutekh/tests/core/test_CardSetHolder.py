@@ -38,7 +38,7 @@ class CardSetHolderTests(SutekhTest):
 
         for sCardName, aInfo in dSet1.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
                 oThisExp = IExpansion(sExpName)
             else:
@@ -99,7 +99,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         oCSH.name = 'Test Set 3'
 
@@ -131,7 +131,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet3.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         aExpectedExpansions = [None] * 5
 
@@ -181,7 +181,7 @@ class CardSetHolderTests(SutekhTest):
 
         for sCardName, aInfo in dSet1.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
                 oThisExp = IExpansion(sExpName)
             else:
@@ -249,7 +249,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         oCSH.name = 'Test Set 3'
 
@@ -283,7 +283,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet3.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         aExpectedExpansions = [None] * 5
 

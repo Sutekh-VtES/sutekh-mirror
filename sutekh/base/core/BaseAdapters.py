@@ -14,7 +14,7 @@ from sqlobject import SQLObjectNotFound
 
 from .BaseTables import (LookupHints, AbstractCard, PhysicalCard,
                          PhysicalCardSet, MapPhysicalCardToPhysicalCardSet,
-                         Keyword, Ruling, RarityPair, Expansion,
+                         Keyword, Ruling, RarityPair, Expansion, Printing,
                          Rarity, CardType, Artist)
 from .BaseAbbreviations import CardTypes, Expansions, Rarities
 from ..Utility import move_articles_to_front
@@ -65,11 +65,17 @@ def IExpansion(oUnknown):
     """Default Expansion adapter"""
     return fail_adapt(oUnknown, 'Expansion')
 
+@singledispatch
+def IPrinting(oUnknown):
+    """Default Printing adapter"""
+    return fail_adapt(oUnknown, 'Printing')
+
 
 @singledispatch
-def IExpansionName(oUnknown):
-    """Default Expansion Name adapter"""
-    return fail_adapt(oUnknown, 'ExpansionName')
+def IPrintingName(oUnknown):
+    """Default Printing Name adapter"""
+    return fail_adapt(oUnknown, 'Printing')
+
 
 
 @singledispatch
@@ -209,6 +215,7 @@ class RarityPairAdapter(Adapter):
 
 IRarityPair.register(RarityPair, passthrough)
 
+
 IRarityPair.register(tuple, RarityPairAdapter.lookup)
 
 
@@ -324,6 +331,7 @@ class PhysicalCardToAbstractCardAdapter(Adapter):
             cls.__dCache[oPhysCard.abstractCardID] = oCard
         return oCard
 
+
 IAbstractCard.register(PhysicalCard, PhysicalCardToAbstractCardAdapter.lookup)
 
 
@@ -343,6 +351,7 @@ class PhysicalCardMappingToPhysicalCardAdapter(Adapter):
             cls.__dCache[oMapPhysCard.physicalCardID] = oCard
         return oCard
 
+
 IPhysicalCard.register(MapPhysicalCardToPhysicalCardSet,
                        PhysicalCardMappingToPhysicalCardAdapter.lookup)
 
@@ -354,8 +363,55 @@ def map_pcs_to_pcs(oMapPhysCard):
     return oMapPhysCard.physicalCardSet
 
 
-class ExpansionNameAdapter(Adapter):
-    """Converts PhysicalCard expansionID to name, used a lot in the gui"""
+class PrintingAdapter(Adapter):
+
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+        # pre-populate cache with mappings to default printings
+        # (name is None)
+        try:
+            for oPrinting in Printing.select(
+                    PhysicalCard.q.name == None):
+                cls.__dCache[(oPrinting.expansionID, None)] = oPrinting
+        except AttributeError:
+            # Old SQLObject doesn't like this construction if the database
+            # is empty, so, as we can't sensibly fill the cache anyway, we
+            # just skip
+            pass
+
+    @classmethod
+    def lookup(cls, tData):
+        oExp, sPrintingName = tData
+        oPrinting = cls.__dCache.get((oExp.id, sPrintingName), None)
+        if oPrinting is None:
+            oPrinting = Printing.selectBy(expansion=oExp,
+                                          name=sPrintingName).getOne()
+            cls.__dCache[(oExp.id, sPrintingName)] = oPrinting
+        return oPrinting
+
+
+IPrinting.register(Printing, passthrough)
+
+
+IPrinting.register(tuple, PrintingAdapter.lookup)
+
+
+@IPrintingName.register(Printing)
+def get_exp_printing_name(oPrint):
+    """Return the canonical name of a printing"""
+    sExpName = oPrint.expansion.name
+    if oPrint.name:
+        sName = '%s (%s)' % (sExpName, oPrint.name)
+    else:
+        sName = sExpName
+    return sName
+
+
+class PrintingNameAdapter(Adapter):
+    """Converts PhysicalCard printing to name, used a lot in the gui"""
 
     __dCache = {}
     sUnknownExpansion = '  Unspecified Expansion'  # canonical version
@@ -366,17 +422,17 @@ class ExpansionNameAdapter(Adapter):
 
     @classmethod
     def lookup(cls, oPhysCard):
-        sExpName = cls.__dCache.get(oPhysCard.expansionID, None)
-        if sExpName is None:
-            if oPhysCard.expansionID:
-                sExpName = oPhysCard.expansion.name
+        sName = cls.__dCache.get(oPhysCard.printingID, None)
+        if sName is None:
+            if oPhysCard.printingID:
+                sName = get_exp_printing_name(oPhysCard.printing)
             else:
-                sExpName = cls.sUnknownExpansion
-            cls.__dCache[oPhysCard.expansionID] = sExpName
-        return sExpName
+                sName = cls.sUnknownExpansion
+            cls.__dCache[oPhysCard.printingID] = sName
+        return sName
 
 
-IExpansionName.register(PhysicalCard, ExpansionNameAdapter.lookup)
+IPrintingName.register(PhysicalCard, PrintingNameAdapter.lookup)
 
 
 class PhysicalCardMappingToAbstractCardAdapter(Adapter):
@@ -395,6 +451,7 @@ class PhysicalCardMappingToAbstractCardAdapter(Adapter):
             cls.__dCache[oMapPhysCard.physicalCardID] = oCard
         return oCard
 
+
 IAbstractCard.register(MapPhysicalCardToPhysicalCardSet,
                        PhysicalCardMappingToAbstractCardAdapter.lookup)
 
@@ -412,7 +469,7 @@ class PhysicalCardAdapter(Adapter):
         # The '== None' is required for constructing the select statement
         try:
             for oPhysicalCard in PhysicalCard.select(
-                    PhysicalCard.q.expansion == None):
+                    PhysicalCard.q.printing == None):
                 oAbsCard = oPhysicalCard.abstractCard
                 cls.__dCache[(oAbsCard.id, None)] = oPhysicalCard
         except AttributeError:
@@ -425,14 +482,15 @@ class PhysicalCardAdapter(Adapter):
     def lookup(cls, tData):
         # pylint: disable=E1101
         # SQLObject confuses pylint
-        oAbsCard, oExp = tData
+        oAbsCard, oPrinting = tData
         # oExp may be None, so we don't use oExp.id here
-        oPhysicalCard = cls.__dCache.get((oAbsCard.id, oExp), None)
+        oPhysicalCard = cls.__dCache.get((oAbsCard.id, oPrinting), None)
         if oPhysicalCard is None:
             oPhysicalCard = PhysicalCard.selectBy(abstractCard=oAbsCard,
-                                                  expansion=oExp).getOne()
-            cls.__dCache[(oAbsCard.id, oExp)] = oPhysicalCard
+                                                  printing=oPrinting).getOne()
+            cls.__dCache[(oAbsCard.id, oPrinting)] = oPhysicalCard
         return oPhysicalCard
+
 
 IPhysicalCard.register(tuple, PhysicalCardAdapter.lookup)
 

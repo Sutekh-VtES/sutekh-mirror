@@ -18,7 +18,8 @@ from logging import FileHandler
 import gtk
 from nose import SkipTest
 
-from ..core.BaseAdapters import IAbstractCard, IPhysicalCard, IExpansion
+from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
+                                 IPrinting)
 
 
 def make_card(sCardName, sExpName):
@@ -27,10 +28,11 @@ def make_card(sCardName, sExpName):
        Handle None for the expansion name properly"""
     if sExpName:
         oExp = IExpansion(sExpName)
+        oPrinting = IPrinting((oExp, None))
     else:
-        oExp = None
+        oPrinting = None
     oAbs = IAbstractCard(sCardName)
-    oCard = IPhysicalCard((oAbs, oExp))
+    oCard = IPhysicalCard((oAbs, oPrinting))
     return oCard
 
 
@@ -132,10 +134,10 @@ class DummyHolder(object):
         self.author = ''
         self.annotations = ''
 
-    def add(self, iCnt, sName, sExpName):
+    def add(self, iCnt, sName, sExpName, sPrintingName):
         """Add a card to the dummy holder."""
-        self.dCards.setdefault((sName, sExpName), 0)
-        self.dCards[(sName, sExpName)] += iCnt
+        self.dCards.setdefault((sName, sExpName, sPrintingName), 0)
+        self.dCards[(sName, sExpName, sPrintingName)] += iCnt
 
     def get_cards_exps(self):
         """Get the cards with expansions"""
@@ -144,9 +146,10 @@ class DummyHolder(object):
     def get_cards(self):
         """Get the card info without expansions"""
         dNoExpCards = {}
-        for sCardName, sExpName in self.dCards:
+        for tKey in self.dCards:
+            sCardName = tKey[0]
             dNoExpCards.setdefault(sCardName, 0)
-            dNoExpCards[sCardName] += self.dCards[(sCardName, sExpName)]
+            dNoExpCards[sCardName] += self.dCards[tKey]
         return dNoExpCards.items()
 
 

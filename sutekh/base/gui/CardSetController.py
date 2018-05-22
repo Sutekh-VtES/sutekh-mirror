@@ -74,7 +74,7 @@ class CardSetController(object):
             # we will prefer removing cards without expansion information if
             # they are present.
 
-            if not oPhysCard.expansion:
+            if not oPhysCard.printing:
                 iCardCount = MapPhysicalCardToPhysicalCardSet.selectBy(
                     physicalCardID=oPhysCard.id,
                     physicalCardSetID=oThePCS.id).count()

@@ -12,7 +12,8 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion, IRarity, IRarityPair,
-                                           ICardType, IArtist, IKeyword)
+                                           ICardType, IArtist, IKeyword,
+                                           IPrinting)
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
@@ -200,7 +201,8 @@ class WhiteWolfParserTests(SutekhTest):
             aExps = [oPair.expansion for oPair in oAbs.rarity]
             for oExp in aExps:
                 try:
-                    _oPair = IPhysicalCard((oAbs, oExp))
+                    oPrint = IPrinting((oExp, None))
+                    _oPair = IPhysicalCard((oAbs, oPrint))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))

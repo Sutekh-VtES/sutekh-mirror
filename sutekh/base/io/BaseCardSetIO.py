@@ -47,7 +47,13 @@ class BaseCardXMLParser(BaseXMLParser):
                 sExpansionName = None
         except KeyError:
             sExpansionName = None
-        oHolder.add(iCount, sName, sExpansionName)
+        try:
+            sPrinting = oElem.attrib['printing']
+            if sPrinting == "No Printing":
+                sPrinting = None
+        except KeyError:
+            sPrinting = None
+        oHolder.add(iCount, sName, sExpansionName, sPrinting)
 
 
 class BaseCardSetParser(BaseCardXMLParser):
@@ -135,18 +141,22 @@ class BaseCardXMLWriter(BaseXMLWriter):
             # so this is easier than using the tree directly. For
             # ElementTree 1.3, this should be reworked
             oAbs = oCard.abstractCard
-            if oCard.expansion:
-                sExpName = oCard.expansion.name
+            if oCard.printing:
+                sExpName = oCard.printing.expansion.name
+                sPrinting = oCard.printing.name
+                if sPrinting is None:
+                    sPrinting = 'No Printing'
             else:
                 sExpName = 'None Specified'
-            tKey = (oAbs.name, sExpName)
+                sPrinting = 'No Printing'
+            tKey = (oAbs.name, sExpName, sPrinting)
             dPhys.setdefault(tKey, 0)
             dPhys[tKey] += 1
 
         # we sort by card name & expansion, as makes results more predictable
         for tKey in sorted(dPhys):
             iNum = dPhys[tKey]
-            sName, sExpName = tKey
+            sName, sExpName, sPrinting = tKey
             SubElement(oRoot, 'card', name=sName, count=str(iNum),
-                       expansion=sExpName)
+                       expansion=sExpName, printing=sPrinting)
         return oRoot

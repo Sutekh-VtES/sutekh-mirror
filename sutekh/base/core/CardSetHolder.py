@@ -36,37 +36,40 @@ class CardSetHolder(object):
 
     # Manipulate Virtual Card Set
 
-    def add(self, iCnt, sName, sExpansionName):
+    def add(self, iCnt, sName, sExpansionName, sPrintingName):
         """Append cards to the virtual set.
 
            sExpansionName may be None.
            """
         self._dCards.setdefault(sName, 0)
         self._dCards[sName] += iCnt
-        self._dExpansions.setdefault(sExpansionName, 0)
-        self._dExpansions[sExpansionName] += iCnt
+        tExp = (sExpansionName, sPrintingName)
+        self._dExpansions.setdefault(tExp, 0)
+        self._dExpansions[tExp] += iCnt
         self._dCardExpansions.setdefault(sName, {})
-        self._dCardExpansions[sName].setdefault(sExpansionName, 0)
-        self._dCardExpansions[sName][sExpansionName] += iCnt
+        self._dCardExpansions[sName].setdefault(tExp, 0)
+        self._dCardExpansions[sName][tExp] += iCnt
 
-    def remove(self, iCnt, sName, sExpansionName):
+    def remove(self, iCnt, sName, sExpansionName, sPrintingName):
         """Remove cards from the virtual set.
 
            sExpansionName may be None.
            """
+        tExp = (sExpansionName, sPrintingName)
         if sName not in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'."
                                % (sName, iCnt))
         elif sName not in self._dCardExpansions \
-                or sExpansionName not in self._dCardExpansions[sName] \
-                or self._dCardExpansions[sName][sExpansionName] < iCnt:
+                or tExp not in self._dCardExpansions[sName] \
+                or self._dCardExpansions[sName][tExp] < iCnt:
             raise RuntimeError("Not enough of card '%s' from expansion"
-                               " '%s' to remove '%d'." % (sName,
+                               " '%s (%s)' to remove '%d'." % (sName,
                                                           sExpansionName,
+                                                          sPrintingName,
                                                           iCnt))
-        self._dCardExpansions[sName][sExpansionName] -= iCnt
+        self._dCardExpansions[sName][tExp] -= iCnt
         # This should be covered by check on self._dCardExpansions
-        self._dExpansions[sExpansionName] -= iCnt
+        self._dExpansions[tExp] -= iCnt
         self._dCards[sName] -= iCnt
 
     def _set_name(self, sValue):
@@ -194,11 +197,11 @@ class CardSetWrapper(CardSetHolder):
         self._oCS = oCS
         self._aWarnings = []  # Any warnings to be passed back to the user
 
-    def add(self, iCnt, sName, sExpansionName):
+    def add(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to append cards."""
         raise NotImplementedError("CardSetWrapper is read-only")
 
-    def remove(self, iCnt, sName, sExpansionName):
+    def remove(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to remove cards."""
         raise NotImplementedError("CardSetWrapper is read-only")
 
@@ -323,8 +326,10 @@ def make_card_set_holder(oCardSet):
     if oCardSet.parent:
         oCS.parent = oCardSet.parent.name
     for oCard in oCardSet.cards:
-        if oCard.expansion is None:
-            oCS.add(1, oCard.abstractCard.canonicalName, None)
+        if oCard.printing is None:
+            oCS.add(1, oCard.abstractCard.canonicalName, None, None)
         else:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
+            oCS.add(1, oCard.abstractCard.canonicalName,
+                    oCard.printing.expansion.name,
+                    oCard.printing.name)
     return oCS
