@@ -48,5 +48,6 @@ class TestCSVParser(SutekhTest):
             self.failUnless(("The Siamese", 2) in aCards)
             self.failUnless(("Abbot", 2) in aCards)
 
+
 if __name__ == "__main__":
     unittest.main()

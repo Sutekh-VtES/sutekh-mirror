@@ -113,5 +113,6 @@ class ELDBInventoryWriterTests(SutekhTest):
                              sorted(sData.splitlines()),
                              sorted(EXPECTED.splitlines())))
 
+
 if __name__ == "__main__":
     unittest.main()

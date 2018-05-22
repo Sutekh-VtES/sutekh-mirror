@@ -77,5 +77,6 @@ class TestELDBDeckFileParser(SutekhTest):
         self.failUnless(('Scapelli, The Family "Mechanic"', 1) in aCards)
         self.failUnless(("The Path of Blood", 1) in aCards)
 
+
 if __name__ == "__main__":
     unittest.main()

@@ -46,5 +46,6 @@ class TestIdentifyXMLFile(SutekhTest):
         oIdFile.parse(StringIO(PCS_EXAMPLE_1))
         self.assertEqual(oIdFile.type, 'PhysicalCardSet')
 
+
 if __name__ == "__main__":
     unittest.main()

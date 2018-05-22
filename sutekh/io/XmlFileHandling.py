@@ -109,10 +109,10 @@ class PhysicalCardSetXmlFile(object):
         """Write the given card set to the file"""
         oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            sFileName = safe_filename(sPhysicalCardSetName)
-            fOut = open(sFileName, 'w')
+            sFileName = safe_filename(sPhysicalCardSetName) + '.xml'
         else:
-            fOut = open(self.sXmlFile, 'w')
+            sFileName = self.sXmlFile
+        fOut = open(sFileName, 'w')
         try:
             oPCS = IPhysicalCardSet(sPhysicalCardSetName)
         except SQLObjectNotFound:
@@ -120,6 +120,7 @@ class PhysicalCardSetXmlFile(object):
         oHolder = CardSetWrapper(oPCS)
         oWriter.write(fOut, oHolder)
         fOut.close()
+        return sFileName
 
     def delete(self):
         """Delete the file"""

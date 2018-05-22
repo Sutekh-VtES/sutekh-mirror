@@ -173,5 +173,6 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual('Dramatic Upheaval' in aCards, True)
         self.assertEqual('Motivated by Gehenna' in aCards, True)
 
+
 if __name__ == "__main__":
     unittest.main()

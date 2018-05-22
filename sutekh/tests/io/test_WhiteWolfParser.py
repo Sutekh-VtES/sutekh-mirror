@@ -200,7 +200,7 @@ class WhiteWolfParserTests(SutekhTest):
             aExps = [oPair.expansion for oPair in oAbs.rarity]
             for oExp in aExps:
                 try:
-                    oPair = IPhysicalCard((oAbs, oExp))
+                    _oPair = IPhysicalCard((oAbs, oExp))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))
