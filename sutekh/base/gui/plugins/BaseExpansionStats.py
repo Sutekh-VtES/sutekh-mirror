@@ -27,7 +27,7 @@ class BaseExpansionStats(BasePlugin):
        list view.
        """
 
-    dTableVersions = {Expansion: (4, )}
+    dTableVersions = {Expansion: (4, 5, )}
     aModelsSupported = (PhysicalCard,)
 
     sMenuName = "Expansion Stats"

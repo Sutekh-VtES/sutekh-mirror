@@ -20,7 +20,7 @@ class BaseCardListCount(BasePlugin):
     """Listen to changes on the card list views, and display a toolbar
        containing a label with a running count of the cards in the list.
        """
-    dTableVersions = {PhysicalCard: (2,)}
+    dTableVersions = {PhysicalCard: (2, 3, )}
     aModelsSupported = (PhysicalCard,)
 
     NO_COUNT, COUNT_CARDS, COUNT_EXP = range(3)
