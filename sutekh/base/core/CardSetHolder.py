@@ -131,13 +131,19 @@ class CardSetHolder(object):
                                        'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
-        aExpNames = self._dExpansions.keys()
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                                             self._dCardExpansions)
-        dExpansionLookup = dict(zip(aExpNames, aExps))
+        aExpNames = [x[0] for x in self._dExpansions.keys()]
+        dExpansionLookup = oCardLookup.expansion_lookup(aExpNames,
+                                                        "Physical Card List",
+                                                        self._dCardExpansions)
+
+        aExpPrintNames = self._dExpansions.keys()
+        dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
+                                                      "Physical Card List",
+                                                      dExpansionLookup,
+                                                      self._dCardExpansions)
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                                                 dNameCards, dExpansionLookup,
+                                                 dNameCards, dPrintingLookup,
                                                  'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):
@@ -285,17 +291,20 @@ class CachedCardSetHolder(CardSetHolder):
                 dLookupCache['cards'][sName] = oAbs.canonicalName
 
         # Apply Expansion lookups
-        aExpNames = [dLookupCache['expansions'].get(sExp, sExp) for sExp
-                     in self._dExpansions]
+        aExpNames = [
+            dLookupCache['expansions'].get(sExpPrint[0], sExpPrint[0])
+            for sExpPrint in self._dExpansions]
         dCardExpansions = {}
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
-            for sExp, iCnt in self._dCardExpansions[sName].iteritems():
-                dCardExpansions[sName][dLookupCache['expansions'].get(
-                    sExp, sExp)] = iCnt
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                                             self._dCardExpansions)
-        dExpansionLookup = dict(zip(aExpNames, aExps))
+            for tExpPrint, iCnt in self._dCardExpansions[sName].iteritems():
+                sExp = tExpPrint[0]
+                sExp = dLookupCache['expansions'].get(sExp, sExp)
+                tNewExpPrint = (sExp, tExpPrint[1])
+                dCardExpansions[sName][tNewExpPrint] = iCnt
+        dExpansionLookup = oCardLookup.expansion_lookup(aExpNames,
+                                                        "Physical Card List",
+                                                        dCardExpansions)
         # Update expansion lookup cache
         for sName, oExp in dExpansionLookup.iteritems():
             if not oExp:
@@ -303,8 +312,14 @@ class CachedCardSetHolder(CardSetHolder):
             else:
                 dLookupCache['expansions'][sName] = oExp.name
 
+        aExpPrintNames = self._dExpansions.keys()
+        dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
+                                                      "Physical Card List",
+                                                      dExpansionLookup,
+                                                      dCardExpansions)
+
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
-                                                 dNameCards, dExpansionLookup,
+                                                 dNameCards, dPrintingLookup,
                                                  'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):

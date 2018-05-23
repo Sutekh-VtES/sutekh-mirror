@@ -7,7 +7,7 @@
    """
 
 from sqlobject import SQLObjectNotFound
-from .BaseAdapters import IPhysicalCard, IExpansion, IAbstractCard
+from .BaseAdapters import IPhysicalCard, IExpansion, IAbstractCard, IPrinting
 
 
 class LookupFailed(Exception):
@@ -37,7 +37,8 @@ class PhysicalCardLookup(object):
        into physical card objects
        """
 
-    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNamePrintings,
+                        sInfo):
         """Returns a list of physical cards. Since physical cards can't
            be repeated, this is a list of statisfable requests.
 
@@ -64,14 +65,31 @@ class ExpansionLookup(object):
        """
 
     def expansion_lookup(self, aExpansionNames, sInfo, dCardExpansions):
-        """Return a list of Expansions, one for each item in aExpansionNames.
+        """Return a mapping from the entries of aExpansionNames to the correct
+           expansion.
 
-           Names for which Expansions could not be found will be marked with
-           a None in the returned list. The method may raise LookupFailed if
-           the entire list should be considered invalid (e.g. if the names
-           are presented to a user who then cancels the operation).
+           Names for which Expansions could not be found will be mapped to None.
+
+           The method may raise LookupFailed if the entire list should be
+           considered invalid (e.g. if the names are presented to a user who
+           then cancels the operation).
            """
         raise NotImplementedError
+
+    def printing_lookup(self, aExpPrintNames, sInfo, dExpansionLookup,
+                        dCardExpansions):
+        """Return a dictionary mapping entries in aExpPrintNames to
+           the corresponding print info.
+
+           dExpansionLookup is a mapping created from the results of
+           expansion_lookup. This should only be called after calling
+           expansion_lookup.
+
+           Names for which printings could not be found will be marked as
+           None. This method may raise LookupFailed if the entire list
+           should be considered invalid."""
+        raise NotImplementedError
+
 
 
 class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
@@ -94,18 +112,19 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 aCards.append(None)
         return aCards
 
-    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, _sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNamePrintings,
+                         _sInfo):
         """Lookup cards in the physical card set, excluding unknown cards."""
         aCards = []
         for sName in dCardExpansions:
             oAbs = dNameCards[sName]
             if oAbs is not None:
-                for sExpansionName in dCardExpansions[sName]:
+                for tExpPrint in dCardExpansions[sName]:
                     try:
-                        iCnt = dCardExpansions[sName][sExpansionName]
-                        oExpansion = dNameExps[sExpansionName]
+                        iCnt = dCardExpansions[sName][tExpPrint]
+                        oPrinting = dNamePrintings[tExpPrint]
                         aCards.extend(
-                            [IPhysicalCard((oAbs, oExpansion))] * iCnt)
+                            [IPhysicalCard((oAbs, oPrinting))] * iCnt)
                     except SQLObjectNotFound:
                         # This card is missing from the PhysicalCard list, so
                         # skipped
@@ -124,7 +143,26 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     aExps.append(None)
             else:
                 aExps.append(None)
-        return aExps
+        return dict(zip(aExpansionNames, aExps))
+
+    def printing_lookup(self, aExpPrintNames, _sInfo, dExpansionLookup,
+                        _dCardExpansions):
+        """Lookup for printing names, excluding unkown expansions or
+           printings."""
+        dPrintings = {}
+        for sExp, sPrintName in aExpPrintNames:
+            dPrintings.setdefault((sExp, sPrintName), None)
+            oTrueExp = dExpansionLookup.get(sExp, None)
+            if not oTrueExp:
+                # Skip this lookup
+                continue
+            try:
+                oPrinting = IPrinting((oTrueExp, sPrintName))
+            except SQLObjectNotFound:
+                # default to the no printing case
+                oPrinting = IPrinting((oTrueExp, None))
+            dPrintings[(sExp, sPrintName)] = oPrinting
+        return dPrintings
 
 
 DEFAULT_LOOKUP = SimpleLookup()

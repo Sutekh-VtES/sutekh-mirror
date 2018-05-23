@@ -14,7 +14,7 @@ from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCard,
                                          Expansion, PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
-                                           IExpansion)
+                                           IExpansion, IPrinting)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 
@@ -90,7 +90,8 @@ class FilterTests(SutekhTest):
                 if oExp not in aAllowedExpansions:
                     continue
                 try:
-                    aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
+                    oPrint = IPrinting((oExp, None))
+                    aPhysicalCards.append(IPhysicalCard((oAbs, oPrint)))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))
@@ -474,9 +475,9 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter,
-                                 [(IAbstractCard(x).name, x.expansion)
+                                 [(IAbstractCard(x).name, x.printing)
                                   for x in aCards],
-                                 [(IAbstractCard(x).name, x.expansion)
+                                 [(IAbstractCard(x).name, x.printing)
                                   for x in aExpectedCards]))
 
     def test_multi_filters(self):

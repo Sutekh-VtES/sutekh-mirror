@@ -350,7 +350,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return [new_card(sName) for sName in aNewNames]
 
-    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNamePrintings,
+                        sInfo):
         """Lookup missing physical cards.
 
            Provides an implementation for PhysicalCardLookup.
@@ -362,15 +363,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oAbs = dNameCards[sName]
             if oAbs is None:
                 continue
-            for sExpansionName in dCardExpansions[sName]:
-                iCnt = dCardExpansions[sName][sExpansionName]
-                oExpansion = dNameExps[sExpansionName]
+            for tExpPrint in dCardExpansions[sName]:
+                iCnt = dCardExpansions[sName][tExpPrint]
+                oPrinting = dNamePrintings[tExpPrint]
                 if iCnt > 0:
                     try:
                         aCards.extend(
-                            [IPhysicalCard((oAbs, oExpansion))] * iCnt)
+                            [IPhysicalCard((oAbs, oPrinting))] * iCnt)
                     except SQLObjectNotFound:
-                        dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
+                        dUnknownCards[(oAbs.name, tExpPrint)] = iCnt
 
         if dUnknownCards:
             # We need to lookup cards in the physical card view
@@ -422,7 +423,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             else:
                 return dUnknownExps[sName]
 
-        return [new_exp(sName) for sName in aExpansionNames]
+        aExps = [new_exp(sName) for sName in aExpansionNames]
+        return dict(zip(aExpansionNames, aExps))
 
     def _handle_unknown_physical_cards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
@@ -442,9 +444,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oModel = oReplacementView.get_model()
 
         # Populate the model with the card names and best guesses
-        for (sName, sExpName), iCnt in dUnknownCards.items():
+        for (sName, tExpPrint), iCnt in dUnknownCards.items():
             sBestGuess = NO_CARD
-            sFullName = "%s [%s]" % (sName, sExpName)
+            sExpName, sPrintName = tExpPrint
+            if sPrintName:
+                sFullName = "%s [%s (%s)]" % (sName, sExpName, sPrintName)
+            else:
+                sFullName = "%s [%s]" % (sName, sExpName)
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
@@ -468,17 +474,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # CardListModel
                 sNewFullName = sNewFullName.decode('utf-8')
                 sFullName = sFullName.decode('utf-8')
-                sName, sExpName = oReplacementView.parse_card_name(sFullName)
+                sName, sExpPrintName = \
+                    oReplacementView.parse_card_name(sFullName)
 
-                sNewName, sNewExpName = \
+                sNewName, sNewExpPrintName = \
                     oReplacementView.parse_card_name(sNewFullName)
 
+                # FIXME: Update this to support printings correctly
                 if sNewName != NO_CARD:
-                    iCnt = dUnknownCards[(sName, sExpName)]
+                    tExpPrint = (sExpPrintName, None)
+                    iCnt = dUnknownCards[(sName, tExpPrint)]
 
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oPhys = self._lookup_new_phys_card(oAbsCard, sNewExpName)
+                    oPhys = self._lookup_new_phys_card(oAbsCard, 
+                                                       sNewExpPrintName)
                     aPhysCards.extend([oPhys] * iCnt)
 
                 oIter = oModel.iter_next(oIter)
