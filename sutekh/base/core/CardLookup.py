@@ -152,7 +152,14 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         dPrintings = {}
         for sExp, sPrintName in aExpPrintNames:
             dPrintings.setdefault((sExp, sPrintName), None)
-            oTrueExp = dExpansionLookup.get(sExp, None)
+            oTrueExp = None
+            if sExp:
+                try:
+                    # Assume the expansion is valid
+                    oTrueExp = IExpansion(sExp)
+                except SQLObjectNotFound:
+                    # See if we have a lookup for it
+                    oTrueExp = dExpansionLookup.get(sExp, None)
             if not oTrueExp:
                 # Skip this lookup
                 continue
