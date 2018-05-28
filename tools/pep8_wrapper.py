@@ -151,11 +151,20 @@ class PEP8Checker(Base):
         """process a module."""
         self.oChecker = pycodestyle.Checker(None)
         # Handle recent pylint changes
+        aLines = []
         if hasattr(aStream, 'file_stream'):
             aStream = aStream.file_stream
             # Only needed for older pylints
             aStream.seek(0)
-        self.oChecker.lines = list(aStream)
+            aLines = list(aStream)
+        elif hasattr(aStream, 'stream'):
+            with aStream.stream() as aData:
+                for _iLineNo, sLine in enumerate(aData):
+                    aLines.append(sLine)
+        else:
+            aLines = list(aStream)
+
+        self.oChecker.lines = aLines
         self.oChecker.report_error = self._transform_error
         self.oChecker.check_all()
 

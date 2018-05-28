@@ -12,6 +12,7 @@
 # to import this
 
 from pylint.interfaces import IRawChecker
+from pylint.exceptions import InvalidMessageError
 from compat_helper import Base, compat_register
 
 # This is a hack, but we want to be able to disable messages that are not
@@ -59,6 +60,6 @@ def register(oLinter):
             # ignoring those that fail
             DummyMessageHolder.msgs = {sMsgID: tData}
             compat_register(DummyMessageHolder, oLinter)
-        except AssertionError:
+        except (AssertionError, InvalidMessageError):
             # This message is already defined, so ignore it
             pass

@@ -28,7 +28,7 @@ def _get_child_nodes(oNode):
 
 class MySQLObjectConstructorChecker(Base):
 
-    """Check for PyProtocols advises syntax
+    """Check for SQLObject constructor syntax
 
        This is a bit clumsy, as it does a fair amount of AST walking on
        all the classes encountered, and monkey-patches the AST pylint
@@ -40,7 +40,7 @@ class MySQLObjectConstructorChecker(Base):
     # Since we just add addtional info to the AST, we have no messages
     options = ()
     # We're going to mess with the AST, so we need to run first
-    priority = -1
+    priority = 0
     # We need to have a msgid or reportid, otherwise newer pylints don't
     # add this to the enable checker list
     msgs = {'C6790': ('SQObject constructor checker dummy message',
