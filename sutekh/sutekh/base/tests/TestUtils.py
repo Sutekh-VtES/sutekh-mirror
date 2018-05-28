@@ -2,8 +2,6 @@
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Simon Cross <hodgestar@gmail.com>
 # Copyright 2008, 2014 Neil Muller <drnlmuller+sutekh@gmail.com>
-# _iterdump():
-#   Copyright 2008 Python Software Foundation; All Rights Reserved
 # GPL - see COPYING for details
 
 """Utilities and support classes that are useful for testing."""
@@ -183,81 +181,6 @@ def make_null_handler():
     if sys.platform.startswith("win"):
         return FileHandler('NUL')
     return FileHandler('/dev/null')
-
-
-def _iterdump(connection):
-    """
-    # From Python 3.0
-    # Mimic the sqlite3 console shell's .dump command
-    # Author: Paul Kippes <kippesp@gmail.com>
-
-    Returns an iterator to the dump of the database in an SQL text format.
-
-    Used to produce an SQL dump of the database.  Useful to save an in-memory
-    database for later restoration.  This function should not be called
-    directly but instead called from the Connection method, iterdump().
-    """
-    # pylint: disable=C0103
-    # Using the original naming convention
-
-    cu = connection.cursor()
-    # yield 'BEGIN TRANSACTION;'
-
-    # sqlite_master table contains the SQL CREATE statements for the database.
-    q = """
-        SELECT name, type, sql
-        FROM sqlite_master
-            WHERE sql NOT NULL AND
-            type == 'table'
-        """
-    schema_res = cu.execute(q)
-    # pylint: disable=W0612
-    # W0612: _type and _name are unused, by don't match our conventions
-    # due to matching original naming
-    for table_name, _type, sql in schema_res.fetchall():
-        if table_name == 'sqlite_sequence':
-            yield 'DELETE FROM sqlite_sequence;'
-        elif table_name == 'sqlite_stat1':
-            yield 'ANALYZE sqlite_master;'
-        elif table_name.startswith('sqlite_'):
-            continue
-        # NOTE: Virtual table support not implemented
-        #elif sql.startswith('CREATE VIRTUAL TABLE'):
-        #    qtable = table_name.replace("'", "''")
-        #    yield("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"
-        #        "VALUES('table','%s','%s',0,'%s');" %
-        #        qtable,
-        #        qtable,
-        #        sql.replace("''"))
-        else:
-            yield '%s;' % sql
-
-        # Build the insert statement for each row of the current table
-        res = cu.execute("PRAGMA table_info('%s')" % table_name)
-        column_names = [str(table_info[1]) for table_info in res.fetchall()]
-        q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
-        q += ",".join(["'||quote(" + col + ")||'" for col in column_names])
-        q += ")' FROM '%(tbl_name)s'"
-        query_res = cu.execute(q % {'tbl_name': table_name})
-        for row in query_res:
-            yield "%s;" % row[0]
-    # pylint: enable=W0612
-
-    # Now when the type is 'index', 'trigger', or 'view'
-    q = """
-        SELECT name, type, sql
-        FROM sqlite_master
-            WHERE sql NOT NULL AND
-            type IN ('index', 'trigger', 'view')
-        """
-    schema_res = cu.execute(q)
-    # pylint: disable=W0612
-    # see above
-    for _name, _type, sql in schema_res.fetchall():
-        yield '%s;' % sql
-    # pylint: enable=W0612
-
-    # yield 'COMMIT;'
 
 
 class FailFile(object):
