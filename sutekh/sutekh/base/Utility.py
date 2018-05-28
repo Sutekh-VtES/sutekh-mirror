@@ -57,8 +57,7 @@ def prefs_dir(sApp):
        application data."""
     if sys.platform.startswith("win") and "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], sApp)
-    else:
-        return os.path.join(os.path.expanduser("~"), ".%s" % sApp.lower())
+    return os.path.join(os.path.expanduser("~"), ".%s" % sApp.lower())
 
 
 def ensure_dir_exists(sDir):

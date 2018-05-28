@@ -505,7 +505,7 @@ class CardListModel(gtk.TreeStore):
         return (bInc, bDec)
 
     def get_exp_name_from_path(self, oPath):
-        """Get the expansion information from the model, returing None if this
+        """Get the expansion information from the model, returning None if this
            is not at a level where the expansion is known."""
         oIter = self.get_iter(oPath)
         if self.iter_depth(oIter) != 2:

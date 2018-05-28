@@ -1603,7 +1603,6 @@ class DatabaseUpgradeTests(SutekhTest):
         assert oPCS1.parent == oMyCollection
         oNewConn.close()
 
-
     def test_upgrade_old_version(self):
         """Test upgrading from 0.8"""
         # We only run this test if using sqlite, since iterdump isn't part

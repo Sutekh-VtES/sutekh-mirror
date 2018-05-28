@@ -148,7 +148,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self.oFileChooser = SutekhFileWidget(self.parent,
                                              gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oFileChooser.add_filter_with_pattern('PDF Files', ['*.pdf'])
-        #self.oFileChooser.default_filter()
+        # self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser, expand=True)
 
         # Choose the expansion for the card set

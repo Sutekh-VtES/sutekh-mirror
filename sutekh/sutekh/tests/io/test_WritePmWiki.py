@@ -21,10 +21,10 @@ A test comment
 
 
 !! Crypt [5 vampires]
- 2x The Siamese    
+ 2x The Siamese
  1x Alan Sovereign Adv
- 1x Abebe    
- 1x Inez "Nurse216" Villagrande    
+ 1x Abebe
+ 1x Inez "Nurse216" Villagrande
 
 !! Library [27 cards]
 

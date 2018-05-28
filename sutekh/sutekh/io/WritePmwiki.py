@@ -63,7 +63,8 @@ class WritePmwiki(ArdbInfo):
             aCryptLines.append(dLine)
 
         for dLine in aCryptLines:
-            sCrypt += " %(count)dx %(name)s %(adv)s\n" % dLine
+            sCurLine = " %(count)dx %(name)s %(adv)s" % dLine
+            sCrypt += sCurLine.rstrip() + '\n'
 
         return sCrypt
 

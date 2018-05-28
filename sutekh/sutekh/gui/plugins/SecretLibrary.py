@@ -141,8 +141,7 @@ class ImportExportBase(SutekhDialog):
            """
         if self._oAsDeckButton.get_active():
             return "deck"
-        else:
-            return "inventory"
+        return "inventory"
 
 
 class ImportDialog(ImportExportBase):

@@ -10,7 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.io.CSVParser import CSVParser
 from sutekh.tests.io.test_WriteCSV import (EXPECTED_1, EXPECTED_2, EXPECTED_3,
                                            EXPECTED_4)
-from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
+
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestCSVParser(SutekhTest):

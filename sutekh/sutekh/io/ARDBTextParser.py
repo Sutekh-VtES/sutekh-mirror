@@ -60,7 +60,7 @@ class NameAndAuthor(HolderState):
             self._oHolder.author = sValue
         elif sKey == "Description":
             oDesc = Description(self._oHolder)
-            if len(sValue) > 0:
+            if sValue:
                 oDesc.data(sValue)
             return oDesc
 

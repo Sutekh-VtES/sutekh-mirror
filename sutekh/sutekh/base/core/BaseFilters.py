@@ -44,8 +44,7 @@ def IN(oCol, oListOrSelect):
        """
     if not oListOrSelect:
         return False
-    else:
-        return SQLOBJ_IN(oCol, oListOrSelect)
+    return SQLOBJ_IN(oCol, oListOrSelect)
 # pylint: enable=C0103
 
 
@@ -790,8 +789,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         elif self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
             return oTable.expansion_id == None
-        else:
-            return IN(oTable.expansion_id, self._aIds)
+        return IN(oTable.expansion_id, self._aIds)
 
 
 class PhysicalCardSetFilter(Filter):

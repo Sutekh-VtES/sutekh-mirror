@@ -37,10 +37,8 @@ class WriteCSV(object):
         if self.bIncludeHeader:
             if self.bIncludeExpansion:
                 return '"Card Name", "Expansion", "Number"\n'
-            else:
-                return '"Card Name", "Number"\n'
-        else:
-            return ""
+            return '"Card Name", "Number"\n'
+        return ""
 
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""

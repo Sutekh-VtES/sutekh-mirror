@@ -119,6 +119,7 @@ def main():
     save_config(oConfig)
 
     logging.shutdown()
+    return 0
 
 
 if __name__ == "__main__":
