@@ -10,7 +10,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.io.CSVParser import CSVParser
 from sutekh.tests.io.test_WriteCSV import (EXPECTED_1, EXPECTED_2, EXPECTED_3,
                                            EXPECTED_4)
-
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestCSVParser(SutekhTest):
@@ -37,7 +37,7 @@ class TestCSVParser(SutekhTest):
 
             aCards = oHolder.get_cards()
 
-            self.assertEqual(len(aCards), 14)
+            self.assertEqual(len(aCards), 17)
             self.failUnless((".44 Magnum", 4) in aCards)
             self.failUnless(("Abebe", 1) in aCards)
             self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
@@ -47,6 +47,7 @@ class TestCSVParser(SutekhTest):
             self.failUnless(('Swallowed by the Night', 2) in aCards)
             self.failUnless(("The Siamese", 2) in aCards)
             self.failUnless(("Abbot", 2) in aCards)
+            self.failUnless(("Immortal Grapple", 4) in aCards)
 
 
 if __name__ == "__main__":

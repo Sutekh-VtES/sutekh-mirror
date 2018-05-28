@@ -39,6 +39,11 @@ CARD_EXPANSIONS = [
     ('Swallowed by the Night', 'Third', 2),
     ('Aire of Elation', 'CE', 3),
     ('Hide the Heart', 'HttB', 1),
+    ('Immortal Grapple', 'Jyhad', 2),
+    ('Immortal Grapple', 'KoT', 2),
+    ('Walk of Flame', 'Third', 2),
+    ('Walk of Flame', 'KoT', 1),
+    ('An Anarch Manifesto', 'TR', 1),
 ]
 
 SET_2_ONLY_CARDS = [

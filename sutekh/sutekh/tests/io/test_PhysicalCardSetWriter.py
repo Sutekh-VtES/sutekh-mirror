@@ -35,12 +35,17 @@ EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh
   <card count="1" expansion="None Specified" name="Abombwe" />
   <card count="3" expansion="Camarilla Edition" name="Aire of Elation" />
   <card count="1" expansion="Promo-20051001" name="Alan Sovereign (Advanced)" />
+  <card count="1" expansion="Twilight Rebellion" name="An Anarch Manifesto" />
   <card count="1" expansion="Heirs to the Blood" name="Hide the Heart" />
+  <card count="2" expansion="Jyhad" name="Immortal Grapple" />
+  <card count="2" expansion="Keepers of Tradition" name="Immortal Grapple" />
   <card count="1" expansion="Nights of Reckoning" name="Inez &quot;Nurse216&quot; Villagrande" />
   <card count="1" expansion="Dark Sovereigns" name="Scapelli, The Family &quot;Mechanic&quot;" />
   <card count="2" expansion="Third Edition" name="Swallowed by the Night" />
   <card count="1" expansion="Lords of the Night" name="The Path of Blood" />
   <card count="2" expansion="Bloodlines" name="The Siamese" />
+  <card count="1" expansion="Keepers of Tradition" name="Walk of Flame" />
+  <card count="2" expansion="Third Edition" name="Walk of Flame" />
 </physicalcardset>"""
 
 EXPECTED_2 = """<physicalcardset author="A test author" name="Test Set 2" sutekh_xml_version="1.3">

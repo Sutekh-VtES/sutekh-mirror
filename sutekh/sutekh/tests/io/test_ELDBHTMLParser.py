@@ -6,9 +6,12 @@
 """Test case for ELDB HTML parser"""
 
 import unittest
+from HTMLParser import HTMLParseError
 
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.tests.TestCore import SutekhTest
+
+from sutekh.tests.io.test_AbstractCardSetParser import ACS_EXAMPLE_1
 
 ELDB_HTML_EXAMPLE_1 = """<HTML>
 <HEAD>

@@ -37,6 +37,7 @@ Expansions,KMW,Kindred Most Wanted
 Expansions,BSC,Blood Shadowed Court
 Expansions,Anthology,Anthology
 Expansions,Tenth,Tenth Anniversary
+Expansions,TR,Twilight Rebellion
 Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
 Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
 Expansions,ReversePrefix:Promo-,Promo
@@ -325,6 +326,13 @@ Discipline: pre pro OBF SER
 Independent: Amisa has 2 votes. Amisa can lock a vampire with a capacity above 7 as a (D) action.
 Artist: Pete Venters
 
+Name: Anarch Manifesto, An
+[TR:C]
+Cardtype: Equipment
+Equipment.
+The anarch with this equipment gets +1 stealth on actions that require an anarch. Titled non-anarch vampires get +1 strength in combat with this minion. A minion may have only one Anarch Manifesto.
+Artist: Heather Kreiter
+
 Name: Anastasz di Zagreb
 [CE:V, KMW:PAl, BSC:X]
 Cardtype: Vampire
@@ -497,6 +505,15 @@ Unique werewolf with 3 life. 1 strength, 0 bleed.
 High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your unlock phase, he gains 1 life.
 Artist: Mark Nelson
 
+Name: Immortal Grapple
+[Jyhad:R2, VTES:R, Sabbat:U, SW:U/PB, FN:PG, CE:U/PB2, Third:U, LotN:PG2, KoT:U/PB3, HttB:PGar3]
+Cardtype: Combat
+Discipline: Potence
+Only usable at close range before strikes are chosen. Grapple.
+[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round.
+[POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.
+Artist: Clint Langley; L. A. Williams; Avery Butterworth
+
 Name: Inez "Nurse216" Villagrande
 [NoR:U]
 Cardtype: Imbued
@@ -555,6 +572,14 @@ Capacity: +1
 Master: Discipline.
 Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Necromancy.
 Artist: Anson Maddocks; Sam Araya
+
+Name: Off Kilter
+[HttB:C/PSam2]
+Cardtype: Action
+Clan: Samedi
++1 stealth action.
+Gain 1 pool. If you do not have the Edge, you get the Edge. Otherwise, you may burn the Edge to gain 1 additional pool.
+Artist: Leif Jones
 
 Name: Ossian
 [KMW:R, KoT:R]
@@ -756,6 +781,15 @@ Discipline: Valeren / Auspex
 [val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action.
 [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.
 Artist: Kari Christensen
+
+Name: Walk of Flame
+[Jyhad:U2, VTES:U, Sabbat:U, CE:C/PTr3, BH:PTr2, Third:C/PTr4, KoT:C]
+Cardtype: Combat
+Discipline: Thaumaturgy
+Not usable on the first round of combat.
+[tha] Strike: 1R aggravated damage.
+[THA] Strike: 2R aggravated damage.
+Artist: Scott Fischer; Richard Thomas
 
 Name: Anarch Railroad
 [Anarchs:R2]

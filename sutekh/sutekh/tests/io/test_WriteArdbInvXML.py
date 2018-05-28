@@ -29,16 +29,16 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="45" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="47" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
-    </vampire><vampire databaseID="67" have="2" need="0" spare="0">
+    </vampire><vampire databaseID="70" have="2" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
     </vampire>
-  </crypt><library size="19">
+  </crypt><library size="27">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
       <set>CE</set>
@@ -57,18 +57,27 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="17" have="3" need="0" spare="0">
       <name>Aire of Elation</name>
       <set>CE</set>
-    </card><card databaseID="72" have="1" need="0" spare="0">
+    </card><card databaseID="26" have="1" need="0" spare="0">
+      <name>Anarch Manifesto, An</name>
+      <set>TR</set>
+    </card><card databaseID="75" have="1" need="0" spare="0">
       <name>Hide the Heart</name>
       <set>HttB</set>
-    </card><card databaseID="63" have="1" need="0" spare="0">
+    </card><card databaseID="46" have="4" need="0" spare="0">
+      <name>Immortal Grapple</name>
+      <set>Jyhad</set>
+    </card><card databaseID="66" have="1" need="0" spare="0">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
-    </card><card databaseID="66" have="2" need="0" spare="0">
+    </card><card databaseID="69" have="2" need="0" spare="0">
       <name>Swallowed by the Night</name>
       <set>Third</set>
-    </card><card databaseID="55" have="1" need="0" spare="0">
+    </card><card databaseID="58" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
+    </card><card databaseID="76" have="3" need="0" spare="0">
+      <name>Walk of Flame</name>
+      <set>KoT</set>
     </card>
   </library>
 </inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR)

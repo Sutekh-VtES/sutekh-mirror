@@ -50,6 +50,9 @@ class TestSLInventoryParser(SutekhTest):
         self.failUnless(("The Textbook Damnation", 1) in aCards)
         self.failUnless(("Watch Commander", 8) in aCards)
 
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
+                          'random stuff')
+
 
 if __name__ == "__main__":
     unittest.main()
