@@ -3,7 +3,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test cases for the CardSetUtilities functions"""
+"""Test cases for the LookupHints behaviour"""
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseAdapters import IAbstractCard
