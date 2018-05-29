@@ -138,6 +138,10 @@ class FilterParserTests(SutekhTest):
             ),
             ('CardType in Equipment OR CardType in Power',
              Filters.MultiCardTypeFilter(['Equipment', 'Power'])),
+            ('CardType in Equipment OR CardType in Power OR '
+             'CardType in Imbued OR CardType in Vampire',
+             Filters.MultiCardTypeFilter(['Equipment', 'Power',
+                                          'Imbued', 'Vampire'])),
             ('NOT CardType in Equipment, Vampire',
              Filters.FilterNot(
                  Filters.MultiCardTypeFilter(['Equipment', 'Vampire']))),
@@ -511,6 +515,54 @@ class FilterParserTests(SutekhTest):
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aNames, aExpectedNames))
 
+    def test_filter_box_other(self):
+        """Test other filter box interactions."""
+        # Check we don't accept anything
+        self.assertRaises(ValueError,
+                          FilterBox.FilterBoxModel, "Nonsense", 'AbstractCard')
+
+        # Check empty box model
+        oBoxModel = FilterBox.FilterBoxModel(None, 'AbstractCard')
+        self.assertEqual(oBoxModel.sBoxType, oBoxModel.AND)
+        self.assertEqual(oBoxModel.get_text(), '')
+        self.assertEqual(oBoxModel.bNegate, False)
+
+        oBoxModel.set_boxtype(oBoxModel.OR, False)
+        self.assertEqual(oBoxModel.sBoxType, oBoxModel.OR)
+        self.assertEqual(oBoxModel.bNegate, False)
+
+        oBoxModel.set_boxtype(oBoxModel.OR, True)
+        self.assertEqual(oBoxModel.sBoxType, oBoxModel.OR)
+        self.assertEqual(oBoxModel.bNegate, True)
+
+        # Test disabling bits
+        sFilter = 'NOT (CardType in Equipment AND Cost in 5)'
+        oFilter = self._parse_filter(sFilter)
+        aNames = self._get_abs_names(oFilter)
+
+        oAST = self.oFilterParser.apply(sFilter)
+        oBoxFilter = FilterBox.FilterBoxModel(oAST, 'AbstractCard')
+        # Disable entire filter
+        oBoxFilter.bDisabled = True
+        self.assertEqual(oBoxFilter.get_ast(), None)
+        oBoxFilter.bDisabled = False
+        oFilterAST = oBoxFilter.get_ast_with_values()
+        aExpectedNames = self._get_abs_names(oFilterAST.get_filter())
+        self.assertEqual(aNames, aExpectedNames,
+                         "FilterBoxModel %s failed. %s != %s." % (
+                                 sFilter, aNames, aExpectedNames))
+
+        # Disabled the equipment subfilter
+        oBoxFilter[0].bDisabled = True
+        sFilter = 'NOT (Cost in 5)'
+        oFilter = self._parse_filter(sFilter)
+        aNames = self._get_abs_names(oFilter)
+        oFilterAST = oBoxFilter.get_ast_with_values()
+        aExpectedNames = self._get_abs_names(oFilterAST.get_filter())
+        self.assertEqual(aNames, aExpectedNames,
+                         "FilterBoxModel %s failed. %s != %s." % (
+                                 sFilter, aNames, aExpectedNames))
+        
 
 if __name__ == "__main__":
     unittest.main()
