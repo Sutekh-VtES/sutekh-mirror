@@ -170,8 +170,6 @@ class TWDAInfoPlugin(SutekhPlugin):
 
            Adds the menu item to the analyze menu.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
         if self.model is None:
             # Add entry to the data download menu
             oDownload = gtk.MenuItem("Download TWDA decks")

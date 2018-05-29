@@ -183,14 +183,13 @@ class StarterInfoPlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self._check_versions() and self._check_model_type():
-            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-            disconnect_row_destroy(self.card_set_added_deleted,
-                                   PhysicalCardSet)
-            disconnect_row_created(self.card_set_added_deleted,
-                                   PhysicalCardSet)
-            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
-                                   self.post_set_card_text)
+        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_added_deleted,
+                               PhysicalCardSet)
+        disconnect_row_created(self.card_set_added_deleted,
+                               PhysicalCardSet)
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                               self.post_set_card_text)
         super(StarterInfoPlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -198,8 +197,6 @@ class StarterInfoPlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
         MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
         # Listen for card set changes to manage the cache

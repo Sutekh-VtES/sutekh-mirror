@@ -432,9 +432,8 @@ class MergedVampirePlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self._check_versions() and self._check_model_type():
-            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
-                                   self.post_set_card_text)
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                               self.post_set_card_text)
         super(MergedVampirePlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -442,8 +441,6 @@ class MergedVampirePlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
         MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
 

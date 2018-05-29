@@ -487,8 +487,6 @@ class AnalyzeCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oAnalyze = gtk.MenuItem(self.sMenuName)
         oAnalyze.connect("activate", self.activate)
         oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")

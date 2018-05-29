@@ -28,8 +28,6 @@ class BaseFromFilter(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Filter' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oGenPCS = gtk.MenuItem("Card Set From Filter")
         oGenPCS.connect("activate", self.activate)
         return ('Filter', oGenPCS)

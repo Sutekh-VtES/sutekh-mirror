@@ -689,8 +689,6 @@ class BaseImagePlugin(BasePlugin):
 
            Adds the menu item on the MainWindow if the images can be found.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
         self.init_image_frame()
         # Add listener
         self._oReplaceItem = gtk.MenuItem("Replace with Card Image Frame")

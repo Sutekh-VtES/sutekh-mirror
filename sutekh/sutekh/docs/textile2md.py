@@ -48,7 +48,7 @@ if __name__ == "__main__":
     Utility.ensure_dir_exists('md')
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
-    aPlugins = oPluginMngr.get_card_list_plugins()
+    aPlugins = oPluginMngr.get_all_plugins()
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
     DocUtils.convert_to_markdown("textile", "md", aPlugins, replace_version)
     DocUtils.cleanup('textile')

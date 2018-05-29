@@ -60,21 +60,19 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
     def __init__(self, *args, **kwargs):
         super(BaseExtraCSListViewColumns, self).__init__(*args, **kwargs)
 
-        if self._check_versions() and self._check_model_type():
-            listen_row_update(self.card_set_changed, PhysicalCardSet)
-            listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
-            listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
-            listen_changed(self.card_changed, PhysicalCardSet)
+        listen_row_update(self.card_set_changed, PhysicalCardSet)
+        listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
+        listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+        listen_changed(self.card_changed, PhysicalCardSet)
 
     def cleanup(self):
         """Disconnect the database listeners"""
-        if self._check_versions() and self._check_model_type():
-            disconnect_changed(self.card_changed, PhysicalCardSet)
-            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-            disconnect_row_destroy(self.card_set_added_deleted,
-                                   PhysicalCardSet)
-            disconnect_row_created(self.card_set_added_deleted,
-                                   PhysicalCardSet)
+        disconnect_changed(self.card_changed, PhysicalCardSet)
+        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_added_deleted,
+                               PhysicalCardSet)
+        disconnect_row_created(self.card_set_added_deleted,
+                               PhysicalCardSet)
         super(BaseExtraCSListViewColumns, self).cleanup()
 
     @classmethod
@@ -86,26 +84,24 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     def update_to_new_db(self):
         """Reconnect the database signal listeners and queue a refresh"""
-        if self._check_versions() and self._check_model_type():
-            # clear cache
-            self._dCache = {}
-            # reconnect signals
-            listen_row_update(self.card_set_changed, PhysicalCardSet)
-            listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
-            listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
-            listen_changed(self.card_changed, PhysicalCardSet)
-            # queue a redraw
-            self.view.queue_draw()
+        # clear cache
+        self._dCache = {}
+        # reconnect signals
+        listen_row_update(self.card_set_changed, PhysicalCardSet)
+        listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
+        listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+        listen_changed(self.card_changed, PhysicalCardSet)
+        # queue a redraw
+        self.view.queue_draw()
 
     def prepare_for_db_update(self):
         """Disconnect the database signals during the upgrade"""
-        if self._check_versions() and self._check_model_type():
-            disconnect_changed(self.card_changed, PhysicalCardSet)
-            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-            disconnect_row_destroy(self.card_set_added_deleted,
-                                   PhysicalCardSet)
-            disconnect_row_created(self.card_set_added_deleted,
-                                   PhysicalCardSet)
+        disconnect_changed(self.card_changed, PhysicalCardSet)
+        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+        disconnect_row_destroy(self.card_set_added_deleted,
+                               PhysicalCardSet)
+        disconnect_row_created(self.card_set_added_deleted,
+                               PhysicalCardSet)
 
     # default data function Functions
 

@@ -93,6 +93,10 @@ class BasePluginManager(object):
 
             # add to appropriate plugin lists
             if issubclass(cPlugin, self.cAppPlugin):
+                # Skip plugins that don't support the current database
+                # schema
+                if not cPlugin.check_versions():
+                    continue
                 self._aPlugins.append(cPlugin)
 
     def load_plugins(self):
@@ -101,9 +105,13 @@ class BasePluginManager(object):
         # with the correct arguments
         raise NotImplementedError
 
-    def get_card_list_plugins(self):
+    def get_all_plugins(self):
         """Get all the plugins loaded"""
         return list(self._aPlugins)
+
+    def get_plugins_for(self, cModelType):
+        return [cPlugin for cPlugin in self._aPlugins
+                if cPlugin.check_model_type(cModelType)]
 
 
 class PluginConfigFileListener(object):
@@ -218,6 +226,26 @@ class BasePlugin(object):
         oConfig.add_deck_specs(cls.__name__, cls.dPerPaneConfig)
         oConfig.add_cardlist_specs(cls.__name__, cls.dCardListConfig)
         oConfig.add_cardset_list_specs(cls.__name__, cls.dCardSetListConfig)
+
+    @classmethod
+    def check_versions(cls):
+        """Check whether the plugin supports the current version of
+           the Sutekh database tables."""
+        oDBVer = DatabaseVersion()
+        for oTable, aVersions in cls.dTableVersions.iteritems():
+            if not oDBVer.check_table_in_versions(oTable, aVersions):
+                logging.warn("Skipping plugin %s due to version error (%s)",
+                             cls, oTable)
+                return False
+        # If nothing is specified, currently we assume everything is A-OK
+        return True
+    
+    @classmethod
+    def check_model_type(cls, cModelType):
+        """Check whether the plugin should register on this frame."""
+        if cModelType in cls.aModelsSupported:
+            return True
+        return False
 
     @classmethod
     def get_help_text(cls):
@@ -362,24 +390,6 @@ class BasePlugin(object):
     # Utility Functions / Internal Plugin API
     # This functions are for use by the plugins, and should not be
     # called externally
-
-    def _check_model_type(self):
-        """Check whether the plugin should register on this frame."""
-        if self._cModelType in self.aModelsSupported:
-            return True
-        return False
-
-    def _check_versions(self):
-        """Check whether the plugin supports the current version of
-           the Sutekh database tables."""
-        oDBVer = DatabaseVersion()
-        for oTable, aVersions in self.dTableVersions.iteritems():
-            if not oDBVer.check_table_in_versions(oTable, aVersions):
-                logging.warn("Skipping plugin %s due to version error (%s)",
-                             self, oTable)
-                return False
-        # If nothing is specified, currently we assume everything is A-OK
-        return True
 
     def _open_cs(self, sPCS, bStartEditable=False):
         """Open a physical card set in the GUI."""

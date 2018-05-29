@@ -115,9 +115,6 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def get_menu_item(self):
         """Add the menu item to the Data Downloads menu.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         oImport = gtk.MenuItem(self.sMenuName)
         oImport.connect('activate', self.run_import_dialog)
         return [('Data Downloads', oImport)]

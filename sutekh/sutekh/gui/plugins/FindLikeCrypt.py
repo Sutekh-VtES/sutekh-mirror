@@ -102,8 +102,6 @@ class FindLikeVampires(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oGenFilter = gtk.MenuItem(self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)

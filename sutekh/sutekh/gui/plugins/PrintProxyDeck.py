@@ -81,8 +81,6 @@ class PrintProxyPlugin(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         if not self._oImageFrame:
             return None
         oPrint = gtk.MenuItem("Print Card Set as Proxies")

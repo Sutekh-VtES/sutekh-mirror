@@ -138,8 +138,6 @@ class BaseDrawProbPlugin(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oCardDraw = gtk.MenuItem(self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)

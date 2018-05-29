@@ -46,7 +46,7 @@ def replace_version(sText):
 if __name__ == "__main__":
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
-    aPlugins = oPluginMngr.get_card_list_plugins()
+    aPlugins = oPluginMngr.get_all_plugins()
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
     DocUtils.convert("textile", "html", SutekhInfo, aPlugins,
                      replace_version)

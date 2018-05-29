@@ -104,8 +104,6 @@ class RandomPromoSelector(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oCardDraw = gtk.MenuItem("Generate random groups of cards")
         oCardDraw.connect("activate", self.activate)
         return ('Actions', oCardDraw)
