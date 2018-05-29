@@ -573,6 +573,16 @@ Master: Discipline.
 Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Necromancy.
 Artist: Anson Maddocks; Sam Araya
 
+Name: New Blood
+[Promo-20150213, Anthology:2]
+Cardtype: Vampire
+Clan: Blood Brother
+Group: ANY
+Capacity: 2
+Discipline: san
+Sabbat: When New Blood enters play during your influence phase, choose a circle and draw 1 card from your crypt. New Blood belongs to the chosen circle. Sterile.
+Artist: Gábor Németh
+
 Name: Off Kilter
 [HttB:C/PSam2]
 Cardtype: Action
@@ -825,6 +835,7 @@ Name: Motivated by Gehenna
 Cardtype: Master
 Master.
 Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.  {NOT FOR LEGAL PLAY}
+Artist: Brian LeBlanc
 """
 
 TEST_RULINGS = """

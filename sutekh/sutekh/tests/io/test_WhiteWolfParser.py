@@ -84,6 +84,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"L\xe1z\xe1r Dobrescu",
         u"Motivated by Gehenna",
         u"Necromancy",
+        u"New Blood",
         u"Off Kilter",
         u"Ossian",
         u"Pariah",
@@ -482,6 +483,18 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
 
+        # Check ANY group handling
+        oNewBlood = IAbstractCard('New Blood')
+        self.assertEqual(oNewBlood.group, -1)
+        self.assertEqual(oNewBlood.capacity, 2)
+        self.assertEqual(oNewBlood.life, None)
+        self.assertEqual(oNewBlood.cost, None)
+
+        self.failUnless(IClan('Blood Brother') in oNewBlood.clan)
+        self.assertEqual(len(oNewBlood.clan), 1)
+        self.assertEqual(len(oNewBlood.discipline), 1)
+        self.assertTrue('belongs to the chosen circle.' in oNewBlood.text)
+
         # Check The Path
         oPath1 = IAbstractCard('The Path of Blood')
 
@@ -607,6 +620,7 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
         self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
+
 
     def test_card_type_checkers(self):
         """Check the various utilities for checking card type
