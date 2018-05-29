@@ -16,6 +16,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
+from sutekh.SutekhUtility import is_crypt_card, is_vampire, is_trifle
 from sutekh.tests.TestCore import SutekhTest
 
 
@@ -410,6 +411,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oAbo.costtype, None)
         self.assertEqual(oAbo.level, None)
 
+
         self.assertEqual(len(oAbo.discipline), 0)
         self.assertEqual(len(oAbo.cardtype), 1)
         self.failUnless(ICardType('Master') in oAbo.cardtype)
@@ -605,6 +607,34 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
         self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
+
+    def test_card_type_checkers(self):
+        """Check the various utilities for checking card type
+           and properties."""
+        oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
+        self.assertTrue(is_vampire(oDob))
+        self.assertTrue(is_crypt_card(oDob))
+        self.assertFalse(is_trifle(oDob))
+
+        oAbo = IAbstractCard('Abombwe')
+        self.assertFalse(is_vampire(oAbo))
+        self.assertFalse(is_crypt_card(oAbo))
+        self.assertTrue(is_trifle(oAbo))
+
+        oAshur = IAbstractCard('Ashur Tablets')
+        self.assertFalse(is_vampire(oAshur))
+        self.assertFalse(is_crypt_card(oAshur))
+        self.assertFalse(is_trifle(oAshur))
+
+        oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
+        self.assertFalse(is_vampire(oEarl))
+        self.assertTrue(is_crypt_card(oEarl))
+        self.assertFalse(is_trifle(oEarl))
+
+        oOssian = IAbstractCard('Ossian')
+        self.assertFalse(is_vampire(oOssian))
+        self.assertFalse(is_crypt_card(oOssian))
+        self.assertFalse(is_trifle(oOssian))
 
 
 if __name__ == "__main__":
