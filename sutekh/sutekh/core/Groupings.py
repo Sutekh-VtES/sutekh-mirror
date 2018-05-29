@@ -116,7 +116,7 @@ class GroupGrouping(IterGrouping):
                 if oCard.group != -1:
                     return ['Group %d' % oCard.group]
                 else:
-                    return ['Any group']
+                    return ['Any Group']
             else:
                 return []
 
@@ -146,7 +146,7 @@ class GroupPairGrouping(IterGrouping):
                     else:
                         return [self.TEXT % (oCard.group - 1, oCard.group)]
                 else:
-                    # Any group is returned in all pairs
+                    # Any Group is returned in all pairs
                     return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
             else:
                 return []
