@@ -27,8 +27,6 @@ class BaseSnapshot(BasePlugin):
 
     def get_menu_item(self):
         """Return a gtk.MenuItem to activate this plugin."""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oMenuItem = gtk.MenuItem("Take a snapshot of this card set")
         oMenuItem.connect("activate", self.activate)
         return ('Actions', oMenuItem)

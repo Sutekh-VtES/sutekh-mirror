@@ -19,10 +19,13 @@ EXPECTED_1 = """4\t.44 Magnum
 2\tAbbot
 2\tAbombwe
 3\tAire of Elation
+1\tAnarch Manifesto, An
 1\tHide the Heart
+4\tImmortal Grapple
 1\tPath of Blood, The
 1\tScapelli, The Family 'Mechanic'
 2\tSwallowed by the Night
+3\tWalk of Flame
 Crypt:
 1\tAbebe
 1\tAlan Sovereign Adv.

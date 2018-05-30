@@ -28,7 +28,7 @@ Crypt [5 vampires] Capacity min: 3 max: 7 average: 5.40
  1x Abebe                  4 nec obf thn         Samedi:4
  1x Inez "Nurse216" Vi     3 inn                 Innocent (Imbued):4
 
-Library [19 cards]
+Library [27 cards]
 ------------------------------------------------------------
 Action [2]
  2x Abbot
@@ -42,10 +42,15 @@ Action Modifier/Combat [2]
 Ally [1]
  1x Scapelli, The Family "Mechanic"
 
-Equipment [7]
+Combat [7]
+ 4x Immortal Grapple
+ 3x Walk of Flame
+
+Equipment [8]
  4x .44 Magnum
  2x AK-47
  1x Aaron's Feeding Razor
+ 1x An Anarch Manifesto
 
 Master [3] (2 trifles)
  2x Abombwe

@@ -22,8 +22,6 @@ class BaseExportCSV(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oExport = gtk.MenuItem("Export to CSV")
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)

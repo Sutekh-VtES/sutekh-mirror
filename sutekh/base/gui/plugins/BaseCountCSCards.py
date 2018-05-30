@@ -34,29 +34,22 @@ class BaseCountCSCards(BasePlugin):
         self._add_dict_keys()
         self._oTextLabel = None
 
-        # We only add listeners to windows we're going to display the toolbar
-        # on
-        if self._check_versions() and self._check_model_type():
-            MessageBus.subscribe(self.model, 'add_new_card', self.add_new_card)
-            MessageBus.subscribe(self.model, 'alter_card_count',
-                                 self.alter_card_count)
-            MessageBus.subscribe(self.model, 'load', self.load)
+        MessageBus.subscribe(self.model, 'add_new_card', self.add_new_card)
+        MessageBus.subscribe(self.model, 'alter_card_count',
+                             self.alter_card_count)
+        MessageBus.subscribe(self.model, 'load', self.load)
 
     def cleanup(self):
         """Remove the listener"""
-        if self._check_versions() and self._check_model_type():
-            MessageBus.unsubscribe(self.model, 'add_new_card',
-                                   self.add_new_card)
-            MessageBus.unsubscribe(self.model, 'alter_card_count',
-                                   self.alter_card_count)
-            MessageBus.unsubscribe(self.model, 'load', self.load)
+        MessageBus.unsubscribe(self.model, 'add_new_card',
+                               self.add_new_card)
+        MessageBus.unsubscribe(self.model, 'alter_card_count',
+                               self.alter_card_count)
+        MessageBus.unsubscribe(self.model, 'load', self.load)
         super(BaseCountCSCards, self).cleanup()
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         self._oTextLabel = gtk.Label(self.TOT_FORMAT % self.dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % self.dInfo)
         self._oTextLabel.show()

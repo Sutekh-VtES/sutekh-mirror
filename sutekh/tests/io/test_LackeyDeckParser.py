@@ -45,6 +45,10 @@ class TestLackeyDeckFileParser(SutekhTest):
         self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
         self.failUnless(("The Path of Blood", 1) in aCards)
 
+        oParser = LackeyDeckParser()
+        self.assertRaises(IOError, self._make_holder_from_string, oParser,
+                          'random stuff')
+
 
 if __name__ == "__main__":
     unittest.main()

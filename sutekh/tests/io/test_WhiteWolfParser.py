@@ -17,6 +17,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
+from sutekh.SutekhUtility import is_crypt_card, is_vampire, is_trifle
 from sutekh.tests.TestCore import SutekhTest
 
 
@@ -53,9 +54,10 @@ class WhiteWolfParserTests(SutekhTest):
         u"Alexandra",
         u"Alfred Benezri",
         u"Ambrogino Giovanni",
-        u'Amisa',
-        u'Anarch Railroad',
-        u'Anarch Revolt',
+        u"Amisa",
+        u"An Anarch Manifesto",
+        u"Anarch Railroad",
+        u"Anarch Revolt",
         u"Anastasz di Zagreb",
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
@@ -66,22 +68,25 @@ class WhiteWolfParserTests(SutekhTest):
         u"Bronwen",
         u"Cedric",
         u"Cesewayo",
-        u'Dramatic Upheaval',
+        u"Dramatic Upheaval",
         u'Earl "Shaka74" Deams',
         u"Enkidu, The Noah",
         u"Fidus, The Shrunken Beast",
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
-        u'Hide the Heart',
+        u"Hide the Heart",
         u"High Top",
+        u"Immortal Grapple",
         u'Inez "Nurse216" Villagrande',
         u"Kabede Maru",
         u"Kemintiri (Advanced)",
         u"Living Manse",
         u"L\xe1z\xe1r Dobrescu",
-        u'Motivated by Gehenna',
+        u"Motivated by Gehenna",
         u"Necromancy",
+        u"New Blood",
+        u"Off Kilter",
         u"Ossian",
         u"Pariah",
         u"Paris Opera House",
@@ -104,6 +109,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"The Slaughterhouse",
         u"Two Wrongs",
         u"Vox Domini",
+        u"Walk of Flame",
         u"Yvette, The Hopeless",
         ]
 
@@ -408,6 +414,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oAbo.costtype, None)
         self.assertEqual(oAbo.level, None)
 
+
         self.assertEqual(len(oAbo.discipline), 0)
         self.assertEqual(len(oAbo.cardtype), 1)
         self.failUnless(ICardType('Master') in oAbo.cardtype)
@@ -477,6 +484,18 @@ class WhiteWolfParserTests(SutekhTest):
         # Make sure we're not picking up the Merged title
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
+
+        # Check ANY group handling
+        oNewBlood = IAbstractCard('New Blood')
+        self.assertEqual(oNewBlood.group, -1)
+        self.assertEqual(oNewBlood.capacity, 2)
+        self.assertEqual(oNewBlood.life, None)
+        self.assertEqual(oNewBlood.cost, None)
+
+        self.failUnless(IClan('Blood Brother') in oNewBlood.clan)
+        self.assertEqual(len(oNewBlood.clan), 1)
+        self.assertEqual(len(oNewBlood.discipline), 1)
+        self.assertTrue('belongs to the chosen circle.' in oNewBlood.text)
 
         # Check The Path
         oPath1 = IAbstractCard('The Path of Blood')
@@ -603,6 +622,35 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
         self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
+
+
+    def test_card_type_checkers(self):
+        """Check the various utilities for checking card type
+           and properties."""
+        oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
+        self.assertTrue(is_vampire(oDob))
+        self.assertTrue(is_crypt_card(oDob))
+        self.assertFalse(is_trifle(oDob))
+
+        oAbo = IAbstractCard('Abombwe')
+        self.assertFalse(is_vampire(oAbo))
+        self.assertFalse(is_crypt_card(oAbo))
+        self.assertTrue(is_trifle(oAbo))
+
+        oAshur = IAbstractCard('Ashur Tablets')
+        self.assertFalse(is_vampire(oAshur))
+        self.assertFalse(is_crypt_card(oAshur))
+        self.assertFalse(is_trifle(oAshur))
+
+        oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
+        self.assertFalse(is_vampire(oEarl))
+        self.assertTrue(is_crypt_card(oEarl))
+        self.assertFalse(is_trifle(oEarl))
+
+        oOssian = IAbstractCard('Ossian')
+        self.assertFalse(is_vampire(oOssian))
+        self.assertFalse(is_crypt_card(oOssian))
+        self.assertFalse(is_trifle(oOssian))
 
 
 if __name__ == "__main__":

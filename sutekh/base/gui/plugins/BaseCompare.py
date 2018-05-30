@@ -90,8 +90,6 @@ class BaseCompare(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oCompare = gtk.MenuItem(self.sMenuName)
         oCompare.connect("activate", self.activate)
         return ('Analyze', oCompare)

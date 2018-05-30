@@ -30,8 +30,6 @@ class BaseCardSetExport(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Export Card Set' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         aMenuItems = []
         for sKey, tInfo in self.EXPORTERS.iteritems():
             sMenuText = tInfo[1]

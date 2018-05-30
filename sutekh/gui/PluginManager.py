@@ -20,9 +20,6 @@ class PluginManager(BasePluginManager):
     cAppPlugin = SutekhPlugin
     sPluginDir = "sutekh.gui.plugins"
 
-    def __init__(self):
-        super(PluginManager, self).__init__()
-
     def load_plugins(self):
         """Load list of Plugin Classes from plugin dir."""
         self._do_load_plugins(plugins)

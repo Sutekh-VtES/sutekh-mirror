@@ -31,8 +31,6 @@ class BaseCSVImport(BasePlugin):
 
     def get_menu_item(self):
         """Overrides method from base class. Register on the 'Import' menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oMenuItem = gtk.MenuItem("Import CSV File")
         oMenuItem.connect("activate", self.activate)
         return ('Import Card Set', oMenuItem)

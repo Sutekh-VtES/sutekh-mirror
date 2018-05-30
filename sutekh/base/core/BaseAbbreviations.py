@@ -70,12 +70,8 @@ class DatabaseAbbreviation(object):
 
     sLookupDomain = None
 
-    def __new__(cls):
-        if cls.sLookupDomain:
-            cls.make_lookup()
-
     # pylint: disable=W0201
-    # W0201 - make_lookup called from __new__
+    # W0201 - make_lookup called from cache handling code
     @classmethod
     def make_lookup(cls):
         """Create a lookup table for the class."""

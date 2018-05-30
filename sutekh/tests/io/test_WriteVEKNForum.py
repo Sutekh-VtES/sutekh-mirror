@@ -27,7 +27,7 @@ A test comment
 [tr][td]1x[/td][td][url=http://www.secretlibrary.info/?crypt=Abebe]Abebe[/url][/td][td][/td][td](4)[/td][td]:nec: :obf: :thn:[/td][td]   [/td][td]:same: Samedi[/td][td](group 4)[/td][/tr]
 [tr][td]1x[/td][td][url=http://www.secretlibrary.info/?crypt=Inez+Nurse216+Villagrande]Inez "Nurse216" Villagrande[/url][/td][td][/td][td](3)[/td][td]:inn:[/td][td]   [/td][td]:inno: Innocent (Imbued)[/td][td](group 4)[/td][/tr]
 [/table]
-[size=18][u]Library [19 cards][/u][/size]
+[size=18][u]Library [27 cards][/u][/size]
 [b][u]Action [2][/u][/b]
  2x [url=http://www.secretlibrary.info/?lib=Abbot]Abbot[/url]
 
@@ -40,10 +40,15 @@ A test comment
 [b][u]Ally [1][/u][/b]
  1x [url=http://www.secretlibrary.info/?lib=Scapelli,+The+Family+Mechanic]Scapelli, The Family "Mechanic"[/url]
 
-[b][u]Equipment [7][/u][/b]
+[b][u]Combat [7][/u][/b]
+ 4x [url=http://www.secretlibrary.info/?lib=Immortal+Grapple]Immortal Grapple[/url]
+ 3x [url=http://www.secretlibrary.info/?lib=Walk+of+Flame]Walk of Flame[/url]
+
+[b][u]Equipment [8][/u][/b]
  4x [url=http://www.secretlibrary.info/?lib=.44+Magnum].44 Magnum[/url]
  2x [url=http://www.secretlibrary.info/?lib=AK-47]AK-47[/url]
  1x [url=http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor]Aaron's Feeding Razor[/url]
+ 1x [url=http://www.secretlibrary.info/?lib=Anarch+Manifesto,+An]An Anarch Manifesto[/url]
 
 [b][u]Master [3] (2 trifles)[/u][/b]
  2x [url=http://www.secretlibrary.info/?lib=Abombwe]Abombwe[/url]

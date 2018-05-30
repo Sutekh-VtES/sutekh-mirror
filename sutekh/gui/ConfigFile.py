@@ -36,9 +36,6 @@ class ConfigFile(BaseConfigFile):
         "Physical Expansion": "PhysicalExpansion in $var0",
     }
 
-    def __init__(self, sFileName):
-        super(ConfigFile, self).__init__(sFileName)
-
     def _get_app_configspec_file(self):
         """Get the application specific config file"""
         # pylint: disable=E1101

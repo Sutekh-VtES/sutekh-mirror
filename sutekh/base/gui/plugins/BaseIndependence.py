@@ -104,8 +104,6 @@ class BaseIndependence(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oTest = gtk.MenuItem(self.sMenuName)
         oTest.connect("activate", self.activate)
         return ('Analyze', oTest)

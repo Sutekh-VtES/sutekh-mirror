@@ -34,7 +34,7 @@ def read_white_wolf_list(oFile, oLogHandler=None):
 def read_rulings(oFile, oLogHandler=None):
     """Parse a new White Wolf rulings file
 
-       oFil is an object with a .open() method (e.g. a
+       oFile is an object with a .open() method (e.g. a
        sutekh.base.io.EncodedFile.EncodedFile)
        """
     oParser = RulingParser(oLogHandler)

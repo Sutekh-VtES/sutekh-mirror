@@ -471,8 +471,7 @@ class MultiCostFilter(SutekhCardFilter):
             if self.__aCost:
                 return OR(IN(self._oMapTable.q.cost, self.__aCost),
                           self._oMapTable.q.cost == None)
-            else:
-                return self._oMapTable.q.cost == None
+            return self._oMapTable.q.cost == None
         return IN(self._oMapTable.q.cost, self.__aCost)
 
 

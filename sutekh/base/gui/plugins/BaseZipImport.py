@@ -175,9 +175,6 @@ class BaseZipImport(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         oImport = gtk.MenuItem(self.sMenuName)
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)

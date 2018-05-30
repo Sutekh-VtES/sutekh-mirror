@@ -26,7 +26,7 @@ Crypt (5 cards, min=20, max=24, avg=5.4)
 1x Abebe\t\t       4   nec obf thn\t\tSamedi:4
 1x Inez "Nurse216" Villagrande 3   inn\t\t\tInnocent (Imbued):4
 
-Library (19 cards)
+Library (27 cards)
 Master (3; 2 trifle)
 2x Abombwe
 1x Path of Blood, The
@@ -37,10 +37,11 @@ Action (2)
 Ally (1)
 1x Scapelli, The Family "Mechanic"
 
-Equipment (7)
+Equipment (8)
 4x .44 Magnum
 2x AK-47
 1x Aaron's Feeding Razor
+1x Anarch Manifesto, An
 
 Action Modifier (3)
 3x Aire of Elation
@@ -50,6 +51,10 @@ Action Modifier/Combat (2)
 
 Reaction (1)
 1x Hide the Heart
+
+Combat (7)
+4x Immortal Grapple
+3x Walk of Flame
 """
 
 TWDA_EXPECTED_2 = """Deck Name: Test Set 2

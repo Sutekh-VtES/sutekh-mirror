@@ -53,9 +53,6 @@ class BasePrint(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         oPrint = gtk.MenuItem("Print Card Set")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)

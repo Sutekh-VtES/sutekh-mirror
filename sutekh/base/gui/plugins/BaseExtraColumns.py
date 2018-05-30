@@ -78,8 +78,7 @@ class BaseExtraColumns(BasePlugin):
 
         self._iShowMode = self.MODES[self.DEFAULT_MODE]
 
-        if self._check_versions() and self._check_model_type():
-            self.perpane_config_updated()
+        self.perpane_config_updated()
 
     @classmethod
     def fix_config(cls, dConfig):
@@ -157,11 +156,9 @@ class BaseExtraColumns(BasePlugin):
 
     def perpane_config_updated(self, _bDoReload=True):
         """Called by base class on config updates."""
-        aCols = None
-        if self._check_versions() and self._check_model_type():
-            aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
-            sShowMode = self.get_perpane_item(self.ICON_MODE)
-            self._iShowMode = self.MODES.get(sShowMode, self.DEFAULT_MODE)
+        aCols = self.get_perpane_item(self.EXTRA_COLUMNS)
+        sShowMode = self.get_perpane_item(self.ICON_MODE)
+        self._iShowMode = self.MODES.get(sShowMode, self.DEFAULT_MODE)
         if aCols is not None:
             # Need to accept empty lists so we remove columns
             self.set_cols_in_use(aCols)
