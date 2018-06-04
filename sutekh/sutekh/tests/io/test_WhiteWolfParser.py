@@ -650,8 +650,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertFalse(is_crypt_card(oOssian))
         self.assertFalse(is_trifle(oOssian))
 
-
-    def test_adpters(self):
+    def test_adapters(self):
         """Extra sanity checks on the adapaters."""
 
         for oAdapter in (IAbstractCard, IPhysicalCard,
