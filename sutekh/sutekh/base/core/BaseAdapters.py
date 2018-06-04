@@ -286,7 +286,7 @@ def keyword_from_string(sKeyword):
     return Keyword.byKeyword(sKeyword.encode('utf8'))
 
 
-IArtist.register(Keyword, passthrough)
+IArtist.register(Artist, passthrough)
 
 
 @IArtist.register(basestring)

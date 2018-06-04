@@ -651,5 +651,34 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertFalse(is_trifle(oOssian))
 
 
+    def test_adpters(self):
+        """Extra sanity checks on the adapaters."""
+
+        for oAdapter in (IAbstractCard, IPhysicalCard,
+                         IExpansion, IRarity, IRarityPair,
+                         ICardType, IArtist, IKeyword):
+            self.assertRaises(NotImplementedError, oAdapter, 1)
+            self.assertRaises(NotImplementedError, oAdapter, None)
+
+        # Various pass through tests
+        self.assertEqual(IAbstractCard("Ossian"),
+                         IAbstractCard(IAbstractCard("Ossian")))
+        self.assertEqual(IExpansion("KMW"), IExpansion(IExpansion("KMW")))
+
+        oPhysCard = IPhysicalCard((IAbstractCard("Ossian"), IExpansion("KMW")))
+        self.assertEqual(oPhysCard, IPhysicalCard(oPhysCard))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard("Ossian"))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard(oPhysCard))
+
+        self.assertEqual(IArtist("Lawrence Snelly"),
+                         IArtist(IArtist("Lawrence Snelly")))
+        self.assertEqual(IKeyword('not for legal play'),
+                         IKeyword(IKeyword('not for legal play')))
+        self.assertEqual(IRarity("Common"), IRarity(IRarity("Common")))
+        self.assertEqual(IRarityPair(("EK", "Common")),
+                         IRarityPair(IRarityPair(("EK", "Common"))))
+        self.assertEqual(ICardType("Vampire"), ICardType(ICardType("Vampire")))
+
+
 if __name__ == "__main__":
     unittest.main()
