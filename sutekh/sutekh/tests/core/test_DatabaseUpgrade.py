@@ -15,8 +15,10 @@ from nose import SkipTest
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
 from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCardSet,
+                                         PhysicalCard, Expansion,
                                          VersionTable)
-from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCardSet,
+                                           IExpansion, IPhysicalCard)
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.base.tests.TestUtils import make_null_handler, make_card
@@ -1657,6 +1659,18 @@ class DatabaseUpgradeTests(SutekhTest):
         self.assertTrue("information to fill the LookupHints" in sLogs)
         self.assertTrue("Missing date information" in sLogs)
         self.assertTrue("Everything seems to have gone OK" in sLogs)
+
+        self.assertEqual(Expansion.select().count(), 25)
+        self.assertEqual(AbstractCard.select().count(), 72)
+        self.assertEqual(PhysicalCard.select().count(), 225)
+
+        oMagnum = IAbstractCard(".44 Magnum")
+        oJyhad = IExpansion("Jyhad")
+
+        assert oMagnum
+        assert oJyhad
+        assert IPhysicalCard((oMagnum, None))
+        assert IPhysicalCard((oMagnum, oJyhad))
 
         oOldDB.close()
 
