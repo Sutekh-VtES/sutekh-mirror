@@ -63,16 +63,16 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
   </crypt><library size="27">
-    <card count="1" databaseID="1">
+    <card count="3" databaseID="1">
       <name>.44 Magnum</name>
-      <set>Jyhad</set>
+      <set>CE</set>
       <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
-    </card><card count="3" databaseID="1">
+    </card><card count="1" databaseID="1">
       <name>.44 Magnum</name>
-      <set>CE</set>
+      <set>Jyhad</set>
       <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
