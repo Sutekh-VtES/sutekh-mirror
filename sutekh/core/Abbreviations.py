@@ -183,6 +183,7 @@ class Expansions(AbbreviationLookup):
         'Anthology': [],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
+        'Black Chantry Reprint': [],
         'Black Hand': ['BH', 'Blackhand'],
         'Bloodlines': ['BL'],
         'Blood Shadowed Court': ['BSC'],
@@ -198,6 +199,7 @@ class Expansions(AbbreviationLookup):
         'Keepers of Tradition': ['KoT'],
         'Legacy of Blood': ['LoB'],
         'Lords of the Night': ['LotN'],
+        'Lost Kindred': ['LK'],
         'Nights of Reckoning': ['NoR'],
         'Sabbat': [],
         'Sabbat Wars': ['SW'],
@@ -247,8 +249,7 @@ class Rarities(AbbreviationLookup):
         'Uncommon': ['U', 'U1', 'U2', 'U3', 'U5'],
         'Rare': ['R', 'R1', 'R2', 'R3'],
         'Vampire': ['V', 'V1', 'V2', 'V3'],
-        'Tenth': ['A', 'B'],
-        'Anthology': ['1', '2', '3', '4'],
+        'Fixed': ['1', '2', '3', '4', 'A1', 'A2', 'B1', 'B2', 'A', 'B'],
         'BSC': ['X'],
         'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
             'PO3'],
@@ -279,9 +280,7 @@ class Sects(AbbreviationLookup):
     """Common strings for the different sects."""
     dKeys = {
         'Camarilla': [], 'Sabbat': [], 'Independent': [],
-        'Laibon': [],
-        # For if we ever start handling merged vampires somehow
-        'Anarch': [],
+        'Laibon': [], 'Anarch': [],
     }
 
 
