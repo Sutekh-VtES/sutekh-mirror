@@ -226,17 +226,30 @@ class CardNameLookupAdapter(Adapter):
         # Fill in values from LookupHints
         for oLookup in LookupHints.select():
             if oLookup.domain == 'CardNames':
+                oCard = None
                 try:
                     # pylint: disable=no-member
                     # SQLObject confuses pylint
                     oCard = AbstractCard.byCanonicalName(
-                        oLookup.value.encode('utf8').lower())
-                    cls.__dCache[oLookup.lookup] = oCard
+                        oLookup.value.lower())
                 except SQLObjectNotFound:
-                    # Possible error in the lookup data - warn about it, but
-                    # we don't want to fail here.
-                    logging.warn("Unable to create %s mapping (%s -> %s)",
-                                 oLookup.domain, oLookup.lookup, oLookup.value)
+                    # Try encoded version, for older SQLObject versions
+                    try:
+                        # pylint: disable=no-member
+                        # SQLObject confuses pylint
+                        oCard = AbstractCard.byCanonicalName(
+                            oLookup.value.encode('utf8').lower())
+                    except SQLObjectNotFound:
+                        # Possible error in the lookup data - warn about it, but
+                        # we don't want to fail here.
+                        logging.warn("Unable to create %s mapping (%s -> %s)",
+                                     oLookup.domain, oLookup.lookup,
+                                     oLookup.value)
+                if oCard is not None:
+                    for sKey in [oLookup.lookup,
+                                 oLookup.lookup.encode('utf8')]:
+                        cls.__dCache[sKey] = oCard
+                        cls.__dCache[sKey.lower()] = oCard
 
     @classmethod
     def lookup(cls, sName):
