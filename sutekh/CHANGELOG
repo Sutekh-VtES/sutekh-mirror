@@ -1,3 +1,15 @@
+06 Jun 2018
+ * Update keyword checks to support latest cardlist.
+
+05 Jun 2018
+ * Update parser to support latest cardlist.
+ * Fix some bugs with the LookupCache and non-ascii keys.
+
+04 Jun 2018
+ * Fix sorting bug in ARDB XML output.
+ * Add more test cases for the Adapters.
+ * Add more checks on the database upgrade checks.
+
 29 May 2018
  * More extensions to the test suite and test data.
  * Restructure plugins to check for model versions
