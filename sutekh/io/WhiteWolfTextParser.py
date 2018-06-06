@@ -152,7 +152,7 @@ class CardDict(dict):
             # Seraph has a special case
             'seraph': re.compile('Sabbat\. Black Hand(\.)? Seraph'),
             'infernal': re.compile('[.:] Infernal\.'),
-            'red list': re.compile('\. Red List:'),
+            'red list': re.compile('\. Red List[:.]'),
             'scarce': re.compile('[.:] Scarce.'),
             'sterile': re.compile('[.:] Sterile.'),
             # Need the } to handle some of the errata'd cards
@@ -176,6 +176,7 @@ class CardDict(dict):
     dAllyProperties = {
             # Red list allies are templated differently
             'red list': re.compile('\. Red List\.'),
+            'unique': re.compile('Unique [A-Za-z ]+ with \d life'),
             }
     oLifeRgx = re.compile('(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
             ' with (\d) life\.')
@@ -202,11 +203,12 @@ class CardDict(dict):
     dMasterProperties = {
             # unique isn't very consistent
             'unique': re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
-                'Unique\.'),
-            'trifle': re.compile('[mM]aster[:.] .*[tT]rifle'),
+                'Unique\.|Unique location\.|Unique contract\.'),
+            'trifle': re.compile('[tT]rifle\.'),
             'discipline': re.compile('Master: Discipline\.'),
-            'out-of-turn': re.compile('Master: out-of-turn'),
-            'location': re.compile('Master[:.] (unique )?[Ll]ocation'),
+            'out-of-turn': re.compile('Master: out-of-turn|Out-of-turn\.'),
+            'location': re.compile('Master[:.] (unique )?[Ll]ocation|'
+                                   'Unique location\.|Location\.'),
             'boon': re.compile('Boon\.'),
             'frenzy': re.compile('Frenzy\.'),
             'hunting ground': re.compile('\. Hunting [Gg]round'),
