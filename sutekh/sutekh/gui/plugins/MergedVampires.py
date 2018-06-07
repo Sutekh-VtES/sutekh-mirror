@@ -487,6 +487,15 @@ class MergedVampirePlugin(SutekhPlugin):
                 # we skip the special cases here
                 continue
 
+    def update_to_new_db(self):
+        """Refresh information after a database updated."""
+        # clear cache
+        self._aBaseVamps = set()
+        self._aExcluded = set()
+        # Refresh everything
+        self._dReplaceMap = make_replace_keywords()
+        self._make_base_map()
+
     def _merge_vampire(self, _oWidget):
         """Display the merged version of the vampire."""
         oCardTextView = self.parent.card_text_pane.view
