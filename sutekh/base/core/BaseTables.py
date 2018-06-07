@@ -119,6 +119,7 @@ class Expansion(SQLObject):
 class PrintingProperty(SQLObject):
 
     tableversion = 1
+    canonicalValue = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     value = UnicodeCol(length=MAX_ID_LENGTH)
     printings = RelatedJoin('Printing', intermediateTable='printing_data_map',
                             createRelatedTable=False)

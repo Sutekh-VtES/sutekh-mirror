@@ -198,6 +198,7 @@ class BaseDBUpgradeManager(object):
         for oObj in PrintingProperty.select(connection=oOrigConn):
             _oCopy = PrintingProperty(id=oObj.id,
                                      value=oObj.value,
+                                     canonicalValue=oObj.canonicalValue,
                                      connection=oTrans)
 
     def _copy_old_print_properties(self, oOrigConn, oTrans, oVer):
@@ -225,9 +226,10 @@ class BaseDBUpgradeManager(object):
     def _copy_printing(self, oOrigConn, oTrans):
         """Copy Printing, assuming versions match"""
         for oObj in Printing.select(connection=oOrigConn):
-            oPrintCopy = Printing(id=oObj.id, expansionID=oObj.expansionID)
+            oPrintCopy = Printing(id=oObj.id, expansionID=oObj.expansionID,
+                                  name=oObj.name, connection=oTrans)
             for oData in oObj.properties:
-                oPrintCopy.addProperty(oData)
+                oPrintCopy.addPrintingProperty(oData)
 
     def _copy_old_printing(self, oOrigConn, oTrans, oVer):
         """Copy printing table, upgrading versions as needed"""
