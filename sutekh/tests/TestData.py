@@ -1,6 +1,6 @@
 # TestData.py
 # -*- coding: utf8 -*-
-# vim:fileencoding=cp1252 ai ts=4 sts=4 et sw=4
+# vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Based on the card data published by WhiteWolf at:
 #  * http://www.white-wolf.com/vtes/index.php?line=cardlist
 #  * http://www.white-wolf.com/vtes/index.php?line=rulings
@@ -192,11 +192,10 @@ Discipline: for pre AUS DOM
 Camarilla: When you play an investment card, add an additional counter to it from the blood bank.
 Artist: Steve Prescott
 
-Name: Alan Sovereign
+Name: Alan Sovereign (Adv)
 [Promo-20051001]
 Cardtype: Vampire
 Clan: Ventrue
-Level: Advanced
 Group: 3
 Capacity: 6
 Discipline: for pre AUS DOM
@@ -422,11 +421,10 @@ Discipline: abo pot AUS CEL OBF QUI
 Laibon magaji: Kabede gets +1 intercept against political actions. (The blood curse does not affect Kabede.)
 Artist: Ken Meyer, Jr.
 
-Name: Kemintiri
+Name: Kemintiri (Adv)
 [KMW:U]
 Cardtype: Vampire
 Clan: Follower of Set
-Level: Advanced
 Group: 2
 Capacity: 10
 Discipline: aus dom OBF PRE SER THA
