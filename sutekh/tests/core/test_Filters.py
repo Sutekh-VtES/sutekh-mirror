@@ -89,12 +89,20 @@ class FilterTests(SutekhTest):
             for oExp in aExps:
                 if oExp not in aAllowedExpansions:
                     continue
-                try:
-                    oPrint = IPrinting((oExp, None))
-                    aPhysicalCards.append(IPhysicalCard((oAbs, oPrint)))
-                except SQLObjectNotFound:
-                    self.fail("Missing physical card %s from expansion %s"
-                              % (oAbs.name, oExp.name))
+                # Add all printings of the given expansion
+                for oPrint in oExp.printings:
+                    try:
+                        oCard = IPhysicalCard((oAbs, oPrint))
+                        aPhysicalCards.append(oCard)
+                    except SQLObjectNotFound:
+                        # If the printing name isn't None, we
+                        # assume the abstract card just isn't in that
+                        # variant
+                        if oPrint.name is None:
+                            # this is fatal
+                            self.fail(
+                                "Missing physical card %s from expansion %s"
+                                 % (oAbs.name, oExp.name))
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])
@@ -130,13 +138,15 @@ class FilterTests(SutekhTest):
             (Filters.DisciplineFilter('obf'),
              [u"Aaron Bathurst", u"Abd al-Rashid", u"Abdelsobek", u"Abebe",
               u"Aeron", u"Amisa", u"Angelica, The Canonicus", u"Cedric",
-              u"Enkidu, The Noah", u"Kabede Maru", u"Kemintiri (Advanced)",
+              u"Enkidu, The Noah", u"Harold Zettler, Pentex Director",
+              u"Kabede Maru", u"Kemintiri (Advanced)",
               u"Pariah", u"Sha-Ennu", u'Swallowed by the Night']),
             (Filters.DisciplineFilter('fli'),
-             [u'Alab\xe1strom', u"Cedric", u"Fidus, The Shrunken Beast"]),
+             [u'Alab\xe1strom', u"Cedric", u"Fidus, The Shrunken Beast",
+              u"Sheela Na Gig"]),
             (Filters.MultiDisciplineFilter(['nec', 'qui']),
              [u"Abd al-Rashid", u"Abdelsobek", u"Abebe", u"Akram",
-              u"Ambrogino Giovanni", u"Kabede Maru"]),
+              u"Ambrogino Giovanni", u"Hektor", u"Kabede Maru"]),
             (Filters.ExpansionFilter('NoR'),
              [u"Abjure", u'Anna "Dictatrix11" Suljic',
               u'Earl "Shaka74" Deams', u'Inez "Nurse216" Villagrande',
@@ -161,20 +171,22 @@ class FilterTests(SutekhTest):
               u"Pier 13, Port of Baltimore"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
              [u"Abd al-Rashid", u"Akram", u"Alexandra", u"Anson", u"Bronwen",
-              u"Cesewayo", u"Enkidu, The Noah", u"Kabede Maru"]),
+              u"Cesewayo", u"Enkidu, The Noah", u"Hektor", u"Kabede Maru"]),
             (Filters.MultiDisciplineLevelFilter([('obt', 'inferior'),
                                                  ('pot', 'inferior'),
                                                  ('obf', 'superior')]),
              [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady", u"Aeron",
               u"Akram", u"Amisa", u"Bronwen", u"Cedric", u"Enkidu, The Noah",
-              u"Kabede Maru", u"Kemintiri (Advanced)", u"Pariah",
+              u"Harold Zettler, Pentex Director", u"Kabede Maru",
+              u"Kemintiri (Advanced)", u"Pariah",
               u"Rebekka, Chantry Elder of Munich", u'Swallowed by the Night']),
             (Filters.MultiDisciplineLevelFilter(['obt with inferior',
                                                  'pot with inferior',
                                                  'obf with superior']),
              [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady", u"Aeron",
               u"Akram", u"Amisa", u"Bronwen", u"Cedric", u"Enkidu, The Noah",
-              u"Kabede Maru", u"Kemintiri (Advanced)", u"Pariah",
+              u'Harold Zettler, Pentex Director', u"Kabede Maru",
+              u"Kemintiri (Advanced)", u"Pariah",
               u"Rebekka, Chantry Elder of Munich", u'Swallowed by the Night']),
             (Filters.CardTypeFilter('Equipment'),
              [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor",
@@ -186,17 +198,18 @@ class FilterTests(SutekhTest):
             (Filters.SectFilter('Sabbat'),
              [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady", u"Aeron",
               u"Alfred Benezri", u"Angelica, The Canonicus", u"Bronwen",
-              u"Enkidu, The Noah", u"New Blood",
-              u"Sha-Ennu", u"The Siamese"]),
+              u"Enkidu, The Noah",  u"Harold Zettler, Pentex Director",
+              u"Hektor", u"New Blood", u"Sha-Ennu", u"Sheela Na Gig",
+              u"The Siamese"]),
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),
              [u"Aabbt Kindred", u"Aaron Bathurst",
               u"Aaron Duggan, Cameron's Toady", u"Abd al-Rashid",
-              u"Abdelsobek", u"Abebe", u"Aeron", u'Alab\xe1strom',
-              u"Alfred Benezri",
+              u"Abdelsobek", u"Abebe", u"Aeron", u"Alfred Benezri",
               u"Ambrogino Giovanni", u"Amisa", u"Angelica, The Canonicus",
-              u"Bronwen", u"Enkidu, The Noah", u"Kemintiri (Advanced)",
-              u"L\xe1z\xe1r Dobrescu", u"New Blood", u"Pariah", u"Sha-Ennu",
-              u"The Siamese"]),
+              u"Bronwen", u"Enkidu, The Noah",
+              u"Harold Zettler, Pentex Director", u"Hektor",
+              u"Kemintiri (Advanced)", u"L\xe1z\xe1r Dobrescu", u"New Blood",
+              u"Pariah", u"Sha-Ennu", u"Sheela Na Gig", u"The Siamese"]),
             (Filters.TitleFilter('Bishop'), [u"Alfred Benezri"]),
             (Filters.TitleFilter('Independent with 1 vote'),
              [u"Ambrogino Giovanni"]),
@@ -206,7 +219,7 @@ class FilterTests(SutekhTest):
              [u"Cesewayo", u"Kabede Maru", u"Sha-Ennu"]),
             (Filters.MultiTitleFilter(['Primogen', 'Priscus', 'Cardinal']),
              [u"Akram", u"Angelica, The Canonicus", u"Bronwen",
-              u"Gracis Nostinus"]),
+              u"Gracis Nostinus", u"Hektor"]),
             (Filters.CreedFilter('Martyr'),
              [u'Anna "Dictatrix11" Suljic']),
             (Filters.MultiCreedFilter(['Martyr', 'Innocent']),
@@ -219,18 +232,20 @@ class FilterTests(SutekhTest):
             (Filters.GroupFilter(4),
              [u"Aaron Bathurst", u"Abebe", u'Anna "Dictatrix11" Suljic',
               u"Cedric", u"Cesewayo", u'Earl "Shaka74" Deams',
-              u"Enkidu, The Noah", u'Inez "Nurse216" Villagrande',
-              u"Sha-Ennu"]),
+              u"Enkidu, The Noah",  u"Harold Zettler, Pentex Director",
+              u"Hektor", u'Inez "Nurse216" Villagrande', u"Sha-Ennu"]),
             (Filters.MultiGroupFilter([4, 5]),
              [u"Aaron Bathurst", u"Abdelsobek", u"Abebe",
               u'Anna "Dictatrix11" Suljic', u"Cedric", u"Cesewayo",
               u'Earl "Shaka74" Deams', u"Enkidu, The Noah",
-              u'Inez "Nurse216" Villagrande', u"Kabede Maru", u"Sha-Ennu"]),
+              u"Harold Zettler, Pentex Director", u"Hektor",
+              u'Inez "Nurse216" Villagrande', u"Kabede Maru", u"Sha-Ennu",
+              u"Sheela Na Gig"]),
             (Filters.CapacityFilter(2),
-             [u"Aaron Duggan, Cameron's Toady", u"New Blood"]),
+             [u"Aaron Duggan, Cameron's Toady", u"New Blood", u"Sheela Na Gig"]),
             (Filters.MultiCapacityFilter([2, 1]),
              [u"Aaron Duggan, Cameron's Toady", u"Abombwe", u"Necromancy",
-              u"New Blood"]),
+              u"New Blood", u"Sheela Na Gig"]),
             (Filters.CostFilter(5), [u"AK-47"]),
             (Filters.MultiCostFilter([2, 5]),
              [u".44 Magnum", u"AK-47", u"Anarch Railroad", u"Ghoul Retainer",
@@ -251,14 +266,15 @@ class FilterTests(SutekhTest):
               u'Cedric', u'Cesewayo', u'Dramatic Upheaval',
               u'Earl "Shaka74" Deams', u"Enkidu, The Noah",
               u"Fidus, The Shrunken Beast", u'Gracis Nostinus',
+              u"Harold Zettler, Pentex Director", u"Hektor",
               u'Hide the Heart', u"Immortal Grapple",
               u'Inez "Nurse216" Villagrande', u'Kabede Maru',
               u"Kemintiri (Advanced)", u'L\xe1z\xe1r Dobrescu',
               u'Motivated by Gehenna', u"Necromancy", u"New Blood",
               u"Off Kilter", u"Pariah", u"Predator's Communion",
               u"Rebekka, Chantry Elder of Munich", u"Sha-Ennu",
-              u'Swallowed by the Night', u"The Siamese", u"Two Wrongs",
-              u"Walk of Flame", u"Yvette, The Hopeless"]),
+              u"Sheela Na Gig", u'Swallowed by the Night', u"The Siamese",
+              u"Two Wrongs", u"Walk of Flame", u"Yvette, The Hopeless"]),
             (Filters.MultiCostFilter([0, 5]),
              [u"AK-47", u'Aabbt Kindred', u'Aaron Bathurst',
               u"Aaron Duggan, Cameron's Toady", u'Abandoning the Flesh',
@@ -273,14 +289,15 @@ class FilterTests(SutekhTest):
               u'Cedric', u'Cesewayo', u'Dramatic Upheaval',
               u'Earl "Shaka74" Deams', u"Enkidu, The Noah",
               u"Fidus, The Shrunken Beast", u'Gracis Nostinus',
+              u"Harold Zettler, Pentex Director", u"Hektor",
               u'Hide the Heart', u"Immortal Grapple",
               u'Inez "Nurse216" Villagrande', u'Kabede Maru',
               u'Kemintiri (Advanced)', u'L\xe1z\xe1r Dobrescu',
               u'Motivated by Gehenna', u"Necromancy", u"New Blood",
               u"Off Kilter", u"Pariah", u"Predator's Communion",
               u"Rebekka, Chantry Elder of Munich", u'Sha-Ennu',
-              u'Swallowed by the Night', u"The Siamese", u"Two Wrongs",
-              u"Walk of Flame", u'Yvette, The Hopeless']),
+              u"Sheela Na Gig", u'Swallowed by the Night', u"The Siamese",
+              u"Two Wrongs", u"Walk of Flame", u'Yvette, The Hopeless']),
             (Filters.LifeFilter(6),
              [u'Anna "Dictatrix11" Suljic', u'Earl "Shaka74" Deams']),
             (Filters.MultiLifeFilter([3, 6]),
@@ -352,7 +369,7 @@ class FilterTests(SutekhTest):
             # Other Filters
             (Filters.CardTextFilter('strike'),
              [u".44 Magnum", u"AK-47", u"Aeron", u"Anastasz di Zagreb",
-              u"Bronwen", u"Ghoul Retainer", u"High Top",
+              u"Bronwen", u"Ghoul Retainer", u"Hektor", u"High Top",
               u"Immortal Grapple", u"Ossian", u"Rock Cat",
               u'Scapelli, The Family "Mechanic"', u"Shade",
               u'Smite', u"Walk of Flame"]),
@@ -410,9 +427,9 @@ class FilterTests(SutekhTest):
                           u"Follower of Set", u"Gangrel",
                           u"Gangrel antitribu", u"Gargoyle", u"Giovanni",
                           u"Harbinger of Skulls", u"Lasombra",
-                          u"Nosferatu antitribu", u"Osebo", u"Pander",
-                          u"Ravnos", u"Samedi", u"Toreador", u"Tremere",
-                          u"Tzimisce", u"Ventrue"])
+                          u"Malkavian antitribu", u"Nosferatu antitribu",
+                          u"Osebo", u"Pander", u"Ravnos", u"Samedi",
+                          u"Toreador", u"Tremere", u"Tzimisce", u"Ventrue"])
         self.assertEqual(Filters.MultiCapacityFilter.get_values(),
                          [str(x) for x in range(1, 12)])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),

@@ -443,6 +443,11 @@ class AppMainWindow(MultiPaneWindow):
         """Handle any preparation for the database upgrade"""
         MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
 
+    def clear_cache(self):
+        """Clear any cached objects."""
+        # Subclasses should provide this if needed
+        pass
+
     # pylint: enable=R0201
 
     def get_editable_panes(self):

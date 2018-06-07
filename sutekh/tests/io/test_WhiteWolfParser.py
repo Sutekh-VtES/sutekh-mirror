@@ -75,6 +75,8 @@ class WhiteWolfParserTests(SutekhTest):
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
+        u"Harold Zettler, Pentex Director",
+        u"Hektor",
         u"Hide the Heart",
         u"High Top",
         u"Immortal Grapple",
@@ -101,6 +103,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
         u"Shade",
+        u"Sheela Na Gig",
         u"Smite",
         u"Swallowed by the Night",
         u"The Ankara Citadel, Turkey",
@@ -199,7 +202,7 @@ class WhiteWolfParserTests(SutekhTest):
         # Check Ashur Tablets
         oAshur = IAbstractCard('Ashur Tablets')
         self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
-        self.assertTrue(IRarityPair(('Anthology', 'Anthology'))
+        self.assertTrue(IRarityPair(('Anthology', 'Fixed'))
                         in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
@@ -545,6 +548,17 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oRaven.cost, 1)
         self.assertEqual(oRaven.costtype, 'blood')
 
+        # Check slave keywords for Fidus and Sheela Na Gig
+        oFidus = IAbstractCard(u"Fidus, The Shrunken Beast")
+        self.assertTrue(IKeyword('tremere slave') in oFidus.keywords)
+
+        oSheela = IAbstractCard(u"Sheela Na Gig")
+        self.assertTrue(IKeyword('tremere antitribu slave') in oSheela.keywords)
+
+        # Check for Anarch sect status
+        oAlab = IAbstractCard(u"Alabástrom")
+        self.failUnless(ISect('Anarch') in oAlab.sect)
+
         # Check special cases
         oRetainer = IAbstractCard('Ghoul Retainer')
         self.failUnless(IKeyword('1 strength') in oRetainer.keywords)
@@ -651,6 +665,37 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertFalse(is_vampire(oOssian))
         self.assertFalse(is_crypt_card(oOssian))
         self.assertFalse(is_trifle(oOssian))
+
+    def test_adapters(self):
+        """Extra sanity checks on the adapaters."""
+        for oAdapter in (IAbstractCard, IPhysicalCard,
+                         IExpansion, IRarity, IRarityPair,
+                         ICardType, IArtist, IKeyword):
+            self.assertRaises(NotImplementedError, oAdapter, 1)
+            self.assertRaises(NotImplementedError, oAdapter, None)
+
+        # Various pass through tests
+        self.assertEqual(IAbstractCard("Ossian"),
+                         IAbstractCard(IAbstractCard("Ossian")))
+        oExp = IExpansion("KMW")
+        self.assertEqual(oExp, IExpansion(oExp))
+
+        oPrinting = IPrinting((oExp, None))
+        self.assertEqual(oPrinting, IPrinting(oPrinting))
+
+        oPhysCard = IPhysicalCard((IAbstractCard("Ossian"), oPrinting))
+        self.assertEqual(oPhysCard, IPhysicalCard(oPhysCard))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard("Ossian"))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard(oPhysCard))
+
+        self.assertEqual(IArtist("Lawrence Snelly"),
+                         IArtist(IArtist("Lawrence Snelly")))
+        self.assertEqual(IKeyword('not for legal play'),
+                         IKeyword(IKeyword('not for legal play')))
+        self.assertEqual(IRarity("Common"), IRarity(IRarity("Common")))
+        self.assertEqual(IRarityPair(("EK", "Common")),
+                         IRarityPair(IRarityPair(("EK", "Common"))))
+        self.assertEqual(ICardType("Vampire"), ICardType(ICardType("Vampire")))
 
 
 if __name__ == "__main__":

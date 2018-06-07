@@ -15,8 +15,11 @@ from nose import SkipTest
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
 from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCardSet,
+                                         PhysicalCard, Printing, Expansion,
                                          VersionTable)
-from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCardSet,
+                                           IPhysicalCard, IPrinting,
+                                           IExpansion)
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
 from sutekh.base.core.DBUtility import flush_cache
 from sutekh.base.tests.TestUtils import make_null_handler, make_card
@@ -1550,6 +1553,9 @@ class DatabaseUpgradeTests(SutekhTest):
         iPCSCount = PhysicalCardSet.select().count()
         iACCount = AbstractCard.select().count()
 
+        iExpCnt = Expansion.select().count()
+        iPrintCnt = Printing.select().count()
+
         # Attempt upgrade
 
         oOrigConn = sqlhub.processConnection
@@ -1578,6 +1584,9 @@ class DatabaseUpgradeTests(SutekhTest):
         self.assertEqual(AbstractCard.select().count(), iACCount)
         self.assertEqual(PhysicalCardSet.select().count(), iPCSCount)
 
+        self.assertEqual(Expansion.select().count(), iExpCnt)
+        self.assertEqual(Printing.select().count(), iPrintCnt)
+
         sqlhub.processConnection = oOrigConn
         oDBUpgrade = DBUpgradeManager()
         bResult, _aMsgs = oDBUpgrade.create_final_copy(oNewConn, oLogHandler)
@@ -1591,8 +1600,26 @@ class DatabaseUpgradeTests(SutekhTest):
         self.assertEqual(AbstractCard.select().count(), iACCount)
         self.assertEqual(PhysicalCardSet.select().count(), iPCSCount)
 
+        self.assertEqual(Expansion.select().count(), iExpCnt)
+        self.assertEqual(Printing.select().count(), iPrintCnt)
+
         oMagnum = IAbstractCard('.44 magnum')
         assert oMagnum
+
+        oImmortal = IAbstractCard("Immortal Grapple")
+        assert oImmortal
+
+        oKoT = IExpansion("Keepers of Tradition")
+
+        oDefPrint = IPrinting((oKoT, None))
+        assert oDefPrint
+
+        assert IPhysicalCard((oImmortal, oDefPrint))
+
+        oNoDraft = IPrinting((oKoT, "No Draft Text"))
+        assert oNoDraft
+
+        assert IPhysicalCard((oImmortal, oNoDraft))
 
         oMyCollection = IPhysicalCardSet("My Collection")
         assert oMyCollection.comment == "test comment"
@@ -1658,6 +1685,21 @@ class DatabaseUpgradeTests(SutekhTest):
         self.assertTrue("information to fill the Printing" in sLogs)
         self.assertTrue("Missing date information" in sLogs)
         self.assertTrue("Everything seems to have gone OK" in sLogs)
+
+        self.assertEqual(Expansion.select().count(), 25)
+        self.assertEqual(AbstractCard.select().count(), 72)
+        self.assertEqual(PhysicalCard.select().count(), 225)
+        self.assertEqual(Printing.select().count(), Expansion.select().count())
+
+        oMagnum = IAbstractCard(".44 Magnum")
+        oJyhad = IExpansion("Jyhad")
+
+        assert oMagnum
+        assert oJyhad
+        assert IPhysicalCard((oMagnum, None))
+        oDefJyhad = IPrinting((oJyhad, None))
+        assert oDefJyhad
+        assert IPhysicalCard((oMagnum, oDefJyhad))
 
         oOldDB.close()
 

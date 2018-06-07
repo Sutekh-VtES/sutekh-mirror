@@ -38,6 +38,7 @@ Expansions,BSC,Blood Shadowed Court
 Expansions,Anthology,Anthology
 Expansions,Tenth,Tenth Anniversary
 Expansions,TR,Twilight Rebellion
+Expansions,LK,Lost Kindred
 Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
 Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
 Expansions,ReversePrefix:Promo-,Promo
@@ -58,10 +59,10 @@ Rarities,R2,Rare
 Rarities,NA,Not Applicable
 Rarities,BSC,BSC
 Rarities,X,BSC
-Rarities,A,Tenth
-Rarities,B,Tenth
-Rarities,1,Anthology
-Rarities,3,Anthology
+Rarities,A,Fixed
+Rarities,B,Fixed
+Rarities,1,Fixed
+Rarities,3,Fixed
 Rarities,Rules,Rules
 Rarities,Storyline,Storyline
 Rarities,Demo,Demo
@@ -264,11 +265,10 @@ Discipline: for pre AUS DOM
 Camarilla: When you play an investment card, add an additional counter to it from the blood bank.
 Artist: Steve Prescott
 
-Name: Alan Sovereign
+Name: Alan Sovereign (Adv)
 [Promo-20051001]
 Cardtype: Vampire
 Clan: Ventrue
-Level: Advanced
 Group: 3
 Capacity: 6
 Discipline: for pre AUS DOM
@@ -496,6 +496,27 @@ Unique -{mortal}- with 1 life. 1 {strength}, 1 bleed.
 Gypsies get +1 stealth on each of their actions.
 Artist: Pete Venters
 
+Name: Harold Zettler, Pentex Director
+[Third:PM]
+Cardtype: Vampire
+Clan: Malkavian antitribu
+Group: 4
+Capacity: 9
+Discipline: vic AUS DEM OBF POT
+Sabbat: Giovanni get +1 bleed when bleeding you. +1 stealth.
+Artist: Rik Martin
+
+Name: Hektor
+[Third:PB2]
+Cardtype: Vampire
+Clan: Brujah antitribu
+Group: 4
+Capacity: 9
+Discipline: for CEL POT PRE QUI
+Sabbat priscus: Damage from Hektor's hand strikes is aggravated. Baali get +1 bleed
+ when bleeding you.
+Artist: Abrar Ajmal
+
 Name: High Top
 [BL:R1, LoB:R]
 Cardtype: Ally
@@ -534,11 +555,10 @@ Discipline: abo pot AUS CEL OBF QUI
 Laibon magaji: Kabede gets +1 intercept against political actions. (The blood curse does not affect Kabede.)
 Artist: Ken Meyer, Jr.
 
-Name: Kemintiri
+Name: Kemintiri (Adv)
 [KMW:U]
 Cardtype: Vampire
 Clan: Follower of Set
-Level: Advanced
 Group: 2
 Capacity: 10
 Discipline: aus dom OBF PRE SER THA
@@ -729,6 +749,16 @@ Discipline: obf tha ANI AUS CHI VIC
 Sabbat regent: Vampires with capacity less than 4 cannot block Sha-Ennu. +2 bleed.
 Artist: Richard Thomas
 
+Name: Sheela Na Gig
+[LK:2]
+Cardtype: Vampire
+Clan: Gargoyle
+Group: 5
+Capacity: 2
+Discipline: vis
+Sabbat: Sheela Na Gig can lock to give a Tremere antitribu you control +1 bleed. Flight [FLIGHT]. Tremere antitribu slave.
+Artist: Noah Hirka
+
 Name: Swallowed by the Night
 [Third:C]
 Cardtype: Action Modifier/Combat
@@ -836,6 +866,105 @@ Cardtype: Master
 Master.
 Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.  {NOT FOR LEGAL PLAY}
 Artist: Brian LeBlanc
+"""
+
+TEST_EXP_INFO = """
+{
+  "TR": {
+    "None": {
+      "date": "2008-05-28",
+      "back": "VtES"
+    }
+  },
+  "HttB": {
+    "None": {
+      "date": "2010-02-03",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2010-02-03",
+      "cards": [
+        "Off Kilter"
+      ],
+      "back": "VtES"
+    }
+  },
+  "Jyhad": {
+    "None": {
+      "date": "1994-08-16",
+      "back": "Jyhad"
+    },
+    "Variant Printing": {
+      "date": "1994-08-16",
+      "cards": [
+        "Ghoul Retainer",
+        "Immortal Grapple",
+        "Walk of Flame"
+      ],
+      "back": "Jyhad"
+    }
+  },
+  "KoT": {
+    "None": {
+      "date": "2008-11-19",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2008-11-19",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    }
+  },
+  "SW": {
+    "Second Printing": {
+      "date": "2001-01-12",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    },
+    "None": {
+      "date": "2000-10-31",
+      "back": "VtES"
+    }
+  },
+  "Anthology": {
+    "None": {
+      "date": "2017-05-11",
+      "back": "VEKN"
+    }
+  },
+  "Third": {
+    "None": {
+      "date": "2006-09-04",
+      "back": "Third Edition"
+    },
+    "No Draft Text": {
+      "date": "2006-09-04",
+      "cards": [
+        "Swallowed by the Night",
+        "Walk of Flame"
+      ],
+      "back": "Third Edition"
+    },
+    "Sketch": {
+      "date": "2006-09-04",
+      "cards": [
+        "Harold Zettler, Pentex Director",
+        "Hektor"
+      ],
+      "back": "Third Edition"
+    }
+  },
+  "Anarchs and Alastors Storyline": {
+    "None": {
+      "date": "2008-08-10",
+      "back": "VtES"
+    }
+  }
+}
 """
 
 TEST_RULINGS = """
