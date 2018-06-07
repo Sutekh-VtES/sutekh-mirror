@@ -78,7 +78,7 @@ class GroupingsTests(SutekhTest):
         aGrp = list(RarityGrouping(aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None not in aGrpNames)
-        self.assertTrue('Anthology' in aGrpNames)
+        self.assertTrue('Fixed' in aGrpNames)
         self.assertTrue('Precon' in aGrpNames)
         self.assertTrue('Vampire' in aGrpNames)
 

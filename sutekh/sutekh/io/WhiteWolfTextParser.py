@@ -157,6 +157,12 @@ class CardDict(dict):
         'sterile': re.compile(r'[.:] Sterile.'),
         # Need the } to handle some of the errata'd cards
         'blood cursed': re.compile(r'[.:\}] \(?Blood [Cc]ursed'),
+        # We divide slave by clan, since that's most useful
+        'tremere slave': re.compile(r'Tremere [Ss]lave[:.]'),
+        'tremere antitribu slave': re.compile(
+            r'Tremere antitribu [Ss]lave[:.]'),
+        'malkavian antitribu slave': re.compile(
+            r'Malkavian antitribu slave'),
     }
 
     # Searches for these keywords must include the full text, including

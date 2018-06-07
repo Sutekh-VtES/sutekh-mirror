@@ -74,6 +74,8 @@ class WhiteWolfParserTests(SutekhTest):
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
+        u"Harold Zettler, Pentex Director",
+        u"Hektor",
         u"Hide the Heart",
         u"High Top",
         u"Immortal Grapple",
@@ -100,6 +102,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
         u"Shade",
+        u"Sheela Na Gig",
         u"Smite",
         u"Swallowed by the Night",
         u"The Ankara Citadel, Turkey",
@@ -198,7 +201,7 @@ class WhiteWolfParserTests(SutekhTest):
         # Check Ashur Tablets
         oAshur = IAbstractCard('Ashur Tablets')
         self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
-        self.assertTrue(IRarityPair(('Anthology', 'Anthology'))
+        self.assertTrue(IRarityPair(('Anthology', 'Fixed'))
                         in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
@@ -542,6 +545,17 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oRaven.life, 1)
         self.assertEqual(oRaven.cost, 1)
         self.assertEqual(oRaven.costtype, 'blood')
+
+        # Check slave keywords for Fidus and Sheela Na Gig
+        oFidus = IAbstractCard(u"Fidus, The Shrunken Beast")
+        self.assertTrue(IKeyword('tremere slave') in oFidus.keywords)
+
+        oSheela = IAbstractCard(u"Sheela Na Gig")
+        self.assertTrue(IKeyword('tremere antitribu slave') in oSheela.keywords)
+
+        # Check for Anarch sect status
+        oAlab = IAbstractCard(u"Alabástrom")
+        self.failUnless(ISect('Anarch') in oAlab.sect)
 
         # Check special cases
         oRetainer = IAbstractCard('Ghoul Retainer')

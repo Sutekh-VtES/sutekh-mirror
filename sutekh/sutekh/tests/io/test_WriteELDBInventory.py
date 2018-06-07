@@ -95,6 +95,9 @@ EXPECTED = """"ELDB - Inventory"
 "Anarch Manifesto, An",1,0,"","Library"
 "Walk of Flame",3,0,"","Library"
 "Immortal Grapple",4,0,"","Library"
+"Harold Zettler, Pentex Director",0,0,"","Crypt"
+"Hektor",0,0,"","Crypt"
+"Sheela Na Gig",0,0,"","Crypt"
 """
 
 
