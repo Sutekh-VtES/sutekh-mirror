@@ -294,7 +294,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         'Title': (Title, (Title.tableversion,)),
     })
     # We override the default values for these
-    SUPPORTED_TABLES['Expansion'] = (Expansion, (Expansion.tableversion, 3))
+    SUPPORTED_TABLES['Expansion'] = (Expansion, (Expansion.tableversion, 3, 4))
     SUPPORTED_TABLES['AbstractCard'] = (AbstractCard,
                                         (AbstractCard.tableversion, 5, 6))
     SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
@@ -365,7 +365,30 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                   connection=oTrans)
                 # Create associated default Printing
                 _oPrint = Printing(expansionID=oCopy.id,
+                                   name=None,
+                                   connection=oTrans)
+        elif oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
+            for oObj in Expansion_v4.select(connection=oOrigConn):
+                oCopy = Expansion(id=oObj.id, name=oObj.name,
+                                  shortname=oObj.shortname,
                                   connection=oTrans)
+                # Create associated default Printing
+                oPrint = Printing(expansionID=oCopy.id,
+                                   name=None,
+                                   connection=oTrans)
+                # Add the release date as a print property
+                sDateVal = ("Release Date: %s" %
+                    oExp.releasedate.strftime('%Y-%m-%d'))
+                try:
+                    oPrintDate = PrintingProperty.byCanonicalValue(
+                        sDateVal.lower())
+                except SQLObjectNotFound:
+                    # Create property for this date
+                    oPrintDate = PrintingProperty(
+                        value=sDateVal,
+                        canonicalValue=sDateVal.lower(),
+                        connection=oTrans)
+                oPrint.addPrintingProperty(oPrintDate)
         else:
             return (False, ["Unknown Expansion Version"])
         return (True, aMessages)
@@ -374,28 +397,11 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         """Upgrade printing table."""
         aMessages = []
         if oVer.check_tables_and_versions([Printing], [-1], oOrigConn):
-            if oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
-                # For expansion v3, we create Printings in that upgrade
-                # We're upgrading from no printing table, so we construct
-                # it from the expansions
                 aMessages = ["Incomplete information to fill the Printing"
                              " table. You will need to reimport the cardlist"
                              " information."]
-                for oExp in Expansion_v4.select(connection=oOrigConn):
-                    # We just create the default name
-                    oPrint = Printing(expansionID=oExp.id,
-                                      connection=oTrans)
-                    # Add the release date as a print property
-                    sDateVal = ("Release Date: %s" %
-                            oExp.releasedate.strftime('%Y-%m-%d'))
-                    try:
-                        oPrintDate = PrintingProperty.selectBy(
-                            value=sDateVal, connection=oTrans).getOne()
-                    except SQLObjectNotFound:
-                        # Create property for this date
-                        oPrintDate = PrintingProperty(value=sDateVal,
-                                                      connection=oTrans)
-                    oPrint.addProperty(oPrintDate)
+                # We construct the printings in the associated expansion
+                # upgrades
         else:
             return (False, ["Unknown Version for Printing"])
         return (True, aMessages)
