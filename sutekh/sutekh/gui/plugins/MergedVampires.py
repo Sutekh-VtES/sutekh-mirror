@@ -140,14 +140,14 @@ class FakeCard(object):
         elif self.name == 'Appolonius (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace(
-                'Baron of London', 'Independent anarch Baron of London')
+                'Baron of London', 'Anarch Baron of London')
         elif self.name == 'Batsheva (Merged)':
             self.keywords.append(IKeyword('2 strength'))
         elif self.name == 'Boss Callihan (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Baron of New York.', '.')
             self.text = self.text.replace(
-                'Independent anarch:', 'Independent anarch Baron of New York:')
+                'Independent anarch:', 'Anarch Baron of New York:')
         elif self.name == 'Brunhilde (EC 2013) (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Anarch Baron of Stockholm', '.')
@@ -161,22 +161,21 @@ class FakeCard(object):
             self.text = self.text.replace('Camarilla',
                                           'Camarilla Prince of Budapest')
         elif self.name == 'Count Germaine (Merged)':
-            self.text = 'Independent. ' + self.text
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
+            self.text = 'Anarch: ' + self.text
         elif self.name == 'Danielle Diron (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Baron of Berlin.', '.')
             self.text = self.text.replace(' Danielle has 1 vote (titled).', '')
             self.text = self.text.replace(
-                'Independent anarch:', 'Independent anarch Baron of Berlin:')
+                'Independent anarch:', 'Anarch Baron of Berlin:')
         elif self.name == 'Dominique (Merged)':
             self.text = self.text.replace(
                 '. Independent Anarch Baron of Paris.', '')
             self.text = self.text.replace(
-                'Sabbat:', 'Independent Anarch Baron of Paris:')
-            self.keywords.append(IKeyword('anarch'))
+                'Sabbat:', 'Anarch Baron of Paris:')
             self.title = [ITitle('Baron')]
-            self.sect = [ISect('Independent')]
+            self.sect = [ISect('Anarch')]
         elif self.name == 'Duality (Red Sign) (Merged)':
             self.discipline.remove(IDisciplinePair(('Thaumaturgy',
                                                     'inferior')))
@@ -216,13 +215,13 @@ class FakeCard(object):
             self.text = self.text.replace('. Baron of Barcelona.', '.')
             self.text = self.text.replace(
                 'Independent anarch:',
-                'Independent anarch Baron of Barcelona:')
+                'Anarch Baron of Barcelona:')
         elif self.name == 'Jeremy MacNeil (Merged)':
             self.text = self.text.replace(' Anarch Baron of Los Angeles.', '')
             self.text = self.text.replace(
-                'Independent:', 'Independent. Anarch Baron of Los Angeles.')
+                'Independent:', 'Anarch Baron of Los Angeles.')
             self.title = [ITitle('Baron')]
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
         elif self.name == 'Jessica (Merged)':
             self.title = [ITitle('Archbishop')]
             self.text = self.text.replace(' Archbishop of Brussels.', '')
@@ -319,10 +318,9 @@ class FakeCard(object):
         elif self.name == 'Xaviar (Merged)':
             self.text = self.text.replace(' Xaviar has 2 votes (titled).', '')
         elif self.name == 'Yazid Tamari (Merged)':
-            self.sect = [ISect('Independent')]
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
             self.text = self.text.replace('Independent. Anarch.', '')
-            self.text = self.text.replace('Sabbat.', 'Independent. Anarch.')
+            self.text = self.text.replace('Sabbat.', 'Anarch.')
             self.text = self.text.replace('Black Hand:', 'Black Hand Seraph:')
         # Fix any issues caused by the various replacements
         self.text = normalise_whitespace(self.text)
