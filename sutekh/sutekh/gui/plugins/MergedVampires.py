@@ -5,6 +5,8 @@
 
 """Shows the merged version for advanced vampires."""
 
+import logging
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import normalise_whitespace
@@ -453,10 +455,13 @@ class MergedVampirePlugin(SutekhPlugin):
             return
         try:
             self._oFakeCard = FakeCard(self._oAbsCard, self._dReplaceMap)
-        except SQLObjectNotFound:
+        except SQLObjectNotFound as oExc:
             do_complaint_error(
-                "Unable to find base vampire for %s" % self._oAbsCard.name)
+                "Unable to created merged vampire for %s"
+                % self._oAbsCard.name)
             self._aExcluded.add(self._oAbsCard)
+            logging.warn("Merged vampire creation failed (%s).", oExc,
+                         exc_info=1)
             return
         oCardTextView = self.parent.card_text_pane.view
         # Button logic
