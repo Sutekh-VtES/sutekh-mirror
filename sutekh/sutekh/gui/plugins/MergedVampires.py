@@ -339,6 +339,8 @@ class FakeCard(object):
             sBaseName = sBaseName.replace(' (EC 2013)', '')
         if '(Red Sign)' in sBaseName:
             sBaseName = sBaseName.replace(' (Red Sign)', '')
+        if '(Ascension of Caine)' in sBaseName:
+            sBaseName = sBaseName.replace(' (Ascension of Caine)', '')
         return IAbstractCard(sBaseName)
 
     def _find_adv_vampire(self):
