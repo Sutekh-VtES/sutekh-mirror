@@ -504,15 +504,20 @@ class CardDict(dict):
 
     def _add_level(self, oCard, sLevel):
         """Add the correct string for the level to the card."""
-        oCard.level = sLevel
+        oCard.level = sLevel.lower()
 
-    def _check_advanced(self):
+    def _fix_advanced_name(self):
         """Check if this is an advanced vampire."""
+        # Various iterations of the text file have used both
+        # variations, so we support both "Name (Adv)" and
+        # Name, Level: Advanced checks
         if self['name'].endswith(' (Adv)'):
             # Yes
             self['level'] = 'advanced'
             self['name'] = self['name'].replace(' (Adv)',
                                                 ' (Advanced)')
+        elif 'level' in self and self['level'].lower() == 'advanced':
+            self['name'] += ' (Advanced)'
 
     def _add_capacity(self, oCard, sCap):
         """Add the capacity to the card."""
@@ -574,7 +579,7 @@ class CardDict(dict):
         if not self.has_key('name'):
             return
 
-        self._check_advanced()
+        self._fix_advanced_name()
 
         oCard = self._make_card(self['name'])
 
