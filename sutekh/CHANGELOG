@@ -1,3 +1,8 @@
+11 Jun 2018
+ * Update parser to support most recent cardlist changes.
+ * Add automatic lookups based on the AKA entries in the cardlist.
+   - Also add automatic lookups for the common 'X (Adv)' names.
+
 07 Jun 2018
  * Update Merged Vampire plugin to handle Anarch changes.
    - Also fix a bug with handling card list updates in the Merged vampire
