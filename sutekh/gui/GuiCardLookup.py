@@ -26,6 +26,32 @@ from sutekh.gui.FilterModelPanes import add_accel_to_button
 NO_CARD = "  No Card"
 
 
+SPECIAL_CASES = {
+    "akhenaten, the sun pharaoh (mummy)": "akhenaten, the sun pharaoh",
+    "amam the devourer (bane mummy)": "amam the devourer",
+    "ambrosius, the ferryman (wraith)": "ambrosius, the ferryman",
+    "brigitte gebauer (wraith)": "brigitte gebauer",
+    "carlton van wyk (hunter)": "carlton van wyk",
+    "dauntain black magician (changeling)": "dauntain black magician",
+    "draeven softfoot (changeling)": "draeven softfoot",
+    'felix "fix" hessian (wraith)': 'felix "fix" hessian (wraith)',
+    "jake washington (hunter)": "jake washington",
+    "kherebutu (bane mummy)": "kherebutu",
+    "mehemet of the ahl-i-batin (mage)": "mehemet of the ahl-i-batin",
+    "mylan horseed (goblin)": "mylan horseed",
+    "neighborhood watch commander (hunter)": "neighborhood watch commander",
+    "nephandus (mage)": "nephandus",
+    "puppeteer (wraith)": "puppeteer",
+    "qetu the evil doer (bane mummy)": "qetu the evil doer",
+    "saatet-ta (bane mummy)": "saatet-ta",
+    "shadow court satyr (changeling)": "shadow court satyr",
+    "tara, the hollow one (mage)": "tara, the hollow one",
+    "tutu the doubly evil one (bane mummy)": "tutu the doubly evil one",
+    "veneficti (mage)": "veneficti",
+    "wendell delburton (hunter)": "wendell delburton",
+}
+
+
 def _sort_replacement(oModel, oIter1, oIter2):
     """Sort replacement, honouring spaces"""
     oVal1 = oModel.get_value(oIter1, 2)
@@ -316,10 +342,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                             'replace')
 
                 try:
-                    # Special case to handle the card rename in the Anthology
-                    # set
-                    if sName == 'carlton van wyk (hunter)':
-                        sName = 'carlton van wyk'
+                    # Special cases to handle the ally name changes
+                    # in the Anthology set and Black Chantry reprints
+                    if sName in SPECIAL_CASES:
+                        sName = SPECIAL_CASES[sName]
                     # Use IAbstractCard to cover more variations
                     oAbs = IAbstractCard(sName.encode('utf8'))
                     dCards[sName] = oAbs
