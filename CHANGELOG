@@ -1,3 +1,9 @@
+11 Jun 2017
+ * Add support for the latest cardlist and both Advanced vampire
+   indicators
+ * Add aliases for the ally name change sto make updating the cardlist
+   easier
+
 06 Jun 2017
  * Add support for Lost Kindred and Black Chantry fixed sets
    - Backport Anarach as sect support from trunk
