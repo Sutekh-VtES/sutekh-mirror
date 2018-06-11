@@ -15,7 +15,7 @@ from sqlobject import SQLObjectNotFound
 from .BaseTables import (LookupHints, AbstractCard, PhysicalCard,
                          PhysicalCardSet, MapPhysicalCardToPhysicalCardSet,
                          Keyword, Ruling, RarityPair, Expansion,
-                         Rarity, CardType, Artist)
+                         Rarity, CardType, Artist, LookupHints)
 from .BaseAbbreviations import CardTypes, Expansions, Rarities
 from ..Utility import move_articles_to_front
 
@@ -100,6 +100,12 @@ def IArtist(oUnknown):
 def IKeyword(oUnknown):
     """The base for keyword adaption"""
     return fail_adapt(oUnknown, 'Keyword')
+
+
+@singledispatch
+def ILookupHint(oUnknown):
+    """The base for keyword adaption"""
+    return fail_adapt(oUnknown, 'LookupHints')
 
 
 # pylint: disable=missing-docstring
@@ -451,3 +457,11 @@ IPhysicalCard.register(tuple, PhysicalCardAdapter.lookup)
 
 
 IPhysicalCard.register(PhysicalCard, passthrough)
+
+
+@ILookupHint.register(tuple)
+def lookup_hint_from_tuple(tData):
+    """Lookup a hint from a (domain, key) tuple"""
+    sDomain, sKey = tData
+    return LookupHints.selectBy(domain=sDomain,
+                                lookup=sKey).getOne()

@@ -399,6 +399,13 @@ class CardDict(dict):
         sName = self.oDispCard.sub('', sName)
         return self._oMaker.make_abstract_card(sName)
 
+    def _make_aliases(self):
+        """Create lookup entries from the AKA entries in the cardlist"""
+        for sAlias in self['aka'].split(';'):
+            oLookup = self._oMaker.make_lookup_hint(
+                "CardNames", sAlias.strip(), self['name'])
+            oLookup.syncUpdate()
+
     def _add_expansions(self, oCard, sExp):
         """Add expansion information to the card, creating expansion pairs
            as needed."""
@@ -513,15 +520,24 @@ class CardDict(dict):
 
     def _add_level(self, oCard, sLevel):
         """Add the correct string for the level to the card."""
-        oCard.level = sLevel
+        oCard.level = self._get_level(sLevel)
 
-    def _check_advanced(self):
+    def _fix_advanced_name(self):
         """Check if this is an advanced vampire."""
+        sAlias = None
         if self['name'].endswith(' (Adv)'):
-            # Yes
             self['level'] = 'advanced'
+            sAlias = self['name']
             self['name'] = self['name'].replace(' (Adv)',
                                                 ' (Advanced)')
+        elif 'level' in self and self._get_level(self['level']) == 'advanced':
+            sAlias = self['name'] + ' (Adv)'
+            self['name'] += ' (Advanced)'
+        if sAlias:
+            # Add a lookup for the common '... (Adv)' variant
+            oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias,
+                                                    self['name'])
+            oLookup.syncUpdate()
 
     def _add_capacity(self, oCard, sCap):
         """Add the capacity to the card."""
@@ -581,9 +597,12 @@ class CardDict(dict):
         if 'name' not in self:
             return
 
-        self._check_advanced()
+        self._fix_advanced_name()
 
         oCard = self._make_card(self['name'])
+
+        if 'aka' in self:
+            self._make_aliases()
 
         self._oLogger.info('Card: %s', self['name'])
 
@@ -751,7 +770,10 @@ class InExpansion(LogStateWithInfo):
         if sLine.startswith('[') and sLine.strip().endswith(']'):
             self._dInfo['expansion'] = sLine.strip()
             return InCard(self._dInfo, self._oLogger)
-        else:
+        elif sLine.startswith('AKA:'):
+            # We force this in here, since otherwise we need to bounce back and
+            # force between InExpansion and InCard in an unpleasant way
+            self._dInfo['aka'] = sLine.replace('AKA:', '').strip()
             return self
 
 

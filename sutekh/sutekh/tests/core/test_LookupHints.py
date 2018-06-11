@@ -29,3 +29,14 @@ class LookupTests(SutekhTest):
         # Odd cases
         self.assertEqual(oCard, IAbstractCard("THE PATH OF bLOOD"))
         self.assertEqual(oCard, IAbstractCard("the paTH oF bLOOD"))
+
+        # Check that the AKA parsing works as expected
+        oCard = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
+        self.assertEqual(oCard, IAbstractCard("Lazar Dobrescu"))
+
+        # check (Adv) automatic lookups
+        oCard = IAbstractCard(u"Kemintiri (Advanced)")
+        self.assertEqual(oCard, IAbstractCard("Kemintiri (Adv)"))
+
+        oCard = IAbstractCard(u"Alan Sovereign (Advanced)")
+        self.assertEqual(oCard, IAbstractCard("Alan Sovereign (Adv)"))

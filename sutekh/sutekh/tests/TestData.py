@@ -555,18 +555,20 @@ Discipline: abo pot AUS CEL OBF QUI
 Laibon magaji: Kabede gets +1 intercept against political actions. (The blood curse does not affect Kabede.)
 Artist: Ken Meyer, Jr.
 
-Name: Kemintiri (Adv)
+Name: Kemintiri
 [KMW:U]
 Cardtype: Vampire
 Clan: Follower of Set
 Group: 2
 Capacity: 10
+Level: Advanced
 Discipline: aus dom OBF PRE SER THA
 Advanced, Independent. Red List: +1 stealth.
 [MERGED] Kemintiri has 3 votes (titled). She can play {minion} cards that require Camarilla, Ventrue, and/or a justicar title {as if she met that/those requirement(s)}.
 Artist: Lawrence Snelly
 
 Name: Lázár Dobrescu
+AKA: Lazar Dobrescu
 [AH:V3, FN:PR]
 Cardtype: Vampire
 Clan: Ravnos
