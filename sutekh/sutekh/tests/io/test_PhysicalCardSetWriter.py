@@ -16,7 +16,8 @@ from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     make_set_1,
-                                                    make_set_2)
+                                                    make_set_2,
+                                                    make_set_3)
 
 # pylint: disable=line-too-long
 # Long lines for this test data ease comparison with the actual files produced
@@ -76,6 +77,20 @@ A third line</comment>
   <card count="2" expansion="Dark Sovereigns" name="Alexandra" />
 </physicalcardset>"""
 
+EXPECTED_4 = """<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.3">
+  <comment>A formatted test comment
+A second line
+A third line</comment>
+  <annotations>Some Annotations</annotations>
+  <card count="1" expansion="Jyhad" name=".44 Magnum" />
+  <card count="1" expansion="Lords of the Night" name="AK-47" />
+  <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" />
+  <card count="1" expansion="Third Edition" name="Abbot" />
+  <card count="1" expansion="None Specified" name="Abombwe" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra" />
+  <card count="1" expansion="Anarchs" name="&#201;tienne Fauberge" />
+</physicalcardset>"""
+
 # pylint: enable=line-too-long
 
 
@@ -133,6 +148,17 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oFile.close()
         self.assertEqual(len(sWriterXML), len(EXPECTED_3))
         self.assertEqual(sWriterXML, EXPECTED_3)
+
+        # Test with more unicode stuff
+        oWriter = PhysicalCardSetWriter()
+
+        oPhysCardSet3 = make_set_3()
+        oFile = StringIO()
+        oWriter.write(oFile, CardSetWrapper(oPhysCardSet3))
+        sWriterXML = oFile.getvalue()
+        oFile.close()
+        self.assertEqual(sWriterXML, EXPECTED_4)
+        self.assertEqual(len(sWriterXML), len(EXPECTED_4))
 
 
 if __name__ == "__main__":

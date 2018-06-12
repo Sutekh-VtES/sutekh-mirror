@@ -50,6 +50,11 @@ SET_2_ONLY_CARDS = [
     ('alexandra', 'DS', 2),
     ('Abandoning the Flesh', 'CE', 1),
 ]
+
+SET_3_ONLY_CARDS = [
+    (u'Étienne Fauberge', "Anarchs", 1),
+]
+
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
 
@@ -116,6 +121,10 @@ def make_set_3():
             continue
         oPhysCardSet3.addPhysicalCard(oPC.id)
     for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
+        oPC = make_card(sName, sExpansion)
+        for _iNum in range(iCount):
+            oPhysCardSet3.addPhysicalCard(oPC.id)
+    for sName, sExpansion, iCount in SET_3_ONLY_CARDS:
         oPC = make_card(sName, sExpansion)
         for _iNum in range(iCount):
             oPhysCardSet3.addPhysicalCard(oPC.id)

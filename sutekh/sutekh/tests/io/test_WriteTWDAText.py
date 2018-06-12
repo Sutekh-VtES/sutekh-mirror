@@ -91,9 +91,10 @@ A formatted test comment
 A second line
 A third line
 
-Crypt (2 cards, min=22, max=22, avg=11)
+Crypt (3 cards, min=30, max=30, avg=10)
 ---------------------------------------
-2x Alexandra 11  ANI AUS CEL PRE dom\t\tinner circle\tToreador:2
+2x Alexandra\t    11  ANI AUS CEL PRE dom\t\tinner circle\tToreador:2
+1x \xc3\x89tienne Fauberge 8   ANI CEL CHI FOR\t\t\t\t\tRavnos:3
 
 Library (5 cards)
 Master (1; 1 trifle)

@@ -98,6 +98,7 @@ EXPECTED = """"ELDB - Inventory"
 "Harold Zettler, Pentex Director",0,0,"","Crypt"
 "Hektor",0,0,"","Crypt"
 "Sheela Na Gig",0,0,"","Crypt"
+"Etienne Fauberge",0,0,"","Crypt"
 """
 
 

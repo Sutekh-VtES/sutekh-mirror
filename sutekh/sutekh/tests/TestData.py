@@ -868,6 +868,17 @@ Cardtype: Master
 Master.
 Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.  {NOT FOR LEGAL PLAY}
 Artist: Brian LeBlanc
+
+Name: Étienne Fauberge
+AKA: Etienne Fauberge
+[Anarchs:U2]
+Cardtype: Vampire
+Clan: Ravnos
+Group: 3
+Capacity: 8
+Discipline: ANI CEL CHI FOR
+Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Followers of Set, Etienne's hand damage is aggravated.
+Artist: Jeff Holt
 """
 
 TEST_RULINGS = """
