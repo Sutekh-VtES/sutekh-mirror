@@ -784,16 +784,18 @@ class AbstractCardAdapter(object):
     def __new__(cls, sName):
         # pylint: disable-msg=E1101
         # SQLObject confuses pylint
-        try:
-            oCard = AbstractCard.byCanonicalName(sName.encode('utf8').lower())
-        except SQLObjectNotFound:
-            # Correct for common variations
-            sNewName = csv_to_canonical(sName)
-            if sNewName != sName:
-                oCard = AbstractCard.byCanonicalName(
-                        sNewName.encode('utf8').lower())
-            else:
-                raise
+        oExp = None
+        for sCand in [sName, csv_to_canonical(sName), sName.encode('utf8'),
+                      csv_to_canonical(sName.encode('utf8'))]:
+            try:
+                oCard = AbstractCard.byCanonicalName(sCand.lower())
+                oExp = None
+                break
+            except SQLObjectNotFound as oExp:
+                # We will handle the failure case after the loop
+                continue
+        if oExp:
+            raise oExp
         return oCard
 
 

@@ -341,13 +341,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     sName = sName.decode('ascii', 'replace').encode('ascii',
                             'replace')
 
+                # Special cases to handle the ally name changes
+                # in the Anthology set and Black Chantry reprints
+                if sName in SPECIAL_CASES:
+                    sName = SPECIAL_CASES[sName]
                 try:
-                    # Special cases to handle the ally name changes
-                    # in the Anthology set and Black Chantry reprints
-                    if sName in SPECIAL_CASES:
-                        sName = SPECIAL_CASES[sName]
                     # Use IAbstractCard to cover more variations
-                    oAbs = IAbstractCard(sName.encode('utf8'))
+                    oAbs = IAbstractCard(sName)
                     dCards[sName] = oAbs
                 except SQLObjectNotFound:
                     dUnknownCards[sName] = None
@@ -362,21 +362,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         for sName, sNewName in dUnknownCards.items():
             if sNewName is None:
                 continue
-            bSuccess = False
-            for sTry in [sNewName.encode('utf8').lower(), sNewName.lower(),
-                         sNewName.decode('utf8').lower()]:
-                try:
-                    # pylint: disable-msg=E1101
-                    # SQLObject methods confuse pylint
-                    oAbs = AbstractCard.byCanonicalName(sTry)
-                    dUnknownCards[sName] = oAbs
-                    bSuccess = True
-                    break
-                except SQLObjectNotFound:
-                    pass
-            if not bSuccess:
+            try:
+                oAbs = IAbstractCard(sNewName)
+                dUnknownCards[sName] = oAbs
+            except SQLObjectNotFound:
                 raise RuntimeError("Unexpectedly encountered missing"
-                        " abstract card '%s'." % sNewName)
+                                   " abstract card '%s'." % sNewName)
 
         def new_card(sName):
             """emulate python 2.5's a = x if C else y"""
