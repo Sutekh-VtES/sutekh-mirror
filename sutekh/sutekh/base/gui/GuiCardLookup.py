@@ -314,7 +314,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # None here is an explicit ignore from the lookup cache
                 dCards[sName] = None
             else:
-                # Check we can encode the name properly
+                # Check we can encode the name properly to avoid potential
+                # errors later.
                 try:
                     _sTemp = sName.encode('utf8')
                 except UnicodeDecodeError:
@@ -326,10 +327,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                     # code so we don't need to encode back to ascii
                     sName = sName.decode('ascii', 'replace').encode('ascii',
                                                                     'replace')
-
                 try:
                     # Use IAbstractCard to cover more variations
-                    oAbs = IAbstractCard(sName.encode('utf8'))
+                    oAbs = IAbstractCard(sName)
                     dCards[sName] = oAbs
                 except SQLObjectNotFound:
                     dUnknownCards[sName] = None
