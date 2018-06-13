@@ -674,6 +674,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             while not oIter is None:
                 sName, sNewName = oModel.get(oIter, 1, 2)
                 sName = sName.decode('utf-8')
+                sNewName = sNewName.decode('utf-8')
                 if sNewName != NO_CARD:
                     dUnknownCards[sName] = sNewName
                 oIter = oModel.iter_next(oIter)
