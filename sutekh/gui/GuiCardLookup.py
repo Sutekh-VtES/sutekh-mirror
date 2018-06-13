@@ -49,6 +49,16 @@ SPECIAL_CASES = {
     "tutu the doubly evil one (bane mummy)": "tutu the doubly evil one",
     "veneficti (mage)": "veneficti",
     "wendell delburton (hunter)": "wendell delburton",
+    "pentex(tm) loves you!": u"pentex™ loves you!",
+    "pentex(tm) subversion": u"pentex™ subversion",
+    u"célèste lamontagne": "céleste lamontagne",
+    u"sébastian goulet": u"sébastien goulet",
+    u"sébastian goulet (advanced)": u"sébastien goulet (advanced)",
+    "bang nakh -- tiger's claws": u"bang nakh — tiger's claws",
+    "etienne fauberge": u"étienne fauberge",
+    "l'epuisette": u"l'épuisette",
+    "sacre cour cathedral, france": u"sacré-cœur cathedral, france",
+    "pere lachaise, france": u"père lachaise, france",
 }
 
 
