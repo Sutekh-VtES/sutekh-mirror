@@ -237,7 +237,8 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
     def __convert_cardname(self):
         """Convert sCardName to the form used by the card image list"""
         sCurExpansionPath = self.__convert_expansion(self.__sCurExpansion)
-        sFilename = _unaccent(self.__sCardName)
+        sFilename = self.__sCardName.replace(u'\u2122', 'tm')
+        sFilename = _unaccent(sFilename)
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
         elif sFilename.startswith('an '):
