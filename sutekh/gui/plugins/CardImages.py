@@ -32,6 +32,34 @@ FULL, VIEW_FIXED, FIT = range(3)
 RATIO = (225, 300)
 
 
+RENAME_LOOKUPS = {
+    "akhenatenthesunpharaoh.jpg": "akhenatenthesunpharaohmummy.jpg",
+    "amamthedevourer.jpg": "amamthedevourerbanemummy.jpg",
+    "ambrosiustheferryman.jpg": "ambrosiustheferrymanwraith.jpg",
+    "brigittegebauer.jpg": "brigittegebauerwraith.jpg",
+    "carltonvanwyk.jpg": "carltonvanwykhunter.jpg",
+    "dauntainblackmagician.jpg": "dauntainblackmagicianchangeling.jpg",
+    "draevensoftfoot.jpg": "draevensoftfootchangeling.jpg",
+    "felixfixhessian.jpg": "felixfixhessianwraith.jpg",
+    "jakewashington.jpg": "jakewashingtonhunter.jpg",
+    "kherebutu.jpg": "kherebutubanemummy.jpg",
+    "mehemetoftheahlibatin.jpg": "mehemetoftheahlibatinmage.jpg",
+    "mylanhorseed.jpg": "mylanhorseedgoblin.jpg",
+    "neighborhoodwatchcommander.jpg": "neighborhoodwatchcommanderhunter.jpg",
+    "nephandus.jpg": "nephandusmage.jpg",
+    "puppeteer.jpg": "puppeteerwraith.jpg",
+    "qetutheevildoer.jpg": "qetutheevildoerbanemummy.jpg",
+    "saatetta.jpg": "saatettabanemummy.jpg",
+    "shadowcoursatyr.jpg": "shadowcoursatyrchangeling.jpg",
+    "tarathehollowone.jpg": "tarathehollowonemage.jpg",
+    "tututhedoublyevilone.jpg": "tututhedoublyevilonebanemummy.jpg",
+    "veneficti.jpg": "venefictimage.jpg",
+    "sebastiengoulet.jpg": "sebastiangoulet.jpg",
+    "sebastiengouletadv.jpg": "sebastiangouletadv.jpg",
+    "wendelldelburton.jpg": "wendelldelburtonhunter.jpg",
+}
+
+
 def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
     """Rescale the image dimension so they fit in the pane, preserving the
        aspect ratiom."""
@@ -248,6 +276,10 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
         sFilename = sFilename + '.jpg'
+        sFullname = os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)
+        # If the new name isn't available, try the old name
+        if not os.path.exists(sFullname) and sFilename in RENAME_LOOKUPS:
+            sFilename = RENAME_LOOKUPS[sFilename]
         return os.path.join(self.__sPrefsPath, sCurExpansionPath, sFilename)
 
     def __load_image(self, sFullFilename):
