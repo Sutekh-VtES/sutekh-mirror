@@ -451,7 +451,7 @@ class ImageConfigDialog(SutekhDialog):
         self.oChoice = FileOrDirOrUrlWidget(oImagePlugin.parent,
                 "Choose location for "
                 "images file", "Choose image directory", sDefaultDir,
-                {'csillagbolcselet.hu': self.sDefaultUrl})
+                {'sutekh.vtes.za.net': self.sDefaultUrl})
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable-msg=E1101
         # pylint doesn't pick up vbox methods correctly
