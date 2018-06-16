@@ -353,8 +353,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
                 # Special cases to handle the ally name changes
                 # in the Anthology set and Black Chantry reprints
-                if sName in SPECIAL_CASES:
-                    sName = SPECIAL_CASES[sName]
+                if sName.lower() in SPECIAL_CASES:
+                    sName = SPECIAL_CASES[sName.lower()]
                 try:
                     # Use IAbstractCard to cover more variations
                     oAbs = IAbstractCard(sName)
