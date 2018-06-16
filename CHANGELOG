@@ -1,19 +1,38 @@
-11 Jun 2017
+16 Jun 2018
+ * Make renamed card lookups case insensitive
+ * Update list of VEKN-style backed card sets.
+ * Backport fixes to the windows build.
+ * Tag Sutekh 0.8.10 release
+
+13 Jun 2018
+ * Add lookups to find the images for renamed cards
+ * Add some more special cases to ease updates.
+ * Fix some more encoding issues with importing non-ascii card names.
+
+11 Jun 2018
  * Add support for the latest cardlist and both Advanced vampire
    indicators
- * Add aliases for the ally name change sto make updating the cardlist
+ * Add aliases for the ally name change to make updating the cardlist
    easier
 
-06 Jun 2017
- * Add support for Lost Kindred and Black Chantry fixed sets
+06 Jun 2018
+ * Add support for Lost Kindred and Black Chantry Reprint fixed sets
    - Backport Anarach as sect support from trunk
    - Backport Keyword fixes from trunk
+   - Backport improved gtk encoding dance to deal with Agi sensibly.
+
+23 Aug 2017
+ * Point image plugin at new source for zip files.
 
 03 Jul 2017
  * Backport the Baron title parsing code from trunk
  * Backport updated "Mixed deck" logic from trunk
  * Backport 'Unlock' text support for FunctionFilter
  * Backport debian package build fixes
+ * Tag 0.8.9 release
+
+02 Jul 2017
+ * Tag 0.8.8 release
 
 01 Jul 2017
  * Backport support for the 'Anthology' expansion.
@@ -23,6 +42,7 @@
 
 03 Feb 2016
  * Backport deb build tweak from trunk.
+ * Tag 0.8.7 release
 
 31 Jan 2016
  * Backport windows build fix from trunk.
@@ -46,10 +66,12 @@
    - Fix parsing of Baron title.
    - Fix error with parsing the "not for legal play" keyword in some cases
    - Add "Anarch" keyword for all anarch vampires, including Barons.
+ * Tag 0.8.6 release
 
 09 Jul 2014
  * Backport a update to the Secret Library plugin which prevented imports from
    the Secret Library working correctly (r3433)
+ * Tag 0.8.5 release
 
 08 Jul 2014
  * Fix datapack handling to still support python 2.4

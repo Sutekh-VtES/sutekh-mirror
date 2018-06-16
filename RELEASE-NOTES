@@ -1,12 +1,13 @@
-Sutekh 0.8.9 (2017-07-03)
+Sutekh 0.8.10 (2018-06-16)
 -------------------------
 
-Sutekh 0.8.9 is a minor update and bugfix release for Sutekh 0.8. In
-particular, Sutekh 0.8.9 fixes a issue with not parsing the Baron
-title correctly in the latest cardlist.
+Sutekh 0.8.10 is a update and bugfix release for Sutekh 0.8.
 
-This is a bug fix to the recent Sutekh 0.8.8 release which added support
-for the 'Anthology' set.
+Sutekh 0.8.10 adds support for the Lost Kindred expansion and the various
+changes to the card list, such as "Anarch" becoming a sect and the
+renaming of various cards (such as "Mylan Horseed (Goblin)" to
+"Mylan Horseed"). It also fixes some issues with managing non-ascii card
+names revealed by the latest cardlist.
 
 Instructions for installing Sutekh can be found at:
 
@@ -24,26 +25,41 @@ Known Issues
 
 * No known issues at this stage.
 
-Notable Improvements since 0.8.8
+Notable Improvements since 0.8.9
 --------------------------------
 
-* Fix the parsing of the Baron title.
+* Full support for the Lost Kindred expansion
+* Handle the recent card name changes mostly transparently.
+* Fix issues with dragging non-ascii named cards revealed by
+  the addition of Ági.
+* Update the list of sets with the new VEKN-style back for
+  the Analyze card set plugin.
 
-Notable Improvements since 0.8.7
---------------------------------
-
-* Full support for "Anthology" expansion
-
-Changelog since 0.8.6
+Changelog since 0.8.9
 ---------------------
 
-03 Jul 2017
- * Backport the Baron title parsing code from trunk
- * Backport updated "Mixed deck" logic from trunk
- * Backport 'Unlock' text support for FunctionFilter
+16 Jun 2018
+ * Make renamed card lookups case insensitive
+ * Update list of VEKN-style backed card sets.
+ * Backport fixes to the windows build.
 
-01 Jul 2017
- * Backport support for the 'Anthology' expansion.
- * Add special handling for the rename of "Carlton Van Wyk (Hunter)" to
-   "Carlton Van Wyk" when importing existing card sets and updating
-   the database.
+13 Jun 2018
+ * Add lookups to find the images for renamed cards
+ * Add some more special cases to ease updates.
+ * Fix some more encoding issues with importing non-ascii card names.
+
+11 Jun 2018
+ * Add support for the latest cardlist and both Advanced vampire
+   indicators
+ * Add aliases for the ally name change to make updating the cardlist
+   easier
+
+06 Jun 2018
+ * Add support for Lost Kindred and Black Chantry Reprint fixed sets
+   - Backport Anarach as sect support from trunk
+   - Backport Keyword fixes from trunk
+   - Backport improved gtk encoding dance to deal with Agi sensibly.
+
+23 Aug 2017
+ * Point image plugin at new source for zip files.
+
