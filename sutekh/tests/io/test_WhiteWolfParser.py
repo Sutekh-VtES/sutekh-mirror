@@ -114,6 +114,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Vox Domini",
         u"Walk of Flame",
         u"Yvette, The Hopeless",
+        u"Étienne Fauberge",
         ]
 
     def test_basic(self):

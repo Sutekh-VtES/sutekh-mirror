@@ -555,18 +555,20 @@ Discipline: abo pot AUS CEL OBF QUI
 Laibon magaji: Kabede gets +1 intercept against political actions. (The blood curse does not affect Kabede.)
 Artist: Ken Meyer, Jr.
 
-Name: Kemintiri (Adv)
+Name: Kemintiri
 [KMW:U]
 Cardtype: Vampire
 Clan: Follower of Set
 Group: 2
 Capacity: 10
+Level: Advanced
 Discipline: aus dom OBF PRE SER THA
 Advanced, Independent. Red List: +1 stealth.
 [MERGED] Kemintiri has 3 votes (titled). She can play {minion} cards that require Camarilla, Ventrue, and/or a justicar title {as if she met that/those requirement(s)}.
 Artist: Lawrence Snelly
 
 Name: Lázár Dobrescu
+AKA: Lazar Dobrescu
 [AH:V3, FN:PR]
 Cardtype: Vampire
 Clan: Ravnos
@@ -866,6 +868,17 @@ Cardtype: Master
 Master.
 Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.  {NOT FOR LEGAL PLAY}
 Artist: Brian LeBlanc
+
+Name: Étienne Fauberge
+AKA: Etienne Fauberge
+[Anarchs:U2]
+Cardtype: Vampire
+Clan: Ravnos
+Group: 3
+Capacity: 8
+Discipline: ANI CEL CHI FOR
+Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Followers of Set, Etienne's hand damage is aggravated.
+Artist: Jeff Holt
 """
 
 TEST_EXP_INFO = """

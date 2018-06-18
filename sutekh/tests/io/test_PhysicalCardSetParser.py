@@ -18,7 +18,11 @@ from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
 from sutekh.io.XmlFileHandling import PhysicalCardSetXmlFile
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
-                                                    get_phys_cards)
+                                                    get_phys_cards,
+                                                    make_set_1,
+                                                    make_set_3)
+from sutekh.tests.io.test_PhysicalCardSetWriter import (EXPECTED_1,
+                                                        EXPECTED_4)
 
 # Test's include single quotes both escaped and not escape by ET
 PCS_EXAMPLE_1 = ('<physicalcardset author="A test author" '
@@ -304,6 +308,34 @@ class PhysicalCardSetParserTests(SutekhTest):
         # This test is a bit funky, as we may get either None or ''
         # depending on sqlobject version,
         self.assertTrue(oPhysCardSet3.author in (None, ''))
+
+    def test_roundtrip(self):
+        """Test that we round trip one of the card sets from the
+           writer successfully"""
+        # We rely on the writer tests to ensure that the strings
+        # are the output of the card sets
+        oParser = PhysicalCardSetParser()
+        for sData, fCardSet, sName in [
+                (EXPECTED_1, make_set_1, CARD_SET_NAMES[0]),
+                (EXPECTED_4, make_set_3, CARD_SET_NAMES[2])]:
+            oOrig = fCardSet()
+             # Make sure we don't clash
+            oOrig.name = 'Original ' + oOrig.name
+            oOrig.syncUpdate()
+            oHolder = CardSetHolder()
+            oParser.parse(StringIO(sData), oHolder)
+            oHolder.create_pcs()
+            oRead = IPhysicalCardSet(sName)
+            self.assertEqual(oRead.author, oOrig.author)
+            self.assertEqual(oRead.comment, oOrig.comment)
+
+            # Check that the card sets have the same cards
+            self.assertEqual(len(oRead.cards), len(oOrig.cards))
+            for oCard in oOrig.cards:
+                self.assertTrue(oCard in oRead.cards,
+                                "%s and %s differ on card %s" % (
+                                    oRead.name, oOrig.name,
+                                    oCard.abstractCard.name))
 
 
 if __name__ == "__main__":

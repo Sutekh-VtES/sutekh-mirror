@@ -304,7 +304,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
 
     if oMainWindow.find_cs_pane_by_set_name(oHolder.name):
         # Already open, so update to changes
-        update_open_card_sets(oMainWindow, oHolder.name)
+        update_open_card_sets(oHolder.name, oMainWindow)
     else:
         # Not already open, so open a new copy
         oMainWindow.add_new_physical_card_set(oHolder.name)

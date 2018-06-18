@@ -114,6 +114,12 @@ def IKeyword(oUnknown):
     return fail_adapt(oUnknown, 'Keyword')
 
 
+@singledispatch
+def ILookupHint(oUnknown):
+    """The base for keyword adaption"""
+    return fail_adapt(oUnknown, 'LookupHints')
+
+
 # pylint: disable=missing-docstring
 # Not a lot of value to docstrings for these classes and methods
 # Abbreviation lookup based adapters
@@ -270,19 +276,20 @@ class CardNameLookupAdapter(Adapter):
         if oCard is None:
             # pylint: disable=no-member
             # SQLObject confuses pylint
-            try:
-                oCard = AbstractCard.byCanonicalName(
-                    sName.encode('utf8').lower())
-                cls.__dCache[sName] = oCard
-            except SQLObjectNotFound:
-                # Correct for common variations
-                sNewName = move_articles_to_front(sName)
-                if sNewName != sName:
-                    oCard = AbstractCard.byCanonicalName(
-                        sNewName.encode('utf8').lower())
-                    cls.__dCache[sNewName] = oCard
-                else:
-                    raise
+            oExp = None
+            for sCand in [sName, move_articles_to_front(sName),
+                          sName.encode('utf8'),
+                          move_articles_to_front(sName.encode('utf8'))]:
+                try:
+                    oCard = AbstractCard.byCanonicalName(sCand.lower())
+                    cls.__dCache[sCand] = oCard
+                    oExp = None
+                    break
+                except SQLObjectNotFound as oExp:
+                    # We will handle the failure case after the loop
+                    continue
+            if oExp:
+                raise oExp
         return oCard
 
 
@@ -527,3 +534,11 @@ IPhysicalCard.register(tuple, PhysicalCardAdapter.lookup)
 
 
 IPhysicalCard.register(PhysicalCard, passthrough)
+
+
+@ILookupHint.register(tuple)
+def lookup_hint_from_tuple(tData):
+    """Lookup a hint from a (domain, key) tuple"""
+    sDomain, sKey = tData
+    return LookupHints.selectBy(domain=sDomain,
+                                lookup=sKey).getOne()

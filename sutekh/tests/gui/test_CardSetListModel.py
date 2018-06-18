@@ -128,6 +128,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         aCards = [
             ('AK-47', None), ('Bronwen', 'SW'), ('Cesewayo', None),
             ('Anna "Dictatrix11" Suljic', 'NoR'),
+            (u'Étienne Fauberge', "Anarchs"),
             ('Ablative Skin', 'Sabbat')
         ] + [('Alexandra', 'CE'), ('Alexandra', None),
              ('Ablative Skin', None), (u'Two Wrongs', None),
@@ -379,18 +380,21 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEquals(oListener.iCnt, 0)
         # Check for the 'No cards' entry in the model
         self.assertEquals(oModel.iter_n_children(None), 1)
-        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
+        aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+                  (u'Étienne Fauberge', "Anarchs")]
         for sName, sExp in aCards:
             oCard = make_card(sName, sExp)
             oPCS.addPhysicalCard(oCard.id)
         oAlex = make_card('Alexandra', 'CE')
+        # So we also test with unicode card names
+        oEtienne = make_card(u'Étienne Fauberge', "Anarchs")
         oModel.load()
-        self.assertEqual(oListener.iCnt, 2)
+        self.assertEqual(oListener.iCnt, 3)
         # Only Vampires added
         self.assertEqual(oModel.iter_n_children(None), 1)
         oModel.groupby = NullGrouping
-        self.assertEqual(count_all_cards(oModel), 2)
-        self.assertEqual(count_second_level(oModel), 2)
+        self.assertEqual(count_all_cards(oModel), 3)
+        self.assertEqual(count_second_level(oModel), 3)
         # These tests need the model to be sorted
         oModel.enable_sorting()
         # Check the drag-n-drop helper
@@ -398,10 +402,16 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_drag_child_info('0:0:0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                          {oAlex.id: 1})
+        self.assertEqual(oModel.get_drag_child_info('0:2'),
+                         {oEtienne.id: 1})
         self.assertEqual(oModel.get_drag_info_from_path('0:0:0'),
                          (oAlex.abstractCard.id, oAlex.id, 1, 2))
+        self.assertEqual(oModel.get_drag_info_from_path('0:2:0'),
+                         (oEtienne.abstractCard.id, oEtienne.id, 1, 2))
         self.assertEqual(oModel.get_drag_info_from_path('0:0'),
                          (oAlex.abstractCard.id, None, 1, 1))
+        self.assertEqual(oModel.get_drag_info_from_path('0:2'),
+                         (oEtienne.abstractCard.id, None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
                          (None, None, None, 0))
         # pylint: disable=W0212
@@ -409,11 +419,13 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.load()
         # This should also work for no expansions shown
-        self.assertEqual(count_all_cards(oModel), 2)
+        self.assertEqual(count_all_cards(oModel), 3)
         self.assertEqual(count_second_level(oModel), 0)
         self.assertEqual(oModel.get_drag_child_info('0'), {})
         self.assertEqual(oModel.get_drag_child_info('0:0'),
                          {oAlex.id: 1})
+        self.assertEqual(oModel.get_drag_child_info('0:2'),
+                         {oEtienne.id: 1})
         cleanup_models([oModel])
 
     def test_db_listeners(self):
@@ -1054,7 +1066,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
                    count_second_level(oModel))
-        tExpected = (1, 36, 4)
+        tExpected = (1, 37, 4)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))

@@ -10,10 +10,10 @@ from sqlobject import SQLObjectNotFound
 
 from .BaseTables import (CardType, Expansion, Rarity, RarityPair,
                          PhysicalCard, Ruling, Keyword, Artist, Printing,
-                         PrintingProperty)
+                         PrintingProperty, LookupHints)
 from .BaseAdapters import (ICardType, IExpansion, IRarity, IRarityPair,
                            IPhysicalCard, IRuling, IKeyword, IArtist,
-                           IPrinting, IPrintingProperty)
+                           IPrinting, IPrintingProperty, ILookupHint)
 from .BaseAbbreviations import CardTypes, Expansions, Rarities
 
 
@@ -74,6 +74,13 @@ class BaseObjectMaker(object):
             return IPrinting((oExp, sPrinting))
         except SQLObjectNotFound:
             return Printing(name=sPrinting, expansion=oExp)
+
+    def make_lookup_hint(self, sLookupDomain, sKey, sValue):
+        try:
+            return ILookupHint((sLookupDomain, sKey))
+        except SQLObjectNotFound:
+            return LookupHints(domain=sLookupDomain,
+                               lookup=sKey, value=sValue)
 
     def make_rarity_pair(self, sExp, sRarity):
         try:

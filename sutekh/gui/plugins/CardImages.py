@@ -121,6 +121,8 @@ class CardImageFrame(BaseImageFrame):
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
+        # Handle the new Pentex (TM) cases
+        sCardName = sCardName.replace(u'\u2122', 'tm')
         sFilename = unaccent(sCardName)
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
