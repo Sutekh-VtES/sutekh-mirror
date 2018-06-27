@@ -18,7 +18,7 @@ import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST
-from sutekh.base.core.BaseAdapters import IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet, IAbstractCard
 from sutekh.core.SutekhTables import TABLE_LIST
 # pylint: disable=W0611
 # We need this import to ensure we have all the filters imported
@@ -29,7 +29,7 @@ from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_date_list,
                                   read_lookup_data)
-from sutekh.base.core.DBUtility import refresh_tables
+from sutekh.base.core.DBUtility import refresh_tables, init_cache
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
@@ -240,6 +240,18 @@ def main_with_args(aTheArgs):
     if oOpts.sql_debug:
         oConn.debug = True
 
+    if not oConn.tableExists('abstract_card'):
+        if not oOpts.refresh_tables:
+            print("Database has not been created.")
+            return 1
+    else:
+        try:
+            _oCard = IAbstractCard('Ossian')
+        except SQLObjectNotFound:
+            if not oOpts.fetch and oOpts.ww_file is None:
+                print("Database is missing cards - please import the cardlist")
+                return 1
+
     # Only log critical messages by default
     setup_logging(oOpts.verbose)
 
@@ -294,13 +306,21 @@ def main_with_args(aTheArgs):
         read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
         read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
 
-    if oOpts.read_physical_cards_from is not None:
-        oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
-        oFile.read()
+    if oOpts.upgrade_db:
+        oDBUpgrade = DBUpgradeManager()
+        oDBUpgrade.attempt_database_upgrade(oLogHandler)
 
     if oOpts.save_all_css and oOpts.save_cs is not None:
         print("Can't use --save-cs and --save-all-cs Simulatenously")
         return 1
+
+    # initialise the caches, so adapters, etc work for reading / writing
+    # card sets
+    init_cache()
+
+    if oOpts.read_physical_cards_from is not None:
+        oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
+        oFile.read()
 
     if oOpts.save_all_css:
         write_all_pcs()
@@ -363,10 +383,6 @@ def main_with_args(aTheArgs):
     if oOpts.upgrade_db and oOpts.refresh_tables:
         print("Can't use --upgrade-db and --refresh-tables simulatenously")
         return 1
-
-    if oOpts.upgrade_db:
-        oDBUpgrade = DBUpgradeManager()
-        oDBUpgrade.attempt_database_upgrade(oLogHandler)
 
     return 0
 
