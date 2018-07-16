@@ -29,7 +29,7 @@ from sutekh.base.core.BaseFilters import (FilterAndBox, FilterOrBox,
                                           CardSetDescriptionFilter,
                                           CardSetAuthorFilter,
                                           CardSetAnnotationsFilter)
-from sutekh.base.core.DBUtility import init_cache
+from sutekh.base.core.DBUtility import make_adapter_caches
 
 from sutekh.core.Filters import (ClanFilter, DisciplineFilter, CardTextFilter,
                                  MultiDisciplineFilter, MultiClanFilter,
@@ -52,7 +52,7 @@ def start(aArgs=['sutekh']):
        python interpreter"""
     main_with_args(aArgs)
     # Also initialise the caches, so adapters, etc work
-    init_cache()
+    make_adapter_caches()
 
 # What we expose to import *
 

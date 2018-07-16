@@ -29,7 +29,7 @@ from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_date_list,
                                   read_lookup_data)
-from sutekh.base.core.DBUtility import refresh_tables, init_cache
+from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
@@ -316,7 +316,7 @@ def main_with_args(aTheArgs):
 
     # initialise the caches, so adapters, etc work for reading / writing
     # card sets
-    init_cache()
+    make_adapter_caches()
 
     if oOpts.read_physical_cards_from is not None:
         oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
