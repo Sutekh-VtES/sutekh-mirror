@@ -18,13 +18,13 @@ from .core.BaseFilters import (PhysicalCardSetFilter, FilterAndBox,
                                PhysicalCardFilter)
 from .core.FilterParser import FilterParser
 from .core.CardSetUtilities import format_cs_list
-from .core.DBUtility import init_cache
+from .core.DBUtility import make_adapter_caches
 
 
 def run_filter(sFilter, sCardSet):
     """Run the given filter, returing a dictionary of cards and counts"""
-    init_cache()  # We need to have the adapters initialised for filtering
-                  # to work
+    make_adapter_caches()  # We need to have the adapters initialised for filtering
+                           # to work
     oCardSet = None
     if sCardSet:
         oCardSet = IPhysicalCardSet(sCardSet)
@@ -89,7 +89,7 @@ def print_card_list(sTreeRoot, sEncoding):
 
 def do_print_card(sCardName, fPrintCard, sEncoding):
     """Print a card, handling possible encoding issues."""
-    init_cache()  # Needed for lookups to work
+    make_adapter_caches()  # Needed for lookups to work
     try:
         try:
             oCard = IAbstractCard(sCardName)

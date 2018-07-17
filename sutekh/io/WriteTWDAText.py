@@ -50,6 +50,12 @@ from sutekh.base.Utility import move_articles_to_back
 from sutekh.core.ArdbInfo import ArdbInfo
 
 
+# the twd.htm normalises some names, but not all of them
+SPECIAL_NAMES = {
+    u'Pentex™ Loves You!': 'Pentex(TM) Loves You!',
+    u'Pentex™ Subversion': 'Pentex(TM) Subversion',
+}
+
 # Emprically derived from the twd.htm entries
 SECTION_ORDER = (
     'Master',
@@ -77,6 +83,12 @@ def format_avg(fAvg):
         sFrac = '%.2g' % fFracPart
         sResult += sFrac[1:]
     return sResult
+
+
+def normalise_card_name(sName):
+    """Normalise the name as needed for the TWDA"""
+    sName = move_articles_to_back(sName)
+    return SPECIAL_NAMES.get(sName, sName)
 
 
 class WriteTWDAText(ArdbInfo):
@@ -128,8 +140,7 @@ class WriteTWDAText(ArdbInfo):
             # Standardise missing disciplines
             if not dLine['disc']:
                 dLine['disc'] = '-none-'
-            # TWDA normalises crypt names to have the articles at the back
-            dLine['name'] = move_articles_to_back(dLine['name'])
+            dLine['name'] = normalise_card_name(dLine['name'])
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
             if iCount > 10:
@@ -236,8 +247,8 @@ class WriteTWDAText(ArdbInfo):
                 for oCard, iCount in sorted(
                         dCards.iteritems(),
                         key=lambda x: move_articles_to_back(x[0].name)):
-                    sLib += "%dx %s\n" % (iCount,
-                                          move_articles_to_back(oCard.name))
+                    sName = normalise_card_name(oCard.name)
+                    sLib += "%dx %s\n" % (iCount, sName)
         return sLib
 
     def write(self, fOut, oHolder):
