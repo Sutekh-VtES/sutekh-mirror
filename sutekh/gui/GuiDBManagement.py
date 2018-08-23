@@ -45,7 +45,7 @@ RULINGS_READER = DataFileReader(sName="rulings.html",
                                 fReader=read_rulings,
                                )
 
-EXP_DATA_READER = DataFileReader(sName="expansiondates.csv",
+EXP_DATA_READER = DataFileReader(sName="expansions.json",
                                  sUrl=EXP_DATE_URL,
                                  sDescription="Extra Expansion Information "
                                               "File",
