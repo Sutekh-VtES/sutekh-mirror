@@ -228,8 +228,8 @@ def get_printing_date(oPrinting):
     """Return the release date for this printing as a date object."""
     for oProp in oPrinting.properties:
         if oProp.value.startswith('Release Date:'):
-            sDate = oProp.value.split(':', 1)[1]
-            oDate = datetime.date.strptime('%Y-%m-%d')
+            sDate = oProp.value.split(':', 1)[1].strip()
+            oDate = datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
             return oDate
     return None
 
