@@ -11,7 +11,7 @@ import logging
 import gtk
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseAdapters import IExpansion
+from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
@@ -76,22 +76,39 @@ class CardImageFrame(BaseImageFrame):
         """Convert the Full Expansion name into the abbreviation needed."""
         if sExpansionName == '':
             return ''
+        bOK = False
         # pylint: disable=E1101
         # pylint doesn't pick up IExpansion methods correctly
         try:
             oExpansion = IExpansion(sExpansionName)
+            oPrinting = None
+            # special case Anarchs and alastors due to promo hack shortname
+            bOK = True
         except SQLObjectNotFound:
+            if '(' in sExpansionName:
+                # Maybe a Printing?
+                sSplitExp, sPrintName = [x.strip() for x in
+                                         sExpansionName.split('(', 1)]
+                sPrintName = sPrintName.replace(')', '')
+                try:
+                    oExpansion = IExpansion(sSplitExp)
+                    oPrinting = IPrinting((oExpansion, sPrintName))
+                    bOK = True
+                except SQLObjectNotFound:
+                    pass
+        if not bOK:
             # This can happen because we cache the expansion name and
             # a new database import may cause that to vanish.
             # We return just return a blank path segment, as the safest choice
             logging.warn('Expansion %s no longer found in the database',
                          sExpansionName)
             return ''
-        # special case Anarchs and alastors due to promo hack shortname
         if oExpansion.name == 'Anarchs and Alastors Storyline':
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()
+        if oPrinting:
+            sExpName += '_' + oPrinting.name.lower()
         # Normalise for storyline cards
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
@@ -107,7 +124,7 @@ class CardImageFrame(BaseImageFrame):
             aUrlExps = [self._convert_expansion(self._sCurExpansion)]
         else:
             # Try all the expansions, latest to oldest
-            aUrlExps = [self._convert_expansion(x) for x in self._aExpansions]
+            aUrlExps = [self._convert_expansion(x) for x in self._aExpPrints]
         aUrls = []
         for sCurExpansionPath in aUrlExps:
             if sCurExpansionPath == '':
