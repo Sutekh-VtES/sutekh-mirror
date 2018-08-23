@@ -70,6 +70,8 @@ class ExpInfoParser(object):
     def parse(self, fIn):
         """Process the JSON file line into the database"""
         dExpInfo = json.load(fIn)
+        if hasattr(self.oLogHandler, 'set_total'):
+            self.oLogHandler.set_total(len(dExpInfo))
         for sExp in dExpInfo:
             self._handle_expansion(sExp, dExpInfo[sExp])
             self.oLogger.info('Added Expansion info: %s', sExp)
