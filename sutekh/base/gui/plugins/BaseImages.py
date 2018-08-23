@@ -325,7 +325,7 @@ class BaseImageFrame(BasicFrame):
         if self._bShowExpansions:
             # Only lookup expansions if we have expansion images
             if oPhysCard.printing:
-                sExpPrintName = IPrintingName(PhysCard)
+                sExpPrintName = IPrintingName(oPhysCard)
             else:
                 # No expansion, so find the latest expansion for this card
                 aExpPrints = get_printing_info(oPhysCard.abstractCard)
@@ -477,7 +477,7 @@ class BaseImageFrame(BasicFrame):
         sCardName = oPhysCard.abstractCard.canonicalName
         sExpPrintName = ''
         if oPhysCard.printing:
-            sExpPrintName = IPrintingName(PhysCard)
+            sExpPrintName = IPrintingName(oPhysCard)
         if sCardName != self._sCardName:
             self._set_expansion_info(oPhysCard.abstractCard)
             self._sCardName = sCardName
