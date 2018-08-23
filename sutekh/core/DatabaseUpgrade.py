@@ -376,19 +376,20 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 oPrint = Printing(expansionID=oCopy.id,
                                    name=None,
                                    connection=oTrans)
-                # Add the release date as a print property
-                sDateVal = ("Release Date: %s" %
-                    oExp.releasedate.strftime('%Y-%m-%d'))
-                try:
-                    oPrintDate = PrintingProperty.byCanonicalValue(
-                        sDateVal.lower())
-                except SQLObjectNotFound:
-                    # Create property for this date
-                    oPrintDate = PrintingProperty(
-                        value=sDateVal,
-                        canonicalValue=sDateVal.lower(),
-                        connection=oTrans)
-                oPrint.addPrintingProperty(oPrintDate)
+                # Add the release date as a print property if set
+                if oObj.releasedate:
+                    sDateVal = ("Release Date: %s" %
+                        oObj.releasedate.strftime('%Y-%m-%d'))
+                    try:
+                        oPrintDate = PrintingProperty.byCanonicalValue(
+                            sDateVal.lower())
+                    except SQLObjectNotFound:
+                        # Create property for this date
+                        oPrintDate = PrintingProperty(
+                            value=sDateVal,
+                            canonicalValue=sDateVal.lower(),
+                            connection=oTrans)
+                    oPrint.addPrintingProperty(oPrintDate)
         else:
             return (False, ["Unknown Expansion Version"])
         return (True, aMessages)
