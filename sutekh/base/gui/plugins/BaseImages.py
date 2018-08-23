@@ -94,9 +94,10 @@ def get_printing_info(oAbsCard):
     bHasInfo = len(oAbsCard.rarity) > 0
     if bHasInfo:
         aPrint = set()
-        for oPair in oAbsCard.rarity:
-            oExp = oPair.expansion
-            for oPrint in oExp.printings:
+        # We want only those printings that actually apply to this card
+        for oCard in oAbsCard.physicalCards:
+            oPrint = oCard.printing
+            if oPrint:
                 aPrint.add((IPrintingName(oPrint),
                             get_printing_date(oPrint)))
         # Sort by date, newest first
