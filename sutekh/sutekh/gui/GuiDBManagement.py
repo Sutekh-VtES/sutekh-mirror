@@ -59,7 +59,7 @@ LOOKUP_DATA_READER = DataFileReader(sName="lookup.csv",
                                     sUrl=LOOKUP_DATA_URL,
                                     sDescription="Lookup Data File",
                                     tPattern=('CSV files', ['*csv']),
-                                    bRequired=False,
+                                    bRequired=True,
                                     bCountLogger=True,
                                     fReader=read_lookup_data,
                                    )
