@@ -5,6 +5,7 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
+import datetime
 import logging
 import os
 import tempfile
@@ -88,8 +89,15 @@ def image_gui_error_handler(oExp):
 def get_expansion_info(oAbsCard):
     """Set the expansion info."""
     bHasInfo = len(oAbsCard.rarity) > 0
+    # We opt to sort undated expansions as newer than expansions with dates
+    # as likely more correct when dealing with new sets. When no expansions
+    # have dates, this is the right thing
+    oToday = datetime.date.today()
+    def get_date(oDate):
+        """Handle None values for date somewhat sanely"""
+        return oDate if oDate else oToday
     if bHasInfo:
-        aExp = set([(oP.expansion.name, oP.expansion.releasedate)
+        aExp = set([(oP.expansion.name, get_date(oP.expansion.releasedate))
                     for oP in oAbsCard.rarity])  # remove duplicates
         # Sort by date, newest first
         aExpansions = [x[0] for x in sorted(aExp,
