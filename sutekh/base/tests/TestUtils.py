@@ -20,13 +20,13 @@ from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
                                  IPrinting)
 
 
-def make_card(sCardName, sExpName):
+def make_card(sCardName, sExpName, sPrinting=None):
     """Create a Physical card given the name and expansion.
 
        Handle None for the expansion name properly"""
     if sExpName:
         oExp = IExpansion(sExpName)
-        oPrinting = IPrinting((oExp, None))
+        oPrinting = IPrinting((oExp, sPrinting))
     else:
         oPrinting = None
     oAbs = IAbstractCard(sCardName)
