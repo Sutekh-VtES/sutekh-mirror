@@ -16,13 +16,14 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 EXPECTED_1 = """"Test Set 1"
 "A test author"
 "A test comment"
-5
+6
 "Abebe"
 "Alan Sovereign (ADV)"
+"Hektor"
 "Inez 'Nurse216' Villagrande"
 "Siamese, The"
 "Siamese, The"
-27
+28
 ".44 Magnum"
 ".44 Magnum"
 ".44 Magnum"
@@ -47,6 +48,7 @@ EXPECTED_1 = """"Test Set 1"
 "Scapelli, The Family `Mechanic`"
 "Swallowed by the Night"
 "Swallowed by the Night"
+"Walk of Flame"
 "Walk of Flame"
 "Walk of Flame"
 "Walk of Flame"

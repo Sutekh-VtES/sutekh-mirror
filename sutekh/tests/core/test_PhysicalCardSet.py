@@ -26,24 +26,29 @@ ABSTRACT_CARDS = [
 ]
 
 CARD_EXPANSIONS = [
-    ('.44 magnum', 'Jyhad', 1),
-    ('ak-47', 'LotN', 1),
-    ('abbot', 'Third Edition', 1),
-    ('abombwe', 'Legacy of Blood', 1),
-    ('alan sovereign (advanced)', 'Promo-20051001', 1),
-    ('the path of blood', 'LotN', 1),
-    ('the siamese', 'BL', 2),
-    ('inez "nurse216" villagrande', 'NoR', 1),
-    ('Scapelli, the Family "Mechanic"', 'DS', 1),
-    ("Aaron's Feeding Razor", "KoT", 1),
-    ('Swallowed by the Night', 'Third', 2),
-    ('Aire of Elation', 'CE', 3),
-    ('Hide the Heart', 'HttB', 1),
-    ('Immortal Grapple', 'Jyhad', 2),
-    ('Immortal Grapple', 'KoT', 2),
-    ('Walk of Flame', 'Third', 2),
-    ('Walk of Flame', 'KoT', 1),
-    ('An Anarch Manifesto', 'TR', 1),
+    ('.44 magnum', 'Jyhad', None, 1),
+    ('ak-47', 'LotN', None, 1),
+    ('abbot', 'Third Edition', None, 1),
+    ('abombwe', 'Legacy of Blood', None, 1),
+    ('alan sovereign (advanced)', 'Promo-20051001', None, 1),
+    ('the path of blood', 'LotN', None, 1),
+    ('the siamese', 'BL', None, 2),
+    ('inez "nurse216" villagrande', 'NoR', None, 1),
+    ('Scapelli, the Family "Mechanic"', 'DS', None, 1),
+    ("Aaron's Feeding Razor", "KoT", None, 1),
+    ('Swallowed by the Night', 'Third', None, 1),
+    ('Swallowed by the Night', 'Third', "No Draft Text", 1),
+    ('Aire of Elation', 'CE', None, 3),
+    ('Hide the Heart', 'HttB', None, 1),
+    ('Immortal Grapple', 'Jyhad', None, 1),
+    ('Immortal Grapple', 'Jyhad', "Variant Printing", 1),
+    ('Immortal Grapple', 'KoT', "No Draft Text", 1),
+    ('Immortal Grapple', 'KoT', None, 1),
+    ('Walk of Flame', 'Third', None, 1),
+    ('Walk of Flame', 'Third', "No Draft Text", 2),
+    ('Walk of Flame', 'KoT', None, 1),
+    ('An Anarch Manifesto', 'TR', None, 1),
+    ('Hektor', 'Third', 'Sketch', 1),
 ]
 
 SET_2_ONLY_CARDS = [
@@ -65,8 +70,8 @@ def get_phys_cards():
         oPC = make_card(sName, None)
         for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
-    for sName, sExpansion, iCount in CARD_EXPANSIONS:
-        oPC = make_card(sName, sExpansion)
+    for sName, sExpansion, sPrinting, iCount in CARD_EXPANSIONS:
+        oPC = make_card(sName, sExpansion, sPrinting)
         for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
     return aAddedPhysCards
