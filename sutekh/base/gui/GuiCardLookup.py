@@ -12,7 +12,8 @@ import pango
 import gobject
 from sqlobject import SQLObjectNotFound
 from ..core.BaseTables import AbstractCard, PhysicalCard, Expansion
-from ..core.BaseAdapters import IAbstractCard, IPhysicalCard, IExpansion
+from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
+                                 IPrinting)
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
                                ExpansionLookup, LookupFailed)
 from ..core.BaseFilters import best_guess_filter
@@ -425,6 +426,32 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         aExps = [new_exp(sName) for sName in aExpansionNames]
         return dict(zip(aExpansionNames, aExps))
+
+    def printing_lookup(self, aExpPrintNames, _sInfo, dExpansionLookup,
+                        _dCardExpansions):
+        """Lookup for printing names, excluding unkown expansions or
+           printings."""
+        dPrintings = {}
+        for sExp, sPrintName in aExpPrintNames:
+            dPrintings.setdefault((sExp, sPrintName), None)
+            oTrueExp = None
+            if sExp:
+                try:
+                    # Assume the expansion is valid
+                    oTrueExp = IExpansion(sExp)
+                except SQLObjectNotFound:
+                    # See if we have a lookup for it
+                    oTrueExp = dExpansionLookup.get(sExp, None)
+            if not oTrueExp:
+                # Skip this lookup
+                continue
+            try:
+                oPrinting = IPrinting((oTrueExp, sPrintName))
+            except SQLObjectNotFound:
+                # default to the no printing case
+                oPrinting = IPrinting((oTrueExp, None))
+            dPrintings[(sExp, sPrintName)] = oPrinting
+        return dPrintings
 
     def _handle_unknown_physical_cards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
