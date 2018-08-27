@@ -330,7 +330,6 @@ class CachedCardSetHolder(CardSetHolder):
                 tNewExpPrint = (sExp, sPrint)
                 dCardExpansions[sName][tNewExpPrint] = iCnt
 
-        print(aExpPrintNames, dCardExpansions)
         dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
                                                       "Physical Card List",
                                                       dExpansionLookup,
