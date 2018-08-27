@@ -121,7 +121,7 @@ class CardImageFrame(BaseImageFrame):
             return None
         if self._bShowExpansions:
             # Only try download the current expansion
-            aUrlExps = [self._convert_expansion(self._sCurExpansion)]
+            aUrlExps = [self._convert_expansion(self._sCurExpPrint)]
         else:
             # Try all the expansions, latest to oldest
             aUrlExps = [self._convert_expansion(x) for x in self._aExpPrints]
