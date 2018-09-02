@@ -248,7 +248,7 @@ class CardDict(dict):
     # Special cases that aren't handled by the general code
     dAllyKeywordSpecial = {
         'Gypsies': ['1 stealth'],
-        'Veneficti (Mage)': ['1 stealth'],
+        'Veneficti': ['1 stealth'],
         'High Top': ['1 intercept'],
         'Ghoul Retainer': ['1 strength'],
     }
