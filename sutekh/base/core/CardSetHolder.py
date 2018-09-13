@@ -131,15 +131,8 @@ class CardSetHolder(object):
                                        'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
-        aExpNames = [x[0] for x in self._dExpansions.keys()]
-        dExpansionLookup = oCardLookup.expansion_lookup(aExpNames,
-                                                        "Physical Card List",
-                                                        self._dCardExpansions)
-
-        aExpPrintNames = self._dExpansions.keys()
-        dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
+        dPrintingLookup = oCardLookup.printing_lookup(self._dExpansions.keys(),
                                                       "Physical Card List",
-                                                      dExpansionLookup,
                                                       self._dCardExpansions)
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
@@ -269,7 +262,6 @@ class CachedCardSetHolder(CardSetHolder):
         # pylint: disable=R0914
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
-        dLookupCache.setdefault('expansions', {})
         dLookupCache.setdefault('printings', {})
         if self.name is None:
             raise RuntimeError("No name for the card set")
@@ -291,56 +283,29 @@ class CachedCardSetHolder(CardSetHolder):
             else:
                 dLookupCache['cards'][sName] = oAbs.canonicalName
 
-        # Apply Expansion lookups
-        aExpNames = [
-            dLookupCache['expansions'].get(sExpPrint[0], sExpPrint[0])
-            for sExpPrint in self._dExpansions]
-        dCardExpansions = {}
-        for sName in self._dCardExpansions:
-            dCardExpansions[sName] = {}
-            for tExpPrint, iCnt in self._dCardExpansions[sName].iteritems():
-                sExp = tExpPrint[0]
-                sExp = dLookupCache['expansions'].get(sExp, sExp)
-                tNewExpPrint = (sExp, tExpPrint[1])
-                dCardExpansions[sName][tNewExpPrint] = iCnt
-        dExpansionLookup = oCardLookup.expansion_lookup(aExpNames,
-                                                        "Physical Card List",
-                                                        dCardExpansions)
-        # Update expansion lookup cache
-        for sName, oExp in dExpansionLookup.iteritems():
-            if not oExp:
-                dLookupCache['expansions'][sName] = None
-            else:
-                dLookupCache['expansions'][sName] = oExp.name
-
         # Apply expansion and print lookups
         aExpPrintNames = []
-        for sExp, sPrintName in self._dExpansions.keys():
-            sTrueExp = dLookupCache['expansions'].get(sExp, sExp)
-            sTruePrintName = dLookupCache['printings'].get(
-                (sTrueExp, sPrintName), sPrintName)
-            aExpPrintNames.append((sTrueExp, sTruePrintName))
+        for tExpPrint in self._dExpansions.keys():
+            tNewExpPrint = dLookupCache['printings'].get(tExpPrint, tExpPrint)
+            aExpPrintNames.append(tNewExpPrint)
         dCardExpansions = {}
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
             for tExpPrint, iCnt in self._dCardExpansions[sName].iteritems():
-                sExp, sPrint = tExpPrint
-                sExp = dLookupCache['expansions'].get(sExp, sExp)
-                sPrint = dLookupCache['printings'].get((sExp, sPrint), sPrint)
-                tNewExpPrint = (sExp, sPrint)
+                tNewExpPrint = dLookupCache['printings'].get(tExpPrint,
+                                                             tExpPrint)
                 dCardExpansions[sName][tNewExpPrint] = iCnt
 
         dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
                                                       "Physical Card List",
-                                                      dExpansionLookup,
                                                       dCardExpansions)
-
         # Update printing lookups using the cache
         for tExpPrint, oPrinting in dPrintingLookup.iteritems():
             if not oPrinting:
-                dLookupCache['printings'][tExpPrint] = None
+                dLookupCache['printings'][tExpPrint] = (None, None)
             else:
-                dLookupCache['printings'][tExpPrint] = oPrinting.name
+                dLookupCache['printings'][tExpPrint] = \
+                        (oPrinting.expansion.name, oPrinting.name)
 
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                                                  dNameCards, dPrintingLookup,

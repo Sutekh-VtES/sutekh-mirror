@@ -213,8 +213,8 @@ class CardSetHolderTests(SutekhTest):
         aPrintings.sort()
         self.assertEqual(aPrintings, aExpectedPrintings)
         self.assertEqual(dLookupCache['cards'][u'Abbot'], u'abbot')
-        self.assertEqual(dLookupCache['expansions'][u'LotN'],
-                         u'Lords of the Night')
+        self.assertEqual(dLookupCache['printings'][(u'LotN', None)],
+                         (u'Lords of the Night', None))
 
         oCSH.name = 'Test Set 2'
         oCSH.parent = 'Test Set 1'
@@ -312,8 +312,8 @@ class CardSetHolderTests(SutekhTest):
         aPrintings.sort()
         self.assertEqual(aPrintings, aExpectedPrintings)
 
-        self.assertEqual(dLookupCache['expansions']['Legacy of Bllod'],
-                         None)
+        self.assertEqual(dLookupCache['printings'][('Legacy of Bllod', None)],
+                         (None, None))
 
 
 if __name__ == "__main__":

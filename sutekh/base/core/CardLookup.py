@@ -59,31 +59,14 @@ class PhysicalCardLookup(object):
         raise NotImplementedError
 
 
-class ExpansionLookup(object):
-    """Base class for objects which translate expansion names into expansion
+class PrintingLookup(object):
+    """Base class for objects which translate expansion + print names into printing
        objects
        """
 
-    def expansion_lookup(self, aExpansionNames, sInfo, dCardExpansions):
-        """Return a mapping from the entries of aExpansionNames to the correct
-           expansion.
-
-           Names for which Expansions could not be found will be mapped to None.
-
-           The method may raise LookupFailed if the entire list should be
-           considered invalid (e.g. if the names are presented to a user who
-           then cancels the operation).
-           """
-        raise NotImplementedError
-
-    def printing_lookup(self, aExpPrintNames, sInfo, dExpansionLookup,
-                        dCardExpansions):
+    def printing_lookup(self, aExpPrintNames, sInfo, dCardExpansions):
         """Return a dictionary mapping entries in aExpPrintNames to
            the corresponding print info.
-
-           dExpansionLookup is a mapping created from the results of
-           expansion_lookup. This should only be called after calling
-           expansion_lookup.
 
            Names for which printings could not be found will be marked as
            None. This method may raise LookupFailed if the entire list
@@ -92,7 +75,7 @@ class ExpansionLookup(object):
 
 
 
-class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
+class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     """A really straightforward lookup of AbstractCards and PhysicalCards.
 
        The default when we don't have a more cunning plan.
@@ -131,43 +114,26 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                         pass
         return aCards
 
-    def expansion_lookup(self, aExpansionNames, _sInfo, _dCardExpansions):
-        """Lookup for expansion names, excluding unknown expansions."""
-        aExps = []
-        for sExp in aExpansionNames:
-            if sExp:
-                try:
-                    oExp = IExpansion(sExp)
-                    aExps.append(oExp)
-                except SQLObjectNotFound:
-                    aExps.append(None)
-            else:
-                aExps.append(None)
-        return dict(zip(aExpansionNames, aExps))
-
-    def printing_lookup(self, aExpPrintNames, _sInfo, dExpansionLookup,
-                        _dCardExpansions):
+    def printing_lookup(self, aExpPrintNames, _sInfo, _dCardExpansions):
         """Lookup for printing names, excluding unkown expansions or
            printings."""
         dPrintings = {}
         for sExp, sPrintName in aExpPrintNames:
             dPrintings.setdefault((sExp, sPrintName), None)
-            oTrueExp = None
+            oExp = None
             if sExp:
                 try:
-                    # Assume the expansion is valid
-                    oTrueExp = IExpansion(sExp)
+                    oExp = IExpansion(sExp)
                 except SQLObjectNotFound:
-                    # See if we have a lookup for it
-                    oTrueExp = dExpansionLookup.get(sExp, None)
-            if not oTrueExp:
+                    oExp = None
+            if not oExp:
                 # Skip this lookup
                 continue
             try:
-                oPrinting = IPrinting((oTrueExp, sPrintName))
+                oPrinting = IPrinting((oExp, sPrintName))
             except SQLObjectNotFound:
                 # default to the no printing case
-                oPrinting = IPrinting((oTrueExp, None))
+                oPrinting = IPrinting((oExp, None))
             dPrintings[(sExp, sPrintName)] = oPrinting
         return dPrintings
 
