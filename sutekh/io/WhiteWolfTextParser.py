@@ -16,8 +16,8 @@ from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
 
-BC_RARITIES = ['A1', 'A2', 'B1', 'B2']
-BC_EXPANSIONS = ['KoT']
+BC_RARITIES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+               'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
 
 
 def strip_braces(sText):
@@ -148,9 +148,9 @@ class CardDict(dict):
     # We avoid running these searches on the merged text of advanced
     # vampires to avoid confusion.
     dCryptProperties = {
-        'black hand': re.compile(r'Sabbat\. Black Hand'),
+        'black hand': re.compile(r'\. Black Hand'),
         # Seraph has a special case
-        'seraph': re.compile(r'Sabbat\. Black Hand(\.)? Seraph'),
+        'seraph': re.compile(r'\. Black Hand(\.)? Seraph'),
         'infernal': re.compile(r'[.:] Infernal\.'),
         'red list': re.compile(r'\. Red List[:.]'),
         'scarce': re.compile(r'[.:] Scarce.'),
@@ -222,7 +222,7 @@ class CardDict(dict):
         'haven': re.compile(r'Haven\.'),
         'trophy': re.compile(r'Master\. Trophy'),
         'investment': re.compile(r'Master[.:] (unique )?[Ii]nvestment'),
-        'archetype': re.compile(r'Master: archetype'),
+        'archetype': re.compile(r'Master: archetype|Archetype\.'),
         'watchtower': re.compile(r'Master: watchtower'),
         'title': re.compile(r'Title\.'),
     }
@@ -423,7 +423,7 @@ class CardDict(dict):
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 # Create dummy expansion for the Black Chantry cards
-                if sRar in BC_RARITIES and sExp in BC_EXPANSIONS:
+                if sRar in BC_RARITIES:
                     sExp = 'Black Chantry Reprint'
                 oPair = self._oMaker.make_rarity_pair(sExp, sRar)
                 if oPair not in oCard.rarity:
