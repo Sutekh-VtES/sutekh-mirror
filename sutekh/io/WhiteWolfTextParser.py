@@ -15,8 +15,8 @@ from logging import Logger
 from sutekh.core.SutekhObjects import SutekhObjectMaker, csv_to_canonical
 
 
-BC_RARITIES = ['A1', 'A2', 'B1', 'B2']
-BC_EXPANSIONS = ['KoT']
+BC_RARITIES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+               'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
 
 
 def strip_braces(sText):
@@ -148,9 +148,9 @@ class CardDict(dict):
     # We avoid running these searches on the merged text of advanced
     # vampires to avoid confusion.
     dCryptProperties = {
-            'black hand': re.compile('Sabbat\. Black Hand'),
+            'black hand': re.compile('\. Black Hand'),
             # Seraph has a special case
-            'seraph': re.compile('Sabbat\. Black Hand(\.)? Seraph'),
+            'seraph': re.compile('\. Black Hand(\.)? Seraph'),
             'infernal': re.compile('[.:] Infernal\.'),
             'red list': re.compile('\. Red List[:.]'),
             'scarce': re.compile('[.:] Scarce.'),
@@ -409,7 +409,7 @@ class CardDict(dict):
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 # Create dummy expansion for the Black Chantry cards
-                if sRar in BC_RARITIES and sExp in BC_EXPANSIONS:
+                if sRar in BC_RARITIES:
                     sExp = 'Black Chantry Reprint'
                 oPair = self._oMaker.make_rarity_pair(sExp, sRar)
                 if oPair not in oCard.rarity:
