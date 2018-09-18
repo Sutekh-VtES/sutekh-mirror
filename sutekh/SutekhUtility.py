@@ -10,11 +10,14 @@
 
 import re
 
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
 from sutekh.base.io.IOBase import safe_parser
 from sutekh.base.io.LookupCSVParser import LookupCSVParser
 
 from sutekh.core.SutekhTables import CRYPT_TYPES
+from sutekh.base.core.BaseAdapters import IAbstractCard
 
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
@@ -134,3 +137,33 @@ def secret_library_url(oCard, bVamp):
     # drop double quotes entirely
     sURL = sURL.replace('"', '')
     return sURL
+
+
+def find_base_vampire(oVampire):
+    """Find the corresponding base vampire.
+       
+       Returns None if the vampire cannot be found."""
+    sBaseName = oVampire.name.replace(' (Advanced)', '')
+    # Special cases
+    if '(EC 2013)' in sBaseName:
+        sBaseName = sBaseName.replace(' (EC 2013)', '')
+    if '(Red Sign)' in sBaseName:
+        sBaseName = sBaseName.replace(' (Red Sign)', '')
+    if '(Ascension of Caine)' in sBaseName:
+        sBaseName = sBaseName.replace(' (Ascension of Caine)', '')
+    try:
+        return IAbstractCard(sBaseName)
+    except SQLObjectNotFound:
+        return None
+
+
+def find_adv_vampire(oVampire):
+    """Find the corresponding advanced vampire
+
+       Returns None if the vampre cannout be found."""
+    sAdvName = oVampire.name + ' (Advanced)'
+    # Note that base Brunhilde links to the non-storyline advanced version
+    try:
+        return IAbstractCard(sAdvName)
+    except SQLObjectNotFound:
+        return None
