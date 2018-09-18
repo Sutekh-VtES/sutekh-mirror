@@ -99,6 +99,7 @@ EXPECTED = """"ELDB - Inventory"
 "Hektor",0,0,"","Crypt"
 "Sheela Na Gig",0,0,"","Crypt"
 "Etienne Fauberge",0,0,"","Crypt"
+"Baron Dieudonne",0,0,"","Crypt"
 """
 
 

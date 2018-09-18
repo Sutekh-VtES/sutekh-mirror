@@ -41,6 +41,7 @@ Expansions,TR,Twilight Rebellion
 Expansions,LK,Lost Kindred
 Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
 Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
+Expansions,Black Chantry Reprint,Black Chantry Reprint
 Expansions,ReversePrefix:Promo-,Promo
 Rarities,C,Common
 Rarities,C1,Common
@@ -396,6 +397,16 @@ Master: trifle.
 Put this card on a Laibon. This Laibon may lock this card to cancel a Frenzy card p
 Artist: Brad Williams
 
+Name: Baron Dieudonne
+[KoT:V/A2]
+Cardtype: Vampire
+Clan: Nosferatu
+Group: 4
+Capacity: 9
+Discipline: ANI OBF POT PRO
+Camarilla Prince of Brussels: After Dieudonne performs a successful action during your minion phase, he can burn 1 blood to unlock.
+Artist: Tony Shasteen
+
 Name: Bravo
 [Gehenna:C]
 Cardtype: Master
@@ -606,7 +617,7 @@ Sabbat: When New Blood enters play during your influence phase, choose a circle 
 Artist: Gábor Németh
 
 Name: Off Kilter
-[HttB:C/PSam2]
+[HttB:C/PSam2/A2]
 Cardtype: Action
 Clan: Samedi
 +1 stealth action.
@@ -815,7 +826,7 @@ Camarilla.
 Artist: Leif Jones
 
 Name: Hide the Heart
-[HttB:C/PSal2]
+[HttB:C/PSal2/B2]
 Cardtype: Reaction
 Discipline: Valeren / Auspex
 

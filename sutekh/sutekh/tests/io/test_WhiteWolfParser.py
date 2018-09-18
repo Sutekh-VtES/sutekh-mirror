@@ -63,6 +63,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Anson",
         u"Ashur Tablets",
         u"Aye",
+        u"Baron Dieudonne",
         u"Bravo",
         u"Bronwen",
         u"Cedric",
@@ -615,6 +616,16 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oSmite.cost, 3)
         self.assertEqual(oSmite.costtype, "conviction")
         self.failUnless(oSmite.text.startswith('{Strike:}'))
+
+        # Check for Black Chantry Expansion data
+        oBaronD = IAbstractCard('Baron Dieudonne')
+        oKoT = IExpansion('Keepers of Tradition')
+        oBC = IExpansion('Black Chantry Reprint')
+        self.assertTrue(oKoT in [oP.expansion for oP in oBaronD.rarity])
+        self.assertTrue(oBC in [oP.expansion for oP in oBaronD.rarity])
+        # Check that we also pick up the BC expansion for Hide the Heart
+        self.assertTrue(oBC in [oP.expansion for oP in oHtH.rarity])
+        self.assertFalse(oKoT in [oP.expansion for oP in oHtH.rarity])
 
         # Check we get the rarity for Aye correct
         oAye = IAbstractCard("Aye")
