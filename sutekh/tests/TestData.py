@@ -392,6 +392,17 @@ Unique -{mortal}- with 1 life. 1 {strength}, 1 bleed.
 Gypsies get +1 stealth on each of their actions.
 Artist: Pete Venters
 
+Name: Hektor
+[Third:PB2]
+Cardtype: Vampire
+Clan: Brujah antitribu
+Group: 4
+Capacity: 9
+Discipline: for CEL POT PRE QUI
+Sabbat priscus: Damage from Hektor's hand strikes is aggravated. Baali get +1 bleed
+ when bleeding you.
+Artist: Abrar Ajmal
+
 Name: High Top
 [BL:R1, LoB:R]
 Cardtype: Ally
@@ -400,6 +411,15 @@ Cost: 4 pool
 Unique werewolf with 3 life. 1 strength, 0 bleed.
 High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your untap phase, he gains 1 life.
 Artist: Mark Nelson
+
+Name: Immortal Grapple
+[Jyhad:R2, VTES:R, Sabbat:U, SW:U/PB, FN:PG, CE:U/PB2, Third:U, LotN:PG2, KoT:U/PB3, HttB:PGar3]
+Cardtype: Combat
+Discipline: Potence
+Only usable at close range before strikes are chosen. Grapple.
+[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round.
+[POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.
+Artist: Clint Langley; L. A. Williams; Avery Butterworth
 
 Name: Inez "Nurse216" Villagrande
 [NoR:U]
