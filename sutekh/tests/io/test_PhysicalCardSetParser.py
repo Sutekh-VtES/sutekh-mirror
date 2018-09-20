@@ -121,6 +121,19 @@ PCS_EXAMPLE_NO_AUTH = '<physicalcardset ' \
         'name="AK-47" />\n</physicalcardset>'
 
 
+PCS_EXAMPLE_V1_4 = """<physicalcardset author="A test author" name="Test Set V1.4" sutekh_xml_version="1.4">
+  <comment>A test comment</comment>
+  <annotations />
+  <card count="1" expansion="Jyhad" name=".44 Magnum" printing="No Printing" />
+  <card count="1" expansion="Third Edition" name="Hektor" printing="Sketch" />
+  <card count="1" expansion="Heirs to the Blood" name="Hide the Heart" printing="No Printing" />
+  <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="No Printing" />
+  <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="Variant Printing" />
+  <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Draft Text" />
+  <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Printing" />
+</physicalcardset>"""
+
+
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
 
@@ -281,6 +294,35 @@ class PhysicalCardSetParserTests(SutekhTest):
         # This test is a bit funky, as we may get either None or ''
         # depending on sqlobject version,
         self.assertTrue(oPhysCardSet3.author in (None, ''))
+
+
+    def test_card_set_parser_v1_4(self):
+        """Test physical card set reading for v1.4 card sets (from Sutekh
+           1.0)"""
+        # pylint: disable-msg=E1101
+        # E1101: SQLObject + PyProtocols magic confuses pylint
+        # Check input
+        oParser = PhysicalCardSetParser()
+
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(PCS_EXAMPLE_V1_4), oHolder)
+        oHolder.create_pcs()
+
+        oPhysCardSet4 = IPhysicalCardSet("Test Set V1.4")
+
+        self.assertEqual(oPhysCardSet4.author, "A test author")
+        self.assertEqual(len(oPhysCardSet4.cards), 7)
+        dExpansionCards = {}
+        for oCard in oPhysCardSet4.cards:
+            sKey = '%s (%s)' % (oCard.abstractCard.name, oCard.expansion.shortname)
+            dExpansionCards.setdefault(sKey, 0)
+            dExpansionCards[sKey] += 1
+        # Check we've correctly merged printings
+        self.assertTrue(dExpansionCards['.44 Magnum (Jyhad)'], 1)
+        self.assertTrue(dExpansionCards['Hide the Heart (HttB)'], 1)
+        self.assertTrue(dExpansionCards['Immortal Grapple (KoT)'], 2)
+        self.assertTrue(dExpansionCards['Immortal Grapple (Jyhad)'], 2)
+        self.assertTrue(dExpansionCards['Hektor (Third)'], 1)
 
 
 if __name__ == "__main__":
