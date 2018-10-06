@@ -162,7 +162,7 @@ class WriteTWDAText(ArdbInfo):
         # Tabstop after titles
         if iTitleJust:
             # Tabstop after titles
-            iTitleJust = ((iDiscJust + 12) // 8) * 8 + 4
+            iTitleJust = ((iDiscJust + 16) // 8) * 8
         for dLine in aCryptLines:
             if iCountSpace == 3:
                 sCount = '%(count)dx ' % dLine
@@ -189,7 +189,9 @@ class WriteTWDAText(ArdbInfo):
                 sPadd = '\t'
             else:
                 # Else we add spaces, because Ankha
-                sPadd += ' ' * (44 - iPos) 
+                sPadd += ' ' * (42 - iPos)
+                # Always at least 2 space
+                sPadd += '  '
             dLine['disc'] = sDisc + sPadd
             if iTitleJust:
                 iEndPos = (iTitleJust - len(dLine['title']) - iDiscJust + 7)

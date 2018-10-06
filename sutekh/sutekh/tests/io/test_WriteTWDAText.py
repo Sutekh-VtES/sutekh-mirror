@@ -23,8 +23,8 @@ Crypt (5 cards, min=20, max=24, avg=5.4)
 ----------------------------------------
 2x Siamese, The\t\t       7   PRE SPI ani pro\tAhrimane:2
 1x Alan Sovereign (ADV)\t       6   AUS DOM for pre\tVentrue:3
-1x Abebe\t\t       4   nec obf thn\t\tSamedi:4
-1x Inez "Nurse216" Villagrande 3   inn\t\t\tInnocent (Imbued):4
+1x Abebe\t\t       4   nec obf thn\t  Samedi:4
+1x Inez "Nurse216" Villagrande 3   inn\t\t  Innocent (Imbued):4
 
 Library (27 cards)
 Master (3; 2 trifle)
@@ -66,8 +66,8 @@ A third line
 
 Crypt (3 cards, min=26, max=26, avg=8.67)
 -----------------------------------------
-2x Alexandra 11  ANI AUS CEL PRE dom\t\tinner circle\tToreador:2
-1x Abebe     4   nec obf thn\t\t\t\t\tSamedi:4
+2x Alexandra 11  ANI AUS CEL PRE dom        inner circle\tToreador:2
+1x Abebe     4   nec obf thn\t            \t\tSamedi:4
 
 Library (5 cards)
 Master (1; 1 trifle)
@@ -93,8 +93,8 @@ A third line
 
 Crypt (3 cards, min=30, max=30, avg=10)
 ---------------------------------------
-2x Alexandra\t    11  ANI AUS CEL PRE dom\t\tinner circle\tToreador:2
-1x \xc3\x89tienne Fauberge 8   ANI CEL CHI FOR\t\t\t\t\tRavnos:3
+2x Alexandra\t    11  ANI AUS CEL PRE dom  inner circle\tToreador:2
+1x \xc3\x89tienne Fauberge 8   ANI CEL CHI FOR\t    \t\tRavnos:3
 
 Library (5 cards)
 Master (1; 1 trifle)
