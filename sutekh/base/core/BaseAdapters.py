@@ -182,6 +182,12 @@ IExpansion.register(Expansion, passthrough)
 IExpansion.register(basestring, ExpansionAdapter.lookup)
 
 
+@IExpansion.register(Printing)
+def exp_name_from_print(oPrint):
+    """Retrun the expansion for a printing."""
+    return oPrint.expansion
+
+
 class RarityAdapter(Adapter):
     # pylint: disable=E1101
     # metaclass confuses pylint
