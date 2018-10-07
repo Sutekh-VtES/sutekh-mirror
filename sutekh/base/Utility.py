@@ -238,5 +238,5 @@ def get_expansion_date(oExp):
     """Get the date of the default printing as a date object."""
     for oPrint in oExp.printings:
         if oPrint.name is None:
-            return get_printing_data(oPrint)
+            return get_printing_date(oPrint)
     return None
