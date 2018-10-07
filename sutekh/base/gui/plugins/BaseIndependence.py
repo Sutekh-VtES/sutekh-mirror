@@ -8,7 +8,8 @@
 
 import gtk
 from ...core.BaseTables import PhysicalCardSet
-from ...core.BaseAdapters import IPhysicalCardSet, IAbstractCard, IPhysicalCard
+from ...core.BaseAdapters import (IPhysicalCardSet, IAbstractCard,
+                                  IPhysicalCard, IPrintingName)
 from ...core.BaseFilters import ParentCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..CardSetsListView import CardSetsListView
@@ -196,17 +197,18 @@ class BaseIndependence(BasePlugin):
         for oCard, oInfo in sorted(dMissing.iteritems(),
                                    key=lambda x: IAbstractCard(x[0]).name):
             sCardName = self._escape(IAbstractCard(oCard).name)
-            if not hasattr(oCard, 'expansion'):
-                sExpansion = ""
-            elif oCard.expansion:
-                sExpansion = " [%s]" % self._escape(oCard.expansion.name)
+            if not hasattr(oCard, 'printing'):
+                sPrinting = ""
+            elif oCard.printing:
+                sPrinting = " [%s]" % self._escape(
+                    IPrintingName(oCard.printing))
             else:
-                sExpansion = " [(unspecified expansion)]"
+                sPrinting = " [(unspecified expansion)]"
             aParentList.append('<span foreground = "blue">'
                                '%s%s</span> : Missing '
                                '<span foreground="red">%d'
                                '</span> copies (used in %s)'
-                               % (sCardName, sExpansion, oInfo.iCount,
+                               % (sCardName, sPrinting, oInfo.iCount,
                                   self._escape(oInfo.format_cs())))
             for sCardSet, iCount in oInfo.dCardSets.iteritems():
                 dFormatted.setdefault(sCardSet, [])
@@ -215,7 +217,7 @@ class BaseIndependence(BasePlugin):
                                             '<span foreground="red">%d'
                                             '</span> copies (%d copies '
                                             'used here)' % (sCardName,
-                                                            sExpansion,
+                                                            sPrinting,
                                                             oInfo.iCount,
                                                             iCount))
 
