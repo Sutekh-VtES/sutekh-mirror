@@ -8,7 +8,7 @@
 import gtk
 from ...core.BaseTables import PhysicalCard, PhysicalCardSet
 from ...core.BaseAdapters import (IPhysicalCard, IAbstractCard,
-                                  IPhysicalCardSet)
+                                  IPhysicalCardSet, IPrintingName)
 from ...core.BaseFilters import PhysicalCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, NotebookDialog, do_complaint_error
@@ -31,8 +31,9 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
             if bIgnoreExpansions:
                 oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
             else:
-                if oCard.expansion:
-                    oKey = (oCard, oAbsCard.name, oCard.expansion.name)
+                if oCard.printing:
+                    oKey = (oCard, oAbsCard.name,
+                            IPrintingName(oCard.printing))
                 else:
                     oKey = (oAbsCard, oAbsCard.name, UNKNOWN_EXP)
             dFullCardList.setdefault(oKey, {aCardSetNames[0]: 0,
