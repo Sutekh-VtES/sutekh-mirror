@@ -5,6 +5,7 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
+import datetime
 import os
 import logging
 
@@ -14,6 +15,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
+from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImageConfigDialog,
                                                 BaseImagePlugin,
@@ -27,6 +29,7 @@ from sutekh.SutekhInfo import SutekhInfo
 
 # Base url for downloading the images from
 SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
+IMAGE_DATE_FILE = "image_dates.txt"
 
 
 class CardImageFrame(BaseImageFrame):
@@ -135,6 +138,32 @@ class CardImageFrame(BaseImageFrame):
                                             sFilename)
             aUrls.append(sUrl)
         return aUrls
+
+    def _make_date_url(self):
+        """Date info file lives with the images"""
+        return '%s/cardimages/%s' % (SUTEKH_IMAGE_SITE, IMAGE_DATE_FILE)
+
+    def _parse_date_data(self, sDateData):
+        """Parse date file into entries"""
+        try:
+            self._dDateCache = {}
+            for sLine in sDateData.splitlines():
+                sLine = sLine.strip()
+                if not sLine:
+                    continue
+                # We are dealing with ls-lR type formatting
+                # size YYYY-mm-DD HH:MM:SS ./<dir>/<name>
+                _sSize, sDay, sTime, sName = sLine.split()
+                oCacheDate = datetime.datetime.strptime(
+                    "%s %s" % (sDay, sTime), "%Y-%m-%d %H:%M:%S")
+                sExpansion, sCardName = sName.replace('./', '').split('/')
+                sKey = os.path.join(self._sPrefsPath, sExpansion, sCardName)
+                self._dDateCache[sKey] = oCacheDate
+            if len(self._dDateCache) > 100:
+                return True
+        except Exception as oErr:
+            logging.warn('Error parsing date cache file %s', oErr)
+        return False
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""

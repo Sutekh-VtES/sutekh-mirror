@@ -229,6 +229,7 @@ class BaseImageFrame(BasicFrame):
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
         self._aFailedUrls = set()
+        self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -305,6 +306,52 @@ class BaseImageFrame(BasicFrame):
         """Return a list of possible urls pointing to a scan of the image"""
         raise NotImplementedError("implement _make_card_urls")
 
+    def _make_date_url(self):
+        """Create the url for the image date cache info."""
+        raise NotImplementedError("Implement _make_date_url")
+
+    def _parse_date_data(self, sDateData):
+        """Parse the date information from the file."""
+        raise NotImplementedError("Implement _parse_date_data")
+
+    def _get_date_data(self):
+        """Get the date data from the website if available"""
+        sDateUrl = self._make_date_url()
+        if not sDateUrl:
+            # No date info, so we skip this
+            return
+        oLastFetched = self._dDateCache.get(
+            'last downloaded', datetime.datetime.utcfromtimestamp(0))
+        if datetime.datetime.now() - oLastFetched < datetime.timedelta(days=1):
+            # Cache fresh enough
+            return
+        logging.info('Downloading date cache from %s', sDateUrl)
+        oFile = urlopen_with_timeout(
+            sDateUrl, fErrorHandler=image_gui_error_handler,
+            dHeaders=self._dReqHeaders)
+        if oFile:
+            sDateData = progress_fetch_data(oFile)
+            if self._parse_date_data(sDateData):
+                self._dDateCache["last downloaded"] = datetime.datetime.now()
+        else:
+            logging.info("Failed to download date cache file")
+
+    def _check_outdated(self, sFullFilename):
+        """Check if the image we're displaying has a more recent version
+           available to download."""
+        # Entries not in the cache are automatically older than we are, so
+        # we don't try download local files
+        oCacheDate = self._dDateCache.get(
+            sFullFilename, datetime.datetime.utcfromtimestamp(0))
+        # We assume the cache dates are utc, so we convert to that
+        oCurDate = datetime.datetime.utcfromtimestamp(
+            os.path.getmtime(sFullFilename))
+        if oCacheDate - oCurDate > datetime.timedelta(seconds=60):
+            # We allow some fuzz to add a bit of protection against weird
+            # filesystems and timezone issues - this is probably too generous
+            logging.info("Downloading newer image for %s", sFullFilename)
+            self._download_image(sFullFilename)
+
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
         raise NotImplementedError("Implement norm_cardname")
@@ -347,7 +394,7 @@ class BaseImageFrame(BasicFrame):
         """Attempt to download the image."""
         aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
-            return False
+            return False 
         for sUrl in aUrls:
             if sUrl not in self._aFailedUrls:
                 logging.info('Trying %s as source for %s',
@@ -387,6 +434,8 @@ class BaseImageFrame(BasicFrame):
         # This is has to handle a number of special cases
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
+        # Ensure we have an up to information about the image dates
+        self._get_date_data()
 
         for sFullFilename in aFullFilenames:
             if not check_file(sFullFilename):
@@ -399,6 +448,14 @@ class BaseImageFrame(BasicFrame):
                                                     gtk.ICON_SIZE_DIALOG)
                         self._oImage.queue_draw()
                         return
+            else:
+                if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
+                        self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES) and
+                        self._check_outdated(sFullFilename)):
+                    # Try download the image
+                    # We don't handle failure specially here - if it fails,
+                    # we will show the existing image
+                    self._download_image(sFullFilename)
         try:
             if self._bShowExpansions:
                 self.oExpPrintLabel.set_markup(
