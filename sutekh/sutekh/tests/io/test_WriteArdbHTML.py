@@ -1210,8 +1210,8 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           <span class="cost">1 pool</span>
         </li>
       </ul><div class="text">
-        <p>Unique equipment.</p>
-        <p>When this vampire successfully hunts, he or she gains 1 additional blood.</p>
+        <p>Unique.</p>
+        <p>The bearer gets +1 hunt.</p>
       </div><h5 class="cardname">An Anarch Manifesto</h5>
       <div class="text">
         <p>Equipment.</p>

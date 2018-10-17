@@ -576,6 +576,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('not for legal play') in oDramatic.keywords)
         oMotivated = IAbstractCard('Motivated by Gehenna')
         self.failUnless(IKeyword('not for legal play') in oMotivated.keywords)
+        oAaron = IAbstractCard("Aaron's Feeding Razor")
+        self.failUnless(IKeyword('unique') in oAaron.keywords)
 
         # Test adding extra expansions works
 

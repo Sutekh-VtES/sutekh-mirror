@@ -136,8 +136,8 @@ Name: Aaron's Feeding Razor
 [Jyhad:R, VTES:R, CE:R, KoT:R]
 Cardtype: Equipment
 Cost: 1 pool
-Unique equipment.
-When this vampire successfully hunts, he or she gains 1 additional blood.
+Unique.
+The bearer gets +1 hunt.
 Artist: Thomas Nairb; Christopher Rush
 
 Name: Abandoning the Flesh
