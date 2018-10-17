@@ -80,9 +80,7 @@ def IPrintingProperty(oUnknown):
 @singledispatch
 def IPrintingName(oUnknown):
     """Default Printing Name adapter"""
-    return fail_adapt(oUnknown, 'Printing')
-
-
+    return fail_adapt(oUnknown, 'PrintingName')
 
 @singledispatch
 def IRarity(oUnknown):
@@ -477,6 +475,34 @@ class PrintingNameAdapter(Adapter):
 
 
 IPrintingName.register(PhysicalCard, PrintingNameAdapter.lookup)
+
+
+class PrintingStringAdapter(Adapter):
+    """Reverse the PrintingName Lookups"""
+
+    __dCache = {}
+
+    @classmethod
+    def make_object_cache(cls):
+        cls.__dCache = {}
+        # pre-populate cache with all known printings
+        # (name is None)
+        try:
+            for oPrinting in Printing.select():
+                sPrintName = get_exp_printing_name(oPrinting)
+                cls.__dCache[sPrintName] = oPrinting
+        except AttributeError:
+            # Old SQLObject doesn't like this construction if the database
+            # is empty, so, as we can't sensibly fill the cache anyway, we
+            # just skip
+            pass
+
+    @classmethod
+    def lookup(cls, sName):
+        return cls.__dCache[sName]
+
+
+IPrinting.register(basestring, PrintingStringAdapter.lookup)
 
 
 class PhysicalCardMappingToAbstractCardAdapter(Adapter):

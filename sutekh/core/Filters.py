@@ -49,6 +49,8 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
                                           KeywordFilter, MultiKeywordFilter,
                                           PhysicalExpansionFilter,
                                           MultiPhysicalExpansionFilter,
+                                          PhysicalPrintingFilter,
+                                          MultiPhysicalPrintingFilter,
                                           ArtistFilter,
                                           MultiArtistFilter,
                                           split_list, make_table_alias)

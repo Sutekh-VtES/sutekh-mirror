@@ -29,7 +29,7 @@ from .BaseTables import (AbstractCard, CardType, Expansion, RarityPair,
                          MapPhysicalCardToPhysicalCardSet)
 from .BaseAdapters import (IAbstractCard, IPhysicalCardSet, IRarityPair,
                            IExpansion, ICardType, IRarity, IArtist,
-                           IKeyword)
+                           IPrinting, IPrintingName, IKeyword)
 
 
 # Compability Patches
@@ -760,7 +760,8 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     keyword = "PhysicalExpansion"
     description = "Physical Expansion"
     helptext = "a list of expansions.\nSelects cards with their expansion " \
-            "set to the chosen expansions."
+            "set to the chosen expansions.\nThis will return all the " \
+            "printings in a given expansion."
     types = ('PhysicalCard',)
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
@@ -784,6 +785,69 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         aExpansions.extend([x.name for x in Expansion.select().orderBy('name')
                             if x.name[:5] != 'Promo'])
         return aExpansions
+
+    def _get_expression(self):
+        oTable = Table('physical_card')
+        # None in the IN statement doesn't do the right thing for me
+        # pylint: disable=singleton-comparison
+        # == None syntax required for SQLObject
+        if self.__bOrUnspec and self._aIds:
+            return OR(IN(oTable.printing_id, self._aIds),
+                      oTable.printing_id == None)
+        elif self.__bOrUnspec:
+            # Psycopg2 doesn't like IN(a, []) constructions
+            return oTable.printing_id == None
+        return IN(oTable.printing_id, self._aIds)
+
+
+class PhysicalPrintingFilter(DirectFilter):
+    """Filter PhysicalCard based on the PhysicalCard printing"""
+    types = ('PhysicalCard',)
+
+    # We must be calling this with a PhysicalCardFilter for sensible results,
+    # so we don't need any special join magic
+    def __init__(self, sExpPrint):
+        self._iPrintID = None
+        if sExpPrint is not None:
+            oPrinting = IPrinting(sExpPrint)
+            self._iPrintID = oPrinting.id
+
+    # pylint: disable=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        oTable = Table('physical_card')
+        return oTable.printing_id == self._iPrintID
+
+class MultiPhysicalPrintingFilter(DirectFilter):
+    """Filter PhysicalCard based on a list of PhysicalCard printings."""
+    keyword = "PhysicalPrinting"
+    description = "Physical Printing"
+    helptext = "a list of printings.\nSelects cards with their printing " \
+            "set to the chosen printings.\nThis will only return cards " \
+            "with the correct printing, and will exclude cards from the " \
+            "same expansion that aren't part of the printing."
+    types = ('PhysicalCard',)
+    islistfilter = True
+    __sUnspec = '  Unspecified Expansion'
+
+    def __init__(self, aPrintings):
+        self._aIds = []
+        self.__bOrUnspec = False
+        for sExpPrint in aPrintings:
+            if sExpPrint is not None and sExpPrint != self.__sUnspec:
+                iId = IPrinting(sExpPrint).id
+                self._aIds.append(iId)
+            else:
+                self.__bOrUnspec = True
+
+    # pylint: disable=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        aExpPrint = [cls.__sUnspec]
+        aExpPrint.extend([IPrintingName(x) for x in Printing.select()
+                          if x.expansion.name[:5] != 'Promo'])
+        return sorted(aExpPrint)
 
     def _get_expression(self):
         oTable = Table('physical_card')
