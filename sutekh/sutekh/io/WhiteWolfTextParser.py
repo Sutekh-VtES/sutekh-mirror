@@ -193,8 +193,8 @@ class CardDict(dict):
                              r'represents a unique location|'
                              r'Unique Nod|^Unique.|'
                              r'this is a unique location|'
-                             r'as equipment (while|when) in play.|'
-                             r' (Haven. )?Unique.'),
+                             r'as equipment (while|when) '
+                             r'in play. (Haven. )?Unique.'),
         'location': re.compile(r'represents a (unique )?location|'
                                r'this is a (unique )?location'),
         'melee weapon': re.compile(r'[mM]elee weapon\.'),
