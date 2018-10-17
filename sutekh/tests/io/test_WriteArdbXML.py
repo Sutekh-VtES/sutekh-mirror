@@ -100,8 +100,8 @@ when bleeding you.</text>
       <set>KoT</set>
       <cost>1 pool</cost>
       <type>Equipment</type>
-      <text>Unique equipment.
-When this vampire successfully hunts, he or she gains 1 additional blood.</text>
+      <text>Unique.
+The bearer gets +1 hunt.</text>
     </card><card count="2" databaseID="8">
       <name>Abbot</name>
       <set>Third</set>
