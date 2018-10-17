@@ -191,8 +191,9 @@ class CardDict(dict):
     dEquipmentProperties = {
         'unique': re.compile(r'Unique (melee )?weapon|Unique equipment|'
                              r'represents a unique location|'
+                             r'Unique Nod|^Unique.|'
                              r'this is a unique location|'
-                             r'as equipment (while|when) in play.'
+                             r'as equipment (while|when) in play.|'
                              r' (Haven. )?Unique.'),
         'location': re.compile(r'represents a (unique )?location|'
                                r'this is a (unique )?location'),
