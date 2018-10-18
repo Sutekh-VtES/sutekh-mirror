@@ -180,6 +180,16 @@ class FilterTests(SutekhTest):
              [u"Aaron's Feeding Razor", u"Abbot", u"Anarch Revolt",
               u"Ghoul Retainer", u"Immortal Grapple",
               u"Pier 13, Port of Baltimore"]),
+            (Filters.PrintingFilter('Third Edition (No Draft Text)'),
+             [u"Swallowed by the Night", u"Walk of Flame"]),
+            (Filters.MultiPrintingFilter(['Third Edition (No Draft Text)',
+                                          'Third Edition (Sketch)']),
+             [u"Harold Zettler, Pentex Director", "Hektor",
+              u"Swallowed by the Night", u"Walk of Flame"]),
+            (Filters.MultiPrintingFilter(['Keepers of Tradition (No Draft Text)',
+                                          'Third Edition (Sketch)']),
+             [u"Harold Zettler, Pentex Director", "Hektor",
+              u"Immortal Grapple"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
              [u"Abd al-Rashid", u"Akram", u"Alexandra", u"Anson", u"Bronwen",
               u"Cesewayo", u"Enkidu, The Noah", u"Hektor", u"Kabede Maru",
@@ -479,7 +489,13 @@ class FilterTests(SutekhTest):
         self.assertEqual(Filters.MultiVirtueFilter.get_values(),
                          [u"Innocence", u"Judgment", u"Martyrdom",
                           u"Redemption", u"Vengeance", u"Vision"])
-
+        self.assertEqual(Filters.MultiPrintingFilter.get_values(),
+                         ['Heirs to the Blood (No Draft Text)',
+                          'Jyhad (Variant Printing)',
+                          'Keepers of Tradition (No Draft Text)',
+                          'Sabbat Wars (Second Printing)',
+                          'Third Edition (No Draft Text)',
+                          'Third Edition (Sketch)'])
         # Test the physical card filtering
         for oFilter, aExpectedCards in aPhysicalTests:
             aCards = sorted(oFilter.select(PhysicalCard).distinct())

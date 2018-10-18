@@ -401,6 +401,60 @@ class MultiExpansionRarityFilter(MultiFilter):
         return aResults
 
 
+class PrintingFilter(DirectFilter):
+    """Filter on Printing Names"""
+    types = ('AbstractCard', 'PhysicalCard')
+
+    def __init__(self, sPrinting):
+        """We filter for cards which appeared in a specific printing"""
+        # This is a bit messy, but we extract all the physical cards
+        # that belong to the printing, then filter on their abstract
+        # card id's
+        self._aIds = set()
+        oPrinting = IPrinting(sPrinting)
+        for oCard in PhysicalCard.selectBy(printing=oPrinting):
+            self._aIds.add(oCard.abstractCardID)
+
+    # pylint: disable=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        return IN(AbstractCard.q.id, self._aIds)
+
+
+class MultiPrintingFilter(DirectFilter):
+    """Filter on multiple Printings"""
+    keyword = "Printing"
+    description = "Non-Default Printing"
+    helptext = "a list of printings. Returns all cards that have appeared " \
+            "in the specific printings."
+    islistfilter = True
+    types = ('AbstractCard', 'PhysicalCard')
+
+    def __init__(self, aPrintings):
+        """  Called with a list of Printing Names"""
+        self._aIds = set()
+        # See comments on PrintingFilter
+        for sPrint in aPrintings:
+            oPrinting = IPrinting(sPrint)
+            for oCard in PhysicalCard.selectBy(printing=oPrinting):
+                self._aIds.add(oCard.abstractCardID)
+
+    # pylint: disable=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        """We restrict ourselves to non-standard printings, since the standard
+           ones are covered by the expansion filters"""
+        aExpPrint = [IPrintingName(x) for x in Printing.select()
+                     if x.expansion.name[:5] != 'Promo' and x.name is not None]
+        return sorted(aExpPrint)
+
+    # pylint: disable=C0111
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    def _get_expression(self):
+        return IN(AbstractCard.q.id, self._aIds)
+
+
 class CardTypeFilter(SingleFilter):
     """Filter on card type"""
     types = ('AbstractCard', 'PhysicalCard')
@@ -824,8 +878,8 @@ class MultiPhysicalPrintingFilter(DirectFilter):
     description = "Physical Printing"
     helptext = "a list of printings.\nSelects cards with their printing " \
             "set to the chosen printings.\nThis will only return cards " \
-            "with the correct printing, and will exclude cards from the " \
-            "same expansion that aren't part of the printing."
+            "with the specified printings, and will exclude cards from the " \
+            "same expansion that aren't part of the given printing."
     types = ('PhysicalCard',)
     islistfilter = True
     __sUnspec = '  Unspecified Expansion'
