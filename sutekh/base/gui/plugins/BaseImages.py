@@ -106,11 +106,15 @@ def get_printing_info(oAbsCard):
         for oCard in oAbsCard.physicalCards:
             oPrint = oCard.printing
             if oPrint:
-                aPrint.add((IPrintingName(oPrint),
-                            get_date(get_printing_date(oPrint))))
+                # We want the newest image, but, for identical dates,
+                # we want the "Non-Printing" image if there are multiple
+                # printings, so we sort by negative ordinal to get the date
+                # ordering and rely on string matching to sort the printings
+                # as we want to, beacause of how IPrintingName works
+                aPrint.add( (-get_date(get_printing_date(oPrint)).toordinal(),
+                             IPrintingName(oPrint)) )
         # Sort by date, newest first
-        aPrintings = [x[0] for x in sorted(aPrint,
-                                            key=lambda x: x[1], reverse=True)]
+        aPrintings = [x[1] for x in sorted(aPrint)]
         return aPrintings
     else:
         return []
