@@ -303,9 +303,9 @@ class MapPrintingToPrintingProperty(SQLObject):
 
 # List of Tables to be created, dropped, etc.
 
-BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
-                   Rarity, RarityPair, CardType, Ruling, Artist, Keyword,
-                   LookupHints, PrintingProperty, Printing,
+BASE_TABLE_LIST = [AbstractCard, Expansion, Printing, PhysicalCard,
+                   PhysicalCardSet, Rarity, RarityPair, CardType, Ruling,
+                   Artist, Keyword, LookupHints, PrintingProperty,
                    # Mapping tables from here on out
                    MapPhysicalCardToPhysicalCardSet,
                    MapAbstractCardToRarityPair,
