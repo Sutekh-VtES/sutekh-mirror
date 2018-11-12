@@ -149,6 +149,10 @@ class BaseGuiDBManager(object):
                                    "Aborting")
                 return None
         else:
+            if not oZipDetails.sName:
+                do_complaint_error("No filename or url given to update from.\n"
+                                   "Aborting")
+                return None
             fIn = file(oZipDetails.sName, 'rb')
             sData = fIn.read()
             fIn.close()
