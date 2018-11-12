@@ -19,7 +19,8 @@
 # pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
-                       EnumCol, MultipleJoin, ForeignKey, DateCol, BoolCol)
+                       EnumCol, MultipleJoin, ForeignKey, DateCol, BoolCol,
+                       SQLObjectNotFound)
 # pylint: enable=E0611
 from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          PhysicalCardSet, Expansion,
@@ -382,7 +383,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                         oObj.releasedate.strftime('%Y-%m-%d'))
                     try:
                         oPrintDate = PrintingProperty.byCanonicalValue(
-                            sDateVal.lower())
+                            sDateVal.lower(), connection=oTrans)
                     except SQLObjectNotFound:
                         # Create property for this date
                         oPrintDate = PrintingProperty(
@@ -553,9 +554,19 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                         expansionID=oObj.expansion.id,
                                         rarityID=oObj.rarity.id,
                                         connection=oTrans)
+            elif oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
+                for oObj in RarityPair_Ev4.select(connection=oOrigConn):
+                    # pylint: disable=W0212
+                    # Need to access _connection here
+                    oObj._connection = oOrigConn
+                    # pylint: enable=W0212
+                    _oCopy = RarityPair(id=oObj.id,
+                                        expansionID=oObj.expansion.id,
+                                        rarityID=oObj.rarity.id,
+                                        connection=oTrans)
             else:
                 # This may result in a duplicate error message
-                return (False, ["Unknown Expansion version"])
+                return (False, ["Unknown Expansion version in RarityPair"])
         else:
             return (False, ["Unknown RarityPair version"])
         return (True, [])
