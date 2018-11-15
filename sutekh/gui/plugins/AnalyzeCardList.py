@@ -83,7 +83,7 @@ def _format_card_line(sString, sTrailer, iNum, iLibSize):
 
 def _load_printing_back_info():
     """Load the different card back types from the printings."""
-    dBacks = {}
+    dBacks = {None: None}  # Unspecified printing maps to None
     for oPrinting in Printing.select():
         for oProp in oPrinting.properties:
             if oProp.value.startswith('Back Type: '):
@@ -242,6 +242,8 @@ def _get_back_counts(aPhysCards, dBacks):
     """Get the counts of the different expansions for the list"""
     dCounts = {}
     for oCard in aPhysCards:
+        # We get 'Other' if we have a printing that is missing
+        # Back information
         oKey = dBacks.get(oCard.printing, 'Other')
         dCounts.setdefault(oKey, 0)
         dCounts[oKey] += 1
