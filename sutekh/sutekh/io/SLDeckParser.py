@@ -114,7 +114,7 @@ class SLDeckParser(CardSetParser):
         sName = move_articles_to_front(sName)
 
         # Secret Library has no expansion info
-        oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None, None)
 
     def _library_section(self, sLine, oHolder):
         """Parse a library entry."""
@@ -129,7 +129,7 @@ class SLDeckParser(CardSetParser):
         sName = move_articles_to_front(sName)
 
         # Secret Library has no expansion info
-        oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None, None)
 
     def parse(self, fIn, oHolder):
         """Parse the SL deck in fIn into oHolder."""

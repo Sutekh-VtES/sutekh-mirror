@@ -21,14 +21,15 @@ Author : A test author
 Description :
 A test comment
 
-Crypt [5 vampires] Capacity min: 3 max: 7 average: 5.40
+Crypt [6 vampires] Capacity min: 3 max: 9 average: 6.00
 ------------------------------------------------------------
- 2x The Siamese            7 PRE SPI ani pro     Ahrimane:2
- 1x Alan Sovereign     Adv 6 AUS DOM for pre     Ventrue:3
- 1x Abebe                  4 nec obf thn         Samedi:4
- 1x Inez "Nurse216" Vi     3 inn                 Innocent (Imbued):4
+ 2x The Siamese            7 PRE SPI ani pro             Ahrimane:2
+ 1x Hektor                 9 CEL POT PRE QUI for Priscus !Brujah:4
+ 1x Alan Sovereign     Adv 6 AUS DOM for pre             Ventrue:3
+ 1x Abebe                  4 nec obf thn                 Samedi:4
+ 1x Inez "Nurse216" Vi     3 inn                         Innocent (Imbued):4
 
-Library [27 cards]
+Library [28 cards]
 ------------------------------------------------------------
 Action [2]
  2x Abbot
@@ -42,9 +43,9 @@ Action Modifier/Combat [2]
 Ally [1]
  1x Scapelli, The Family "Mechanic"
 
-Combat [7]
+Combat [8]
  4x Immortal Grapple
- 3x Walk of Flame
+ 4x Walk of Flame
 
 Equipment [8]
  4x .44 Magnum

@@ -12,7 +12,8 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion, IRarity, IRarityPair,
-                                           ICardType, IArtist, IKeyword)
+                                           ICardType, IArtist, IKeyword,
+                                           IPrinting)
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
@@ -211,7 +212,8 @@ class WhiteWolfParserTests(SutekhTest):
             aExps = [oPair.expansion for oPair in oAbs.rarity]
             for oExp in aExps:
                 try:
-                    _oPair = IPhysicalCard((oAbs, oExp))
+                    oPrint = IPrinting((oExp, None))
+                    _oPair = IPhysicalCard((oAbs, oPrint))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))
@@ -680,7 +682,6 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_adapters(self):
         """Extra sanity checks on the adapaters."""
-
         for oAdapter in (IAbstractCard, IPhysicalCard,
                          IExpansion, IRarity, IRarityPair,
                          ICardType, IArtist, IKeyword):
@@ -690,9 +691,13 @@ class WhiteWolfParserTests(SutekhTest):
         # Various pass through tests
         self.assertEqual(IAbstractCard("Ossian"),
                          IAbstractCard(IAbstractCard("Ossian")))
-        self.assertEqual(IExpansion("KMW"), IExpansion(IExpansion("KMW")))
+        oExp = IExpansion("KMW")
+        self.assertEqual(oExp, IExpansion(oExp))
 
-        oPhysCard = IPhysicalCard((IAbstractCard("Ossian"), IExpansion("KMW")))
+        oPrinting = IPrinting((oExp, None))
+        self.assertEqual(oPrinting, IPrinting(oPrinting))
+
+        oPhysCard = IPhysicalCard((IAbstractCard("Ossian"), oPrinting))
         self.assertEqual(oPhysCard, IPhysicalCard(oPhysCard))
         self.assertEqual(oPhysCard.abstractCard, IAbstractCard("Ossian"))
         self.assertEqual(oPhysCard.abstractCard, IAbstractCard(oPhysCard))

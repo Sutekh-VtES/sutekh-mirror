@@ -15,6 +15,7 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
 EXPECTED_1 = """Abebe
 Alan Sovereign (advanced)
+Hektor
 Inez "Nurse216" Villagrande
 2xThe Siamese
 
@@ -30,7 +31,7 @@ Hide the Heart
 Scapelli, The Family "Mechanic"
 2xSwallowed by the Night
 The Path of Blood
-3xWalk of Flame
+4xWalk of Flame
 """
 
 

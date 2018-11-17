@@ -15,6 +15,7 @@ from ...core.BaseFilters import NullFilter, make_illegal_filter
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
 from ..AutoScrolledWindow import AutoScrolledWindow
+from ...Utility import get_expansion_date
 
 
 class BaseExpansionStats(BasePlugin):
@@ -26,7 +27,7 @@ class BaseExpansionStats(BasePlugin):
        list view.
        """
 
-    dTableVersions = {Expansion: (4, )}
+    dTableVersions = {Expansion: (4, 5, )}
     aModelsSupported = (PhysicalCard,)
 
     sMenuName = "Expansion Stats"
@@ -154,8 +155,9 @@ class StatsModel(gtk.TreeStore):
             if sGroup != 'Promo':
                 sExp, sRarity = sGroup.split(':')
                 oExp = IExpansion(sExp.strip())
-                if oExp.releasedate:
-                    sDate = oExp.releasedate.strftime('%Y-%m-%d')
+                oRelDate = get_expansion_date(oExp)
+                if oRelDate:
+                    sDate = oRelDate.strftime('%Y-%m-%d')
             else:
                 sExp, sRarity = 'Promo', None
                 sDate = ''
@@ -196,6 +198,7 @@ class StatsModel(gtk.TreeStore):
                             if not oPair.expansion.name.startswith('Promo-'):
                                 continue
                             oExp = oPair.expansion
-                            if oExp.releasedate:
-                                self.set(oCardIter, 1,
-                                         oExp.releasedate.strftime('%Y-%m-%d'))
+                            oRelDate = get_expansion_date(oExp)
+                            if oRelDate:
+                                sDate = oRelDate.strftime('%Y-%m-%d')
+                                self.set(oCardIter, 1, sDate)

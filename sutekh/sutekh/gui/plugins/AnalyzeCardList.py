@@ -15,7 +15,7 @@ import logging
 import gtk
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet, Printing
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion, IKeyword)
 from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
@@ -28,10 +28,6 @@ from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.core.SutekhTables import CRYPT_TYPES
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.Abbreviations import Titles
-
-ODD_BACKS = {}
-
-PDF_SETS = set()
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
@@ -74,42 +70,6 @@ def _disc_sort_key(tData):
     return (-tData[1][1], -tData[1][2], tData[0].fullname)
 
 
-def _load_odd_backs():
-    """Cache info about the non-standard card backs."""
-    ODD_BACKS.clear()
-    try:
-        aThirdEd = set([IExpansion('Third Edition')])
-        aJyhad = set([IExpansion('Jyhad')])
-        aVEKNPrinted = set([IExpansion('Anthology'),
-                            IExpansion('Lost Kindred'),
-                            IExpansion('Black Chantry Reprint')])
-        ODD_BACKS['Third Edition'] = aThirdEd
-        ODD_BACKS['Jyhad'] = aJyhad
-        ODD_BACKS['VEKN Printed Set'] = aVEKNPrinted
-        ODD_BACKS['Unknown'] = set([None])
-    except SQLObjectNotFound as oExcDetails:
-        # log exception at same level as plugin errors (verbose)
-        logging.warn("Expansion caching failed (%s).", oExcDetails, exc_info=1)
-
-
-def _load_pdf_sets():
-    """Cache the sets from the VEKN pdf expansions"""
-    PDF_SETS.clear()
-    for sSet in ['Danse Macabre', 'The Unaligned',
-                 'Anarchs Unbound',
-                 # Storyline reward cards are an annoying scattering of
-                 # promo dates
-                 'Promo-20150211', 'Promo-20150212', 'Promo-20150213',
-                 'Promo-20150214', 'Promo-20150216', 'Promo-20150217',
-                 'Promo-20150218', 'Promo-20150219', 'Promo-20150220',
-                 'Promo-20150221']:
-        try:
-            oSet = IExpansion(sSet)
-            PDF_SETS.add(oSet)
-        except SQLObjectNotFound:
-            pass
-
-
 def _format_card_line(sString, sTrailer, iNum, iLibSize):
     """Format card lines for notebook"""
     sPer = _percentage(iNum, iLibSize, "Library")
@@ -119,6 +79,17 @@ def _format_card_line(sString, sTrailer, iNum, iLibSize):
         'num': iNum,
         'per': sPer,
         }
+
+
+def _load_printing_back_info():
+    """Load the different card back types from the printings."""
+    dBacks = {None: None}  # Unspecified printing maps to None
+    for oPrinting in Printing.select():
+        for oProp in oPrinting.properties:
+            if oProp.value.startswith('Back Type: '):
+                sValue = oProp.value.replace('Back Type: ', '')
+                dBacks[oPrinting] = sValue
+    return dBacks
 
 
 def _get_card_costs(aCards):
@@ -267,23 +238,13 @@ def _format_multi(sCardType, dMulti, iNum):
     return sText
 
 
-def _get_back_counts(aPhysCards):
+def _get_back_counts(aPhysCards, dBacks):
     """Get the counts of the different expansions for the list"""
     dCounts = {}
     for oCard in aPhysCards:
-        oKey = oCard.expansion
-        if oKey in PDF_SETS:
-            oKey = 'PDF'
-        else:
-            bOther = True
-            for sName, oSet in ODD_BACKS.items():
-                if oKey in oSet:
-                    oKey = sName
-                    bOther = False
-                    break
-            if bOther:
-                # Fell through without a match
-                oKey = 'Other'
+        # We get 'Other' if we have a printing that is missing
+        # Back information
+        oKey = dBacks.get(oCard.printing, 'Other')
         dCounts.setdefault(oKey, 0)
         dCounts[oKey] += 1
     return dCounts
@@ -305,15 +266,12 @@ def _split_into_crypt_lib(aPhysCards):
     return aCrypt, aLib
 
 
-def _check_same(aPhysCards):
+def _check_same(aPhysCards, dBacks):
     """Check that all the crypt cards and all the library cards have the
        same backs"""
-    if not ODD_BACKS:
-        # Error importing the expansions, so complain
-        return False
     aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
-    dCrypt = _get_back_counts(aCrypt)
-    dLib = _get_back_counts(aLib)
+    dCrypt = _get_back_counts(aCrypt, dBacks)
+    dLib = _get_back_counts(aLib, dBacks)
     if len(dCrypt) > 1 or len(dLib) > 1:
         return False  # Differing backs
     if 'PDF' in dCrypt or 'PDF' in dLib:
@@ -357,23 +315,16 @@ def _percentage_backs(dCards, iSize, fPer, sType):
     return sText, bOK
 
 
-def _group_backs(dCards, aCards, iNum):
+def _group_backs(dCards, aCards, iNum, dBacks):
     """Check for that cards of a single back don't belong to too few different
        card groups"""
     # No more than 2 distinct vampires of in a group of common backs
     aCardsByExp = []
     bOK = True
     sText = ""
-    aAllOdd = set()
-    for aExps in ODD_BACKS.values():
-        aAllOdd.update(aExps)
     for sGrpName in dCards:
-        if sGrpName != 'Other':
-            aCardsByExp.append([oCard for oCard in aCards if
-                                oCard.expansion in ODD_BACKS[sGrpName]])
-        else:
-            aCardsByExp.append([oCard for oCard in aCards if
-                                oCard.expansion not in aAllOdd])
+        aCardsByExp.append([oCard for oCard in aCards if
+                            dBacks[oCard.printing] == sGrpName])
     for aExpCards in aCardsByExp:
         # For each expansion, count number of distinct cards
         aNames = set([x.abstractCard.name for x in aExpCards])
@@ -464,8 +415,7 @@ class AnalyzeCardList(SutekhPlugin):
 
     def __init__(self, *args, **kwargs):
         super(AnalyzeCardList, self).__init__(*args, **kwargs)
-        _load_pdf_sets()
-        _load_odd_backs()
+        self._dBacks = _load_printing_back_info()
         # dictionary of individual analysis pages
         self._dConstruct = {
             'Vampire': self._process_vampire,
@@ -555,7 +505,7 @@ class AnalyzeCardList(SutekhPlugin):
             elif sCardType == 'Mixed Card Backs':
                 # Assume not mixed, so we skip
                 self.dTypeNumbers[sCardType] = 0
-                if not _check_same(aAllPhysCards):
+                if not _check_same(aAllPhysCards, self._dBacks):
                     self.dTypeNumbers[sCardType] = len(aAllPhysCards)
                 dCardLists[sCardType] = aAllPhysCards
 
@@ -1166,7 +1116,7 @@ class AnalyzeCardList(SutekhPlugin):
                                           'Crypt')
         if sAddText:
             sText += sAddText
-        sAddText, _aCryptByExp = _group_backs(dCrypt, aCrypt, 3)
+        sAddText, _aCryptByExp = _group_backs(dCrypt, aCrypt, 3, self._dBacks)
         if sAddText:
             sText += sAddText
             bOK = False
@@ -1189,7 +1139,7 @@ class AnalyzeCardList(SutekhPlugin):
         sAddText, bOK = _percentage_backs(dLib, self.iLibSize, 20.0, 'Library')
         if sAddText:
             sText += sAddText
-        sAddText, aLibByExp = _group_backs(dLib, aLib, 5)
+        sAddText, aLibByExp = _group_backs(dLib, aLib, 5, self._dBacks)
         if sAddText:
             sText += sAddText
             bOK = False
@@ -1216,14 +1166,9 @@ class AnalyzeCardList(SutekhPlugin):
     def _process_backs(self, aPhysCards):
         """Run some heuristic tests to see if cards are 'of sufficiently
            mixed card type'"""
-        if not ODD_BACKS:
-            # Error importing the expansions, so complain
-            return ("Failed to import all the expansion information\n"
-                    "Unable to accurately analyze if this deck requires"
-                    "sleeves")
         aCrypt, aLib = _split_into_crypt_lib(aPhysCards)
-        dCrypt = _get_back_counts(aCrypt)
-        dLib = _get_back_counts(aLib)
+        dCrypt = _get_back_counts(aCrypt, self._dBacks)
+        dLib = _get_back_counts(aLib, self._dBacks)
         sText = "\t\t<b>Mixed Card Backs :</b>\n\n"
         # PDF trumps none
         if 'PDF' in dCrypt or 'PDF' in dLib:

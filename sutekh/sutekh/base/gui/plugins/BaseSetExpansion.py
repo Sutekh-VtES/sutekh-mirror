@@ -7,7 +7,8 @@
 import gtk
 from ...core.BaseTables import (PhysicalCardSet,
                                 MapPhysicalCardToPhysicalCardSet)
-from ...core.BaseAdapters import IExpansion, IPhysicalCard, IAbstractCard
+from ...core.BaseAdapters import (IExpansion, IPhysicalCard,
+                                  IAbstractCard, IPrinting)
 from ...core.DBSignals import send_changed_signal
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog, do_complaint_error
@@ -63,13 +64,14 @@ class BaseSetExpansion(BasePlugin):
             else:
                 sExpName = aExpNames[0]
                 if sExpName == self.model.sUnknownExpansion:
-                    oExpansion = None
+                    oPrinting = None
                 else:
                     oExpansion = IExpansion(sExpName)
-                self.do_set_expansion(dSelected, oExpansion)
+                    oPrinting = IPrinting((oExpansion, None))
+                self.do_set_printing(dSelected, oPrinting)
         oDialog.destroy()
 
-    def do_set_expansion(self, dSelected, oExpansion):
+    def do_set_printing(self, dSelected, oPrinting):
         """Iterate over the cards, setting the correct expansion"""
         # Dealing with selected cards, so filter list is the correct one
         oCS = self._get_card_set()
@@ -78,10 +80,10 @@ class BaseSetExpansion(BasePlugin):
             oAbsCard = IAbstractCard(oCard)
             if oAbsCard.id in dSelected:
                 oPhysCard = IPhysicalCard(oCard)
-                if oPhysCard.expansion is oExpansion:
+                if oPhysCard.printing is oPrinting:
                     continue  # No need to change this
                 if oPhysCard.id in dSelected[oAbsCard.id]:
-                    oNewCard = IPhysicalCard((oAbsCard, oExpansion))
+                    oNewCard = IPhysicalCard((oAbsCard, oPrinting))
                     # Card in the selection, so replace with changed card
                     MapPhysicalCardToPhysicalCardSet.delete(oCard.id)
                     oCS.addPhysicalCard(oNewCard.id)

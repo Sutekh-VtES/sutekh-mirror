@@ -25,8 +25,11 @@ class MainMenu(AppMenu):
     def _add_download_menu(self, oDownloadMenu):
         """Extend the File Download menu"""
         super(MainMenu, self)._add_download_menu(oDownloadMenu)
-        self.create_menu_item('Check for updated cardlist', oDownloadMenu,
-                              self.check_updated_cardlist)
+        oCheckItem = self.create_menu_item('Check for updated cardlist', oDownloadMenu,
+                                           self.check_updated_cardlist)
+        if self.is_memory_db():
+            # Need to have memory connection available for this
+            oCheckItem.set_sensitive(False)
         self.create_menu_item('Download VTES icons', oDownloadMenu,
                               self.download_icons)
 

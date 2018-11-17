@@ -11,10 +11,12 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from ..core.BaseTables import AbstractCard, PhysicalCard, Expansion
-from ..core.BaseAdapters import IAbstractCard, IPhysicalCard, IExpansion
+from ..core.BaseTables import (AbstractCard, PhysicalCard, Expansion,
+                               Printing)
+from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
+                                 IPrinting, IPrintingName)
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
-                               ExpansionLookup, LookupFailed)
+                               PrintingLookup, LookupFailed)
 from ..core.BaseFilters import best_guess_filter
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from .CellRendererSutekhButton import CellRendererSutekhButton
@@ -24,6 +26,9 @@ from .FilterModelPanes import add_accel_to_button
 
 
 NO_CARD = "  No Card"
+
+NO_EXP_AND_PRINT = "No Expansion and Printing"
+
 
 
 def _sort_replacement(oModel, oIter1, oIter2):
@@ -289,7 +294,7 @@ class ReplacementTreeView(gtk.TreeView):
         return oMatch.group('name'), oMatch.group('exp')
 
 
-class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
+class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
@@ -350,7 +355,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return [new_card(sName) for sName in aNewNames]
 
-    def physical_lookup(self, dCardExpansions, dNameCards, dNameExps, sInfo):
+    def physical_lookup(self, dCardExpansions, dNameCards, dNamePrintings,
+                        sInfo):
         """Lookup missing physical cards.
 
            Provides an implementation for PhysicalCardLookup.
@@ -362,15 +368,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
             oAbs = dNameCards[sName]
             if oAbs is None:
                 continue
-            for sExpansionName in dCardExpansions[sName]:
-                iCnt = dCardExpansions[sName][sExpansionName]
-                oExpansion = dNameExps[sExpansionName]
+            for tExpPrint in dCardExpansions[sName]:
+                iCnt = dCardExpansions[sName][tExpPrint]
+                oPrinting = dNamePrintings[tExpPrint]
                 if iCnt > 0:
                     try:
                         aCards.extend(
-                            [IPhysicalCard((oAbs, oExpansion))] * iCnt)
+                            [IPhysicalCard((oAbs, oPrinting))] * iCnt)
                     except SQLObjectNotFound:
-                        dUnknownCards[(oAbs.name, sExpansionName)] = iCnt
+                        dUnknownCards[(oAbs.name, tExpPrint)] = iCnt
 
         if dUnknownCards:
             # We need to lookup cards in the physical card view
@@ -381,48 +387,45 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         return aCards
 
-    def expansion_lookup(self, aExpansionNames, sInfo, dCardExpansions):
-        """Lookup missing expansions.
-
-           Provides an implementation for ExpansionLookup.
-           """
-        dExps = {}
-        dUnknownExps = {}
-
-        for sExp in aExpansionNames:
-            if not sExp:
-                dExps[sExp] = None
-            else:
+    def printing_lookup(self, aExpPrintNames, sInfo, dCardExpansions):
+        """Lookup for printing names, excluding unkown expansions or
+           printings."""
+        dPrintings = {}
+        dUnknownPrintings = {}
+        for sExp, sPrintName in aExpPrintNames:
+            oTrueExp = None
+            if sExp:
                 try:
-                    oExp = IExpansion(sExp)
-                    dExps[sExp] = oExp
+                    oTrueExp = IExpansion(sExp)
                 except SQLObjectNotFound:
-                    dUnknownExps[sExp] = None
-
-        if dUnknownExps:
-            if not self._handle_unknown_expansions(dUnknownExps, sInfo,
-                                                   dCardExpansions):
-                raise LookupFailed("Lookup of missing expansions aborted by"
-                                   " the user.")
-
-        for sName, sNewName in dUnknownExps.items():
-            if sNewName is None:
+                    # Unknown expansion, so we don't even try the printing
+                    dUnknownPrintings[(sExp, sPrintName)] = None
+                    continue
+            else:
                 continue
             try:
-                oExp = IExpansion(sNewName)
-                dUnknownExps[sName] = oExp
+                oPrinting = IPrinting((oTrueExp, sPrintName))
+                dPrintings[(sExp, sPrintName)] = oPrinting
             except SQLObjectNotFound:
-                raise RuntimeError("Unexpectedly encountered"
-                                   " missing expansion '%s'." % sNewName)
+                # Expansion known, but printing isn't
+                dUnknownPrintings[(sExp, sPrintName)] = None
 
-        def new_exp(sName):
-            """emulate python 2.5's a = x if C else y"""
-            if sName in dExps:
-                return dExps[sName]
-            else:
-                return dUnknownExps[sName]
+        if dUnknownPrintings:
+            if not self._handle_unknown_printings(dUnknownPrintings, sInfo,
+                                                  dCardExpansions):
+                raise LookupFailed("Lookup of missing printings aborted by"
+                                   " the user.")
 
-        return [new_exp(sName) for sName in aExpansionNames]
+        for tExpPrint, oNewPrint in dUnknownPrintings.items():
+            if oNewPrint is None:
+                continue
+            dUnknownPrintings[tExpPrint] = oNewPrint
+
+        for tExpPrint in aExpPrintNames:
+            if tExpPrint not in dPrintings:
+                dPrintings[tExpPrint] = dUnknownPrintings.get(tExpPrint, None)
+
+        return dPrintings
 
     def _handle_unknown_physical_cards(self, dUnknownCards, aPhysCards, sInfo):
         """Handle unknwon physical cards
@@ -442,9 +445,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oModel = oReplacementView.get_model()
 
         # Populate the model with the card names and best guesses
-        for (sName, sExpName), iCnt in dUnknownCards.items():
+        for (sName, tExpPrint), iCnt in dUnknownCards.items():
             sBestGuess = NO_CARD
-            sFullName = "%s [%s]" % (sName, sExpName)
+            sExpName, sPrintName = tExpPrint
+            if sPrintName:
+                sFullName = "%s [%s (%s)]" % (sName, sExpName, sPrintName)
+            else:
+                sFullName = "%s [%s]" % (sName, sExpName)
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
@@ -468,17 +475,21 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
                 # CardListModel
                 sNewFullName = sNewFullName.decode('utf-8')
                 sFullName = sFullName.decode('utf-8')
-                sName, sExpName = oReplacementView.parse_card_name(sFullName)
+                sName, sExpPrintName = \
+                    oReplacementView.parse_card_name(sFullName)
 
-                sNewName, sNewExpName = \
+                sNewName, sNewExpPrintName = \
                     oReplacementView.parse_card_name(sNewFullName)
 
+                # FIXME: Update this to support printings correctly
                 if sNewName != NO_CARD:
-                    iCnt = dUnknownCards[(sName, sExpName)]
+                    tExpPrint = (sExpPrintName, None)
+                    iCnt = dUnknownCards[(sName, tExpPrint)]
 
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oPhys = self._lookup_new_phys_card(oAbsCard, sNewExpName)
+                    oPhys = self._lookup_new_phys_card(oAbsCard, 
+                                                       sNewExpPrintName)
                     aPhysCards.extend([oPhys] * iCnt)
 
                 oIter = oModel.iter_next(oIter)
@@ -647,25 +658,34 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         else:
             return False
 
-    def _handle_unknown_expansions(self, dUnknownExps, sInfo, dCardExpansions):
-        """Handle the list of unknown expansions.
+
+    def _handle_unknown_printings(self, dUnknownPrintings, sInfo,
+                                   dCardExpansions):
+        """Handle the list of unknown expansion + printings.
 
            We allow the user to select the correct replacements from the
-           expansions listed in the database.
+           expansion / printing combinations listed in the database.
            """
         oUnknownDialog = SutekhDialog(
-            "Unknown expansions found importing %s" % sInfo, None,
+            "Unknown printings found importing %s" % sInfo, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        aKnownExpansions = list(Expansion.select())
-        aKnownExpansions.sort(key=lambda x: x.name)
+        # Find all known expansion / printing combos and sort them
+        # by name
+        dKnownPrintings = dict([(IPrintingName(x), x) for x in Printing.select()])
+        dPrintingCards = {}
+        for oCard in PhysicalCard.select():
+            if oCard.printing:
+                sKey = IPrintingName(oCard.printing)
+                dPrintingCards.setdefault(sKey, [])
+                dPrintingCards[sKey].append(oCard.abstractCard.name)
 
         oMesgLabel1 = gtk.Label(
             "While importing %s\n"
-            "The following expansions could not be found:\n"
-            "Choose how to handle these expansions?\n" % (sInfo))
+            "The following expansions and printings could not be found:\n"
+            "Choose how to handle these printings?\n" % (sInfo))
         oMesgLabel2 = gtk.Label(
             "OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
@@ -674,37 +694,39 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         oButtonBox = gtk.VBox()
 
-        # Fill in the Expansions and options
+        # Fill in the Printings and options
         dReplacement = {}
-        for sName in dUnknownExps:
+        for tExpPrint in dUnknownPrintings:
             # Find the corresponding cards
             aCards = []
+            sPrintInfo = "%s (%s)" % tExpPrint
             for sCard in dCardExpansions:
-                if sName in dCardExpansions[sCard]:
-                    aCards.append('%s [%s]' % (sCard, sName))
+                if tExpPrint in dCardExpansions[sCard]:
+                    aCards.append('%s [%s]' % (sCard, sPrintInfo))
             oBox = gtk.HBox()
-            oLabel = gtk.Label("%s is Unknown: " % sName)
+            oLabel = gtk.Label("%s is Unknown: " % sPrintInfo)
             oBox.pack_start(oLabel)
 
             oPopup = gtk.Button('Show cards')
             oPopup.connect('clicked', self._popup_list,
-                           '\n'.join(sorted(aCards)), sName)
+                           '\n'.join(sorted(aCards)), sPrintInfo)
             oBox.pack_start(oPopup)
 
             oLabel2 = gtk.Label("Replace with ")
             oBox.pack_start(oLabel2)
 
             oSelector = gtk.combo_box_new_text()
-            oSelector.append_text("No Expansion")
-            for oExp in aKnownExpansions:
-                oSelector.append_text(oExp.name)
+            oSelector.append_text(NO_EXP_AND_PRINT)
+            for sPrintName in sorted(dKnownPrintings):
+                oSelector.append_text(sPrintName)
 
-            dReplacement[sName] = oSelector
+            dReplacement[tExpPrint] = oSelector
 
             oPopupExpList = gtk.Button('Show cards')
-            oPopupExpList.connect('clicked', self._popup_exp, oSelector)
+            oPopupExpList.connect('clicked', self._popup_exp, oSelector,
+                                  dKnownPrintings, dPrintingCards)
 
-            oBox.pack_start(dReplacement[sName])
+            oBox.pack_start(dReplacement[tExpPrint])
             oBox.pack_start(oPopupExpList)
             oButtonBox.pack_start(oBox)
 
@@ -719,19 +741,19 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
 
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
-            for sName in dUnknownExps:
-                sNewName = dReplacement[sName].get_active_text()
-                if sNewName != "No Expansion":
-                    dUnknownExps[sName] = sNewName
+            for tUnknownExpPrint in dUnknownPrintings:
+                sNewPrint = dReplacement[tUnknownExpPrint].get_active_text()
+                if sNewPrint != NO_EXP_AND_PRINT:
+                    dUnknownPrintings[tUnknownExpPrint] = dKnownPrintings[sNewPrint]
             return True
         else:
             return False
 
     @staticmethod
-    def _popup_list(_oButton, sCardText, sName):
+    def _popup_list(_oButton, sCardText, sPrint):
         """Popup the list of cards from the unknown expansion"""
         oCardDialog = SutekhDialog(
-            "Cards with unknown expansion %s" % sName, None,
+            "Cards with unknown expansion and print: %s" % sPrint, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oLabel = gtk.Label(sCardText)
@@ -742,18 +764,18 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, ExpansionLookup):
         oCardDialog.destroy()
 
     @staticmethod
-    def _popup_exp(_oButton, oSelector):
+    def _popup_exp(_oButton, oSelector, dKnownPrintings, dPrintingCards):
         """Popup the list of cards from the selected replacement expansion"""
         sNewName = oSelector.get_active_text()
-        if sNewName == 'No Expansion' or sNewName is None:
+        if sNewName == NO_EXP_AND_PRINT or sNewName is None:
             # No cards to show, so do nothing
             sTitle = "No Expansion Selected"
             oLabel = gtk.Label('No Expansion selected')
         else:
             sTitle = "Cards with expansion %s" % sNewName
-            aCards = set()
-            for aRP in IExpansion(sNewName).pairs:
-                aCards.update([x.name for x in aRP.cards])
+            oPrint = dKnownPrintings[sNewName]
+            # Show all cards with the given printing
+            aCards = dPrintingCards[sNewName]
             oLabel = gtk.Label('\n'.join(sorted(aCards)))
         oCardDialog = SutekhDialog(
             sTitle, None,

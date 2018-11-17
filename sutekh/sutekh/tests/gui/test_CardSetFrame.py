@@ -216,7 +216,7 @@ class TestCardSetFrame(GuiSutekhTest):
                               IAbstractCard(x).name == 'Ablative Skin']), 6)
         self.assertEqual(len([x for x in oPCS2.cards if
                               IAbstractCard(x).name == 'Ablative Skin' and
-                              IPhysicalCard(x).expansionID is None]), 5)
+                              IPhysicalCard(x).printingID is None]), 5)
         # Test involving top level and sublevel selections
         # Top level should override the sub selections, as being
         # most consitent behaviour

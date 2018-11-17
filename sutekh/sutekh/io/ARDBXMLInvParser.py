@@ -80,7 +80,7 @@ class ARDBInvXMLState(object):
                     self._sCardName = self._sCardName + ' (Advanced)'
                 self._sCardName = move_articles_to_front(self._sCardName)
                 self._oHolder.add(self._iCount, self._sCardName,
-                                  self._sCardSet)
+                                  self._sCardSet, None)
                 self._sCardName = None
                 self._sCardSet = None
                 self._iState = self.NOTAG

@@ -19,12 +19,14 @@
 # pylint: disable=E0611
 # sqlobject confuses pylint here
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
-                       EnumCol, MultipleJoin, ForeignKey)
+                       EnumCol, MultipleJoin, ForeignKey, DateCol, BoolCol,
+                       SQLObjectNotFound)
 # pylint: enable=E0611
 from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          PhysicalCardSet, Expansion,
                                          RarityPair, LookupHints,
-                                         Rarity, CardType,
+                                         Rarity, CardType, PrintingProperty,
+                                         Printing,
                                          MAX_ID_LENGTH)
 from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Virtue,
                                       Discipline, Creed, DisciplinePair,
@@ -150,7 +152,7 @@ class PhysicalCard_ACv5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
     # pylint: disable=old-style-class
     class sqlmeta:
-        """meta cleass used to set the correct table"""
+        """meta class used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
         cacheValues = False
 
@@ -165,7 +167,7 @@ class PhysicalCard_ACv6(SQLObject):
     """Table used to upgrade AbstractCard from v6"""
     # pylint: disable=old-style-class
     class sqlmeta:
-        """meta cleass used to set the correct table"""
+        """meta class used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
         cacheValues = False
 
@@ -181,7 +183,7 @@ class Expansion_v3(SQLObject):
 
     # pylint: disable=old-style-class
     class sqlmeta:
-        """meta cleass used to set the correct table"""
+        """meta class used to set the correct table"""
         table = Expansion.sqlmeta.table
         cacheValues = False
 
@@ -195,7 +197,7 @@ class RarityPair_Ev3(SQLObject):
 
     # pylint: disable=old-style-class
     class sqlmeta:
-        """meta cleass used to set the correct table"""
+        """meta class used to set the correct table"""
         table = RarityPair.sqlmeta.table
         cacheValues = False
 
@@ -203,7 +205,75 @@ class RarityPair_Ev3(SQLObject):
     rarity = ForeignKey('Rarity')
 
 
+class PhysicalCard_v2(SQLObject):
+    """Table used to upgrade PhysicalCard from v2"""
+    # pylint: disable=old-style-class
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = PhysicalCard.sqlmeta.table
+        cacheValues = False
+
+    abstractCard = ForeignKey('AbstractCard')
+    # Explicitly allow None as expansion
+    expansion = ForeignKey('Expansion_v4', notNull=False)
+    sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
+                       createRelatedTable=False)
+
+
+class PhysicalCardSet_PCv3(SQLObject):
+    """Physical Card Set to update from Physical Card v2"""
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = PhysicalCardSet.sqlmeta.table
+        cacheValues = False
+
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    author = UnicodeCol(default='')
+    comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
+    inuse = BoolCol(default=False)
+    parent = ForeignKey('PhysicalCardSet_PCv3', default=None)
+    cards = RelatedJoin('PhysicalCard_v2', intermediateTable='physical_map',
+                        createRelatedTable=False)
+
+
+class Expansion_v4(SQLObject):
+    """Table used to update Expansion from v4"""
+
+    # pylint: disable=old-style-class
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = Expansion.sqlmeta.table
+        cacheValues = False
+
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    shortname = UnicodeCol(default=None)
+    releasedate = DateCol(default=None)
+    pairs = MultipleJoin('RarityPair_Ev3')
+
+
+class RarityPair_Ev4(SQLObject):
+    """Table used to update Expansion from v4"""
+
+    # pylint: disable=old-style-class
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = RarityPair.sqlmeta.table
+        cacheValues = False
+
+    expansion = ForeignKey('Expansion_v4')
+    rarity = ForeignKey('Rarity')
+
 # pylint: enable=C0103, W0232
+
+
+def _lookup_printing_for_exp(oExpID, oConn):
+    if oExpID is None:
+        return None
+    oPrinting = Printing.selectBy(expansionID=oExpID, name=None,
+                                  connection=oConn).getOne()
+    return oPrinting.id
+
 
 class DBUpgradeManager(BaseDBUpgradeManager):
     """Class to handle database upgrades,"""
@@ -225,7 +295,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         'Title': (Title, (Title.tableversion,)),
     })
     # We override the default values for these
-    SUPPORTED_TABLES['Expansion'] = (Expansion, (Expansion.tableversion, 3))
+    SUPPORTED_TABLES['Expansion'] = (Expansion, (Expansion.tableversion, 3, 4))
     SUPPORTED_TABLES['AbstractCard'] = (AbstractCard,
                                         (AbstractCard.tableversion, 5, 6))
     SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
@@ -268,6 +338,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                           [PhysicalCard.tableversion],
                                           oConn):
             iCount += PhysicalCard.select(connection=oConn).count()
+        elif oVer.check_tables_and_versions([PhysicalCard], [2],
+                                            oConn):
+            iCount += PhysicalCard_v2.select(connection=oConn).count()
         if oVer.check_tables_and_versions([PhysicalCardSet],
                                           [PhysicalCardSet.tableversion],
                                           oConn):
@@ -288,18 +361,57 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                              " You will need to reimport the card list"
                              " for these to be correct")
             for oObj in Expansion_v3.select(connection=oOrigConn):
-                _oCopy = Expansion(id=oObj.id, name=oObj.name,
-                                   shortname=oObj.shortname,
-                                   releasedate=None,
+                oCopy = Expansion(id=oObj.id, name=oObj.name,
+                                  shortname=oObj.shortname,
+                                  connection=oTrans)
+                # Create associated default Printing
+                _oPrint = Printing(expansionID=oCopy.id,
+                                   name=None,
                                    connection=oTrans)
+        elif oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
+            for oObj in Expansion_v4.select(connection=oOrigConn):
+                oCopy = Expansion(id=oObj.id, name=oObj.name,
+                                  shortname=oObj.shortname,
+                                  connection=oTrans)
+                # Create associated default Printing
+                oPrint = Printing(expansionID=oCopy.id,
+                                   name=None,
+                                   connection=oTrans)
+                # Add the release date as a print property if set
+                if oObj.releasedate:
+                    sDateVal = ("Release Date: %s" %
+                        oObj.releasedate.strftime('%Y-%m-%d'))
+                    try:
+                        oPrintDate = PrintingProperty.byCanonicalValue(
+                            sDateVal.lower(), connection=oTrans)
+                    except SQLObjectNotFound:
+                        # Create property for this date
+                        oPrintDate = PrintingProperty(
+                            value=sDateVal,
+                            canonicalValue=sDateVal.lower(),
+                            connection=oTrans)
+                    oPrint.addPrintingProperty(oPrintDate)
         else:
             return (False, ["Unknown Expansion Version"])
+        return (True, aMessages)
+
+    def _upgrade_printing(self, oOrigConn, oTrans, oVer):
+        """Upgrade printing table."""
+        aMessages = []
+        if oVer.check_tables_and_versions([Printing], [-1], oOrigConn):
+                aMessages = ["Incomplete information to fill the Printing"
+                             " table. You will need to reimport the cardlist"
+                             " information."]
+                # We construct the printings in the associated expansion
+                # upgrades
+        else:
+            return (False, ["Unknown Version for Printing"])
         return (True, aMessages)
 
     def _upgrade_lookup_hints(self, oOrigConn, oTrans, oVer):
         """Create lookup hints table in the case of v3 Expansion data"""
         aMessages = []
-        if (oVer.check_tables_and_versions([Expansion], [3], oOrigConn) and
+        if (oVer.check_tables_and_versions([Expansion], [3, 4], oOrigConn) and
                 oVer.check_tables_and_versions([LookupHints],
                                                [-1], oOrigConn)):
             aMessages = ["Incomplete information to fill the LookupHints"
@@ -442,9 +554,19 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                         expansionID=oObj.expansion.id,
                                         rarityID=oObj.rarity.id,
                                         connection=oTrans)
+            elif oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
+                for oObj in RarityPair_Ev4.select(connection=oOrigConn):
+                    # pylint: disable=W0212
+                    # Need to access _connection here
+                    oObj._connection = oOrigConn
+                    # pylint: enable=W0212
+                    _oCopy = RarityPair(id=oObj.id,
+                                        expansionID=oObj.expansion.id,
+                                        rarityID=oObj.rarity.id,
+                                        connection=oTrans)
             else:
                 # This may result in a duplicate error message
-                return (False, ["Unknown Expansion version"])
+                return (False, ["Unknown Expansion version in RarityPair"])
         else:
             return (False, ["Unknown RarityPair version"])
         return (True, [])
@@ -624,39 +746,62 @@ class DBUpgradeManager(BaseDBUpgradeManager):
     def _upgrade_physical_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PhysicalCards, upgrading if needed."""
         aMessages = []
-        if not oVer.check_tables_and_versions([PhysicalCard],
-                                              [PhysicalCard.tableversion],
-                                              oOrigConn):
+        if not oVer.check_table_in_versions(PhysicalCard,
+                                            [2, PhysicalCard.tableversion],
+                                            oOrigConn):
             return (False, ["Unknown PhysicalCard version"])
         elif oVer.check_tables_and_versions([AbstractCard], [5], oOrigConn):
             for oCard in PhysicalCard_ACv5.select(
                     connection=oOrigConn).orderBy('id'):
+                oPrintingID = _lookup_printing_for_exp(oCard.expansionID,
+                                                      oTrans)
                 oCardCopy = PhysicalCard(
                     id=oCard.id, abstractCardID=oCard.abstractCardID,
-                    expansionID=oCard.expansionID, connection=oTrans)
+                    printingID=oPrintingID, connection=oTrans)
                 oCardCopy.syncUpdate()
                 oLogger.info('copied PC %s', oCardCopy.id)
         elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
             for oCard in PhysicalCard_ACv6.select(
                     connection=oOrigConn).orderBy('id'):
+                oPrintingID = _lookup_printing_for_exp(oCard.expansionID, oTrans)
                 oCardCopy = PhysicalCard(
                     id=oCard.id, abstractCardID=oCard.abstractCardID,
-                    expansionID=oCard.expansionID, connection=oTrans)
+                    printingID=oPrintingID, connection=oTrans)
+                oCardCopy.syncUpdate()
+                oLogger.info('copied PC %s', oCardCopy.id)
+        elif oVer.check_tables_and_versions([PhysicalCard], [2], oOrigConn):
+            for oCard in PhysicalCard_v2.select(
+                    connection=oOrigConn).orderBy('id'):
+                oPrintingID = _lookup_printing_for_exp(oCard.expansionID, oTrans)
+                oCardCopy = PhysicalCard(
+                    id=oCard.id, abstractCardID=oCard.abstractCardID,
+                    printingID=oPrintingID, connection=oTrans)
                 oCardCopy.syncUpdate()
                 oLogger.info('copied PC %s', oCardCopy.id)
         else:
             return (False, ["Unknown PhysicalCard version"])
         return (True, aMessages)
 
+    def _copy_old_pcs_loop(self, oOrigConn, oTrans, oLogger):
+        """Loop over the old card sets, copying them to the new database."""
+        aSets = list(PhysicalCardSet_PCv3.select(connection=oOrigConn))
+        self._copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger)
+
     def _upgrade_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
-                                          [6, PhysicalCard.tableversion],
+                                          [6, 2],
                                           oOrigConn):
             # Version 7 just adds an extra index, so we don't need
             # fancier copy logic
-            self._copy_physical_card_set(oOrigConn, oTrans, oLogger)
+            self._copy_old_pcs_loop(oOrigConn, oTrans, oLogger)
+        elif oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
+                                            [PhysicalCardSet.tableversion, 2],
+                                            oOrigConn):
+            # Upgrading just physical card, so we still need to use older
+            # PCS model
+            self._copy_old_pcs_loop(oOrigConn, oTrans, oLogger)
         else:
             return (False, ["Unknown PhysicalCardSet version"])
         return (True, aMessages)

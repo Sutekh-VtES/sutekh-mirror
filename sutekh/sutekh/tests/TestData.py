@@ -892,6 +892,105 @@ Independent: Other Methuselahs' actions targeting Etienne cost 1 additional bloo
 Artist: Jeff Holt
 """
 
+TEST_EXP_INFO = """
+{
+  "TR": {
+    "None": {
+      "date": "2008-05-28",
+      "back": "VtES"
+    }
+  },
+  "HttB": {
+    "None": {
+      "date": "2010-02-03",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2010-02-03",
+      "cards": [
+        "Off Kilter"
+      ],
+      "back": "VtES"
+    }
+  },
+  "Jyhad": {
+    "None": {
+      "date": "1994-08-16",
+      "back": "Jyhad"
+    },
+    "Variant Printing": {
+      "date": "1994-08-16",
+      "cards": [
+        "Ghoul Retainer",
+        "Immortal Grapple",
+        "Walk of Flame"
+      ],
+      "back": "Jyhad"
+    }
+  },
+  "KoT": {
+    "None": {
+      "date": "2008-11-19",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2008-11-19",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    }
+  },
+  "SW": {
+    "Second Printing": {
+      "date": "2001-01-12",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    },
+    "None": {
+      "date": "2000-10-31",
+      "back": "VtES"
+    }
+  },
+  "Anthology": {
+    "None": {
+      "date": "2017-05-11",
+      "back": "VEKN"
+    }
+  },
+  "Third": {
+    "None": {
+      "date": "2006-09-04",
+      "back": "Third Edition"
+    },
+    "No Draft Text": {
+      "date": "2006-09-04",
+      "cards": [
+        "Swallowed by the Night",
+        "Walk of Flame"
+      ],
+      "back": "Third Edition"
+    },
+    "Sketch": {
+      "date": "2006-09-04",
+      "cards": [
+        "Harold Zettler, Pentex Director",
+        "Hektor"
+      ],
+      "back": "Third Edition"
+    }
+  },
+  "Anarchs and Alastors Storyline": {
+    "None": {
+      "date": "2008-08-10",
+      "back": "VtES"
+    }
+  }
+}
+"""
+
 TEST_RULINGS = """
 <html>
 <head><title>Sutekh Test Rulings</title></head>

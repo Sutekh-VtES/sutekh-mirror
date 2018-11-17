@@ -20,7 +20,7 @@ class BaseCardListCount(BasePlugin):
     """Listen to changes on the card list views, and display a toolbar
        containing a label with a running count of the cards in the list.
        """
-    dTableVersions = {PhysicalCard: (2,)}
+    dTableVersions = {PhysicalCard: (2, 3, )}
     aModelsSupported = (PhysicalCard,)
 
     NO_COUNT, COUNT_CARDS, COUNT_EXP = range(3)
@@ -125,7 +125,7 @@ class BaseCardListCount(BasePlugin):
                 iAbsCount = 1
             else:
                 iAbsCount = 0
-            if oCard.expansionID:
+            if oCard.printingID:
                 # We don't count expansion ifno for cards with no expansion set
                 iExpCount = 1
                 if oAbsCard not in self._dExpCounts:
@@ -196,7 +196,7 @@ class BaseCardListCount(BasePlugin):
         elif self.model.iter_depth(oIter) == 2 and \
                 self._iMode == self.COUNT_EXP:
             oPhysCard = self.model.get_physical_card_from_iter(oIter)
-            if oPhysCard.expansionID:
+            if oPhysCard.printingID:
                 return 1
         return 0
 

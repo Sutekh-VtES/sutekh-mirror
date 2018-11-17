@@ -25,10 +25,11 @@ EXPECTED_1 = """4\t.44 Magnum
 1\tPath of Blood, The
 1\tScapelli, The Family 'Mechanic'
 2\tSwallowed by the Night
-3\tWalk of Flame
+4\tWalk of Flame
 Crypt:
 1\tAbebe
 1\tAlan Sovereign Adv.
+1\tHektor
 1\tInez ''Nurse216'' Villagrande
 2\tSiamese, The
 """

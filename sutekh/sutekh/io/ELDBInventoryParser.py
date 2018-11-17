@@ -39,4 +39,4 @@ class ELDBInventoryParser(BaseLineParser):
                 sName = self._dNameCache[sName]
             if iCnt:
                 # ELDB will create 0 entries
-                oHolder.add(iCnt, sName, None)
+                oHolder.add(iCnt, sName, None, None)

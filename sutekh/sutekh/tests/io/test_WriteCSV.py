@@ -27,6 +27,7 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 "Aire of Elation", "Camarilla Edition", 3
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
 "An Anarch Manifesto", "Twilight Rebellion", 1
+"Hektor", "Third Edition", 1
 "Hide the Heart", "Heirs to the Blood", 1
 "Immortal Grapple", "Jyhad", 2
 "Immortal Grapple", "Keepers of Tradition", 2
@@ -36,7 +37,7 @@ EXPECTED_1 = """"Card Name", "Expansion", "Number"
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 2
 "Walk of Flame", "Keepers of Tradition", 1
-"Walk of Flame", "Third Edition", 2
+"Walk of Flame", "Third Edition", 3
 """
 
 EXPECTED_2 = """".44 Magnum", "Jyhad", 1
@@ -52,6 +53,7 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 "Aire of Elation", "Camarilla Edition", 3
 "Alan Sovereign (Advanced)", "Promo-20051001", 1
 "An Anarch Manifesto", "Twilight Rebellion", 1
+"Hektor", "Third Edition", 1
 "Hide the Heart", "Heirs to the Blood", 1
 "Immortal Grapple", "Jyhad", 2
 "Immortal Grapple", "Keepers of Tradition", 2
@@ -61,7 +63,7 @@ EXPECTED_2 = """".44 Magnum", "Jyhad", 1
 "The Path of Blood", "Lords of the Night", 1
 "The Siamese", "Bloodlines", 2
 "Walk of Flame", "Keepers of Tradition", 1
-"Walk of Flame", "Third Edition", 2
+"Walk of Flame", "Third Edition", 3
 """
 
 
@@ -75,6 +77,7 @@ EXPECTED_3 = """"Card Name", "Number"
 "Aire of Elation", 3
 "Alan Sovereign (Advanced)", 1
 "An Anarch Manifesto", 1
+"Hektor", 1
 "Hide the Heart", 1
 "Immortal Grapple", 4
 "Inez ""Nurse216"" Villagrande", 1
@@ -82,7 +85,7 @@ EXPECTED_3 = """"Card Name", "Number"
 "Swallowed by the Night", 2
 "The Path of Blood", 1
 "The Siamese", 2
-"Walk of Flame", 3
+"Walk of Flame", 4
 """
 
 EXPECTED_4 = """".44 Magnum", 4
@@ -94,6 +97,7 @@ EXPECTED_4 = """".44 Magnum", 4
 "Aire of Elation", 3
 "Alan Sovereign (Advanced)", 1
 "An Anarch Manifesto", 1
+"Hektor", 1
 "Hide the Heart", 1
 "Immortal Grapple", 4
 "Inez ""Nurse216"" Villagrande", 1
@@ -101,7 +105,7 @@ EXPECTED_4 = """".44 Magnum", 4
 "Swallowed by the Night", 2
 "The Path of Blood", 1
 "The Siamese", 2
-"Walk of Flame", 3
+"Walk of Flame", 4
 """
 
 

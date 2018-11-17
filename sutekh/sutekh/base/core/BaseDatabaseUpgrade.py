@@ -27,7 +27,7 @@ from .BaseTables import (PhysicalCard, AbstractCard,
                          PhysicalCardSet, Expansion,
                          Rarity, RarityPair, CardType,
                          Ruling, Keyword, Artist,
-                         LookupHints)
+                         LookupHints, Printing, PrintingProperty)
 from .DBUtility import flush_cache, refresh_tables
 from .BaseDBManagement import UnknownVersion
 from .DatabaseVersion import DatabaseVersion
@@ -59,9 +59,11 @@ class BaseDBUpgradeManager(object):
         'Ruling': (Ruling, (Ruling.tableversion,)),
         'RarityPair': (RarityPair, (RarityPair.tableversion,)),
         'AbstractCard': (AbstractCard, (AbstractCard.tableversion,)),
-        'PhysicalCard': (PhysicalCard, (PhysicalCard.tableversion,)),
+        'PhysicalCard': (PhysicalCard, (2, PhysicalCard.tableversion,)),
         'PhysicalCardSet': (PhysicalCardSet, (PhysicalCardSet.tableversion,)),
         'LookupHints': (LookupHints, (-1, LookupHints.tableversion,)),
+        'Printing': (Printing, (-1, Printing.tableversion,)),
+        'PrintingProperty': (PrintingProperty, (-1, PrintingProperty.tableversion,)),
     }
 
     # List of functions for upgrading databases
@@ -71,6 +73,8 @@ class BaseDBUpgradeManager(object):
         ('_copy_old_lookup_hints', 'LookupHints table', False),
         ('_copy_old_rarity', 'Rarity table', False),
         ('_copy_old_expansion', 'Expansion table', False),
+        ('_copy_old_print_properties', 'PrintingProperty table', False),
+        ('_copy_old_printing', 'Printing table', False),
         ('_copy_old_card_type', 'CardType table', False),
         ('_copy_old_ruling', 'Ruling table', False),
         ('_copy_old_rarity_pair', 'RarityPair table', False),
@@ -87,6 +91,8 @@ class BaseDBUpgradeManager(object):
         ('_copy_lookup_hints', 'LookupHints table', False),
         ('_copy_rarity', 'Rarity table', False),
         ('_copy_expansion', 'Expansion table', False),
+        ('_copy_print_properties', 'PrintingProperty table', False),
+        ('_copy_printing', 'Printing table', False),
         ('_copy_card_type', 'CardType table', False),
         ('_copy_ruling', 'Ruling table', False),
         ('_copy_rarity_pair', 'RarityPair table', False),
@@ -134,7 +140,7 @@ class BaseDBUpgradeManager(object):
                             shortname=oObj.shortname, connection=oTrans)
 
     def _copy_old_lookup_hints(self, oOrigConn, oTrans, oVer):
-        """Copy rarity table, upgrading versions as needed"""
+        """Copy lookup table, upgrading versions as needed"""
         if oVer.check_tables_and_versions([LookupHints],
                                           [LookupHints.tableversion],
                                           oOrigConn):
@@ -187,6 +193,54 @@ class BaseDBUpgradeManager(object):
             return (False, ["Unknown Version for LookupHints"])
         return (True, aMessages)
 
+    def _copy_print_properties(self, oOrigConn, oTrans):
+        """Copy Keyword, assuming versions match"""
+        for oObj in PrintingProperty.select(connection=oOrigConn):
+            _oCopy = PrintingProperty(id=oObj.id,
+                                     value=oObj.value,
+                                     canonicalValue=oObj.canonicalValue,
+                                     connection=oTrans)
+
+    def _copy_old_print_properties(self, oOrigConn, oTrans, oVer):
+        """Copy printing data table, upgrading versions as needed"""
+        if oVer.check_tables_and_versions([PrintingProperty],
+                                          [PrintingProperty.tableversion],
+                                          oOrigConn):
+            self._copy_print_properties(oOrigConn, oTrans)
+        else:
+            return self._upgrade_print_properties(oOrigConn, oTrans, oVer)
+        return (True, [])
+
+    def _upgrade_print_properties(self, oOrigConn, oTrans, oVer):
+        """Upgrade PrintingProperty hints table"""
+        if oVer.check_tables_and_versions([PrintingProperty], [-1], oOrigConn):
+            # We're upgrading from no printing data table
+            # So we need to flag that we don't have the data
+            aMessages = ["Incomplete information to fill the PrintingProperty"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+        else:
+            return (False, ["Unknown Version for PrintingProperty"])
+        return (True, aMessages)
+
+    def _copy_printing(self, oOrigConn, oTrans):
+        """Copy Printing, assuming versions match"""
+        for oObj in Printing.select(connection=oOrigConn):
+            oPrintCopy = Printing(id=oObj.id, expansionID=oObj.expansionID,
+                                  name=oObj.name, connection=oTrans)
+            for oData in oObj.properties:
+                oPrintCopy.addPrintingProperty(oData)
+
+    def _copy_old_printing(self, oOrigConn, oTrans, oVer):
+        """Copy printing table, upgrading versions as needed"""
+        if oVer.check_tables_and_versions([Printing],
+                                          [Printing.tableversion],
+                                          oOrigConn):
+            self._copy_printing(oOrigConn, oTrans)
+        else:
+            return self._upgrade_printing(oOrigConn, oTrans, oVer)
+        return (True, [])
+
     def _copy_old_rarity(self, oOrigConn, oTrans, oVer):
         """Copy rarity table, upgrading versions as needed"""
         if oVer.check_tables_and_versions([Rarity], [Rarity.tableversion],
@@ -206,7 +260,6 @@ class BaseDBUpgradeManager(object):
         for oObj in Expansion.select(connection=oOrigConn):
             _oCopy = Expansion(id=oObj.id, name=oObj.name,
                                shortname=oObj.shortname,
-                               releasedate=oObj.releasedate,
                                connection=oTrans)
 
     def _copy_old_expansion(self, oOrigConn, oTrans, oVer):
@@ -404,7 +457,7 @@ class BaseDBUpgradeManager(object):
         for oCard in PhysicalCard.select(connection=oOrigConn).orderBy('id'):
             oCardCopy = PhysicalCard(id=oCard.id,
                                      abstractCardID=oCard.abstractCardID,
-                                     expansionID=oCard.expansionID,
+                                     printingID=oCard.printingID,
                                      connection=oTrans)
             oLogger.info('copied PC %s', oCardCopy.id)
 

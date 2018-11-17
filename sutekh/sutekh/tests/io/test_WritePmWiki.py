@@ -20,13 +20,14 @@ A test comment
 !! Notes
 
 
-!! Crypt [5 vampires]
+!! Crypt [6 vampires]
  2x The Siamese
+ 1x Hektor
  1x Alan Sovereign Adv
  1x Abebe
  1x Inez "Nurse216" Villagrande
 
-!! Library [27 cards]
+!! Library [28 cards]
 
 !!! Action [2]
  2x Abbot
@@ -40,9 +41,9 @@ A test comment
 !!! Ally [1]
  1x Scapelli, The Family "Mechanic"
 
-!!! Combat [7]
+!!! Combat [8]
  4x Immortal Grapple
- 3x Walk of Flame
+ 4x Walk of Flame
 
 !!! Equipment [8]
  4x .44 Magnum

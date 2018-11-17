@@ -21,7 +21,7 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
-from sutekh.io.ExpDateCSVParser import ExpDateCSVParser
+from sutekh.io.ExpInfoParser import ExpInfoParser
 
 
 def read_white_wolf_list(oFile, oLogHandler=None):
@@ -44,13 +44,13 @@ def read_rulings(oFile, oLogHandler=None):
     safe_parser(oFile, oParser)
 
 
-def read_exp_date_list(oFile, oLogHandler=None):
-    """Read the expansion date information from the given file.
+def read_exp_info_file(oFile, oLogHandler=None):
+    """Read the expansion and printing information from the given file.
 
        oFile is an object with a .open() method (e.g. a
        sutekh.base.io.EncodedFile.EncodedFile)
        """
-    oParser = ExpDateCSVParser(oLogHandler)
+    oParser = ExpInfoParser(oLogHandler)
     safe_parser(oFile, oParser)
 
 

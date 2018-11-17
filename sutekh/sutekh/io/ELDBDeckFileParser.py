@@ -84,7 +84,7 @@ class Cards(State):
             sName = self._dNameCache[sCard]
         else:
             sName = sCard
-        self._oHolder.add(1, sName, None)
+        self._oHolder.add(1, sName, None, None)
         return self
 
 

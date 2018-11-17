@@ -26,8 +26,8 @@ class WriteCSV(object):
     def _expansion_name(self, oCard):
         """Utility function to return iether the name, or the appropriate
            placeholder for oExpansion is None."""
-        if oCard.expansion and self.bIncludeExpansion:
-            return oCard.expansion.name
+        if oCard.printing and self.bIncludeExpansion:
+            return oCard.printing.expansion.name
         return 'Unknown Expansion'
 
     # pylint: disable=R0201

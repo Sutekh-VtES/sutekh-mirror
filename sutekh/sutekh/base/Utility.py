@@ -8,11 +8,12 @@
 
 """Misc generic functions needed in various places."""
 
-import tempfile
+import datetime
+import logging
 import os
 import re
 import sys
-import logging
+import tempfile
 import urlparse
 
 from sqlobject import sqlhub
@@ -221,3 +222,21 @@ def setup_logging(bVerbose, sErrFile=None):
         oLogHandler = logging.StreamHandler(sys.stderr)
         oRootLogger.addHandler(oLogHandler)
     return oRootLogger
+
+
+def get_printing_date(oPrinting):
+    """Return the release date for this printing as a date object."""
+    for oProp in oPrinting.properties:
+        if oProp.value.startswith('Release Date:'):
+            sDate = oProp.value.split(':', 1)[1].strip()
+            oDate = datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
+            return oDate
+    return None
+
+
+def get_expansion_date(oExp):
+    """Get the date of the default printing as a date object."""
+    for oPrint in oExp.printings:
+        if oPrint.name is None:
+            return get_printing_date(oPrint)
+    return None

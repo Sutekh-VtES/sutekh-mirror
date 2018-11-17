@@ -11,10 +11,10 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
 from sutekh.base.core.BaseTables import (AbstractCard, PhysicalCard,
-                                         Expansion, PhysicalCardSet,
+                                         Printing, PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
-                                           IExpansion)
+                                           IExpansion, IPrinting)
 from sutekh.core import Filters
 from sutekh.base.core import BaseFilters
 
@@ -66,34 +66,53 @@ class FilterTests(SutekhTest):
            card names and optional expansions into the correct
            filter on the physical card list and a list of expected
            PhysicalCard objects."""
+        if len(tTest) < 1 or len(tTest) > 4:
+            raise RuntimeError("Invalid input to _physical_test: %s" % tTest)
         if len(tTest) == 2:
             oFilter, aExpectedNames = tTest
-            aAllowedExpansions = set(Expansion.select())
-            aAllowedExpansions.add(None)
+            aAllowedPrintings = set(Printing.select())
+            aAllowedPrintings.add(None)
         else:
-            assert len(tTest) == 3
             oFilter, aExpectedNames = tTest[:2]
-            aAllowedExpansions = set([IExpansion(sExp) for sExp
-                                      in tTest[2] if sExp is not None])
-            if None in tTest[2]:
-                aAllowedExpansions.add(None)
-
+            aAllowedPrintings = set()
+            aExp = [IExpansion(sExp) if sExp else None for sExp in tTest[2]]
+            if len(tTest) == 3:
+                # Add all the printings for each expansion
+                for oExp in aExp:
+                    if oExp:
+                        for oPrint in oExp.printings:
+                            aAllowedPrintings.add(oPrint)
+                    else:
+                        aAllowedPrintings.add(oExp)
+            else:
+                # Only added the specified printings
+                for oExp, sPrint in zip(aExp, tTest[3]):
+                    oPrint = IPrinting((oExp, sPrint))
+                    aAllowedPrintings.add(oPrint)
         aPhysicalCards = []
         for sName in aExpectedNames:
             oAbs = IAbstractCard(sName)
             aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
 
-            if None in aAllowedExpansions:
+            if None in aAllowedPrintings:
                 aPhysicalCards.append(IPhysicalCard((oAbs, None)))
 
             for oExp in aExps:
-                if oExp not in aAllowedExpansions:
-                    continue
-                try:
-                    aPhysicalCards.append(IPhysicalCard((oAbs, oExp)))
-                except SQLObjectNotFound:
-                    self.fail("Missing physical card %s from expansion %s"
-                              % (oAbs.name, oExp.name))
+                for oPrint in oExp.printings:
+                    if oPrint not in aAllowedPrintings:
+                        continue
+                    try:
+                        oCard = IPhysicalCard((oAbs, oPrint))
+                        aPhysicalCards.append(oCard)
+                    except SQLObjectNotFound:
+                        # If the printing name isn't None, we
+                        # assume the abstract card just isn't in that
+                        # variant
+                        if oPrint.name is None:
+                            # this is fatal
+                            self.fail(
+                                "Missing physical card %s from expansion %s"
+                                 % (oAbs.name, oExp.name))
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])
@@ -161,6 +180,16 @@ class FilterTests(SutekhTest):
              [u"Aaron's Feeding Razor", u"Abbot", u"Anarch Revolt",
               u"Ghoul Retainer", u"Immortal Grapple",
               u"Pier 13, Port of Baltimore"]),
+            (Filters.PrintingFilter('Third Edition (No Draft Text)'),
+             [u"Swallowed by the Night", u"Walk of Flame"]),
+            (Filters.MultiPrintingFilter(['Third Edition (No Draft Text)',
+                                          'Third Edition (Sketch)']),
+             [u"Harold Zettler, Pentex Director", "Hektor",
+              u"Swallowed by the Night", u"Walk of Flame"]),
+            (Filters.MultiPrintingFilter(['Keepers of Tradition (No Draft Text)',
+                                          'Third Edition (Sketch)']),
+             [u"Harold Zettler, Pentex Director", "Hektor",
+              u"Immortal Grapple"]),
             (Filters.DisciplineLevelFilter(('cel', 'superior')),
              [u"Abd al-Rashid", u"Akram", u"Alexandra", u"Anson", u"Bronwen",
               u"Cesewayo", u"Enkidu, The Noah", u"Hektor", u"Kabede Maru",
@@ -260,7 +289,7 @@ class FilterTests(SutekhTest):
               u'Ambrogino Giovanni', u'Amisa', u"An Anarch Manifesto",
               u'Anarch Revolt', u'Anastasz di Zagreb',
               u'Angelica, The Canonicus', u'Anna "Dictatrix11" Suljic',
-              u'Anson', u'Ashur Tablets', u"Aye", 
+              u'Anson', u'Ashur Tablets', u"Aye",
               u"Baron Dieudonne", u'Bravo', u'Bronwen',
               u'Cedric', u'Cesewayo', u'Dramatic Upheaval',
               u'Earl "Shaka74" Deams', u"Enkidu, The Noah",
@@ -460,7 +489,13 @@ class FilterTests(SutekhTest):
         self.assertEqual(Filters.MultiVirtueFilter.get_values(),
                          [u"Innocence", u"Judgment", u"Martyrdom",
                           u"Redemption", u"Vengeance", u"Vision"])
-
+        self.assertEqual(Filters.MultiPrintingFilter.get_values(),
+                         ['Heirs to the Blood (No Draft Text)',
+                          'Jyhad (Variant Printing)',
+                          'Keepers of Tradition (No Draft Text)',
+                          'Sabbat Wars (Second Printing)',
+                          'Third Edition (No Draft Text)',
+                          'Third Edition (Sketch)'])
         # Test the physical card filtering
         for oFilter, aExpectedCards in aPhysicalTests:
             aCards = sorted(oFilter.select(PhysicalCard).distinct())
@@ -477,6 +512,15 @@ class FilterTests(SutekhTest):
               u"Protracted Investment", u"Raven Spy", u"Walk of Flame"],
              ['Jyhad']
             ),
+            # Check we are getting all the printings we expect
+            (Filters.PhysicalExpansionFilter('Jyhad'),
+             ['.44 Magnum', "Aaron's Feeding Razor", u"Anarch Revolt",
+              u"Anson", u'Dramatic Upheaval', u"Ghoul Retainer",
+              u"Gypsies", u"Immortal Grapple",
+              u"Protracted Investment", u"Raven Spy", u"Walk of Flame"],
+             ['Jyhad', 'Jyhad'], [None, 'Variant Printing'],
+            ),
+
             (Filters.PhysicalExpansionFilter('LoB'),
              ['Abombwe', 'Aye', '.44 Magnum', 'Abebe', u"Cedric", u"Cesewayo",
               u"Predator's Communion", u"The Slaughterhouse",
@@ -503,6 +547,40 @@ class FilterTests(SutekhTest):
              self.aExpectedCards,
              [None, 'VTES']
             ),
+            (Filters.PhysicalPrintingFilter('Jyhad'),
+             ['.44 Magnum', "Aaron's Feeding Razor", u"Anarch Revolt",
+              u"Anson", u'Dramatic Upheaval', u"Ghoul Retainer",
+              u"Gypsies", u"Immortal Grapple",
+              u"Protracted Investment", u"Raven Spy", u"Walk of Flame"],
+             ['Jyhad'], [None],
+            ),
+            (Filters.PhysicalPrintingFilter('Jyhad (Variant Printing)'),
+             [u"Ghoul Retainer", u"Immortal Grapple", u"Walk of Flame"],
+             ['Jyhad'], ['Variant Printing'],
+            ),
+            (Filters.PhysicalPrintingFilter(
+                'Keepers of Tradition (No Draft Text)'),
+             [u"Immortal Grapple"],
+             ["Keepers of Tradition"], ["No Draft Text"],
+            ),
+            (Filters.MultiPhysicalPrintingFilter([
+                'Legacy of Blood',
+                'Lords of the Night']),
+             ['Abombwe', '.44 Magnum', 'Abebe', 'AK-47', 'Abdelsobek',
+              'Aye', u"Cedric", u"Cesewayo", u"Kabede Maru",
+              u"Predator's Communion", u"The Path of Blood",
+              u"The Slaughterhouse", u"Raven Spy",
+              u"Park Hunting Ground", u"Necromancy",
+              u"Agent of Power", u"Immortal Grapple", u"Paris Opera House",
+              u"Vox Domini", u"Rock Cat", u"High Top"],
+             ['LoB', 'LotN'], [None, None]
+            ),
+            (Filters.MultiPhysicalPrintingFilter([
+                'Jyhad (Variant Printing)',
+                'Keepers of Tradition (No Draft Text)']),
+             [u"Ghoul Retainer", u"Immortal Grapple", u"Walk of Flame"],
+             ['Jyhad', 'KoT'], ['Variant Printing', 'No Draft Text'],
+            ),
         ]
 
         for tTest in aExpansionTests:
@@ -511,10 +589,66 @@ class FilterTests(SutekhTest):
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter,
-                                 [(IAbstractCard(x).name, x.expansion)
+                                 [(IAbstractCard(x).name, x.printing)
                                   for x in aCards],
-                                 [(IAbstractCard(x).name, x.expansion)
+                                 [(IAbstractCard(x).name, x.printing)
                                   for x in aExpectedCards]))
+
+        # Test we get the right values from the physical expansion and
+        # printing filters
+        self.assertEqual(Filters.MultiPhysicalExpansionFilter.get_values(),
+                         ["  Unspecified Expansion", "Anarchs",
+                          "Anarchs and Alastors Storyline", "Ancient Hearts",
+                          'Anthology', 'Black Chantry Reprint', 'Black Hand',
+                          'Blood Shadowed Court', 'Bloodlines',
+                          'Camarilla Edition', 'Dark Sovereigns',
+                          'Ebony Kingdom', "Eden's Legacy Storyline",
+                          'Final Nights', 'Gehenna', 'Heirs to the Blood',
+                          'Jyhad', 'Keepers of Tradition',
+                          'Kindred Most Wanted', 'Legacy of Blood',
+                          'Lords of the Night', 'Lost Kindred',
+                          'Nights of Reckoning', 'Sabbat',
+                          'Sabbat Wars', 'Tenth Anniversary',
+                          'Third Edition', 'Twilight Rebellion', 'VTES']
+                        )
+
+        self.assertEqual(Filters.MultiPhysicalPrintingFilter.get_values(),
+                         ["  Unspecified Expansion",
+                          "Anarchs",
+                          "Anarchs and Alastors Storyline",
+                          "Ancient Hearts",
+                          'Anthology',
+                          'Black Chantry Reprint',
+                          'Black Hand',
+                          'Blood Shadowed Court',
+                          'Bloodlines',
+                          'Camarilla Edition',
+                          'Dark Sovereigns',
+                          'Ebony Kingdom',
+                          "Eden's Legacy Storyline",
+                          'Final Nights',
+                          'Gehenna',
+                          'Heirs to the Blood',
+                          'Heirs to the Blood (No Draft Text)',
+                          'Jyhad',
+                          'Jyhad (Variant Printing)',
+                          'Keepers of Tradition',
+                          'Keepers of Tradition (No Draft Text)',
+                          'Kindred Most Wanted',
+                          'Legacy of Blood',
+                          'Lords of the Night',
+                          'Lost Kindred',
+                          'Nights of Reckoning',
+                          'Sabbat',
+                          'Sabbat Wars',
+                          'Sabbat Wars (Second Printing)',
+                          'Tenth Anniversary',
+                          'Third Edition',
+                          'Third Edition (No Draft Text)',
+                          'Third Edition (Sketch)',
+                          'Twilight Rebellion',
+                          'VTES']
+                        )
 
     def test_multi_filters(self):
         """Test that MultiFilters and the equivilent single filters work as

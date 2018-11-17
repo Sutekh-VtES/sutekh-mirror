@@ -15,10 +15,10 @@ from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
 
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
-                                  read_lookup_data)
+                                  read_exp_info_file, read_lookup_data)
 from sutekh.core.SutekhTables import TABLE_LIST
 from sutekh.tests.TestData import (TEST_CARD_LIST, TEST_RULINGS,
-                                   TEST_LOOKUP_LIST)
+                                   TEST_EXP_INFO, TEST_LOOKUP_LIST)
 from sutekh.tests.TestCore import SutekhTest
 
 
@@ -29,13 +29,16 @@ def create_db():
     sLookupData = create_pkg_tmp_file(TEST_LOOKUP_LIST)
     sCardList = create_pkg_tmp_file(TEST_CARD_LIST)
     sRulings = create_pkg_tmp_file(TEST_RULINGS)
+    sExpJSON = create_pkg_tmp_file(TEST_EXP_INFO)
 
     oLogHandler = make_null_handler()
     read_lookup_data(EncodedFile(sLookupData), oLogHandler)
     read_white_wolf_list(EncodedFile(sCardList), oLogHandler)
+    read_exp_info_file(EncodedFile(sExpJSON), oLogHandler)
     read_rulings(EncodedFile(sRulings), oLogHandler)
 
     os.remove(sRulings)
+    os.remove(sExpJSON)
     os.remove(sCardList)
     os.remove(sLookupData)
 

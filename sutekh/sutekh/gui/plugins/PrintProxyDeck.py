@@ -9,9 +9,9 @@ import gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
-                                           IExpansion)
+                                           IPrinting)
 from sutekh.base.gui.SutekhDialog import do_complaint_error
-from sutekh.base.gui.plugins.BaseImages import get_expansion_info, check_file
+from sutekh.base.gui.plugins.BaseImages import get_printing_info, check_file
 from sutekh.gui.PluginManager import SutekhPlugin
 
 
@@ -137,16 +137,16 @@ class PrintProxyPlugin(SutekhPlugin):
             oCard = oTheCard
             if self._iPrintExpansion == PRINT_LATEST:
                 # We build a fake card with the correct expansion
-                sLatestExpansion = get_expansion_info(oTheCard.abstractCard)[0]
-                oExp = IExpansion(sLatestExpansion)
+                sLatestPrinting = get_printing_info(oTheCard.abstractCard)[0]
+                oExp = IPrinting(sLatestPrinting)
                 oCard = IPhysicalCard((oTheCard.abstractCard, oExp))
 
             sFilename = self._oImageFrame.lookup_filename(oCard)[0]
             if not check_file(sFilename):
                 bOk = False
-                for sExpName in get_expansion_info(oTheCard.abstractCard):
-                    oExp = IExpansion(sExpName)
-                    oCard = IPhysicalCard((oTheCard.abstractCard, oExp))
+                for sExpName in get_printing_info(oTheCard.abstractCard):
+                    oPrinting = IPrinting(sExpName)
+                    oCard = IPhysicalCard((oTheCard.abstractCard, oPrinting))
                     sFilename = self._oImageFrame.lookup_filename(oCard)[0]
                     if check_file(sFilename):
                         bOk = True

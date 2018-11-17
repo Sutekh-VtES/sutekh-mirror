@@ -17,7 +17,7 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
 from ..core.BaseGroupings import CardTypeGrouping
 from ..core.BaseTables import PhysicalCard
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard,
-                                 IExpansionName, ExpansionNameAdapter)
+                                 IPrintingName, PrintingNameAdapter)
 from ..core.FilterParser import FilterParser
 from ..Utility import move_articles_to_back
 from .BaseConfigFile import FULL_CARDLIST
@@ -44,7 +44,7 @@ class CardListModel(gtk.TreeStore):
     # Could possibly be more visually distinct, but users can filter
     # on unknown expansions if needed.
 
-    sUnknownExpansion = ExpansionNameAdapter.sUnknownExpansion
+    sUnknownExpansion = PrintingNameAdapter.sUnknownExpansion
 
     def __init__(self, oConfig):
         # STRING is the card name, INT is the card count
@@ -180,7 +180,7 @@ class CardListModel(gtk.TreeStore):
         if not self.bExpansions:
             return aExpansions
         for oPhysCard in dExpanInfo:
-            aExpansions.append((oPhysCard, IExpansionName(oPhysCard)))
+            aExpansions.append((oPhysCard, IPrintingName(oPhysCard)))
         return aExpansions
 
     def lookup_icons(self, sGroup):

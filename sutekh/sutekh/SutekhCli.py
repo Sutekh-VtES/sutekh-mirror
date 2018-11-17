@@ -27,7 +27,7 @@ import sutekh.core.Filters
 # pylint: enable=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
-                                  format_text, read_exp_date_list,
+                                  format_text, read_exp_info_file,
                                   read_lookup_data)
 from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,

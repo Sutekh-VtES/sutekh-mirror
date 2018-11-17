@@ -15,7 +15,7 @@ from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
                               WW_CARDLIST_DATAPACK)
 from sutekh.io.DataPack import find_data_pack
 from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
-                                  read_exp_date_list, read_lookup_data,
+                                  read_exp_info_file, read_lookup_data,
                                   find_base_vampire, is_crypt_card,
                                   is_vampire)
 
@@ -47,14 +47,14 @@ RULINGS_READER = DataFileReader(sName="rulings.html",
                                 fReader=read_rulings,
                                )
 
-EXP_DATA_READER = DataFileReader(sName="expansiondates.csv",
+EXP_DATA_READER = DataFileReader(sName="expansions.json",
                                  sUrl=EXP_DATE_URL,
-                                 sDescription="Expansion Release "
-                                              "Date File",
-                                 tPattern=('CSV files', ['*csv']),
+                                 sDescription="Extra Expansion Information "
+                                              "File",
+                                 tPattern=('JSON files', ['*json']),
                                  bRequired=False,
                                  bCountLogger=True,
-                                 fReader=read_exp_date_list,
+                                 fReader=read_exp_info_file,
                                 )
 
 LOOKUP_DATA_READER = DataFileReader(sName="lookup.csv",

@@ -90,7 +90,7 @@ class CardItem(HolderState):
             sName = self._sData.strip()
             sName = sName.replace("`", "'")
             # No expansion info for these
-            self._oHolder.add(self._iCnt, sName, None)
+            self._oHolder.add(self._iCnt, sName, None, None)
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)

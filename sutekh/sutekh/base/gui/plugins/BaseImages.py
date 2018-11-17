@@ -16,8 +16,12 @@ import zipfile
 import gobject
 import gtk
 
+from ...core.BaseAdapters import IPrintingName
+
 from ...io.UrlOps import urlopen_with_timeout
-from ...Utility import prefs_dir, ensure_dir_exists
+
+from ...Utility import prefs_dir, ensure_dir_exists, get_printing_date
+
 from ..BasePluginManager import BasePlugin
 from ..ProgressDialog import ProgressDialog
 from ..MessageBus import MessageBus, CARD_TEXT_MSG
@@ -86,7 +90,7 @@ def image_gui_error_handler(oExp):
     gui_error_handler(oExp)
 
 
-def get_expansion_info(oAbsCard):
+def get_printing_info(oAbsCard):
     """Set the expansion info."""
     bHasInfo = len(oAbsCard.rarity) > 0
     # We opt to sort undated expansions as newer than expansions with dates
@@ -97,12 +101,21 @@ def get_expansion_info(oAbsCard):
         """Handle None values for date somewhat sanely"""
         return oDate if oDate else oToday
     if bHasInfo:
-        aExp = set([(oP.expansion.name, get_date(oP.expansion.releasedate))
-                    for oP in oAbsCard.rarity])  # remove duplicates
+        aPrint = set()
+        # We want only those printings that actually apply to this card
+        for oCard in oAbsCard.physicalCards:
+            oPrint = oCard.printing
+            if oPrint:
+                # We want the newest image, but, for identical dates,
+                # we want the "Non-Printing" image if there are multiple
+                # printings, so we sort by negative ordinal to get the date
+                # ordering and rely on string matching to sort the printings
+                # as we want to, beacause of how IPrintingName works
+                aPrint.add( (-get_date(get_printing_date(oPrint)).toordinal(),
+                             IPrintingName(oPrint)) )
         # Sort by date, newest first
-        aExpansions = [x[0] for x in sorted(aExp,
-                                            key=lambda x: x[1], reverse=True)]
-        return aExpansions
+        aPrintings = [x[1] for x in sorted(aPrint)]
+        return aPrintings
     else:
         return []
 
@@ -189,8 +202,8 @@ class BaseImageFrame(BasicFrame):
         self._oImagePlugin = oImagePlugin
         oVBox = gtk.VBox(False, 2)
         oBox = gtk.EventBox()
-        self.oExpansionLabel = gtk.Label()
-        oVBox.pack_start(self.oExpansionLabel, False, False)
+        self.oExpPrintLabel = gtk.Label()
+        oVBox.pack_start(self.oExpPrintLabel, False, False)
         oVBox.pack_start(oBox)
         self._oView = AutoScrolledWindow(oVBox, True)
         self._oView.get_hadjustment().connect('changed', self._pane_adjust)
@@ -213,13 +226,14 @@ class BaseImageFrame(BasicFrame):
             self._oImagePlugin.set_config_item(CARD_IMAGE_PATH,
                                                self._sPrefsPath)
         self._bShowExpansions = self._have_expansions()
-        self._sCurExpansion = ''
-        self._aExpansions = []
+        self._sCurExpPrint = ''
+        self._aExpPrints = []
         self._iExpansionPos = 0
         self._sCardName = ''
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
         self._aFailedUrls = set()
+        self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -274,12 +288,12 @@ class BaseImageFrame(BasicFrame):
 
     def _set_expansion_info(self, oAbsCard):
         """Set the expansion info."""
-        self._aExpansions = get_expansion_info(oAbsCard)
+        self._aExpPrints = get_printing_info(oAbsCard)
         self._iExpansionPos = 0
-        if self._aExpansions:
-            self._sCurExpansion = self._aExpansions[0]
+        if self._aExpPrints:
+            self._sCurExpPrint = self._aExpPrints[0]
         else:
-            self._sCurExpansion = ''
+            self._sCurExpPrint = ''
 
     def _redraw(self, bPause):
         """Redraw the current card"""
@@ -295,6 +309,52 @@ class BaseImageFrame(BasicFrame):
     def _make_card_urls(self, _sFullFilename):
         """Return a list of possible urls pointing to a scan of the image"""
         raise NotImplementedError("implement _make_card_urls")
+
+    def _make_date_url(self):
+        """Create the url for the image date cache info."""
+        raise NotImplementedError("Implement _make_date_url")
+
+    def _parse_date_data(self, sDateData):
+        """Parse the date information from the file."""
+        raise NotImplementedError("Implement _parse_date_data")
+
+    def _get_date_data(self):
+        """Get the date data from the website if available"""
+        sDateUrl = self._make_date_url()
+        if not sDateUrl:
+            # No date info, so we skip this
+            return
+        oLastFetched = self._dDateCache.get(
+            'last downloaded', datetime.datetime.utcfromtimestamp(0))
+        if datetime.datetime.now() - oLastFetched < datetime.timedelta(days=1):
+            # Cache fresh enough
+            return
+        logging.info('Downloading date cache from %s', sDateUrl)
+        oFile = urlopen_with_timeout(
+            sDateUrl, fErrorHandler=image_gui_error_handler,
+            dHeaders=self._dReqHeaders)
+        if oFile:
+            sDateData = progress_fetch_data(oFile)
+            if self._parse_date_data(sDateData):
+                self._dDateCache["last downloaded"] = datetime.datetime.now()
+        else:
+            logging.info("Failed to download date cache file")
+
+    def _check_outdated(self, sFullFilename):
+        """Check if the image we're displaying has a more recent version
+           available to download."""
+        # Entries not in the cache are automatically older than we are, so
+        # we don't try download local files
+        oCacheDate = self._dDateCache.get(
+            sFullFilename, datetime.datetime.utcfromtimestamp(0))
+        # We assume the cache dates are utc, so we convert to that
+        oCurDate = datetime.datetime.utcfromtimestamp(
+            os.path.getmtime(sFullFilename))
+        if oCacheDate - oCurDate > datetime.timedelta(seconds=60):
+            # We allow some fuzz to add a bit of protection against weird
+            # filesystems and timezone issues - this is probably too generous
+            logging.info("Downloading newer image for %s", sFullFilename)
+            self._download_image(sFullFilename)
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
@@ -314,7 +374,7 @@ class BaseImageFrame(BasicFrame):
         if not self._bShowExpansions:
             sCurExpansionPath = ''
         else:
-            sCurExpansionPath = self._convert_expansion(self._sCurExpansion)
+            sCurExpansionPath = self._convert_expansion(self._sCurExpPrint)
         aFullFilenames = self._make_paths(self._sCardName, sCurExpansionPath)
         return aFullFilenames
 
@@ -324,13 +384,13 @@ class BaseImageFrame(BasicFrame):
         sCardName = oPhysCard.abstractCard.canonicalName
         if self._bShowExpansions:
             # Only lookup expansions if we have expansion images
-            if oPhysCard.expansion:
-                sExpansionName = oPhysCard.expansion.name
+            if oPhysCard.printing:
+                sExpPrintName = IPrintingName(oPhysCard)
             else:
                 # No expansion, so find the latest expansion for this card
-                aExpasions = get_expansion_info(oPhysCard.abstractCard)
-                sExpansionName = aExpasions[0]
-            sExpansionPath = self._convert_expansion(sExpansionName)
+                aExpPrints = get_printing_info(oPhysCard.abstractCard)
+                sExpPrintName = aExpPrints[0]
+            sExpansionPath = self._convert_expansion(sExpPrintName)
         aFullFilenames = self._make_paths(sCardName, sExpansionPath)
         return aFullFilenames
 
@@ -338,7 +398,7 @@ class BaseImageFrame(BasicFrame):
         """Attempt to download the image."""
         aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
-            return False
+            return False 
         for sUrl in aUrls:
             if sUrl not in self._aFailedUrls:
                 logging.info('Trying %s as source for %s',
@@ -378,6 +438,8 @@ class BaseImageFrame(BasicFrame):
         # This is has to handle a number of special cases
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
+        # Ensure we have an up to information about the image dates
+        self._get_date_data()
 
         for sFullFilename in aFullFilenames:
             if not check_file(sFullFilename):
@@ -390,14 +452,22 @@ class BaseImageFrame(BasicFrame):
                                                     gtk.ICON_SIZE_DIALOG)
                         self._oImage.queue_draw()
                         return
+            else:
+                if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
+                        self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES) and
+                        self._check_outdated(sFullFilename)):
+                    # Try download the image
+                    # We don't handle failure specially here - if it fails,
+                    # we will show the existing image
+                    self._download_image(sFullFilename)
         try:
             if self._bShowExpansions:
-                self.oExpansionLabel.set_markup(
-                    '<i>Image from expansion : </i> %s' % self._sCurExpansion)
-                self.oExpansionLabel.show()
-                iHeightOffset = self.oExpansionLabel.allocation.height + 2
+                self.oExpPrintLabel.set_markup(
+                    '<i>Image from expansion : </i> %s' % self._sCurExpPrint)
+                self.oExpPrintLabel.show()
+                iHeightOffset = self.oExpPrintLabel.allocation.height + 2
             else:
-                self.oExpansionLabel.hide()  # config changes can cause this
+                self.oExpPrintLabel.hide()  # config changes can cause this
                 iHeightOffset = 0
             aPixbufs = []
             iHeight = 0
@@ -475,25 +545,25 @@ class BaseImageFrame(BasicFrame):
         if not oPhysCard:
             return
         sCardName = oPhysCard.abstractCard.canonicalName
-        sExpansionName = ''
-        if oPhysCard.expansion:
-            sExpansionName = oPhysCard.expansion.name
+        sExpPrintName = ''
+        if oPhysCard.printing:
+            sExpPrintName = IPrintingName(oPhysCard)
         if sCardName != self._sCardName:
             self._set_expansion_info(oPhysCard.abstractCard)
             self._sCardName = sCardName
-        if len(self._aExpansions) > 0:
-            if sExpansionName in self._aExpansions:
+        if len(self._aExpPrints) > 0:
+            if sExpPrintName in self._aExpPrints:
                 # Honour expansion from set_card_text
-                self._sCurExpansion = sExpansionName
-                self._iExpansionPos = self._aExpansions.index(sExpansionName)
+                self._sCurExpPrint = sExpPrintName
+                self._iExpansionPos = self._aExpPrints.index(sExpPrintName)
             else:
-                # Set self._sCurExpansion to an existing image, if possible
+                # Set self._sCurExpPrint to an existing image, if possible
                 self._iExpansionPos = 0
                 bFound = False
                 while not bFound and \
-                        self._iExpansionPos < len(self._aExpansions):
-                    self._sCurExpansion = \
-                        self._aExpansions[self._iExpansionPos]
+                        self._iExpansionPos < len(self._aExpPrints):
+                    self._sCurExpPrint = \
+                        self._aExpPrints[self._iExpansionPos]
                     aFullFilenames = self._convert_cardname_to_path()
                     for sFullFilename in aFullFilenames:
                         if check_file(sFullFilename):
@@ -502,23 +572,23 @@ class BaseImageFrame(BasicFrame):
                     if not bFound:
                         self._iExpansionPos += 1
                 if not bFound:
-                    self._sCurExpansion = self._aExpansions[0]
+                    self._sCurExpPrint = self._aExpPrints[0]
                     self._iExpansionPos = 0
         self._redraw(False)
 
     def do_cycle_expansion(self, iDir):
         """Change the expansion image to a different one in the list."""
-        if len(self._aExpansions) < 2 or not self._bShowExpansions:
+        if len(self._aExpPrints) < 2 or not self._bShowExpansions:
             return  # nothing to scroll through
         if iDir == FORWARD:
             self._iExpansionPos += 1
-            if self._iExpansionPos >= len(self._aExpansions):
+            if self._iExpansionPos >= len(self._aExpPrints):
                 self._iExpansionPos = 0
         elif iDir == BACKWARD:
             self._iExpansionPos -= 1
             if self._iExpansionPos < 0:
-                self._iExpansionPos = len(self._aExpansions) - 1
-        self._sCurExpansion = self._aExpansions[self._iExpansionPos]
+                self._iExpansionPos = len(self._aExpPrints) - 1
+        self._sCurExpPrint = self._aExpPrints[self._iExpansionPos]
         self._redraw(False)
 
     def set_zoom_mode(self, iScale):
@@ -536,7 +606,7 @@ class BaseImageFrame(BasicFrame):
             # Do context menu
             oPopupMenu = CardImagePopupMenu(self, self._iZoomMode)
             oPopupMenu.set_show_expansion_state(self._bShowExpansions and
-                                                len(self._aExpansions) > 1)
+                                                len(self._aExpPrints) > 1)
             oPopupMenu.popup(None, None, None, oEvent.button, oEvent.time)
         return True
 

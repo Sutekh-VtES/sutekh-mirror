@@ -114,15 +114,15 @@ class ArdbXMLDeckParserTests(SutekhTest):
         aCards = oHolder.get_cards_exps()
 
         self.assertEqual(len(aCards), 8)
-        self.failUnless((("Test Vamp 1", "CE"), 2) in aCards)
-        self.failUnless((("Test Vamp 2", "SW"), 1) in aCards)
+        self.failUnless((("Test Vamp 1", "CE", None), 2) in aCards)
+        self.failUnless((("Test Vamp 2", "SW", None), 1) in aCards)
         self.failUnless(
-            (("Test Vamp 2 (Advanced)", "Promo-20051001"), 1) in aCards)
-        self.failUnless((("Test Card 1", "Sabbat"), 4) in aCards)
-        self.failUnless((("Test Card 2", "BH"), 2) in aCards)
-        self.failUnless((("Test Card 3", "BH"), 12) in aCards)
-        self.failUnless((("Test Card 4", None), 1) in aCards)
-        self.failUnless((("The Test Card 5", None), 1) in aCards)
+            (("Test Vamp 2 (Advanced)", "Promo-20051001", None), 1) in aCards)
+        self.failUnless((("Test Card 1", "Sabbat", None), 4) in aCards)
+        self.failUnless((("Test Card 2", "BH", None), 2) in aCards)
+        self.failUnless((("Test Card 3", "BH", None), 12) in aCards)
+        self.failUnless((("Test Card 4", None, None), 1) in aCards)
+        self.failUnless((("The Test Card 5", None, None), 1) in aCards)
 
         oParser = ARDBXMLDeckParser()
         self.assertRaises(IOError, self._make_holder_from_string, oParser,

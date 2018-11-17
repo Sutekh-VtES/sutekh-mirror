@@ -19,14 +19,15 @@ Author: A test author
 Description:
 A test comment
 
-Crypt (5 cards, min=20, max=24, avg=5.4)
-----------------------------------------
-2x Siamese, The\t\t       7   PRE SPI ani pro\tAhrimane:2
-1x Alan Sovereign (ADV)\t       6   AUS DOM for pre\tVentrue:3
-1x Abebe\t\t       4   nec obf thn\t  Samedi:4
-1x Inez "Nurse216" Villagrande 3   inn\t\t  Innocent (Imbued):4
+Crypt (6 cards, min=20, max=29, avg=6)
+--------------------------------------
+2x Siamese, The\t\t       7   PRE SPI ani pro\t\t\tAhrimane:2
+1x Hektor\t\t       9   CEL POT PRE QUI for\tpriscus\t\tBrujah antitribu:4
+1x Alan Sovereign (ADV)\t       6   AUS DOM for pre\t\t\tVentrue:3
+1x Abebe\t\t       4   nec obf thn\t  \t\tSamedi:4
+1x Inez "Nurse216" Villagrande 3   inn\t\t  \t\tInnocent (Imbued):4
 
-Library (27 cards)
+Library (28 cards)
 Master (3; 2 trifle)
 2x Abombwe
 1x Path of Blood, The
@@ -52,9 +53,9 @@ Action Modifier/Combat (2)
 Reaction (1)
 1x Hide the Heart
 
-Combat (7)
+Combat (8)
 4x Immortal Grapple
-3x Walk of Flame
+4x Walk of Flame
 """
 
 TWDA_EXPECTED_2 = """Deck Name: Test Set 2

@@ -21,6 +21,7 @@ Crypt
 ---
 1 Abebe
 1 Alan Sovereign (Adv)
+1 Hektor
 1 Inez Nurse216 Villagrande
 2 Siamese, The
 
@@ -38,7 +39,7 @@ Library
 1 Path of Blood, The
 1 Scapelli, The Family Mechanic
 2 Swallowed by the Night
-3 Walk of Flame
+4 Walk of Flame
 """
 
 

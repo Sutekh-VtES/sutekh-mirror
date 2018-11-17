@@ -20,7 +20,7 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 # C0301 - Ignore line length limits for this string
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>DATE</date>
-  <crypt size="5">
+  <crypt size="6">
     <vampire databaseID="11" have="1" need="0" spare="0">
       <adv />
       <name>Abebe</name>
@@ -29,6 +29,10 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
+    </vampire><vampire databaseID="47" have="1" need="0" spare="0">
+      <adv />
+      <name>Hektor</name>
+      <set>Third</set>
     </vampire><vampire databaseID="50" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
@@ -38,7 +42,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <name>Siamese, The</name>
       <set>BL</set>
     </vampire>
-  </crypt><library size="27">
+  </crypt><library size="28">
     <card databaseID="1" have="4" need="0" spare="0">
       <name>.44 Magnum</name>
       <set>CE</set>
@@ -75,7 +79,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="62" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
-    </card><card databaseID="81" have="3" need="0" spare="0">
+    </card><card databaseID="81" have="4" need="0" spare="0">
       <name>Walk of Flame</name>
       <set>KoT</set>
     </card>

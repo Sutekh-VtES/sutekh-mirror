@@ -5,15 +5,17 @@
 
 """Adds a frame which will display card images from ARDB in the GUI"""
 
+import datetime
 import os
 import logging
 
 import gtk
 from sqlobject import SQLObjectNotFound
 
-from sutekh.base.core.BaseAdapters import IExpansion
+from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
+from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImageConfigDialog,
                                                 BaseImagePlugin,
@@ -27,6 +29,7 @@ from sutekh.SutekhInfo import SutekhInfo
 
 # Base url for downloading the images from
 SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
+IMAGE_DATE_FILE = "image_dates.txt"
 
 
 class CardImageFrame(BaseImageFrame):
@@ -76,22 +79,39 @@ class CardImageFrame(BaseImageFrame):
         """Convert the Full Expansion name into the abbreviation needed."""
         if sExpansionName == '':
             return ''
+        bOK = False
         # pylint: disable=E1101
         # pylint doesn't pick up IExpansion methods correctly
         try:
             oExpansion = IExpansion(sExpansionName)
+            oPrinting = None
+            # special case Anarchs and alastors due to promo hack shortname
+            bOK = True
         except SQLObjectNotFound:
+            if '(' in sExpansionName:
+                # Maybe a Printing?
+                sSplitExp, sPrintName = [x.strip() for x in
+                                         sExpansionName.split('(', 1)]
+                sPrintName = sPrintName.replace(')', '')
+                try:
+                    oExpansion = IExpansion(sSplitExp)
+                    oPrinting = IPrinting((oExpansion, sPrintName))
+                    bOK = True
+                except SQLObjectNotFound:
+                    pass
+        if not bOK:
             # This can happen because we cache the expansion name and
             # a new database import may cause that to vanish.
             # We return just return a blank path segment, as the safest choice
             logging.warn('Expansion %s no longer found in the database',
                          sExpansionName)
             return ''
-        # special case Anarchs and alastors due to promo hack shortname
         if oExpansion.name == 'Anarchs and Alastors Storyline':
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()
+        if oPrinting:
+            sExpName += '_' + oPrinting.name.lower()
         # Normalise for storyline cards
         sExpName = sExpName.replace(' ', '_').replace("'", '')
         return sExpName
@@ -104,10 +124,10 @@ class CardImageFrame(BaseImageFrame):
             return None
         if self._bShowExpansions:
             # Only try download the current expansion
-            aUrlExps = [self._convert_expansion(self._sCurExpansion)]
+            aUrlExps = [self._convert_expansion(self._sCurExpPrint)]
         else:
             # Try all the expansions, latest to oldest
-            aUrlExps = [self._convert_expansion(x) for x in self._aExpansions]
+            aUrlExps = [self._convert_expansion(x) for x in self._aExpPrints]
         aUrls = []
         for sCurExpansionPath in aUrlExps:
             if sCurExpansionPath == '':
@@ -118,6 +138,32 @@ class CardImageFrame(BaseImageFrame):
                                             sFilename)
             aUrls.append(sUrl)
         return aUrls
+
+    def _make_date_url(self):
+        """Date info file lives with the images"""
+        return '%s/cardimages/%s' % (SUTEKH_IMAGE_SITE, IMAGE_DATE_FILE)
+
+    def _parse_date_data(self, sDateData):
+        """Parse date file into entries"""
+        try:
+            self._dDateCache = {}
+            for sLine in sDateData.splitlines():
+                sLine = sLine.strip()
+                if not sLine:
+                    continue
+                # We are dealing with ls-lR type formatting
+                # size YYYY-mm-DD HH:MM:SS ./<dir>/<name>
+                _sSize, sDay, sTime, sName = sLine.split()
+                oCacheDate = datetime.datetime.strptime(
+                    "%s %s" % (sDay, sTime), "%Y-%m-%d %H:%M:%S")
+                sExpansion, sCardName = sName.replace('./', '').split('/')
+                sKey = os.path.join(self._sPrefsPath, sExpansion, sCardName)
+                self._dDateCache[sKey] = oCacheDate
+            if len(self._dDateCache) > 100:
+                return True
+        except Exception as oErr:
+            logging.warn('Error parsing date cache file %s', oErr)
+        return False
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""

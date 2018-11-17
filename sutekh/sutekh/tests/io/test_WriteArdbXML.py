@@ -23,7 +23,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
-  <crypt avg="5.40" max="7" min="3" size="5">
+  <crypt avg="6.00" max="9" min="3" size="6">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -43,6 +43,17 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
+    </vampire><vampire count="1" databaseID="47">
+      <adv />
+      <name>Hektor</name>
+      <set>Third</set>
+      <disciplines>CEL POT PRE QUI for</disciplines>
+      <clan>Brujah antitribu</clan>
+      <capacity>9</capacity>
+      <group>4</group>
+      <title>Priscus</title>
+      <text>Sabbat priscus: Damage from Hektor's hand strikes is aggravated. Baali get +1 bleed
+when bleeding you.</text>
     </vampire><vampire count="1" databaseID="50">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
@@ -62,7 +73,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="27">
+  </crypt><library size="28">
     <card count="3" databaseID="1">
       <name>.44 Magnum</name>
       <set>CE</set>
@@ -168,7 +179,7 @@ Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less b
       <disciplines>THA</disciplines>
       <text>Not usable on the first round of combat.
 [tha] Strike: 1R aggravated damage. [THA] Strike: 2R aggravated damage.</text>
-    </card><card count="2" databaseID="81">
+    </card><card count="3" databaseID="81">
       <name>Walk of Flame</name>
       <set>Third</set>
       <type>Combat</type>
