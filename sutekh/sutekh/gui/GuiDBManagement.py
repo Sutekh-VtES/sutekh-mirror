@@ -11,7 +11,7 @@ from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.core.SutekhTables import TABLE_LIST
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
-                              EXP_DATE_URL, LOOKUP_DATA_URL,
+                              EXP_DATA_URL, LOOKUP_DATA_URL,
                               WW_CARDLIST_DATAPACK)
 from sutekh.io.DataPack import find_data_pack
 from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
@@ -48,7 +48,7 @@ RULINGS_READER = DataFileReader(sName="rulings.html",
                                )
 
 EXP_DATA_READER = DataFileReader(sName="expansions.json",
-                                 sUrl=EXP_DATE_URL,
+                                 sUrl=EXP_DATA_URL,
                                  sDescription="Extra Expansion Information "
                                               "File",
                                  tPattern=('JSON files', ['*json']),

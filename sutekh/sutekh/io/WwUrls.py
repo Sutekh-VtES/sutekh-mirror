@@ -17,8 +17,8 @@ EXTRA_CARD_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
 WW_RULINGS_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
                   "raw/tip/Rulebooks/rulebook-data/rulings.html")
 
-EXP_DATE_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                "raw/tip/ExpansionDates/expansion-data/expansiondates.csv")
+EXP_DATA_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
+                "raw/tip/ExpansionDates/expansion-data/expansions.json")
 
 LOOKUP_DATA_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
                    "raw/tip/Lookups/lookup.csv")

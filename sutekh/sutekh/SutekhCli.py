@@ -44,7 +44,7 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
-                              EXTRA_CARD_URL, EXP_DATE_URL,
+                              EXTRA_CARD_URL, EXP_DATA_URL,
                               LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
@@ -69,8 +69,8 @@ def parse_options(aArgs):
                           dest="ruling_file", default=None,
                           help="HTML file (probably from VEKN website) "
                                "to read rulings from.")
-    oOptParser.add_option("--date-file", type="string", dest="date_file",
-                          default=None, help="CSV file to read expansion "
+    oOptParser.add_option("--exp-data-file", type="string", dest="exp_data_file",
+                          default=None, help="JSON file to read expansion "
                                              "release date info from.")
     oOptParser.add_option("--lookup-data-file", type="string",
                           dest="lookup_file", default=None,
@@ -290,8 +290,8 @@ def main_with_args(aTheArgs):
     if oOpts.extra_file is not None:
         read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
 
-    if oOpts.date_file is not None:
-        read_exp_date_list(EncodedFile(oOpts.date_file), oLogHandler)
+    if oOpts.exp_data_file is not None:
+        read_exp_info_file(EncodedFile(oOpts.exp_data_file), oLogHandler)
 
     if oOpts.lookup_file is not None:
         read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
@@ -304,7 +304,7 @@ def main_with_args(aTheArgs):
         read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
         read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
         read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
-        read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
+        read_exp_info_file(EncodedFile(EXP_DATA_URL, True), oLogHandler)
 
     if oOpts.upgrade_db:
         oDBUpgrade = DBUpgradeManager()
