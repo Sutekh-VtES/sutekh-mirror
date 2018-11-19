@@ -1,3 +1,38 @@
+19 Nov 2018
+ * Fix bugs in the command line support for updating the database
+
+17 Nov 2018
+ * Add support for variant printings of cards
+   - Display Exp (Printing) in the card lists when multiple variants exists
+   - Replace csv expansion parser with json file
+   - Move date to new PrintingProperties table
+   - Add data on card backs to the PrintingProperties
+   - Remove hardcoded list of back types from Analyze plugin
+   - Add support for downloading updated card images
+   - Add filters on phyiscal printing and on cards printed with variants
+
+17 Oct 2018
+ * Fix parsing of unique keyword
+
+18 Sep 2018
+ * Fix some issues with the latest Black Chantry reprints
+
+02 Sep 2018
+ * Fix Special case for Veneficti
+ * Move adv / base vampire helpers to SutekhUtility
+
+26 Aug 2018
+ * Make lookup data required.
+
+16 Jul 2018
+ * Avoid double initiliasing the cache in the cli client.
+
+05 Jul 2018
+ * Add more special cases for exporting to Secret Library
+
+27 Jun 2018
+ * Fix bug with cli client not initiliasing adapators before importing a card set
+
 16 Jun 2018
  * Update list of VEKN backed cards.
 
