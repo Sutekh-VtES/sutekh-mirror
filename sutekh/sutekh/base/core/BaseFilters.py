@@ -425,7 +425,7 @@ class MultiPrintingFilter(DirectFilter):
     """Filter on multiple Printings"""
     keyword = "Printing"
     description = "Non-Default Printing"
-    helptext = "a list of printings. Returns all cards that have appeared " \
+    helptext = "a list of printings.\nReturns all cards that have appeared " \
             "in the specific printings."
     islistfilter = True
     types = ('AbstractCard', 'PhysicalCard')
