@@ -6,7 +6,7 @@
     <title>Sutekh Card Filters</title>
 </head>
 <body>
-	<h1>Card Filters for Sutekh 0.9.3</h1>
+	<h1>Card Filters for Sutekh 0.9.4</h1>
 
 	<h2>Contents</h2>
 
@@ -35,6 +35,8 @@
 			<li><a href="#keyword">Keyword</a></li>
 			<li><a href="#life">Life</a></li>
 			<li><a href="#physicalexpansion">Physical Expansion</a></li>
+			<li><a href="#physicalprinting">Physical Printing</a></li>
+			<li><a href="#printing">Non-Default Printing</a></li>
 			<li><a href="#sect">Sect</a></li>
 			<li><a href="#setsinuse">In the &#8216;In Use&#8217; children of</a></li>
 			<li><a href="#title">Title</a></li>
@@ -50,6 +52,7 @@ hand pane to the filter to add them to the filter, and dragged from the filter
 to the right hand pane to remove them from the filter. Disabled filter 
 elements or filter elements with no values set are ignored.</p>
 
+
 	<h2 id="navigation">Keyboard Navigation</h2>
 
 	<p>You can switch between the different filter lists using 
@@ -59,12 +62,14 @@ into the filter.  <strong>&lt;Del&gt;</strong> will delete a value or filter par
 filter <strong>&lt;Ctrl&gt;&#8212;&lt;Space&gt;</strong> will disable a filter part, while 
 <strong>&lt;Alt&gt;&#8212;&lt;Space&gt;</strong> will negate it.</p>
 
+
 	<h2 id="elements">Filter Elements</h2>
 
 	<p>The available filtering options are listed below.  The first line of each item 
 shows the description you&#8217;ll see in the filter editor in bold.  The rest of the 
 description describes the arguments the filter takes and the results it 
 produces.</p>
+
 
 	<h3 id="filter_group">Filter Group</h3>
 
@@ -80,6 +85,8 @@ produces.</p>
 		<li><em>Not all of</em>: This filter matches if at least one of the filters in the group doesn&#8217;t match.</li>
 		<li><em>Not any of</em>: This filter matches only if none of the filters in the group match.</li>
 	</ul>
+
+
 
 	<h3 id="artist">Artist</h3>
 
@@ -195,7 +202,21 @@ For cases where the life varies, only the base value for life is used.</p>
 
 	<p><strong>Parameters:</strong> a list of expansions.</p>
 
-	<p>Selects cards with their expansion set to the chosen expansions.</p>
+	<p>Selects cards with their expansion set to the chosen expansions. 
+This will return all the printings in a given expansion.</p>
+
+	<h3 id="physicalprinting">Physical Printing</h3>
+
+	<p><strong>Parameters:</strong> a list of printings.</p>
+
+	<p>Selects cards with their printing set to the chosen printings. 
+This will only return cards with the specified printings, and will exclude cards from the same expansion that aren&#8217;t part of the given printing.</p>
+
+	<h3 id="printing">Non-Default Printing</h3>
+
+	<p><strong>Parameters:</strong> a list of printings.</p>
+
+	<p>Returns all cards that have appeared in the specific printings.</p>
 
 	<h3 id="sect">Sect</h3>
 
@@ -220,6 +241,8 @@ For cases where the life varies, only the base value for life is used.</p>
 	<p><strong>Parameters:</strong> a list of virtues.</p>
 
 	<p>Returns all cards requiring or having the selected virtues</p>
+
+
 
 	<h2 id="note">Notes</h2>
 
