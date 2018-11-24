@@ -95,7 +95,9 @@ class BasePluginManager(object):
             if issubclass(cPlugin, self.cAppPlugin):
                 # Skip plugins that don't support the current database
                 # schema
-                if not cPlugin.check_versions():
+                # We skip the check if we're not currently connected to a database,
+                # so we can import plugins to generate the docs and so forth.
+                if hasattr(sqlhub, 'processConnection') and not cPlugin.check_versions():
                     continue
                 self._aPlugins.append(cPlugin)
 
