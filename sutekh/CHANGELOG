@@ -1,5 +1,8 @@
 19 Nov 2018
  * Fix bugs in the command line support for updating the database
+ * Fix bug preventing importing plugins to generate docs correctly.
+ * Fixed the help text for the new filters
+ * Regenerated the manuals
 
 17 Nov 2018
  * Add support for variant printings of cards
