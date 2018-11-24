@@ -8,7 +8,8 @@
 import gtk
 import pango
 from ...core.BaseTables import PhysicalCardSet
-from ...core.BaseAdapters import IAbstractCard, IPhysicalCard
+from ...core.BaseAdapters import (IAbstractCard, IPhysicalCard, IPrintingName,
+                                  IExpansion)
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_error
 
@@ -19,10 +20,10 @@ NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 def _card_expansion_details(oCard, iMode):
     """Get the expansion for the name"""
     oPhysCard = IPhysicalCard(oCard)
-    if oPhysCard.expansion:
+    if oPhysCard.printing:
         if iMode == SHORT_LINE:
-            return oPhysCard.expansion.shortname
-        return oPhysCard.expansion.name
+            return IExpansion(oPhysCard.printing).shortname
+        return IPrintingName(oPhysCard.printing)
     return ' (Unknown)'
 
 
@@ -53,9 +54,6 @@ class BasePrint(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         oPrint = gtk.MenuItem("Print Card Set")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)

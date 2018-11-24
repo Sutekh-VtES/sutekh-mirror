@@ -28,7 +28,35 @@ from sutekh.SutekhUtility import is_crypt_card
 
 # Variations between SL names and the official card list
 SL_FIXES = {
-    'Carlton Van Wyk': 'Carlton Van Wyk (Hunter)',
+    u'Carlton Van Wyk': 'Carlton Van Wyk (Hunter)',
+    u"Jake Washington": "Jake Washington (Hunter)",
+    u'Pentex™ Loves You!': 'Pentex(TM) Loves You!',
+    u'Pentex™ Subversion': 'Pentex(TM) Subversion',
+    u'Nephandus': 'Nephandus (Mage)',
+    u'Shadow Court Satyr': 'Shadow Court Satyr (Changeling)',
+    u'Amam the Devourer': 'Amam the Devourer (Bane Mummy)',
+    u'Wendell Delburton': 'Wendell Delburton (Hunter)',
+    u'Dauntain Black Magician': 'Dauntain Black Magician (Changeling)',
+    u"Bang Nakh — Tiger's Claws": "Bang Nakh -- Tiger's Claws",
+    u"Neighborhood Watch Commander": "Neighborhood Watch Commander (Hunter)",
+    u"Mylan Horseed": "Mylan Horseed (Goblin)",
+    u"Sacré-Cœur Cathedral, France": "Sacre Cour Cathedral, France",
+    u"Ambrosius, The Ferryman": "Ambrosius, The Ferryman (Wraith)",
+    u"C\xe9leste Lamontagne": u"C\xe9l\xe8ste Lamontagne",
+    u"L'\xc9puisette": "L'Epuisette",
+    u"Puppeteer": "Puppeteer (Wraith)",
+    u"S\xe9bastien Goulet": u"S\xe9bastian Goulet",
+    u"S\xe9bastien Goulet (Adv)": u"S\xe9bastian Goulet (Adv)",
+    u"Akhenaten, The Sun Pharaoh": "Akhenaten, The Sun Pharaoh (Mummy)",
+    u"Tutu the Doubly Evil One": "Tutu the Doubly Evil One (Bane Mummy)",
+    u"Veneficti": "Veneficti (Mage)",
+    u"Brigitte Gebauer": "Brigitte Gebauer (Wraith)",
+    u"\xc9tienne Fauberge": "Etienne Fauberge",
+    u'Kherebutu': 'Kherebutu (Bane Mummy)',
+    u'Qetu the Evil Doer': 'Qetu the Evil Doer (Bane Mummy)',
+    u"Saatet-ta": u"Saatet-ta (Bane Mummy)",
+    u"Mehemet of the Ahl-i-Batin": "Mehemet of the Ahl-i-Batin (Mage)",
+    u"Draeven Softfoot": "Draeven Softfoot (Changeling)",
 }
 
 

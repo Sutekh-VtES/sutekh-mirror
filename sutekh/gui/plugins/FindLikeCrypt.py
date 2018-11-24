@@ -76,9 +76,8 @@ def _make_superset(oCard, bSuperior, bVampire):
                     oP.level == 'superior'])
     elif bVampire:
         return set([oP.discipline for oP in oCard.discipline])
-    else:
-        # Imbued
-        return set(oCard.virtue)
+    # Imbued
+    return set(oCard.virtue)
 
 
 class FindLikeVampires(SutekhPlugin):
@@ -103,8 +102,6 @@ class FindLikeVampires(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oGenFilter = gtk.MenuItem(self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
@@ -204,7 +201,7 @@ class FindLikeVampires(SutekhPlugin):
                      oP.level == 'superior']
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
-        if len(aSuperior) > 0:
+        if aSuperior:
             oDisciplines = gtk.RadioButton(None, "Match Disciplines")
             oSuperior = gtk.RadioButton(oDisciplines,
                                         "Match Superior Disciplines")

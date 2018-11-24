@@ -116,9 +116,7 @@ class Sects(AbbreviationLookup):
     """Common strings for the different sects."""
     dKeys = {
         'Camarilla': [], 'Sabbat': [], 'Independent': [],
-        'Laibon': [],
-        # For if we ever start handling merged vampires somehow
-        'Anarch': [],
+        'Laibon': [], 'Anarch': [],
     }
 
 

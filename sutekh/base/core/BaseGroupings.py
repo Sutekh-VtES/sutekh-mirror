@@ -24,11 +24,11 @@ class IterGrouping(object):
         dKeyItem = {}
         for oItem in self.__oIter:
             aSet = set(self.__fKeys(oItem))
-            if len(aSet) == 0:
-                dKeyItem.setdefault(None, []).append(oItem)
-            else:
+            if aSet:
                 for oKey in aSet:
                     dKeyItem.setdefault(oKey, []).append(oItem)
+            else:
+                dKeyItem.setdefault(None, []).append(oItem)
 
         aList = dKeyItem.keys()
         aList.sort()

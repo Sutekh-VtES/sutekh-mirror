@@ -35,4 +35,4 @@ class JOLDeckParser(BaseLineParser):
         # Avoid going down the exception path in IAbstractCard if we can
         sName = move_articles_to_front(sName)
         # JOL has no expansion info
-        oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None, None)

@@ -44,6 +44,12 @@ class AppMenu(SutekhMenu):
         # subclasses need to provide this
         self.cIdentifyFile = None
 
+    def is_memory_db(self):
+        """Helper function to test if we are using a memory db.
+
+           returns True if this is a memory db"""
+        return sqlhub.processConnection.uri() in ["sqlite:///:memory:", "sqlite:/:memory:"]
+
     # pylint: disable=W0201
     # these are called from __init__
     def _create_file_menu(self):
@@ -136,11 +142,12 @@ class AppMenu(SutekhMenu):
 
     def _add_download_menu(self, oDownloadMenu):
         """Add the File Download menu"""
-        if sqlhub.processConnection.uri() != "sqlite:///:memory:":
-            # Need to have memory connection available for this
-            self.create_menu_item(
+        oImportItem = self.create_menu_item(
                 "Import new Full Card List and rulings",
                 oDownloadMenu, self.do_import_new_card_list)
+        # Need to have memory connection available for this
+        if self.is_memory_db():
+            oImportItem.set_sensitive(False)
 
     def _create_pane_menu(self):
         """Create the 'Pane Actions' menu"""

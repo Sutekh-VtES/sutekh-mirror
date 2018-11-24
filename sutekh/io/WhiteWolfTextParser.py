@@ -16,6 +16,10 @@ from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
 
+BC_RARITIES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+               'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
+
+
 def strip_braces(sText):
     """Helper function for searching for keywords. Strip all {} tags from the
        text"""
@@ -75,6 +79,19 @@ def _find_sect_and_title(aLines):
             sTitle = 'Cardinal'
         elif sLowerLine.find('sabbat regent') != -1:
             sTitle = 'Regent'
+    elif aLines[0].find('Anarch') != -1 or \
+            aLines[0].find('Independent anarch') != -1:
+        # We must do this before the Independent sect check, due to existence
+        # of 'Independent Anarch' lines in the file.
+        sSect = 'Anarch'
+        # also check for Baron title
+        try:
+            oBaronTitle = re.compile(r'[aA]narch Baron of')
+            oMatch = oBaronTitle.search(aLines[0])
+            if oMatch is not None:
+                sTitle = 'Baron'
+        except IndexError:
+            pass
     elif aLines[0].find('Independent') != -1:
         sSect = 'Independent'
         # Independent titles are on the next line. Of the form
@@ -107,14 +124,6 @@ def _find_sect_and_title(aLines):
                     sTitle = 'Independent with 3 votes'
         except IndexError:
             pass
-        # also check for Baron title
-        try:
-            oBaronTitle = re.compile(r'[aA]narch Baron of')
-            oMatch = oBaronTitle.search(aLines[0])
-            if oMatch is not None:
-                sTitle = 'Baron'
-        except IndexError:
-            pass
     elif aLines[0].find('Laibon') != -1:
         sSect = 'Laibon'
         if sLowerLine.find('laibon magaji') != -1:
@@ -139,18 +148,21 @@ class CardDict(dict):
     # We avoid running these searches on the merged text of advanced
     # vampires to avoid confusion.
     dCryptProperties = {
-        'black hand': re.compile(r'Sabbat\. Black Hand'),
+        'black hand': re.compile(r'\. Black Hand'),
         # Seraph has a special case
-        'seraph': re.compile(r'Sabbat\. Black Hand(\.)? Seraph'),
+        'seraph': re.compile(r'\. Black Hand(\.)? Seraph'),
         'infernal': re.compile(r'[.:] Infernal\.'),
-        'red list': re.compile(r'\. Red List:'),
-        'anarch': re.compile(r'\. Anarch:|\. Anarch Baron|'
-                             r'Independent anarch[:\.]|'
-                             r'Independent anarch Baron'),
+        'red list': re.compile(r'\. Red List[:.]'),
         'scarce': re.compile(r'[.:] Scarce.'),
         'sterile': re.compile(r'[.:] Sterile.'),
         # Need the } to handle some of the errata'd cards
         'blood cursed': re.compile(r'[.:\}] \(?Blood [Cc]ursed'),
+        # We divide slave by clan, since that's most useful
+        'tremere slave': re.compile(r'Tremere [Ss]lave[:.]'),
+        'tremere antitribu slave': re.compile(
+            r'Tremere antitribu [Ss]lave[:.]'),
+        'malkavian antitribu slave': re.compile(
+            r'Malkavian antitribu slave'),
     }
 
     # Searches for these keywords must include the full text, including
@@ -170,6 +182,7 @@ class CardDict(dict):
     dAllyProperties = {
         # Red list allies are templated differently
         'red list': re.compile(r'\. Red List\.'),
+        'unique': re.compile(r'Unique [A-Za-z ]+ with \d life'),
     }
     oLifeRgx = re.compile(r'(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
                           r' with (\d) life\.')
@@ -178,9 +191,10 @@ class CardDict(dict):
     dEquipmentProperties = {
         'unique': re.compile(r'Unique (melee )?weapon|Unique equipment|'
                              r'represents a unique location|'
+                             r'Unique Nod|^Unique.|'
                              r'this is a unique location|'
-                             r'as equipment (while|when) in play.'
-                             r' (Haven. )?Unique.'),
+                             r'as equipment (while|when) '
+                             r'in play. (Haven. )?Unique.'),
         'location': re.compile(r'represents a (unique )?location|'
                                r'this is a (unique )?location'),
         'melee weapon': re.compile(r'[mM]elee weapon\.'),
@@ -197,18 +211,19 @@ class CardDict(dict):
     dMasterProperties = {
         # unique isn't very consistent
         'unique': re.compile(r'[Uu]nique [mM]aster|Master[:.] unique|'
-                             r'Unique\.'),
-        'trifle': re.compile(r'[mM]aster[:.] .*[tT]rifle'),
+                             r'Unique\.|Unique location\.|Unique contract\.'),
+        'trifle': re.compile(r'[tT]rifle\.'),
         'discipline': re.compile(r'Master: Discipline\.'),
-        'out-of-turn': re.compile(r'Master: out-of-turn'),
-        'location': re.compile(r'Master[:.] (unique )?[Ll]ocation'),
+        'out-of-turn': re.compile(r'Master: out-of-turn|Out-of-turn\.'),
+        'location': re.compile(r'Master[:.] (unique )?[Ll]ocation|'
+                               r'Unique location\.|Location\.'),
         'boon': re.compile(r'Boon\.'),
         'frenzy': re.compile(r'Frenzy\.'),
         'hunting ground': re.compile(r'\. Hunting [Gg]round'),
         'haven': re.compile(r'Haven\.'),
         'trophy': re.compile(r'Master\. Trophy'),
         'investment': re.compile(r'Master[.:] (unique )?[Ii]nvestment'),
-        'archetype': re.compile(r'Master: archetype'),
+        'archetype': re.compile(r'Master: archetype|Archetype\.'),
         'watchtower': re.compile(r'Master: watchtower'),
         'title': re.compile(r'Title\.'),
     }
@@ -234,7 +249,7 @@ class CardDict(dict):
     # Special cases that aren't handled by the general code
     dAllyKeywordSpecial = {
         'Gypsies': ['1 stealth'],
-        'Veneficti (Mage)': ['1 stealth'],
+        'Veneficti': ['1 stealth'],
         'High Top': ['1 intercept'],
         'Ghoul Retainer': ['1 strength'],
     }
@@ -385,6 +400,13 @@ class CardDict(dict):
         sName = self.oDispCard.sub('', sName)
         return self._oMaker.make_abstract_card(sName)
 
+    def _make_aliases(self):
+        """Create lookup entries from the AKA entries in the cardlist"""
+        for sAlias in self['aka'].split(';'):
+            oLookup = self._oMaker.make_lookup_hint(
+                "CardNames", sAlias.strip(), self['name'])
+            oLookup.syncUpdate()
+
     def _add_expansions(self, oCard, sExp):
         """Add expansion information to the card, creating expansion pairs
            as needed."""
@@ -401,6 +423,9 @@ class CardDict(dict):
 
         for sExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
+                # Create dummy expansion for the Black Chantry cards
+                if sRar in BC_RARITIES:
+                    sExp = 'Black Chantry Reprint'
                 oPair = self._oMaker.make_rarity_pair(sExp, sRar)
                 if oPair not in oCard.rarity:
                     oCard.addRarityPair(oPair)
@@ -496,11 +521,24 @@ class CardDict(dict):
 
     def _add_level(self, oCard, sLevel):
         """Add the correct string for the level to the card."""
-        oCard.level = str(self._get_level(sLevel))  # make str non-unicode
+        oCard.level = self._get_level(sLevel)
 
-    def _add_level_to_name(self, sName, sLevel):
-        """Add level info to the vampire name."""
-        return sName.strip() + " (%s)" % self._get_level(sLevel).capitalize()
+    def _fix_advanced_name(self):
+        """Check if this is an advanced vampire."""
+        sAlias = None
+        if self['name'].endswith(' (Adv)'):
+            self['level'] = 'advanced'
+            sAlias = self['name']
+            self['name'] = self['name'].replace(' (Adv)',
+                                                ' (Advanced)')
+        elif 'level' in self and self._get_level(self['level']) == 'advanced':
+            sAlias = self['name'] + ' (Adv)'
+            self['name'] += ' (Advanced)'
+        if sAlias:
+            # Add a lookup for the common '... (Adv)' variant
+            oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias,
+                                                    self['name'])
+            oLookup.syncUpdate()
 
     def _add_capacity(self, oCard, sCap):
         """Add the capacity to the card."""
@@ -547,7 +585,8 @@ class CardDict(dict):
         """Create a physical card for each expansion."""
         self._oMaker.make_physical_card(oCard, None)
         for oExp in set([oRarity.expansion for oRarity in oCard.rarity]):
-            self._oMaker.make_physical_card(oCard, oExp)
+            oPrinting = self._oMaker.make_default_printing(oExp)
+            self._oMaker.make_physical_card(oCard, oPrinting)
 
     def save(self):
         # pylint: disable=R0912
@@ -560,10 +599,12 @@ class CardDict(dict):
         if 'name' not in self:
             return
 
-        if 'level' in self:
-            self['name'] = self._add_level_to_name(self['name'], self['level'])
+        self._fix_advanced_name()
 
         oCard = self._make_card(self['name'])
+
+        if 'aka' in self:
+            self._make_aliases()
 
         self._oLogger.info('Card: %s', self['name'])
 
@@ -686,6 +727,7 @@ class InCard(LogStateWithInfo):
     # card text
 
     aTextTags = [
+        'anarch',
         'master',
         'camarilla',
         'sabbat',
@@ -730,7 +772,10 @@ class InExpansion(LogStateWithInfo):
         if sLine.startswith('[') and sLine.strip().endswith(']'):
             self._dInfo['expansion'] = sLine.strip()
             return InCard(self._dInfo, self._oLogger)
-        else:
+        elif sLine.startswith('AKA:'):
+            # We force this in here, since otherwise we need to bounce back and
+            # force between InExpansion and InCard in an unpleasant way
+            self._dInfo['aka'] = sLine.replace('AKA:', '').strip()
             return self
 
 

@@ -38,7 +38,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
+        <span>[6 vampires] Capacity min : 3 max : 9 average : 6.00</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
@@ -57,6 +57,23 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td />
               <td>
                 <span class="tablevalue">Ahrimane (group 2)</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showvamp.html?NAME=Hektor">Hektor</a>
+                </span>
+              </td><td />
+              <td>
+                <span class="tablevalue">9</span>
+              </td><td>
+                <span class="tablevalue">CEL POT PRE QUI for</span>
+              </td><td>
+                <span class="tablevalue">Priscus</span>
+              </td><td>
+                <span class="tablevalue">Brujah antitribu (group 4)</span>
               </td>
             </tr><tr>
               <td>
@@ -114,7 +131,7 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[19 cards]</span>
+        <span class="stats" id="librarystats">[28 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -177,8 +194,31 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
             </tr>
           </tbody>
         </table><h4 class="librarytype">
+          <span>Combat</span>
+          <span class="stats">[8]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Immortal%%20Grapple">Immortal Grapple</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Walk%%20of%%20Flame">Walk of Flame</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[7]</span>
+          <span class="stats">[8]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -203,6 +243,14 @@ EXPECTED_1 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://monger.vekn.org/showcard.html?NAME=Aaron's%%20Feeding%%20Razor">Aaron's Feeding Razor</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://monger.vekn.org/showcard.html?NAME=Anarch%%20Manifesto,%%20An">An Anarch Manifesto</a>
                 </span>
               </td>
             </tr>
@@ -276,7 +324,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
+        <span>[6 vampires] Capacity min : 3 max : 9 average : 6.00</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
@@ -293,6 +341,21 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td />
               <td>
                 <span class="tablevalue">Ahrimane (group 2)</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">Hektor</span>
+              </td><td />
+              <td>
+                <span class="tablevalue">9</span>
+              </td><td>
+                <span class="tablevalue">CEL POT PRE QUI for</span>
+              </td><td>
+                <span class="tablevalue">Priscus</span>
+              </td><td>
+                <span class="tablevalue">Brujah antitribu (group 4)</span>
               </td>
             </tr><tr>
               <td>
@@ -344,7 +407,7 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[19 cards]</span>
+        <span class="stats" id="librarystats">[28 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -399,8 +462,27 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
             </tr>
           </tbody>
         </table><h4 class="librarytype">
+          <span>Combat</span>
+          <span class="stats">[8]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">Immortal Grapple</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">Walk of Flame</span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[7]</span>
+          <span class="stats">[8]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -420,6 +502,12 @@ EXPECTED_2 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                 <span class="tablevalue">1x</span>
               </td><td>
                 <span class="tablevalue">Aaron's Feeding Razor</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">An Anarch Manifesto</span>
               </td>
             </tr>
           </tbody>
@@ -486,7 +574,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
+        <span>[6 vampires] Capacity min : 3 max : 9 average : 6.00</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
@@ -505,6 +593,23 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td />
               <td>
                 <span class="tablevalue">Ahrimane (group 2)</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?crypt=Hektor">Hektor</a>
+                </span>
+              </td><td />
+              <td>
+                <span class="tablevalue">9</span>
+              </td><td>
+                <span class="tablevalue">CEL POT PRE QUI for</span>
+              </td><td>
+                <span class="tablevalue">Priscus</span>
+              </td><td>
+                <span class="tablevalue">Brujah antitribu (group 4)</span>
               </td>
             </tr><tr>
               <td>
@@ -562,7 +667,7 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[19 cards]</span>
+        <span class="stats" id="librarystats">[28 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -625,8 +730,31 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
             </tr>
           </tbody>
         </table><h4 class="librarytype">
+          <span>Combat</span>
+          <span class="stats">[8]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Immortal+Grapple">Immortal Grapple</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Walk+of+Flame">Walk of Flame</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[7]</span>
+          <span class="stats">[8]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -651,6 +779,14 @@ EXPECTED_3 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Anarch+Manifesto,+An">An Anarch Manifesto</a>
                 </span>
               </td>
             </tr>
@@ -724,7 +860,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="crypt">
       <h3 id="crypttitle">
         <span>Crypt</span>
-        <span>[5 vampires] Capacity min : 3 max : 7 average : 5.40</span>
+        <span>[6 vampires] Capacity min : 3 max : 9 average : 6.00</span>
       </h3><div id="crypttable">
         <table summary="Crypt card table">
           <tbody>
@@ -743,6 +879,23 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td />
               <td>
                 <span class="tablevalue">Ahrimane (group 2)</span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?crypt=Hektor">Hektor</a>
+                </span>
+              </td><td />
+              <td>
+                <span class="tablevalue">9</span>
+              </td><td>
+                <span class="tablevalue">CEL POT PRE QUI for</span>
+              </td><td>
+                <span class="tablevalue">Priscus</span>
+              </td><td>
+                <span class="tablevalue">Brujah antitribu (group 4)</span>
               </td>
             </tr><tr>
               <td>
@@ -800,7 +953,7 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     </div><div id="library">
       <h3 id="librarytitle">
         <span>Library</span>
-        <span class="stats" id="librarystats">[19 cards]</span>
+        <span class="stats" id="librarystats">[28 cards]</span>
       </h3><div class="librarytable">
         <h4 class="librarytype">
           <span>Action</span>
@@ -863,8 +1016,31 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
             </tr>
           </tbody>
         </table><h4 class="librarytype">
+          <span>Combat</span>
+          <span class="stats">[8]</span>
+        </h4><table summary="Library card table">
+          <tbody>
+            <tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Immortal+Grapple">Immortal Grapple</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">4x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Walk+of+Flame">Walk of Flame</a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table><h4 class="librarytype">
           <span>Equipment</span>
-          <span class="stats">[7]</span>
+          <span class="stats">[8]</span>
         </h4><table summary="Library card table">
           <tbody>
             <tr>
@@ -889,6 +1065,14 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
               </td><td>
                 <span class="tablevalue">
                   <a href="http://www.secretlibrary.info/?lib=Aaron's+Feeding+Razor">Aaron's Feeding Razor</a>
+                </span>
+              </td>
+            </tr><tr>
+              <td>
+                <span class="tablevalue">1x</span>
+              </td><td>
+                <span class="tablevalue">
+                  <a href="http://www.secretlibrary.info/?lib=Anarch+Manifesto,+An">An Anarch Manifesto</a>
                 </span>
               </td>
             </tr>
@@ -954,6 +1138,24 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         </li>
       </ul><div class="text">
         <p>Sabbat: +1 bleed. Sterile.</p>
+      </div><h5>Hektor</h5>
+      <ul>
+        <li>
+          <span class="label">Capacity:</span>
+          <span class="capacity">9</span>
+        </li><li>
+          <span class="label">Group:</span>
+          <span class="group">4</span>
+        </li><li>
+          <span class="label">Clan:</span>
+          <span class="clan">Brujah antitribu</span>
+        </li><li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">CEL POT PRE QUI for</span>
+        </li>
+      </ul><div class="text">
+        <p>Sabbat priscus: Damage from Hektor\'s hand strikes is aggravated. Baali get +1 bleed</p>
+        <p>when bleeding you.</p>
       </div><h5>Alan Sovereign (Advanced)</h5>
       <ul>
         <li>
@@ -1047,6 +1249,25 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       </ul><div class="text">
         <p>Unique {mortal} with 3 life. {0 strength}, 1 bleed.</p>
         <p>{Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</p>
+      </div><h4 class="libraryttype">Combat</h4>
+      <h5 class="cardname">Immortal Grapple</h5>
+      <ul>
+        <li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">POT</span>
+        </li>
+      </ul><div class="text">
+        <p>Only usable at close range before strikes are chosen. Grapple.</p>
+        <p>[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round. [POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.</p>
+      </div><h5 class="cardname">Walk of Flame</h5>
+      <ul>
+        <li>
+          <span class="label">Disciplines:</span>
+          <span class="disciplines">THA</span>
+        </li>
+      </ul><div class="text">
+        <p>Not usable on the first round of combat.</p>
+        <p>[tha] Strike: 1R aggravated damage. [THA] Strike: 2R aggravated damage.</p>
       </div><h4 class="libraryttype">Equipment</h4>
       <h5 class="cardname">.44 Magnum</h5>
       <ul>
@@ -1073,8 +1294,12 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           <span class="cost">1 pool</span>
         </li>
       </ul><div class="text">
-        <p>Unique equipment.</p>
-        <p>When this vampire successfully hunts, he or she gains 1 additional blood.</p>
+        <p>Unique.</p>
+        <p>The bearer gets +1 hunt.</p>
+      </div><h5 class="cardname">An Anarch Manifesto</h5>
+      <div class="text">
+        <p>Equipment.</p>
+        <p>The anarch with this equipment gets +1 stealth on actions that require an anarch. Titled non-anarch vampires get +1 strength in combat with this minion. A minion may have only one Anarch Manifesto.</p>
       </div><h4 class="libraryttype">Master</h4>
       <h5 class="cardname">Abombwe</h5>
       <div class="text">

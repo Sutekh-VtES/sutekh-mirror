@@ -115,9 +115,6 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def get_menu_item(self):
         """Add the menu item to the Data Downloads menu.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         oImport = gtk.MenuItem(self.sMenuName)
         oImport.connect('activate', self.run_import_dialog)
         return [('Data Downloads', oImport)]
@@ -148,7 +145,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self.oFileChooser = SutekhFileWidget(self.parent,
                                              gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oFileChooser.add_filter_with_pattern('PDF Files', ['*.pdf'])
-        #self.oFileChooser.default_filter()
+        # self.oFileChooser.default_filter()
         self.oDlg.vbox.pack_start(self.oFileChooser, expand=True)
 
         # Choose the expansion for the card set

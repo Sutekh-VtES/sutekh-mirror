@@ -3,7 +3,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test cases for the CardSetUtilities functions"""
+"""Test cases for the LookupHints behaviour"""
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseAdapters import IAbstractCard
@@ -29,3 +29,14 @@ class LookupTests(SutekhTest):
         # Odd cases
         self.assertEqual(oCard, IAbstractCard("THE PATH OF bLOOD"))
         self.assertEqual(oCard, IAbstractCard("the paTH oF bLOOD"))
+
+        # Check that the AKA parsing works as expected
+        oCard = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
+        self.assertEqual(oCard, IAbstractCard("Lazar Dobrescu"))
+
+        # check (Adv) automatic lookups
+        oCard = IAbstractCard(u"Kemintiri (Advanced)")
+        self.assertEqual(oCard, IAbstractCard("Kemintiri (Adv)"))
+
+        oCard = IAbstractCard(u"Alan Sovereign (Advanced)")
+        self.assertEqual(oCard, IAbstractCard("Alan Sovereign (Adv)"))

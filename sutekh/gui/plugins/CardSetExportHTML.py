@@ -31,9 +31,6 @@ class CardSetExportHTML(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the Plugins Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         if self._cModelType == "MainWindow":
             oPrefs = gtk.MenuItem("Export to HTML preferences")
             oSubMenu = gtk.Menu()

@@ -16,13 +16,14 @@ from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 EXPECTED_1 = """"Test Set 1"
 "A test author"
 "A test comment"
-5
+6
 "Abebe"
 "Alan Sovereign (ADV)"
+"Hektor"
 "Inez 'Nurse216' Villagrande"
 "Siamese, The"
 "Siamese, The"
-19
+28
 ".44 Magnum"
 ".44 Magnum"
 ".44 Magnum"
@@ -37,11 +38,20 @@ EXPECTED_1 = """"Test Set 1"
 "Aire of Elation"
 "Aire of Elation"
 "Aire of Elation"
+"Anarch Manifesto, An"
 "Hide the Heart"
+"Immortal Grapple"
+"Immortal Grapple"
+"Immortal Grapple"
+"Immortal Grapple"
 "Path of Blood, The"
 "Scapelli, The Family `Mechanic`"
 "Swallowed by the Night"
 "Swallowed by the Night"
+"Walk of Flame"
+"Walk of Flame"
+"Walk of Flame"
+"Walk of Flame"
 """
 
 
@@ -60,6 +70,7 @@ class ELDBDeckWriterTests(SutekhTest):
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
+
 
 if __name__ == "__main__":
     unittest.main()

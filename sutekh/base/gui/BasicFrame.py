@@ -92,8 +92,8 @@ class BasicFrame(gtk.Frame):
 
     def init_plugins(self):
         """Loop through the plugins, and enable those appropriate for us."""
-        for cPlugin in \
-                self._oMainWindow.plugin_manager.get_card_list_plugins():
+        oPluginMgr = self._oMainWindow.plugin_manager
+        for cPlugin in oPluginMgr.get_plugins_for(self._cModelType):
             self._aPlugins.append(cPlugin(self._oController.view,
                                           self._oController.view.get_model(),
                                           self._cModelType))

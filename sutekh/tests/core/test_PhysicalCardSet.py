@@ -11,7 +11,7 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
-from sutekh.base.core.BaseAdapters import IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCardSet
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.core.CardSetUtilities import delete_physical_card_set
 
@@ -26,25 +26,40 @@ ABSTRACT_CARDS = [
 ]
 
 CARD_EXPANSIONS = [
-    ('.44 magnum', 'Jyhad', 1),
-    ('ak-47', 'LotN', 1),
-    ('abbot', 'Third Edition', 1),
-    ('abombwe', 'Legacy of Blood', 1),
-    ('alan sovereign (advanced)', 'Promo-20051001', 1),
-    ('the path of blood', 'LotN', 1),
-    ('the siamese', 'BL', 2),
-    ('inez "nurse216" villagrande', 'NoR', 1),
-    ('Scapelli, the Family "Mechanic"', 'DS', 1),
-    ("Aaron's Feeding Razor", "KoT", 1),
-    ('Swallowed by the Night', 'Third', 2),
-    ('Aire of Elation', 'CE', 3),
-    ('Hide the Heart', 'HttB', 1),
+    ('.44 magnum', 'Jyhad', None, 1),
+    ('ak-47', 'LotN', None, 1),
+    ('abbot', 'Third Edition', None, 1),
+    ('abombwe', 'Legacy of Blood', None, 1),
+    ('alan sovereign (advanced)', 'Promo-20051001', None, 1),
+    ('the path of blood', 'LotN', None, 1),
+    ('the siamese', 'BL', None, 2),
+    ('inez "nurse216" villagrande', 'NoR', None, 1),
+    ('Scapelli, the Family "Mechanic"', 'DS', None, 1),
+    ("Aaron's Feeding Razor", "KoT", None, 1),
+    ('Swallowed by the Night', 'Third', None, 1),
+    ('Swallowed by the Night', 'Third', "No Draft Text", 1),
+    ('Aire of Elation', 'CE', None, 3),
+    ('Hide the Heart', 'HttB', None, 1),
+    ('Immortal Grapple', 'Jyhad', None, 1),
+    ('Immortal Grapple', 'Jyhad', "Variant Printing", 1),
+    ('Immortal Grapple', 'KoT', "No Draft Text", 1),
+    ('Immortal Grapple', 'KoT', None, 1),
+    ('Walk of Flame', 'Third', None, 1),
+    ('Walk of Flame', 'Third', "No Draft Text", 2),
+    ('Walk of Flame', 'KoT', None, 1),
+    ('An Anarch Manifesto', 'TR', None, 1),
+    ('Hektor', 'Third', 'Sketch', 1),
 ]
 
 SET_2_ONLY_CARDS = [
-    ('alexandra', 'DS', 1),
+    ('alexandra', 'DS', 2),
     ('Abandoning the Flesh', 'CE', 1),
 ]
+
+SET_3_ONLY_CARDS = [
+    (u'Étienne Fauberge', "Anarchs", 1),
+]
+
 CARD_SET_NAMES = ['Test Set 1', 'Test Set 2', 'Test Set 3', 'Test Set 4']
 
 
@@ -55,8 +70,8 @@ def get_phys_cards():
         oPC = make_card(sName, None)
         for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
-    for sName, sExpansion, iCount in CARD_EXPANSIONS:
-        oPC = make_card(sName, sExpansion)
+    for sName, sExpansion, sPrinting, iCount in CARD_EXPANSIONS:
+        oPC = make_card(sName, sExpansion, sPrinting)
         for _iNum in range(iCount):
             aAddedPhysCards.append(oPC)
     return aAddedPhysCards
@@ -94,6 +109,32 @@ def make_set_2():
             oPhysCardSet2.addPhysicalCard(oPC.id)
     oPhysCardSet2.syncUpdate()
     return oPhysCardSet2
+
+
+def make_set_3():
+    """Copy of the second card set with Abebe dropped"""
+    aAddedPhysCards = get_phys_cards()
+    oPhysCardSet3 = PhysicalCardSet(name=CARD_SET_NAMES[2])
+
+    oPhysCardSet3.comment = ('A formatted test comment\nA second line\n'
+                             'A third line')
+    oPhysCardSet3.author = 'A test author'
+    oPhysCardSet3.annotations = 'Some Annotations'
+    for iLoop in range(5, 10):
+        oPC = aAddedPhysCards[iLoop]
+        if IAbstractCard(oPC).name == 'Abebe':
+            continue
+        oPhysCardSet3.addPhysicalCard(oPC.id)
+    for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
+        oPC = make_card(sName, sExpansion)
+        for _iNum in range(iCount):
+            oPhysCardSet3.addPhysicalCard(oPC.id)
+    for sName, sExpansion, iCount in SET_3_ONLY_CARDS:
+        oPC = make_card(sName, sExpansion)
+        for _iNum in range(iCount):
+            oPhysCardSet3.addPhysicalCard(oPC.id)
+    oPhysCardSet3.syncUpdate()
+    return oPhysCardSet3
 
 
 class PhysicalCardSetTests(SutekhTest):
@@ -199,6 +240,7 @@ class PhysicalCardSetTests(SutekhTest):
         self.assertEqual(
             MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=aAddedPhysCards[4].id).count(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

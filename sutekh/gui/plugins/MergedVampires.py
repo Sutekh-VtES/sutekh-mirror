@@ -5,6 +5,8 @@
 
 """Shows the merged version for advanced vampires."""
 
+import logging
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import normalise_whitespace
@@ -14,6 +16,7 @@ from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
 from sutekh.base.gui.GuiUtils import make_markup_button
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 
+from sutekh.SutekhUtility import find_base_vampire, find_adv_vampire
 from sutekh.core.SutekhTables import SutekhAbstractCard
 from sutekh.core.SutekhAdapters import ITitle, ISect, IDisciplinePair
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -63,10 +66,12 @@ class FakeCard(object):
     def __init__(self, oAbsCard, dReplaceMap):
         if oAbsCard.level:
             self.oAdvanced = oAbsCard
-            self.oBase = self._find_base_vampire()
+            # Due to the other checks, we assume this is never None
+            self.oBase = find_base_vampire(oAbsCard)
         else:
             self.oBase = oAbsCard
-            self.oAdvanced = self._find_adv_vampire()
+            # Due to the other checks, we assume this is never None
+            self.oAdvanced = find_adv_vampire(oAbsCard)
 
         self.dReplaceMap = dReplaceMap
 
@@ -140,14 +145,14 @@ class FakeCard(object):
         elif self.name == 'Appolonius (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace(
-                'Baron of London', 'Independent anarch Baron of London')
+                'Baron of London', 'Anarch Baron of London')
         elif self.name == 'Batsheva (Merged)':
             self.keywords.append(IKeyword('2 strength'))
         elif self.name == 'Boss Callihan (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Baron of New York.', '.')
             self.text = self.text.replace(
-                'Independent anarch:', 'Independent anarch Baron of New York:')
+                'Independent anarch:', 'Anarch Baron of New York:')
         elif self.name == 'Brunhilde (EC 2013) (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Anarch Baron of Stockholm', '.')
@@ -161,22 +166,21 @@ class FakeCard(object):
             self.text = self.text.replace('Camarilla',
                                           'Camarilla Prince of Budapest')
         elif self.name == 'Count Germaine (Merged)':
-            self.text = 'Independent. ' + self.text
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
+            self.text = 'Anarch: ' + self.text
         elif self.name == 'Danielle Diron (Merged)':
             self.title = [ITitle('Baron')]
             self.text = self.text.replace('. Baron of Berlin.', '.')
             self.text = self.text.replace(' Danielle has 1 vote (titled).', '')
             self.text = self.text.replace(
-                'Independent anarch:', 'Independent anarch Baron of Berlin:')
+                'Independent anarch:', 'Anarch Baron of Berlin:')
         elif self.name == 'Dominique (Merged)':
             self.text = self.text.replace(
                 '. Independent Anarch Baron of Paris.', '')
             self.text = self.text.replace(
-                'Sabbat:', 'Independent Anarch Baron of Paris:')
-            self.keywords.append(IKeyword('anarch'))
+                'Sabbat:', 'Anarch Baron of Paris:')
             self.title = [ITitle('Baron')]
-            self.sect = [ISect('Independent')]
+            self.sect = [ISect('Anarch')]
         elif self.name == 'Duality (Red Sign) (Merged)':
             self.discipline.remove(IDisciplinePair(('Thaumaturgy',
                                                     'inferior')))
@@ -216,13 +220,13 @@ class FakeCard(object):
             self.text = self.text.replace('. Baron of Barcelona.', '.')
             self.text = self.text.replace(
                 'Independent anarch:',
-                'Independent anarch Baron of Barcelona:')
+                'Anarch Baron of Barcelona:')
         elif self.name == 'Jeremy MacNeil (Merged)':
             self.text = self.text.replace(' Anarch Baron of Los Angeles.', '')
             self.text = self.text.replace(
-                'Independent:', 'Independent. Anarch Baron of Los Angeles.')
+                'Independent:', 'Anarch Baron of Los Angeles.')
             self.title = [ITitle('Baron')]
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
         elif self.name == 'Jessica (Merged)':
             self.title = [ITitle('Archbishop')]
             self.text = self.text.replace(' Archbishop of Brussels.', '')
@@ -319,37 +323,12 @@ class FakeCard(object):
         elif self.name == 'Xaviar (Merged)':
             self.text = self.text.replace(' Xaviar has 2 votes (titled).', '')
         elif self.name == 'Yazid Tamari (Merged)':
-            self.sect = [ISect('Independent')]
-            self.keywords.append(IKeyword('anarch'))
+            self.sect = [ISect('Anarch')]
             self.text = self.text.replace('Independent. Anarch.', '')
-            self.text = self.text.replace('Sabbat.', 'Independent. Anarch.')
+            self.text = self.text.replace('Sabbat.', 'Anarch.')
             self.text = self.text.replace('Black Hand:', 'Black Hand Seraph:')
         # Fix any issues caused by the various replacements
         self.text = normalise_whitespace(self.text)
-
-    def _find_base_vampire(self):
-        """Find the corresponding base vampire.
-
-           Due to the checks in the plugin, this is assumed to be safe."""
-        # pylint: disable=E1103
-        # pyprotocols confuses pylint
-        sBaseName = self.oAdvanced.name.replace(' (Advanced)', '')
-        # Special cases
-        if '(EC 2013)' in sBaseName:
-            sBaseName = sBaseName.replace(' (EC 2013)', '')
-        if '(Red Sign)' in sBaseName:
-            sBaseName = sBaseName.replace(' (Red Sign)', '')
-        return IAbstractCard(sBaseName)
-
-    def _find_adv_vampire(self):
-        """Find the corresponding advanced vampire
-
-           Due to the checks in the plugin, this is assumed to be safe."""
-        # pylint: disable=E1103
-        # pyprotocols confuses pylint
-        sAdvName = self.oBase.name + ' (Advanced)'
-        # Note that base brunhilde links to the non-storyline advanced version
-        return IAbstractCard(sAdvName)
 
     def _make_merged_text(self):
         """Combine the text of the two versions, cleaning up keyword
@@ -432,9 +411,8 @@ class MergedVampirePlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        if self._check_versions() and self._check_model_type():
-            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
-                                   self.post_set_card_text)
+        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                               self.post_set_card_text)
         super(MergedVampirePlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -442,8 +420,6 @@ class MergedVampirePlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        if not self._check_versions() or not self._check_model_type():
-            return None
         MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
 
@@ -458,10 +434,13 @@ class MergedVampirePlugin(SutekhPlugin):
             return
         try:
             self._oFakeCard = FakeCard(self._oAbsCard, self._dReplaceMap)
-        except SQLObjectNotFound:
+        except SQLObjectNotFound as oExc:
             do_complaint_error(
-                "Unable to find base vampire for %s" % self._oAbsCard.name)
+                "Unable to created merged vampire for %s"
+                % self._oAbsCard.name)
             self._aExcluded.add(self._oAbsCard)
+            logging.warn("Merged vampire creation failed (%s).", oExc,
+                         exc_info=1)
             return
         oCardTextView = self.parent.card_text_pane.view
         # Button logic
@@ -486,6 +465,15 @@ class MergedVampirePlugin(SutekhPlugin):
             except SQLObjectNotFound:
                 # we skip the special cases here
                 continue
+
+    def update_to_new_db(self):
+        """Refresh information after a database updated."""
+        # clear cache
+        self._aBaseVamps = set()
+        self._aExcluded = set()
+        # Refresh everything
+        self._dReplaceMap = make_replace_keywords()
+        self._make_base_map()
 
     def _merge_vampire(self, _oWidget):
         """Display the merged version of the vampire."""

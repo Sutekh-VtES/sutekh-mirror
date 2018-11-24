@@ -12,10 +12,12 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion, IRarity, IRarityPair,
-                                           ICardType, IArtist, IKeyword)
+                                           ICardType, IArtist, IKeyword,
+                                           IPrinting)
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
+from sutekh.SutekhUtility import is_crypt_card, is_vampire, is_trifle
 from sutekh.tests.TestCore import SutekhTest
 
 
@@ -52,35 +54,42 @@ class WhiteWolfParserTests(SutekhTest):
         u"Alexandra",
         u"Alfred Benezri",
         u"Ambrogino Giovanni",
-        u'Amisa',
-        u'Anarch Railroad',
-        u'Anarch Revolt',
+        u"Amisa",
+        u"An Anarch Manifesto",
+        u"Anarch Railroad",
+        u"Anarch Revolt",
         u"Anastasz di Zagreb",
         u"Angelica, The Canonicus",
         u'Anna "Dictatrix11" Suljic',
         u"Anson",
         u"Ashur Tablets",
         u"Aye",
+        u"Baron Dieudonne",
         u"Bravo",
         u"Bronwen",
         u"Cedric",
         u"Cesewayo",
-        u'Dramatic Upheaval',
+        u"Dramatic Upheaval",
         u'Earl "Shaka74" Deams',
         u"Enkidu, The Noah",
         u"Fidus, The Shrunken Beast",
         u"Ghoul Retainer",
         u"Gracis Nostinus",
         u"Gypsies",
-        u'Hide the Heart',
+        u"Harold Zettler, Pentex Director",
+        u"Hektor",
+        u"Hide the Heart",
         u"High Top",
+        u"Immortal Grapple",
         u'Inez "Nurse216" Villagrande',
         u"Kabede Maru",
         u"Kemintiri (Advanced)",
         u"Living Manse",
         u"L\xe1z\xe1r Dobrescu",
-        u'Motivated by Gehenna',
+        u"Motivated by Gehenna",
         u"Necromancy",
+        u"New Blood",
+        u"Off Kilter",
         u"Ossian",
         u"Pariah",
         u"Paris Opera House",
@@ -95,6 +104,7 @@ class WhiteWolfParserTests(SutekhTest):
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
         u"Shade",
+        u"Sheela Na Gig",
         u"Smite",
         u"Swallowed by the Night",
         u"The Ankara Citadel, Turkey",
@@ -103,7 +113,9 @@ class WhiteWolfParserTests(SutekhTest):
         u"The Slaughterhouse",
         u"Two Wrongs",
         u"Vox Domini",
+        u"Walk of Flame",
         u"Yvette, The Hopeless",
+        u"Étienne Fauberge",
         ]
 
     def test_basic(self):
@@ -192,7 +204,7 @@ class WhiteWolfParserTests(SutekhTest):
         # Check Ashur Tablets
         oAshur = IAbstractCard('Ashur Tablets')
         self.assertTrue(oAnthology in [oP.expansion for oP in oAshur.rarity])
-        self.assertTrue(IRarityPair(('Anthology', 'Anthology'))
+        self.assertTrue(IRarityPair(('Anthology', 'Fixed'))
                         in oAshur.rarity)
 
         # Check Abstract and Physical expansions match
@@ -200,7 +212,8 @@ class WhiteWolfParserTests(SutekhTest):
             aExps = [oPair.expansion for oPair in oAbs.rarity]
             for oExp in aExps:
                 try:
-                    oPair = IPhysicalCard((oAbs, oExp))
+                    oPrint = IPrinting((oExp, None))
+                    _oPair = IPhysicalCard((oAbs, oPrint))
                 except SQLObjectNotFound:
                     self.fail("Missing physical card %s from expansion %s"
                               % (oAbs.name, oExp.name))
@@ -406,6 +419,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oAbo.costtype, None)
         self.assertEqual(oAbo.level, None)
 
+
         self.assertEqual(len(oAbo.discipline), 0)
         self.assertEqual(len(oAbo.cardtype), 1)
         self.failUnless(ICardType('Master') in oAbo.cardtype)
@@ -476,6 +490,18 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
 
+        # Check ANY group handling
+        oNewBlood = IAbstractCard('New Blood')
+        self.assertEqual(oNewBlood.group, -1)
+        self.assertEqual(oNewBlood.capacity, 2)
+        self.assertEqual(oNewBlood.life, None)
+        self.assertEqual(oNewBlood.cost, None)
+
+        self.failUnless(IClan('Blood Brother') in oNewBlood.clan)
+        self.assertEqual(len(oNewBlood.clan), 1)
+        self.assertEqual(len(oNewBlood.discipline), 1)
+        self.assertTrue('belongs to the chosen circle.' in oNewBlood.text)
+
         # Check The Path
         oPath1 = IAbstractCard('The Path of Blood')
 
@@ -524,6 +550,17 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oRaven.cost, 1)
         self.assertEqual(oRaven.costtype, 'blood')
 
+        # Check slave keywords for Fidus and Sheela Na Gig
+        oFidus = IAbstractCard(u"Fidus, The Shrunken Beast")
+        self.assertTrue(IKeyword('tremere slave') in oFidus.keywords)
+
+        oSheela = IAbstractCard(u"Sheela Na Gig")
+        self.assertTrue(IKeyword('tremere antitribu slave') in oSheela.keywords)
+
+        # Check for Anarch sect status
+        oAlab = IAbstractCard(u"Alabástrom")
+        self.failUnless(ISect('Anarch') in oAlab.sect)
+
         # Check special cases
         oRetainer = IAbstractCard('Ghoul Retainer')
         self.failUnless(IKeyword('1 strength') in oRetainer.keywords)
@@ -541,6 +578,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('not for legal play') in oDramatic.keywords)
         oMotivated = IAbstractCard('Motivated by Gehenna')
         self.failUnless(IKeyword('not for legal play') in oMotivated.keywords)
+        oAaron = IAbstractCard("Aaron's Feeding Razor")
+        self.failUnless(IKeyword('unique') in oAaron.keywords)
 
         # Test adding extra expansions works
 
@@ -582,6 +621,16 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oSmite.costtype, "conviction")
         self.failUnless(oSmite.text.startswith('{Strike:}'))
 
+        # Check for Black Chantry Expansion data
+        oBaronD = IAbstractCard('Baron Dieudonne')
+        oKoT = IExpansion('Keepers of Tradition')
+        oBC = IExpansion('Black Chantry Reprint')
+        self.assertTrue(oKoT in [oP.expansion for oP in oBaronD.rarity])
+        self.assertTrue(oBC in [oP.expansion for oP in oBaronD.rarity])
+        # Check that we also pick up the BC expansion for Hide the Heart
+        self.assertTrue(oBC in [oP.expansion for oP in oHtH.rarity])
+        self.assertFalse(oKoT in [oP.expansion for oP in oHtH.rarity])
+
         # Check we get the rarity for Aye correct
         oAye = IAbstractCard("Aye")
         self.assertEqual(oAye.canonicalName, u"aye")
@@ -601,6 +650,66 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
         self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
+
+
+    def test_card_type_checkers(self):
+        """Check the various utilities for checking card type
+           and properties."""
+        oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
+        self.assertTrue(is_vampire(oDob))
+        self.assertTrue(is_crypt_card(oDob))
+        self.assertFalse(is_trifle(oDob))
+
+        oAbo = IAbstractCard('Abombwe')
+        self.assertFalse(is_vampire(oAbo))
+        self.assertFalse(is_crypt_card(oAbo))
+        self.assertTrue(is_trifle(oAbo))
+
+        oAshur = IAbstractCard('Ashur Tablets')
+        self.assertFalse(is_vampire(oAshur))
+        self.assertFalse(is_crypt_card(oAshur))
+        self.assertFalse(is_trifle(oAshur))
+
+        oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
+        self.assertFalse(is_vampire(oEarl))
+        self.assertTrue(is_crypt_card(oEarl))
+        self.assertFalse(is_trifle(oEarl))
+
+        oOssian = IAbstractCard('Ossian')
+        self.assertFalse(is_vampire(oOssian))
+        self.assertFalse(is_crypt_card(oOssian))
+        self.assertFalse(is_trifle(oOssian))
+
+    def test_adapters(self):
+        """Extra sanity checks on the adapaters."""
+        for oAdapter in (IAbstractCard, IPhysicalCard,
+                         IExpansion, IRarity, IRarityPair,
+                         ICardType, IArtist, IKeyword):
+            self.assertRaises(NotImplementedError, oAdapter, 1)
+            self.assertRaises(NotImplementedError, oAdapter, None)
+
+        # Various pass through tests
+        self.assertEqual(IAbstractCard("Ossian"),
+                         IAbstractCard(IAbstractCard("Ossian")))
+        oExp = IExpansion("KMW")
+        self.assertEqual(oExp, IExpansion(oExp))
+
+        oPrinting = IPrinting((oExp, None))
+        self.assertEqual(oPrinting, IPrinting(oPrinting))
+
+        oPhysCard = IPhysicalCard((IAbstractCard("Ossian"), oPrinting))
+        self.assertEqual(oPhysCard, IPhysicalCard(oPhysCard))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard("Ossian"))
+        self.assertEqual(oPhysCard.abstractCard, IAbstractCard(oPhysCard))
+
+        self.assertEqual(IArtist("Lawrence Snelly"),
+                         IArtist(IArtist("Lawrence Snelly")))
+        self.assertEqual(IKeyword('not for legal play'),
+                         IKeyword(IKeyword('not for legal play')))
+        self.assertEqual(IRarity("Common"), IRarity(IRarity("Common")))
+        self.assertEqual(IRarityPair(("EK", "Common")),
+                         IRarityPair(IRarityPair(("EK", "Common"))))
+        self.assertEqual(ICardType("Vampire"), ICardType(ICardType("Vampire")))
 
 
 if __name__ == "__main__":

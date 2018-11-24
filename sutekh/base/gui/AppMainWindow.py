@@ -150,13 +150,16 @@ class AppMainWindow(MultiPaneWindow):
         # Load plugins
         self._oPluginManager = oPluginManager
         self._oPluginManager.load_plugins()
-        for cPlugin in self._oPluginManager.get_card_list_plugins():
-            # Find plugins that will work on the Main Window
-            self._aPlugins.append(cPlugin(self, None,
-                                          "MainWindow"))
+        for cPlugin in self._oPluginManager.get_all_plugins():
             # Fixup config to accomodate the plugins
             cPlugin.update_config()
             cPlugin.register_with_config(oConfig)
+
+
+        # Initiliase plugins that will work on the Main Window
+        for cPlugin in self._oPluginManager.get_plugins_for('MainWindow'):
+            self._aPlugins.append(cPlugin(self, None,
+                                          "MainWindow"))
 
         # Re-validate config after adding plugin specs
         oValidationResults = oConfig.validate()
@@ -439,6 +442,11 @@ class AppMainWindow(MultiPaneWindow):
     def prepare_for_db_update(self):
         """Handle any preparation for the database upgrade"""
         MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
+
+    def clear_cache(self):
+        """Clear any cached objects."""
+        # Subclasses should provide this if needed
+        pass
 
     # pylint: enable=R0201
 

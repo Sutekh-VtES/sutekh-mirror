@@ -53,4 +53,4 @@ class LackeyDeckParser(BaseLineParser):
             # Skip the 'Crypt:' line
             return
         # Lackey has no expansion info
-        oHolder.add(iNum, sName, None)
+        oHolder.add(iNum, sName, None, None)

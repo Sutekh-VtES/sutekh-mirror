@@ -47,8 +47,12 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
                                           MultiCardTypeFilter,
                                           BaseCardTextFilter,
                                           KeywordFilter, MultiKeywordFilter,
+                                          PrintingFilter,
+                                          MultiPrintingFilter,
                                           PhysicalExpansionFilter,
                                           MultiPhysicalExpansionFilter,
+                                          PhysicalPrintingFilter,
+                                          MultiPhysicalPrintingFilter,
                                           ArtistFilter,
                                           MultiArtistFilter,
                                           split_list, make_table_alias)
@@ -471,8 +475,7 @@ class MultiCostFilter(SutekhCardFilter):
             if self.__aCost:
                 return OR(IN(self._oMapTable.q.cost, self.__aCost),
                           self._oMapTable.q.cost == None)
-            else:
-                return self._oMapTable.q.cost == None
+            return self._oMapTable.q.cost == None
         return IN(self._oMapTable.q.cost, self.__aCost)
 
 

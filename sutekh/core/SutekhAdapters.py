@@ -72,6 +72,7 @@ class ClanAdapter(Adapter):
     def lookup(cls, sName):
         return cls.fetch(Clans.canonical(sName), Clan)
 
+
 IClan.register(Clan, passthrough)
 
 IClan.register(basestring, ClanAdapter.lookup)

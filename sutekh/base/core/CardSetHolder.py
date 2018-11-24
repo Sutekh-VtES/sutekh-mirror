@@ -36,37 +36,40 @@ class CardSetHolder(object):
 
     # Manipulate Virtual Card Set
 
-    def add(self, iCnt, sName, sExpansionName):
+    def add(self, iCnt, sName, sExpansionName, sPrintingName):
         """Append cards to the virtual set.
 
            sExpansionName may be None.
            """
         self._dCards.setdefault(sName, 0)
         self._dCards[sName] += iCnt
-        self._dExpansions.setdefault(sExpansionName, 0)
-        self._dExpansions[sExpansionName] += iCnt
+        tExp = (sExpansionName, sPrintingName)
+        self._dExpansions.setdefault(tExp, 0)
+        self._dExpansions[tExp] += iCnt
         self._dCardExpansions.setdefault(sName, {})
-        self._dCardExpansions[sName].setdefault(sExpansionName, 0)
-        self._dCardExpansions[sName][sExpansionName] += iCnt
+        self._dCardExpansions[sName].setdefault(tExp, 0)
+        self._dCardExpansions[sName][tExp] += iCnt
 
-    def remove(self, iCnt, sName, sExpansionName):
+    def remove(self, iCnt, sName, sExpansionName, sPrintingName):
         """Remove cards from the virtual set.
 
            sExpansionName may be None.
            """
+        tExp = (sExpansionName, sPrintingName)
         if sName not in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'."
                                % (sName, iCnt))
         elif sName not in self._dCardExpansions \
-                or sExpansionName not in self._dCardExpansions[sName] \
-                or self._dCardExpansions[sName][sExpansionName] < iCnt:
+                or tExp not in self._dCardExpansions[sName] \
+                or self._dCardExpansions[sName][tExp] < iCnt:
             raise RuntimeError("Not enough of card '%s' from expansion"
-                               " '%s' to remove '%d'." % (sName,
+                               " '%s (%s)' to remove '%d'." % (sName,
                                                           sExpansionName,
+                                                          sPrintingName,
                                                           iCnt))
-        self._dCardExpansions[sName][sExpansionName] -= iCnt
+        self._dCardExpansions[sName][tExp] -= iCnt
         # This should be covered by check on self._dCardExpansions
-        self._dExpansions[sExpansionName] -= iCnt
+        self._dExpansions[tExp] -= iCnt
         self._dCards[sName] -= iCnt
 
     def _set_name(self, sValue):
@@ -128,13 +131,12 @@ class CardSetHolder(object):
                                        'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
-        aExpNames = self._dExpansions.keys()
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                                             self._dCardExpansions)
-        dExpansionLookup = dict(zip(aExpNames, aExps))
+        dPrintingLookup = oCardLookup.printing_lookup(self._dExpansions.keys(),
+                                                      "Physical Card List",
+                                                      self._dCardExpansions)
 
         aPhysCards = oCardLookup.physical_lookup(self._dCardExpansions,
-                                                 dNameCards, dExpansionLookup,
+                                                 dNameCards, dPrintingLookup,
                                                  'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):
@@ -194,11 +196,11 @@ class CardSetWrapper(CardSetHolder):
         self._oCS = oCS
         self._aWarnings = []  # Any warnings to be passed back to the user
 
-    def add(self, iCnt, sName, sExpansionName):
+    def add(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to append cards."""
         raise NotImplementedError("CardSetWrapper is read-only")
 
-    def remove(self, iCnt, sName, sExpansionName):
+    def remove(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to remove cards."""
         raise NotImplementedError("CardSetWrapper is read-only")
 
@@ -260,7 +262,7 @@ class CachedCardSetHolder(CardSetHolder):
         # pylint: disable=R0914
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
-        dLookupCache.setdefault('expansions', {})
+        dLookupCache.setdefault('printings', {})
         if self.name is None:
             raise RuntimeError("No name for the card set")
 
@@ -281,27 +283,32 @@ class CachedCardSetHolder(CardSetHolder):
             else:
                 dLookupCache['cards'][sName] = oAbs.canonicalName
 
-        # Apply Expansion lookups
-        aExpNames = [dLookupCache['expansions'].get(sExp, sExp) for sExp
-                     in self._dExpansions]
+        # Apply expansion and print lookups
+        aExpPrintNames = []
+        for tExpPrint in self._dExpansions.keys():
+            tNewExpPrint = dLookupCache['printings'].get(tExpPrint, tExpPrint)
+            aExpPrintNames.append(tNewExpPrint)
         dCardExpansions = {}
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
-            for sExp, iCnt in self._dCardExpansions[sName].iteritems():
-                dCardExpansions[sName][dLookupCache['expansions'].get(
-                    sExp, sExp)] = iCnt
-        aExps = oCardLookup.expansion_lookup(aExpNames, "Physical Card List",
-                                             self._dCardExpansions)
-        dExpansionLookup = dict(zip(aExpNames, aExps))
-        # Update expansion lookup cache
-        for sName, oExp in dExpansionLookup.iteritems():
-            if not oExp:
-                dLookupCache['expansions'][sName] = None
+            for tExpPrint, iCnt in self._dCardExpansions[sName].iteritems():
+                tNewExpPrint = dLookupCache['printings'].get(tExpPrint,
+                                                             tExpPrint)
+                dCardExpansions[sName][tNewExpPrint] = iCnt
+
+        dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
+                                                      "Physical Card List",
+                                                      dCardExpansions)
+        # Update printing lookups using the cache
+        for tExpPrint, oPrinting in dPrintingLookup.iteritems():
+            if not oPrinting:
+                dLookupCache['printings'][tExpPrint] = (None, None)
             else:
-                dLookupCache['expansions'][sName] = oExp.name
+                dLookupCache['printings'][tExpPrint] = \
+                        (oPrinting.expansion.name, oPrinting.name)
 
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
-                                                 dNameCards, dExpansionLookup,
+                                                 dNameCards, dPrintingLookup,
                                                  'Card Set "%s"' % self.name)
 
         if hasattr(sqlhub.processConnection, 'commit'):
@@ -323,8 +330,10 @@ def make_card_set_holder(oCardSet):
     if oCardSet.parent:
         oCS.parent = oCardSet.parent.name
     for oCard in oCardSet.cards:
-        if oCard.expansion is None:
-            oCS.add(1, oCard.abstractCard.canonicalName, None)
+        if oCard.printing is None:
+            oCS.add(1, oCard.abstractCard.canonicalName, None, None)
         else:
-            oCS.add(1, oCard.abstractCard.canonicalName, oCard.expansion.name)
+            oCS.add(1, oCard.abstractCard.canonicalName,
+                    oCard.printing.expansion.name,
+                    oCard.printing.name)
     return oCS

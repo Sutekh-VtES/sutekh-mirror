@@ -23,7 +23,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
   <name>Test Set 1</name>
   <author>A test author</author>
   <description>A test comment</description>
-  <crypt avg="5.40" max="7" min="3" size="5">
+  <crypt avg="6.00" max="9" min="3" size="6">
     <vampire count="1" databaseID="11">
       <adv />
       <name>Abebe</name>
@@ -43,7 +43,18 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>3</group>
       <text>Advanced, Camarilla: While Alan is ready, you may pay some or all of the pool cost of equipping from any investment cards you control.
 [MERGED] During your master phase, if Alan is ready, you may move a counter from any investment card to your pool.</text>
-    </vampire><vampire count="1" databaseID="45">
+    </vampire><vampire count="1" databaseID="47">
+      <adv />
+      <name>Hektor</name>
+      <set>Third</set>
+      <disciplines>CEL POT PRE QUI for</disciplines>
+      <clan>Brujah antitribu</clan>
+      <capacity>9</capacity>
+      <group>4</group>
+      <title>Priscus</title>
+      <text>Sabbat priscus: Damage from Hektor's hand strikes is aggravated. Baali get +1 bleed
+when bleeding you.</text>
+    </vampire><vampire count="1" databaseID="50">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
@@ -52,7 +63,7 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <capacity>3</capacity>
       <group>4</group>
       <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
-    </vampire><vampire count="2" databaseID="67">
+    </vampire><vampire count="2" databaseID="75">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -62,17 +73,17 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <group>2</group>
       <text>Sabbat: +1 bleed. Sterile.</text>
     </vampire>
-  </crypt><library size="19">
-    <card count="1" databaseID="1">
+  </crypt><library size="28">
+    <card count="3" databaseID="1">
       <name>.44 Magnum</name>
-      <set>Jyhad</set>
+      <set>CE</set>
       <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
 2R damage each strike, with an optional maneuver each combat.</text>
-    </card><card count="3" databaseID="1">
+    </card><card count="1" databaseID="1">
       <name>.44 Magnum</name>
-      <set>CE</set>
+      <set>Jyhad</set>
       <cost>2 pool</cost>
       <type>Equipment</type>
       <text>Weapon, gun.
@@ -85,12 +96,12 @@ EXPECTED_1 = """<deck databaseVersion="%s" formatVersion="-TODO-1.0" generator="
       <text>Weapon. Gun.
 2R damage each strike, with an optional maneuver {each combat}. When bearer strikes with this gun, he or she gets an optional additional strike this round, only usable to strike with this gun.</text>
     </card><card count="1" databaseID="6">
-      <name>Aaron's Feeding Razor</name>
+      <name>Aaron\'s Feeding Razor</name>
       <set>KoT</set>
       <cost>1 pool</cost>
       <type>Equipment</type>
-      <text>Unique equipment.
-When this vampire successfully hunts, he or she gains 1 additional blood.</text>
+      <text>Unique.
+The bearer gets +1 hunt.</text>
     </card><card count="2" databaseID="8">
       <name>Abbot</name>
       <set>Third</set>
@@ -111,14 +122,34 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <disciplines>PRE</disciplines>
       <text>You cannot play another action modifier to further increase the bleed for this action.
 [pre] +1 bleed; +2 bleed if the acting vampire is Toreador. [PRE] +2 bleed; +3 bleed if the acting vampire is Toreador.</text>
-    </card><card count="1" databaseID="72">
+    </card><card count="1" databaseID="26">
+      <name>Anarch Manifesto, An</name>
+      <set>TR</set>
+      <type>Equipment</type>
+      <text>Equipment.
+The anarch with this equipment gets +1 stealth on actions that require an anarch. Titled non-anarch vampires get +1 strength in combat with this minion. A minion may have only one Anarch Manifesto.</text>
+    </card><card count="1" databaseID="80">
       <name>Hide the Heart</name>
       <set>HttB</set>
       <type>Reaction</type>
       <disciplines>AUS VAL</disciplines>
       <text>[aus] Reduce a bleed against you by 1.
 [val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action. [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.</text>
-    </card><card count="1" databaseID="63">
+    </card><card count="2" databaseID="49">
+      <name>Immortal Grapple</name>
+      <set>Jyhad</set>
+      <type>Combat</type>
+      <disciplines>POT</disciplines>
+      <text>Only usable at close range before strikes are chosen. Grapple.
+[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round. [POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.</text>
+    </card><card count="2" databaseID="49">
+      <name>Immortal Grapple</name>
+      <set>KoT</set>
+      <type>Combat</type>
+      <disciplines>POT</disciplines>
+      <text>Only usable at close range before strikes are chosen. Grapple.
+[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round. [POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.</text>
+    </card><card count="1" databaseID="70">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
       <cost>3 pool</cost>
@@ -126,14 +157,14 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Ally</type>
       <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
 {Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
-    </card><card count="2" databaseID="66">
+    </card><card count="2" databaseID="74">
       <name>Swallowed by the Night</name>
       <set>Third</set>
       <type>Action Modifier/Combat</type>
       <disciplines>OBF</disciplines>
       <text>[obf] [ACTION MODIFIER] +1 stealth.
 [OBF] [COMBAT] Maneuver.</text>
-    </card><card count="1" databaseID="55">
+    </card><card count="1" databaseID="62">
       <name>Path of Blood, The</name>
       <set>LotN</set>
       <cost>1 pool</cost>
@@ -141,6 +172,20 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Master</type>
       <text>Unique master.
 Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
+    </card><card count="1" databaseID="81">
+      <name>Walk of Flame</name>
+      <set>KoT</set>
+      <type>Combat</type>
+      <disciplines>THA</disciplines>
+      <text>Not usable on the first round of combat.
+[tha] Strike: 1R aggravated damage. [THA] Strike: 2R aggravated damage.</text>
+    </card><card count="3" databaseID="81">
+      <name>Walk of Flame</name>
+      <set>Third</set>
+      <type>Combat</type>
+      <disciplines>THA</disciplines>
+      <text>Not usable on the first round of combat.
+[tha] Strike: 1R aggravated damage. [THA] Strike: 2R aggravated damage.</text>
     </card>
   </library>
 </deck>""" % (WriteArdbXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
@@ -164,6 +209,7 @@ class ArdbXMLWriterTests(SutekhTest):
         sData = sData.replace(sCurDate, '>DATE<')
 
         self.assertEqual(sData, EXPECTED_1)
+
 
 if __name__ == "__main__":
     unittest.main()

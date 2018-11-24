@@ -102,9 +102,6 @@ class IconManager(BaseIconManager):
 
     sBaseUrl = "http://www.vekn.net/images/stories/icons/"
 
-    def __init__(self, sPath):
-        super(IconManager, self).__init__(sPath)
-
     def _get_clan_icons(self, aValues):
         """Get the icons for the clans"""
         dIcons = {}

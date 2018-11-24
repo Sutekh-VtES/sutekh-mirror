@@ -11,6 +11,8 @@ from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.CardSetUtilities import (delete_physical_card_set,
                                                get_loop_names, detect_loop,
                                                find_children, break_loop,
+                                               has_children, clean_empty,
+                                               get_current_card_sets,
                                                format_cs_list)
 
 from sutekh.tests.TestCore import SutekhTest
@@ -32,6 +34,12 @@ class CardSetUtilTests(SutekhTest):
         # Check detect_loop fails
         self.assertFalse(detect_loop(oRoot))
         self.assertFalse(detect_loop(oChild))
+
+        # Check has_children
+        self.assertTrue(has_children(oRoot))
+        self.assertTrue(has_children(oChild))
+        self.assertFalse(has_children(aChildren[0]))
+        self.assertFalse(has_children(aChildren[1]))
 
         # Check find_children behaves properly
         aFoundChildren = find_children(oRoot)
@@ -122,9 +130,41 @@ class CardSetUtilTests(SutekhTest):
         oRoot.syncUpdate()
         self.assertTrue(detect_loop(oRoot))
         # Use the break loop function
-        break_loop(oRoot)
+        self.assertEqual(break_loop(oRoot), oRoot.name)
         self.assertFalse(detect_loop(oRoot))
         self.assertFalse(detect_loop(aChildren[1]))
+        # Check that break_loop returns None for non-loop status
+        self.assertEqual(break_loop(oRoot), None)
+        self.assertEqual(break_loop(aChildren[1]), None)
+        # Try breaking loop with a child
+        oRoot.parent = aChildren[1]
+        oRoot.syncUpdate()
+        self.assertTrue(detect_loop(oRoot))
+        self.assertEqual(break_loop(aChildren[1]), aChildren[1].name)
+        self.assertFalse(detect_loop(oRoot))
+        self.assertFalse(detect_loop(aChildren[1]))
+
+    def test_clean_empty(self):
+        """Test clean_empty works as desired."""
+        oRoot = PhysicalCardSet(name='Root')
+        oChild = PhysicalCardSet(name='Child', parent=oRoot)
+        aChildren = []
+        for iCnt in range(4):
+            oSet = PhysicalCardSet(name='Card Set %d' % iCnt, parent=oChild)
+            aChildren.append(oSet)
+
+        aSets = get_current_card_sets()
+        self.assertEqual(len(aSets), 6)
+        # Check that clean_emtpy doesn't remove any sets we say were existing
+        clean_empty(aSets, aSets)
+        self.assertEqual(len(get_current_card_sets()), 6)
+        # Check that clean_empty removes all the children if we say none
+        # were existing
+        clean_empty([x.name for x in aChildren], [])
+        aSets = get_current_card_sets()
+        self.assertEqual(len(aSets), 2)
+        self.assertTrue(oChild.name in aSets)
+        self.assertTrue(oRoot.name in aSets)
 
 
 if __name__ == "__main__":

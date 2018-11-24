@@ -16,9 +16,8 @@ from sqlobject import sqlhub, connectionForURI
 
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
-from ..core.DBUtility import flush_cache
-from ..core.BaseTables import PhysicalCardSet
-from ..core.DBUtility import get_cs_id_name_table, refresh_tables
+from ..core.BaseTables import AbstractCard,PhysicalCardSet
+from ..core.DBUtility import flush_cache, get_cs_id_name_table, refresh_tables
 
 from ..io.EncodedFile import EncodedFile
 from ..io.UrlOps import urlopen_with_timeout, HashError
@@ -104,6 +103,34 @@ class BaseGuiDBManager(object):
                                                 bUrl=oResult.bIsUrl)
         return dFiles, sBackupFile
 
+    def _do_import_checks(self):
+        """Do the actual import checks.
+           Returns a list of errors. An empty list is considered a success.
+
+           Subclasses must implement the correct logic here."""
+        raise NotImplementedError("Implement _do_import_checks")
+
+    def _check_import(self):
+        """Check the database for any import issues and display
+           any errors to the user."""
+        aMessages = []
+        for oAbsCard in AbstractCard.select():
+            aMessages.extend(self._do_import_checks(oAbsCard))
+        if not aMessages:
+            # No messages, so import should be fine
+            return True
+        # Display an abort / continue dialog with the messages
+        aFullMessages = ["<b>The database import has failed"
+                         " consistency checks</b>"]
+        for sDetails in aMessages:
+            aFullMessages.append('<i>%s</i>' % sDetails)
+        iRes = do_complaint_buttons(
+            '\n'.join(aFullMessages),
+            gtk.MESSAGE_ERROR,
+             ("Abort import?", 1, "Accept import despite errors", 2),
+             True)
+        return iRes == 2
+
     def read_zip_file(self, oZipDetails, sHash):
         """open (Downlaoding it if required) a zip file and split it into
            the required bits.
@@ -122,6 +149,10 @@ class BaseGuiDBManager(object):
                                    "Aborting")
                 return None
         else:
+            if not oZipDetails.sName:
+                do_complaint_error("No filename or url given to update from.\n"
+                                   "Aborting")
+                return None
             fIn = file(oZipDetails.sName, 'rb')
             sData = fIn.read()
             fIn.close()
@@ -290,6 +321,12 @@ class BaseGuiDBManager(object):
         if not bRet:
             # Aborted for some other reason, so cleanup as above.
             # We assume the user has already seen a suitable error dialog.
+            oProgressDialog.destroy()
+            sqlhub.processConnection = oOldConn
+            self._oWin.update_to_new_db()
+            return False
+        if not self._check_import():
+            # user aborted the import due to failing consistency checks
             oProgressDialog.destroy()
             sqlhub.processConnection = oOldConn
             self._oWin.update_to_new_db()

@@ -90,6 +90,16 @@ EXPECTED = """"ELDB - Inventory"
 "Anarch Revolt",0,0,"","Library"
 "Smite",0,0,"","Library"
 "Aye",0,0,"","Library"
+"New Blood",0,0,"","Crypt"
+"Off Kilter",0,0,"","Library"
+"Anarch Manifesto, An",1,0,"","Library"
+"Walk of Flame",4,0,"","Library"
+"Immortal Grapple",4,0,"","Library"
+"Harold Zettler, Pentex Director",0,0,"","Crypt"
+"Hektor",1,0,"","Crypt"
+"Sheela Na Gig",0,0,"","Crypt"
+"Etienne Fauberge",0,0,"","Crypt"
+"Baron Dieudonne",0,0,"","Crypt"
 """
 
 
@@ -112,6 +122,7 @@ class ELDBInventoryWriterTests(SutekhTest):
                          "Output differs : %s vs %s" % (
                              sorted(sData.splitlines()),
                              sorted(EXPECTED.splitlines())))
+
 
 if __name__ == "__main__":
     unittest.main()

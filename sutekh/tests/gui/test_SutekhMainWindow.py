@@ -78,5 +78,6 @@ class TestSutekhMainWindow(GuiSutekhTest):
         self.assertEqual(len(
             self.oWin.find_cs_pane_by_set_name('My Collection')), 2)
 
+
 if __name__ == "__main__":
     unittest.main()

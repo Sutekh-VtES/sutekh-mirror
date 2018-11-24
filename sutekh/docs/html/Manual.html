@@ -6,7 +6,7 @@
     <title>Sutekh Manual</title>
 </head>
 <body>
-	<h1>Manual for Sutekh 0.9.3</h1>
+	<h1>Manual for Sutekh 0.9.4</h1>
 
 	<p><img alt="Sutekh Icon" src="sutekh-icon.png" title="Sutekh Icon" /></p>
 
@@ -103,6 +103,7 @@
 
 	<p>If you are new to Sutekh, try reading <a href="Tutorial.html">The Sutekh Tutorial</a>.</p>
 
+
 	<h2 id="concepts">Important Concepts</h2>
 
 	<p>Sutekh is concerned with two different types of objects: <em>Cards</em> and 
@@ -124,6 +125,7 @@ parent-child hierarchy. In a typical setup, there is a single card set for the
 main card collection (usually the <strong>My Collection</strong> card set); and other card 
 sets, which represent constructed decks, are children of this card set &#8212; but 
 many other arrangements are possible.</p>
+
 
 	<h2 id="main">Main Window</h2>
 
@@ -218,6 +220,7 @@ that card set.</p>
 that set cannot be found, the card set will be imported 
 with no parent set.</p>
 
+
 	<h4 id="backup">Backup</h4>
 
 	<p>This allows you either to save or to restore a full backup 
@@ -238,10 +241,11 @@ whether you would like to save a backup when you
 initiate certain actions, such as updating the full 
 card list.</p>
 
+
 	<h4 id="importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</h4>
 
 	<p>This allows you to import files produced by <span class="caps">ARDB</span>, 
-<span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt 
+JOL, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt 
 to identify the file format automatically, this 
 isn&#8217;t always reliable, so you have the option of 
 specifying the format manually.</p>
@@ -256,6 +260,8 @@ set or cancel the import.</p>
 
 	<p>If no cards are found in the card set, the card set 
 will not be created.</p>
+
+
 
 	<h4 id="importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</h4>
 
@@ -283,6 +289,8 @@ image for the card. Cards which have already
 been choses will be marked with a tick-mark 
 next to their names.</p>
 
+
+
 	<h3 id="main_pane_actions">Pane Actions</h3>
 
 	<p>This menu allows you to manage the panes in Sutekh. The <em>Pane Actions</em> menu 
@@ -297,6 +305,7 @@ has the following options:</p>
 		<li><em>Close Pane</em>: Close the currently active pane.</li>
 	</ul>
 
+
 	<h3 id="rulebook">Rulebook</h3>
 
 	<p>Once you have downloaded the rulebook files, you 
@@ -308,6 +317,7 @@ the <span class="caps">VTES</span> and Imbued <span class="caps">FAQ</span>&#821
 
 	<p>To download the files, or update your existing copies, use the _Download 
 Rulebook Files_ item in the <em>Data Downloads</em> submenu.</p>
+
 
 	<h3 id="keyboard">Keyboard Shortcuts</h3>
 
@@ -324,12 +334,14 @@ on and off using <strong>&lt;Ctrl&gt;-T</strong>.</p>
 	<p>The <strong>&lt;Ctrl&gt;&#8212;+</strong> and <strong>&lt;Ctrl&gt;&#8212;-</strong> shortcuts allow you to expand fully or 
 collapse completely the entire tree displayed in a pane.</p>
 
+
 	<h3 id="minimize_panes">Minimizing Panes</h3>
 
 	<p>Double-clicking on a pane title will minimize the pane to a toolbar below the 
 main menu. The toolbar is hidden if no frames are currently minimized. Clicking 
 on a pane listed on the toolbar will unminimize it and place to the right of 
 current set of open panes.</p>
+
 
 	<h3 id="refresh">Refreshing the White Wolf Card List</h3>
 
@@ -402,6 +414,7 @@ to the card.</p>
 cost, the card type, the disciplines or virtues associated with the card, the 
 clans and creeds associated with the card, vampire titles, sects and groups, 
 capacity and the expansions in which the card was printed.</p>
+
 
 	<h2 id="card_image">Card Images</h2>
 
@@ -536,6 +549,8 @@ can be found.</p>
 card set, which can be used to restict the card printed 
 to only those required.</p>
 
+
+
 	<h3 id="cardsets_edit">Edit</h3>
 
 	<p>This menu has the following options:</p>
@@ -579,6 +594,8 @@ a filter active will be slow in some cases.</p>
 	<p>Create a new card set containing the results 
 of the current filter. The new card set will 
 be opened automatically and will be set editable.</p>
+
+
 
 	<h3 id="cardsets_analyze">Analyze</h3>
 
@@ -664,6 +681,7 @@ the dialog and not effect any else.</p>
 	<p>The search looks to match names starting with the typed text. When multiple 
 cards match, you can easily move between them by using the up or down keys 
 while the search dialog is visible.</p>
+
 
 	<h2 id="filters">Filters</h2>
 
@@ -798,6 +816,7 @@ together.</p>
 	<p>Each filter group can also contain further filters groups.  You can thus 
 construct complex queries by nesting multiple filter groups.</p>
 
+
 	<h3 id="string">String filters</h3>
 
 	<p>Several filters check a string which you specify against a particular text 
@@ -889,11 +908,12 @@ tournament play (such as banned cards or storyline only
 cards) if the current profile for the full card list shows 
 those cards.</p>
 
+
 	<h3 id="clandisciplinestats">Clan Discipline Stats</h3>
 
 	<p>This shows an analysis of all the different clans in the 
 White Wolf card list. For each clan, it displays the total 
-number of vampires in the clan, the sum of the vampires&#8217; 
+number of vampires in the clan, the sum of the vampires&#8216; 
 capacities, and the most common disciplines. It also shows 
 the score for the disciplines, and various stats about how 
 the disciplines are distributed.</p>
@@ -912,6 +932,8 @@ tournament play (such as banned cards or storyline only
 cards) if the current profile for the full card list shows 
 those cards.</p>
 
+
+
 	<h3 id="analyzedeck">Analyze Deck</h3>
 
 	<p>This tool examines a card set and displays various 
@@ -929,6 +951,7 @@ consider specific card types.</p>
 	<p>The happy family implementation allows you either to 
 select the number of disciplines to use, or to select 
 the disciplines to consider manually.</p>
+
 
 	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
 
@@ -960,6 +983,7 @@ tab.</p>
 which can be used to create a card set containing the 
 specific cards listed.</p>
 
+
 	<h3 id="carddrawprobabilities">Card Draw probabilities</h3>
 
 	<p>This tool displays the probabilities of drawing the selected 
@@ -990,6 +1014,7 @@ cards (shown in brackets).</p>
 	<p>The selected changes are only applied when you press the 
 the <em>recalculate table</em> button.</p>
 
+
 	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
 
 	<p>This allows you to find crypt cards that are similar to the 
@@ -1001,6 +1026,7 @@ disciplines or virtues with the selected crypt card.</p>
 card set and then using the &#8216;Only match cards visible in 
 this pane&#8217; option to restrict the results of the crypt card 
 search to match the filter.</p>
+
 
 	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
 
@@ -1021,6 +1047,7 @@ card set.</p>
 	<p>You can create card sets from each list of results using 
 the &#8216;Create Card Set from this list&#8217; button.</p>
 
+
 	<h3 id="findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</h3>
 
 	<p>If you have downloaded the database of tournament winning 
@@ -1040,6 +1067,7 @@ decks can be opened as new panes by choosing the
 examine the opened card sets closely without closing 
 the search results.</p>
 
+
 	<h3 id="simulateopeninghand">Simulate opening hand</h3>
 
 	<p>This tool treats the card set as a completed deck, and 
@@ -1048,6 +1076,8 @@ hand and crypt. It is intended to give you some idea of how
 the deck will work in practice. In addition, you can 
 generate example opening hands and crypts by clicking the 
 <em>Draw sample hand</em> button.</p>
+
+
 
 	<h2 id="profiles">Profiles</h2>
 
@@ -1108,6 +1138,9 @@ to the default profile.</p>
 		<li><em>Title</em>: Group by the political title of the vampire.</li>
 	</ul>
 
+
+
+
 	<h3 id="ww_profile">White Wolf Card List Profile Options</h3>
 
 	<p>You can set the following options for the white wolf card list in the profile:</p>
@@ -1160,6 +1193,9 @@ you will be able to toggle the display between the
 <em>Show Icons and Names</em>, <em>Show Text only</em> and 
 <em>Show Icons only</em> options using the combo box. This setting 
 will affect all selected columns that can use icons.</p>
+
+
+
 
 	<h3 id="cardset_profile">Card Set Profile Options</h3>
 

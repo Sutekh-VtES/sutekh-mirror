@@ -205,8 +205,8 @@ class ArdbInfo(object):
 
     def _get_ardb_exp_name(self, oPhysCard):
         """Extract the correct ARDB name for the expansion"""
-        if oPhysCard.expansion:
-            oExpansion = oPhysCard.expansion
+        if oPhysCard.printing:
+            oExpansion = oPhysCard.printing.expansion
         else:
             oAbsCard = IAbstractCard(oPhysCard)
             # ARDB doesn't have a concept of 'No expansion', so we

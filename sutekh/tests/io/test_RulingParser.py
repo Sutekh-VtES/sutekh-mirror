@@ -40,5 +40,6 @@ class RulingParserTests(SutekhTest):
         self.assertEqual(oRuling.code, self.aExpectedRulings[0])
         self.assertNotEqual(oRuling.url, None)
 
+
 if __name__ == "__main__":
     unittest.main()

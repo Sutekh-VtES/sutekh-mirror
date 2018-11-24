@@ -37,8 +37,11 @@ Expansions,KMW,Kindred Most Wanted
 Expansions,BSC,Blood Shadowed Court
 Expansions,Anthology,Anthology
 Expansions,Tenth,Tenth Anniversary
+Expansions,TR,Twilight Rebellion
+Expansions,LK,Lost Kindred
 Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
 Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
+Expansions,Black Chantry Reprint,Black Chantry Reprint
 Expansions,ReversePrefix:Promo-,Promo
 Rarities,C,Common
 Rarities,C1,Common
@@ -57,10 +60,10 @@ Rarities,R2,Rare
 Rarities,NA,Not Applicable
 Rarities,BSC,BSC
 Rarities,X,BSC
-Rarities,A,Tenth
-Rarities,B,Tenth
-Rarities,1,Anthology
-Rarities,3,Anthology
+Rarities,A,Fixed
+Rarities,B,Fixed
+Rarities,1,Fixed
+Rarities,3,Fixed
 Rarities,Rules,Rules
 Rarities,Storyline,Storyline
 Rarities,Demo,Demo
@@ -133,8 +136,8 @@ Name: Aaron's Feeding Razor
 [Jyhad:R, VTES:R, CE:R, KoT:R]
 Cardtype: Equipment
 Cost: 1 pool
-Unique equipment.
-When this vampire successfully hunts, he or she gains 1 additional blood.
+Unique.
+The bearer gets +1 hunt.
 Artist: Thomas Nairb; Christopher Rush
 
 Name: Abandoning the Flesh
@@ -263,11 +266,10 @@ Discipline: for pre AUS DOM
 Camarilla: When you play an investment card, add an additional counter to it from the blood bank.
 Artist: Steve Prescott
 
-Name: Alan Sovereign
+Name: Alan Sovereign (Adv)
 [Promo-20051001]
 Cardtype: Vampire
 Clan: Ventrue
-Level: Advanced
 Group: 3
 Capacity: 6
 Discipline: for pre AUS DOM
@@ -324,6 +326,13 @@ Capacity: 8
 Discipline: pre pro OBF SER
 Independent: Amisa has 2 votes. Amisa can lock a vampire with a capacity above 7 as a (D) action.
 Artist: Pete Venters
+
+Name: Anarch Manifesto, An
+[TR:C]
+Cardtype: Equipment
+Equipment.
+The anarch with this equipment gets +1 stealth on actions that require an anarch. Titled non-anarch vampires get +1 strength in combat with this minion. A minion may have only one Anarch Manifesto.
+Artist: Heather Kreiter
 
 Name: Anastasz di Zagreb
 [CE:V, KMW:PAl, BSC:X]
@@ -387,6 +396,16 @@ Cardtype: Master
 Master: trifle.
 Put this card on a Laibon. This Laibon may lock this card to cancel a Frenzy card p
 Artist: Brad Williams
+
+Name: Baron Dieudonne
+[KoT:V/A2]
+Cardtype: Vampire
+Clan: Nosferatu
+Group: 4
+Capacity: 9
+Discipline: ANI OBF POT PRO
+Camarilla Prince of Brussels: After Dieudonne performs a successful action during your minion phase, he can burn 1 blood to unlock.
+Artist: Tony Shasteen
 
 Name: Bravo
 [Gehenna:C]
@@ -488,6 +507,27 @@ Unique -{mortal}- with 1 life. 1 {strength}, 1 bleed.
 Gypsies get +1 stealth on each of their actions.
 Artist: Pete Venters
 
+Name: Harold Zettler, Pentex Director
+[Third:PM]
+Cardtype: Vampire
+Clan: Malkavian antitribu
+Group: 4
+Capacity: 9
+Discipline: vic AUS DEM OBF POT
+Sabbat: Giovanni get +1 bleed when bleeding you. +1 stealth.
+Artist: Rik Martin
+
+Name: Hektor
+[Third:PB2]
+Cardtype: Vampire
+Clan: Brujah antitribu
+Group: 4
+Capacity: 9
+Discipline: for CEL POT PRE QUI
+Sabbat priscus: Damage from Hektor's hand strikes is aggravated. Baali get +1 bleed
+ when bleeding you.
+Artist: Abrar Ajmal
+
 Name: High Top
 [BL:R1, LoB:R]
 Cardtype: Ally
@@ -496,6 +536,15 @@ Cost: 4 pool
 Unique werewolf with 3 life. 1 strength, 0 bleed.
 High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your unlock phase, he gains 1 life.
 Artist: Mark Nelson
+
+Name: Immortal Grapple
+[Jyhad:R2, VTES:R, Sabbat:U, SW:U/PB, FN:PG, CE:U/PB2, Third:U, LotN:PG2, KoT:U/PB3, HttB:PGar3]
+Cardtype: Combat
+Discipline: Potence
+Only usable at close range before strikes are chosen. Grapple.
+[pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round.
+[POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.
+Artist: Clint Langley; L. A. Williams; Avery Butterworth
 
 Name: Inez "Nurse216" Villagrande
 [NoR:U]
@@ -521,15 +570,16 @@ Name: Kemintiri
 [KMW:U]
 Cardtype: Vampire
 Clan: Follower of Set
-Level: Advanced
 Group: 2
 Capacity: 10
+Level: Advanced
 Discipline: aus dom OBF PRE SER THA
 Advanced, Independent. Red List: +1 stealth.
 [MERGED] Kemintiri has 3 votes (titled). She can play {minion} cards that require Camarilla, Ventrue, and/or a justicar title {as if she met that/those requirement(s)}.
 Artist: Lawrence Snelly
 
 Name: Lázár Dobrescu
+AKA: Lazar Dobrescu
 [AH:V3, FN:PR]
 Cardtype: Vampire
 Clan: Ravnos
@@ -555,6 +605,24 @@ Capacity: +1
 Master: Discipline.
 Put this card on a vampire. This vampire gains 1 level of Necromancy [nec]. Capacity increases by 1: the vampire is one generation older. Cannot be placed on a vampire with superior Necromancy.
 Artist: Anson Maddocks; Sam Araya
+
+Name: New Blood
+[Promo-20150213, Anthology:2]
+Cardtype: Vampire
+Clan: Blood Brother
+Group: ANY
+Capacity: 2
+Discipline: san
+Sabbat: When New Blood enters play during your influence phase, choose a circle and draw 1 card from your crypt. New Blood belongs to the chosen circle. Sterile.
+Artist: Gábor Németh
+
+Name: Off Kilter
+[HttB:C/PSam2/A2]
+Cardtype: Action
+Clan: Samedi
++1 stealth action.
+Gain 1 pool. If you do not have the Edge, you get the Edge. Otherwise, you may burn the Edge to gain 1 additional pool.
+Artist: Leif Jones
 
 Name: Ossian
 [KMW:R, KoT:R]
@@ -694,6 +762,16 @@ Discipline: obf tha ANI AUS CHI VIC
 Sabbat regent: Vampires with capacity less than 4 cannot block Sha-Ennu. +2 bleed.
 Artist: Richard Thomas
 
+Name: Sheela Na Gig
+[LK:2]
+Cardtype: Vampire
+Clan: Gargoyle
+Group: 5
+Capacity: 2
+Discipline: vis
+Sabbat: Sheela Na Gig can lock to give a Tremere antitribu you control +1 bleed. Flight [FLIGHT]. Tremere antitribu slave.
+Artist: Noah Hirka
+
 Name: Swallowed by the Night
 [Third:C]
 Cardtype: Action Modifier/Combat
@@ -748,7 +826,7 @@ Camarilla.
 Artist: Leif Jones
 
 Name: Hide the Heart
-[HttB:C/PSal2]
+[HttB:C/PSal2/B2]
 Cardtype: Reaction
 Discipline: Valeren / Auspex
 
@@ -756,6 +834,15 @@ Discipline: Valeren / Auspex
 [val] The action ends (unsuccessfully). The acting minion may burn 1 blood to cancel this card as it is played. Only one Hide the Heart may be played at [val] each action.
 [VAL] Reduce a bleed against you by 2, or lock to reduce a bleed against any Methuselah by 2.
 Artist: Kari Christensen
+
+Name: Walk of Flame
+[Jyhad:U2, VTES:U, Sabbat:U, CE:C/PTr3, BH:PTr2, Third:C/PTr4, KoT:C]
+Cardtype: Combat
+Discipline: Thaumaturgy
+Not usable on the first round of combat.
+[tha] Strike: 1R aggravated damage.
+[THA] Strike: 2R aggravated damage.
+Artist: Scott Fischer; Richard Thomas
 
 Name: Anarch Railroad
 [Anarchs:R2]
@@ -791,6 +878,117 @@ Name: Motivated by Gehenna
 Cardtype: Master
 Master.
 Put this card in play, If you control the Edge, any vampire you control may enter combat with a ready minion controlled by another Methuselah as a (D) action that costs 1 blood.  {NOT FOR LEGAL PLAY}
+Artist: Brian LeBlanc
+
+Name: Étienne Fauberge
+AKA: Etienne Fauberge
+[Anarchs:U2]
+Cardtype: Vampire
+Clan: Ravnos
+Group: 3
+Capacity: 8
+Discipline: ANI CEL CHI FOR
+Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Followers of Set, Etienne's hand damage is aggravated.
+Artist: Jeff Holt
+"""
+
+TEST_EXP_INFO = """
+{
+  "TR": {
+    "None": {
+      "date": "2008-05-28",
+      "back": "VtES"
+    }
+  },
+  "HttB": {
+    "None": {
+      "date": "2010-02-03",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2010-02-03",
+      "cards": [
+        "Off Kilter"
+      ],
+      "back": "VtES"
+    }
+  },
+  "Jyhad": {
+    "None": {
+      "date": "1994-08-16",
+      "back": "Jyhad"
+    },
+    "Variant Printing": {
+      "date": "1994-08-16",
+      "cards": [
+        "Ghoul Retainer",
+        "Immortal Grapple",
+        "Walk of Flame"
+      ],
+      "back": "Jyhad"
+    }
+  },
+  "KoT": {
+    "None": {
+      "date": "2008-11-19",
+      "back": "VtES"
+    },
+    "No Draft Text": {
+      "date": "2008-11-19",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    }
+  },
+  "SW": {
+    "Second Printing": {
+      "date": "2001-01-12",
+      "cards": [
+        "Immortal Grapple"
+      ],
+      "back": "VtES"
+    },
+    "None": {
+      "date": "2000-10-31",
+      "back": "VtES"
+    }
+  },
+  "Anthology": {
+    "None": {
+      "date": "2017-05-11",
+      "back": "VEKN"
+    }
+  },
+  "Third": {
+    "None": {
+      "date": "2006-09-04",
+      "back": "Third Edition"
+    },
+    "No Draft Text": {
+      "date": "2006-09-04",
+      "cards": [
+        "Swallowed by the Night",
+        "Walk of Flame"
+      ],
+      "back": "Third Edition"
+    },
+    "Sketch": {
+      "date": "2006-09-04",
+      "cards": [
+        "Harold Zettler, Pentex Director",
+        "Hektor"
+      ],
+      "back": "Third Edition"
+    }
+  },
+  "Anarchs and Alastors Storyline": {
+    "None": {
+      "date": "2008-08-10",
+      "back": "VtES"
+    }
+  }
+}
 """
 
 TEST_RULINGS = """

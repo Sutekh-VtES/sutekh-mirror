@@ -16,8 +16,9 @@ from ..BasePluginManager import BasePlugin
 class BaseGroupBy(BasePlugin):
     """Plugin to allow the user to change how cards are grouped.
 
-       Show a dialog which allows the user to select from the avail
-       groupings of the cards, and changes the setting in the CardListView.
+       Adds the list of groupings to the profile editor, and all the user
+       to choose the groupings of the cards, and changes the setting
+       in the CardListView.
        """
 
     GROUP_BY = "group by"

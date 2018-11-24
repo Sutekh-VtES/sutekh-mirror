@@ -18,7 +18,7 @@ import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST
-from sutekh.base.core.BaseAdapters import IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import IPhysicalCardSet, IAbstractCard
 from sutekh.core.SutekhTables import TABLE_LIST
 # pylint: disable=W0611
 # We need this import to ensure we have all the filters imported
@@ -27,9 +27,9 @@ import sutekh.core.Filters
 # pylint: enable=W0611
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
-                                  format_text, read_exp_date_list,
+                                  format_text, read_exp_info_file,
                                   read_lookup_data)
-from sutekh.base.core.DBUtility import refresh_tables
+from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
@@ -44,7 +44,7 @@ from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ZipFileWrapper import ZipFileWrapper
 from sutekh.base.io.EncodedFile import EncodedFile
 from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
-                              EXTRA_CARD_URL, EXP_DATE_URL,
+                              EXTRA_CARD_URL, EXP_DATA_URL,
                               LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
 
@@ -69,8 +69,8 @@ def parse_options(aArgs):
                           dest="ruling_file", default=None,
                           help="HTML file (probably from VEKN website) "
                                "to read rulings from.")
-    oOptParser.add_option("--date-file", type="string", dest="date_file",
-                          default=None, help="CSV file to read expansion "
+    oOptParser.add_option("--exp-data-file", type="string", dest="exp_data_file",
+                          default=None, help="JSON file to read expansion "
                                              "release date info from.")
     oOptParser.add_option("--lookup-data-file", type="string",
                           dest="lookup_file", default=None,
@@ -240,6 +240,18 @@ def main_with_args(aTheArgs):
     if oOpts.sql_debug:
         oConn.debug = True
 
+    if not oConn.tableExists('abstract_card'):
+        if not oOpts.refresh_tables:
+            print("Database has not been created.")
+            return 1
+    else:
+        try:
+            _oCard = IAbstractCard('Ossian')
+        except SQLObjectNotFound:
+            if not oOpts.fetch and oOpts.ww_file is None:
+                print("Database is missing cards - please import the cardlist")
+                return 1
+
     # Only log critical messages by default
     setup_logging(oOpts.verbose)
 
@@ -278,8 +290,8 @@ def main_with_args(aTheArgs):
     if oOpts.extra_file is not None:
         read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
 
-    if oOpts.date_file is not None:
-        read_exp_date_list(EncodedFile(oOpts.date_file), oLogHandler)
+    if oOpts.exp_data_file is not None:
+        read_exp_info_file(EncodedFile(oOpts.exp_data_file), oLogHandler)
 
     if oOpts.lookup_file is not None:
         read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
@@ -292,15 +304,23 @@ def main_with_args(aTheArgs):
         read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
         read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
         read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
-        read_exp_date_list(EncodedFile(EXP_DATE_URL, True), oLogHandler)
+        read_exp_info_file(EncodedFile(EXP_DATA_URL, True), oLogHandler)
 
-    if oOpts.read_physical_cards_from is not None:
-        oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
-        oFile.read()
+    if oOpts.upgrade_db:
+        oDBUpgrade = DBUpgradeManager()
+        oDBUpgrade.attempt_database_upgrade(oLogHandler)
 
     if oOpts.save_all_css and oOpts.save_cs is not None:
         print("Can't use --save-cs and --save-all-cs Simulatenously")
         return 1
+
+    # initialise the caches, so adapters, etc work for reading / writing
+    # card sets
+    make_adapter_caches()
+
+    if oOpts.read_physical_cards_from is not None:
+        oFile = PhysicalCardXmlFile(oOpts.read_physical_cards_from)
+        oFile.read()
 
     if oOpts.save_all_css:
         write_all_pcs()
@@ -364,10 +384,6 @@ def main_with_args(aTheArgs):
         print("Can't use --upgrade-db and --refresh-tables simulatenously")
         return 1
 
-    if oOpts.upgrade_db:
-        oDBUpgrade = DBUpgradeManager()
-        oDBUpgrade.attempt_database_upgrade(oLogHandler)
-
     return 0
 
 
@@ -376,6 +392,7 @@ def main():
     Entry_point for setuptools scripts. Passes sys.argv to main_with_args
     """
     return main_with_args(sys.argv)
+
 
 if __name__ == "__main__":
     sys.exit(main())

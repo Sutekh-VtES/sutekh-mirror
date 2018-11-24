@@ -23,9 +23,10 @@
    ...
 
    Library (77 cards)
-   Master (3)
+   Master (4; 1 trifle)
      2x Barrens, The
      1x Sudden Reversal
+     1x Wash
 
    Action (20)
      2x Blithe Acceptance
@@ -49,6 +50,12 @@ from sutekh.base.Utility import move_articles_to_back
 from sutekh.core.ArdbInfo import ArdbInfo
 
 
+# the twd.htm normalises some names, but not all of them
+SPECIAL_NAMES = {
+    u'Pentex™ Loves You!': 'Pentex(TM) Loves You!',
+    u'Pentex™ Subversion': 'Pentex(TM) Subversion',
+}
+
 # Emprically derived from the twd.htm entries
 SECTION_ORDER = (
     'Master',
@@ -64,6 +71,24 @@ SECTION_ORDER = (
     'Combat',
     'Event',
 )
+
+
+def format_avg(fAvg):
+    """The TWDA doesn't want trailing zeros in the average, so we
+       strip those here"""
+    iIntPart = int(fAvg)
+    fFracPart = fAvg - iIntPart
+    sResult = '%d' % iIntPart
+    if fFracPart > 0.001:
+        sFrac = '%.2g' % fFracPart
+        sResult += sFrac[1:]
+    return sResult
+
+
+def normalise_card_name(sName):
+    """Normalise the name as needed for the TWDA"""
+    sName = move_articles_to_back(sName)
+    return SPECIAL_NAMES.get(sName, sName)
 
 
 class WriteTWDAText(ArdbInfo):
@@ -93,10 +118,11 @@ class WriteTWDAText(ArdbInfo):
            dCards is mapping of (card id, card name) -> card count.
            """
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
+        dCryptStats['formatted_avg'] = format_avg(dCryptStats['avg'])
         dCombinedVamps = self._group_sets(dVamps)
 
         sCryptLine = "Crypt (%(size)d cards, min=%(minsum)d, " \
-                     "max=%(maxsum)d, avg=%(avg).2f)" \
+                     "max=%(maxsum)d, avg=%(formatted_avg)s)" \
                      % dCryptStats
         sCrypt = sCryptLine + '\n' + '-' * len(sCryptLine) + '\n'
 
@@ -114,8 +140,7 @@ class WriteTWDAText(ArdbInfo):
             # Standardise missing disciplines
             if not dLine['disc']:
                 dLine['disc'] = '-none-'
-            # TWDA normalises crypt names to have the articles at the back
-            dLine['name'] = move_articles_to_back(dLine['name'])
+            dLine['name'] = normalise_card_name(dLine['name'])
             iNameJust = max(iNameJust, len(dLine['name']))
             iDiscJust = max(iDiscJust, len(dLine['disc']))
             if iCount > 10:
@@ -133,13 +158,11 @@ class WriteTWDAText(ArdbInfo):
         # we want the last tabstop shorter than the name length, since we
         # then pad with spaces to the capacity
         iNameJust = ((iNameJust + iCountSpace - 1) // 8) * 8
-        # Tabstob after disciplines
-        iDiscJust = ((iCapacityPos + 2 + iDiscJust + 7) // 8) * 8
+        iDiscJust = ((iCapacityPos + 2 + iDiscJust) // 8) * 8
         # Tabstop after titles
         if iTitleJust:
             # Tabstop after titles
-            iTitleJust = ((iDiscJust + iTitleJust + 7) // 8) * 8
-
+            iTitleJust = ((iDiscJust + 16) // 8) * 8
         for dLine in aCryptLines:
             if iCountSpace == 3:
                 sCount = '%(count)dx ' % dLine
@@ -154,13 +177,22 @@ class WriteTWDAText(ArdbInfo):
             dLine['name'] += ' ' * (iCapacityPos - iPos)
             sDisc = '%(capacity)-3d %(disc)s' % dLine
             iPos = iCapacityPos + len(sDisc)
-            # Always at least 1 tab after disciplines
-            sDisc += '\t'
-            iPos = iPos + 8 - (iPos + 8) % 8
-            while iPos <= iDiscJust:
-                sDisc += '\t'
-                iPos += 8
-            dLine['disc'] = sDisc
+            # Round position to the trailing tabstop
+            iTabPos = iPos - iPos % 8
+            sPadd = ''
+            while iTabPos < iDiscJust:
+                sPadd += '\t'
+                iTabPos += 8
+                iPos = iPos + 8 - (iPos + 8) % 8
+            if sPadd == '' and iTabPos > 40:
+                # We add a tab in this case
+                sPadd = '\t'
+            else:
+                # Else we add spaces, because Ankha
+                sPadd += ' ' * (42 - iPos)
+                # Always at least 2 space
+                sPadd += '  '
+            dLine['disc'] = sDisc + sPadd
             if iTitleJust:
                 iEndPos = (iTitleJust - len(dLine['title']) - iDiscJust + 7)
                 iPadding = iEndPos // 8
@@ -209,7 +241,7 @@ class WriteTWDAText(ArdbInfo):
                 if sTypeString == 'Master':
                     iTrifles = self._count_trifles(dLib)
                     if iTrifles:
-                        sLib += "%s (%d, %d trifle)\n" % (sTypeString,
+                        sLib += "%s (%d; %d trifle)\n" % (sTypeString,
                                                           iTotal, iTrifles)
                     else:
                         sLib += "%s (%d)\n" % (sCandidate, iTotal)
@@ -222,8 +254,8 @@ class WriteTWDAText(ArdbInfo):
                 for oCard, iCount in sorted(
                         dCards.iteritems(),
                         key=lambda x: move_articles_to_back(x[0].name)):
-                    sLib += "%dx %s\n" % (iCount,
-                                          move_articles_to_back(oCard.name))
+                    sName = normalise_card_name(oCard.name)
+                    sLib += "%dx %s\n" % (iCount, sName)
         return sLib
 
     def write(self, fOut, oHolder):

@@ -129,7 +129,22 @@ class CardListModelTests(ConfigSutekhTest):
         oSecond = IPhysicalCard((oAbbt, IExpansion('Final Nights')))
         self.assertEqual(oModel.get_child_entries_from_iter(oIter),
                          [(oFirst, 0), (oSecond, 0)])
-
+        # Test that the different variants show correctly
+        oPath = '0:25:0'  # Harold's position
+        self.assertEqual(oModel.get_card_name_from_path(oPath),
+                         u"Harold Zettler, Pentex Director")
+        self.assertEqual(oModel.get_exp_name_from_path(oPath),
+                         oModel.sUnknownExpansion)
+        oPath = '0:25:1'
+        self.assertEqual(oModel.get_card_name_from_path(oPath),
+                         u"Harold Zettler, Pentex Director")
+        self.assertEqual(oModel.get_exp_name_from_path(oPath),
+                         "Third Edition")
+        oPath = '0:25:2'
+        self.assertEqual(oModel.get_card_name_from_path(oPath),
+                         u"Harold Zettler, Pentex Director")
+        self.assertEqual(oModel.get_exp_name_from_path(oPath),
+                         "Third Edition (Sketch)")
         oListener.bLoadCalled = False
         # Test MessageBus clear does the right thing
         MessageBus.clear(oModel)
@@ -172,6 +187,7 @@ class CardListModelTests(ConfigSutekhTest):
         aCards = get_card_names(oModel)
         self.assertEqual('Dramatic Upheaval' in aCards, True)
         self.assertEqual('Motivated by Gehenna' in aCards, True)
+
 
 if __name__ == "__main__":
     unittest.main()

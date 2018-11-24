@@ -60,7 +60,7 @@ class NameAndAuthor(HolderState):
             self._oHolder.author = sValue
         elif sKey == "Description":
             oDesc = Description(self._oHolder)
-            if len(sValue) > 0:
+            if sValue:
                 oDesc.data(sValue)
             return oDesc
 
@@ -107,7 +107,7 @@ class Cards(HolderState):
             # Check for the advacned string and append advanced if needed
             if self._oAdvRe.search(sLine) and 'Adv' not in sName:
                 sName += ' (Advanced)'
-            self._oHolder.add(iCnt, sName, None)
+            self._oHolder.add(iCnt, sName, None, None)
         return self
 
 

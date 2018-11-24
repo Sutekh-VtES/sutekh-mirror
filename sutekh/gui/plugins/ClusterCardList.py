@@ -51,8 +51,6 @@ class ClusterCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        if not self._check_versions() or not self._check_model_type():
-            return None
         oCluster = gtk.MenuItem("Cluster Cards")
         oCluster.connect("activate", self.activate)
         return ('Analyze', oCluster)

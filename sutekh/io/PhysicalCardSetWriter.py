@@ -7,7 +7,7 @@
 """Write physical cards from a PhysicalCardSet
 
    Save to an XML file which looks like:
-   <physicalcardset sutekh_xml_version='1.3' name='SetName' author='Author'>
+   <physicalcardset sutekh_xml_version='1.4' name='SetName' author='Author'>
      <comment>Deck Description</comment>
      <annotations> Various annotations
      More annotations
@@ -16,7 +16,7 @@
      <card name='Some Card' count='2'
         expansion='Some Other Expansion' />
      <card name='Some Other Card' count='2'
-        expansion='Some Other Expansion' />
+        expansion='Some Other Expansion' printing="Some Printing" />
    </physicalcardset>
    """
 
@@ -29,6 +29,6 @@ class PhysicalCardSetWriter(BaseCardXMLWriter):
        We generate an ElementTree representation of the Card Set, which
        can then easily be converted to an appropriate XML representation.
        """
-    sMyVersion = "1.3"
+    sMyVersion = "1.4"
     sTypeTag = "physicalcardset"
     sVersionTag = "sutekh_xml_version"

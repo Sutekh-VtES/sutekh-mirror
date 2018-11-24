@@ -12,8 +12,7 @@
 # pylint: disable=E0611
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
-                       MultipleJoin, BoolCol, DatabaseIndex, ForeignKey,
-                       DateCol)
+                       MultipleJoin, BoolCol, DatabaseIndex, ForeignKey)
 from sqlobject.inheritance import InheritableSQLObject
 # pylint: enable=E0611
 
@@ -76,11 +75,11 @@ class AbstractCard(InheritableSQLObject):
 
 class PhysicalCard(SQLObject):
 
-    tableversion = 2
+    tableversion = 3
     abstractCard = ForeignKey('AbstractCard')
     abstractCardIndex = DatabaseIndex(abstractCard)
     # Explicitly allow None as expansion
-    expansion = ForeignKey('Expansion', notNull=False)
+    printing = ForeignKey('Printing', notNull=False)
     sets = RelatedJoin('PhysicalCardSet', intermediateTable='physical_map',
                        createRelatedTable=False)
 
@@ -110,11 +109,32 @@ class RarityPair(SQLObject):
 
 class Expansion(SQLObject):
 
-    tableversion = 4
+    tableversion = 5
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     shortname = UnicodeCol(default=None)
-    releasedate = DateCol(default=None)
     pairs = MultipleJoin('RarityPair')
+    printings = MultipleJoin('Printing')
+
+
+class PrintingProperty(SQLObject):
+
+    tableversion = 1
+    canonicalValue = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    value = UnicodeCol(length=MAX_ID_LENGTH)
+    printings = RelatedJoin('Printing', intermediateTable='printing_data_map',
+                            createRelatedTable=False)
+
+
+class Printing(SQLObject):
+
+    tableversion = 1
+    expansion = ForeignKey('Expansion', notNull=True)
+    # None here is used for the "default" no-variant case
+    name = UnicodeCol(length=MAX_ID_LENGTH, default=None, notNull=False)
+    properties = CachedRelatedJoin('PrintingProperty',
+                                   intermediateTable='printing_data_map',
+                                   joinColumn="printing_id",
+                                   createRelatedTable=False)
 
 
 class Rarity(SQLObject):
@@ -266,11 +286,26 @@ class LookupHints(SQLObject):
     value = UnicodeCol()
 
 
+class MapPrintingToPrintingProperty(SQLObject):
+
+    # pylint: disable=old-style-class
+    class sqlmeta:
+        table = 'printing_data_map'
+
+    tableversion = 1
+
+    printing = ForeignKey('Printing', notNull=True)
+    printingProperty = ForeignKey('PrintingProperty', notNull=True)
+
+    printingIndex = DatabaseIndex(printing, unique=False)
+    propertyIndex = DatabaseIndex(printingProperty, unique=False)
+
+
 # List of Tables to be created, dropped, etc.
 
-BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
-                   Rarity, RarityPair, CardType, Ruling, Artist, Keyword,
-                   LookupHints,
+BASE_TABLE_LIST = [AbstractCard, Expansion, Printing, PhysicalCard,
+                   PhysicalCardSet, Rarity, RarityPair, CardType, Ruling,
+                   Artist, Keyword, LookupHints, PrintingProperty,
                    # Mapping tables from here on out
                    MapPhysicalCardToPhysicalCardSet,
                    MapAbstractCardToRarityPair,
@@ -278,6 +313,7 @@ BASE_TABLE_LIST = [AbstractCard, Expansion, PhysicalCard, PhysicalCardSet,
                    MapAbstractCardToCardType,
                    MapAbstractCardToArtist,
                    MapAbstractCardToKeyword,
+                   MapPrintingToPrintingProperty,
                   ]
 
 # For reloading the Physical Card Sets

@@ -141,8 +141,7 @@ class ImportExportBase(SutekhDialog):
            """
         if self._oAsDeckButton.get_active():
             return "deck"
-        else:
-            return "inventory"
+        return "inventory"
 
 
 class ImportDialog(ImportExportBase):
@@ -222,7 +221,7 @@ class SecretLibrary(SutekhPlugin):
     SL_USER_AGENT = "Sutekh Secret Library Plugin"
     SL_AGENT_VERSION = SutekhInfo.VERSION_STR
 
-    SL_API_URL = "http://www.secretlibrary.info/api.php"
+    SL_API_URL = "https://www.secretlibrary.info/api.php"
 
     def __init__(self, oCardListView, oCardListModel, cModelType):
         try:
@@ -236,9 +235,6 @@ class SecretLibrary(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
-        if not self._check_versions() or not self._check_model_type():
-            return None
-
         if self.model is None:
             oMenuItem = gtk.MenuItem("Import from Secret Library")
             oMenuItem.connect("activate", self.make_import_dialog)

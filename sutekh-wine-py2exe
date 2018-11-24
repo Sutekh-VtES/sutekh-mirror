@@ -44,13 +44,15 @@ if [ "x$WINEPATH" = "x" ]; then
    WINEPATH="wine winepath.exe"
 fi
 
-WINE_WIN_PYTHON=`wine python -u -c "import os, sys; print os.path.dirname(sys.executable)"`
+WIN_PYTHON_CMD=python
+
+WINE_WIN_PYTHON=`wine ${WIN_PYTHON_CMD} -u -c "import os, sys; print os.path.dirname(sys.executable)"`
 WINE_WIN_SYS32="C:/windows/system32"
-WINE_WIN_GTK="C:/GTK"
+WINE_WIN_GTK="C:/Python27/Lib/site-packages/gtk-2.0/runtime/"
 WINE_PYTHON=`${WINEPATH} "${WINE_WIN_PYTHON}"`
 WINE_SYS32=`${WINEPATH} "${WINE_WIN_SYS32}"`
 WINE_GTK=`${WINEPATH} "${WINE_WIN_GTK}"`
-PY_DLL=`wine python -u -c "import sys; print 'python%d%d.dll' % (sys.version_info[0], sys.version_info[1])"`
+PY_DLL=`wine ${WIN_PYTHON_CMD} -u -c "import sys; print 'python%d%d.dll' % (sys.version_info[0], sys.version_info[1])"`
 
 # Sanitize build environment
 
@@ -61,7 +63,7 @@ mkdir -p "${BUILD_FOLDER}"
 mkdir -p `dirname "${ZIP_NAME}"`
 
 #
-# Report vairables 
+# Report variables
 #
 
 echo "=== Building Sutekh for Windows using Wine ==="
@@ -78,7 +80,7 @@ echo ""
 # Run py2exe build under wine
 #
 
-echo "=== Running wine python setup.py ==="
+echo "=== Running wine ${WIN_PYTHON_CMD} setup.py ==="
 echo ""
 echo "  Writing log to ${PY2EXE_LOG}."
 echo "  ---"
@@ -87,16 +89,16 @@ echo "  and run_w.exe with PETools (they need to have their"
 echo "  executable size correctly set)."
 echo ""
 
-wine python setup.py py2exe >${PY2EXE_LOG} 2>&1
+wine ${WIN_PYTHON_CMD} setup.py py2exe >${PY2EXE_LOG} 2>&1
 
 # Copy /etc, /lib and /share/themes from GTK Wine installation
 # Fix gdk-pixbuf.loaders
 #  TODO: this fix is rather fragile
 # Copy /bin/*.dll from the GTK Wine installation
-# Copy python dll that py2exe misses   
+# Copy python dll that py2exe misses
 # Note that this doesn't currently handle the msvcr90 dll juggling that's
 # required - the NSIS installer should handle this by installing the
-# correct vcredist_x86.exe 
+# correct vcredist_x86.exe
 # Copy sqlite dll that py2exe misses
 
 echo "=== Copying in GTK and Python dependencies that py2exe missed ==="
@@ -113,10 +115,10 @@ mkdir -p "${BUILD_FOLDER}/share"
 cp -R "${WINE_GTK}/share/themes" "${BUILD_FOLDER}/share"
 
 echo "Fixing gdk-pixbuf.loaders (this fix is rather hacky) ..."
-sed -i -e 's#^"C:/GTK/#"#' "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders"
+sed -i -e "s#^\"${WINE_WIN_GTK}#\"#" "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders"
 rm -f "${BUILD_FOLDER}/etc/gtk-2.0/gdk-pixbuf.loaders.orig"
 echo "Fixing loaders.cache (also very fragile)"
-sed -i -e 's#^"C:/Python2./Lib/site-packages/gtk-2.0/runtime/#"#' "${BUILD_FOLDER}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+sed -i -e "s#^\"${WINE_WIN_GTK}#\"#" "${BUILD_FOLDER}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
 
 echo "'${WINE_GTK}/bin/*.dll' -> '${BUILD_FOLDER}'"

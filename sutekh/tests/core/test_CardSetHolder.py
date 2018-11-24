@@ -9,7 +9,7 @@ import unittest
 
 from sutekh.base.core.CardSetHolder import CardSetHolder, CachedCardSetHolder
 from sutekh.base.core.BaseAdapters import (IPhysicalCardSet, IExpansion,
-                                           IAbstractCard)
+                                           IAbstractCard, IPrinting)
 from sutekh.base.core.BaseTables import MapPhysicalCardToPhysicalCardSet
 from sutekh.base.core import BaseFilters
 
@@ -34,18 +34,19 @@ class CardSetHolderTests(SutekhTest):
             'Abbot': [1, 'Third Edition'],
         }
         oCSH = CardSetHolder()
-        aExpectedExpansions = []
+        aExpectedPrintings = []
 
         for sCardName, aInfo in dSet1.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
-                oThisExp = IExpansion(sExpName)
+                oExp = IExpansion(sExpName)
+                oThisPrint = IPrinting((oExp, None))
             else:
-                oThisExp = None
-            aExpectedExpansions.extend([oThisExp] * iCnt)
+                oThisPrint = None
+            aExpectedPrintings.extend([oThisPrint] * iCnt)
 
-        aExpectedExpansions.sort()
+        aExpectedPrintings.sort()
         self.assertRaises(RuntimeError, oCSH.create_pcs)
         oCSH.name = 'Test Set 1'
         oCSH.create_pcs()
@@ -62,17 +63,17 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
-        aExpansions = [oCard.expansion for oCard in oCS.cards]
-        aExpansions.sort()
-        self.assertEqual(aExpansions, aExpectedExpansions)
+        aPrintings = [oCard.printing for oCard in oCS.cards]
+        aPrintings.sort()
+        self.assertEqual(aPrintings, aExpectedPrintings)
 
         oCSH.name = 'Test Set 2'
         oCSH.parent = 'Test Set 1'
-        self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None)
+        self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None, None)
         self.assertRaises(RuntimeError, oCSH.remove, 2, 'Abbot',
-                          'Third Edition')
-        oCSH.remove(1, 'Abbot', 'Third Edition')
-        oCSH.remove(1, 'Abombwe', 'LoB')
+                          'Third Edition', None)
+        oCSH.remove(1, 'Abbot', 'Third Edition', None)
+        oCSH.remove(1, 'Abombwe', 'LoB', None)
         oCSH.create_pcs()
 
         oCS2 = IPhysicalCardSet('Test Set 2')
@@ -99,7 +100,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         oCSH.name = 'Test Set 3'
 
@@ -131,9 +132,9 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CardSetHolder()
         for sCardName, aInfo in dSet3.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
-        aExpectedExpansions = [None] * 5
+        aExpectedPrintings = [None] * 5
 
         # Also check parent warnings
         oCSH.parent = 'Test Set 5'
@@ -159,9 +160,9 @@ class CardSetHolderTests(SutekhTest):
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
 
-        aExpansions = [oCard.expansion for oCard in oCS.cards]
-        aExpansions.sort()
-        self.assertEqual(aExpansions, aExpectedExpansions)
+        aPrintings = [oCard.printing for oCard in oCS.cards]
+        aPrintings.sort()
+        self.assertEqual(aPrintings, aExpectedPrintings)
 
     def test_cache(self):
         """Cached card set holder tests."""
@@ -176,19 +177,20 @@ class CardSetHolderTests(SutekhTest):
             'Abbot': [1, 'Third Edition'],
         }
         oCSH = CachedCardSetHolder()
-        aExpectedExpansions = []
+        aExpectedPrintings = []
         dLookupCache = {}
 
         for sCardName, aInfo in dSet1.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
-                oThisExp = IExpansion(sExpName)
+                oExp = IExpansion(sExpName)
+                oThisPrint = IPrinting((oExp, None))
             else:
-                oThisExp = None
-            aExpectedExpansions.extend([oThisExp] * iCnt)
+                oThisPrint = None
+            aExpectedPrintings.extend([oThisPrint] * iCnt)
 
-        aExpectedExpansions.sort()
+        aExpectedPrintings.sort()
         self.assertRaises(RuntimeError, oCSH.create_pcs)
         oCSH.name = 'Test Set 1'
         oCSH.create_pcs(dLookupCache=dLookupCache)
@@ -207,20 +209,20 @@ class CardSetHolderTests(SutekhTest):
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
-        aExpansions = [oCard.expansion for oCard in oCS.cards]
-        aExpansions.sort()
-        self.assertEqual(aExpansions, aExpectedExpansions)
+        aPrintings = [oCard.printing for oCard in oCS.cards]
+        aPrintings.sort()
+        self.assertEqual(aPrintings, aExpectedPrintings)
         self.assertEqual(dLookupCache['cards'][u'Abbot'], u'abbot')
-        self.assertEqual(dLookupCache['expansions'][u'LotN'],
-                         u'Lords of the Night')
+        self.assertEqual(dLookupCache['printings'][(u'LotN', None)],
+                         (u'Lords of the Night', None))
 
         oCSH.name = 'Test Set 2'
         oCSH.parent = 'Test Set 1'
-        self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None)
+        self.assertRaises(RuntimeError, oCSH.remove, 1, 'Abbot', None, None)
         self.assertRaises(RuntimeError, oCSH.remove, 2, 'Abbot',
-                          'Third Edition')
-        oCSH.remove(1, 'Abbot', 'Third Edition')
-        oCSH.remove(1, 'Abombwe', 'LoB')
+                          'Third Edition', None)
+        oCSH.remove(1, 'Abbot', 'Third Edition', None)
+        oCSH.remove(1, 'Abombwe', 'LoB', None)
         oCSH.create_pcs(dLookupCache=dLookupCache)
 
         oCS2 = IPhysicalCardSet('Test Set 2')
@@ -249,7 +251,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet2.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
         oCSH.name = 'Test Set 3'
 
@@ -283,9 +285,9 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CachedCardSetHolder()
         for sCardName, aInfo in dSet3.iteritems():
             iCnt, sExpName = aInfo
-            oCSH.add(iCnt, sCardName, sExpName)
+            oCSH.add(iCnt, sCardName, sExpName, None)
 
-        aExpectedExpansions = [None] * 5
+        aExpectedPrintings = [None] * 5
 
         oCSH.name = 'Test Set 4'
         oCSH.create_pcs(dLookupCache=dLookupCache)
@@ -306,12 +308,12 @@ class CardSetHolderTests(SutekhTest):
                         MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
 
-        aExpansions = [oCard.expansion for oCard in oCS.cards]
-        aExpansions.sort()
-        self.assertEqual(aExpansions, aExpectedExpansions)
+        aPrintings = [oCard.printing for oCard in oCS.cards]
+        aPrintings.sort()
+        self.assertEqual(aPrintings, aExpectedPrintings)
 
-        self.assertEqual(dLookupCache['expansions']['Legacy of Bllod'],
-                         None)
+        self.assertEqual(dLookupCache['printings'][('Legacy of Bllod', None)],
+                         (None, None))
 
 
 if __name__ == "__main__":

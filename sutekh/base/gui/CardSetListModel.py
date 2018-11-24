@@ -25,7 +25,7 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
 from ..core.BaseTables import (PhysicalCard, PhysicalCardSet,
                                MapPhysicalCardToPhysicalCardSet)
 from ..core.BaseAdapters import (IPhysicalCard, IPhysicalCardSet,
-                                 IAbstractCard, IExpansionName)
+                                 IAbstractCard, IPrintingName)
 from ..core.DBSignals import (listen_changed, disconnect_changed,
                               listen_row_destroy, listen_row_update,
                               listen_row_created,
@@ -592,7 +592,7 @@ class CardSetCardListModel(CardListModel):
         if self.bEditable:
             for oPhysCard in oAbsCard.physicalCards:
                 if self.check_card_visible(oPhysCard):
-                    dExpanInfo.setdefault((IExpansionName(oPhysCard),
+                    dExpanInfo.setdefault((IPrintingName(oPhysCard),
                                            oPhysCard), 0)
 
     def _adjust_row(self, dAbsCards, oPhysCard, dChildCache, bInc):
@@ -616,7 +616,7 @@ class CardSetCardListModel(CardListModel):
                 aPhysCards = [x for x in oAbsCard.physicalCards if
                               self.check_card_visible(x)]
                 # This is safe, since we know the None case has been excluded
-                aPhysCards.sort(key=IExpansionName)
+                aPhysCards.sort(key=IPrintingName)
                 oRow.oPhysCard = aPhysCards[0]
         else:
             oRow = dAbsCards[oPhysCard.abstractCardID]
@@ -625,7 +625,7 @@ class CardSetCardListModel(CardListModel):
         dExpanInfo = oRow.dExpansions
         dChildInfo = oRow.dChildCardSets
         if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
-            sExpName = IExpansionName(oPhysCard)
+            sExpName = IPrintingName(oPhysCard)
             dExpanInfo.setdefault((sExpName, oPhysCard), 0)
             if bInc:
                 dExpanInfo[(sExpName, oPhysCard)] += 1
@@ -912,7 +912,7 @@ class CardSetCardListModel(CardListModel):
                         self._init_expansions(dExpanInfo[sCardSetName],
                                               oAbsCard)
                         for oThisPhysCard in aChildCards:
-                            sExpName = IExpansionName(oThisPhysCard)
+                            sExpName = IPrintingName(oThisPhysCard)
                             dExpanInfo[sCardSetName].setdefault(
                                 (sExpName, oThisPhysCard), 0)
                             dExpanInfo[sCardSetName][(sExpName,
@@ -921,12 +921,12 @@ class CardSetCardListModel(CardListModel):
                 if self.bEditable:
                     if not dChildInfo:
                         for oThisPhysCard in oAbsCard.physicalCards:
-                            sExpName = IExpansionName(oThisPhysCard)
+                            sExpName = IPrintingName(oThisPhysCard)
                             dChildInfo.setdefault(sExpName, {})
                     for sExpName in dChildInfo:
                         dChildInfo[sExpName].setdefault(sCardSetName, 0)
                 for oThisPhysCard in aChildCards:
-                    sExpName = IExpansionName(oThisPhysCard)
+                    sExpName = IPrintingName(oThisPhysCard)
                     dChildInfo.setdefault(sExpName, {})
                     dChildInfo[sExpName].setdefault(
                         sCardSetName, 0)
@@ -1006,7 +1006,7 @@ class CardSetCardListModel(CardListModel):
                 if oAbsId in dSiblingCards:
                     for oPhysCard in dSiblingCards[oAbsId]:
                         oRow.iParentCount -= 1
-                        sExpansion = IExpansionName(oPhysCard)
+                        sExpansion = IPrintingName(oPhysCard)
                         oRow.dParentExpansions.setdefault(sExpansion, 0)
                         oRow.dParentExpansions[sExpansion] -= 1
 
@@ -1018,7 +1018,7 @@ class CardSetCardListModel(CardListModel):
         for oPhysCard in self._dCache['parent cards']:
             oAbsId = oPhysCard.abstractCardID
             if oAbsId in dAbsCards and self.check_card_visible(oPhysCard):
-                sExpansion = IExpansionName(oPhysCard)
+                sExpansion = IPrintingName(oPhysCard)
                 dParentExp = dAbsCards[oAbsId].dParentExpansions
                 dParentExp.setdefault(sExpansion, 0)
                 if self._iParentCountMode != IGNORE_PARENT:
@@ -1689,7 +1689,7 @@ class CardSetCardListModel(CardListModel):
                                     bCheckAddRemove):
         """Update the third level for EXP_AND_CARD_SETS"""
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         tExpKey = (oAbsId, sExpName)
         if tExpKey in self._dAbs2nd3rdLevel2Iter:
             bRemoveChild = False
@@ -1714,7 +1714,7 @@ class CardSetCardListModel(CardListModel):
     def _add_3rd_level_card_sets(self, oPhysCard, iParCnt):
         """Add 3rd level entries for the EXP_AND_CARD_SETS mode"""
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         for sCardSet, oSetFilter in self._dCache['child filters'].iteritems():
             iCnt = 0
             if sCardSet in self._dCache['child card sets'] and \
@@ -1744,7 +1744,7 @@ class CardSetCardListModel(CardListModel):
            for the SHOW_EXPANSIONS and EXP_AND_CARD_SETS modes"""
         # We need to update the expansion count for this card
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         bRemove = False
         if (oAbsId in self._dAbsSecondLevel2Iter and
                 sExpName in self._dAbsSecondLevel2Iter[oAbsId]):
@@ -1786,7 +1786,7 @@ class CardSetCardListModel(CardListModel):
         # Loop over all the children, and modify the count
         # if needed
         if oAbsId in self._dAbsSecondLevel2Iter:
-            sExpName = IExpansionName(oPhysCard)
+            sExpName = IPrintingName(oPhysCard)
             for sValue in self._dAbsSecondLevel2Iter[oAbsId]:
                 for oChildIter in self._dAbsSecondLevel2Iter[oAbsId][sValue]:
                     iParCnt = self.get_value(oChildIter, 2) + iChg
@@ -1808,7 +1808,7 @@ class CardSetCardListModel(CardListModel):
         """Add expansion level items for CARD_SETS_AND_EXP mode if
            needed."""
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         iParCnt = None
         for sCardSetName in self._dAbsSecondLevel2Iter[oAbsId]:
             tCSKey = (oAbsId, sCardSetName)
@@ -2103,7 +2103,7 @@ class CardSetCardListModel(CardListModel):
         """Handle the alter child card case when showing expansions as the
            second level."""
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         tExpKey = (oAbsId, sExpName)
         # Check if we need to add or remove an expansion entry
         if iChg > 0:
@@ -2148,7 +2148,7 @@ class CardSetCardListModel(CardListModel):
         """Handle the alter child card case when showing child sets as the
            second level with expansions"""
         oAbsId = oPhysCard.abstractCardID
-        sExpName = IExpansionName(oPhysCard)
+        sExpName = IPrintingName(oPhysCard)
         tExpKey = (oAbsId, sExpName)
         if (oAbsId in self._dAbsSecondLevel2Iter and
                 sCardSetName in self._dAbsSecondLevel2Iter[oAbsId]):

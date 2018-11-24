@@ -138,6 +138,14 @@ setup   (   # Metadata
                     'webbrowser', 'csv',
                     # plugins
                     'sutekh.gui.plugins.*',
+                    # pkg_resources extra stuff
+                    "pkg_resources._vendor.appdirs",
+                    "pkg_resources._vendor.pyparsing",
+                    "pkg_resources._vendor.packaging",
+                    "pkg_resources._vendor.packaging.version",
+                    "pkg_resources._vendor.packaging.specifiers",
+                    "pkg_resources._vendor.packaging.requirements",
+                    "pkg_resources._vendor.six",
                 ],
                 'excludes': [
                 ],

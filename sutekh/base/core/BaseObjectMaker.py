@@ -9,9 +9,11 @@
 from sqlobject import SQLObjectNotFound
 
 from .BaseTables import (CardType, Expansion, Rarity, RarityPair,
-                         PhysicalCard, Ruling, Keyword, Artist)
+                         PhysicalCard, Ruling, Keyword, Artist, Printing,
+                         PrintingProperty, LookupHints)
 from .BaseAdapters import (ICardType, IExpansion, IRarity, IRarityPair,
-                           IPhysicalCard, IRuling, IKeyword, IArtist)
+                           IPhysicalCard, IRuling, IKeyword, IArtist,
+                           IPrinting, IPrintingProperty, ILookupHint)
 from .BaseAbbreviations import CardTypes, Expansions, Rarities
 
 
@@ -58,11 +60,27 @@ class BaseObjectMaker(object):
         # doesn't exist?
         raise NotImplementedError
 
-    def make_physical_card(self, oCard, oExp):
+    def make_physical_card(self, oCard, oPrinting):
         try:
-            return IPhysicalCard((oCard, oExp))
+            return IPhysicalCard((oCard, oPrinting))
         except SQLObjectNotFound:
-            return PhysicalCard(abstractCard=oCard, expansion=oExp)
+            return PhysicalCard(abstractCard=oCard, printing=oPrinting)
+
+    def make_default_printing(self, oExp):
+        return self.make_printing(oExp, None)
+
+    def make_printing(self, oExp, sPrinting):
+        try:
+            return IPrinting((oExp, sPrinting))
+        except SQLObjectNotFound:
+            return Printing(name=sPrinting, expansion=oExp)
+
+    def make_lookup_hint(self, sLookupDomain, sKey, sValue):
+        try:
+            return ILookupHint((sLookupDomain, sKey))
+        except SQLObjectNotFound:
+            return LookupHints(domain=sLookupDomain,
+                               lookup=sKey, value=sValue)
 
     def make_rarity_pair(self, sExp, sRarity):
         try:
@@ -89,3 +107,10 @@ class BaseObjectMaker(object):
             return IArtist(sArtist)
         except SQLObjectNotFound:
             return Artist(canonicalName=sArtist.lower(), name=sArtist)
+
+    def make_printing_property(self, sValue):
+        try:
+            return IPrintingProperty(sValue)
+        except SQLObjectNotFound:
+            return PrintingProperty(value=sValue,
+                                    canonicalValue=sValue.lower())
