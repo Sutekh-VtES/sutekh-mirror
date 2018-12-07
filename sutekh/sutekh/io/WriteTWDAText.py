@@ -110,7 +110,7 @@ class WriteTWDAText(ArdbInfo):
 
            We override the base class so we can sort by the modified name."""
         return (-tItem[1][0], self._get_cap_key(tItem[0]),
-                move_articles_to_back(tItem[0].name))
+                move_articles_to_back(tItem[0].name).lower())
 
     def _gen_crypt(self, dCards):
         """Generate an TWDA text file crypt description.
@@ -253,7 +253,7 @@ class WriteTWDAText(ArdbInfo):
                 # library cards are also normalised
                 for oCard, iCount in sorted(
                         dCards.iteritems(),
-                        key=lambda x: move_articles_to_back(x[0].name)):
+                        key=lambda x: move_articles_to_back(x[0].name).lower()):
                     sName = normalise_card_name(oCard.name)
                     sLib += "%dx %s\n" % (iCount, sName)
         return sLib
