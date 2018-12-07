@@ -3,7 +3,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Test Writing a card set to an TWDA bbcode file"""
+"""Test Writing a card set to an TWDA text file"""
 
 import unittest
 
@@ -40,8 +40,8 @@ Ally (1)
 
 Equipment (8)
 4x .44 Magnum
-2x AK-47
 1x Aaron's Feeding Razor
+2x AK-47
 1x Anarch Manifesto, An
 
 Action Modifier (3)
