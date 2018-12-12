@@ -7,6 +7,8 @@
 """Base classes for sutekh.io card set parsers and writers.
    """
 
+import logging
+
 from xml.etree.ElementTree import parse, tostring
 # pylint: disable=E0611, F0401
 # For compatability with ElementTree 1.3
@@ -130,6 +132,14 @@ class BaseXMLWriter(CardSetWriter):
         fOut.write(sData)
 
 
+class SlienceFilter(logging.Filter):
+    """Silence all logging during the cache updates"""
+
+    def filter(self, _record):
+        """We allow nothing through"""
+        return 0
+
+
 def safe_parser(oFile, oParser):
     """Wrap the logic for parsing files, to ensure we
        handle transactions and error conditions consistently.
@@ -137,7 +147,14 @@ def safe_parser(oFile, oParser):
        oFile is an object with a .open() method (e.g. EncodedFile).
        oParser is an object with a parse() method that takes an
        open file object."""
+    # We don't care about issues we log in this flush_cache step,
+    # as the database may not have all the required information.
+    # So we forcibly silence all log messages for this step.
+    oRootLogger = logging.getLogger()
+    oFilter = SlienceFilter()
+    oRootLogger.addFilter(oFilter)
     flush_cache()
+    oRootLogger.removeFilter(oFilter)
     fIn = None
     oOldConn = sqlhub.processConnection
     sqlhub.processConnection = oOldConn.transaction()
