@@ -24,8 +24,8 @@ Crypt (6 cards, min=20, max=29, avg=6)
 2x Siamese, The\t\t       7   PRE SPI ani pro\t\t\tAhrimane:2
 1x Hektor\t\t       9   CEL POT PRE QUI for\tpriscus\t\tBrujah antitribu:4
 1x Alan Sovereign (ADV)\t       6   AUS DOM for pre\t\t\tVentrue:3
-1x Abebe\t\t       4   nec obf thn\t  \t\tSamedi:4
-1x Inez "Nurse216" Villagrande 3   inn\t\t  \t\tInnocent (Imbued):4
+1x Abebe\t\t       4   nec obf thn\t\t\t\tSamedi:4
+1x Inez "Nurse216" Villagrande 3   inn\t\t\t\t\tInnocent (Imbued):4
 
 Library (28 cards)
 Master (3; 2 trifle)
@@ -67,8 +67,8 @@ A third line
 
 Crypt (3 cards, min=26, max=26, avg=8.67)
 -----------------------------------------
-2x Alexandra 11  ANI AUS CEL PRE dom        inner circle\tToreador:2
-1x Abebe     4   nec obf thn\t            \t\tSamedi:4
+2x Alexandra\t\t11  ANI AUS CEL PRE dom\tinner circle\tToreador:2
+1x Abebe\t\t4   nec obf thn\t\t\t\tSamedi:4
 
 Library (5 cards)
 Master (1; 1 trifle)
@@ -94,8 +94,8 @@ A third line
 
 Crypt (3 cards, min=30, max=30, avg=10)
 ---------------------------------------
-2x Alexandra\t    11  ANI AUS CEL PRE dom  inner circle\tToreador:2
-1x \xc3\x89tienne Fauberge 8   ANI CEL CHI FOR\t    \t\tRavnos:3
+2x Alexandra\t\t11  ANI AUS CEL PRE dom\tinner circle\tToreador:2
+1x \xc3\x89tienne Fauberge\t8   ANI CEL CHI FOR\t\t\tRavnos:3
 
 Library (5 cards)
 Master (1; 1 trifle)
@@ -114,12 +114,12 @@ Combat/Reaction (1)
 
 
 class TWDATextWriterTests(SutekhTest):
-    """class for the TWDA bbcode file writer tests"""
+    """class for the TWDA text file writer tests"""
     # pylint: disable=R0904
     # R0904 - unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
-        """Test TWDA bbcode file writing"""
+        """Test TWDA text file writing"""
         oPhysCardSet = make_set_1()
 
         # Check output
@@ -139,7 +139,7 @@ class TWDATextWriterTests(SutekhTest):
         self.assertEqual(sData, TWDA_EXPECTED_2)
 
     def test_deck_with_int_avg(self):
-        """Test TWDA writing with a titled vampire."""
+        """Test TWDA writing with a titled vampire and accented characters."""
         oPhysCardSet = make_set_3()
 
         # Check output

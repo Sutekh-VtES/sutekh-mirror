@@ -154,10 +154,12 @@ class WriteTWDAText(ArdbInfo):
         # Vincent likes tabs. Why, Vincent, why?
         # Capacity position
         iCapacityPos = iCountSpace + iNameJust + 1
+        if iCapacityPos < 24:
+            # MAtch TWDA conventions
+            iCapacityPos = 24
         # Convert to tabstop positions
-        # we want the last tabstop shorter than the name length, since we
-        # then pad with spaces to the capacity
-        iNameJust = ((iNameJust + iCountSpace - 1) // 8) * 8
+        iNameJust = (iCapacityPos // 8) * 8
+        # Tab stop after disciplines
         iDiscJust = ((iCapacityPos + 2 + iDiscJust) // 8) * 8
         # Tabstop after titles
         if iTitleJust:
@@ -173,25 +175,21 @@ class WriteTWDAText(ArdbInfo):
                 dLine['name'] += '\t'
                 # round pos to the next tabstop
                 iPos = iPos + 8 - (iPos + 8) % 8
-            # Pad out with spaces to capacity position
+            # Pad out with spaces to just before capacity position
             dLine['name'] += ' ' * (iCapacityPos - iPos)
             sDisc = '%(capacity)-3d %(disc)s' % dLine
             iPos = iCapacityPos + len(sDisc)
-            # Round position to the trailing tabstop
+            # Round position to the tabstop before the end of the disciplines
             iTabPos = iPos - iPos % 8
             sPadd = ''
-            while iTabPos < iDiscJust:
+            while iTabPos <= iDiscJust:
                 sPadd += '\t'
                 iTabPos += 8
-                iPos = iPos + 8 - (iPos + 8) % 8
+                iPos = iTabPos + 8
             if sPadd == '' and iTabPos > 40:
                 # We add a tab in this case
                 sPadd = '\t'
-            else:
-                # Else we add spaces, because Ankha
-                sPadd += ' ' * (42 - iPos)
-                # Always at least 2 space
-                sPadd += '  '
+                iPos = iTabPos + 8
             dLine['disc'] = sDisc + sPadd
             if iTitleJust:
                 iEndPos = (iTitleJust - len(dLine['title']) - iDiscJust + 7)
