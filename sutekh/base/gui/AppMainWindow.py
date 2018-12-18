@@ -155,7 +155,6 @@ class AppMainWindow(MultiPaneWindow):
             cPlugin.update_config()
             cPlugin.register_with_config(oConfig)
 
-
         # Initiliase plugins that will work on the Main Window
         for cPlugin in self._oPluginManager.get_plugins_for('MainWindow'):
             self._aPlugins.append(cPlugin(self, None,
@@ -178,6 +177,12 @@ class AppMainWindow(MultiPaneWindow):
         iTimeout = oConfig.get_socket_timeout()
         socket.setdefaulttimeout(iTimeout)
 
+        # Display initial window and check for cardlist updates
+        # We need to do this before we update plugins, so we avoid
+        # problems with plugin data that assumes a recent cardlist
+        self._setup_vbox()
+        self.check_for_updates()
+
         # Do setup - prompt for downloads, etc. if needed
         self._oIconManager.setup()
         # plugins as well
@@ -186,10 +191,11 @@ class AppMainWindow(MultiPaneWindow):
 
         # Break any loops in the database
         break_existing_loops()
-
-        self._setup_vbox()
+        # Process config file settings
         self.restore_from_config()
-        self.check_for_updates()
+
+        # Now we can check for any plugins that have updated data
+        self.check_for_plugin_updates()
 
     def _create_app_menu(self):
         """Hook for creating the main application menu."""
@@ -304,14 +310,15 @@ class AppMainWindow(MultiPaneWindow):
             self.add_pane()
 
     def check_for_updates(self):
-        """Check for updated data from plugins or updated cardlists
-           and so forth."""
+        """Check for updated cardlists and so forth."""
         # Check for cardlist updates before other updates, to avoid
         # ordering issues
         if self._oConfig.get_check_for_updates():
             # Check for updated card list
             self.check_updated_cardlist()
 
+    def check_for_plugin_updates(self):
+        """Check for any plugins that have updated data"""
         # FIXME: We should probably add a config option so people can
         # skip this if desirable.
         aMessages = []
