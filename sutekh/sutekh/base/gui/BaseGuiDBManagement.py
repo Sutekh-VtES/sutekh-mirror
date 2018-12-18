@@ -103,7 +103,7 @@ class BaseGuiDBManager(object):
                                                 bUrl=oResult.bIsUrl)
         return dFiles, sBackupFile
 
-    def _do_import_checks(self):
+    def _do_import_checks(self, _oAbsCard):
         """Do the actual import checks.
            Returns a list of errors. An empty list is considered a success.
 
