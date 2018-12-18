@@ -345,9 +345,8 @@ class TWDAInfoPlugin(SutekhPlugin):
         if sPrefsValue == 'Unasked':
             # First time
             self.set_config_item('twda configured', 'No')
-            if not self.check_enabled():
-                oDialog = TWDAConfigDialog(self.parent, True)
-                self.handle_response(oDialog)
+            oDialog = TWDAConfigDialog(self.parent, True)
+            self.handle_response(oDialog)
 
     def do_download(self, _oMenuWidget):
         """Prompt the user to download/setup decks"""
