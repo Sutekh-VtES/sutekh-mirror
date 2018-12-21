@@ -99,7 +99,8 @@ def _load_odd_backs():
         aJyhad = set([IExpansion('Jyhad')])
         aVEKNPrinted = set([IExpansion('Anthology'),
                             IExpansion('Lost Kindred'),
-                            IExpansion('Black Chantry Reprint')])
+                            IExpansion('Black Chantry Reprint'),
+                            IExpansion('Humble Bundle 2018 Cards')])
         ODD_BACKS['Third Edition'] = aThirdEd
         ODD_BACKS['Jyhad'] = aJyhad
         ODD_BACKS['VEKN Printed Set'] = aVEKNPrinted
