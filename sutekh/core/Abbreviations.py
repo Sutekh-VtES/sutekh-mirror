@@ -194,7 +194,7 @@ class Expansions(AbbreviationLookup):
         'Final Nights': ['FN'],
         'Gehenna': [],
         'Heirs to the Blood': ['HttB'],
-        'Humble Bundle 2018 Cards"': ['HB2018'],
+        'Humble Bundle 2018 Cards': ['HB2018'],
         'Jyhad': [],
         'Kindred Most Wanted': ['KMW'],
         'Keepers of Tradition': ['KoT'],
