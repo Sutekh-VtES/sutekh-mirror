@@ -1,6 +1,15 @@
 21 Dec 2018
  * Add support for Humble Bundle cards
 
+17 Oct 2018
+ * Fix parsing of unique keyword with the latest cardlist.
+
+20 Sep 2018
+ * Add support for reading 1.4 XML files as will be produced by Sutekh 0.9.4
+
+18 Sep 2018
+ * Fix handling of Veneficti's keywords
+
 16 Jun 2018
  * Make renamed card lookups case insensitive
  * Update list of VEKN-style backed card sets.
