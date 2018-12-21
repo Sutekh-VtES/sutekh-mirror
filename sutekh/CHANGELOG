@@ -1,3 +1,15 @@
+21 Dec 2018
+ * Update deb package build helpers
+
+18 Dec 2018
+ * Fix bug in the TWDA plugin's handling of first time config
+
+12 Dec 2018
+ * Silence the cardlist update warnings when the database is in an inconsitent state because
+   of an ongoing import.
+ * Reorder the cardlist update checks and plugin updates checks to avoid problems with importing
+   plugin data that depends on the recent cardlist when updating from 0.8
+
 19 Nov 2018
  * Fix bugs in the command line support for updating the database
  * Fix bug preventing importing plugins to generate docs correctly.
