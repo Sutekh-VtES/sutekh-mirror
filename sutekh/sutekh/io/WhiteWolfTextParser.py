@@ -535,10 +535,11 @@ class CardDict(dict):
             sAlias = self['name'] + ' (Adv)'
             self['name'] += ' (Advanced)'
         if sAlias:
-            # Add a lookup for the common '... (Adv)' variant
-            oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias,
-                                                    self['name'])
-            oLookup.syncUpdate()
+            # Add lookups for the '.. (Adv)' and '.. (ADV)' variations
+            for sLookup in [sAlias, sAlias.replace('(Adv)', '(ADV)')]:
+                oLookup = self._oMaker.make_lookup_hint("CardNames", sLookup,
+                                                        self['name'])
+                oLookup.syncUpdate()
 
     def _add_capacity(self, oCard, sCap):
         """Add the capacity to the card."""
