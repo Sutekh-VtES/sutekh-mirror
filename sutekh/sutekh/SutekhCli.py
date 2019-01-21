@@ -284,6 +284,9 @@ def main_with_args(aTheArgs):
             print("refresh failed")
             return 1
 
+    if oOpts.lookup_file is not None:
+        read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
+
     if oOpts.ww_file is not None:
         read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler)
 
@@ -292,9 +295,6 @@ def main_with_args(aTheArgs):
 
     if oOpts.exp_data_file is not None:
         read_exp_info_file(EncodedFile(oOpts.exp_data_file), oLogHandler)
-
-    if oOpts.lookup_file is not None:
-        read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
 
     if oOpts.ruling_file is not None:
         read_rulings(EncodedFile(oOpts.ruling_file), oLogHandler)
