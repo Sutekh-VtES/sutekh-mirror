@@ -204,7 +204,8 @@ class CardDict(dict):
                              r'Weapon.|Unique weapon.'),
         'vehicle': re.compile(r'Vehicle\.'),
         'haven': re.compile(r'Haven\.'),
-        'electronic equipment': re.compile(r'Electronic equipment.'),
+        'electronic equipment': re.compile(r'Electronic equipment.|'
+                                           r'^Electronic\.'),
     }
 
     # master properties
