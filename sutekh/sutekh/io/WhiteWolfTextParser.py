@@ -227,6 +227,8 @@ class CardDict(dict):
         'archetype': re.compile(r'Master: archetype|Archetype\.'),
         'watchtower': re.compile(r'Master: watchtower'),
         'title': re.compile(r'Title\.'),
+        'contract': re.compile(r'Contract\.|Unique contract\.|'
+                               r'Master: contract\.'),
     }
 
     # event properties
@@ -240,6 +242,7 @@ class CardDict(dict):
 
     # Catch for non-specified card types
     dOtherProperties = {
+        'contract': re.compile(r'Contract\.'),
         'unique': re.compile(r'Unique\.'),
         'boon': re.compile(r'Boon\.'),
         'watchtower': re.compile(r'Watchtower\.'),
