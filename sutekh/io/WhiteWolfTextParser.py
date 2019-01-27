@@ -197,7 +197,8 @@ class CardDict(dict):
                 'Weapon.|Unique weapon.'),
             'vehicle': re.compile('Vehicle\.'),
             'haven': re.compile('Haven\.'),
-            'electronic equipment': re.compile('Electronic equipment.'),
+            'electronic equipment': re.compile(r'Electronic equipment.|'
+                                               r'^Electronic\.'),
             }
 
     # master properties
@@ -219,6 +220,8 @@ class CardDict(dict):
             'archetype': re.compile('Master: archetype'),
             'watchtower': re.compile('Master: watchtower'),
             'title': re.compile('Title\.'),
+            'contract': re.compile(r'Contract\.|Unique contract\.|'
+                                   r'Master: contract\.'),
             }
 
     # event properties
@@ -232,6 +235,7 @@ class CardDict(dict):
 
     # Catch for non-specified card types
     dOtherProperties = {
+            'contract': re.compile(r'Contract\.'),
             'unique': re.compile('Unique\.'),
             'boon': re.compile('Boon\.'),
             'watchtower': re.compile('Watchtower\.'),
