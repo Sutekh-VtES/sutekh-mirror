@@ -148,7 +148,7 @@ class CardDict(dict):
     # We avoid running these searches on the merged text of advanced
     # vampires to avoid confusion.
     dCryptProperties = {
-        'black hand': re.compile(r'\. Black Hand'),
+        'black hand': re.compile(r'[:.] Black Hand'),
         # Seraph has a special case
         'seraph': re.compile(r'\. Black Hand(\.)? Seraph'),
         'infernal': re.compile(r'[.:] Infernal\.'),
