@@ -1,3 +1,20 @@
+01 Feb 2019
+ * Update the Black Hand keyword check for latest cardlist.
+
+25 Jan 2019
+ * Add contract as a keyword.
+
+24 Jan 2019
+ * Fix the electronic equipment keyword check to work with updated Light Intensifying Goggles
+   text.
+
+21 Jan 2019
+ * Ensure we always process lookup.csv files first when using the command line to update
+   the cardlist.
+
+08 Jan 2019
+ * Add lookup for (ADV) card names
+
 21 Dec 2018
  * Update deb package build helpers
 
