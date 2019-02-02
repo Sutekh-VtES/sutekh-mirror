@@ -59,6 +59,8 @@ SPECIAL_CASES = {
     "l'epuisette": u"l'épuisette",
     "sacre cour cathedral, france": u"sacré-cœur cathedral, france",
     "pere lachaise, france": u"père lachaise, france",
+    'felix "fix" hessian (wraith)': 'felix "fix" hessian',
+    "thadius zho, mage": "thadius zho",
 }
 
 
