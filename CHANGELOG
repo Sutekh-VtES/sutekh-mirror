@@ -1,3 +1,11 @@
+02 Feb 2019
+ * Backport BH keyword fix from trunk
+ * Add Expansion and Rarities for the new Sabbat Preconstructed cards.
+ * Add lookups for cards renamed in the latest cardlist.
+
+27 Jan 2019
+ * Backport keyword fixes and contract keyword from trunk
+
 21 Dec 2018
  * Add support for Humble Bundle cards
 
