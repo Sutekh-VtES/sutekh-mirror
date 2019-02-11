@@ -41,7 +41,8 @@ Expansions,TR,Twilight Rebellion
 Expansions,LK,Lost Kindred
 Expansions,Anarchs and Alastors Storyline,Anarchs and Alastors Storyline
 Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
-Expansions,Black Chantry Reprint,Black Chantry Reprint
+Expansions,Black Chantry Reprint,Black Chantry
+Expansions,Black Chantry,Black Chantry
 Expansions,ReversePrefix:Promo-,Promo
 Rarities,C,Common
 Rarities,C1,Common

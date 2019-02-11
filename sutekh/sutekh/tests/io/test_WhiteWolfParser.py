@@ -624,7 +624,10 @@ class WhiteWolfParserTests(SutekhTest):
         # Check for Black Chantry Expansion data
         oBaronD = IAbstractCard('Baron Dieudonne')
         oKoT = IExpansion('Keepers of Tradition')
-        oBC = IExpansion('Black Chantry Reprint')
+        oBC = IExpansion('Black Chantry')
+        # Check we hanlde the conversion of our old name for the Black Chantry cards correctly
+        oBCold = IExpansion('Black Chantry Reprint')
+        self.assertEqual(oBC, oBCold)
         self.assertTrue(oKoT in [oP.expansion for oP in oBaronD.rarity])
         self.assertTrue(oBC in [oP.expansion for oP in oBaronD.rarity])
         # Check that we also pick up the BC expansion for Hide the Heart

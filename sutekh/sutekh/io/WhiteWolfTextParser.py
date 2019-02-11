@@ -429,7 +429,7 @@ class CardDict(dict):
             for sRar in sRarSet.split('/'):
                 # Create dummy expansion for the Black Chantry cards
                 if sRar in BC_RARITIES:
-                    sExp = 'Black Chantry Reprint'
+                    sExp = 'Black Chantry'
                 oPair = self._oMaker.make_rarity_pair(sExp, sRar)
                 if oPair not in oCard.rarity:
                     oCard.addRarityPair(oPair)
