@@ -181,9 +181,10 @@ class Expansions(AbbreviationLookup):
         'Anarchs Unbound': ['AU'],
         'Ancient Hearts': ['AH'],
         'Anthology': [],
+        'Anthology I Reprint Set': ['AnthologyI'],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
-        'Black Chantry Reprint': [],
+        'Black Chantry': ['Black Chantry Reprint', 'Sabbat Preconstructed', 'SP'],
         'Black Hand': ['BH', 'Blackhand'],
         'Bloodlines': ['BL'],
         'Blood Shadowed Court': ['BSC'],
@@ -194,7 +195,7 @@ class Expansions(AbbreviationLookup):
         'Final Nights': ['FN'],
         'Gehenna': [],
         'Heirs to the Blood': ['HttB'],
-        'Humble Bundle 2018 Cards': ['HB2018', 'Promo-2018104'],
+        'Humble Bundle 2018 Cards': ['HB2018', 'Promo-20181004'],
         'Jyhad': [],
         'Kindred Most Wanted': ['KMW'],
         'Keepers of Tradition': ['KoT'],
@@ -203,7 +204,6 @@ class Expansions(AbbreviationLookup):
         'Lost Kindred': ['LK'],
         'Nights of Reckoning': ['NoR'],
         'Sabbat': [],
-        'Sabbat Preconstructed': ['SP'],
         'Sabbat Wars': ['SW'],
         'Sword of Caine': ['SoC'],
         'Tenth Anniversary': ['Tenth'],
