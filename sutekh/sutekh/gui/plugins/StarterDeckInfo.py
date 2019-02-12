@@ -14,7 +14,7 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
-from sutekh.base.core.BaseAdapters import IRarityPair, IPhysicalCardSet
+from sutekh.base.core.BaseAdapters import IRarityPair, IPhysicalCardSet, IExpansion
 from sutekh.base.core.BaseFilters import (PhysicalCardSetFilter,
                                           FilterAndBox, SpecificCardIdFilter)
 from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
@@ -436,7 +436,16 @@ class StarterInfoPlugin(SutekhPlugin):
                                   ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
-                    sExpName = oMatch.groups()[0]
+                    sCandExpName = oMatch.groups()[0]
+                    # Canonicalise the expansion name, so we can handle cases
+                    # Where we want to use the marketing name, even when
+                    # it doesn't map to the canonical expansion name
+                    try:
+                        oExp = IExpansion(sCandExpName)
+                        sExpName = oExp.name
+                    except SQLObjectNotFound:
+                        # Just fall through and fail on the next check
+                        sExpName = sCandExpName
                     if _check_exp_name(sExpName, oAbsCard):
                         dMatches[sType].append((oCS, oMatch.groups()[0],
                                                 oMatch.groups()[1]))
