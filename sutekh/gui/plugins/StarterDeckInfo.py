@@ -7,7 +7,8 @@
 """Adds info about the starter decks cards are found in"""
 
 from sutekh.core.SutekhObjects import PhysicalCardSet, \
-        MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet, IRarityPair
+        MapPhysicalCardToPhysicalCardSet, IPhysicalCardSet, IRarityPair, \
+        IExpansion
 from sutekh.core.Filters import PhysicalCardSetFilter, \
         FilterAndBox, SpecificCardIdFilter
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -391,7 +392,16 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                     ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
-                    sExpName = oMatch.groups()[0]
+                    sCandExpName = oMatch.groups()[0]
+                    # Canonicalise the expansion name, so we can handle cases
+                    # Where we want to use the marketing name, even when
+                    # it doesn't map to the canonical expansion name
+                    try:
+                        oExp = IExpansion(sCandExpName)
+                        sExpName = oExp.name
+                    except SQLObjectNotFound:
+                        # Just fall through and fail on the next check
+                        sExpName = sCandExpName
                     if _check_exp_name(sExpName, oAbsCard):
                         dMatches[sType].append((oCS, oMatch.groups()[0],
                             oMatch.groups()[1]))
