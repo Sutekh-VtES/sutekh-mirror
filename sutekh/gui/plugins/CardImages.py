@@ -57,6 +57,7 @@ RENAME_LOOKUPS = {
     "sebastiengoulet.jpg": "sebastiangoulet.jpg",
     "sebastiengouletadv.jpg": "sebastiangouletadv.jpg",
     "wendelldelburton.jpg": "wendelldelburtonhunter.jpg",
+    "thadiuszho.jpg": "thadiuszhomage.jpg",
 }
 
 
