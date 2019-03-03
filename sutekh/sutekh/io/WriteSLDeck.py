@@ -57,6 +57,8 @@ SL_FIXES = {
     u"Saatet-ta": u"Saatet-ta (Bane Mummy)",
     u"Mehemet of the Ahl-i-Batin": "Mehemet of the Ahl-i-Batin (Mage)",
     u"Draeven Softfoot": "Draeven Softfoot (Changeling)",
+    u"Felix Fix Hessian": "Felix Fix Hessian (Wraith)",
+    u"Thadius Zho": "Thadius Zho, Mage",
 }
 
 
