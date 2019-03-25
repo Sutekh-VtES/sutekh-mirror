@@ -64,9 +64,9 @@ class CardSetHolder(object):
                 or self._dCardExpansions[sName][tExp] < iCnt:
             raise RuntimeError("Not enough of card '%s' from expansion"
                                " '%s (%s)' to remove '%d'." % (sName,
-                                                          sExpansionName,
-                                                          sPrintingName,
-                                                          iCnt))
+                                                               sExpansionName,
+                                                               sPrintingName,
+                                                               iCnt))
         self._dCardExpansions[sName][tExp] -= iCnt
         # This should be covered by check on self._dCardExpansions
         self._dExpansions[tExp] -= iCnt
@@ -223,8 +223,7 @@ class CardSetWrapper(CardSetHolder):
         """Return the parent card set's name or None if their is no parent."""
         if self._oCS.parent is None:
             return None
-        else:
-            return self._oCS.parent.name
+        return self._oCS.parent.name
 
     # pylint: disable=W0212, C0103
     # W0212: we delibrately allow access via these properties
@@ -285,7 +284,7 @@ class CachedCardSetHolder(CardSetHolder):
 
         # Apply expansion and print lookups
         aExpPrintNames = []
-        for tExpPrint in self._dExpansions.keys():
+        for tExpPrint in self._dExpansions:
             tNewExpPrint = dLookupCache['printings'].get(tExpPrint, tExpPrint)
             aExpPrintNames.append(tNewExpPrint)
         dCardExpansions = {}

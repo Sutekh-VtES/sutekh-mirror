@@ -562,7 +562,7 @@ class FilterParserTests(SutekhTest):
         self.assertEqual(aNames, aExpectedNames,
                          "FilterBoxModel %s failed. %s != %s." % (
                                  sFilter, aNames, aExpectedNames))
-        
+
 
 if __name__ == "__main__":
     unittest.main()

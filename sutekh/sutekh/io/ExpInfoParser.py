@@ -6,10 +6,7 @@
 """Parse expansion and printing info from a json file."""
 
 import json
-import datetime
 from logging import Logger
-
-from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseAdapters import (IExpansion, IPrinting,
                                            IAbstractCard)

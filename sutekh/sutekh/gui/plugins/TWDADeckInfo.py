@@ -490,7 +490,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         oProgressDialog.destroy()
 
         # Bomb out if we're going to end up doing nothing
-        if len(aZipHolders) == 0:
+        if not aZipHolders:
             return False
 
         # Delete all TWDA entries in the holders we replace
@@ -524,5 +524,6 @@ class TWDAInfoPlugin(SutekhPlugin):
         aToDelete = self._get_twda_names()
         return unzip_files_into_db([oFile], "Adding TWDA Data", self.parent,
                                    aToDelete)
+
 
 plugin = TWDAInfoPlugin

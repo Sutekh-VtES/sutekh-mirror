@@ -69,7 +69,8 @@ def parse_options(aArgs):
                           dest="ruling_file", default=None,
                           help="HTML file (probably from VEKN website) "
                                "to read rulings from.")
-    oOptParser.add_option("--exp-data-file", type="string", dest="exp_data_file",
+    oOptParser.add_option("--exp-data-file", type="string",
+                          dest="exp_data_file",
                           default=None, help="JSON file to read expansion "
                                              "release date info from.")
     oOptParser.add_option("--lookup-data-file", type="string",

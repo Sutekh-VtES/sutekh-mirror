@@ -222,7 +222,7 @@ class FilterTests(SutekhTest):
             (Filters.SectFilter('Sabbat'),
              [u"Aaron Bathurst", u"Aaron Duggan, Cameron's Toady", u"Aeron",
               u"Alfred Benezri", u"Angelica, The Canonicus", u"Bronwen",
-              u"Enkidu, The Noah",  u"Harold Zettler, Pentex Director",
+              u"Enkidu, The Noah", u"Harold Zettler, Pentex Director",
               u"Hektor", u"New Blood", u"Sha-Ennu", u"Sheela Na Gig",
               u"The Siamese"]),
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),

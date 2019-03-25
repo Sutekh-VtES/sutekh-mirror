@@ -141,7 +141,7 @@ def secret_library_url(oCard, bVamp):
 
 def find_base_vampire(oVampire):
     """Find the corresponding base vampire.
-       
+
        Returns None if the vampire cannot be found."""
     sBaseName = oVampire.name.replace(' (Advanced)', '')
     # Special cases

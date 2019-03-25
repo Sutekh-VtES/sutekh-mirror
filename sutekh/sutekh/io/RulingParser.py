@@ -118,8 +118,7 @@ class NoSection(LogState):
         """Transition to InSection if needed."""
         if sTag == 'p':
             return InSection(RuleDict(self._oLogger), self._oLogger)
-        else:
-            return self
+        return self
 
 
 class InSection(LogStateWithInfo):
@@ -132,8 +131,7 @@ class InSection(LogStateWithInfo):
         elif sTag == 'p':
             # skip to next section
             return InSection(RuleDict(self._oLogger), self._oLogger)
-        else:
-            return NoSection(self._oLogger)
+        return NoSection(self._oLogger)
 
 
 class SectionTitle(LogStateWithInfo):
@@ -147,8 +145,7 @@ class SectionTitle(LogStateWithInfo):
         elif sTag == '/b':
             self._dInfo['title'] = self._sData.strip().strip(':')
             return SectionWithTitle(self._dInfo, self._oLogger)
-        else:
-            return self
+        return self
 
 
 class SectionWithTitle(LogStateWithInfo):
@@ -163,8 +160,7 @@ class SectionWithTitle(LogStateWithInfo):
             return InSection(RuleDict(self._oLogger), self._oLogger)
         elif sTag == '/ul':
             return NoSection(self._oLogger)
-        else:
-            return self
+        return self
 
 
 class SectionRule(LogStateWithInfo):
@@ -176,8 +172,7 @@ class SectionRule(LogStateWithInfo):
             return InRuleText(self._dInfo, self._oLogger)
         elif sTag == '/ul':
             return NoSection(self._oLogger)
-        else:
-            return self
+        return self
 
 
 class InRuleText(LogStateWithInfo):
@@ -221,8 +216,7 @@ class InRuleUrl(LogStateWithInfo):
             # since that matches the url we keep
             self._dInfo['code'] = self._sData.strip()
             return InRuleText(self._dInfo, self._oLogger)
-        else:
-            return self
+        return self
 
 
 # Parser

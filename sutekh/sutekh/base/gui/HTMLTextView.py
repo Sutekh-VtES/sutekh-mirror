@@ -698,11 +698,11 @@ class HTMLViewDialog(SutekhDialog):
         self._oHTMLTextView.display_html(self._fCurrent)
         if self._sTextAnchor:
             self._oHTMLTextView.set_text_pos(self._sTextAnchor)
-        if len(self._aPastUrls) > 0:
+        if self._aPastUrls:
             self._oBackButton.set_sensitive(True)
         else:
             self._oBackButton.set_sensitive(False)
-        if len(self._aFutureUrls) > 0:
+        if self._aFutureUrls:
             self._oForwardButton.set_sensitive(True)
         else:
             self._oForwardButton.set_sensitive(False)
@@ -740,7 +740,7 @@ class HTMLViewDialog(SutekhDialog):
 
     def _go_back(self, _oWidget):
         """Go backwards through the list of visited urls"""
-        if len(self._aPastUrls) == 0:
+        if not self._aPastUrls:
             return
         self._aFutureUrls.append((self._fCurrent, self._sTextAnchor))
         self._fCurrent, self._sTextAnchor = self._aPastUrls.pop()
@@ -748,7 +748,7 @@ class HTMLViewDialog(SutekhDialog):
 
     def _go_forward(self, _oWidget):
         """Go forward through the list of visited urls"""
-        if len(self._aFutureUrls) == 0:
+        if not self._aFutureUrls:
             return
         self._aPastUrls.append((self._fCurrent, self._sTextAnchor))
         self._fCurrent, self._sTextAnchor = self._aFutureUrls.pop()

@@ -488,7 +488,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
                     # Find First physical card that matches this name
                     # that's not in aPhysCards
-                    oPhys = self._lookup_new_phys_card(oAbsCard, 
+                    oPhys = self._lookup_new_phys_card(oAbsCard,
                                                        sNewExpPrintName)
                     aPhysCards.extend([oPhys] * iCnt)
 

@@ -74,7 +74,7 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertTrue(oPhysCardSet2.name in dEntries)
         self.assertTrue(oPhysCardSet1.name in dEntries)
         self.assertTrue(oMyCollection.name in dEntries)
-        self.assertEquals(dEntries[oPhysCardSet1.name][2], oMyCollection.name)
+        self.assertEqual(dEntries[oPhysCardSet1.name][2], oMyCollection.name)
 
         # Check it loads correctly
         # Destroy some existing data

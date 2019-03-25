@@ -806,6 +806,8 @@ class PhysicalExpansionFilter(DirectFilter):
         if self._aPrintings:
             return IN(oTable.printing_id, self._aPrintings)
         # None case
+        # pylint: disable=singleton-comparison
+        # Must be a comparison so SQLObject generates the correct SQL
         return oTable.printing_id == None
 
 

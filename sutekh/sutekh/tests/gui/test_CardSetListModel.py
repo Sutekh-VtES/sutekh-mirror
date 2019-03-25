@@ -384,9 +384,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertFalse(oListener.bLoadCalled)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
-        self.assertEquals(oListener.iCnt, 0)
+        self.assertEqual(oListener.iCnt, 0)
         # Check for the 'No cards' entry in the model
-        self.assertEquals(oModel.iter_n_children(None), 1)
+        self.assertEqual(oModel.iter_n_children(None), 1)
         aCards = [('Alexandra', 'CE', None), ('Sha-Ennu', 'Third Edition', None),
                   (u'Étienne Fauberge', "Anarchs", None),
                   ("Hektor", "Third", "Sketch")]

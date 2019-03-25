@@ -1328,4 +1328,5 @@ class AnalyzeCardList(SutekhPlugin):
                                  '%d </span>\n' % abs(iHFNum - iLibNum))
         return sHappyFamilyText
 
+
 plugin = AnalyzeCardList

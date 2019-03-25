@@ -60,8 +60,8 @@ class PhysicalCardLookup(object):
 
 
 class PrintingLookup(object):
-    """Base class for objects which translate expansion + print names into printing
-       objects
+    """Base class for objects which translate expansion + print names
+       into printing objects
        """
 
     def printing_lookup(self, aExpPrintNames, sInfo, dCardExpansions):
@@ -96,7 +96,7 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         return aCards
 
     def physical_lookup(self, dCardExpansions, dNameCards, dNamePrintings,
-                         _sInfo):
+                        _sInfo):
         """Lookup cards in the physical card set, excluding unknown cards."""
         aCards = []
         for sName in dCardExpansions:

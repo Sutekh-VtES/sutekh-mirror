@@ -461,7 +461,7 @@ class MultiPaneWindow(gtk.Window):
                 iPos = (oCurAlloc.height - oMenuAlloc.height) // 2
             else:
                 oNewPane = gtk.HPaned()
-            if len(self._aHPanes) > 0:
+            if self._aHPanes:
                 # We pop out the current frame, and plonk it in
                 # the new pane - we add the new widget to the other
                 # part

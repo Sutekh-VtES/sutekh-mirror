@@ -97,9 +97,11 @@ def get_printing_info(oAbsCard):
     # as likely more correct when dealing with new sets. When no expansions
     # have dates, this is the right thing
     oToday = datetime.date.today()
+
     def get_date(oDate):
         """Handle None values for date somewhat sanely"""
         return oDate if oDate else oToday
+
     if bHasInfo:
         aPrint = set()
         # We want only those printings that actually apply to this card
@@ -398,7 +400,7 @@ class BaseImageFrame(BasicFrame):
         """Attempt to download the image."""
         aUrls = self._make_card_urls(sFullFilename)
         if not aUrls:
-            return False 
+            return False
         for sUrl in aUrls:
             if sUrl not in self._aFailedUrls:
                 logging.info('Trying %s as source for %s',

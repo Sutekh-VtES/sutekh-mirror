@@ -280,4 +280,5 @@ class StatsModel(gtk.TreeStore):
 
         return oClanStats
 
+
 plugin = ClanDisciplineStats

@@ -241,7 +241,7 @@ class BasePlugin(object):
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True
-    
+
     @classmethod
     def check_model_type(cls, cModelType):
         """Check whether the plugin should register on this frame."""
