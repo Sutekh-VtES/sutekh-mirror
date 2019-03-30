@@ -615,6 +615,10 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(ICardType("Reaction") in oHtH.cardtype)
         self.failUnless(oHtH.text.startswith('[aus] Reduce'))
 
+        self.assertTrue(IRarityPair(('HttB', 'Common')) in oHtH.rarity)
+        self.assertTrue(IRarityPair(('Black Chantry', 'Fixed')) in oHtH.rarity)
+        self.assertTrue(IRarityPair(('HttB', 'Precon')) in oHtH.rarity)
+
         oSmite = IAbstractCard("Smite")
         self.assertEqual(oSmite.canonicalName, u"smite")
         self.assertEqual(oSmite.cost, 3)
