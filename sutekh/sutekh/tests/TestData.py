@@ -65,6 +65,10 @@ Rarities,A,Fixed
 Rarities,B,Fixed
 Rarities,1,Fixed
 Rarities,3,Fixed
+Rarities,A1,Fixed
+Rarities,A2,Fixed
+Rarities,B1,Fixed
+Rarities,B2,Fixed
 Rarities,Rules,Rules
 Rarities,Storyline,Storyline
 Rarities,Demo,Demo
@@ -827,7 +831,7 @@ Camarilla.
 Artist: Leif Jones
 
 Name: Hide the Heart
-[HttB:C/PSal2/B2]
+[HttB:C/B2/PSal2]
 Cardtype: Reaction
 Discipline: Valeren / Auspex
 
