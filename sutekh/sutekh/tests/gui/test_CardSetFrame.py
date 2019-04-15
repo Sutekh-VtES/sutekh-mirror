@@ -10,7 +10,8 @@ import unittest
 import gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
-from sutekh.base.core.BaseAdapters import IPhysicalCard, IAbstractCard
+from sutekh.base.core.BaseAdapters import IPhysicalCard, IAbstractCard, IPrintingName
+from sutekh.base.core import BaseFilters
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.gui.BaseConfigFile import CARDSET
 from sutekh.base.gui.CardSetListModel import EXTRA_LEVEL_OPTION
@@ -255,6 +256,77 @@ class TestCardSetFrame(GuiSutekhTest):
         oFrame.reload()
         aExp2 = self.get_expanded(oFrame.view)
         self.assertEqual(aExp1, aExp2)  # But reload has retained the new state
+
+    def test_delete_with_physical_filters(self):
+        """Test deleting cards with physical filters in play."""
+        oColl = PhysicalCardSet(name='My Collection')
+        # Add some cards
+        aCards = [("Ghoul Retainer", "Jyhad", None)] * 2 + \
+            [("Ghoul Retainer", "Jyhad", "Variant Printing")] * 3 + \
+            [("Off Kilter", "HttB", None)] * 3 + \
+            [("Off Kilter", "HttB", "No Draft Text")] * 4
+        aPhysCards = []
+        for (sName, sExp, sPrint) in aCards:
+            oCard = make_card(sName, sExp, sPrint)
+            aPhysCards.append(oCard)
+        for oCard in aPhysCards:
+            oColl.addPhysicalCard(oCard.id)
+            oColl.syncUpdate()
+        self.assertEqual(len(oColl.cards), 12)
+        self.oWin.setup(self.oConfig)
+        # Remove the unneeded panes
+        for oPane in self.oWin.aOpenFrames[:]:
+            if oPane.title in ('Card Text', 'Card Set List', 'Full Card List'):
+                self.oWin.remove_frame(oPane)
+            if oPane.title == 'My Collection':
+                oMyColl = oPane
+        oMyColl.view.toggle_editable(True)
+        # Test deleting with no filter works as expected
+        self._select_cards(oMyColl, [(u'Ghoul Retainer', ),
+                                       (u'Off Kilter', )])
+        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
+        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        # Check that we can delete all the way
+        # We should remove 2 cards each time until we've removed 5 Ghoul Retainers
+        for iExpected in range(10, 0, -2):
+            oMyColl.view.key_press(oMyColl, oEvent)
+            self.assertEqual(len(oColl.cards), iExpected)
+        # Then remove 1 card for the last 2
+        for iExpected in range(1, -1, -1):
+            oMyColl.view.key_press(oMyColl, oEvent)
+            self.assertEqual(len(oColl.cards), iExpected)
+        oColl.syncUpdate()
+        for oCard in aPhysCards:
+            oColl.addPhysicalCard(oCard.id)
+            oColl.syncUpdate()
+        self.assertEqual(len(oColl.cards), 12)
+        oMyColl.reload()
+        # Test deleting with physical printing filter works as expected
+        oFilter = BaseFilters.PhysicalPrintingFilter('Jyhad (Variant Printing)')
+        oMyColl.view.set_filter(oFilter)
+        oMyColl.reload()
+        self._select_cards(oMyColl, [(u'Ghoul Retainer', )])
+        # Each removal should remove 1 card
+        for iExpected in range(11, 8, -1):
+            oMyColl.view.key_press(oMyColl, oEvent)
+            self.assertEqual(len(oColl.cards), iExpected)
+        # Further removals have no effect
+        oMyColl.view.key_press(oMyColl, oEvent)
+        self.assertEqual(len(oColl.cards), 9)
+        oMyColl.view.key_press(oMyColl, oEvent)
+        self.assertEqual(len(oColl.cards), 9)
+        # Test deleting with physical expansion filter works as expected
+        oFilter = BaseFilters.PhysicalExpansionFilter('Heirs to the Blood')
+        oMyColl.view.set_filter(oFilter)
+        oMyColl.reload()
+        self._select_cards(oMyColl, [(u'Off Kilter', )])
+        for iExpected in range(8, 1, -1):
+            oMyColl.view.key_press(oMyColl, oEvent)
+            self.assertEqual(len(oColl.cards), iExpected)
+        # Asset that all the remaining 2 cards are both Jyhad (No variant) Ghoul retainers
+        for oCard in oColl.cards:
+            self.assertEqual(oCard.abstractCard.name, "Ghoul Retainer")
+            self.assertEqual(IPrintingName(oCard), "Jyhad")
 
     def test_paste_form_card_set(self):
         """Test selecting and pasting with the different display modes"""
