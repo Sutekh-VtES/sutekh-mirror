@@ -88,6 +88,59 @@ CardTypes,Imbued,Imbued
 CardTypes,Retainer,Retainer
 CardTypes,Reflex,Reflex
 CardTypes,Conviction,Conviction
+Clans,Brujah,Brujah
+Clans,Malk,Malkavian
+Clans,Nos,Nosferatu
+Clans,Tor,Toreador
+Clans,Tre,Tremere
+Clans,Ven,Ventrue
+Clans,Caitiff,Caitiff
+Clans,Abom,Abomination
+Clans,Gangrel,Gangrel
+Clans,Assa,Assamite
+Clans,Set,Follower of Set
+Clans,FoS,Follower of Set
+Clans,Giov,Giovanni
+Clans,Ravnos,Ravnos
+Clans,Baali,Baali
+Clans,DoC,Daughter of Cacophony
+Clans,Garg,Gargoyle
+Clans,Naga,Nagaraja
+Clans,Salu,Salubri
+Clans,Sam,Samedi
+Clans,TBruj,True Brujah
+Clans,Lasom,Lasombra
+Clans,Tz,Tzimisce
+Clans,!Brujah,Brujah antitribu
+Clans,!Gangrel,Gangrel antitribu
+Clans,!Malk,Malkavian antitribu
+Clans,!Nos,Nosferatu antitribu
+Clans,!Tor,Toreador antitribu
+Clans,!Tre,Tremere antitribu
+Clans,!Ven,Ventrue antitribu
+Clans,Pan,Pander
+Clans,Ahrimanes,Ahrimane
+Clans,Blood Brothers,Blood Brother
+Clans,BB,Blood Brother
+Clans,HoS,Harbinger of Skulls
+Clans,Kias,Kiasyd
+Clans,!Salu,Salubri antitribu
+Clans,Aku,Akunanse
+Clans,Guru,Guruhi
+Clans,Ish,Ishtarri
+Clans,Ose,Osebo
+Creeds,Avenger,Avenger
+Creeds,Defender,Defender
+Creeds,Innocent,Innocent
+Creeds,Judge,Judge
+Creeds,Martyr,Martyr
+Creeds,Redeemer,Redeemer
+Creeds,Visionary,Visionary
+Sects,Camarilla,Camarilla
+Sects,Sabbat,Sabbat
+Sects,Independent,Independent
+Sects,Laibon,Laibon
+Sects,Anarch,Anarch
 """
 
 TEST_CARD_LIST = """

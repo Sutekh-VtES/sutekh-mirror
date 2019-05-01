@@ -9,7 +9,7 @@
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
 
-from sutekh.base.core.BaseAbbreviations import AbbreviationLookup
+from sutekh.base.core.BaseAbbreviations import AbbreviationLookup, DatabaseAbbreviation
 
 # Abbreviation Lookups
 
@@ -17,57 +17,14 @@ from sutekh.base.core.BaseAbbreviations import AbbreviationLookup
 # pylint: disable=W0223
 # We don't override all the abstract methods in all the classes
 # this is OK, since we control the use cases
-class Clans(AbbreviationLookup):
+class Clans(DatabaseAbbreviation):
     """Standard names and common abbreviations for the VtES clans."""
-    dKeys = {
-        # Camarilla
-        'Brujah': ['Brujah'], 'Malkavian': ['Malk'],
-        'Nosferatu': ['Nos'], 'Toreador': ['Tor'],
-        'Tremere': ['Tre'], 'Ventrue': ['Ven'],
-        'Caitiff': ['Caitiff'],
-        # Independents
-        'Abomination': ['Abom'], 'Gangrel': ['Gangrel'],
-        'Assamite': ['Assa'], 'Follower of Set': ['Set'],
-        'Giovanni': ['Giov'], 'Ravnos': ['Ravnos'],
-        'Baali': ['Baali'], 'Daughter of Cacophony': ['DoC'],
-        'Gargoyle': ['Garg'], 'Nagaraja': ['Naga'],
-        'Salubri': ['Salu'], 'Samedi': ['Sam'],
-        'True Brujah': ['TBruj'],
-        # Sabbat
-        'Lasombra': ['Lasom'], 'Tzimisce': ['Tz'],
-        'Brujah antitribu': ['!Brujah'], 'Gangrel antitribu': ['!Gangrel'],
-        'Malkavian antitribu': ['!Malk'], 'Nosferatu antitribu': ['!Nos'],
-        'Toreador antitribu': ['!Tor'], 'Tremere antitribu': ['!Tre'],
-        'Ventrue antitribu': ['!Ven'], 'Pander': ['Pan'],
-        'Ahrimane': ['Ahrimanes'],
-        'Blood Brother': ['BB', 'Blood Brothers'],
-        'Harbinger of Skulls': ['HoS'],
-        'Kiasyd': ['Kias'], 'Salubri antitribu': ['!Salu'],
-        # Laibon
-        'Akunanse': ['Aku'], 'Guruhi': ['Guru'], 'Ishtarri': ['Ish'],
-        'Osebo': ['Ose'],
-        # Other
-    }
-
-    @classmethod
-    def shortname(cls, sCanonical):
-        """Return the abbreviation for the canonical clan name."""
-        return cls.dKeys[sCanonical][0]
+    sLookupDomain = 'Clans'
 
 
-class Creeds(AbbreviationLookup):
+class Creeds(DatabaseAbbreviation):
     """The Imbued creeds."""
-    dKeys = {
-        # Imbued
-        'Avenger': [], 'Defender': [], 'Innocent': [],
-        'Judge': [], 'Martyr': [], 'Redeemer': [],
-        'Visionary': [],
-    }
-
-    @classmethod
-    def shortname(cls, sCanonical):
-        """Return the defined shortname."""
-        return sCanonical
+    sLookupDomain = 'Creeds'
 
 
 class Disciplines(AbbreviationLookup):
@@ -112,12 +69,9 @@ class Disciplines(AbbreviationLookup):
         return cls.dKeys[sCanonical][1]
 
 
-class Sects(AbbreviationLookup):
+class Sects(DatabaseAbbreviation):
     """Common strings for the different sects."""
-    dKeys = {
-        'Camarilla': [], 'Sabbat': [], 'Independent': [],
-        'Laibon': [], 'Anarch': [],
-    }
+    sLookupDomain = 'Sects'
 
 
 class Titles(AbbreviationLookup):
