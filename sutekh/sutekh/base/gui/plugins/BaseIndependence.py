@@ -273,7 +273,7 @@ class BaseIndependence(BasePlugin):
         # Turn data into a list of cards to add
         aCards = []
         for oCard, oInfo in dMissing.iteritems():
-            if not hasattr(oCard, 'expansion'):
+            if not hasattr(oCard, 'printing'):
                 # Dealing with abstract cards in the list
                 oPhysCard = IPhysicalCard((oCard, None))
             else:
