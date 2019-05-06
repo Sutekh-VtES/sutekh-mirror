@@ -1,3 +1,20 @@
+06 May 2019
+ * Fix buggy check in the "Test Independence" plugin which prevented creating card sets
+   from the results.
+
+01 May 2019
+ * Convert Clan, Creed and Sect Abbrevations to be Lookup based to make adding new clans
+   easier.
+
+30 Mar 2019
+ * Fix the rarity for Black Chantry reprint sets.
+
+03 Feb 2019
+ * Tweak Secret Library output to address more card name changes.
+
+12 Feb 2019
+ * Tweak expansion matching logic, so aliases work as expected in starter deck names.
+
 11 Feb 2019
  * Rename 'Black Chantry Reprint' to 'Black Chantry' to better match reality.
 
