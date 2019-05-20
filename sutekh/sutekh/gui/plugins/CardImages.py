@@ -43,6 +43,12 @@ class CardImageFrame(BaseImageFrame):
 
     APP_NAME = SutekhInfo.NAME
 
+    # Special cases where we don't want to use the Promo short name
+    SPECIAL_PROMOS = [
+        "Anarchs and Alastors Storyline",
+        "Promo-20190408",
+    ]
+
     # Cloudflare doesn't like the urllib2 default
     _dReqHeaders = {
         'User-Agent': 'Sutekh Image Plugin'
@@ -85,7 +91,6 @@ class CardImageFrame(BaseImageFrame):
         try:
             oExpansion = IExpansion(sExpansionName)
             oPrinting = None
-            # special case Anarchs and alastors due to promo hack shortname
             bOK = True
         except SQLObjectNotFound:
             if '(' in sExpansionName:
@@ -106,14 +111,15 @@ class CardImageFrame(BaseImageFrame):
             logging.warn('Expansion %s no longer found in the database',
                          sExpansionName)
             return ''
-        if oExpansion.name == 'Anarchs and Alastors Storyline':
+        # check special cases
+        if oExpansion.name in self.SPECIAL_PROMOS:
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()
         if oPrinting:
             sExpName += '_' + oPrinting.name.lower()
         # Normalise for storyline cards
-        sExpName = sExpName.replace(' ', '_').replace("'", '')
+        sExpName = sExpName.replace(' ', '_').replace("'", '').replace('-', '_')
         return sExpName
 
     def _make_card_urls(self, _sFullFilename):
