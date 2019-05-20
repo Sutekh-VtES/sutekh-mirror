@@ -167,6 +167,12 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
 
     sMenuFlag = 'Card Image Frame'
 
+    # Special cases where we don't want to use the Promo short name
+    SPECIAL_PROMOS = [
+        "Anarchs and Alastors Storyline",
+        "Promo-20190408",
+    ]
+
     def __init__(self, oImagePlugin):
         super(CardImageFrame, self).__init__(oImagePlugin.parent)
         self._oImagePlugin = oImagePlugin
@@ -227,13 +233,13 @@ class CardImageFrame(BasicFrame, CardTextViewListener):
             logging.warn('Expansion %s no longer found in the database',
                     sExpansionName)
             return ''
-        # special case Anarchs and alastors due to promo hack shortname
-        if oExpansion.name == 'Anarchs and Alastors Storyline':
+        # check special cases
+        if oExpansion.name in self.SPECIAL_PROMOS:
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()
         # Normalise for storyline cards
-        sExpName = sExpName.replace(' ', '_').replace("'", '')
+        sExpName = sExpName.replace(' ', '_').replace("'", '').replace('-', '_')
         return sExpName
 
     def __set_expansion_info(self, sCardName):
