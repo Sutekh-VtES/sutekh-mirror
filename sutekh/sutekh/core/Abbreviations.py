@@ -9,7 +9,10 @@
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
 
+import sys
+
 from sutekh.base.core.BaseAbbreviations import AbbreviationLookup, DatabaseAbbreviation
+from sutekh.base.core.BaseTables import LookupHints
 
 # Abbreviation Lookups
 
@@ -27,46 +30,22 @@ class Creeds(DatabaseAbbreviation):
     sLookupDomain = 'Creeds'
 
 
-class Disciplines(AbbreviationLookup):
+class Disciplines(DatabaseAbbreviation):
     """Standard abbreviations and names for the VtES disciplines."""
-    dKeys = {
-        'abo': ['ABO', 'Abombwe'],
-        'ani': ['ANI', 'Animalism'],
-        'aus': ['AUS', 'Auspex'],
-        'cel': ['CEL', 'Celerity'],
-        'chi': ['CHI', 'Chimerstry'],
-        'dai': ['DAI', 'Daimoinon'],
-        'dem': ['DEM', 'Dementation'],
-        'dom': ['DOM', 'Dominate'],
-        'fli': ['FLI', 'Flight'],
-        'for': ['FOR', 'Fortitude'],
-        'mal': ['MAL', 'Maleficia'],
-        'mel': ['MEL', 'Melpominee'],
-        'myt': ['MYT', 'Mytherceria'],
-        'nec': ['NEC', 'Necromancy'],
-        'obe': ['OBE', 'Obeah'],
-        'obf': ['OBF', 'Obfuscate'],
-        'obt': ['OBT', 'Obtenebration'],
-        'pot': ['POT', 'Potence'],
-        'pre': ['PRE', 'Presence'],
-        'pro': ['PRO', 'Protean'],
-        'qui': ['QUI', 'Quietus'],
-        'san': ['SAN', 'Sanguinus'],
-        'ser': ['SER', 'Serpentis'],
-        'spi': ['SPI', 'Spiritus'],
-        'str': ['STR', 'Striga'],
-        'tem': ['TEM', 'Temporis'],
-        'thn': ['THN', 'Thanatosis'],
-        'tha': ['THA', 'Thaumaturgy'],
-        'val': ['VAL', 'Valeren'],
-        'vic': ['VIC', 'Vicissitude'],
-        'vis': ['VIS', 'Visceratika'],
-    }
+    sLookupDomain = "Disciplines"
 
     @classmethod
-    def fullname(cls, sCanonical):
+    def fullname(cls, sShortName):
         """Return the full name for the given abbreviation."""
-        return cls.dKeys[sCanonical][1]
+        sFullName = None
+        sCanonical = cls.canonical(sShortName)
+        # We need to look up the longest reverse version of the canonical lookup
+        # We assume the 3 letter entries are all abbrevations
+        for oLookup in LookupHints.selectBy(domain=cls.sLookupDomain):
+            if oLookup.value == sCanonical and len(oLookup.lookup) > 3:
+                sFullName = oLookup.lookup
+                break
+        return sFullName
 
 
 class Sects(DatabaseAbbreviation):
@@ -116,20 +95,21 @@ class Titles(AbbreviationLookup):
         return cls.dVoteValues[sTitle]
 
 
-class Virtues(AbbreviationLookup):
+class Virtues(DatabaseAbbreviation):
     """Common abbreviations for Imbued Virtues"""
-    dKeys = {
-        # Virtues (last key is full name)
-        'def': ['Defense'],
-        'inn': ['Innocence'],
-        'jud': ['Judgment', 'Judgement'],
-        'mar': ['Martyrdom'],
-        'red': ['Redemption'],
-        'ven': ['Vengeance'],
-        'vis': ['Vision'],
-    }
+    sLookupDomain = 'Virtues'
 
     @classmethod
     def fullname(cls, sCanonical):
         """Return the canonical long name of the Virtue"""
-        return cls.dKeys[sCanonical][0]
+        sFullName = None
+        sCanonical = cls.canonical(sCanonical)
+        # We need to look reverse version of the canonical lookup
+        for oLookup in LookupHints.selectBy(domain=cls.sLookupDomain):
+            # We skip the identity lookup and grab the next one
+            # We assume the ordering in the lookup file is correct
+            # so we handle the 'Judgement/Judgment' case
+            if oLookup.value == sCanonical and oLookup.lookup != sCanonical:
+                sFullName = oLookup.lookup
+                break
+        return sFullName
