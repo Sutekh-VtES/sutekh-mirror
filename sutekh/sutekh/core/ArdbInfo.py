@@ -97,8 +97,8 @@ class ArdbInfo(object):
         """Extract the crypt cards from the list."""
         dCryptStats = {
             'size': 0,
-            'min': 75,
-            'minsum': 75,
+            'min': 0,
+            'minsum': 0,
             'max': 0,
             'maxsum': 0,
             'avg': 0.0,
@@ -116,16 +116,14 @@ class ArdbInfo(object):
                     iCap = oCard.life
                 dCryptStats['avg'] += iCap * iCount
                 aCaps.extend([iCap]*iCount)
-        aCaps.sort()
-        dCryptStats['min'] = min(aCaps)
-        dCryptStats['max'] = max(aCaps)
-        dCryptStats['minsum'] = sum(aCaps[:4])
-        dCryptStats['maxsum'] = sum(aCaps[-4:])
         if dCryptStats['size'] > 0:
+            aCaps.sort()
+            dCryptStats['min'] = min(aCaps)
+            dCryptStats['max'] = max(aCaps)
+            dCryptStats['minsum'] = sum(aCaps[:4])
+            dCryptStats['maxsum'] = sum(aCaps[-4:])
             dCryptStats['avg'] = round(dCryptStats['avg'] /
                                        dCryptStats['size'], 2)
-        if dCryptStats['min'] == 75:
-            dCryptStats['min'] = 0
         return dVamps, dCryptStats
 
     def _extract_library(self, dCards):
