@@ -17,7 +17,7 @@ import tempfile
 import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
-from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST
+from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST, AbstractCard
 from sutekh.base.core.BaseAdapters import IPhysicalCardSet, IAbstractCard
 from sutekh.core.SutekhTables import TABLE_LIST
 # pylint: disable=W0611
@@ -28,7 +28,7 @@ import sutekh.core.Filters
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_info_file,
-                                  read_lookup_data)
+                                  read_lookup_data, do_card_checks)
 from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
@@ -235,6 +235,8 @@ def main_with_args(aTheArgs):
         ensure_dir_exists(sPrefsDir)
         oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db"))
 
+    bDoCardListChecks = False
+
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
 
@@ -290,9 +292,11 @@ def main_with_args(aTheArgs):
 
     if oOpts.ww_file is not None:
         read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler)
+        bDoCardListChecks = True
 
     if oOpts.extra_file is not None:
         read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
+        bDoCardListChecks = True
 
     if oOpts.exp_data_file is not None:
         read_exp_info_file(EncodedFile(oOpts.exp_data_file), oLogHandler)
@@ -306,6 +310,14 @@ def main_with_args(aTheArgs):
         read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
         read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
         read_exp_info_file(EncodedFile(EXP_DATA_URL, True), oLogHandler)
+        bDoCardListChecks = True
+
+    if bDoCardListChecks:
+        # Run the consistency checks on the database
+        for oAbsCard in AbstractCard.select():
+            aMessages = do_card_checks(oAbsCard)
+            if aMessages:
+                print('\n'.join(aMessages))
 
     if oOpts.upgrade_db:
         oDBUpgrade = DBUpgradeManager()

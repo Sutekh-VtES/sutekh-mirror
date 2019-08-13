@@ -167,3 +167,75 @@ def find_adv_vampire(oVampire):
         return IAbstractCard(sAdvName)
     except SQLObjectNotFound:
         return None
+
+
+def _check_ally_keywords(aKeywords, sKeywordType, sName):
+    """Check if we have the correct keywords in the list.
+
+       We return a list, so we can use .extend on the result."""
+    for sKeyword in aKeywords:
+        if sKeyword.endswith(sKeywordType):
+            # Found it, so no messages
+            return []
+    # Return a message
+    return ["%s (ally) is missing %s keyword" % (sName, sKeywordType)]
+
+
+def do_card_checks(oAbsCard):
+    """Spot check cards for consisency after importing a new card list.
+
+       We check the following things:
+       * Each card has a card type
+       * Each vampire has a clan, a group and a capacity
+       * Each advanced vampire has a base vampire
+         (including storyline advanced vamps)
+       * Each Imbued has a creed, a group and a life total
+       * Each Ally has a life total, and the bleed and strength keywords.
+       * Each retainer has a life total
+    """
+    aMessages = []
+    sName = oAbsCard.name
+    if not oAbsCard.cardtype:
+        aMessages.append('%s has no Type' % sName)
+        # We skip the other checks, as this is a badly broken card
+        return aMessages
+    if oAbsCard.cost is not None:
+        if not oAbsCard.costtype:
+            aMessages.append('%s has a cost, but no cost type' % sName)
+    elif oAbsCard.costtype is not None:
+        aMessages.append('%s has a costtype, but no cost' % sName)
+    aTypes = [oT.name.lower() for oT in oAbsCard.cardtype]
+    aKeywords = [oK.keyword for oK in oAbsCard.keywords]
+    if 'retainer' in aTypes:
+        if not oAbsCard.life:
+            aMessages.append("%s (retainer) has no life" % sName)
+    if 'ally' in aTypes:
+        if not oAbsCard.life:
+            aMessages.append("%s (ally) has no life" % sName)
+        aMessages.extend(_check_ally_keywords(aKeywords, 'strength', sName))
+        aMessages.extend(_check_ally_keywords(aKeywords, 'bleed', sName))
+
+    if is_crypt_card(oAbsCard):
+        # We don't check keywords for crypt cards, because the parser
+        # always adds them, even if they're not parsed correctly
+        if not oAbsCard.group:
+            aMessages.append("%s is a crypt card with no group" % sName)
+        if not is_vampire(oAbsCard):
+            # Imbued checks
+            if not oAbsCard.life:
+                aMessages.append("%s (imbued) has no life" % sName)
+            if not oAbsCard.creed:
+                aMessages.append("%s (imbued) has no creed" % sName)
+        else:
+            # Vampire checks
+            if not oAbsCard.clan:
+                aMessages.append("%s (vampire) has no clan" % sName)
+            if not oAbsCard.capacity:
+                aMessages.append("%s (vampire) has no capacity" % sName)
+            if oAbsCard.level:
+               oBase = find_base_vampire(oAbsCard)
+               if not oBase:
+                   aMessages.append("Advanced vampire %s has no base"
+                                    " vampire" % sName)
+    return aMessages
+
