@@ -139,7 +139,8 @@ class StarterConfigDialog(SutekhDialog):
 def _is_precon(oRarityPair):
     """Return true if the rarity is a precon one"""
     if oRarityPair.rarity.name == 'Precon' or \
-            oRarityPair.rarity.name == 'Demo':
+            oRarityPair.rarity.name == 'Demo' or \
+            oRarityPair.rarity.name == 'Fixed':
         return True
     return False
 
@@ -173,6 +174,10 @@ class StarterInfoPlugin(SutekhPlugin):
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile(r'^\[(.*)\] (.*) Starter')
     oDemoRegex = re.compile(r'^\[(.*)\] (.*) Demo Deck')
+    oFixedRegex = re.compile(r'^\[(.*)\] (.*) (Set|([A,B])|Bundle ([0-9])|Bundle|Box)$')
+
+    # Groups to check for additional information about the matching set
+    aPostfixes = [3, 4]
 
     def __init__(self, *args, **kwargs):
         super(StarterInfoPlugin, self).__init__(*args, **kwargs)
@@ -421,6 +426,7 @@ class StarterInfoPlugin(SutekhPlugin):
         """Lookup the starter decks and cache them to avoid repeated queries"""
         for oCS in PhysicalCardSet.select():
             for _sType, oRegex in (('Starters', self.oStarterRegex),
+                                   ('Fixed', self.oFixedRegex),
                                    ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
@@ -430,9 +436,10 @@ class StarterInfoPlugin(SutekhPlugin):
         """Find preconstructed card sets that contain the card"""
         if not self._aStarters:
             self._cache_starters()
-        dMatches = {'Starters': [], 'Demos': []}
+        dMatches = {'Starters': [], 'Demos': [], 'Fixed': []}
         for oCS in self._aStarters:
             for sType, oRegex in (('Starters', self.oStarterRegex),
+                                  ('Fixed', self.oFixedRegex),
                                   ('Demos', self.oDemoRegex)):
                 oMatch = oRegex.match(oCS.name)
                 if oMatch:
@@ -447,11 +454,17 @@ class StarterInfoPlugin(SutekhPlugin):
                         # Just fall through and fail on the next check
                         sExpName = sCandExpName
                     if _check_exp_name(sExpName, oAbsCard):
+                        sDeckName = oMatch.groups()[1]
+                        for iPostfix in self.aPostfixes:
+                            if len(oMatch.groups()) <= iPostfix:
+                                break
+                            if oMatch.groups()[iPostfix]:
+                                sDeckName += ' ' + oMatch.groups()[iPostfix]
                         dMatches[sType].append((oCS, oMatch.groups()[0],
-                                                oMatch.groups()[1]))
+                                                sDeckName))
 
         # Find the card in the starter decks
-        dInfo = {'Starters': [], 'Demos': []}
+        dInfo = {'Starters': [], 'Demos': [], 'Fixed': []}
         for sType, aResults in dMatches.iteritems():
             for oCS, sExpName, sDeckName in sorted(aResults,
                                                    key=lambda x: (x[1], x[2])):
@@ -493,6 +506,13 @@ class StarterInfoPlugin(SutekhPlugin):
             oCardTextBuf.tag_text("\n")
             oCardTextBuf.labelled_list('Preconstructed Decks',
                                        dInfo['Starters'], 'starters')
+
+        if dInfo['Fixed']:
+            oCardTextBuf.set_cur_iter_to_mark('expansion')
+            oCardTextBuf.tag_text("\n")
+            oCardTextBuf.labelled_list('Fixed Distribution Sets',
+                                       dInfo['Fixed'], 'starters')
+
         oCardTextBuf.set_cur_iter(oTempIter)
 
 
