@@ -1,6 +1,22 @@
 21 Aug 2019
  * Add "25th Anniversary" expansion name.
 
+20 May 2019
+ * Backport changes to support multiple promo images for a card from trunk.
+
+31 Mar 2019
+ * Backport a fix for Black Chantry overriding the correct expansion, leading to missing
+   (expansion, rarity) pairs.
+
+26 Feb 2019
+ * Backport py2exe fixes from trunk.
+
+19 Feb 2019
+ * More rename fixes.
+
+12 Feb 2019
+ * Support start deck aliases in lookups.
+
 11 Feb 2019
  * Rename 'Black Chantry Reprint' to 'Black Chantry' to be more accurate.
    - Ensure we import old names correctly.
