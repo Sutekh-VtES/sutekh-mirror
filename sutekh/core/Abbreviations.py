@@ -182,6 +182,7 @@ class Expansions(AbbreviationLookup):
         'Ancient Hearts': ['AH'],
         'Anthology': [],
         'Anthology I Reprint Set': ['AnthologyI'],
+        'Twenty-Fifth Anniversary': ['25th'],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
         'Black Chantry': ['Black Chantry Reprint', 'Sabbat Preconstructed', 'SP'],
@@ -251,7 +252,8 @@ class Rarities(AbbreviationLookup):
         'Uncommon': ['U', 'U1', 'U2', 'U3', 'U5'],
         'Rare': ['R', 'R1', 'R2', 'R3'],
         'Vampire': ['V', 'V1', 'V2', 'V3'],
-        'Fixed': ['1', '2', '3', '4', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+        'Fixed': ['1', '2', '3', '4', '5', '6', '7', '8',
+                  'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
                   'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A', 'B',
                   'HB2'],
         'BSC': ['X'],
