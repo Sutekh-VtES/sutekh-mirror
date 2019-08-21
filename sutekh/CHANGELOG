@@ -1,3 +1,21 @@
+18 Aug 2019
+ * Extend the "Starter plugin" to also show the contents of fixed sets like the 10th &
+   25th anniversary sets.
+
+13 Aug 2019
+ * Run the import constitency checks when importing cardlists via the command line as well.
+
+02 Jul 2019
+ * Fix a bug with the handling of empty crypts in the Ardb-based card sets
+
+01 Jul 2019
+ * Convert Discipline and Virtue to database backed abbreviations
+ * Update test data to match.
+
+20 May 2019
+ * Add special casing to handle the case where cards are printed in multiple
+   promo versions to the card images plugin.
+
 06 May 2019
  * Fix buggy check in the "Test Independence" plugin which prevented creating card sets
    from the results.
