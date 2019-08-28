@@ -94,7 +94,7 @@ class TWDAConfigDialog(SutekhDialog):
                                            "TWDA decks",
                                            {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(gtk.HSeparator(), False, False)
@@ -193,10 +193,6 @@ class TWDAInfoPlugin(SutekhPlugin):
             self.oAllTWDA.set_sensitive(False)
         return ('Analyze', oTWDMenu)
 
-    def cleanup(self):
-        """Disconnect the database listeners"""
-        super(TWDAInfoPlugin, self).cleanup()
-
     def find_twda(self, _oWidget, sMode):
         """Find decks which match the given search"""
         # Only want the distinct cards - numbers are unimportant
@@ -219,7 +215,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         oMapFilter = MultiPhysicalCardSetMapFilter(aNames)
         oFullFilter = FilterAndBox([oCardFilter, oMapFilter])
 
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # Pyprotocols confuses pylint
         dCardSets = {}
         for oMapCard in oFullFilter.select(MapPhysicalCardToPhysicalCardSet):
@@ -292,7 +288,7 @@ class TWDAInfoPlugin(SutekhPlugin):
 
     def _empty_dlg(self, sMatchText):
         """Add an nothing found notice to dialog"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # gtk confuses pylint
         oDlg = SutekhDialog("No TWDA matches", self.parent,
                             gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -406,8 +402,6 @@ class TWDAInfoPlugin(SutekhPlugin):
         aToUnzip = []
         aToReplace = []
 
-        # pylint: disable=E1101
-        # Pyprotocols confuses pylint
         for sUrl, sDate, sHash in zip(aUrls, aDates, aHashes):
             if not sUrl:
                 return False, False

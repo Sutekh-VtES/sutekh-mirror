@@ -56,7 +56,7 @@ class CardSetManagementController(object):
         sSetName = self._oView.get_selected_card_set()
         if not sSetName:
             return
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # sqlobject confuses pylint
         try:
             oCS = PhysicalCardSet.byName(sSetName)
@@ -77,7 +77,7 @@ class CardSetManagementController(object):
         if not sSetName:
             return
         try:
-            # pylint: disable=E1101
+            # pylint: disable=no-member
             # SQLObject confuses pylint
             oCS = PhysicalCardSet.byName(sSetName)
         except SQLObjectNotFound:

@@ -76,10 +76,10 @@ class BaseTestCase(unittest.TestCase):
 
         return sFilename
 
-    # pylint: disable=invalid-name, W0201
+    # pylint: disable=invalid-name, attribute-defined-outside-init
     # setUp + tearDown names are needed by unittest, so we use
     #        their conventions
-    # W0201: _setUpTemps is called from setUp, so defining things here OK
+    # _setUpTemps is called from setUp, so defining things here OK
     def _setUpTemps(self):
         """Create a directory to hold the temporary files."""
         self._sTempDir = tempfile.mkdtemp(suffix='dir', prefix=self.PREFIX)
@@ -94,7 +94,7 @@ class BaseTestCase(unittest.TestCase):
         os.rmdir(self._sTempDir)
         self._sTempDir = None
         self._aTempFiles = None
-    # pylint: enable=invalid-name, W0201
+    # pylint: enable=invalid-name, attribute-defined-outside-init
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
@@ -110,7 +110,7 @@ class BaseTestCase(unittest.TestCase):
         fIn.close()
         return sData
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with _round_trip_obj
     def _make_holder_from_string(self, oParser, sString):
         """Read the given string into a DummyHolder.

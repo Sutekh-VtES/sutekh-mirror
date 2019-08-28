@@ -54,7 +54,7 @@ class CustomDragIconView(gtk.TreeView):
             self.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
         # We don't change anything in the nothing selected case
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
                     _oTimestamp):

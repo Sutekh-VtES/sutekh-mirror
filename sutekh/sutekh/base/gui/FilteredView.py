@@ -95,7 +95,7 @@ class FilteredView(CustomDragIconView):
 
     # Filtering
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Method so sub-classes can override this
 
     def _get_filter_dialog(self, _sDefaultFilter):
@@ -105,7 +105,7 @@ class FilteredView(CustomDragIconView):
            do."""
         return False
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def get_filter(self, oMenu, sDefaultFilter=None):
         """Get the Filter from the FilterDialog.
@@ -176,7 +176,7 @@ class FilteredView(CustomDragIconView):
         """Convert a Name or key to a canonical ASCII form."""
         return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # Various arguments required by function signatures
 
     def _set_row_selected_status(self, _oModel, oPath, oIter, aSelectedSet):
@@ -288,7 +288,7 @@ class FilteredView(CustomDragIconView):
                 self.reload_keep_expanded()
 
     # drag-n-drop helpers
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # These need to be available to children as methods
 
     def split_selection_data(self, sSelectionData):

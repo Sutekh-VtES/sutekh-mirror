@@ -58,7 +58,7 @@ class ArdbInfo(object):
             dDict[(oAbsCard, sSet)] += 1
         return dDict
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # these need to be available to the descendants
     def _group_sets(self, dCards):
         """Group the cards together regardless of set.

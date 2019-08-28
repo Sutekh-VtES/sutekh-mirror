@@ -142,8 +142,8 @@ class BaseDrawProbPlugin(BasePlugin):
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
-    # pylint: disable=W0201
-    # W0201 - we define lots of things here, rather than __init__, since this
+    # pylint: disable=attribute-defined-outside-init
+    # we define lots of things here, rather than __init__, since this
     # is the plugin's entry point, and they need to reflect the current state
     def activate(self, _oWidget):
         """Create the actual dialog, and populate it."""

@@ -90,10 +90,10 @@ class BaseZipFileWrapper(object):
         aList = []
         for oPCSet in aPCSList:
             sZName = oPCSet.name
-            # pylint: disable=E1102
+            # pylint: disable=not-callable
             # subclasses will provide a callable cWriter
             oWriter = self._cWriter()
-            # pylint: enable=E1102
+            # pylint: enable=not-callable
             oString = write_string(oWriter, oPCSet)
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
@@ -126,10 +126,10 @@ class BaseZipFileWrapper(object):
                 oLogHandler.set_total(len(self.oZip.infolist()))
         # We do this so we can accomodate user created zipfiles,
         # that don't nessecarily have the ordering we want
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cIdentifyFile
         oIdParser = self._cIdentifyFile()
-        # pylint: enable=E1102
+        # pylint: enable=not-callable
         # check that the zip file contains at least 1 Physical Card Set
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
@@ -159,10 +159,10 @@ class BaseZipFileWrapper(object):
            a list of those that couldn't be read because their parents
            weren't read first"""
         aToRead = []
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cIdentifyFile
         oIdParser = self._cIdentifyFile()
-        # pylint: enable=E1102
+        # pylint: enable=not-callable
         oOldConn = sqlhub.processConnection
         oTrans = oOldConn.transaction()
         sqlhub.processConnection = oTrans
@@ -250,10 +250,10 @@ class BaseZipFileWrapper(object):
         """Return the list of card sets in the zip file"""
         self._open_zip_for_read()
         dCardSets = {}
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cIdentifyFile
         oIdParser = self._cIdentifyFile()
-        # pylint: enable=E1102
+        # pylint: enable=not-callable
         for oItem in self.oZip.infolist():
             oData = self.oZip.read(oItem.filename)
             oIdParser.parse_string(oData)
@@ -267,10 +267,10 @@ class BaseZipFileWrapper(object):
     def read_single_card_set(self, sFilename):
         """Read a single card set into a card set holder."""
         self._open_zip_for_read()
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cIdentifyFile
         oIdParser = self._cIdentifyFile()
-        # pylint: enable=E1102
+        # pylint: enable=not-callable
         oData = self.oZip.read(sFilename)
         oIdParser.parse_string(oData)
         oHolder = None

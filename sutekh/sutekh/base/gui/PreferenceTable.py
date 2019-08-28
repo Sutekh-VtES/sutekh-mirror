@@ -128,13 +128,13 @@ class BaseParsedSpec(object):
             sType, aArgs, dKwargs, sDefault
         self.oEntry = self.create_widget()
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # This is a method so duck-typing works
     def format_value(self, oValue):
         """Return a string representation of a value."""
         return str(oValue)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def create_widget(self):
         """Return a widget for editing this config spec."""
@@ -152,7 +152,7 @@ class BaseParsedSpec(object):
 class UneditableSpec(BaseParsedSpec):
     """Class for a spec entry that can't be edited"""
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # we define _oOrigValue outside __init__, but it's OK because create_widget
     # is called in init
     def create_widget(self):
@@ -243,7 +243,7 @@ class OptionListParsedSpec(BaseParsedSpec):
             oContainer.pack_start(gtk.CheckButton(sValue))
         return oContainer
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # This is a method so duck-typing works
     def format_value(self, oValue):
         """Return a string representation of the value."""
@@ -251,7 +251,7 @@ class OptionListParsedSpec(BaseParsedSpec):
             return "None"
         return ", ".join(oValue)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def set_value(self, oValue):
         """Set the selected list correctly"""

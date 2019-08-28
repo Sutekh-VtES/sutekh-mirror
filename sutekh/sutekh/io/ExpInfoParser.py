@@ -18,7 +18,7 @@ class ExpInfoParser(object):
     """Parse expansion and printing info from a JSON file and update the
        database with the correct information."""
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # we may need all these arguments for some files
     def __init__(self, oLogHandler):
         self.oLogger = Logger('exp info parser')
@@ -40,8 +40,13 @@ class ExpInfoParser(object):
             "Release Date: %s" % sDate)
         oBackProp = self._oMaker.make_printing_property(
             "Back Type: %s" % sBack)
+
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oPrinting.addPrintingProperty(oDateProp)
         oPrinting.addPrintingProperty(oBackProp)
+        # pylint: enable=no-member
+
         aCards = dPrintInfo.pop('cards', [])
         # Create Physical cards for the variant cards if needed
         for sCardName in aCards:

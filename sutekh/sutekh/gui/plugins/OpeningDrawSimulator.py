@@ -97,7 +97,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         """Fill in the stats from the draws"""
         oHBox = gtk.HBox(True, 3)
         # setup display widgets
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # vbox methods not detected by pylint
         oDialog.vbox.pack_start(oHBox)
         dLibProbs = self._get_lib_props()

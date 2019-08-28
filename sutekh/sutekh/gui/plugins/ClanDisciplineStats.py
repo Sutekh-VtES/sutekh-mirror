@@ -82,7 +82,7 @@ class ClanDisciplineStats(SutekhPlugin):
 
         self._oStatsVbox = gtk.VBox(False, 0)
 
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # vbox methods not seen
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)
@@ -255,8 +255,8 @@ class StatsModel(gtk.TreeStore):
 
     def gather_stats(self):
         """Collect up information on vampires from all clans."""
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
 
         aClans = list(Clan.select())
@@ -265,7 +265,7 @@ class StatsModel(gtk.TreeStore):
         for oClan in aClans:
             yield (oClan, self.gather_clan_stats(oClan, iMaxGrp))
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # could be a function, but that doesn't add to clarity
     def gather_clan_stats(self, oClan, iMaxGrp):
         """Collect information on vampires from a particular clan."""

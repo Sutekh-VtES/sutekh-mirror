@@ -229,10 +229,10 @@ class ClusterCardList(SutekhPlugin):
 
         return oVbx
 
-    # pylint: disable=W0201, R0914
-    # W0201: We create a lot of attributes here, which is OK, because of
+    # pylint: disable=attribute-defined-outside-init, too-many-locals
+    # We create a lot of attributes here, which is OK, because of
     # plugin structure
-    # R0914: We use lots of local variables for clarity
+    # We use lots of local variables for clarity
     def _populate_results(self, aCards, aColNames, aMeans, aClusters):
         """Populate the results tab of the notebook with the results of
            clustering run."""
@@ -298,7 +298,7 @@ class ClusterCardList(SutekhPlugin):
 
         self._oResultsVbox.show_all()
 
-    # pylint: enable=W0201, R0914
+    # pylint: enable=attribute-defined-outside-init, too-many-locals
 
     # Actions
 
@@ -446,7 +446,7 @@ class ClusterCardList(SutekhPlugin):
         # Create Deck
         oDeck = PhysicalCardSet(name=sDeckName)
 
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject confuses pylint
         aCards = [IPhysicalCard(self._aCards[x]) for x in
                   self._aClusters[iClusterId]]

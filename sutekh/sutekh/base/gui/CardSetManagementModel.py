@@ -57,7 +57,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
     # pylint: enable=W0212, invalid-name
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # this should be a method for consistency
     def get_card_set_iterator(self, oFilter):
         """Return an interator over the card set model.
@@ -67,7 +67,7 @@ class CardSetManagementModel(gtk.TreeStore):
         if not oFilter:
             oFilter = NullFilter()
         return oFilter.select(PhysicalCardSet).distinct()
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _format_set(self, oSet):
         """Format the card set name for display"""

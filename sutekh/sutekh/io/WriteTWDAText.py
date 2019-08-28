@@ -95,7 +95,7 @@ class WriteTWDAText(ArdbInfo):
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an TWDA text file header."""
@@ -103,7 +103,7 @@ class WriteTWDAText(ArdbInfo):
                 "Author: %s\n"
                 "Description:\n%s\n" % (oHolder.name, oHolder.author,
                                         oHolder.comment))
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _crypt_sort_key(self, tItem):
         """Sort the crypt cards.

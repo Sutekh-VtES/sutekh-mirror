@@ -4,10 +4,10 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=W0231, W0223, too-many-lines
+# pylint: disable=W0231, abstract-method, too-many-lines
 # W0231 - the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
-# W0223 - not every abstract method is immediately overridden
+# not every abstract method is immediately overridden
 # the module is long, but keeping the filters together is the best
 # option
 
@@ -62,7 +62,7 @@ class Filter(object):
         # to fill in the values most times
         raise NotImplementedError
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # children need to be able to override this.
     def involves(self, _oCardSet):
         """Return true if the filter results change when oCardSet changes"""
@@ -177,7 +177,7 @@ class FilterNot(Filter):
            We generate a suitable subselect from self._oSubFilter, and
            negate the results of that.
            """
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         oExpression = self.__oSubFilter._get_expression()
         aJoins = self.__oSubFilter._get_joins()
@@ -255,14 +255,14 @@ class SingleFilter(Filter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id ==
                            self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return self._oIdField == self._oId
 
@@ -277,14 +277,14 @@ class MultiFilter(Filter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id ==
                            self._oMapTable.q.abstract_card_id)]
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return IN(self._oIdField, self._aIds)
 
@@ -418,6 +418,8 @@ class PrintingFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         return IN(AbstractCard.q.id, self._aIds)
 
 
@@ -452,6 +454,8 @@ class MultiPrintingFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         return IN(AbstractCard.q.id, self._aIds)
 
 
@@ -569,7 +573,7 @@ class BaseCardTextFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return LIKE(func.LOWER(AbstractCard.q.text),
                     '%' + self._sPattern + '%')
@@ -603,7 +607,7 @@ class CardNameFilter(DirectFilter):
         return ''
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return LIKE(AbstractCard.q.canonicalName,
                     '%' + self.__sPattern + '%')
@@ -622,7 +626,7 @@ class PhysicalCardFilter(Filter):
         # This is one of the filters allowed to
         # pass the AbstractCard table as a joining table.
         # The join is needed so filtering on abstract card properties can work
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         oTable = Table('physical_card')
         return [LEFTJOINOn(None, AbstractCard,
@@ -653,7 +657,7 @@ class AbstractCardFilter(Filter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         oTable = Table('abstract_card')
         return [LEFTJOINOn(None, PhysicalCard,
@@ -679,7 +683,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # Selects cards with a count in the range specified by aCounts from
         # the Physical Card Set sCardSetName
         # We rely on the joins to limit this to the appropriate card sets
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         aIds = []
         try:
@@ -760,7 +764,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
         # We create the actual filters here, which filter for cards with the
         # correct numbers as we can't create the lists in __init__ since
         # the numbers can change between calls to _get_expression
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         aFinalFilters = []
         oConn = sqlhub.processConnection
@@ -932,7 +936,7 @@ class PhysicalCardSetFilter(Filter):
         # physical card sets on abstract card propeties, since the base class
         # for physical card sets is the mapping table.
         # This is one of the only filters allowed to join like this
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return [
             LEFTJOINOn(None, PhysicalCard,
@@ -1009,7 +1013,7 @@ class MultiPhysicalCardSetMapFilter(Filter):
     # pylint: disable=missing-docstring
     # don't need docstrings for get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return [
             LEFTJOINOn(None, PhysicalCard,
@@ -1075,7 +1079,7 @@ class SpecificCardFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return AbstractCard.q.id == self.__iCardId
 
@@ -1090,7 +1094,7 @@ class SpecificCardIdFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return AbstractCard.q.id == self.__iCardId
 
@@ -1105,7 +1109,7 @@ class MultiSpecificCardIdFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return IN(AbstractCard.q.id, self.__aCardIds)
 
@@ -1123,7 +1127,7 @@ class SpecificPhysCardIdFilter(DirectFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return PhysicalCard.q.id == self.__iCardId
 
@@ -1248,7 +1252,7 @@ class ParentCardSetFilter(MultiFilter):
     types = ('PhysicalCardSet',)
 
     def __init__(self, aCardSets):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         self._aIds = [IPhysicalCardSet(x).id for x in aCardSets]
         self._oIdField = PhysicalCardSet.q.parent
@@ -1279,7 +1283,7 @@ class CSPhysicalCardSetInUseFilter(DirectFilter):
         return None
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         # pylint: disable=singleton-comparison
         # == True syntax required for SQLObject

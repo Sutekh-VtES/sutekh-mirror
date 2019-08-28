@@ -50,8 +50,8 @@ def _parse_css_color(sColor):
 
 
 class HtmlHandler(HTMLParser.HTMLParser):
-    # pylint: disable=R0201, too-many-instance-attributes, too-many-public-methods
-    # R0201: can't break these into functions
+    # pylint: disable=no-self-use, too-many-instance-attributes, too-many-public-methods
+    # can't break these into functions
     # We need to keep a lot of state to handle HTML properly
     # Lots of public methods from HTMLParser
     """Parse the HTML input and update the gtk.TextView"""
@@ -310,7 +310,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         self._insert_text(self._sText.replace('\n', ''))
         self._sText = ''
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # Arguments needed by function signature
     def _anchor_event(self, _oTag, _oView, oEvent, _oIter, oHref, oType):
         """Something happened to a link, so see if we need to react."""
@@ -326,7 +326,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
            changes."""
         fCallback(oAllocation.width * fFrac, *args)
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def handle_data(self, sContent):
         """Process the character comments of an element."""
@@ -338,7 +338,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Get the list of target anchors."""
         return self._dTargets
 
-    # pylint: disable=R0912, R0915, R0914
+    # pylint: disable=too-many-branches, too-many-statements, too-many-locals
     # entity handler, so it is is a massive if..elif.. statement
     def handle_entityref(self, sEntity):
         """Convert entity to something we can use"""

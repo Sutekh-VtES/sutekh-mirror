@@ -15,10 +15,11 @@ from .FilterDialog import FilterDialog
 
 class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
-    # pylint: disable=too-many-public-methods, too-many-instance-attributes, R0901
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
-    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # pylint: disable=too-many-ancestors
+    # many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
 
     def __init__(self, oController, oMainWindow):
@@ -57,7 +58,7 @@ class CardSetManagementView(CardSetsListView):
             # use pane icon
             self.frame.make_drag_icon(self, oDragContext)
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # arguments as required by the function signature
     def drag_card_set(self, oBtn, oDragContext, oSelectionData, oInfo, oTime):
         """Allow card sets to be dragged to a frame."""
@@ -112,7 +113,7 @@ class CardSetManagementView(CardSetsListView):
         sName = self._oModel.get_name_from_path(oPath)
         self._oMainWin.add_new_physical_card_set(sName)
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def get_path_at_pointer(self):
         """Get the path at the current pointer position"""

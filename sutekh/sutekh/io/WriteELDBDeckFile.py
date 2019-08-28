@@ -28,7 +28,7 @@ from sutekh.SutekhUtility import is_crypt_card
 class WriteELDBDeckFile(object):
     """Create a string in ELDB deck format representing a card set."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an ELDB deck file header."""
@@ -57,7 +57,7 @@ class WriteELDBDeckFile(object):
             sResult += '"%s"\n' % sName
         return sResult
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an ELDB inventory

@@ -435,7 +435,7 @@ class BaseImageFrame(BasicFrame):
 
     def _load_image(self, aFullFilenames):
         """Load an image into the pane, show broken image if needed"""
-        # pylint: disable=R0912, R0914, R0915
+        # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         # This is has to handle a number of special cases
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image

@@ -86,7 +86,7 @@ class CardImageFrame(BaseImageFrame):
         if sExpansionName == '':
             return ''
         bOK = False
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pylint doesn't pick up IExpansion methods correctly
         try:
             oExpansion = IExpansion(sExpansionName)
@@ -205,7 +205,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
         # here, rather than cluttering up the generic ConfigDialog with
         # this entirely Sutekh specific logic
         if bDownloadUpgrade:
-            # pylint: disable=E1101
+            # pylint: disable=no-member
             # pylint doesn't pick up vbox methods correctly
             # Clear the dialog vbox and start again
             self.vbox.remove(self.oDescLabel)

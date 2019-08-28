@@ -24,10 +24,10 @@ class SutekhTest(BaseTestCase):
 
     # pylint: disable=invalid-name
     # setUp + tearDown names are needed by unittest - use their convention
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # setUp is always called by the tests, so it doesn't matter that
     # declarations aren't in __init__
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # This is a method for convience
     def _setUpDb(self):
         """Initialises a database with the cardlist and
@@ -35,7 +35,7 @@ class SutekhTest(BaseTestCase):
            """
         assert refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def setUp(self):
         """Common setup routine for tests.

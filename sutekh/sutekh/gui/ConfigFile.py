@@ -38,7 +38,7 @@ class ConfigFile(BaseConfigFile):
 
     def _get_app_configspec_file(self):
         """Get the application specific config file"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pkg_resources confuses pylint
         fConfigSpec = pkg_resources.resource_stream(__name__, "configspec.ini")
         return fConfigSpec

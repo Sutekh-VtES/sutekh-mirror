@@ -12,10 +12,11 @@ from .FilteredView import FilteredView
 
 class CardSetsListView(FilteredView):
     """Tree View for the card set list."""
-    # pylint: disable=too-many-public-methods, too-many-instance-attributes, R0901
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
-    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # pylint: disable=too-many-ancestors
+    # many ancestors due to our object hierachy on top of the quite
     # deep gtk one
     def __init__(self, oController, oMainWindow, bSpecialSelect=False):
         oModel = CardSetManagementModel(oMainWindow)

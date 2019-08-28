@@ -60,7 +60,7 @@ class CardTextView(BaseCardTextView):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager)
 
-    # pylint: disable=R0912, R0915
+    # pylint: disable=too-many-branches, too-many-statements
     # We need to consider all cases for oCard, so need the branches
     # and statements
     def print_card_to_buffer(self, oCard):

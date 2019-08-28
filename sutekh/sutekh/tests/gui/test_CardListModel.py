@@ -31,8 +31,8 @@ class CardListModelTests(ConfigSutekhTest):
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         oModel = CardListModel(self.oConfig)
         # We test with illegal cards shown

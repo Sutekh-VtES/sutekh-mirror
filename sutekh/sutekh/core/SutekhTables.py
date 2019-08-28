@@ -21,10 +21,11 @@ from sutekh.base.core.BaseTables import (AbstractCard, BASE_TABLE_LIST,
 
 # Table Objects
 
-# pylint: disable=W0232, too-many-instance-attributes, W0201, invalid-name
-# W0232: Most of the classes defined here don't have __init__ methods by design
+# pylint: disable=no-init, too-many-instance-attributes
+# Most of the classes defined here don't have __init__ methods by design
 # We aren't worried about the number of insance variables
-# W0201: We don't care about attributes defined outside init, by design
+# pylint: disable=attribute-defined-outside-init, invalid-name
+# We don't care about attributes defined outside init, by design
 # We use different naming conventions for the table columns
 
 
@@ -227,7 +228,8 @@ class MapAbstractCardToVirtue(SQLObject):
     virtueIndex = DatabaseIndex(virtue, unique=False)
 
 
-# pylint: enable=W0232, too-many-instance-attributes, W0201, invalid-name
+# pylint: enable=no-init, too-many-instance-attributes
+# pylint: enable=attribute-defined-outside-init, invalid-name
 
 # List of Tables to be created, dropped, etc.
 

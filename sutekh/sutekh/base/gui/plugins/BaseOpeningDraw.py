@@ -295,7 +295,7 @@ class BaseOpeningDraw(BasePlugin):
         oDialog.show_all()
         oDialog.run()
 
-    # pylint: disable=R0912
+    # pylint: disable=too-many-branches
     # We need to handle all the responses, so the number of branches is large
     def _next_hand(self, oDialog, iResponse, oBackButton, oShowButton):
         """Change the shown hand in the dialog."""

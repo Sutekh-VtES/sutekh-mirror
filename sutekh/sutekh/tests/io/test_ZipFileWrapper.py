@@ -30,8 +30,8 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_zip_file(self):
         """Test zip file handling"""
-        # pylint: disable=R0915
-        # R0915: Want a single test case to avoid re-initialising the database
+        # pylint: disable=too-many-statements
+        # Want a single test case to avoid re-initialising the database
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
@@ -39,6 +39,8 @@ class ZipFileWrapperTest(SutekhTest):
         oMyCollection = PhysicalCardSet(name='My Collection')
 
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oMyCollection.addPhysicalCard(oCard.id)
             oMyCollection.syncUpdate()
 
@@ -51,6 +53,8 @@ class ZipFileWrapperTest(SutekhTest):
         self.assertEqual(oPhysCardSet1.parent.id, oMyCollection.id)
 
         for iLoop in range(5):
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oPhysCardSet1.addPhysicalCard(aPhysCards[iLoop].id)
             oPhysCardSet1.syncUpdate()
             if iLoop > 3:
@@ -63,6 +67,8 @@ class ZipFileWrapperTest(SutekhTest):
         oPhysCardSet2.author = 'A different author'
 
         for iLoop in range(2, 7):
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oPhysCardSet2.addPhysicalCard(aPhysCards[iLoop].id)
             oPhysCardSet2.syncUpdate()
 
@@ -123,6 +129,8 @@ class ZipFileWrapperTest(SutekhTest):
         oMyCollection = PhysicalCardSet(name='My Collection')
 
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oMyCollection.addPhysicalCard(oCard.id)
             oMyCollection.syncUpdate()
 

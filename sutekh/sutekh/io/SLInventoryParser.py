@@ -55,14 +55,14 @@ class SLInventoryParser(CardSetParser):
             raise IOError('Unknown section heading in Secret'
                           ' Library inventory format')
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
     def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
         raise IOError('Data line outside of section'
                       ' for Secret Library inventory format')
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""

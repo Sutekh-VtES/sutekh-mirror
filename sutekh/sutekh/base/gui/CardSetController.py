@@ -44,13 +44,13 @@ class CardSetController(object):
         """Remove the signal handlers."""
         self.model.cleanup()
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
         MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def inc_card(self, oPhysCard, sCardSetName, bAddUndo=True):
         """Returns the exact PhysicalCard that was successfully added,
@@ -121,6 +121,8 @@ class CardSetController(object):
             # Any error means we bail
             return None
 
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oThePCS.addPhysicalCard(oPhysCard.id)
         oThePCS.syncUpdate()
         # Signal to update the model

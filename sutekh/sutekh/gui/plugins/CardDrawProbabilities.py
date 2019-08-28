@@ -53,8 +53,8 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
                    The selected changes are only applied when you press the
                    the _recalculate table_ button."""
 
-    # pylint: disable=W0201
-    # W0201 - we define lots of things here, rather than __init__, since that's
+    # pylint: disable=attribute-defined-outside-init
+    # we define lots of things here, rather than __init__, since that's
     # how our override hooks work
     def _set_draw_title_and_size(self, oMainTitle):
         """Setup title and draw sizes"""

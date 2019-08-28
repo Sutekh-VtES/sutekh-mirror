@@ -230,7 +230,7 @@ class WriteArdbHTML(ArdbInfo):
         return oDocRoot
 
     # methods to fill in the actual HTML content
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # these are all methods for consistency
     def _add_header(self, oDocRoot, oHolder):
         """Add the header and title of the HTML file."""

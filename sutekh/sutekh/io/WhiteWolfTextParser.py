@@ -36,9 +36,9 @@ def _find_sect_and_title(aLines):
        This is potentially brittle, since it had to rely on WW's
        standard text layout.
        """
-    # pylint: disable=R0912, R0915
-    # R0912: Need to consider all the cases here
-    # R0915: This is thus a long function
+    # pylint: disable=too-many-branches, too-many-statements
+    # Need to consider all the cases here
+    # this is thus a long function
     # Card text for vampires is either Sect attributes. or Sect.
     sSect = None
     sTitle = None
@@ -344,7 +344,7 @@ class CardDict(dict):
 
     def _parse_text(self, oCard):
         """Parse the CardText for Sect and Titles"""
-        # pylint: disable=R0912
+        # pylint: disable=too-many-branches
         # Complex set of conditions, so many branches
         sType = None
         if 'cardtype' in self:
@@ -397,6 +397,8 @@ class CardDict(dict):
             oPair = self._oMaker.make_rarity_pair('BSC', 'BSC')
             if oPair not in oCard.rarity:
                 # Don't duplicate entries
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCard.addRarityPair(oPair)
 
     def _make_card(self, sName):
@@ -434,6 +436,8 @@ class CardDict(dict):
                 else:
                     oPair = self._oMaker.make_rarity_pair(sThisExp, sRar)
                 if oPair not in oCard.rarity:
+                    # pylint: disable=no-member
+                    # SQLObject confuses pylint
                     oCard.addRarityPair(oPair)
 
     def _add_disciplines(self, oCard, sDis):
@@ -449,6 +453,8 @@ class CardDict(dict):
                 oPair = self._oMaker.make_discipline_pair(sVal, 'inferior')
             else:
                 oPair = self._oMaker.make_discipline_pair(sVal, 'superior')
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             if oPair not in oCard.discipline:
                 oCard.addDisciplinePair(oPair)
 
@@ -460,6 +466,8 @@ class CardDict(dict):
             return
 
         for sVal in sVir.split():
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oVirt = self._oMaker.make_virtue(sVal)
             if oVirt not in oCard.virtue:
                 oCard.addVirtue(oVirt)
@@ -472,6 +480,8 @@ class CardDict(dict):
             return
 
         for sVal in sCreed.split('/'):
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCreed = self._oMaker.make_creed(sVal.strip())
             if oCreed not in oCard.creed:
                 oCard.addCreed(oCreed)
@@ -486,6 +496,8 @@ class CardDict(dict):
         for sVal in sClan.split('/'):
             oClan = self._oMaker.make_clan(sVal.strip())
             if oClan not in oCard.clan:
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCard.addClan(oClan)
 
     def _add_cost(self, oCard, sCost):
@@ -561,24 +573,32 @@ class CardDict(dict):
         for sVal in sTypes.split('/'):
             oType = self._oMaker.make_card_type(sVal.strip())
             if oType not in oCard.cardtype:
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCard.addCardType(oType)
 
     def _add_title(self, oCard, sTitle):
         """Add the title to the card."""
         oTitle = self._oMaker.make_title(sTitle)
         if oTitle not in oCard.title:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard.addTitle(oTitle)
 
     def _add_sect(self, oCard, sSect):
         """Add the sect to the card."""
         oSect = self._oMaker.make_sect(sSect)
         if oSect not in oCard.sect:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard.addSect(oSect)
 
     def _add_keyword(self, oCard, sKeyword):
         """Add the keyword to the card."""
         oKeyword = self._oMaker.make_keyword(sKeyword)
         if oKeyword not in oCard.keywords:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard.addKeyword(oKeyword)
 
     def _add_artists(self, oCard, sArtists):
@@ -586,6 +606,8 @@ class CardDict(dict):
         for sArtist in self.oArtistSp.split(sArtists):
             oArtist = self._oMaker.make_artist(sArtist.strip())
             if oArtist not in oCard.artists:
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCard.addArtist(oArtist)
 
     def _add_physical_cards(self, oCard):
@@ -596,7 +618,7 @@ class CardDict(dict):
             self._oMaker.make_physical_card(oCard, oPrinting)
 
     def save(self):
-        # pylint: disable=R0912
+        # pylint: disable=too-many-branches
         # Need to consider all cases, so many branches
         """Commit the card to the database.
 

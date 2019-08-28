@@ -43,9 +43,9 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # old versions
 
 
-# pylint: disable=invalid-name, W0232
+# pylint: disable=invalid-name, no-init
 # names set largely by SQLObject conventions, so ours don't apply
-# W0232 - SQLObject classes don't have user defined __init__
+# SQLObject classes don't have user defined __init__
 class AbstractCard_v5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
     # pylint: disable=old-style-class
@@ -265,7 +265,7 @@ class RarityPair_Ev4(SQLObject):
     expansion = ForeignKey('Expansion_v4')
     rarity = ForeignKey('Rarity')
 
-# pylint: enable=invalid-name, W0232
+# pylint: enable=invalid-name, no-init
 
 
 def _lookup_printing_for_exp(oExpID, oConn):
@@ -279,9 +279,8 @@ def _lookup_printing_for_exp(oExpID, oConn):
 class DBUpgradeManager(BaseDBUpgradeManager):
     """Class to handle database upgrades,"""
 
-    # pylint: disable=R0201
-    # R0201: Several _copy methods are very simple, but methods for
-    # consistency.
+    # pylint: disable=no-self-use
+    # Several _copy methods are very simple, but methods for consistency.
 
     # Sutekh 0.9.x and 1.0.x can upgrade from the versions in Sutekh 0.8.x,
     # but no earlier
@@ -380,6 +379,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                   connection=oTrans)
                 # Add the release date as a print property if set
                 if oObj.releasedate:
+                    # pylint: disable=no-member
+                    # SQLObject confuses pylint
                     sDateVal = ("Release Date: %s" %
                                 oObj.releasedate.strftime('%Y-%m-%d'))
                     try:
@@ -606,8 +607,10 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _make_abs_card(self, oOldCard, oTrans):
         """Copy SutekhAbstractCard, assuming versions match"""
-        # pylint: disable=R0912
-        # R0912 - need the branches for this
+        # pylint: disable=too-many-branches
+        # need the branches for this
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oCardCopy = SutekhAbstractCard(
             id=oOldCard.id, canonicalName=oOldCard.canonicalName,
             name=oOldCard.name, text=oOldCard.text,
@@ -636,9 +639,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
 
     def _upgrade_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
-        # pylint: disable=R0912, R0915
-        # R0912 - need the branches for this
-        # R0915 - This is long, but needs to be to handle all the cases
+        # pylint: disable=too-many-branches, too-many-statements
+        # need the branches for this
+        # This is long, but needs to be to handle all the cases
         # Postgres 9's default ordering may not be by id, which causes issues
         # when doing the database upgrade when combined with postgres 9's
         # auto-incrementing behaviour. We explictly sort by id to force
@@ -655,6 +658,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 # force issue for SQObject >= 0.11.4
                 oCard._connection = oOrigConn
                 # pylint: enable=W0212
+
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCardCopy = SutekhAbstractCard(
                     id=oCard.id, canonicalName=oCard.canonicalName,
                     name=oCard.name, text=oCard.text, connection=oTrans)
@@ -703,6 +709,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 # force issue for SQObject >= 0.11.4
                 oCard._connection = oOrigConn
                 # pylint: enable=W0212
+
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCardCopy = SutekhAbstractCard(
                     id=oCard.id, canonicalName=oCard.canonicalName,
                     name=oCard.name, text=oCard.text, connection=oTrans)

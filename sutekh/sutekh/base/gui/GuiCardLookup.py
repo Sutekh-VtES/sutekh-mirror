@@ -175,7 +175,7 @@ class ReplacementTreeView(gtk.TreeView):
         oCell.connect('clicked', fClicked)
         self._dToolTips[oColumn] = sToolTip
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # Need this many arguments from function signature
     # Show tooltips for the column buttons
     def _show_tooltip(self, _oWidget, _iXPos, _iYPos, _bKeyboard, oToolTip):
@@ -193,7 +193,7 @@ class ReplacementTreeView(gtk.TreeView):
             return True
         return False
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""
@@ -307,7 +307,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
            Provides an implementation for AbstractCardLookup.
            """
-        # pylint: disable=R0912
+        # pylint: disable=too-many-branches
         # Lots of different cases to consider, to several branches
         dCards = {}
         dUnknownCards = {}
@@ -433,7 +433,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            We allow the user to select the correct replacements from the
            Physical Card List
            """
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # we use lots of variables for clarity
 
         oUnknownDialog, oHBox = self._create_dialog(
@@ -496,7 +496,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         else:
             return False
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # These are methods for convenience
     def _create_dialog(self, sInfo, sMsg):
         """Create the dialog to present to the user.
@@ -598,7 +598,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                                       expansionID=iExpID).getOne()
         return oPhys
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _handle_unknown_abstract_cards(self, dUnknownCards, sInfo):
         """Handle the list of unknown abstract cards.
@@ -606,7 +606,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            We allow the user to select the correct replacements from the
            Abstract Card List.
            """
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # we use lots of variables for clarity
         oUnknownDialog, oHBox = self._create_dialog(
             sInfo, "The following card names could not be found")

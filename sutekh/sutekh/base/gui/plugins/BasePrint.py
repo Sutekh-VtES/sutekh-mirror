@@ -135,7 +135,7 @@ class BasePrint(BasePlugin):
     def draw_page(self, _oPrintOp, oContext, iPageNum):
         """Page drawing callback.
            """
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # We use lots of variables for clarity
         iStartPageLine, iEndPageLine = 0, 0
         aPageBreaks = self._aPageBreaks

@@ -40,7 +40,7 @@ class BaseCSVImport(BasePlugin):
         oDlg = self.make_dialog()
         oDlg.run()
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # defining elements outside of init is OK here, because of plugin structure
     def make_dialog(self):
         """Create the dialog.
@@ -149,7 +149,7 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, True)
         self._set_column_selectors(aColumns)
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # A method for consistency
     def _create_column_selector(self):
         """Create a combo box from which a column can be selected."""
@@ -159,7 +159,7 @@ class BaseCSVImport(BasePlugin):
         oComboBox.pack_start(oCell, True)
         oComboBox.add_attribute(oCell, 'text', 1)
         return oComboBox
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _clear_column_selectors(self):
         """Clear the column selection lists."""

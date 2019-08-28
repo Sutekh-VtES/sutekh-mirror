@@ -70,7 +70,7 @@ def break_loop(oCardSet):
 
 def delete_physical_card_set(sSetName):
     """Unconditionally delete a PCS and its contents"""
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # SQLObject confuse pylint
     def _delete_cards(oCS):
         """Remove cards from the card set.
@@ -98,7 +98,7 @@ def delete_physical_card_set(sSetName):
 
 def find_children(oCardSet):
     """Find all the children of the given card set"""
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # SQLObject confuses pylint
     if oCardSet:
         return list(PhysicalCardSet.selectBy(parentID=oCardSet.id))
@@ -134,7 +134,7 @@ def clean_empty(aMyList, aExistingList):
         except SQLObjectNotFound:
             # set not there, so skip
             continue
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject + PyProtocols confuses pylint
         if has_children(oCS):
             continue

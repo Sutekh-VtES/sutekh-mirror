@@ -65,7 +65,7 @@ SL_FIXES = {
 class WriteSLDeck(object):
     """Create a string in SL import format representing a card set."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
 
     def _escape(self, sName):
@@ -92,7 +92,7 @@ class WriteSLDeck(object):
             aResult.append('%d %s\n' % (dCards[sName], sName))
         return ''.join(aResult)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
     def _gen_sl_deck(self, oHolder):
         """Process the card set, creating the lines as needed"""
         # Add the header information
@@ -114,7 +114,7 @@ class WriteSLDeck(object):
         # Assume conversion will be handled by viewers/editor/web browser?
         return sResult
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an JOL deck

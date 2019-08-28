@@ -21,7 +21,7 @@ class MainToolbar(gtk.Toolbar):
         self.set_style(gtk.TOOLBAR_BOTH)
         self._oMainWindow = oWindow
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Method for consistency
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):
         """Create a Toolbar button with the given action."""
@@ -30,7 +30,7 @@ class MainToolbar(gtk.Toolbar):
             oToolButton.connect('clicked', fAction)
         return oToolButton
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def remove_frame_button(self, sTitle):
         """Remove the button associated with the given frame title."""

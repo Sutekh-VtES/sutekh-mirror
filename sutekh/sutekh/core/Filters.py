@@ -4,10 +4,10 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=W0231, W0223, too-many-lines
+# pylint: disable=W0231, abstract-method, too-many-lines
 # W0231 - the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
-# W0223 - not every abstract method is immediately overridden
+# not every abstract method is immediately overridden
 # the module is long, but keeping the filters together is the best
 # option
 
@@ -77,8 +77,8 @@ class SutekhCardFilter(Filter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id == self._oMapTable.q.id)]
 
@@ -373,8 +373,8 @@ class MultiGroupFilter(SutekhCardFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
         return [str(x) for x in range(1, iMax + 1)] + ['Any']
 
@@ -413,8 +413,8 @@ class MultiCapacityFilter(SutekhCardFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.capacity)
         return [str(x) for x in range(1, iMax + 1)]
 
@@ -463,8 +463,8 @@ class MultiCostFilter(SutekhCardFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.cost)
         return [str(x) for x in range(0, iMax + 1)] + ['X']
 
@@ -554,8 +554,8 @@ class MultiLifeFilter(SutekhCardFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        # pylint: disable=E1101
-        # E1101 - avoid SQLObject method not detected problems
+        # pylint: disable=no-member
+        # avoid SQLObject method not detected problems
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.life)
         return [str(x) for x in range(1, iMax + 1)]
 
@@ -574,7 +574,7 @@ class CardTextFilter(BaseCardTextFilter):
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         return [LEFTJOINOn(None, self._oMapTable,
                            AbstractCard.q.id == self._oMapTable.q.id)]
@@ -584,7 +584,7 @@ class CardTextFilter(BaseCardTextFilter):
         return ''
 
     def _get_expression(self):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         if self._bBraces:
             super(CardTextFilter, self).get_expression()

@@ -193,7 +193,7 @@ class CardListModel(gtk.TreeStore):
             aTexts = aIcons = []
         return aTexts, aIcons
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Method so it can be inherited
     def _fix_group_name(self, sGroup):
         """Fix the None group name"""
@@ -202,7 +202,7 @@ class CardListModel(gtk.TreeStore):
             return "<< None >>"
         return sGroup
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _set_display_name(self, bPostfix):
         """Set the correct display name for the cards.
@@ -234,7 +234,7 @@ class CardListModel(gtk.TreeStore):
             self.set_sort_column_id(iSortColumn, iSortOrder)
 
     def load(self):
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # we use many local variables for clarity
         """Clear and reload the underlying store. For use after initialisation
            or when the filter or grouping changes."""

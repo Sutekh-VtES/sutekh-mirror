@@ -40,7 +40,7 @@ def flush_cache(bMakeCache=True):
     for oJoin in AbstractCard.sqlmeta.joins:
         if isinstance(oJoin, SOCachedRelatedJoin):
             oJoin.flush_cache()
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # AbstractCard confuses pylint
     for oChild in AbstractCard.__subclasses__():
         for oJoin in oChild.sqlmeta.joins:
@@ -55,7 +55,7 @@ def init_cache():
     for oJoin in AbstractCard.sqlmeta.joins:
         if isinstance(oJoin, SOCachedRelatedJoin):
             oJoin.init_cache()
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # AbstractCard confuses pylint
     for oChild in AbstractCard.__subclasses__():
         for oJoin in oChild.sqlmeta.joins:

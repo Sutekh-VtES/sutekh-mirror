@@ -65,7 +65,7 @@ class SLDeckParser(CardSetParser):
             raise IOError('Unknown section heading in Secret'
                           ' Library Deck Format')
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
     def _no_section(self, _sLine, _oHolder):
         """Initial parser -- seeing a line here is an error."""
@@ -95,7 +95,7 @@ class SLDeckParser(CardSetParser):
         else:
             oHolder.comment = sLine
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _crypt_section(self, sLine, oHolder):
         """Parse a crypt entry."""

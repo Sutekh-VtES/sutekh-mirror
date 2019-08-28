@@ -93,7 +93,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                              "differ after %s cards" % sMode,
                              aCacheList, aNoCacheList, oModelCache, oCS))
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # Need all these arguments here
     def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
@@ -117,8 +117,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                        oModel.bEditable))
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
-    # pylint: enable=R0201
-    # pylint: enable=R0913
+    # pylint: enable=no-self-use
+    # pylint: enable=too-many-arguments
 
     # pylint: disable=invalid-name
     # setUp + tearDown names are needed by unittest - use their convention
@@ -150,8 +150,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,
            validating that the model works correctly"""
-        # pylint: disable=R0914
-        # R0914: several local variables, as we test a number of conditions
+        # pylint: disable=too-many-locals
+        # several local variables, as we test a number of conditions
         dModelInfo = {}
         for oModel in aModels:
             oListener = TestListener(oModel, False)
@@ -163,6 +163,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             aStartList = get_all_counts(oModel)
             dModelInfo[oModel] = [oListener, tStartTotals, aStartList]
         for oCard in self.aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oPCS.addPhysicalCard(oCard.id)
             oPCS.syncUpdate()
             send_changed_signal(oPCS, oCard, 1)
@@ -267,11 +269,10 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable=W0212, R0101, R0912, R0914
+        # pylint: disable=W0212, R0101, too-many-branches, too-many-locals
         # W0212 - We need to access protected methods
         # R0101 - We need all these blocks to cover all the cases
-        # R0912, R0914 - covering all the cases requires we track a lot
-        #                of state
+        # covering all the cases requires a lot of branches and local vars
         for oModel in aModels:
             # Ensure we start with a clean cache
             oController = DummyCardSetController()
@@ -392,6 +393,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                   (u'Étienne Fauberge', "Anarchs", None),
                   ("Hektor", "Third", "Sketch")]
         for sName, sExp, sPrint in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp, sPrint)
             oPCS.addPhysicalCard(oCard.id)
         oAlex = make_card('Alexandra', 'CE')
@@ -550,6 +553,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oPCS = PhysicalCardSet(name=self.aNames[0])
         aCards = [('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition')]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oPCS.addPhysicalCard(oCard.id)
         oPCS.syncUpdate()
@@ -639,6 +644,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
                     for oCard in aCardsToAdd:
+                        # pylint: disable=no-member
+                        # SQLObject confuses pylint
                         oPCS.addPhysicalCard(oCard.id)
                         oPCS.syncUpdate()
                         send_changed_signal(oPCS, oCard, 1)
@@ -660,7 +667,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_cache_complex(self):
         """Test that the special persistent caches don't affect results with
            more complex card set relationships"""
-        # pylint: disable=W0212, R0914
+        # pylint: disable=W0212, too-many-locals
         # we need to access protected methods
         # We loop over a lot of combinations, so lots of local variables
         _oCache = SutekhObjectCache()
@@ -699,6 +706,8 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oModel.load()
                     for oCS in (oEmptyPCS, oChildPCS, oGrandChildPCS, oPCS):
                         for oCard in aCardsToAdd:
+                            # pylint: disable=no-member
+                            # SQLObject confuses pylint
                             oCS.addPhysicalCard(oCard.id)
                             oCS.syncUpdate()
                             send_changed_signal(oCS, oCard, 1)
@@ -737,10 +746,14 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oPCS.addPhysicalCard(oCard.id)
         oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS)
         for sName, sExp in aCards[2:6] + [(u'Two Wrongs', None)]:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oChildPCS.addPhysicalCard(oCard.id)
         oChildPCS.inuse = False
@@ -753,6 +766,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         """Setup the grand child for the relationship tests"""
         oGrandChildPCS = PhysicalCardSet(name=self.aNames[2], parent=oChildPCS)
         for sName, sExp in aCards[3:7]:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oGrandChildPCS.addPhysicalCard(oCard.id)
         oGrandChildPCS.syncUpdate()
@@ -764,6 +779,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oChildPCS.inuse = True
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oSibPCS.addPhysicalCard(oCard.id)
         oSibPCS.inuse = True
@@ -774,6 +791,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oGrandChildPCS.inuse = True
         oGrandChild2PCS.inuse = True
         for sName, sExp in aCards[3:7] + [('Aire of Elation', 'CE')] * 3:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oGrandChildPCS.addPhysicalCard(oCard.id)
         aGC2Cards = [
@@ -783,6 +802,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Ablative Skin', None)
         ]
         for sName, sExp in aGC2Cards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oGrandChild2PCS.addPhysicalCard(oCard.id)
         oChildPCS.syncUpdate()
@@ -841,6 +862,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         # add sibling
         oSibPCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS)
         for sName, sExp in aCards[1:6]:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oSibPCS.addPhysicalCard(oCard.id)
         oGrandChild2PCS = PhysicalCardSet(name=self.aNames[4],
@@ -851,6 +874,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oGrandChild2PCS.addPhysicalCard(oCard.id)
             if sName == 'Aire of Elation':
@@ -973,8 +998,8 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_filters(self):
         """Test filtering for the card set"""
-        # pylint: disable=R0915, W0212
-        # R0915: Want a long, sequential test case to reduce
+        # pylint: disable=too-many-statements, W0212
+        # Want a long, sequential test case to reduce
         # repeated setups, so it has lots of lines
         # W0212: We need to access protected methods
         # Note that these tests are with the illegal card filter enabled
@@ -989,6 +1014,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC', None)
         ]
         for sName, sExp, sPrint in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp, sPrint)
             oPCS.addPhysicalCard(oCard.id)
         oModel = self._get_model(self.aNames[0])
@@ -1053,6 +1080,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oChildPCS.addPhysicalCard(oCard.id)
         oModel.bEditable = False
@@ -1113,6 +1142,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             oPCS.addPhysicalCard(oCard.id)
             if sName != 'Yvette, The Hopeless':
@@ -1143,6 +1174,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)
@@ -1179,6 +1212,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Yvette, The Hopeless', 'BSC')
         ]
         for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCard = make_card(sName, sExp)
             if sName != 'Sha-Ennu':
                 oPCS.addPhysicalCard(oCard.id)

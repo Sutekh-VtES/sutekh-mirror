@@ -45,8 +45,8 @@ class BaseDBUpgradeManager(object):
     """Convience class to define and manage all the various aspects
        around database upgrades."""
 
-    # pylint: disable=R0201
-    # R0201 - We provide many stub methods for subclasses to override
+    # pylint: disable=no-self-use
+    # We provide many stub methods for subclasses to override
 
     # subclasses should extend/replace these as needed.
 
@@ -212,7 +212,7 @@ class BaseDBUpgradeManager(object):
             return self._upgrade_print_properties(oOrigConn, oTrans, oVer)
         return (True, [])
 
-    def _upgrade_print_properties(self, oOrigConn, oTrans, oVer):
+    def _upgrade_print_properties(self, oOrigConn, _oTrans, oVer):
         """Upgrade PrintingProperty hints table"""
         if oVer.check_tables_and_versions([PrintingProperty], [-1], oOrigConn):
             # We're upgrading from no printing data table
@@ -224,12 +224,19 @@ class BaseDBUpgradeManager(object):
             return (False, ["Unknown Version for PrintingProperty"])
         return (True, aMessages)
 
+    def _upgrade_printing(self, _oOrigConn, _oTrans, _oVer):
+        """Default fail - subclasses should override this
+           when needed."""
+        return (False, ["Unknown Version for Printing"])
+
     def _copy_printing(self, oOrigConn, oTrans):
         """Copy Printing, assuming versions match"""
         for oObj in Printing.select(connection=oOrigConn):
             oPrintCopy = Printing(id=oObj.id, expansionID=oObj.expansionID,
                                   name=oObj.name, connection=oTrans)
             for oData in oObj.properties:
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oPrintCopy.addPrintingProperty(oData)
 
     def _copy_old_printing(self, oOrigConn, oTrans, oVer):
@@ -493,7 +500,7 @@ class BaseDBUpgradeManager(object):
             # pylint: disable=W0212
             # Need to access _connection here
             oSet._connection = oOrigConn
-            # pyline: enable=W0212
+            # pylint: enable=W0212
         while not bDone:
             # We make sure we copy parent's before children
             # We need to be careful, since we don't retain card set IDs,
@@ -506,7 +513,7 @@ class BaseDBUpgradeManager(object):
                         oParent = dDone[oSet.parent.id]
                     else:
                         oParent = None
-                    # pylint: disable=E1101
+                    # pylint: disable=no-member
                     # SQLObject confuses pylint
                     oCopy = PhysicalCardSet(name=oSet.name,
                                             author=oSet.author,
@@ -534,7 +541,7 @@ class BaseDBUpgradeManager(object):
 
     def _copy_old_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
-        # pylint: disable=E1101, E1103
+        # pylint: disable=no-member, E1103
         # SQLObject confuses pylint
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],
@@ -555,8 +562,8 @@ class BaseDBUpgradeManager(object):
     def read_old_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Read the old database into new database, filling in
            blanks when needed"""
-        # pylint: disable=R0914
-        # R0914: Reducing the number of variables won't help clarity
+        # pylint: disable=too-many-locals
+        # Reducing the number of variables won't help clarity this function
         try:
             if not self.check_can_read_old_database(oOrigConn):
                 return (False, ["Unable to read database"])

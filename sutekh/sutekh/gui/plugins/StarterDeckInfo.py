@@ -14,7 +14,8 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
-from sutekh.base.core.BaseAdapters import IRarityPair, IPhysicalCardSet, IExpansion
+from sutekh.base.core.BaseAdapters import (IRarityPair, IPhysicalCardSet,
+                                           IExpansion)
 from sutekh.base.core.BaseFilters import (PhysicalCardSetFilter,
                                           FilterAndBox, SpecificCardIdFilter)
 from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
@@ -79,7 +80,7 @@ class StarterConfigDialog(SutekhDialog):
                                            "Starter decks",
                                            {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(gtk.HSeparator(), False, False)
@@ -174,7 +175,8 @@ class StarterInfoPlugin(SutekhPlugin):
     # FIXME: Expose this to the user?
     oStarterRegex = re.compile(r'^\[(.*)\] (.*) Starter')
     oDemoRegex = re.compile(r'^\[(.*)\] (.*) Demo Deck')
-    oFixedRegex = re.compile(r'^\[(.*)\] (.*) (Set|([A,B])|Bundle ([0-9])|Bundle|Box)$')
+    oFixedRegex = re.compile(
+        r'^\[(.*)\] (.*) (Set|([A,B])|Bundle ([0-9])|Bundle|Box)$')
 
     # Groups to check for additional information about the matching set
     aPostfixes = [3, 4]
@@ -320,8 +322,6 @@ class StarterInfoPlugin(SutekhPlugin):
             oUrlDate = None
         sUpdated = "Date Updated:"
         oDeckDate = None
-        # pylint: disable=E1101
-        # Pyprotocols confuses pylint
         if not oHolder.annotations:
             # No date information, so we assume we need to download
             return True

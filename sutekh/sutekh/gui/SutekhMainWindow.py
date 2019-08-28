@@ -109,7 +109,7 @@ class SutekhMainWindow(AppMainWindow):
         """Remove the cached set of objects, for card list reloads, etc."""
         del self.__oSutekhObjectCache
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # convienent to have this as a method
     def show_about_dialog(self, _oWidget):
         """Display the about dialog"""
@@ -117,7 +117,7 @@ class SutekhMainWindow(AppMainWindow):
         oDlg.run()
         oDlg.destroy()
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def show_tutorial(self):
         """Show the HTML Tutorial"""

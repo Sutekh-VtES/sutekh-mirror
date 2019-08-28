@@ -80,7 +80,7 @@ class AppMainWindow(MultiPaneWindow):
     def do_db_checks(self, oConn, oConfig, bIgnoreVersionCheck=False):
         """Test basic database sanity and version status"""
         # Test on some tables where we specify the table name
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
         if not oConn.tableExists('abstract_card') or \
@@ -106,7 +106,7 @@ class AppMainWindow(MultiPaneWindow):
 
     def do_refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Handle reloading the card list via the database manager object."""
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cDBManager
         self._block_reload()
         oDBManager = self._cDBManager(self)
@@ -116,7 +116,7 @@ class AppMainWindow(MultiPaneWindow):
 
     def do_refresh_from_zip_url(self, oUpdateDate, sUrl, sHash=None):
         """Refresh the card list from the given zip file url"""
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cDBManager
         oDBManager = self._cDBManager(self)
         oZipDetails = Result(sName=sUrl, bIsUrl=True)
@@ -126,7 +126,7 @@ class AppMainWindow(MultiPaneWindow):
         self._unblock_reload()
         return bRet
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # We define attributes here, since this is called after database checks
     def setup(self, oConfig):
         """Entry point for setting up the application window"""
@@ -205,7 +205,7 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses will implement this
         raise NotImplementedError
 
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     # pylint: disable=W0212
     # We allow access via these properties
@@ -247,9 +247,9 @@ class AppMainWindow(MultiPaneWindow):
 
     def restore_from_config(self):
         """Restore all the frame form the config file."""
-        # pylint: disable=R0912, R0914, W9967
-        # R0912: Need to consider all these cases, so many branches
-        # R0914: Consequently, many local variables
+        # pylint: disable=too-many-branches, too-many-locals, W9967
+        # Need to consider all these cases, so many branches
+        # Consequently, many local variables
         self._clear_frames()
         # Flag to delay reloading pcs card list until after everything else
         # has loaded
@@ -437,7 +437,7 @@ class AppMainWindow(MultiPaneWindow):
         if self._oPCSListPane is not None:
             self._oPCSListPane.reload()
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions would not be convenient
     def update_to_new_db(self):
         """Resync panes against the database."""
@@ -453,7 +453,7 @@ class AppMainWindow(MultiPaneWindow):
         # Subclasses should provide this if needed
         pass
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def get_editable_panes(self):
         """Get a list of panes, which are currently editable.
@@ -528,7 +528,7 @@ class AppMainWindow(MultiPaneWindow):
 
     # startup, exit and other misc functions
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # making this a function would not be convient
     def run(self):
         """gtk entry point"""
@@ -557,7 +557,7 @@ class AppMainWindow(MultiPaneWindow):
         else:
             raise ValueError("Unknown resource %s" % sLocalUrl)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def action_close(self, _oWidget, _oEvent):
         """Close the app (menu or window manager) and save the settings"""
@@ -604,12 +604,12 @@ class AppMainWindow(MultiPaneWindow):
         self._oConfig.set_window_size(self.get_size())
 
     def save_frames(self):
-        # pylint: disable=R0912
+        # pylint: disable=too-many-branches
         # lots of decisions, so many branches
         """save the current frame layout"""
         self._oConfig.clear_open_frames()
 
-        # pylint: disable=R0913
+        # pylint: disable=too-many-arguments
         # we need all these arguments
         def save_pane_to_config(iNum, oPane, oConfig, bVert, bClosed, iPos):
             """Save a pane to the config file, dealing with card set panes

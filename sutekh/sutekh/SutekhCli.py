@@ -168,8 +168,8 @@ def parse_options(aArgs):
 
 def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
-    # pylint: disable=R0912
-    # R0912: Several cases to consider, so many branches
+    # pylint: disable=too-many-branches
+    # Several cases to consider, so many branches
     if len(oCard.cardtype) == 0:
         print('CardType: Unknown')
     else:
@@ -221,7 +221,7 @@ def main_with_args(aTheArgs):
     accordingly.
     """
     # Turn off some pylint refactoring warnings
-    # pylint: disable=R0915, R0912, R0911, R0914
+    # pylint: disable=too-many-statements, too-many-branches, R0911, too-many-locals
     oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
     sPrefsDir = prefs_dir(SutekhInfo.NAME)
 

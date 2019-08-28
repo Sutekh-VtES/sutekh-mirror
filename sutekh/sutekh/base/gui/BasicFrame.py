@@ -150,7 +150,7 @@ class BasicFrame(gtk.Frame):
         self._oMainWindow.replace_with_physical_card_set(aData[1], self)
         return True
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Methods so sub-classes can override them
     def is_card_set(self, _sSetName):
         """Returns true if we're a copy of the given card set"""
@@ -167,7 +167,7 @@ class BasicFrame(gtk.Frame):
         MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
                              self.update_to_new_db)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def cleanup(self, _bQuit=False):
         """Hook for cleanup actions when the frame is removed."""
@@ -275,7 +275,7 @@ class BasicFrame(gtk.Frame):
         oFocusFunc(self, oEvent, self)
         return False
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # function signature requires all these arguments
     def drag_drop_handler(self, _oWindow, oDragContext, _iXPos, _iYPos,
                           oSelectionData, _oInfo, oTime):
@@ -303,7 +303,7 @@ class BasicFrame(gtk.Frame):
         sData = 'Basic Pane:\n%s' % self.pane_id
         oSelectionData.set(oSelectionData.target, 8, sData)
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # needs to be a method, as children can override this if needed
     def drag_motion(self, _oWidget, oDrag_context, _iXPos, _iYPos,
                     _oTimestamp):

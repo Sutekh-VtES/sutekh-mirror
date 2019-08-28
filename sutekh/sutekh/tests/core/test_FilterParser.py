@@ -34,7 +34,7 @@ class FilterParserTests(SutekhTest):
         oAST = self.oFilterParser.apply(sFilter)
         return oAST.get_filter()
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # I prefer to have these as methods
     def _get_abs_names(self, oFilter):
         """Get the names of the cards selected by a filter on the
@@ -51,9 +51,9 @@ class FilterParserTests(SutekhTest):
                       MapPhysicalCardToPhysicalCardSet).distinct()]
         return sorted(aNames)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
-    # pylint: disable=R0914
+    # pylint: disable=too-many-locals
     # We don't really care about the number of local variables here
     def test_basic(self):
         """Set of simple tests of the filter parser."""

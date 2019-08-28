@@ -181,6 +181,8 @@ class CardSetHolder(object):
         oPCS.syncUpdate()
 
         for oPhysCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             if not oPhysCard:
                 continue
             oPCS.addPhysicalCard(oPhysCard.id)
@@ -258,7 +260,7 @@ class CachedCardSetHolder(CardSetHolder):
            calling oCardLookup.lookup(...).
            """
         # Need to cache both abstract card lookups & expansion lookups
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
         dLookupCache.setdefault('printings', {})

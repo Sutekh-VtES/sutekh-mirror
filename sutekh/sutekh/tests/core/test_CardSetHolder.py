@@ -23,8 +23,8 @@ class CardSetHolderTests(SutekhTest):
 
     def test_basic(self):
         """Basic card set holder tests."""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise repeated setup
         # Everything is in the database, so should be no problems
         dSet1 = {
             '.44 Magnum': [3, None],
@@ -166,8 +166,8 @@ class CardSetHolderTests(SutekhTest):
 
     def test_cache(self):
         """Cached card set holder tests."""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise repeated setup
         # Everything is in the database, so should be no problems
         dSet1 = {
             '.44 Magnum': [3, None],

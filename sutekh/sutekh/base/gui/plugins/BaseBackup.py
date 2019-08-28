@@ -108,10 +108,10 @@ class BaseBackup(BasePlugin):
             oProgressDialog.set_description("Saving backup")
             oLogHandler.set_dialog(oProgressDialog)
             oProgressDialog.show()
-            # pylint: disable=E1102
+            # pylint: disable=not-callable
             # subclasses will provide a callable cZipWrapper
             oFile = self.cZipWrapper(sFilename)
-            # pylint: enable=E1102
+            # pylint: enable=not-callable
             oFile.do_dump_all_to_zip(oLogHandler)
             oProgressDialog.destroy()
         except Exception as oException:
@@ -152,10 +152,10 @@ class BaseBackup(BasePlugin):
                 oProgressDialog.set_description("Restoring backup")
                 oLogHandler.set_dialog(oProgressDialog)
                 oProgressDialog.show()
-                # pylint: disable=E1102
+                # pylint: disable=not-callable
                 # subclasses will provide a callable cZipWrapper
                 oFile = self.cZipWrapper(sFilename)
-                # pylint: enable=E1102
+                # pylint: enable=not-callable
                 oFile.do_restore_from_zip(self.cardlookup, oLogHandler)
                 # restore successful, refresh display
                 aMessages = oFile.get_warnings()

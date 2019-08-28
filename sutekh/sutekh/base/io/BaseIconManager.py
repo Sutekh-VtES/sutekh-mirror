@@ -24,8 +24,8 @@ class BaseIconManager(object):
     def __init__(self, sPath):
         self._sPrefsDir = sPath
 
-    # pylint: disable=R0201
-    # R0201: This exists to be overridden
+    # pylint: disable=no-self-use
+    # This exists to be overridden
     def _get_icon(self, sFileName, _iSize=12):
         """Return the icon.
 

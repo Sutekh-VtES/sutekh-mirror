@@ -13,7 +13,7 @@ from ..core.BaseTables import MAX_ID_LENGTH
 
 
 class BaseCardXMLParser(BaseXMLParser):
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
     """Base class for cardset XML files.
@@ -34,7 +34,7 @@ class BaseCardXMLParser(BaseXMLParser):
         if oRoot.attrib[self.sVersionTag] not in self.aSupportedVersions:
             raise IOError("Unrecognised %s File version" % self.sTypeName)
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method so subclasses can use it if needed
 
     def _parse_card(self, oElem, oHolder):
@@ -57,7 +57,7 @@ class BaseCardXMLParser(BaseXMLParser):
 
 
 class BaseCardSetParser(BaseCardXMLParser):
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
     """Base class for physical cardset XML files.

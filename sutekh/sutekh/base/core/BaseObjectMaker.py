@@ -26,7 +26,7 @@ class BaseObjectMaker(object):
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    # pylint: disable=R0201, R0913
+    # pylint: disable=no-self-use, too-many-arguments
     # we want ObjectMakers to be self-contained, so these are all methods.
     # This needs all these arguments
     def _make_object(self, cObjClass, fAdapter, cAbbreviation, sObj,

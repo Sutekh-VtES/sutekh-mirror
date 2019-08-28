@@ -51,7 +51,7 @@ class AppMenu(SutekhMenu):
         return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
                                                   "sqlite:/:memory:"]
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # these are called from __init__
     def _create_file_menu(self):
         """Create the File Menu"""
@@ -255,7 +255,7 @@ class AppMenu(SutekhMenu):
         """Make the 'Last shown help page' option active"""
         self.oHelpLast.set_sensitive(True)
 
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     def del_pane_set_sensitive(self, bValue):
         """Set the 'pane can be removed' option to bValue"""
@@ -296,10 +296,10 @@ class AppMenu(SutekhMenu):
         oFileChooser.run()
         sFileName = oFileChooser.get_name()
         if sFileName is not None:
-            # pylint: disable=E1102
+            # pylint: disable=not-callable
             # subclasses will provide a callable cIdentifyFile
             oIdParser = self.cIdentifyFile()
-            # pylint: enable=E1102
+            # pylint: enable=not-callable
             oIdParser.id_file(sFileName)
             if oIdParser.can_parse():
                 fIn = open(sFileName, 'rU')

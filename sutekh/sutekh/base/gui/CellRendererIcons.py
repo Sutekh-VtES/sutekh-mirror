@@ -60,7 +60,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the properties"""
-        # pylint: disable=R0912
+        # pylint: disable=too-many-branches
         # Essentially nested case statements, so many branches
         if oProp.name == 'icons':
             if oValue is None:
@@ -144,8 +144,8 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable=R0913
-    # R0913 - number of parameters needed by function signature
+    # pylint: disable=too-many-arguments
+    # number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, _oBackgroundArea,
                   oCellArea, oExposeArea, _iFlags):
         """Render the icons & text for the tree view"""

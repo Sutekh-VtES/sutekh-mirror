@@ -51,14 +51,6 @@ class ScrolledFrame(BasicFrame):
         self.add(oBox)
         self.show_all()
 
-    def frame_setup(self):
-        """Hook for setup actions"""
-        super(ScrolledFrame, self).frame_setup()
-
-    def cleanup(self, bQuit=False):
-        """Cleanup actions"""
-        super(ScrolledFrame, self).cleanup(bQuit)
-
     def update_to_new_db(self):
         """Ensure we update cached results so DB changes don't cause odd
            results"""

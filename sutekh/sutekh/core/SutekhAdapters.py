@@ -64,7 +64,7 @@ def IVirtue(oUnknown):
 
 # Abbreviation lookup based adapters
 class ClanAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -79,7 +79,7 @@ IClan.register(basestring, ClanAdapter.lookup)
 
 
 class CreedAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -94,7 +94,7 @@ ICreed.register(basestring, CreedAdapter.lookup)
 
 
 class DisciplineAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -109,7 +109,7 @@ IDiscipline.register(basestring, DisciplineAdapter.lookup)
 
 
 class SectAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -124,7 +124,7 @@ ISect.register(basestring, SectAdapter.lookup)
 
 
 class TitleAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -139,7 +139,7 @@ ITitle.register(basestring, TitleAdapter.lookup)
 
 
 class VirtueAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -165,7 +165,7 @@ class DisciplinePairAdapter(Adapter):
 
     @classmethod
     def lookup(cls, tData):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # adapters confuses pylint
         oDis = IDiscipline(tData[0])
         sLevel = str(tData[1])

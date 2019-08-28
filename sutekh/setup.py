@@ -34,10 +34,10 @@ try:
 
     class PkgResourceBuilder(builder):
         """Extend to builder class to override copy_extensions"""
-        # pylint: disable=E1101, C0103, W0232
-        # E1101: missed imports leave pylint confused here
-        # C0103: not using our naming conventions here
-        # W0232: we don't need an __init__ method for our goals
+        # pylint: disable=no-member, invalid-name, no-init
+        # missed imports leave pylint confused here
+        # not using our naming conventions here
+        # we don't need an __init__ method for our goals
 
         def copy_extensions(self, extensions):
             """Hack the py2exe C extension copier
@@ -67,7 +67,7 @@ try:
                             name))
 
 except ImportError:
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # pylint thinks this is a const, which it isn't
     PkgResourceBuilder = None
 

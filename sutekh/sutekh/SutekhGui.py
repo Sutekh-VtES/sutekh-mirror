@@ -59,7 +59,7 @@ def parse_options(aArgs):
 
 
 def main():
-    # pylint: disable=R0912, R0914, R0915
+    # pylint: disable=too-many-branches, too-many-locals, too-many-statements
     # lots of different cases to consider, so long and has lots of variables
     # and if statement
     """Start the Sutekh Gui.

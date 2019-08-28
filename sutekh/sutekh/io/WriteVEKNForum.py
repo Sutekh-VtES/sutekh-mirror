@@ -60,7 +60,7 @@ def add_clan_symbol(dLine):
 class WriteVEKNForum(ArdbInfo):
     """Create a string suitable for pasting into the VEKN forums"""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an suitable forum header."""
@@ -69,7 +69,7 @@ class WriteVEKNForum(ArdbInfo):
                "[b][u]Description :[/u][/b]\n%s\n" % (oHolder.name,
                                                       oHolder.author,
                                                       oHolder.comment)
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _gen_crypt(self, dCards):
         """Generaten a VEKN Forum crypt description.

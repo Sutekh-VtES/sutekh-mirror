@@ -318,7 +318,7 @@ class BasePlugin(object):
         return self.config.get_deck_option(oModel.frame_id, oModel.cardset_id,
                                            sKey)
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # We expect children to override these when needed
     def get_menu_item(self):
         """Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
@@ -372,7 +372,7 @@ class BasePlugin(object):
         """Called to handle any pending updates."""
         pass
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
@@ -445,7 +445,7 @@ class BasePlugin(object):
                 return False  # fail
         return True  # A-OK
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # utilty function for plugins
     def _escape(self, sInput):
         """Escape strings so that markup and special characters don't break
@@ -461,6 +461,8 @@ class BasePlugin(object):
             """The actual work happens here, so it can be wrapped in a
                sqlobject transaction"""
             for oCard in aCards:
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCS.addPhysicalCard(oCard)
 
         sqlhub.doInTransaction(_in_transaction, oCS, aCards)

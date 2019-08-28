@@ -87,7 +87,7 @@ class FilteredViewMenu(SutekhMenu):
 
     # profile helpers
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # We need all these arguments
     def _create_profile_menu(self, oParentMenu, sTitle, sType, fCallback,
                              sProfile):
@@ -105,7 +105,7 @@ class FilteredViewMenu(SutekhMenu):
 
         return oMenu
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def _update_profile_group(self, oMenu, sType, fCallback, sProfile):
         """Update the profile selection menu"""

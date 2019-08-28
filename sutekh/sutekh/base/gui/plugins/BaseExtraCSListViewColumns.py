@@ -124,7 +124,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             self._dCache[sCardSetName]['Card Set'] = None
             return None
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when
@@ -246,7 +246,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
         aText, aIcons = self._get_data_description(sCardSet, True)
         oCell.set_data(aText, aIcons, self._iShowMode)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     # SQLObject event listeners
     # While we can try to be clever and update the cache, there are enough

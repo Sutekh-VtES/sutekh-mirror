@@ -36,7 +36,7 @@ from sutekh.core.ArdbInfo import ArdbInfo
 class WritePmwiki(ArdbInfo):
     """Create a string in pmwiki format representing a dictionary of cards."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
     def _gen_header(self, oHolder):
         """Generate an pmwiki header."""
@@ -44,7 +44,7 @@ class WritePmwiki(ArdbInfo):
                 "!! Description\n%s\n"
                 "!! Notes\n%s\n" % (oHolder.name, oHolder.author,
                                     oHolder.comment, oHolder.annotations))
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def _gen_crypt(self, dCards):
         """Generate an pmwiki crypt description.

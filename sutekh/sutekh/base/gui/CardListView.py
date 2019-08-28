@@ -15,10 +15,11 @@ from ..core.BaseAdapters import IPhysicalCard
 
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
-    # pylint: disable=too-many-public-methods, too-many-instance-attributes, R0901
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
-    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # pylint: disable=too-many-ancestors
+    # many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
 
     def __init__(self, oController, oMainWindow, oModel, oConfig):
@@ -190,7 +191,7 @@ class CardListView(FilteredView):
             aCardInfo.append((iCount, oPhysCard))
         return sSource, aCardInfo
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # arguments as required by the function signature
 
     def drag_card(self, oBtn, oContext, oSelectionData, oInfo, oTime):
@@ -257,7 +258,7 @@ class CardListView(FilteredView):
 
         return True
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     # Activating Rows
     def card_activated(self, _oTree, oPath, _oColumn):

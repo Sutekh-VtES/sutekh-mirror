@@ -114,7 +114,7 @@ def textile2markdown(aLines, fProcessText):
        This is rule-based, and doesn't cover the full textile syntax.
        We aim to convert to the markdown variant supported by the
        sourceforge wiki."""
-    # pylint: disable=R0914
+    # pylint: disable=too-many-locals
     # We use a bunch of local variables as psuedo-constants to
     # keep this self-contained
 
@@ -286,8 +286,8 @@ def _process_plugins(aLines, aPlugins):
 
 def convert(sTextileDir, sHtmlDir, cAppInfo, aPlugins, fProcessText):
     """Convert all .txt files in sTextileDir to .html files in sHtmlDir."""
-    # pylint: disable=R0914
-    # R0914: Reducing the number of variables won't help clarity
+    # pylint: disable=too-many-locals
+    # Reducing the number of variables won't help clarity
     for sTextilePath in glob.glob(os.path.join(sTextileDir, "*.txt")):
         sBasename = os.path.basename(sTextilePath)
         sFilename, _sExt = os.path.splitext(sBasename)
@@ -366,9 +366,9 @@ def add_filters(aOutput, iTocIndex, dFilters):
 
 def make_filter_txt(sDir, aFilters):
     """Convert base filters into the approriate textile files"""
-    # pylint: disable=R0914, R0915, R0912
-    # R0914: Reducing the number of variables won't help clarity
-    # R0912, R0915: We choose not to split this into subfuctions to
+    # pylint: disable=too-many-locals, too-many-statements, too-many-branches
+    # Reducing the number of variables won't help clarity
+    # We choose not to split this into subfuctions to
     # reduce line count and branches since the logic isn't reused
     # elsewhere and it's simpler to keep it all in one place.
 

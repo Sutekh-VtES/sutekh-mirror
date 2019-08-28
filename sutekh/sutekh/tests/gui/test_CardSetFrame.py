@@ -25,7 +25,7 @@ class TestCardSetFrame(GuiSutekhTest):
     # pylint: disable=too-many-public-methods
     # tunittest.TestCase, so many public methods
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # I prefer to have these as methods
 
     def _select_cards(self, oFrame, aCards):
@@ -78,17 +78,17 @@ class TestCardSetFrame(GuiSutekhTest):
         aPaths.sort()
         return aPaths
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def test_basic(self):
         """Set of simple tests of the CardSetFrame"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
 
         # Add card sets needed for the tests
         # pylint: disable=unsupported-membership-test, not-an-iterable
-        # Checks on RelatedJoins confuse pyline
+        # Checks on RelatedJoins confuse pylint
         oPhysCardSet = PhysicalCardSet(name='My Collection')
         oPCS2 = PhysicalCardSet(name='Test Set 1',
                                 parent=oPhysCardSet)
@@ -104,6 +104,8 @@ class TestCardSetFrame(GuiSutekhTest):
             oCard = make_card(sName, sExp)
             aPhysCards.append(oCard)
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oPhysCardSet.addPhysicalCard(oCard.id)
             oPhysCardSet.syncUpdate()
         self.oWin.setup(self.oConfig)
@@ -271,6 +273,8 @@ class TestCardSetFrame(GuiSutekhTest):
             oCard = make_card(sName, sExp, sPrint)
             aPhysCards.append(oCard)
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oColl.addPhysicalCard(oCard.id)
             oColl.syncUpdate()
         self.assertEqual(len(oColl.cards), 12)
@@ -299,6 +303,8 @@ class TestCardSetFrame(GuiSutekhTest):
             self.assertEqual(len(oColl.cards), iExpected)
         oColl.syncUpdate()
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oColl.addPhysicalCard(oCard.id)
             oColl.syncUpdate()
         self.assertEqual(len(oColl.cards), 12)
@@ -334,12 +340,12 @@ class TestCardSetFrame(GuiSutekhTest):
 
     def test_paste_form_card_set(self):
         """Test selecting and pasting with the different display modes"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         # Add card sets needed for the tests
         # pylint: disable=unsupported-membership-test, not-an-iterable
-        # Checks on RelatedJoins confuse pyline
+        # Checks on RelatedJoins confuse pylint
 
         def clear_cardset(oPCS, oFrame):
             """Clear the cards from a card set and reload the model"""
@@ -365,6 +371,8 @@ class TestCardSetFrame(GuiSutekhTest):
             oCard = make_card(sName, sExp)
             aPhysCards.append(oCard)
         for oCard in aPhysCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oCollSet.addPhysicalCard(oCard.id)
             oCollSet.syncUpdate()
         oAKLotN = make_card(u'AK-47', u'Lords of the Night')
@@ -376,6 +384,8 @@ class TestCardSetFrame(GuiSutekhTest):
                       make_card(u'Ablative Skin', 'Sabbat'),
                       oAblative, oAblative, oAblative, oAblative, oAblative,
                       oAlex, oAlex, oAlex]:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
             oTest1.addPhysicalCard(oCard.id)
             oTest1.syncUpdate()
         self.oWin.setup(self.oConfig)

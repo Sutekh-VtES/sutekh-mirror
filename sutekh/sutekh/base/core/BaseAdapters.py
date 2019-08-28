@@ -130,8 +130,8 @@ class StrAdaptMeta(type):
     def __init__(cls, _sName, _aBases, _dDict):
         cls.make_object_cache()
 
-    # pylint: disable=W0201
-    # W0201 - make_object_cache called from init
+    # pylint: disable=attribute-defined-outside-init
+    # make_object_cache called from init
     def make_object_cache(cls):
         cls.__dCache = {}
 
@@ -151,7 +151,7 @@ class Adapter(object):
 
 
 class CardTypeAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -166,7 +166,7 @@ ICardType.register(basestring, CardTypeAdapter.lookup)
 
 
 class ExpansionAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -187,7 +187,7 @@ def exp_name_from_print(oPrint):
 
 
 class RarityAdapter(Adapter):
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # metaclass confuses pylint
     __metaclass__ = StrAdaptMeta
 
@@ -215,7 +215,7 @@ class RarityPairAdapter(Adapter):
 
     @classmethod
     def lookup(cls, tData):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # adapters confuses pylint
         oExp = IExpansion(tData[0])
         oRarity = IRarity(tData[1])
@@ -550,7 +550,7 @@ class PhysicalCardAdapter(Adapter):
 
     @classmethod
     def lookup(cls, tData):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject confuses pylint
         oAbsCard, oPrinting = tData
         # oExp may be None, so we don't use oExp.id here

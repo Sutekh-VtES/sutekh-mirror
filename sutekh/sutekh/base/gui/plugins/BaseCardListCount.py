@@ -74,8 +74,7 @@ class BaseCardListCount(BasePlugin):
         if self._iMode == self.COUNT_EXP:
             # We default if we're only showing the unspecified expansion
             return self._dExpCounts.get(oAbsCard, 0)
-        else:
-            return self._dAbsCounts[oAbsCard]
+        return self._dAbsCounts[oAbsCard]
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
@@ -216,9 +215,8 @@ class BaseCardListCount(BasePlugin):
             return -1
         elif iVal1 > iVal2:
             return 1
-        else:
-            # Values agree, so do fall back sort
-            return self.model.sort_equal_iters(oIter1, oIter2)
+        # Values agree, so do fall back sort
+        return self.model.sort_equal_iters(oIter1, oIter2)
 
     def _get_card_keys(self, oAbsCard):
         """Get the list of applicable dictionary keys for this card."""

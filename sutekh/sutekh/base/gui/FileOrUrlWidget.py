@@ -23,8 +23,8 @@ class FileOrUrlWidget(gtk.VBox):
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
-    # pylint: disable=R0913, invalid-name
-    # R0913: Need this many arguments
+    # pylint: disable=too-many-arguments, invalid-name
+    # Need this many arguments
     # Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
                  homogeneous=False, spacing=0):
@@ -82,7 +82,7 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
 
-    # pylint: enable=R0913, invalid-name
+    # pylint: enable=too-many-arguments, invalid-name
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""
@@ -184,8 +184,8 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
     OTHER_DIR = 'Select directory ...'
 
-    # pylint: disable=R0913, invalid-name
-    # R0913: Need this many arguments
+    # pylint: disable=too-many-arguments, invalid-name
+    # Need this many arguments
     # Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, sDirTitle=None,
                  sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
@@ -207,7 +207,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
         self._oSrcCombo.append_text(self.OTHER_DIR)
 
-    # pylint: enable=R0913, invalid-name
+    # pylint: enable=too-many-arguments, invalid-name
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""

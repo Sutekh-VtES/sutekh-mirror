@@ -263,7 +263,7 @@ class BaseGuiDBManager(object):
         oProgressDialog.set_description("Saving backup")
         oLogHandler.set_dialog(oProgressDialog)
         oProgressDialog.show()
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cZipFileWrapper
         oFile = self.cZipFileWrapper(sBackupFile)
         oFile.do_dump_all_to_zip(oLogHandler)
@@ -271,11 +271,11 @@ class BaseGuiDBManager(object):
 
     def refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Handle grunt work of refreshing the card lists"""
-        # pylint: disable=R0914, R0915
-        # R0914: We're juggling lots of different bits of state, so we use a
-        #        lot of variables
-        # R0915: There isn't much benefit to breaking this function up,
-        #        since it's a single process we're managing.
+        # pylint: disable=too-many-locals, too-many-statements
+        # We're juggling lots of different bits of state, so we use a
+        # lot of variables
+        # There isn't much benefit to breaking this function up,
+        # since it's a single process we're managing.
         aEditable = self._oWin.get_editable_panes()
         dOldMap = get_cs_id_name_table()
         if not dFiles:

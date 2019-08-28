@@ -24,7 +24,7 @@ from sutekh.core.ELDBUtilities import type_of_card
 class WriteJOL(object):
     """Create a string in JOL format representing a card set."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # method for consistency with the other methods
 
     def _escape(self, sName):
@@ -32,7 +32,7 @@ class WriteJOL(object):
         sName = sName.replace('(Advanced)', '(advanced)')
         return sName
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         dCards = {'Crypt': {}, 'Library': {}}
@@ -55,7 +55,7 @@ class WriteJOL(object):
         # Assume conversion will be handled by viewers/editor/web browser?
         return sResult
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def write(self, fOut, oHolder):
         """Takes file object + card set to write, and writes an JOL deck

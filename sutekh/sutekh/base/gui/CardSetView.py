@@ -45,10 +45,11 @@ MINUS_KEYS = set([
 
 
 class CardSetView(CardListView):
-    # pylint: disable=too-many-public-methods, too-many-instance-attributes, R0901
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
-    # R0901 - many ancestors, due to our object hierachy on top of the quite
+    # pylint: disable=too-many-ancestors
+    # many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
     """Subclass of CardListView specific to the Card Sets
 
@@ -59,7 +60,7 @@ class CardSetView(CardListView):
        """
 
     # Initialise key ranges for key tests
-    # pylint: disable=R0915
+    # pylint: disable=too-many-statements
     # We need a lot of setup here, so this is long
     def __init__(self, oMainWindow, oController, sName, bStartEditable):
         oModel = CardSetCardListModel(sName, oMainWindow.config_file)
@@ -136,7 +137,7 @@ class CardSetView(CardListView):
 
         self.set_fixed_height_mode(True)
 
-    # pylint: enable=R0915
+    # pylint: enable=too-many-statements
 
     def process_selection(self):
         """Create a dictionary from the selection.
@@ -236,7 +237,7 @@ class CardSetView(CardListView):
                 dSelectedData[oPhysCard][sCardSet] = [iCount, iNewCount]
         return dSelectedData
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # elements required by function signature
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
@@ -264,7 +265,7 @@ class CardSetView(CardListView):
             # else paste succeeds
         oContext.finish(bDragRes, False, oTime)
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def inc_card(self, _oCell, oPath):
         """Called to increment the count for a card."""

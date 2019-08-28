@@ -52,7 +52,7 @@ class RulebookConfigDialog(SutekhDialog):
                                            "rulebook zip file",
                                            {'Sutekh Datapack': self.sDocUrl})
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
         self.vbox.pack_start(oDescLabel, False, False)
         self.vbox.pack_start(self.oFileWidget, False, False)

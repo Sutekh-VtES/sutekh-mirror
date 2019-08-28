@@ -79,8 +79,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         # gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
-    # pylint: disable=R0913
-    # R0913 - number of parameters needed by function signature
+    # pylint: disable=too-many-arguments
+    # number of parameters needed by function signature
     def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
                     _oCellArea, _iFlags):
         """Activate signal received from the TreeView"""
@@ -91,8 +91,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.emit('clicked', oPath)
         return True
 
-    # pylint: disable=R0913
-    # R0913 - number of parameters needed by function signature
+    # pylint: disable=too-many-arguments
+    # number of parameters needed by function signature
     def on_render(self, oWindow, oWidget, oBackgroundArea,
                   oCellArea, oExposeArea, _iFlags):
         """Render the icon for the button"""

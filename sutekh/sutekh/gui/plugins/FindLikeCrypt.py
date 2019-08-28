@@ -50,7 +50,7 @@ def _get_groups(oCard):
     # We ignore the any group cases as they are currently uninteresing
     # and excluded by the discipline check
     # If this ever changes, this will need to be revisited.
-    # pylint: disable=E1101
+    # pylint: disable=no-member
     # SQLObject confuses pylint
     iGrp = oCard.group
     iMaxGrp = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
@@ -105,7 +105,7 @@ class FindLikeVampires(SutekhPlugin):
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # we define attributes outside __init__, but it's OK because of plugin
     # structure
     def activate(self, _oWidget):
@@ -118,7 +118,7 @@ class FindLikeVampires(SutekhPlugin):
             do_complaint_error("Please select only 1 crypt card.")
             return
         # We treat imbued and vampires differently
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject confuses pylint
         if is_vampire(self.oSelCard):
             if len(self.oSelCard.discipline) == 0:
@@ -132,7 +132,7 @@ class FindLikeVampires(SutekhPlugin):
             dGroups = self.find_imbued_like()
         if dGroups:
             self.display_results(dGroups)
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     # pylint: disable=too-many-arguments
     # need all these arguments to format results nicely
@@ -184,7 +184,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def find_vampires_like(self):
         """Construct a vampire search from the card"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Vampire'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Vampires like', self.parent,
@@ -250,7 +250,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def find_imbued_like(self):
         """Construct a imbued search from the card"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject & gtk confuse pylint
         aFilters = [CardTypeFilter('Imbued'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Imbued like', self.parent,
@@ -322,7 +322,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def display_results(self, dGroups):
         """Display the results nicely"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject and gtk confuse pylint
         bVampire = is_vampire(self.oSelCard)
         if bVampire:
@@ -369,7 +369,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def _make_cs(self, _oButton, oDlg):
         """Create a card set with the given cards"""
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject confuses pylint
         oView = oDlg.get_cur_widget().get_child()
         aCards = oView.get_selected_cards()
@@ -381,6 +381,8 @@ class FindLikeVampires(SutekhPlugin):
             oCardSet = IPhysicalCardSet(sCSName)
             for oCard in aCards:
                 # We add with unknown expansion
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
                 oCardSet.addPhysicalCard(IPhysicalCard((oCard, None)))
             self._open_cs(sCSName, True)
 

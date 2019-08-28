@@ -34,7 +34,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # called from __init__, so OK
     def __create_actions_menu(self):
         """Add the Actions Menu"""
@@ -50,7 +50,7 @@ class CardSetManagementMenu(FilteredViewMenu):
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     def create_edit_menu(self):
         """Create the edit menu and populate it"""

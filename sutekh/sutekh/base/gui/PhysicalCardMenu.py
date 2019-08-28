@@ -34,7 +34,7 @@ class PhysicalCardMenu(CardListMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # called from __init__, so OK
     def __create_physical_cl_menu(self):
         """Create the Actions menu for the card list."""

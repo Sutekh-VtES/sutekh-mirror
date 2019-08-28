@@ -294,7 +294,7 @@ class BaseConfigFile(object):
                 # use set_profile to ensure we call the message bus
                 self.set_profile(FRAME, sNewId, dOldProfiles[sOldId])
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # We need all the info in the arguments here
     def add_frame(self, iFrameNumber, sType, sName, bVertical, bClosed, iPos,
                   sPaneId):
@@ -323,7 +323,7 @@ class BaseConfigFile(object):
         else:
             oNewPane['position'] = -1
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     #
     # Plugin Config Section Handling

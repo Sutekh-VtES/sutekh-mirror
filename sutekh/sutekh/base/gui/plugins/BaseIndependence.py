@@ -117,9 +117,8 @@ class BaseIndependence(BasePlugin):
 
     def make_dialog(self):
         """Create the list of card sets to select"""
-        # pylint: disable=W0201
-        # W0201: No need to define oThisCardSet, oCSView & oInUseButton in
-        # __init__
+        # pylint: disable=attribute-defined-outside-init
+        # No need to define oThisCardSet, oCSView & oInUseButton in __init__
         self.oThisCardSet = self._get_card_set()
         if not self.oThisCardSet.parent:
             do_complaint_error("Card Set has no parent, so nothing to test.")

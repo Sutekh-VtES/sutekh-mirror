@@ -200,10 +200,10 @@ class BaseZipImport(BasePlugin):
                                % sFilename)
             return
 
-        # pylint: disable=E1102
+        # pylint: disable=not-callable
         # subclasses will provide a callable cZipWrapper
         oFile = self.cZipWrapper(sFilename)
-        # pylint: enable=E1102
+        # pylint: enable=not-callable
         dList = oFile.get_all_entries()
         dEscapedList = {}
         for sName, tInfo in dList.iteritems():
@@ -237,9 +237,9 @@ class BaseZipImport(BasePlugin):
     def _read_heart(self, oFile, dSelected, oLogger, iClashMode):
         """Heart of the reading loop - ensure we read parents before
            children, and correct for renames that occur."""
-        # pylint: disable=W0703, R0914
-        # @0703: we really do want all the exceptions
-        # R0914: Use track a lot of state, so many local variables
+        # pylint: disable=W0703, too-many-locals
+        # W0703: we really do want all the exceptions
+        # Use track a lot of state, so many local variables
         dRemaining = {}
         dRenames = {}
         for sEscapedName, tInfo in dSelected.iteritems():

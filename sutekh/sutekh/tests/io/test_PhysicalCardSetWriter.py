@@ -106,8 +106,8 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
     def test_physical_card_set_writer(self):
         """Test physical card set writing"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         # We have a physical card list, so create some physical card sets
         oPhysCardSet1 = make_set_1()

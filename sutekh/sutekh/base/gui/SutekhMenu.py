@@ -65,7 +65,7 @@ class SutekhMenu(gtk.MenuBar):
             self._add_accel(oMenuItem, sAccelKey)
         return oMenuItem
 
-    # pylint: disable=R0913
+    # pylint: disable=too-many-arguments
     # We need all the arguments here
     def create_check_menu_item(self, sName, oMenu, fAction, bState=False,
                                sAccelKey=None):
@@ -83,7 +83,7 @@ class SutekhMenu(gtk.MenuBar):
             self._add_accel(oMenuItem, sAccelKey)
         return oMenuItem
 
-    # pylint: enable=R0913
+    # pylint: enable=too-many-arguments
 
     def create_menu_item_with_submenu(self, oTopLevelMenu, sName):
         """Create a MenuItem and a submenu, returning the menu_item"""

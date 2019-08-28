@@ -39,13 +39,13 @@ class PhysicalCardController(object):
         """Remove the signal handlers."""
         self.model.cleanup()
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
         MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
 
-    # pylint: enable=R0201
+    # pylint: enable=no-self-use
 
     def toggle_expansion(self, oWidget):
         """Toggle whether the expansion information is shown."""

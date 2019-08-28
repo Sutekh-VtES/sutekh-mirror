@@ -48,7 +48,7 @@ class BaseState(object):
 class LogState(BaseState):
     """Base class for the State transitions with a log handler"""
 
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # descendants will override transition, so still abstract here.
     def __init__(self, oLogger):
         super(LogState, self).__init__()
@@ -58,7 +58,7 @@ class LogState(BaseState):
 class LogStateWithInfo(LogState):
     """Base class for states which contain information of interest"""
 
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # transition method is still abstract here
     def __init__(self, dInfo, oLogger):
         super(LogStateWithInfo, self).__init__(oLogger)
@@ -68,7 +68,7 @@ class LogStateWithInfo(LogState):
 class HolderState(BaseState):
     """Base class for parser states"""
 
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # transition method is still abstract here
     def __init__(self, oHolder):
         super(HolderState, self).__init__()

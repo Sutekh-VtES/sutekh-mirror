@@ -75,7 +75,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                    _Show Icons only_ options using the combo box. This setting
                    will affect all selected columns that can use icons."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
 
     @classmethod

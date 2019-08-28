@@ -17,7 +17,7 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import PhysicalCardSet, Printing
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
-                                           IExpansion, IKeyword)
+                                           IKeyword)
 from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
                                           KeywordFilter)
 from sutekh.base.gui.SutekhDialog import NotebookDialog
@@ -255,8 +255,6 @@ def _split_into_crypt_lib(aPhysCards):
     aCrypt = []
     aLib = []
     for oCard in aPhysCards:
-        # pylint: disable=E1101
-        # pyprotocols confuses pylint
         oAbsCard = IAbstractCard(oCard)
         sType = [x.name for x in oAbsCard.cardtype][0]
         if sType in CRYPT_TYPES:
@@ -453,13 +451,14 @@ class AnalyzeCardList(SutekhPlugin):
         """Activate for non RT analysis"""
         self.activate_heart(True)
 
-    # pylint: disable=W0201, R0912, R0914, R0915
-    # W0201 - We define a lot of class variables here, because a) this is the
+    # pylint: disable=attribute-defined-outside-init
+    # We define a lot of class variables here, because a) this is the
     # plugin entry point, and, b) they need to reflect the current CardSet,
     # so they can't be filled properly in __init__
-    # R0915, R0912, R0914 - This is responsible for filling the whole
-    # notebook, so quite a long function with several branches and variables,
-    # and there's no benefit to splitting it up further
+    # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    # This is responsible for filling the whole notebook, so quite a long
+    # function with several branches and variables, and there's no benefit
+    # to splitting it up further
     def activate_heart(self, bRapid=False):
         """Create the actual dialog, and populate it"""
         if not self._check_cs_size('Analyze Deck', 500):
@@ -558,7 +557,8 @@ class AnalyzeCardList(SutekhPlugin):
         oDlg.notebook.set_current_page(0)
         oDlg.run()
 
-    # pylint: enable=W0201, R0912, R0915
+    # pylint: enable=attribute-defined-outside-init
+    # pylint: enable=too-many-branches, too-many-statements
 
     def get_crypt_stats(self, aVampireCards, aImbuedCards):
         """Extract the relevant statistics about the crypt from the lists
@@ -641,9 +641,9 @@ class AnalyzeCardList(SutekhPlugin):
                 self.dLibStats['discipline'].setdefault(sDisc, 0)
                 self.dLibStats['discipline'][sDisc] += 1
 
-    # pylint: disable=R0912
-    # R0912 - We need to check all these cases to present a sensible
-    # summary - there isn't a benefir to splitting these into different
+    # pylint: disable=too-many-branches
+    # We need to check all these cases to present a sensible
+    # summary - there isn't a benefit to splitting these into different
     # functions
     def _prepare_main(self, bRapid):
         """Setup the main notebook display"""
@@ -736,7 +736,7 @@ class AnalyzeCardList(SutekhPlugin):
                           ' constructed tournaments</span>\n')
 
         return wrap(sTitleText), oScrolledBox, wrap(sMainText)
-    # pylint: enable=R0912
+    # pylint: enable=too-many-branches
 
     def _process_library(self):
         """Create a notebook for the basic library card overview"""

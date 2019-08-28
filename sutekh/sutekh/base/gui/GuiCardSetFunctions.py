@@ -358,8 +358,6 @@ def _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
             # exists, as being the most sensible default
             aChildren = []
             if check_cs_exists(oHolder.name):
-                # pylint: disable=E1101, E1103
-                # pyprotocols confuses pylint
                 oCS = IPhysicalCardSet(oHolder.name)
                 aChildren = find_children(oCS)
                 # Ensure we restore with the correct parent

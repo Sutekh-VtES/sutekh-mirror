@@ -30,7 +30,7 @@ class SutekhObjectMaker(BaseObjectMaker):
        All the methods will return either a copy of an existing object
        or a new object.
        """
-    # pylint: disable=R0201, R0913
+    # pylint: disable=no-self-use, too-many-arguments
     # we want SutekhObjectMaker self-contained, so these are all methods.
     # This needs all these arguments
     def make_clan(self, sClan):

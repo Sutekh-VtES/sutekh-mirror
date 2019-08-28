@@ -139,7 +139,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                                  gtk.DIALOG_DESTROY_WITH_PARENT,
                                  (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # vbox confuses pylint
         self.oDlg.vbox.pack_start(gtk.Label("PDF File"), expand=False)
         self.oFileChooser = SutekhFileWidget(self.parent,

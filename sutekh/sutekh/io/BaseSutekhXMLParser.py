@@ -12,7 +12,7 @@ from sutekh.base.io.BaseCardSetIO import BaseCardXMLParser
 
 
 class BaseSutekhXMLParser(BaseCardXMLParser):
-    # pylint: disable=W0223
+    # pylint: disable=abstract-method
     # Doesn't matter that we don't override _convert_tree - subclasses will
     # do that for us
     """Base class for Sutekh XML files.

@@ -37,9 +37,6 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
        Converts messages of the form 'Card: X' into an approximate
        progress measure
        """
-    def __init__(self):
-        super(SutekhHTMLLogHandler, self).__init__()
-
     # Massage messages from HTMLParser into Dialog updates
     def emit(self, oRecord):
         """Massage message into progress value.

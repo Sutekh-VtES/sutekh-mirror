@@ -124,7 +124,7 @@ class GroupPairGrouping(IterGrouping):
     TEXT = "Groups %d, %d"
 
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         iMax = SutekhAbstractCard.select().max(SutekhAbstractCard.q.group)
 

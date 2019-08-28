@@ -45,10 +45,10 @@ class ImportExportBase(SutekhDialog):
     # we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
-    # pylint: disable=W0201, R0913
-    # W0201: we define attributes outside __init__, but it's OK because of
+    # pylint: disable=attribute-defined-outside-init, too-many-arguments
+    # we define attributes outside __init__, but it's OK because of
     # plugin structure
-    # R0913: We needs lots of parameters for flexibility here
+    # We needs lots of parameters for flexibility here
     def _setup_vbox(self, sTitlePhrase, sSourcePhrase, aDeckWidgets,
                     aInvWidgets, sUsername, sPassword):
         """Set up Secret Library configuration dialog."""
@@ -108,7 +108,7 @@ class ImportExportBase(SutekhDialog):
         self.vbox.pack_start(gtk.Label("Password"), False, False)
         self.vbox.pack_start(self._oPasswordEntry)
 
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     def _deck_inv_changed(self, _oWidget):
         """Handle a change in whether we're importing/exporting to/from a

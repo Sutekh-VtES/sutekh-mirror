@@ -52,7 +52,7 @@ def get_filters_for_type(sFilterType):
 # which are based on ply examples
 class ParseFilterDefinitions(object):
     """Provides the lexer used by PLY"""
-    # pylint: disable=invalid-name, R0201
+    # pylint: disable=invalid-name, no-self-use
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
@@ -110,7 +110,7 @@ class ParseFilterDefinitions(object):
         return t
 
     # Ply docs say don't do this in __init__, so we don't
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     def build(self, **kwargs):
         """Create the lexer object.
 
@@ -132,7 +132,7 @@ class ParseFilterDefinitions(object):
 # Define a yacc parser to produce the abstract syntax tree
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
-    # pylint: disable=invalid-name, R0201
+    # pylint: disable=invalid-name, no-self-use
     tokens = ParseFilterDefinitions.tokens
     aUsedVariables = []
 

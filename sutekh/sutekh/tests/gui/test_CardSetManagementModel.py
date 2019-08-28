@@ -14,7 +14,7 @@ from sutekh.base.gui.CardSetManagementModel import CardSetManagementModel
 class DummyWindow(object):
     """Dummy main window object"""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Must be a method to act as dummy
     def find_pane_by_name(self, sName):
         """Proxy for the find_pane_by_name method"""

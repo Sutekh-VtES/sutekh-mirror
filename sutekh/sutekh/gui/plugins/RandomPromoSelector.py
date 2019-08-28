@@ -47,7 +47,7 @@ class RandomPromoDialog(SutekhDialog):
         oHbox.pack_start(gtk.Label("Cards per group:"), expand=False,
                          padding=5)
         oHbox.pack_start(self._oCardsPerGroup, expand=False)
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # vbox confuses pylint
         self.vbox.pack_start(oHbox, expand=False)
 

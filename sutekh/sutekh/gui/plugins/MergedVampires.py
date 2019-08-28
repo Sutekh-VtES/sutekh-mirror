@@ -122,7 +122,7 @@ class FakeCard(object):
 
     def _fix_special_cases(self):
         """This is a long and tedious set of cases we need to handle."""
-        # pylint: disable=R0915, R0912
+        # pylint: disable=too-many-statements, too-many-branches
         # We can't really shorten this, due to the number
         # of individual special cases.
         if self.name == 'Al-Ashrad, Amr of Alamut (Merged)':

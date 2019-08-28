@@ -61,7 +61,7 @@ class CardSetMenu(CardListMenu):
 
     # pylint: enable=W0212, invalid-name
 
-    # pylint: disable=W0201
+    # pylint: disable=attribute-defined-outside-init
     # these methods are called from __init__, so it's OK
     def _create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
@@ -122,7 +122,7 @@ class CardSetMenu(CardListMenu):
 
         self.add_edit_menu_actions(oMenu)
 
-    # pylint: enable=W0201
+    # pylint: enable=attribute-defined-outside-init
 
     def cleanup(self):
         """Remove the menu listener"""

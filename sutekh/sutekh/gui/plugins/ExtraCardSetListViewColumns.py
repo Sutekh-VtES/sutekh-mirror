@@ -55,7 +55,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraCSListViewColumns):
                    The display can be sorted on these columns by clicking on \
                    the column headers."""
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
 
     @classmethod

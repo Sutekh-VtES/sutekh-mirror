@@ -49,7 +49,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
         else:
             return None
 
-    # pylint: disable=R0201
+    # pylint: disable=no-self-use
     # Making these functions for clarity
     # several unused paramaters due to function signatures
     # The bGetIcons parameter is needed to avoid icon lookups, etc when

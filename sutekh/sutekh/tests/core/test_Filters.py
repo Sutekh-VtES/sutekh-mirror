@@ -49,6 +49,8 @@ def make_physical_card_sets():
                                author=sAuthor, inuse=bInUse,
                                parent=oParent)
         for sName, sExp in aPCSCards[iCnt]:
+            # pylint: disable=no-member
+            # SQLObect confused pylint
             oPhys = make_card(sName, sExp)
             oPCS.addPhysicalCard(oPhys.id)
         aPCSs.append(oPCS)
@@ -132,7 +134,7 @@ class FilterTests(SutekhTest):
                           % (sName, sExp))
         return sorted(aPhysCards)
 
-    # pylint: disable=R0914
+    # pylint: disable=too-many-locals
     # We don't really care about the number of local variables here
     def test_basic(self):
         """Simple tests of the filter"""

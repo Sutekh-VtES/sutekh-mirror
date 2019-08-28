@@ -120,8 +120,8 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic WW list parser tests"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise repeated setups
         aCards = sorted(list(AbstractCard.select()), key=lambda oC: oC.name)
 
         # Check card names

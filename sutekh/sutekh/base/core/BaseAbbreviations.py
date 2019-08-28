@@ -20,8 +20,8 @@ class AbbrevMeta(type):
         if cls.dKeys:
             cls.make_lookup()
 
-    # pylint: disable=W0201
-    # W0201 - make_lookup called from init
+    # pylint: disable=attribute-defined-outside-init
+    # make_lookup called from init
     def make_lookup(cls):
         """Create a lookup table for the class."""
         cls._dLook = {}
@@ -70,8 +70,8 @@ class DatabaseAbbreviation(object):
 
     sLookupDomain = None
 
-    # pylint: disable=W0201
-    # W0201 - make_lookup called from cache handling code
+    # pylint: disable=attribute-defined-outside-init
+    # make_lookup called from cache handling code
     @classmethod
     def make_lookup(cls):
         """Create a lookup table for the class."""

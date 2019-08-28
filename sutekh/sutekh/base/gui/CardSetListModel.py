@@ -263,7 +263,7 @@ class CardSetCardListModel(CardListModel):
                                                  [], BLACK, None, None))
 
     def load(self):
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # we use many local variables for clarity
         """Clear and reload the underlying store. For use after initialisation,
            when the filter or grouping changes or when card set relationships
@@ -637,9 +637,9 @@ class CardSetCardListModel(CardListModel):
 
     def _get_child_filters(self, oCurFilter):
         """Get the filters for the child card sets of this card set."""
-        # pylint: disable=R0912
-        # R0912 - The various cache cases intoduce many branches, but can't
-        #   reasonably split away.
+        # pylint: disable=too-many-branches
+        # The various cache cases intoduce many branches, but can't
+        # reasonably split away.
 
         def _update_child_caches(oCard):
             """Add card info to the cache"""
@@ -811,10 +811,10 @@ class CardSetCardListModel(CardListModel):
            Returns a iterator over the groupings, and a list of all the
            abstract cards in the card set considered.
            """
-        # pylint: disable=R0914, R0912, R0915
-        # R0914: We use lots of local variables for clarity
-        # R0912: Lots of cases to consider, so several branches
-        # R0915: Artificially subdividing this further would not be useful
+        # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        # We use lots of local variables for clarity
+        # Lots of cases to consider, so several branches
+        # Artificially subdividing this further would not be useful
 
         # Define iterable and grouping function based on cardclass
         aCards = []
@@ -1107,7 +1107,7 @@ class CardSetCardListModel(CardListModel):
         return oSectionIter
 
     def add_new_card(self, oPhysCard):
-        # pylint: disable=R0914
+        # pylint: disable=too-many-locals
         # we use many local variables for clarity
         """If the card oPhysCard is not in the current list (i.e. is not in
            the card set or is filtered out) see if it should be visible. If it
@@ -1304,8 +1304,8 @@ class CardSetCardListModel(CardListModel):
            When the parent changes to or from none, we also update the menus
            and the parent card shown view.
            """
-        # pylint: disable=R0912
-        # R0912: We do need all these branches
+        # pylint: disable=too-many-branches
+        # We do need all these branches
         if oCardSet.id == self._oCardSet.id and \
                 'parentID' in dChanges:
             # This card set's parent is changing
@@ -1406,9 +1406,8 @@ class CardSetCardListModel(CardListModel):
            as we can query the database and obtain accurate results.
            Does rely on everyone calling send_changed_signal.
            """
-        # pylint: disable=R0912, R0915
-        # R0912, R0915 - need to consider several cases, so lots of
-        #     branches and statements
+        # pylint: disable=too-many-branches, too-many-statements
+        # need to consider several cases, so lots of branches and statements
         oAbsId = oPhysCard.abstractCardID
         if self._bPhysicalFilter:
             oCurFilter = self.get_current_filter()
@@ -1878,8 +1877,8 @@ class CardSetCardListModel(CardListModel):
     def alter_card_count(self, oPhysCard, iChg):
         """Alter the card count of a card which is in the current list
            (i.e. in the card set and not filtered out) by iChg."""
-        # pylint: disable=R0912
-        # R0912: Several cases to consider, so several branches
+        # pylint: disable=too-many-branches
+        # Several cases to consider, so several branches
         oAbsId = oPhysCard.abstractCardID
         bRemove = False
         bChecked = False  # flag to avoid repeated work
@@ -2244,8 +2243,8 @@ class CardSetCardListModel(CardListModel):
 
            bSkipLoad is set when we first call this function during the model
            creation to avoid calling load twice."""
-        # pylint: disable=R0914
-        # R0914: We use a bunch of local variables for clarity
+        # pylint: disable=too-many-locals
+        # We use a bunch of local variables for clarity
 
         sExtraLevelOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, EXTRA_LEVEL_OPTION).lower()

@@ -1546,7 +1546,11 @@ class DatabaseUpgradeTests(SutekhTest):
         oPCS1 = PhysicalCardSet(name="PCS1", parent=oMyCollection)
 
         oPC = make_card(".44 magnum", "Jyhad")
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oMyCollection.addPhysicalCard(oPC)
+
+        # pylint: enable=no-member
 
         assert list(PhysicalCardSet.select())
 

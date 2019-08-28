@@ -16,7 +16,7 @@ from sutekh.base.core.BaseTables import LookupHints
 # Abbreviation Lookups
 
 
-# pylint: disable=W0223
+# pylint: disable=abstract-method
 # We don't override all the abstract methods in all the classes
 # this is OK, since we control the use cases
 class Clans(DatabaseAbbreviation):

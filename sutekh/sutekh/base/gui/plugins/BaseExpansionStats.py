@@ -136,9 +136,9 @@ class StatsModel(gtk.TreeStore):
             self.oLegalFilter = make_illegal_filter()
         self.load(cGrping)
 
-    # pylint: disable=R0914, R0912
-    # R0912: Lots of different cases and loops, so a lot of branches
-    # R0914: We use lots of local variables for clarity
+    # pylint: disable=too-many-locals, too-many-branches
+    # Lots of different cases and loops, so a lot of branches
+    # We use lots of local variables for clarity
     def load(self, cSubGrping):
         """Populate the contents of the TreeStore"""
         self.clear()

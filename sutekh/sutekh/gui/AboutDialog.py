@@ -34,7 +34,7 @@ class SutekhAboutDialog(gtk.AboutDialog):
         self.set_artists([tAuth[0] for tAuth in SutekhInfo.ARTISTS])
         self.set_logo(SutekhIcon.SUTEKH_ICON)
         # self.set_translator_credits(translator_credits)
-        # pylint: disable=E1101
+        # pylint: disable=no-member
         # pylint doesn't like the dialog vbox
         oUrlText = gtk.Label('Database URI: %s' % get_database_url())
         self.vbox.pack_end(oUrlText, False, False)

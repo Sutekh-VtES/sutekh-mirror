@@ -88,6 +88,8 @@ def make_set_1():
     oPhysCardSet1.comment = 'A test comment'
     oPhysCardSet1.author = 'A test author'
     for oCard in aAddedPhysCards:
+        # pylint: disable=no-member
+        # SQLObect confused pylint
         oPhysCardSet1.addPhysicalCard(oCard.id)
     oPhysCardSet1.syncUpdate()
     return oPhysCardSet1
@@ -102,10 +104,14 @@ def make_set_2():
     oPhysCardSet2.author = 'A test author'
     oPhysCardSet2.annotations = 'Some Annotations'
     for iLoop in range(5, 10):
+        # pylint: disable=no-member
+        # SQLObect confused pylint
         oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
     for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
         oPC = make_card(sName, sExpansion)
         for _iNum in range(iCount):
+            # pylint: disable=no-member
+            # SQLObect confused pylint
             oPhysCardSet2.addPhysicalCard(oPC.id)
     oPhysCardSet2.syncUpdate()
     return oPhysCardSet2
@@ -121,15 +127,21 @@ def make_set_3():
     oPhysCardSet3.author = 'A test author'
     oPhysCardSet3.annotations = 'Some Annotations'
     for iLoop in range(5, 10):
+        # pylint: disable=no-member
+        # SQLObect confused pylint
         oPC = aAddedPhysCards[iLoop]
         if IAbstractCard(oPC).name == 'Abebe':
             continue
         oPhysCardSet3.addPhysicalCard(oPC.id)
     for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
+        # pylint: disable=no-member
+        # SQLObect confused pylint
         oPC = make_card(sName, sExpansion)
         for _iNum in range(iCount):
             oPhysCardSet3.addPhysicalCard(oPC.id)
     for sName, sExpansion, iCount in SET_3_ONLY_CARDS:
+        # pylint: disable=no-member
+        # SQLObect confused pylint
         oPC = make_card(sName, sExpansion)
         for _iNum in range(iCount):
             oPhysCardSet3.addPhysicalCard(oPC.id)
@@ -144,8 +156,8 @@ class PhysicalCardSetTests(SutekhTest):
 
     def test_physical_card_set(self):
         """Test physical card set object"""
-        # pylint: disable=R0915, R0914
-        # R0915, R0914: Want a long, sequential test case to minimise
+        # pylint: disable=too-many-statements, too-many-locals
+        # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
@@ -155,6 +167,8 @@ class PhysicalCardSetTests(SutekhTest):
         # Add cards to the physical card sets
 
         for iLoop in range(5):
+            # pylint: disable=no-member
+            # SQLObect confused pylint
             oPhysCardSet1.addPhysicalCard(aAddedPhysCards[iLoop].id)
         oPhysCardSet1.syncUpdate()
 
@@ -176,6 +190,8 @@ class PhysicalCardSetTests(SutekhTest):
         self.assertEqual(oPhysCardSet2.comment, 'Test 2')
 
         for iLoop in range(3, 8):
+            # pylint: disable=no-member
+            # SQLObect confused pylint
             oPhysCardSet2.addPhysicalCard(aAddedPhysCards[iLoop].id)
         oPhysCardSet2.syncUpdate()
 
