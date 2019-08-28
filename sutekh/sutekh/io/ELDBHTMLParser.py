@@ -105,8 +105,8 @@ class CardItem(HolderState):
 # See comments in base.io.SutekhBaseHTMLParser
 class ELDBHTMLParser(SutekhBaseHTMLParser):
     """Actual Parser for the ELDB HTML files."""
-    # pylint: disable=R0904
-    # R0904: Lots of public methods from HTMLParser
+    # pylint: disable=too-many-public-methods
+    # Lots of public methods from HTMLParser
 
     def __init__(self):
         """Create an ELDBHTMLParser.

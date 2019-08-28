@@ -25,8 +25,8 @@ from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
 
 class ZipFileWrapperTest(SutekhTest):
     """class for the Zip File tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_zip_file(self):
         """Test zip file handling"""

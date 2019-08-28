@@ -15,8 +15,8 @@ from sutekh.tests.io.test_WriteCSV import (EXPECTED_1, EXPECTED_2, EXPECTED_3,
 # Needs to be a SutekhTestCase so the name mapping cache test works
 class TestCSVParser(SutekhTest):
     """class for the CSV deck file parser tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Run the input test."""

@@ -13,7 +13,7 @@ from .CustomDragIconView import CustomDragIconView
 
 
 class ScrolledListStore(gtk.ListStore):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Simple list store for ScrolledList widget"""
     def __init__(self):
@@ -28,8 +28,8 @@ class ScrolledListStore(gtk.ListStore):
 
 
 class ScrolledListView(CustomDragIconView):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Simple tree view for the ScrolledList widget"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
@@ -83,8 +83,8 @@ class ScrolledListView(CustomDragIconView):
 
 
 class ScrolledList(gtk.Frame):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):

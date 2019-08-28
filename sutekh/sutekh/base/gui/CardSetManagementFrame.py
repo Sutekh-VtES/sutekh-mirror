@@ -15,8 +15,8 @@ from .AutoScrolledWindow import AutoScrolledWindow
 
 
 class CardSetManagementFrame(BasicFrame):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Pane for the List of card sets.
 

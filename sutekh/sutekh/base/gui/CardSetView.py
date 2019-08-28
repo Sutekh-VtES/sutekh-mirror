@@ -45,8 +45,8 @@ MINUS_KEYS = set([
 
 
 class CardSetView(CardListView):
-    # pylint: disable=R0904, R0902, R0901
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902, R0901
+    # gtk.Widget, so many public methods
     # R0902 - We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one

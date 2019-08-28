@@ -11,7 +11,7 @@ from .SutekhDialog import SutekhDialog
 
 
 class UpdateDialog(SutekhDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Dialog which prompts the user if datapack or other updates
        are available."""

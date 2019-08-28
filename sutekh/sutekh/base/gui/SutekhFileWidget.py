@@ -47,7 +47,7 @@ def _mapped(oFileWidget, oParent):
 
 
 class SutekhFileDialog(gtk.FileChooserDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
     """Wrapper for the gtk.FileChooseDialog which updates the
        working dir of Sutekh."""
@@ -75,7 +75,7 @@ class SutekhFileDialog(gtk.FileChooserDialog):
 
 
 class SutekhFileWidget(gtk.FileChooserWidget):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
     """Wrapper for the gtk.FileChooseWidget which updates the
        working dir of Sutekh."""
@@ -99,7 +99,7 @@ class SutekhFileWidget(gtk.FileChooserWidget):
 
 
 class SutekhFileButton(gtk.FileChooserButton):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
     """Wrapper class for gtk.FileChooserButton which updates the
        working directory."""
@@ -124,7 +124,7 @@ class SutekhFileButton(gtk.FileChooserButton):
 
 
 class SimpleFileDialog(SutekhFileDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """A simple file dialog, which just returns the file name"""
     def __init__(self, oParent, sTitle, oAction):
@@ -149,7 +149,7 @@ class SimpleFileDialog(SutekhFileDialog):
 
 
 class ImportDialog(SimpleFileDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Prompt the user for a file name to import"""
     def __init__(self, sTitle, oParent):
@@ -158,7 +158,7 @@ class ImportDialog(SimpleFileDialog):
 
 
 class ExportDialog(SimpleFileDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Prompt the user for a filename to export to"""
     def __init__(self, sTitle, oParent, sDefaultFileName=None):
@@ -170,7 +170,7 @@ class ExportDialog(SimpleFileDialog):
 
 
 class ZipFileDialog(SimpleFileDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Prompt the user for a zip file name"""
     def __init__(self, oParent, sTitle, oAction):

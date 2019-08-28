@@ -19,8 +19,8 @@ from .BaseConfigFile import FRAME
 class LocalProfileEditor(SutekhDialog):
     """Dialog which allows the user to set temporary option profiles.
        """
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk.Widget, so many public methods
 
     RESPONSE_CLOSE = 1
     RESPONSE_CANCEL = 2

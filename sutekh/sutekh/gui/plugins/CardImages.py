@@ -33,8 +33,8 @@ IMAGE_DATE_FILE = "image_dates.txt"
 
 
 class CardImageFrame(BaseImageFrame):
-    # pylint: disable=R0904, R0902
-    # R0904 - can't not trigger these warning with pygtk
+    # pylint: disable=too-many-public-methods, R0902
+    # can't not trigger these warning with pygtk
     # R0902 - we need to keep quite a lot of internal state
     """Frame which displays the image.
 
@@ -189,8 +189,8 @@ class CardImageFrame(BaseImageFrame):
 
 
 class ImageConfigDialog(BaseImageConfigDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
     # These two are descriptive, so set them to the final value

@@ -13,8 +13,8 @@ from .MessageBus import MessageBus, DATABASE_MSG
 
 
 class BasicFrame(gtk.Frame):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """The basic, blank frame for sutekh.
 

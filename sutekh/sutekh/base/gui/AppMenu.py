@@ -21,8 +21,8 @@ class AppMenu(SutekhMenu):
        This provides access to the major pane management actions, the
        global file actions, the help system, and any global plugins.
        """
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk.Widget, so many public methods
     # R0902 - We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(AppMenu, self).__init__(oWindow)
@@ -143,8 +143,8 @@ class AppMenu(SutekhMenu):
     def _add_download_menu(self, oDownloadMenu):
         """Add the File Download menu"""
         oImportItem = self.create_menu_item(
-                "Import new Full Card List and rulings",
-                oDownloadMenu, self.do_import_new_card_list)
+            "Import new Full Card List and rulings",
+            oDownloadMenu, self.do_import_new_card_list)
         # Need to have memory connection available for this
         if self.is_memory_db():
             oImportItem.set_sensitive(False)

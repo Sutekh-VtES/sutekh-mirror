@@ -38,7 +38,7 @@ def _set_selected_rows(_oButton, oScrolledList, aData):
 
 
 class ZipFileDirStore(gtk.TreeStore):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Simple tree store to show card set hierachy in a ScrolledList widget"""
     def __init__(self):
@@ -72,7 +72,7 @@ class ZipFileDirStore(gtk.TreeStore):
 
 class SelectZipFileContents(SutekhDialog):
     """Dialog for querying contents of the zip file"""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Dialog, so lots of public methods
 
     def __init__(self, dEscapedList, oParent):

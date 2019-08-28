@@ -32,8 +32,8 @@ from sutekh.tests.io.test_PhysicalCardSetParser import PCS_EXAMPLE_1
 
 class TestGuessFileParser(SutekhTest):
     """class for the guess file parser tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     TESTS = [
         (AbstractCardSetParser, ACS_EXAMPLE_1),

@@ -157,9 +157,9 @@ class CardSetModelRow(object):
 
 
 class CardSetCardListModel(CardListModel):
-    # pylint: disable=R0904, R0902, W1001
+    # pylint: disable=too-many-public-methods, R0902, W1001
     # R0902: need local attributes for state
-    # R0904: gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """CardList Model specific to lists of physical cards.
 
@@ -1113,8 +1113,6 @@ class CardSetCardListModel(CardListModel):
            the card set or is filtered out) see if it should be visible. If it
            should be visible, add it to the appropriate groups.
            """
-        # pylint: disable=redefined-variable-type
-        # Redefinition of oFilter is intentional
         self._init_cache(False)
         oFilter = self.get_current_filter()
         if not oFilter:
@@ -1130,7 +1128,6 @@ class CardSetCardListModel(CardListModel):
         else:
             oCardFilter = FilterAndBox([
                 oFilter, SpecificPhysCardIdFilter(oPhysCard.id)])
-        # pylint: enable=redefined-variable-type
 
         oCardIter = self.get_card_iterator(oCardFilter)
 

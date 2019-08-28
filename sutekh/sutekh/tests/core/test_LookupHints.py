@@ -11,8 +11,8 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 
 class LookupTests(SutekhTest):
     """class for various lookup tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Test behaviour"""

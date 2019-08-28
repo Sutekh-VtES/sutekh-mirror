@@ -51,8 +51,8 @@ TEST_DATA = json.dumps({
 
 class DataPackTest(SutekhTest):
     """Class for the data pack tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def create_index(self, sData):
         """Create a test index and return a URL for it."""

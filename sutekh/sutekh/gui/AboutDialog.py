@@ -13,10 +13,10 @@ from sutekh.gui import SutekhIcon
 from sutekh.SutekhInfo import SutekhInfo
 
 
-# pylint: disable=R0904
-# R0904 - gtk Widget, so has many public methods
 class SutekhAboutDialog(gtk.AboutDialog):
     """About dialog for Sutekh."""
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
 
     def __init__(self, *aArgs, **kwargs):
         super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)

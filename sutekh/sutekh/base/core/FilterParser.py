@@ -12,11 +12,11 @@
    uses intospection to find the filters to add to the grammar.
    """
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # pylint 0.18 misses ply parts
 import ply.lex as lex
 import ply.yacc as yacc
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 from .BaseFilters import Filter, FilterNot, FilterAndBox, FilterOrBox
 from ..Utility import find_subclasses
 
@@ -183,8 +183,6 @@ class FilterYaccParser(object):
     def p_filterpart_var(self, p):
         """filterpart : FILTERTYPE IN VARIABLE
                       | FILTERTYPE NOT IN VARIABLE"""
-        # pylint: disable=redefined-variable-type
-        # redefition of oResult is intentional
         if len(p) == 4:
             sVarName = p[3]
             oResult = FilterPartNode(p[1], None, sVarName)

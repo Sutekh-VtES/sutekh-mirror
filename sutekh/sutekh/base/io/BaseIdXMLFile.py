@@ -9,13 +9,13 @@
    Defines the public interface available."""
 
 from xml.etree.ElementTree import parse, fromstring, ElementTree
-# pylint: disable=E0611, F0401
+# pylint: disable=no-name-in-module, import-error
 # For compatability with ElementTree 1.3
 try:
     from xml.etree.ElementTree import ParseError
 except ImportError:
     from xml.parsers.expat import ExpatError as ParseError
-# pylint: enable=E0611, F0401
+# pylint: enable=no-name-in-module, import-error
 
 
 class BaseIdXMLFile(object):

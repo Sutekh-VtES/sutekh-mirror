@@ -22,7 +22,7 @@ def mouse_in_button(oButton):
 
 
 class MultiSelectComboBox(gtk.HBox):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Implementation of a multiselect combo box widget."""
 

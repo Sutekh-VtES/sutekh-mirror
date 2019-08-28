@@ -57,8 +57,8 @@ class BaseTestCase(unittest.TestCase):
 
        Define some useful helper methods.
        """
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     TEST_CONN = None
     PREFIX = 'testcase'
@@ -154,10 +154,10 @@ class DummyHolder(object):
 class GuiBaseTest(unittest.TestCase):
     """Adds useful methods for gui test cases."""
 
-    # pylint: disable=C0103, R0904
+    # pylint: disable=C0103, too-many-public-methods
     # C0103 - setUp + tearDown names are needed by unittest,
     #         so use their convention
-    # R0904 - unittest.TestCase, so many public methods
+    # unittest.TestCase, so many public methods
 
     def setUp(self):
         """Check if we should run the gui tests."""

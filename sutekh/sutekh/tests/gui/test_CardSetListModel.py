@@ -51,8 +51,8 @@ from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
-    # pylint: disable=R0904
-    # R0904: We test a number of sepetate bits, so many methods
+    # pylint: disable=too-many-public-methods
+    # We test a number of sepetate bits, so many methods
 
     aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
                          'MINUS_SETS_IN_USE']
@@ -135,11 +135,11 @@ class CardSetListModelTests(ConfigSutekhTest):
             ('Walk of Flame', 'Third Edition', None),
             ('Walk of Flame', 'Third Edition', "No Draft Text"),
         ] + [
-                ('Alexandra', 'CE', None), ('Alexandra', None, None),
-                ('Ablative Skin', None, None), (u'Two Wrongs', None, None),
-                (u'Agent of Power', None, None),
-                ("Walk of Flame", "Jyhad", "Variant Printing"),
-            ] * 2
+            ('Alexandra', 'CE', None), ('Alexandra', None, None),
+            ('Ablative Skin', None, None), (u'Two Wrongs', None, None),
+            (u'Agent of Power', None, None),
+            ("Walk of Flame", "Jyhad", "Variant Printing"),
+        ] * 2
         self.aPhysCards = []
         for sName, sExp, sPrint in aCards:
             oCard = make_card(sName, sExp, sPrint)
@@ -387,7 +387,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oListener.iCnt, 0)
         # Check for the 'No cards' entry in the model
         self.assertEqual(oModel.iter_n_children(None), 1)
-        aCards = [('Alexandra', 'CE', None), ('Sha-Ennu', 'Third Edition', None),
+        aCards = [('Alexandra', 'CE', None),
+                  ('Sha-Ennu', 'Third Edition', None),
                   (u'Étienne Fauberge', "Anarchs", None),
                   ("Hektor", "Third", "Sketch")]
         for sName, sExp, sPrint in aCards:

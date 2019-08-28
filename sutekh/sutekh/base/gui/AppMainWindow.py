@@ -15,10 +15,10 @@ import pygtk
 # This check needs to be before we import gtk
 pygtk.require('2.0')
 import gtk
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 
 from ..core.BaseTables import PhysicalCardSet, PhysicalCard, VersionTable
 from ..core.DatabaseVersion import DatabaseVersion
@@ -38,9 +38,9 @@ from .DataFilesDialog import Result
 
 class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902 - we need to keep a lot of state, so many instance attributes
-    # R0904 - gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(AppMainWindow, self).__init__()
@@ -272,8 +272,6 @@ class AppMainWindow(MultiPaneWindow):
             oNewFrame = self.add_pane(bVert, iPos)
             oRestored = None
             self.win_focus(None, None, oNewFrame)
-            # pylint: disable=redefined-variable-type
-            # reuse of oRestored is intentional
             if sType == PhysicalCardSet.sqlmeta.table:
                 oRestored = self.replace_with_physical_card_set(sName,
                                                                 oNewFrame,

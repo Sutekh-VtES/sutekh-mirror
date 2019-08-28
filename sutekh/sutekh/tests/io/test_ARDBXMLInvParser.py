@@ -71,8 +71,8 @@ ARDB_INV_EXAMPLE_1 = """
 
 class ArdbXMLInvParserTests(SutekhTest):
     """class for the ARDB XML inventory file parser tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Run the input test."""

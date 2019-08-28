@@ -19,8 +19,8 @@ class ConfigFile(BaseConfigFile):
        Provides application overrides and the default setup.
        """
 
-    # pylint: disable=R0904
-    # R0904 - Extends ConfigFile, which needs a lot of methods to manage
+    # pylint: disable=too-many-public-methods
+    # Extends ConfigFile, which needs a lot of methods to manage
     # all the state
 
     DEFAULT_FILTERS = {

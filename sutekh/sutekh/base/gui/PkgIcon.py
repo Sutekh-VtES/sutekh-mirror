@@ -5,10 +5,10 @@
 
 """Provide a base class for handling the application icon"""
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 import gtk
 
 

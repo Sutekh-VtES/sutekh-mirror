@@ -16,7 +16,7 @@ from sqlobject import sqlhub, connectionForURI
 
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
-from ..core.BaseTables import AbstractCard,PhysicalCardSet
+from ..core.BaseTables import AbstractCard, PhysicalCardSet
 from ..core.DBUtility import flush_cache, get_cs_id_name_table, refresh_tables
 
 from ..io.EncodedFile import EncodedFile
@@ -127,8 +127,8 @@ class BaseGuiDBManager(object):
         iRes = do_complaint_buttons(
             '\n'.join(aFullMessages),
             gtk.MESSAGE_ERROR,
-             ("Abort import?", 1, "Accept import despite errors", 2),
-             True)
+            ("Abort import?", 1, "Accept import despite errors", 2),
+            True)
         return iRes == 2
 
     def read_zip_file(self, oZipDetails, sHash):
@@ -187,8 +187,6 @@ class BaseGuiDBManager(object):
         for oReader in self.tReaders:
             if oReader.sName not in dFiles:
                 continue
-            # pylint: disable=redefined-variable-type
-            # This redefinition is delibrate
             if oReader.bCountLogger:
                 oLogHandler = SutekhCountLogHandler()
             else:

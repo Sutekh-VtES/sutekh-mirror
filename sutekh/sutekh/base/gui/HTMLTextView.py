@@ -51,10 +51,10 @@ def _parse_css_color(sColor):
 
 
 class HtmlHandler(HTMLParser.HTMLParser):
-    # pylint: disable=R0201, R0902, R0904
+    # pylint: disable=R0201, R0902, too-many-public-methods
     # R0201: can't break these into functions
     # R0902: We need to keep a lot of state to handle HTML properly
-    # R0904: Lots of public methods from HTMLParser
+    # Lots of public methods from HTMLParser
     """Parse the HTML input and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
         HTMLParser.HTMLParser.__init__(self)
@@ -560,7 +560,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
 
 class HTMLTextView(gtk.TextView):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """TextView subclass to display HTML"""
     __gtype_name__ = 'HTMLTextView'
@@ -641,8 +641,8 @@ class HTMLTextView(gtk.TextView):
 
 
 class HTMLViewDialog(SutekhDialog):
-    # pylint: disable=R0904, R0902
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk.Widget, so many public methods
     # R0902: We need to keep a lot of state to handle navigation
     """Dialog Window that wraps the HTMLTextView
 

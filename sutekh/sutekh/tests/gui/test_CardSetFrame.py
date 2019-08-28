@@ -21,8 +21,8 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
 class TestCardSetFrame(GuiSutekhTest):
     """Class for the CardSetFrame test cases"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # tunittest.TestCase, so many public methods
 
     # pylint: disable=R0201
     # I prefer to have these as methods

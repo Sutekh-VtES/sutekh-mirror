@@ -15,9 +15,9 @@ from .CustomDragIconView import CustomDragIconView
 
 class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902: We need to keep state, so many attrs
-    # R0904: gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,

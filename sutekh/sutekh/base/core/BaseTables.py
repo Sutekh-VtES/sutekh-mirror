@@ -9,12 +9,12 @@
 
 """The base database definitions and pyprotocols adapters"""
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (sqlmeta, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        MultipleJoin, BoolCol, DatabaseIndex, ForeignKey)
 from sqlobject.inheritance import InheritableSQLObject
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 
 from .CachedRelatedJoin import CachedRelatedJoin
 

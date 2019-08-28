@@ -100,7 +100,7 @@ class BaseExpansionStats(BasePlugin):
 
 
 class StatsView(gtk.TreeView):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk classes, so we have lots of public methods
     """TreeView used to display expansion stats"""
 
@@ -122,7 +122,7 @@ class StatsView(gtk.TreeView):
 
 
 class StatsModel(gtk.TreeStore):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the expansion statistics"""
 

@@ -17,8 +17,8 @@ class SutekhTest(BaseTestCase):
 
        Define common setup and teardown routines common to test cases.
        """
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     PREFIX = 'sutekhtests'
 

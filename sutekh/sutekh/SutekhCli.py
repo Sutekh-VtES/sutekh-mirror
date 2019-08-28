@@ -20,11 +20,11 @@ from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST, AbstractCard
 from sutekh.base.core.BaseAdapters import IPhysicalCardSet, IAbstractCard
 from sutekh.core.SutekhTables import TABLE_LIST
-# pylint: disable=W0611
+# pylint: disable=unused-import
 # We need this import to ensure we have all the filters imported
 # correctly, even though we don't use it directly
 import sutekh.core.Filters
-# pylint: enable=W0611
+# pylint: enable=unused-import
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_info_file,

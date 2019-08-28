@@ -23,18 +23,18 @@ SutekhInfo = SutekhInfoMod.SutekhInfo
 
 
 try:
-    # pylint: disable-msg=F0401, W0611
-    # F0401 - OK to fail to import these here
-    # W0611 - py2exe is unused, since the import is just a check
+    # pylint: disable=import-error, unused-import
+    # import-error - OK to fail to import these here
+    # unused-import - py2exe is unused, since the import is just a check
     import py2exe
     from py2exe.build_exe import py2exe as builder
     import os
     import glob
-    # pylint: enable-msg=F0401, W0611
+    # pylint: enable=import-error, unused-import
 
     class PkgResourceBuilder(builder):
         """Extend to builder class to override copy_extensions"""
-        # pylint: disable-msg=E1101, C0103, W0232
+        # pylint: disable=E1101, C0103, W0232
         # E1101: missed imports leave pylint confused here
         # C0103: not using our naming conventions here
         # W0232: we don't need an __init__ method for our goals
@@ -67,7 +67,7 @@ try:
                             name))
 
 except ImportError:
-    # pylint: disable-msg=C0103
+    # pylint: disable=C0103
     # pylint thinks this is a const, which it isn't
     PkgResourceBuilder = None
 

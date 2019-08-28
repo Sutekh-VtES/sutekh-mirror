@@ -9,11 +9,11 @@
 
 """The database definitions and pyprotocols adapters for Sutekh"""
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # pylint doesn't parse sqlobject's column declaration magic correctly
 from sqlobject import (SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, DatabaseIndex, ForeignKey)
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 
 from sutekh.base.core.CachedRelatedJoin import CachedRelatedJoin
 from sutekh.base.core.BaseTables import (AbstractCard, BASE_TABLE_LIST,

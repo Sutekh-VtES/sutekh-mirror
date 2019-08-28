@@ -100,7 +100,7 @@ class BaseShowExported(BasePlugin):
 
 
 class ExportBuffer(gtk.TextBuffer):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Buffer object for showing the exported card set text"""
 

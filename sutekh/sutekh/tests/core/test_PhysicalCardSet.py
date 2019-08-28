@@ -139,8 +139,8 @@ def make_set_3():
 
 class PhysicalCardSetTests(SutekhTest):
     """class for the Physical Card Set tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_physical_card_set(self):
         """Test physical card set object"""

@@ -14,8 +14,8 @@ from sutekh.io.SLInventoryParser import SLInventoryParser
 
 class TestSLInventoryParser(SutekhTest):
     """Class for the Secret Library inventory file parser tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     sTestText1 = """
         ***SL***CRYPT***

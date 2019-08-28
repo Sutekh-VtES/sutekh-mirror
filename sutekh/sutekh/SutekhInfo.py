@@ -6,7 +6,7 @@
 """Requirements and such for setuptools"""
 
 # pylint doesn't see resource_string for some reason
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 from pkg_resources import resource_string
 
 

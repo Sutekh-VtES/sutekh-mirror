@@ -18,10 +18,10 @@
 
 from logging import Logger
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # sqlobject confuses pylint here
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 
 from .BaseTables import (PhysicalCard, AbstractCard,
                          PhysicalCardSet, Expansion,
@@ -63,7 +63,8 @@ class BaseDBUpgradeManager(object):
         'PhysicalCardSet': (PhysicalCardSet, (PhysicalCardSet.tableversion,)),
         'LookupHints': (LookupHints, (-1, LookupHints.tableversion,)),
         'Printing': (Printing, (-1, Printing.tableversion,)),
-        'PrintingProperty': (PrintingProperty, (-1, PrintingProperty.tableversion,)),
+        'PrintingProperty': (PrintingProperty,
+                             (-1, PrintingProperty.tableversion,)),
     }
 
     # List of functions for upgrading databases
@@ -197,9 +198,9 @@ class BaseDBUpgradeManager(object):
         """Copy Keyword, assuming versions match"""
         for oObj in PrintingProperty.select(connection=oOrigConn):
             _oCopy = PrintingProperty(id=oObj.id,
-                                     value=oObj.value,
-                                     canonicalValue=oObj.canonicalValue,
-                                     connection=oTrans)
+                                      value=oObj.value,
+                                      canonicalValue=oObj.canonicalValue,
+                                      connection=oTrans)
 
     def _copy_old_print_properties(self, oOrigConn, oTrans, oVer):
         """Copy printing data table, upgrading versions as needed"""

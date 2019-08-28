@@ -33,8 +33,8 @@ def _get_top_levels(aGrouping):
 
 class GroupingsTests(SutekhTest):
     """class for various lookup tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_abstract_card_iterator(self):
         """Test behaviour on abstract card lists"""
@@ -61,11 +61,11 @@ class GroupingsTests(SutekhTest):
                           'Equipment', 'Imbued', 'Master',
                           'Political Action', 'Power', 'Reaction',
                           'Reflex', 'Retainer', 'Vampire'],
-                          _get_top_levels(aGrp))
+                         _get_top_levels(aGrp))
         self.assertTrue(oSwallowed in _get_cards_for_group(aGrp,
                                                            'Action Modifier'))
         self.assertTrue(oAire in _get_cards_for_group(aGrp,
-                                                           'Action Modifier'))
+                                                      'Action Modifier'))
         self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, 'Combat'))
         self.assertTrue(oAire not in _get_cards_for_group(aGrp, 'Combat'))
         self.assertTrue(oAshur in _get_cards_for_group(aGrp, 'Master'))
@@ -140,7 +140,7 @@ class GroupingsTests(SutekhTest):
                           'Political Action', 'Power', 'Reaction',
                           'Reaction / Reflex',
                           'Retainer', 'Vampire'],
-                          _get_top_levels(aGrp))
+                         _get_top_levels(aGrp))
         self.assertTrue(oAire in _get_cards_for_group(aGrp, 'Action Modifier'))
         self.assertTrue(oSwallowed not in _get_cards_for_group(
             aGrp, 'Action Modifier'))
@@ -187,7 +187,8 @@ class GroupingsTests(SutekhTest):
         self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, None))
         self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Groups 1, 2'))
         self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Groups 2, 3'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp, 'Groups 3, 4'))
+        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp,
+                                                           'Groups 3, 4'))
         self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 3, 4'))
         self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 1, 2'))
         self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 5, 6'))
@@ -201,25 +202,25 @@ class GroupingsTests(SutekhTest):
         self.assertTrue(None not in aGrpNames)
 
         self.assertTrue(oAabbt in _get_cards_for_group(
-             aGrp, 'Final Nights : Uncommon'))
+            aGrp, 'Final Nights : Uncommon'))
         self.assertTrue(oShaEnnu in _get_cards_for_group(
-             aGrp, 'Third Edition : Vampire'))
+            aGrp, 'Third Edition : Vampire'))
         self.assertTrue(oShaEnnu not in _get_cards_for_group(
-             aGrp, 'Third Edition : Precon'))
+            aGrp, 'Third Edition : Precon'))
         self.assertTrue(oSwallowed in _get_cards_for_group(
-             aGrp, 'Third Edition : Common'))
+            aGrp, 'Third Edition : Common'))
         self.assertTrue(oRaven not in _get_cards_for_group(
-             aGrp, 'Third Edition : Common'))
+            aGrp, 'Third Edition : Common'))
         self.assertTrue(oRaven not in _get_cards_for_group(
-             aGrp, 'Third Edition : Uncommon'))
+            aGrp, 'Third Edition : Uncommon'))
         self.assertTrue(oRaven in _get_cards_for_group(
-             aGrp, 'Third Edition : Precon'))
+            aGrp, 'Third Edition : Precon'))
         self.assertTrue(oRaven in _get_cards_for_group(
-             aGrp, 'Lords of the Night : Precon'))
+            aGrp, 'Lords of the Night : Precon'))
         self.assertTrue(oRaven in _get_cards_for_group(
-             aGrp, 'Third Edition : Precon Only'))
+            aGrp, 'Third Edition : Precon Only'))
         self.assertTrue(oRaven in _get_cards_for_group(
-             aGrp, 'Jyhad : Uncommon'))
+            aGrp, 'Jyhad : Uncommon'))
 
         aGrp = list(CryptLibraryGrouping(aCards, DEF_GET_CARD))
         self.assertEqual(['Crypt', 'Library'], _get_top_levels(aGrp))

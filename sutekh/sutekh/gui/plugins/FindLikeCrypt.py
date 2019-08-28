@@ -234,8 +234,6 @@ class FindLikeVampires(SutekhPlugin):
         bUseCardSet = oUseCardSet.get_active()
         iNum = int(oComboBox.get_active_text())
         bSuperior = oSuperior and oSuperior.get_active()
-        # pylint: disable=redefined-variable-type
-        # resuse of oDisciplineFilter is intentional
         if bSuperior:
             oDisciplineFilter = MultiDisciplineLevelFilter(
                 [(x.fullname, 'superior') for x in aSuperior])
@@ -389,7 +387,7 @@ class FindLikeVampires(SutekhPlugin):
 
 
 class LikeCardsView(gtk.TreeView):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk classes, so we have lots of public methods
     """TreeView for showing details of matching cards"""
 
@@ -432,7 +430,7 @@ class LikeCardsView(gtk.TreeView):
 
 
 class LikeCardsModel(gtk.ListStore):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk classes, so we have lots of public methods
     """ListStore for holding details of the matching cards"""
 

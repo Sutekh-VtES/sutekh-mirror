@@ -40,8 +40,8 @@ def canonical_to_sl(sName):
 
 
 class ImportExportBase(SutekhDialog):
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk Widget, so has many public methods
     # R0902 - we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
@@ -145,8 +145,8 @@ class ImportExportBase(SutekhDialog):
 
 
 class ImportDialog(ImportExportBase):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for importing card sets from the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
@@ -175,8 +175,8 @@ class ImportDialog(ImportExportBase):
 
 
 class ExportDialog(ImportExportBase):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for exporting cards sets to the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):

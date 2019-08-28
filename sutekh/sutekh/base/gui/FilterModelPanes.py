@@ -58,8 +58,8 @@ def add_accel_to_button(oButton, sAccelKey, oAccelGroup, sToolTip=None):
 
 class FilterModelPanes(gtk.HBox):
     """Widget to hold the different panes of the Filter editor"""
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
 
     def __init__(self, sFilterType, oDialog):
         super(FilterModelPanes, self).__init__()
@@ -93,8 +93,8 @@ class FilterModelPanes(gtk.HBox):
 
 class FilterEditorToolbar(CustomDragIconView):
     """Toolbar listing the possible filter elements"""
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
 
     def __init__(self, sFilterType):
         self._oListStore = gtk.ListStore(gobject.TYPE_STRING,
@@ -138,8 +138,8 @@ class FilterEditorToolbar(CustomDragIconView):
 
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk.Widget, so many public methods
     # R0902: We need to keep a lot of state to handle all the cases
 
     def __init__(self, oDialog, sFilterType):
@@ -578,7 +578,7 @@ class FilterValuesBox(gtk.VBox):
 
 class BoxModelPopupMenu(gtk.Menu):
     """Popup context menu for disable/ negate & delete"""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
 
     def __init__(self, oBoxModelEditor):
@@ -598,8 +598,8 @@ class BoxModelPopupMenu(gtk.Menu):
 
 class FilterBoxModelStore(gtk.TreeStore):
     """TreeStore for the FilterBoxModelEditor"""
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
 
     BLACK = gtk.gdk.color_parse('black')
     GREY = gtk.gdk.color_parse('grey')
@@ -829,8 +829,8 @@ class FilterBoxModelStore(gtk.TreeStore):
 
 class FilterBoxModelEditView(CustomDragIconView):
     """TreeView for the FilterBoxModelEditor"""
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
 
     def __init__(self, oStore, oValuesWidget, oBoxModel):
         super(FilterBoxModelEditView, self).__init__(oStore)
@@ -1386,7 +1386,7 @@ class FilterBoxModelEditView(CustomDragIconView):
 
 class FilterBoxModelEditBox(gtk.VBox):
     """Box to hold the BoxModel view."""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
 
     def __init__(self, oValuesWidget):

@@ -40,8 +40,8 @@ ACS_EXAMPLE_2 = ('<abstractcardset author="A test author" '
 
 class AbstractCardSetParserTest(SutekhTest):
     """class for the Abstract Card Set Parser"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_abstract_cs_parser(self):
         """Test abstract card set parser"""

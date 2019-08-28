@@ -12,10 +12,10 @@
 import urllib2
 import socket
 from logging import Logger
-# pylint: disable=E0611
-# E0611: hashlib is strange, and confuses pylint
+# pylint: disable=no-name-in-module
+# no-name-in-module: hashlib is strange, and confuses pylint
 from hashlib import sha256
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 
 
 class HashError(Exception):

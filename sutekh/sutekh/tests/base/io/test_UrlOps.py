@@ -15,8 +15,8 @@ from sutekh.base.io.UrlOps import fetch_data
 
 class UrlOpsTest(SutekhTest):
     """Class for the URL ops tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_error_handler(self):
         """Test triggering the error handler"""

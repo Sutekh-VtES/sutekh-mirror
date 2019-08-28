@@ -21,7 +21,7 @@ from ..Utility import get_database_url
 
 
 class SutekhDialog(gtk.Dialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
     """wrapper class for gtk.Dialog"""
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
@@ -89,7 +89,7 @@ def do_complaint_warning(sMessage):
 
 class DetailDialog(SutekhDialog):
     """Message dialog with a details expander"""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
 
     def __init__(self, sMessage, sDetails):
@@ -169,8 +169,8 @@ def exception_handler(oType, oValue, oTraceback):
 
 class NotebookDialog(SutekhDialog):
     """Dialog with a notebook widget."""
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
 
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):

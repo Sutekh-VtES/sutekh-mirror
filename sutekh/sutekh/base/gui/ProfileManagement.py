@@ -24,8 +24,8 @@ LABELS = {
 
 
 class ProfileListStore(gtk.ListStore):
-    # pylint: disable=R0904
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     """Simple list store for profiles widget"""
     def __init__(self):
         super(ProfileListStore, self).__init__(gobject.TYPE_STRING,
@@ -60,7 +60,7 @@ class ProfileListStore(gtk.ListStore):
 
 
 class ProfileListView(gtk.TreeView):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Simple tree view for the profile list"""
     def __init__(self, sTitle):
@@ -84,8 +84,8 @@ class ProfileListView(gtk.TreeView):
 
 
 class ScrolledProfileList(gtk.Frame):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
@@ -106,9 +106,9 @@ class ScrolledProfileList(gtk.Frame):
 
 class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
-    # pylint: disable=R0902, R0904
+    # pylint: disable=R0902, too-many-public-methods
     # R0902 - we keep a lot of internal state, so many instance variables
-    # R0904 - gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
 
     RESPONSE_EDIT = 1
     RESPONSE_DELETE = 2

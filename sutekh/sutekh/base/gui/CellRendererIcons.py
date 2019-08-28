@@ -20,13 +20,13 @@ def _layout_text(oLayout, sText):
     oLayout.set_alignment(pango.ALIGN_LEFT)
 
 
-# pylint: disable=R0904
-# gtk widget, so we must have a lot of public methods
 class CellRendererIcons(gtk.GenericCellRenderer):
     """Render a list of icons and text in a cell in a TreeView.
 
        Used to render the icons in the CardListViews
        """
+    # pylint: disable=too-many-public-methods
+    # gtk widget, so we must have a lot of public methods
     # Pad constant
     iTextPad = 4
 

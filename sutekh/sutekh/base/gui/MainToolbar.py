@@ -13,8 +13,8 @@ class MainToolbar(gtk.Toolbar):
 
        This provides a place to minimize panes.
        """
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     def __init__(self, oWindow):
         super(MainToolbar, self).__init__()
         self.set_no_show_all(True)

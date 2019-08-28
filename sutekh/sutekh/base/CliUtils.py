@@ -32,8 +32,6 @@ def run_filter(sFilter, sCardSet):
     oFilter = oParser.apply(sFilter).get_filter()
 
     dResults = {}
-    # pylint: disable=redefined-variable-type
-    # We reuse oBaseFilter so the common logic is clear
     if oCardSet:
         # Filter the given card set
         oBaseFilter = PhysicalCardSetFilter(oCardSet.name)

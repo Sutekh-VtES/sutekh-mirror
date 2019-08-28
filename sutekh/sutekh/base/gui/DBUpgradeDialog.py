@@ -11,7 +11,7 @@ from .SutekhDialog import SutekhDialog
 
 
 class DBUpgradeDialog(SutekhDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Dialog which prompts the user at the end of a database upgrade.
 

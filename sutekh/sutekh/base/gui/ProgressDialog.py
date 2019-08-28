@@ -95,7 +95,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
 
 
 class ProgressDialog(gtk.Window):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Show a window with a single progress bar."""
     # This is not a proper dialog, since we don't want the blocking

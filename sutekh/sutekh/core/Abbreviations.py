@@ -9,9 +9,8 @@
 # Fullname: Discipline, Virtue
 # Shortname: Expansion, Creed, Clan
 
-import sys
-
-from sutekh.base.core.BaseAbbreviations import AbbreviationLookup, DatabaseAbbreviation
+from sutekh.base.core.BaseAbbreviations import (AbbreviationLookup,
+                                                DatabaseAbbreviation)
 from sutekh.base.core.BaseTables import LookupHints
 
 # Abbreviation Lookups
@@ -39,8 +38,8 @@ class Disciplines(DatabaseAbbreviation):
         """Return the full name for the given abbreviation."""
         sFullName = None
         sCanonical = cls.canonical(sShortName)
-        # We need to look up the longest reverse version of the canonical lookup
-        # We assume the 3 letter entries are all abbrevations
+        # We need to look up the longest reverse version of the canonical
+        # lookup.  We assume the 3 letter entries are all abbrevations
         for oLookup in LookupHints.selectBy(domain=cls.sLookupDomain):
             if oLookup.value == sCanonical and len(oLookup.lookup) > 3:
                 sFullName = oLookup.lookup

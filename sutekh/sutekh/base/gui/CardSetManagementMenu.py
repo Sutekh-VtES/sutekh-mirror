@@ -17,7 +17,7 @@ from .MessageBus import MessageBus, CONFIG_MSG
 class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
        """
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
         super(CardSetManagementMenu, self).__init__(oFrame, oWindow,

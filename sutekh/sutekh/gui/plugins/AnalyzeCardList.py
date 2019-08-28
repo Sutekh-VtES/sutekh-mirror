@@ -340,7 +340,7 @@ def _group_backs(dCards, aCards, iNum, dBacks):
 
 
 class DisciplineNumberSelect(gtk.HBox):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget so many public methods
     """Holds a combo box and a discpline list for choosing a list
        of disciplines to use."""

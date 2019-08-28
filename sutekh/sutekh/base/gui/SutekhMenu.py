@@ -10,8 +10,8 @@ import gtk
 
 
 class SutekhMenu(gtk.MenuBar):
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     """Base class for Menus
 
        This provides useful methods for handling accelerators.

@@ -18,8 +18,8 @@ class BaseCardTextBuffer(gtk.TextBuffer):
     """Base class for buffer object which holds the actual card text.
        """
 
-    # pylint: disable=R0904
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     def __init__(self):
         super(BaseCardTextBuffer, self).__init__(None)
 
@@ -139,8 +139,8 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 class BaseCardTextView(gtk.TextView):
     """Base class for TextView widget which holds the TextBuffer."""
 
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oBuffer, oIconManager):
         super(BaseCardTextView, self).__init__()

@@ -9,7 +9,7 @@ import gtk
 
 
 class CustomDragIconView(gtk.TreeView):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """Base class for tree views that fiddle with the drag icon"""
 

@@ -23,8 +23,8 @@ from sutekh.tests.core.test_Filters import make_physical_card_sets
 
 class FilterParserTests(SutekhTest):
     """Class for the test cases"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
     oFilterParser = FilterParser.FilterParser()
 
@@ -550,7 +550,7 @@ class FilterParserTests(SutekhTest):
         aExpectedNames = self._get_abs_names(oFilterAST.get_filter())
         self.assertEqual(aNames, aExpectedNames,
                          "FilterBoxModel %s failed. %s != %s." % (
-                                 sFilter, aNames, aExpectedNames))
+                             sFilter, aNames, aExpectedNames))
 
         # Disabled the equipment subfilter
         oBoxFilter[0].bDisabled = True
@@ -561,7 +561,7 @@ class FilterParserTests(SutekhTest):
         aExpectedNames = self._get_abs_names(oFilterAST.get_filter())
         self.assertEqual(aNames, aExpectedNames,
                          "FilterBoxModel %s failed. %s != %s." % (
-                                 sFilter, aNames, aExpectedNames))
+                             sFilter, aNames, aExpectedNames))
 
 
 if __name__ == "__main__":

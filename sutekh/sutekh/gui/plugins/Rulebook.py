@@ -27,8 +27,8 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class RulebookConfigDialog(SutekhDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for configuring the Rulebook plugin."""
 
     sDocUrl = DOC_URL

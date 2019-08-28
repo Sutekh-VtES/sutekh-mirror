@@ -28,9 +28,9 @@ class FilterDialog(SutekhDialog):
        This also listens to Config File events, so the list of available
        filters remains syncronised across the different views.
        """
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902 - we keep a lot of internal state, so many instance variables
-    # R0904 - gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
 
     RESPONSE_CLEAR = 1

@@ -22,9 +22,9 @@ from .BasicFrame import BasicFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902 - we need to keep a lot of state, so many instance attributes
-    # R0904: gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)

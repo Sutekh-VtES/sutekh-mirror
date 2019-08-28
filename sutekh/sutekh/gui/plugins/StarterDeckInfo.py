@@ -54,8 +54,8 @@ def _get_cs_to_remove(oZipFile):
 
 
 class StarterConfigDialog(SutekhDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for configuring the Starter plugin."""
 
     sDocUrl = DOC_URL

@@ -52,7 +52,7 @@ class DummyController(object):
 
 class ACLLookupView(PhysicalCardView):
     """Specialised version for the Card Lookup."""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
@@ -87,7 +87,7 @@ class ACLLookupView(PhysicalCardView):
 
 class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
@@ -116,7 +116,7 @@ class PCLLookupView(PhysicalCardView):
 
 class ReplacementTreeView(gtk.TreeView):
     """A TreeView which tracks the current set of replacement cards."""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods.
 
     def __init__(self, oCardListView, oFilterToggleButton):
@@ -481,7 +481,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 sNewName, sNewExpPrintName = \
                     oReplacementView.parse_card_name(sNewFullName)
 
-                # FIXME: Update this to support printings correctly
                 if sNewName != NO_CARD:
                     tExpPrint = (sExpPrintName, None)
                     iCnt = dUnknownCards[(sName, tExpPrint)]
@@ -660,7 +659,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
 
     def _handle_unknown_printings(self, dUnknownPrintings, sInfo,
-                                   dCardExpansions):
+                                  dCardExpansions):
         """Handle the list of unknown expansion + printings.
 
            We allow the user to select the correct replacements from the

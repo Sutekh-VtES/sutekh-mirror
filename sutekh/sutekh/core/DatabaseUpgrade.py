@@ -16,12 +16,12 @@
 # SutekhTables. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
 
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 # sqlobject confuses pylint here
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, ForeignKey, DateCol, BoolCol,
                        SQLObjectNotFound)
-# pylint: enable=E0611
+# pylint: enable=no-name-in-module
 from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          PhysicalCardSet, Expansion,
                                          RarityPair, LookupHints,
@@ -222,6 +222,7 @@ class PhysicalCard_v2(SQLObject):
 
 class PhysicalCardSet_PCv3(SQLObject):
     """Physical Card Set to update from Physical Card v2"""
+    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = PhysicalCardSet.sqlmeta.table
@@ -375,12 +376,12 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                   connection=oTrans)
                 # Create associated default Printing
                 oPrint = Printing(expansionID=oCopy.id,
-                                   name=None,
-                                   connection=oTrans)
+                                  name=None,
+                                  connection=oTrans)
                 # Add the release date as a print property if set
                 if oObj.releasedate:
                     sDateVal = ("Release Date: %s" %
-                        oObj.releasedate.strftime('%Y-%m-%d'))
+                                oObj.releasedate.strftime('%Y-%m-%d'))
                     try:
                         oPrintDate = PrintingProperty.byCanonicalValue(
                             sDateVal.lower(), connection=oTrans)
@@ -395,15 +396,15 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             return (False, ["Unknown Expansion Version"])
         return (True, aMessages)
 
-    def _upgrade_printing(self, oOrigConn, oTrans, oVer):
+    def _upgrade_printing(self, oOrigConn, _oTrans, oVer):
         """Upgrade printing table."""
         aMessages = []
         if oVer.check_tables_and_versions([Printing], [-1], oOrigConn):
-                aMessages = ["Incomplete information to fill the Printing"
-                             " table. You will need to reimport the cardlist"
-                             " information."]
-                # We construct the printings in the associated expansion
-                # upgrades
+            aMessages = ["Incomplete information to fill the Printing"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+            # We construct the printings in the associated expansion
+            # upgrades
         else:
             return (False, ["Unknown Version for Printing"])
         return (True, aMessages)
@@ -754,7 +755,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             for oCard in PhysicalCard_ACv5.select(
                     connection=oOrigConn).orderBy('id'):
                 oPrintingID = _lookup_printing_for_exp(oCard.expansionID,
-                                                      oTrans)
+                                                       oTrans)
                 oCardCopy = PhysicalCard(
                     id=oCard.id, abstractCardID=oCard.abstractCardID,
                     printingID=oPrintingID, connection=oTrans)
@@ -763,7 +764,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         elif oVer.check_tables_and_versions([AbstractCard], [6], oOrigConn):
             for oCard in PhysicalCard_ACv6.select(
                     connection=oOrigConn).orderBy('id'):
-                oPrintingID = _lookup_printing_for_exp(oCard.expansionID, oTrans)
+                oPrintingID = _lookup_printing_for_exp(oCard.expansionID,
+                                                       oTrans)
                 oCardCopy = PhysicalCard(
                     id=oCard.id, abstractCardID=oCard.abstractCardID,
                     printingID=oPrintingID, connection=oTrans)
@@ -772,7 +774,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         elif oVer.check_tables_and_versions([PhysicalCard], [2], oOrigConn):
             for oCard in PhysicalCard_v2.select(
                     connection=oOrigConn).orderBy('id'):
-                oPrintingID = _lookup_printing_for_exp(oCard.expansionID, oTrans)
+                oPrintingID = _lookup_printing_for_exp(oCard.expansionID,
+                                                       oTrans)
                 oCardCopy = PhysicalCard(
                     id=oCard.id, abstractCardID=oCard.abstractCardID,
                     printingID=oPrintingID, connection=oTrans)

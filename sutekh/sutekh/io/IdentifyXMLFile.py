@@ -12,7 +12,6 @@ from sutekh.base.io.BaseIdXMLFile import BaseIdXMLFile
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
 from sutekh.io.PhysicalCardParser import PhysicalCardParser
 from sutekh.io.PhysicalCardSetParser import PhysicalCardSetParser
-# pylint: enable=E0611, F0401
 
 
 class IdentifyXMLFile(BaseIdXMLFile):

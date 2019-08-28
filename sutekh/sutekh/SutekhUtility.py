@@ -233,9 +233,8 @@ def do_card_checks(oAbsCard):
             if not oAbsCard.capacity:
                 aMessages.append("%s (vampire) has no capacity" % sName)
             if oAbsCard.level:
-               oBase = find_base_vampire(oAbsCard)
-               if not oBase:
-                   aMessages.append("Advanced vampire %s has no base"
-                                    " vampire" % sName)
+                oBase = find_base_vampire(oAbsCard)
+                if not oBase:
+                    aMessages.append("Advanced vampire %s has no base"
+                                     " vampire" % sName)
     return aMessages
-

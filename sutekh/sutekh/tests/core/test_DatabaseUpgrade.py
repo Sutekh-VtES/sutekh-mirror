@@ -31,7 +31,7 @@ from sutekh.tests import create_db
 
 
 # Dump created from Sutekh 0.8
-# pylint: disable-msg=line-too-long
+# pylint: disable=line-too-long
 OLD_VERSION_DUMP = [
     """BEGIN TRANSACTION""",
     """CREATE TABLE version_table (    id INTEGER PRIMARY KEY AUTOINCREMENT,    table_name VARCHAR(50) NOT NULL UNIQUE,    version INT);""",
@@ -1526,13 +1526,13 @@ OLD_VERSION_DUMP = [
     """CREATE INDEX physical_map_jointIndex ON physical_map (physical_card_id, physical_card_set_id);""",
     """COMMIT;""",
 ]
-# pylint: disable-msg=line-too-long
+# pylint: enable=line-too-long
 
 
 class DatabaseUpgradeTests(SutekhTest):
     """Class for the database upgrade tests."""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_copy_to_new_ac_db(self):
         """Test copying an existing database to a freshly created one using

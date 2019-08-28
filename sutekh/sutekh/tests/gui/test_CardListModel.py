@@ -26,8 +26,8 @@ from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
@@ -83,10 +83,7 @@ class CardListModelTests(ConfigSutekhTest):
                          PhysicalCard.select().count())
         self.assertEqual(count_top_level(oModel), 2)
         # Test card type
-        # pylint: disable=redefined-variable-type
-        # This is delibrate
         oModel.selectfilter = BaseFilters.CardTypeFilter('Vampire')
-        # pylint: enable=redefined-variable-type
         oModel.applyfilter = True
         oModel.load()
         self.assertEqual(count_top_level(oModel), 1)

@@ -12,8 +12,8 @@ from .SutekhMenu import SutekhMenu
 
 
 class FilteredViewMenu(SutekhMenu):
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     """Base class for individual FilteredView menus
 
        This provides handling for enabling and disabling the menus
@@ -135,8 +135,8 @@ class FilteredViewMenu(SutekhMenu):
 
 
 class CardListMenu(FilteredViewMenu):
-    # pylint: disable=R0904
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk.Widget, so many public methods
     """Base class for Card List Menus
 
        Adds some common methods for dealing with the card lists -

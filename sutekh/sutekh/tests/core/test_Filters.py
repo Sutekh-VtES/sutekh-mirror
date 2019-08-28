@@ -57,8 +57,8 @@ def make_physical_card_sets():
 
 class FilterTests(SutekhTest):
     """Test class for testing Sutekh Filters"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
     def _physical_test(self, tTest):
@@ -112,7 +112,7 @@ class FilterTests(SutekhTest):
                             # this is fatal
                             self.fail(
                                 "Missing physical card %s from expansion %s"
-                                 % (oAbs.name, oExp.name))
+                                % (oAbs.name, oExp.name))
 
         oFullFilter = Filters.FilterAndBox([Filters.PhysicalCardFilter(),
                                             oFilter])

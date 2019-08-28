@@ -13,8 +13,8 @@ from .BasicFrame import BasicFrame
 
 
 class ScrolledFrame(BasicFrame):
-    # pylint: disable=R0904, W1001
-    # R0904: gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, W1001
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Frame which holds a view in a scrolled window.
 
@@ -24,7 +24,7 @@ class ScrolledFrame(BasicFrame):
 
     _sName = 'scrolled'
 
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so lots of public methods
     def __init__(self, oView, oMainWindow):
         super(ScrolledFrame, self).__init__(oMainWindow)

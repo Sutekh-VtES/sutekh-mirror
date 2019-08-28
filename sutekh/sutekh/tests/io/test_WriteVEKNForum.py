@@ -65,8 +65,8 @@ Recorded with : Sutekh %s [ DATE ]
 
 class VEKNForumWriterTests(SutekhTest):
     """class for the VEKN bbcode file writer tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test VEKN bbcode file writing"""

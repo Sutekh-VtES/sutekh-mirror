@@ -66,8 +66,8 @@ class BinnedCountLogHandler(SutekhCountLogHandler):
 
 
 class TWDAConfigDialog(SutekhDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for configuring the TWDA plugin."""
 
     sDocUrl = DOC_URL
@@ -245,8 +245,6 @@ class TWDAInfoPlugin(SutekhPlugin):
             sMatchText = 'Matching ALL of "%s"' % sCards
 
         # Create a dialog showing the results
-        # pylint: disable=redefined-variable-type
-        # This redefinition is intentional
         if dCardSets:
             oDlg = self._fill_dlg(dCardSets, sMatchText)
         else:

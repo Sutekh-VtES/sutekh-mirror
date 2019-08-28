@@ -35,9 +35,9 @@ HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902: need local attributes for state
-    # R0904: gtk.Widget, so many public methods
+    # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Provides a card list specific API for accessing a gtk.TreeStore."""
     # Use spaces to ensure it sorts first

@@ -43,8 +43,8 @@ def get_domain(sUrl):
 
 
 class DataFilesDialog(SutekhDialog):
-    # pylint: disable=R0904, R0902
-    # R0904 - gtk.Widget, so many public methods
+    # pylint: disable=too-many-public-methods, R0902
+    # gtk.Widget, so many public methods
     # R0902 - we keep a lot of internal state, so many instance variables
     """Dialog that asks for the Data files or urls as required"""
 

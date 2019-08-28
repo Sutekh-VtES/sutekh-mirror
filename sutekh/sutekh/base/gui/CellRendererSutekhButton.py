@@ -19,14 +19,14 @@ import gobject
 # but that is currently not a priority
 
 
-# pylint: disable=R0904
-# gtk widget, so we must have a lot of public methods
 class CellRendererSutekhButton(gtk.GenericCellRenderer):
     """Render a icon in a cell in a TreeView.
 
        Used to render the arrows for incrementing and decrementing cards
        in the CardListView's
        """
+    # pylint: disable=too-many-public-methods
+    # gtk widget, so we must have a lot of public methods
     # Register a showicon property - used to control wether the icon
     # is visible or not
     __gproperties__ = {

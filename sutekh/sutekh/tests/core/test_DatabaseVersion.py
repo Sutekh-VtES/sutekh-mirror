@@ -12,8 +12,8 @@ from sutekh.core.SutekhTables import TABLE_LIST
 
 class DatabaseVersionTests(SutekhTest):
     """Class for the database version tests."""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_version(self):
         """Handle the expected case where everything is fine"""

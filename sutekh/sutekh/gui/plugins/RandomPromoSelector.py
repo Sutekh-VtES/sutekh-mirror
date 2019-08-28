@@ -22,8 +22,8 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 
 class RandomPromoDialog(SutekhDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Dialog for displaying random sets of cards."""
 
     def __init__(self, oParent, aCards):

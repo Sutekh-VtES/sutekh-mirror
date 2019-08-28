@@ -50,8 +50,8 @@ class BaseConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
-    # pylint: disable=R0904, R0902
-    # R0904 - We need to provide fine-grained access to all the data,
+    # pylint: disable=too-many-public-methods, R0902
+    # We need to provide fine-grained access to all the data,
     # so lots of methods
     # R0902 - Lots of internal state, so lots of attributes
 

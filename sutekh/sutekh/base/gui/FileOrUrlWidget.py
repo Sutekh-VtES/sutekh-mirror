@@ -17,7 +17,7 @@ from .GuiDataPack import gui_error_handler, progress_fetch_data
 
 class FileOrUrlWidget(gtk.VBox):
     """Compound widget for loading a file from either a URL or a local file."""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
 
     OTHER_FILE = 'Select file ...'
@@ -180,7 +180,7 @@ class FileOrUrlWidget(gtk.VBox):
 
 class FileOrDirOrUrlWidget(FileOrUrlWidget):
     """Allow the user to select either a file, an url or a directory"""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
 
     OTHER_DIR = 'Select directory ...'

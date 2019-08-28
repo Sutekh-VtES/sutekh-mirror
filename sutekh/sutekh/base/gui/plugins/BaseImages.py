@@ -123,8 +123,8 @@ def get_printing_info(oAbsCard):
 
 
 class CardImagePopupMenu(gtk.Menu):
-    # pylint: disable=R0904
-    # R0904 - can't not trigger these warning with pygtk
+    # pylint: disable=too-many-public-methods
+    # can't not trigger these warning with pygtk
     """Popup menu for the Card Image Frame"""
 
     def __init__(self, oFrame, iZoomMode):
@@ -181,9 +181,9 @@ class CardImagePopupMenu(gtk.Menu):
 
 
 class BaseImageFrame(BasicFrame):
-    # pylint: disable=R0902, R0904, W1001
+    # pylint: disable=R0902, too-many-public-methods, W1001
     # R0902 - we need to keep quite a lot of internal state
-    # R0904 - can't not trigger these warning with pygtk
+    # can't not trigger these warning with pygtk
     # W1001: gtk widgets aren't old-style, despite pylint's opinion
     """Frame which displays the image.
 
@@ -627,8 +627,8 @@ class BaseImageFrame(BasicFrame):
 
 
 class BaseImageConfigDialog(SutekhDialog):
-    # pylint: disable=R0904
-    # R0904 - gtk Widget, so has many public methods
+    # pylint: disable=too-many-public-methods
+    # gtk Widget, so has many public methods
     """Base Dialog for configuring the Image plugin."""
 
     sDefURLId = ''

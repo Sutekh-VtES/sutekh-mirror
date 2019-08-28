@@ -20,7 +20,7 @@ class PhysicalCardMenu(CardListMenu):
        Enables actions specific to the physical card collection (export to
        file, etc), filtering and plugins.
        """
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)

@@ -696,10 +696,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aCounts = []
         # strip whitespace before comparing stuff
         # aCounts may be a single string, so we can't use 'for x in aCounts'
-        # pylint: disable=redefined-variable-type
-        # We intentionally change to a set here
         aCounts = set([x.strip() for x in list(aCounts)])
-        # pylint: enable=redefined-variable-type
         self._oFilters = []
         self._aCardSetIds = aIds
         self._oZeroQuery = None

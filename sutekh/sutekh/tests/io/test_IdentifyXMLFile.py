@@ -17,8 +17,8 @@ from sutekh.tests.io.test_PhysicalCardParser import make_example_pcxml
 
 class TestIdentifyXMLFile(SutekhTest):
     """class for the IdentifyXMLFile tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""

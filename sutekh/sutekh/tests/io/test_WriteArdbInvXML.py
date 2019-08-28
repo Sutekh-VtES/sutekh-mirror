@@ -90,8 +90,8 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
 
 class ArdbInvXMLWriterTests(SutekhTest):
     """class for the ARDB inventory XML writer tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def test_deck_writer(self):
         """Test ARDB XML inventory writing"""

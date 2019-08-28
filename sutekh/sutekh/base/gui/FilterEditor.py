@@ -13,7 +13,7 @@ from .FilterModelPanes import FilterModelPanes, add_accel_to_button
 
 
 class FilterEditor(gtk.Alignment):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     """GTK component for editing Sutekh filter ASTs.
 

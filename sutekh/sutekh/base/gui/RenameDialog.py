@@ -17,7 +17,7 @@ RENAME, REPLACE, PROMPT = 1, 2, 3
 
 
 class RenameDialog(SutekhDialog):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
     """Class to handle the card set renaming"""
 

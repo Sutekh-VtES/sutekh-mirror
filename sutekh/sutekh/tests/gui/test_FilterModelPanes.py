@@ -21,7 +21,7 @@ from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
 class DummyDialog(gtk.Dialog):
     """Dummy dialog for the filter pane tests"""
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     # gtk widget, so has many public methods
 
     def __init__(self):
@@ -33,8 +33,8 @@ class DummyDialog(gtk.Dialog):
 
 class TestFilterModelPane(GuiSutekhTest):
     """Class for the FilterModelPanes tests"""
-    # pylint: disable=R0904
-    # R0904 - unittest.TestCase, so many public methods
+    # pylint: disable=too-many-public-methods
+    # unittest.TestCase, so many public methods
 
     def _check_asts(self, oAST1, oAST2):
         """Helper utility to check that two AST's generate identical
