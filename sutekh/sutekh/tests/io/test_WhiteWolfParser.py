@@ -129,7 +129,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual([oC.name for oC in aCards], self.aExpectedCards)
 
         # Check Magnum
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # o44 is OK here
         o44 = IAbstractCard(".44 Magnum")
         self.assertEqual(o44.canonicalName, u".44 magnum")
@@ -143,7 +143,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(o44.costtype, 'pool')
         self.assertEqual(o44.level, None)
 
-        # pylint: enable=C0103
+        # pylint: enable=invalid-name
         oCommon = IRarity('Common')
         oJyhad = IExpansion('Jyhad')
         oVTES = IExpansion('VTES')
@@ -555,7 +555,8 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(IKeyword('tremere slave') in oFidus.keywords)
 
         oSheela = IAbstractCard(u"Sheela Na Gig")
-        self.assertTrue(IKeyword('tremere antitribu slave') in oSheela.keywords)
+        self.assertTrue(IKeyword('tremere antitribu slave')
+                        in oSheela.keywords)
 
         # Check for Anarch sect status
         oAlab = IAbstractCard(u"Alabástrom")
@@ -629,7 +630,8 @@ class WhiteWolfParserTests(SutekhTest):
         oBaronD = IAbstractCard('Baron Dieudonne')
         oKoT = IExpansion('Keepers of Tradition')
         oBC = IExpansion('Black Chantry')
-        # Check we hanlde the conversion of our old name for the Black Chantry cards correctly
+        # Check we handle the conversion of our old name for the Black Chantry
+        # cards correctly
         oBCold = IExpansion('Black Chantry Reprint')
         self.assertEqual(oBC, oBCold)
         self.assertTrue(oKoT in [oP.expansion for oP in oBaronD.rarity])

@@ -23,8 +23,8 @@ from .core.DBUtility import make_adapter_caches
 
 def run_filter(sFilter, sCardSet):
     """Run the given filter, returing a dictionary of cards and counts"""
-    make_adapter_caches()  # We need to have the adapters initialised for filtering
-                           # to work
+    make_adapter_caches()  # We need to have the adapters initialised
+                           # for filtering to work
     oCardSet = None
     if sCardSet:
         oCardSet = IPhysicalCardSet(sCardSet)

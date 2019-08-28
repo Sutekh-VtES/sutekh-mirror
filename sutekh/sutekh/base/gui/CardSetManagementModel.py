@@ -35,9 +35,9 @@ class CardSetManagementModel(gtk.TreeStore):
 
         self._aExcludedSet = set()
 
-    # pylint: disable=W0212, C0103
+    # pylint: disable=W0212, invalid-name
     # W0212 - we explicitly allow access via these properties
-    # C0103 - we allow these names
+    # we allow these names
     applyfilter = property(fget=lambda self: self._bApplyFilter,
                            fset=lambda self, x: setattr(self,
                                                         '_bApplyFilter', x))
@@ -55,7 +55,7 @@ class CardSetManagementModel(gtk.TreeStore):
                           doc="Cardset ID of card set list "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, C0103
+    # pylint: enable=W0212, invalid-name
 
     # pylint: disable=R0201
     # this should be a method for consistency
@@ -168,8 +168,7 @@ class CardSetManagementModel(gtk.TreeStore):
         """Get the current applied filter."""
         if self.applyfilter:
             return self.selectfilter
-        else:
-            return None
+        return None
 
     def get_name_from_iter(self, oIter):
         """Extract the value at oIter from the model, correcting for encoding

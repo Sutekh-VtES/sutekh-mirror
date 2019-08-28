@@ -33,9 +33,9 @@ IMAGE_DATE_FILE = "image_dates.txt"
 
 
 class CardImageFrame(BaseImageFrame):
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # can't not trigger these warning with pygtk
-    # R0902 - we need to keep quite a lot of internal state
+    # we need to keep quite a lot of internal state
     """Frame which displays the image.
 
        Adds the VtES specific handling.

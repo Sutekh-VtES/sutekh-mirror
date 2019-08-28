@@ -35,8 +35,8 @@ HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable=R0902, too-many-public-methods, W1001
-    # R0902: need local attributes for state
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # need local attributes for state
     # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """Provides a card list specific API for accessing a gtk.TreeStore."""
@@ -86,9 +86,9 @@ class CardListModel(gtk.TreeStore):
         MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
                              self.set_postfix_the_display)
 
-    # pylint: disable=W0212, C0103
+    # pylint: disable=W0212, invalid-name
     # W0212 - we explicitly allow access via these properties
-    # C0103 - we allow these names
+    # we allow these names for properties
     cardclass = property(fget=lambda self: self._cCardClass,
                          fset=lambda self, x: setattr(self, '_cCardClass', x))
     groupby = property(fget=lambda self: self._cGroupBy,
@@ -119,7 +119,7 @@ class CardListModel(gtk.TreeStore):
                           doc="Cardset ID of card list "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, C0103
+    # pylint: enable=W0212, invalid-name
 
     def cleanup(self):
         """Remove the config file listener if needed"""

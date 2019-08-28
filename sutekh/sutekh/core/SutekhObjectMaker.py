@@ -22,8 +22,8 @@ from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
 
 
 # Object Maker API
-# pylint: disable=C0111
-# C0111 - No point in docstrings for these methods, really
+# pylint: disable=missing-docstring
+# No point in docstrings for these methods, really
 class SutekhObjectMaker(BaseObjectMaker):
     """Creates all kinds of SutekhTables from simple strings.
 

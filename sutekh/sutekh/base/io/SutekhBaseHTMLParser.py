@@ -94,7 +94,7 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
         super(SutekhBaseHTMLParser, self).reset()
         self._oState = BaseState()
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # names are as listed in HTMLParser docs, so no need for docstrings
     def handle_starttag(self, sTag, aAttr):
         self._oState = self._oState.transition(sTag.lower(), dict(aAttr))

@@ -10,7 +10,7 @@ Convert Sutekh textile documentation into Markdown pages for the wiki.
 import imp
 import os
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 # We ignore our usual conventions for all the import fiddling, since
 # we want to end up with global module names for consistency elsewhere in the
 # code base
@@ -35,7 +35,7 @@ sPluginPath = os.path.join(os.path.dirname(__file__), '..', 'gui',
 PluginManager = imp.load_source('sutekh.gui.PluginManager', sPluginPath)
 
 
-# pylint: enable=C0103
+# pylint: enable=invalid-name
 
 
 def replace_version(sText):

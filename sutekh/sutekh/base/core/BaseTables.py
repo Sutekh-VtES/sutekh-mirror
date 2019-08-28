@@ -4,8 +4,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=C0111
-# C0111 - No point in docstrings for these classes, really
+# pylint: disable=missing-docstring
+# No point in docstrings for these classes, really
 
 """The base database definitions and pyprotocols adapters"""
 
@@ -20,11 +20,11 @@ from .CachedRelatedJoin import CachedRelatedJoin
 
 # Table Objects
 
-# pylint: disable=W0232, R0902, W0201, C0103
+# pylint: disable=W0232, too-many-instance-attributes, W0201, invalid-name
 # W0232: Most of the classes defined here don't have __init__ methods by design
-# R0902: We aren't worried about the number of insance variables
+# We aren't worried about the number of insance variables
 # W0201: We don't care about attributes defined outside init, by design
-# C0103: We use different naming conventions for the table columns
+# We use different naming conventions for the table columns
 
 # We try to avoid limiting the length of unicode columns but we have
 # to provide a length for alternate id columns and index columns.

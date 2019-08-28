@@ -62,9 +62,8 @@ class Description(State):
             self.data(sValue.strip('"'))
             self._oHolder.comment = self._sData
             return Cards(self._oHolder, self._dNameCache)
-        else:
-            self.data(sValue.strip('"') + '\n')
-            return self
+        self.data(sValue.strip('"') + '\n')
+        return self
 
 
 class Cards(State):

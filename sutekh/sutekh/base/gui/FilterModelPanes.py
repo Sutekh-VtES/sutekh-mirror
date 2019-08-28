@@ -138,9 +138,9 @@ class FilterEditorToolbar(CustomDragIconView):
 
 class FilterValuesBox(gtk.VBox):
     """Holder for the value setting objects"""
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902: We need to keep a lot of state to handle all the cases
+    # We need to keep a lot of state to handle all the cases
 
     def __init__(self, oDialog, sFilterType):
         super(FilterValuesBox, self).__init__()

@@ -123,7 +123,7 @@ def _hyper_prob_at_least(aFound, iDraws, aObjects, iTotal, iCurCol=0):
 class BaseDrawProbPlugin(BasePlugin):
     """Displays the probabilities for drawing cards from the current
        selection."""
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # we use a lot of attributes to pass the data around
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)

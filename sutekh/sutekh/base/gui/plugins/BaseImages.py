@@ -113,13 +113,12 @@ def get_printing_info(oAbsCard):
                 # printings, so we sort by negative ordinal to get the date
                 # ordering and rely on string matching to sort the printings
                 # as we want to, beacause of how IPrintingName works
-                aPrint.add( (-get_date(get_printing_date(oPrint)).toordinal(),
-                             IPrintingName(oPrint)) )
+                aPrint.add((-get_date(get_printing_date(oPrint)).toordinal(),
+                            IPrintingName(oPrint)))
         # Sort by date, newest first
         aPrintings = [x[1] for x in sorted(aPrint)]
         return aPrintings
-    else:
-        return []
+    return []
 
 
 class CardImagePopupMenu(gtk.Menu):
@@ -181,8 +180,8 @@ class CardImagePopupMenu(gtk.Menu):
 
 
 class BaseImageFrame(BasicFrame):
-    # pylint: disable=R0902, too-many-public-methods, W1001
-    # R0902 - we need to keep quite a lot of internal state
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # we need to keep quite a lot of internal state
     # can't not trigger these warning with pygtk
     # W1001: gtk widgets aren't old-style, despite pylint's opinion
     """Frame which displays the image.
@@ -901,8 +900,7 @@ class BaseImagePlugin(BasePlugin):
         """Add the frame if it's been saved in the config file."""
         if sType == self._sMenuFlag:
             return self.image_frame
-        else:
-            return None
+        return None
 
     def replace_pane(self, _oWidget):
         """Handle replacing a frame to the main window if required"""

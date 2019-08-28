@@ -57,7 +57,7 @@ class DummyCardSetController(object):
 
     # pylint: enable=W0212
 
-    # pylint: disable=R0201, C0111
+    # pylint: disable=R0201, missing-docstring
     # dummy functions, so they're empty
 
     def set_parent_count_col_vis(self, _bVal):

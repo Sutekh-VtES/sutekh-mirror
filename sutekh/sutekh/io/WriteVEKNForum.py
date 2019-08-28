@@ -3,7 +3,7 @@
 # Copyright 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=C0301
+# pylint: disable=line-too-long
 # documentation, so line length ignored
 """Writer for VEKN Forum posts, based on the ARDB Text format
 
@@ -31,7 +31,7 @@
      4x [url=....]Dream World[/url]
    ...
    """
-# pylint: enable=C0301
+# pylint: enable=line-too-long
 import time
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhUtility import secret_library_url

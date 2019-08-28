@@ -7,6 +7,6 @@
 
 from sutekh.base.gui.PkgIcon import PkgIcon
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 # special case, so convention doesn't apply
 SUTEKH_ICON = PkgIcon(__name__, "sutekh-icon.svg").get_pixbuf()

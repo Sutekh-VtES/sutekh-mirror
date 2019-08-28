@@ -38,9 +38,9 @@ from sutekh.gui.CardTextFrame import CardTextFrame
 
 class SutekhMainWindow(AppMainWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902 - we need to keep a lot of state, so many instance attributes
+    # we need to keep a lot of state, so many instance attributes
     def __init__(self):
         super(SutekhMainWindow, self).__init__()
         self._cPCSWriter = PhysicalCardSetWriter

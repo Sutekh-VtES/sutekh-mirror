@@ -76,8 +76,8 @@ class BaseTestCase(unittest.TestCase):
 
         return sFilename
 
-    # pylint: disable=C0103, W0201
-    # C0103: setUp + tearDown names are needed by unittest, so we use
+    # pylint: disable=invalid-name, W0201
+    # setUp + tearDown names are needed by unittest, so we use
     #        their conventions
     # W0201: _setUpTemps is called from setUp, so defining things here OK
     def _setUpTemps(self):
@@ -94,7 +94,7 @@ class BaseTestCase(unittest.TestCase):
         os.rmdir(self._sTempDir)
         self._sTempDir = None
         self._aTempFiles = None
-    # pylint: enable=C0103, W0201
+    # pylint: enable=invalid-name, W0201
 
     def _round_trip_obj(self, oWriter, oObj):
         """Round trip an object through a temporary file.
@@ -123,7 +123,7 @@ class BaseTestCase(unittest.TestCase):
 
 class DummyHolder(object):
     """Emulate CardSetHolder for test purposes."""
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # placeholder names for CardSetHolder attributes
     def __init__(self):
         self.dCards = {}
@@ -154,8 +154,8 @@ class DummyHolder(object):
 class GuiBaseTest(unittest.TestCase):
     """Adds useful methods for gui test cases."""
 
-    # pylint: disable=C0103, too-many-public-methods
-    # C0103 - setUp + tearDown names are needed by unittest,
+    # pylint: disable=invalid-name, too-many-public-methods
+    # setUp + tearDown names are needed by unittest,
     #         so use their convention
     # unittest.TestCase, so many public methods
 

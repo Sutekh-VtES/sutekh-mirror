@@ -26,8 +26,8 @@ class CardSetMenu(CardListMenu):
        card set specific actions - editing card set properties, editng
        annotations, exporting to file, and so on.
        """
-    # pylint: disable=R0902
-    # R0902 - we are keeping a lot of state, so many instance variables
+    # pylint: disable=too-many-instance-attributes
+    # we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, cPCSWriter):
         super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
         # Reference to the card set writer
@@ -45,9 +45,9 @@ class CardSetMenu(CardListMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
 
-    # pylint: disable=W0212, C0103
+    # pylint: disable=W0212, invalid-name
     # W0212: We allow access via these properties
-    # C0103: different convention for property names
+    # different convention for property names
     name = property(fget=lambda self: self._oController.view.sSetName,
                     doc="Associated Card Set Name")
 
@@ -59,7 +59,7 @@ class CardSetMenu(CardListMenu):
                           doc="Cardset ID of associated card set "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, C0103
+    # pylint: enable=W0212, invalid-name
 
     # pylint: disable=W0201
     # these methods are called from __init__, so it's OK

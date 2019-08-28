@@ -18,8 +18,8 @@ from .BaseAbbreviations import CardTypes, Expansions, Rarities
 
 
 # Object Maker API
-# pylint: disable=C0111
-# C0111 - No point in docstrings for these methods, really
+# pylint: disable=missing-docstring
+# No point in docstrings for these methods, really
 class BaseObjectMaker(object):
     """Creates all kinds of program Objects from simple strings.
 

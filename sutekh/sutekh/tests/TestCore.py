@@ -22,7 +22,7 @@ class SutekhTest(BaseTestCase):
 
     PREFIX = 'sutekhtests'
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # setUp + tearDown names are needed by unittest - use their convention
     # pylint: disable=W0201
     # setUp is always called by the tests, so it doesn't matter that

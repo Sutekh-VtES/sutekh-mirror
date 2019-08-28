@@ -38,8 +38,8 @@ from .DataFilesDialog import Result
 
 class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0902, too-many-public-methods, W1001
-    # R0902 - we need to keep a lot of state, so many instance attributes
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # we need to keep a lot of state, so many instance attributes
     # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):

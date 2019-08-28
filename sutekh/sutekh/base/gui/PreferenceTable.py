@@ -13,7 +13,7 @@ import gtk
 
 class PreferenceTable(gtk.Table):
     """A widget for editing a list of options."""
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
 
     COLUMNS = 3
@@ -110,8 +110,7 @@ class PreferenceOption(object):
         """Return the value of the option."""
         if self.oInherit.get_active():
             return None
-        else:
-            return self.oSpec.get_value()
+        return self.oSpec.get_value()
 
     def _inherit_toggled(self, _oWidget):
         """Update the state after the inherit widget is toggled."""
@@ -250,8 +249,7 @@ class OptionListParsedSpec(BaseParsedSpec):
         """Return a string representation of the value."""
         if not oValue:
             return "None"
-        else:
-            return ", ".join(oValue)
+        return ", ".join(oValue)
 
     # pylint: enable=R0201
 

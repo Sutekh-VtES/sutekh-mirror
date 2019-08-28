@@ -4,7 +4,7 @@
 # Copyright 2007 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=C0301
+# pylint: disable=line-too-long
 # documentation, so line length ignored
 """Parser for ELDB HTML format.
 
@@ -19,7 +19,7 @@
    ...
    <TR><TD COLSPAN=2 WIDTH=650>2&nbsp;&nbsp;<a href="http://monger.vekn.org/showcard.html?ID=109" class="textLink">Blood Doll</a></TD></TR>
    """
-# pylint: enable=C0301
+# pylint: enable=line-too-long
 
 import re
 
@@ -37,8 +37,7 @@ class Collecting(HolderState):
             return CardItem(self._oHolder)
         elif sTag == 'td':
             return DeckInfoItem(self._oHolder)
-        else:
-            return self
+        return self
 
 
 class DeckInfoItem(HolderState):

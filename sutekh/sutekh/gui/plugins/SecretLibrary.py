@@ -40,9 +40,9 @@ def canonical_to_sl(sName):
 
 
 class ImportExportBase(SutekhDialog):
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk Widget, so has many public methods
-    # R0902 - we use a lot of attributes to pass the data around
+    # we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
     # pylint: disable=W0201, R0913

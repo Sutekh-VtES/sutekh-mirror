@@ -4,11 +4,11 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=W0231, W0223, C0302
+# pylint: disable=W0231, W0223, too-many-lines
 # W0231 - the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
 # W0223 - not every abstract method is immediately overridden
-# C0302 - the module is long, but keeping the filters together is the best
+# the module is long, but keeping the filters together is the best
 # option
 
 """Define all the filters provided in sutekh"""
@@ -74,7 +74,7 @@ class SutekhCardFilter(Filter):
         self._oMapTable = make_table_alias('sutekh_abstract_card')
         super(SutekhCardFilter, self).__init__()
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # pylint: disable=E1101
@@ -108,7 +108,7 @@ class MultiClanFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_clan_map')
         self._oIdField = self._oMapTable.q.clan_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -142,7 +142,7 @@ class MultiDisciplineFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -189,7 +189,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_discipline_pair_map')
         self._oIdField = self._oMapTable.q.discipline_pair_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -241,7 +241,7 @@ class MultiSectFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_sect_map')
         self._oIdField = self._oMapTable.q.sect_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -271,7 +271,7 @@ class MultiTitleFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_title_map')
         self._oIdField = self._oMapTable.q.title_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -302,7 +302,7 @@ class MultiCreedFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_creed_map')
         self._oIdField = self._oMapTable.q.creed_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -333,7 +333,7 @@ class MultiVirtueFilter(MultiFilter):
         self._oMapTable = make_table_alias('abs_virtue_map')
         self._oIdField = self._oMapTable.q.virtue_id
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -348,7 +348,7 @@ class GroupFilter(SutekhCardFilter):
         super(GroupFilter, self).__init__()
         self.__iGroup = iGroup
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.grp == self.__iGroup
@@ -369,7 +369,7 @@ class MultiGroupFilter(SutekhCardFilter):
         if 'Any' in aGroups:
             self.__aGroups.append(-1)
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -390,7 +390,7 @@ class CapacityFilter(SutekhCardFilter):
         super(CapacityFilter, self).__init__()
         self.__iCap = iCap
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.capacity == self.__iCap
@@ -409,7 +409,7 @@ class MultiCapacityFilter(SutekhCardFilter):
         super(MultiCapacityFilter, self).__init__()
         self.__aCaps = [int(sV) for sV in aCaps]
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -435,7 +435,7 @@ class CostFilter(SutekhCardFilter):
         if not iCost:
             self.__iCost = None
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.cost == self.__iCost
@@ -459,7 +459,7 @@ class MultiCostFilter(SutekhCardFilter):
             self.__bZeroCost = True
             self.__aCost.remove(0)
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -488,7 +488,7 @@ class CostTypeFilter(SutekhCardFilter):
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ("blood", "pool", "conviction", None)
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.costtype == self.__sCostType.lower()
@@ -511,7 +511,7 @@ class MultiCostTypeFilter(SutekhCardFilter):
         if None in aCostTypes:
             self.__aCostTypes.append(None)
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -529,7 +529,7 @@ class LifeFilter(SutekhCardFilter):
         super(LifeFilter, self).__init__()
         self.__iLife = iLife
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_expression(self):
         return self._oMapTable.q.life == self.__iLife
@@ -550,7 +550,7 @@ class MultiLifeFilter(SutekhCardFilter):
         super(MultiLifeFilter, self).__init__()
         self.__aLife = [int(sV) for sV in aLife]
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
@@ -571,7 +571,7 @@ class CardTextFilter(BaseCardTextFilter):
         self._bBraces = '{' in self._sPattern or '}' in self._sPattern
         self._oMapTable = make_table_alias('sutekh_abstract_card')
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     def _get_joins(self):
         # pylint: disable=E1101
@@ -670,7 +670,7 @@ class CardFunctionFilter(DirectFilter):
                                           CardTextFilter('reduce')]))
         self._oFilter = FilterOrBox(aFilters)
 
-    # pylint: disable=C0111
+    # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):

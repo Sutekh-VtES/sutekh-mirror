@@ -10,7 +10,8 @@ import unittest
 import gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
-from sutekh.base.core.BaseAdapters import IPhysicalCard, IAbstractCard, IPrintingName
+from sutekh.base.core.BaseAdapters import (IPhysicalCard, IAbstractCard,
+                                           IPrintingName)
 from sutekh.base.core import BaseFilters
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.base.gui.BaseConfigFile import CARDSET
@@ -283,11 +284,12 @@ class TestCardSetFrame(GuiSutekhTest):
         oMyColl.view.toggle_editable(True)
         # Test deleting with no filter works as expected
         self._select_cards(oMyColl, [(u'Ghoul Retainer', ),
-                                       (u'Off Kilter', )])
+                                     (u'Off Kilter', )])
         oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
         oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
         # Check that we can delete all the way
-        # We should remove 2 cards each time until we've removed 5 Ghoul Retainers
+        # We should remove 2 cards each time until we've removed
+        # 5 Ghoul Retainers
         for iExpected in range(10, 0, -2):
             oMyColl.view.key_press(oMyColl, oEvent)
             self.assertEqual(len(oColl.cards), iExpected)
@@ -302,7 +304,8 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len(oColl.cards), 12)
         oMyColl.reload()
         # Test deleting with physical printing filter works as expected
-        oFilter = BaseFilters.PhysicalPrintingFilter('Jyhad (Variant Printing)')
+        oFilter = BaseFilters.PhysicalPrintingFilter(
+            'Jyhad (Variant Printing)')
         oMyColl.view.set_filter(oFilter)
         oMyColl.reload()
         self._select_cards(oMyColl, [(u'Ghoul Retainer', )])
@@ -323,7 +326,8 @@ class TestCardSetFrame(GuiSutekhTest):
         for iExpected in range(8, 1, -1):
             oMyColl.view.key_press(oMyColl, oEvent)
             self.assertEqual(len(oColl.cards), iExpected)
-        # Asset that all the remaining 2 cards are both Jyhad (No variant) Ghoul retainers
+        # Asset that all the remaining 2 cards are both Jyhad (No variant)
+        # Ghoul retainers
         for oCard in oColl.cards:
             self.assertEqual(oCard.abstractCard.name, "Ghoul Retainer")
             self.assertEqual(IPrintingName(oCard), "Jyhad")

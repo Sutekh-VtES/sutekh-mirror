@@ -106,8 +106,8 @@ class ScrolledProfileList(gtk.Frame):
 
 class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
-    # pylint: disable=R0902, too-many-public-methods
-    # R0902 - we keep a lot of internal state, so many instance variables
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
+    # we keep a lot of internal state, so many instance variables
     # gtk.Widget, so many public methods
 
     RESPONSE_EDIT = 1

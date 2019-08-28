@@ -21,9 +21,9 @@ class AppMenu(SutekhMenu):
        This provides access to the major pane management actions, the
        global file actions, the help system, and any global plugins.
        """
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902 - We keep a lot of state here (menu's available, etc.)
+    # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(AppMenu, self).__init__(oWindow)
         self._oConfig = oConfig
@@ -48,7 +48,8 @@ class AppMenu(SutekhMenu):
         """Helper function to test if we are using a memory db.
 
            returns True if this is a memory db"""
-        return sqlhub.processConnection.uri() in ["sqlite:///:memory:", "sqlite:/:memory:"]
+        return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
+                                                  "sqlite:/:memory:"]
 
     # pylint: disable=W0201
     # these are called from __init__

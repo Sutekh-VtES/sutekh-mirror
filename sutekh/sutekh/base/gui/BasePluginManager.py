@@ -73,7 +73,7 @@ class BasePluginManager(object):
         """Load list of Plugin Classes from plugin dir."""
         for sPluginName in submodules(aPlugins):
             # load module
-            # pylint: disable=C0103
+            # pylint: disable=invalid-name
             # mPlugin is legal name here
             try:
                 mPlugin = __import__("%s.%s" % (self.sPluginDir, sPluginName),

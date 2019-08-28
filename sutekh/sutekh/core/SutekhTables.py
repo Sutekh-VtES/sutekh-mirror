@@ -4,8 +4,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=C0111, C0302
-# C0111 - No point in docstrings for these classes, really
+# pylint: disable=missing-docstring, too-many-lines
+# No point in docstrings for these classes, really
 
 """The database definitions and pyprotocols adapters for Sutekh"""
 
@@ -21,11 +21,11 @@ from sutekh.base.core.BaseTables import (AbstractCard, BASE_TABLE_LIST,
 
 # Table Objects
 
-# pylint: disable=W0232, R0902, W0201, C0103
+# pylint: disable=W0232, too-many-instance-attributes, W0201, invalid-name
 # W0232: Most of the classes defined here don't have __init__ methods by design
-# R0902: We aren't worried about the number of insance variables
+# We aren't worried about the number of insance variables
 # W0201: We don't care about attributes defined outside init, by design
-# C0103: We use different naming conventions for the table columns
+# We use different naming conventions for the table columns
 
 
 class SutekhAbstractCard(AbstractCard):
@@ -227,7 +227,7 @@ class MapAbstractCardToVirtue(SQLObject):
     virtueIndex = DatabaseIndex(virtue, unique=False)
 
 
-# pylint: enable=W0232, R0902, W0201, C0103
+# pylint: enable=W0232, too-many-instance-attributes, W0201, invalid-name
 
 # List of Tables to be created, dropped, etc.
 

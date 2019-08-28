@@ -26,7 +26,7 @@ class FakeTitle(object):
     """Fake titles not in the database"""
 
     def __init__(self, sText):
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # We duplicate Title naming here
         self.name = sText
 
@@ -35,7 +35,7 @@ class MergedKeyword(object):
     """Fake a 'merged' keyword"""
 
     def __init__(self):
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # We duplicate Keyword naming here
         self.keyword = 'merged'
 
@@ -60,7 +60,7 @@ def make_replace_keywords():
 
 class FakeCard(object):
     """Class which fakes being an AbstractCard for the text view."""
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # Need all the attributes to match AbstractCard
 
     def __init__(self, oAbsCard, dReplaceMap):
@@ -75,7 +75,7 @@ class FakeCard(object):
 
         self.dReplaceMap = dReplaceMap
 
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # We duplicate AbstractCard naming here
         self.name = self.oAdvanced.name.replace('(Advanced)', '(Merged)')
         # These are never set
@@ -383,7 +383,7 @@ class FakeCard(object):
 
 class MergedVampirePlugin(SutekhPlugin):
     """Plugin providing access to starter deck info."""
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # Need all these instance variables to track the plugin state
     # across the differ parts of showing the base, adv & merged vamps
     dTableVersions = {PhysicalCardSet: (5, 6, 7)}

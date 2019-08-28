@@ -33,17 +33,16 @@ def _gen_subsets(aData, iSetSize, iDepth=1):
         return []
     elif iDepth == iSetSize:
         return [set([x]) for x in aData]
-    else:
-        # I'm arguably overly fond of recursion
-        aNewSets = []
-        aSets = _gen_subsets(aData, iSetSize, iDepth + 1)
-        for oVal in aData:
-            for oSet in aSets:
-                if oVal not in oSet:
-                    oNewSet = oSet.union(set([oVal]))
-                    if oNewSet not in aNewSets:
-                        aNewSets.append(oNewSet)
-        return aNewSets
+    # I'm arguably overly fond of recursion
+    aNewSets = []
+    aSets = _gen_subsets(aData, iSetSize, iDepth + 1)
+    for oVal in aData:
+        for oSet in aSets:
+            if oVal not in oSet:
+                oNewSet = oSet.union(set([oVal]))
+                if oNewSet not in aNewSets:
+                    aNewSets.append(oNewSet)
+    return aNewSets
 
 
 def _get_groups(oCard):
@@ -337,14 +336,14 @@ class FindLikeVampires(SutekhPlugin):
 
         oResults.set_size_request(700, 600)
 
-        oAllView = LikeCardsView(dGroups['all'], 'All Matches', bVampire)
+        oAllView = LikeCardsView(dGroups['all'], bVampire)
         oResults.add_widget_page(AutoScrolledWindow(oAllView),
                                  'All Matches')
         for sSet in sorted(dGroups):
             if sSet == 'all':
                 # Already handled
                 continue
-            oView = LikeCardsView(dGroups[sSet], sSet, bVampire)
+            oView = LikeCardsView(dGroups[sSet], bVampire)
             oResults.add_widget_page(AutoScrolledWindow(oView), sSet)
         oActions = gtk.HBox()
         oToggle = gtk.CheckButton('Include original card')
@@ -394,7 +393,7 @@ class LikeCardsView(gtk.TreeView):
     VAMP_LABELS = ['Name', 'Group', 'Capacity', 'Clan', 'Disciplines']
     IMBUED_LABELS = ['Name', 'Group', 'Life', 'Creed', 'Virtues']
 
-    def __init__(self, aCards, sLabel, bVampire):
+    def __init__(self, aCards, bVampire):
         self._oModel = LikeCardsModel(aCards, bVampire)
 
         super(LikeCardsView, self).__init__(self._oModel)

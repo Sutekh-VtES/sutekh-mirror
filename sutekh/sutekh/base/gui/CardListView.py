@@ -15,9 +15,9 @@ from ..core.BaseAdapters import IPhysicalCard
 
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
-    # pylint: disable=too-many-public-methods, R0902, R0901
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes, R0901
     # gtk.Widget, so many public methods
-    # R0902 - We need to track a fair amount of state, so many attributes
+    # We need to track a fair amount of state, so many attributes
     # R0901 - many ancestors, due to our object hierachy on top of the quite
     # deep gtk one
 

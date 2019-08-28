@@ -46,14 +46,13 @@ def _parse_css_color(sColor):
     if sColor.startswith("rgb(") and sColor.endswith(')'):
         iRed, iGreen, iBlue = [int(c) * 257 for c in sColor[4:-1].split(',')]
         return gtk.gdk.Color(iRed, iGreen, iBlue)
-    else:
-        return gtk.gdk.color_parse(sColor)
+    return gtk.gdk.color_parse(sColor)
 
 
 class HtmlHandler(HTMLParser.HTMLParser):
-    # pylint: disable=R0201, R0902, too-many-public-methods
+    # pylint: disable=R0201, too-many-instance-attributes, too-many-public-methods
     # R0201: can't break these into functions
-    # R0902: We need to keep a lot of state to handle HTML properly
+    # We need to keep a lot of state to handle HTML properly
     # Lots of public methods from HTMLParser
     """Parse the HTML input and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
@@ -277,7 +276,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         oTag.set_property("wrap-mode", gtk.WRAP_WORD)
         if sStyle is None:
             self._aStyles.append(oTag)
-            return None
+            return
         for sAttr, sVal in [item.split(':', 1) for item in sStyle.split(';')]:
             sAttr = sAttr.strip().lower()
             sVal = sVal.strip()
@@ -641,9 +640,9 @@ class HTMLTextView(gtk.TextView):
 
 
 class HTMLViewDialog(SutekhDialog):
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902: We need to keep a lot of state to handle navigation
+    # We need to keep a lot of state to handle navigation
     """Dialog Window that wraps the HTMLTextView
 
        Used to show HTML Manuals in Sutekh.

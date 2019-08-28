@@ -24,8 +24,7 @@ class ClanGrouping(IterGrouping):
         oThisCard = self.fGetCard(oCard)
         if oThisCard.creed:
             return [y.name for y in oThisCard.creed]
-        else:
-            return [y.name for y in oThisCard.clan]
+        return [y.name for y in oThisCard.clan]
 
 
 class DisciplineGrouping(IterGrouping):
@@ -40,8 +39,7 @@ class DisciplineGrouping(IterGrouping):
         oThisCard = self.fGetCard(oCard)
         if oThisCard.virtue:
             return [y.fullname for y in oThisCard.virtue]
-        else:
-            return [y.discipline.fullname for y in oThisCard.discipline]
+        return [y.discipline.fullname for y in oThisCard.discipline]
 
 
 class DisciplineLevelGrouping(IterGrouping):
@@ -58,9 +56,8 @@ class DisciplineLevelGrouping(IterGrouping):
         oThisCard = self.fGetCard(oCard)
         if oThisCard.virtue:
             return [y.fullname for y in oThisCard.virtue]
-        else:
-            return ['%s (%s)' % (y.discipline.fullname, y.level)
-                    for y in oThisCard.discipline]
+        return ['%s (%s)' % (y.discipline.fullname, y.level)
+                for y in oThisCard.discipline]
 
 
 class CryptLibraryGrouping(IterGrouping):
@@ -99,8 +96,7 @@ class CostGrouping(IterGrouping):
                     return ['X %s' % oCard.costtype]
                 else:
                     return ['%d %s' % (oCard.cost, oCard.costtype)]
-            else:
-                return []
+            return []
 
         super(CostGrouping, self).__init__(oIter, get_values)
 
@@ -117,8 +113,7 @@ class GroupGrouping(IterGrouping):
                     return ['Group %d' % oCard.group]
                 else:
                     return ['Any Group']
-            else:
-                return []
+            return []
 
         super(GroupGrouping, self).__init__(oIter, get_values)
 
@@ -148,8 +143,7 @@ class GroupPairGrouping(IterGrouping):
                 else:
                     # Any Group is returned in all pairs
                     return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
-            else:
-                return []
+            return []
 
         super(GroupPairGrouping, self).__init__(oIter, get_values)
 

@@ -26,8 +26,7 @@ def type_of_card(oCard):
     """Return either Crypt or Library as required."""
     if is_crypt_card(oCard):
         return "Crypt"
-    else:
-        return "Library"
+    return "Library"
 
 
 def norm_name(oCard):

@@ -77,7 +77,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
             self._oOtherJoin.invalidate_cache_item(oOther, oInst,
                                                    bDoOther=False)
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # Name must match SQLObject conventions
     def performJoin(self, oInst):
         """Return the join the result, from the cache if possible."""

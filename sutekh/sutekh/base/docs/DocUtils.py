@@ -15,7 +15,7 @@ import re
 
 import textile
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 # we ignore our usual naming conventions here
 
 try:
@@ -67,7 +67,7 @@ description describes the arguments the filter takes and the results it
 produces.
 """
 
-# pylint: enable=C0103
+# pylint: enable=invalid-name
 
 
 def _make_link(sName):
@@ -118,7 +118,7 @@ def textile2markdown(aLines, fProcessText):
     # We use a bunch of local variables as psuedo-constants to
     # keep this self-contained
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # we break the naming convention for these pseudo-constants
     HEADER = re.compile(r'h([0-9])\(#(.*)\)\. (.*)$')
     NUM_LINK = re.compile(r'^(#*) "([^:]*)":(#.*)$')
@@ -128,7 +128,7 @@ def textile2markdown(aLines, fProcessText):
     # good enough
     LIST_ITEM = re.compile(r'^(\*+)([^\*]+$|[^\*]+\*[^\*]+\*[^\*]*)+$')
     EMP_ITEM = re.compile(r'\*([^\*]+)\*')
-    # pylint: enable=C0103
+    # pylint: enable=invalid-name
 
     aOutput = []
     for sLine in aLines:

@@ -425,13 +425,14 @@ class CardDict(dict):
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 
-        for sExp, sRarSet in aExp:
+        for sThisExp, sRarSet in aExp:
             for sRar in sRarSet.split('/'):
                 if sRar in BC_RARITIES:
                     # Create expansion for the Black Chantry cards
-                    oPair = self._oMaker.make_rarity_pair('Black Chantry', sRar)
+                    oPair = self._oMaker.make_rarity_pair('Black Chantry',
+                                                          sRar)
                 else:
-                    oPair = self._oMaker.make_rarity_pair(sExp, sRar)
+                    oPair = self._oMaker.make_rarity_pair(sThisExp, sRar)
                 if oPair not in oCard.rarity:
                     oCard.addRarityPair(oPair)
 
@@ -766,8 +767,7 @@ class InCard(LogStateWithInfo):
         if oCardText:
             # Hand over the line to the card text parser
             return oCardText.transition(sLine, None)
-        else:
-            return self
+        return self
 
 
 class InExpansion(LogStateWithInfo):
@@ -783,6 +783,8 @@ class InExpansion(LogStateWithInfo):
             # force between InExpansion and InCard in an unpleasant way
             self._dInfo['aka'] = sLine.replace('AKA:', '').strip()
             return self
+        # This shouldn't happen, so we bail as the only thing to do
+        raise IOError("Failed to parse expansion information")
 
 
 class InCardText(LogStateWithInfo):

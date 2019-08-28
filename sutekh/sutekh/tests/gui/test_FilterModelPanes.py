@@ -26,7 +26,7 @@ class DummyDialog(gtk.Dialog):
 
     def __init__(self):
         super(DummyDialog, self).__init__('Dummy', None, 0)
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # Needs to match the property name in the FilterDialog
         self.accel_group = gtk.AccelGroup()
 

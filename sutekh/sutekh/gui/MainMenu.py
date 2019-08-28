@@ -15,9 +15,9 @@ class MainMenu(AppMenu):
 
        Extends AppMenu with the various sutekh specific options.
        """
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902 - We keep a lot of state here (menu's available, etc.)
+    # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__(oWindow, oConfig)
         self.cIdentifyFile = IdentifyXMLFile
@@ -25,7 +25,8 @@ class MainMenu(AppMenu):
     def _add_download_menu(self, oDownloadMenu):
         """Extend the File Download menu"""
         super(MainMenu, self)._add_download_menu(oDownloadMenu)
-        oCheckItem = self.create_menu_item('Check for updated cardlist', oDownloadMenu,
+        oCheckItem = self.create_menu_item('Check for updated cardlist',
+                                           oDownloadMenu,
                                            self.check_updated_cardlist)
         if self.is_memory_db():
             # Need to have memory connection available for this

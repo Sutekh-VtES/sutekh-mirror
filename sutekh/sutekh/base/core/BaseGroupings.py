@@ -47,7 +47,7 @@ DEF_GET_CARD = lambda x: x
 # pylint: enable=E0602
 
 
-# pylint: disable=C0111
+# pylint: disable=missing-docstring
 # class names are pretty self-evident, so skip docstrings
 class CardTypeGrouping(IterGrouping):
     """Group by card type. This is the default grouping. This grouping
@@ -62,7 +62,7 @@ class MultiTypeGrouping(IterGrouping):
        cards which have multiple types."""
 
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # we accept x here for consistency with other groupings
         def multitype(x):
             """Return a list of one string with slash separated card types."""

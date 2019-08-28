@@ -52,7 +52,7 @@ def get_filters_for_type(sFilterType):
 # which are based on ply examples
 class ParseFilterDefinitions(object):
     """Provides the lexer used by PLY"""
-    # pylint: disable=C0103, R0201
+    # pylint: disable=invalid-name, R0201
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
 
     tokens = (
@@ -132,7 +132,7 @@ class ParseFilterDefinitions(object):
 # Define a yacc parser to produce the abstract syntax tree
 class FilterYaccParser(object):
     """Provide the parser used by PLY"""
-    # pylint: disable=C0103, R0201
+    # pylint: disable=invalid-name, R0201
     tokens = ParseFilterDefinitions.tokens
     aUsedVariables = []
 
@@ -325,7 +325,7 @@ class ValueObject(object):
         """Does this represent a assigned string value?"""
         return isinstance(self.oValue, str) and self.oValue != ''
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     def is_None(self):
         """Is this node's value None?"""
         return self.oValue is None

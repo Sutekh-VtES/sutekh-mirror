@@ -23,9 +23,9 @@ class FileOrUrlWidget(gtk.VBox):
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
-    # pylint: disable=R0913, C0103
+    # pylint: disable=R0913, invalid-name
     # R0913: Need this many arguments
-    # C0103: Use gtk naming conventions here for consistency when called
+    # Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
                  homogeneous=False, spacing=0):
         """Create a FileOrUrlWidget.
@@ -82,7 +82,7 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
 
-    # pylint: enable=R0913, C0103
+    # pylint: enable=R0913, invalid-name
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""
@@ -134,9 +134,8 @@ class FileOrUrlWidget(gtk.VBox):
             return self._oFileButton.get_filename(), False
         elif sName in self._dUrls:
             return self._dUrls[sName], True
-        else:
-            # something weird happened
-            return None, False
+        # something weird happened
+        return None, False
 
     def get_wwfile_data(self):
         """Open the selected file as a EncodedFile and retrieve the data.
@@ -185,9 +184,9 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
     OTHER_DIR = 'Select directory ...'
 
-    # pylint: disable=R0913, C0103
+    # pylint: disable=R0913, invalid-name
     # R0913: Need this many arguments
-    # C0103: Use gtk naming conventions here for consistency when called
+    # Use gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, sDirTitle=None,
                  sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
         """Create a FileOrDirOrUrlWidget.
@@ -208,7 +207,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
         self._oSrcCombo.append_text(self.OTHER_DIR)
 
-    # pylint: enable=R0913, C0103
+    # pylint: enable=R0913, invalid-name
 
     def _src_combo_updated(self, oSrcCombo):
         """Handle updating of the selected source combo box."""
@@ -239,5 +238,4 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
         sName = self._oSrcCombo.get_active_text()
         if sName == self.OTHER_DIR:
             return self._oDirButton.get_filename(), False, True
-        else:
-            return None, False, False
+        return None, False, False

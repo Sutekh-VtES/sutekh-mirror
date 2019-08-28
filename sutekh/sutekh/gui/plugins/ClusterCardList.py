@@ -26,7 +26,7 @@ class ClusterCardList(SutekhPlugin):
        Allows the user to choose various clustering parameters, such as
        attributes to to use and methods, and then to create card sets
        from the clustering results."""
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # we use a lot of attributes to keep track of data & gui aspects
 
     dTableVersions = {}
@@ -34,7 +34,7 @@ class ClusterCardList(SutekhPlugin):
 
     def __init__(self, *args, **kwargs):
         super(ClusterCardList, self).__init__(*args, **kwargs)
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:
             self._fMakeCardSetFromCluster = None

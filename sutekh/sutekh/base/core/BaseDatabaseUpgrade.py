@@ -11,7 +11,7 @@
    (currently 0.8)
    """
 
-# pylint: disable=C0302
+# pylint: disable=too-many-lines
 # This is a long module, partly because of the duplicated code from
 # BaseTables. We want to keep all the database upgrade stuff together.
 # so we jsut live with it

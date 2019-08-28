@@ -31,9 +31,9 @@ def make_scrolled_text(oCardSet, sAttr):
 
 
 class CreateCardSetDialog(SutekhDialog):
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # gtk.Widget, so many public methods
-    # R0902 - We manage a bunch of state, so need several attributes
+    # We manage a bunch of state, so need several attributes
     """Prompt the user for the name of a new card set.
 
        Optionally, get Author + Description.

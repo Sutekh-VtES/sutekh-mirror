@@ -214,7 +214,7 @@ class StatsModel(gtk.TreeStore):
             oClanIter = self.append(None)
             self.set_iter_values(oClanIter, oClan, None, oClanStats.oAllStats)
 
-            # pylint: disable=C0103
+            # pylint: disable=invalid-name
             # atGrps doesn't match the regexp, but is a valid name
             atGrps = oClanStats.dSubStats.keys()
             atGrps.sort()

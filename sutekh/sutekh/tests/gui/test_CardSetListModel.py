@@ -3,7 +3,7 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=C0302
+# pylint: disable=too-many-lines
 # This tests the card set list model extensively, so it's quite long
 
 """Tests the Card List Model"""
@@ -120,7 +120,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     # pylint: enable=R0201
     # pylint: enable=R0913
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # setUp + tearDown names are needed by unittest - use their convention
     def setUp(self):
         """Setup the card list used in _loop_modes"""
@@ -145,7 +145,7 @@ class CardSetListModelTests(ConfigSutekhTest):
             oCard = make_card(sName, sExp, sPrint)
             self.aPhysCards.append(oCard)
 
-    # pylint: enable=C0103
+    # pylint: enable=invalid-name
 
     def _add_remove_cards(self, oPCS, aModels, dCountInfo):
         """Helper function to add and remove distinct cards from the card set,

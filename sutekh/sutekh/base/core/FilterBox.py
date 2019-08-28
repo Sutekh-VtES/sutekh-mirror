@@ -19,10 +19,10 @@ class FilterBoxModel(list):
        Values are retained for each contained filter.
        """
 
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # These are the best names to use
     AND, OR = 'and', 'or'
-    # pylint: enable=C0103
+    # pylint: enable=invalid-name
 
     # pylint: disable=W0231
     # no point to calling list's __init__
@@ -200,7 +200,7 @@ class FilterBoxItem(object):
        This represents either a single FilterPart or a single
        NOT(FilterPart) expression in the AST.
        """
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # We track a lot of state, so several instance attributes
     NONE, ENTRY, LIST, LIST_FROM = range(4)
 

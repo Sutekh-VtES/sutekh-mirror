@@ -17,8 +17,7 @@ def _get_connection(oConn):
     """Ensure we have a valid connection object"""
     if oConn is None:
         return sqlhub.processConnection
-    else:
-        return oConn
+    return oConn
 
 
 class DatabaseVersion(object):

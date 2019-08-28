@@ -11,7 +11,7 @@
 
 if __name__ == "__main__":
     import code
-    # pylint: disable=C0103
+    # pylint: disable=invalid-name
     # pylint thinks this should be a constant
     console = code.InteractiveConsole()
     console.interact()

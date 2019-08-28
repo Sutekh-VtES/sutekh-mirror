@@ -81,9 +81,8 @@ class Description(HolderState):
         elif sLine.strip().startswith('Crypt ('):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder)
-        else:
-            self.data(sLine)
-            return self
+        self.data(sLine)
+        return self
 
 
 class Cards(HolderState):

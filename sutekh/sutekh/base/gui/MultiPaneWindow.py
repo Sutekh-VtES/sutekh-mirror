@@ -22,8 +22,8 @@ from .BasicFrame import BasicFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable=R0902, too-many-public-methods, W1001
-    # R0902 - we need to keep a lot of state, so many instance attributes
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # we need to keep a lot of state, so many instance attributes
     # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
@@ -213,7 +213,7 @@ class MultiPaneWindow(gtk.Window):
         if not oFrame:
             if not self.aOpenFrames:
                 # No frame, so nothing to focus
-                return
+                return None
             # get first child, and descent that
             oChild = self.top_level_panes()[0]
             oParent = self._oVBox
@@ -250,7 +250,7 @@ class MultiPaneWindow(gtk.Window):
         if not oFrame:
             if not self.aOpenFrames:
                 # No frame, so nothing to focus
-                return
+                return None
             # get first child, and descent that
             oChild = self.top_level_panes()[0]
             oParent = self._oVBox

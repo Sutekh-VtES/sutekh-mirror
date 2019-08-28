@@ -20,8 +20,8 @@ class ConfigSutekhTest(SutekhTest):
     """Base class for Sutekh tests that need a config file.
 
        Defines common startUp and tearDown routines."""
-    # pylint: disable=C0103, too-many-public-methods
-    # C0103 - setUp + tearDown names are needed by unittest,
+    # pylint: disable=invalid-name, too-many-public-methods
+    # setUp + tearDown names are needed by unittest,
     #         so use their convention
     # unittest.TestCase, so many public methods
 
@@ -74,8 +74,8 @@ class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
 
        Define common setup and teardown routines common to gui test cases.
        """
-    # pylint: disable=C0103, too-many-public-methods
-    # C0103 - setUp + tearDown names are needed by unittest,
+    # pylint: disable=invalid-name, too-many-public-methods
+    # setUp + tearDown names are needed by unittest,
     #         so use their convention
     # unittest.TestCase, so many public methods
 

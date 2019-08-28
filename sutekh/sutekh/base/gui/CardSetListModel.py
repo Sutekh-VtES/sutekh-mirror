@@ -3,8 +3,8 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
-# pylint: disable=C0302
-# C0302 - This covers a lot of cases, and splitting it into multiple
+# pylint: disable=too-many-lines
+# This covers a lot of cases, and splitting it into multiple
 # files won't gain any clarity
 
 """The gtk.TreeModel for the card set lists."""
@@ -86,7 +86,7 @@ PARENT_OR_MINUS = set([PARENT_COUNT, MINUS_THIS_SET])
 
 class CardSetModelRow(object):
     """Object which holds the data needed for a card set row."""
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # We do want all these attributes
 
     def __init__(self, bEditable, iExtraLevelsMode, oAbsCard):
@@ -157,8 +157,8 @@ class CardSetModelRow(object):
 
 
 class CardSetCardListModel(CardListModel):
-    # pylint: disable=too-many-public-methods, R0902, W1001
-    # R0902: need local attributes for state
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes, W1001
+    # need local attributes for state
     # gtk.Widget, so many public methods
     # W1001: gtk classes aren't old-style, but pylint thinks they are
     """CardList Model specific to lists of physical cards.

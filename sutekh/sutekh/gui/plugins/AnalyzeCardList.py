@@ -4,8 +4,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>,
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
-# pylint: disable=C0302
-# C0302 - This covers a lot of cases, and splitting it into multiple
+# pylint: disable=too-many-lines
+# This covers a lot of cases, and splitting it into multiple
 # files won't gain any clarity
 
 """Display interesting statistics and properties of the card set."""

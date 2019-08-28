@@ -13,7 +13,7 @@ from .BaseTables import PhysicalCardSet
 
 
 class CardSetHolder(object):
-    # pylint: disable=R0902
+    # pylint: disable=too-many-instance-attributes
     # Need to keep state of card set, so many attributes
     """Holder for Card Sets.
 
@@ -76,9 +76,9 @@ class CardSetHolder(object):
         """Set the name, ensuring we have santised any encoding issues"""
         self._sName = self._sanitise_text(sValue, 'the card set name', True)
 
-    # pylint: disable=W0212, C0103
+    # pylint: disable=W0212, invalid-name
     # W0212: we delibrately allow access via these properties
-    # C0103: we use the column naming conventions
+    # we use the column naming conventions
     name = property(fget=lambda self: self._sName,
                     fset=_set_name)
     author = property(fget=lambda self: self._sAuthor,
@@ -94,7 +94,7 @@ class CardSetHolder(object):
                       fset=lambda self, x: setattr(self, '_sParent', x))
     num_entries = property(fget=lambda self: len(self._dCards))
 
-    # pylint: enable=W0212, C0103
+    # pylint: enable=W0212, invalid-name
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -225,9 +225,9 @@ class CardSetWrapper(CardSetHolder):
             return None
         return self._oCS.parent.name
 
-    # pylint: disable=W0212, C0103
+    # pylint: disable=W0212, invalid-name
     # W0212: we delibrately allow access via these properties
-    # C0103: we use the column naming conventions
+    # we use the column naming conventions
     name = property(fget=lambda self: self._get_cs_attr('name'))
     author = property(fget=lambda self: self._get_cs_attr('author'))
     comment = property(fget=lambda self: self._get_cs_attr('comment'))
@@ -237,7 +237,7 @@ class CardSetWrapper(CardSetHolder):
     num_entries = property(fget=lambda self: len(self._oCS.cards))
     cards = property(fget=lambda self: self._oCS.cards)
 
-    # pylint: enable=W0212, C0103
+    # pylint: enable=W0212, invalid-name
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -266,13 +266,13 @@ class CachedCardSetHolder(CardSetHolder):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         # name OK here
         aAbsCards = oCardLookup.lookup(
             [dLookupCache['cards'].get(tCardCnt[0], tCardCnt[0])
              for tCardCnt in aCardCnts],
             'Card Set "%s"' % self.name)
-        # pylint: enable=C0103
+        # pylint: enable=invalid-name
         dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
 
         # Update dLookupCache
@@ -318,8 +318,8 @@ class CachedCardSetHolder(CardSetHolder):
 
 def make_card_set_holder(oCardSet):
     """Given a CardSet, create a Cached Card Set Holder for it."""
-    # pylint: disable=C0103
-    # C0103: we use the column naming conventions
+    # pylint: disable=invalid-name
+    # we use the column naming conventions
     oCS = CachedCardSetHolder()
     oCS.name = oCardSet.name
     oCS.author = oCardSet.author

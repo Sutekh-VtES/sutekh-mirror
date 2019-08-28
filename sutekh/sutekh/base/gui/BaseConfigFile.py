@@ -50,10 +50,10 @@ class BaseConfigFile(object):
        can register as listeners on the config file to respond to
        changes to the filters.
        """
-    # pylint: disable=too-many-public-methods, R0902
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # We need to provide fine-grained access to all the data,
     # so lots of methods
-    # R0902 - Lots of internal state, so lots of attributes
+    # Lots of internal state, so lots of attributes
 
     dCustomConfigTypes = {
         'option_list': is_option_list,
@@ -395,8 +395,7 @@ class BaseConfigFile(object):
         sKey = sKey.lower()
         if sKey in self._oConfig['filters']:
             return self._oConfig['filters'][sKey]['query']
-        else:
-            return None
+        return None
 
     def get_filter_values(self, sKey):
         """Return the filter values associated with the given key.
@@ -406,8 +405,7 @@ class BaseConfigFile(object):
         sKey = sKey.lower()
         if sKey in self._oConfig['filters']:
             return self._oConfig['filters'][sKey]['vars'].dict()
-        else:
-            return None
+        return None
 
     # pylint: disable=W0102
     # W0102 - {} is the right thing here
@@ -495,8 +493,7 @@ class BaseConfigFile(object):
         try:
             if sProfile is None:
                 return self._oConfig['per_deck']['defaults'][sKey]
-            else:
-                return self._oConfig['per_deck']['profiles'][sProfile][sKey]
+            return self._oConfig['per_deck']['profiles'][sProfile][sKey]
         except KeyError:
             return None
 

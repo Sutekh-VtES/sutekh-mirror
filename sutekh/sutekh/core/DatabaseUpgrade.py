@@ -11,7 +11,7 @@
    (currently 0.8)
    """
 
-# pylint: disable=C0302
+# pylint: disable=too-many-lines
 # This is a long module, partly because of the duplicated code from
 # SutekhTables. We want to keep all the database upgrade stuff together.
 # so we jsut live with it
@@ -43,8 +43,8 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # old versions
 
 
-# pylint: disable=C0103, W0232
-# C0103 - names set largely by SQLObject conventions, so ours don't apply
+# pylint: disable=invalid-name, W0232
+# names set largely by SQLObject conventions, so ours don't apply
 # W0232 - SQLObject classes don't have user defined __init__
 class AbstractCard_v5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
@@ -265,7 +265,7 @@ class RarityPair_Ev4(SQLObject):
     expansion = ForeignKey('Expansion_v4')
     rarity = ForeignKey('Rarity')
 
-# pylint: enable=C0103, W0232
+# pylint: enable=invalid-name, W0232
 
 
 def _lookup_printing_for_exp(oExpID, oConn):
