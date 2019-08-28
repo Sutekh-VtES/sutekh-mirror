@@ -86,7 +86,7 @@ class FilterDialog(SutekhDialog):
 
         if sDefaultFilter:
             # Ensure filter isn't broken
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sDefaultFilter)
@@ -116,11 +116,11 @@ class FilterDialog(SutekhDialog):
 
         self.show_all()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # explicitly allow access to these values via thesep properties
     accel_group = property(fget=lambda self: self._oAccelGroup,
                            doc="Dialog Accelerator group")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def __button_response(self, _oWidget, iResponse):
         """Handle the button choices from the user.
@@ -227,7 +227,7 @@ class FilterDialog(SutekhDialog):
         aErrMsgs = []
 
         for sName, sFilter in oFilterIter:
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we do want to catch all exceptions here
             try:
                 oAST = self.__oParser.apply(sFilter)
@@ -258,8 +258,7 @@ class FilterDialog(SutekhDialog):
                 # Should be safe, since we don't allow empty names for
                 # filters
                 return ''
-            else:
-                return tFiltInfo[0]
+            return tFiltInfo[0]
 
         aFilters.sort(key=filter_key)
 

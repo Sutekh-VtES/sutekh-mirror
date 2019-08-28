@@ -341,7 +341,7 @@ class ClusterCardList(SutekhPlugin):
 
             # iCard is defined because k_means doesn't call
             # this unless aCards is non-empty
-            # pylint: disable=W0631
+            # pylint: disable=undefined-loop-variable
 
             if iCard == len(aCards):
                 # guard against slight possibility of being very close
@@ -373,12 +373,12 @@ class ClusterCardList(SutekhPlugin):
             # calculate membership in clusters
             for iCard in xrange(iCards):
                 oVec = aCards[iCard]
-                # pylint: disable=W0640
+                # pylint: disable=cell-var-from-loop
                 # Since we use key immediately, this warning isn't
                 # an issue
                 iVmin = min(xrange(iNumClust),
                             key=lambda iV: fDist(oVec, aMeans[iV]))
-                # pylint: enable=W0640
+                # pylint: enable=cell-var-from-loop
                 aClusters[iVmin].append(iCard)
 
             # recompute the centroids
@@ -463,7 +463,7 @@ class Vector(object):
         self._aData = aData
 
     # We do want to access _aData on other Vectors.
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
 
     def euclidian_distance(self, oVec2):
         """Euclidean distance between two vectors."""

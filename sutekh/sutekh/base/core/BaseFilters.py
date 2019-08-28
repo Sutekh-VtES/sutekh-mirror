@@ -4,8 +4,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=W0231, abstract-method, too-many-lines
-# W0231 - the base classes don't have useful __init__ methods, so we
+# pylint: disable=super-init-not-called, abstract-method, too-many-lines
+# the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
 # not every abstract method is immediately overridden
 # the module is long, but keeping the filters together is the best
@@ -13,10 +13,10 @@
 
 """Define all the filters provided in sutekh"""
 
-# pylint: disable=W0402
+# pylint: disable=deprecated-module
 # We need string.punctation for best_guess_filter
 import string
-# pylint: enable=W0402
+# pylint: enable=deprecated-module
 
 from sqlobject import (SQLObjectNotFound, AND, OR, NOT, LIKE, func, sqlhub,
                        IN as SQLOBJ_IN)
@@ -93,7 +93,7 @@ class Filter(object):
 class FilterBox(Filter, list):
     """Base class for filter collections."""
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # we delibrately access protected members
     def _get_joins(self):
         """The joins required for the composite filter
@@ -125,7 +125,7 @@ class FilterBox(Filter, list):
             bResult = bResult or oSubFilter.involves(oCardSet)
         return bResult
 
-    # W0212 applies here too
+    # We allow protected access here too
     types = property(fget=lambda self: self._get_types(),
                      doc="types supported by this filter")
 
@@ -133,8 +133,8 @@ class FilterBox(Filter, list):
 class FilterAndBox(FilterBox):
     """AND a list of filters."""
 
-    # pylint: disable=W0212
-    # W0212 - we intentinally access protected members
+    # pylint: disable=protected-access
+    # we intentinally access protected members
     def _get_expression(self):
         """Combine filters with AND"""
         return AND(*[x._get_expression() for x in self])
@@ -143,8 +143,8 @@ class FilterAndBox(FilterBox):
 class FilterOrBox(FilterBox):
     """OR a list of filters."""
 
-    # pylint: disable=W0212
-    # W0212 - we intentinally access protected members
+    # pylint: disable=protected-access
+    # we intentinally access protected members
     def _get_expression(self):
         """Combine filters with OR"""
         return OR(*[x._get_expression() for x in self])
@@ -165,8 +165,8 @@ class FilterNot(Filter):
         """Joins for not is null, as they are used in the sub-select"""
         return []
 
-    # pylint: disable=W0212
-    # W0212 - we are delibrately accesing protected members her
+    # pylint: disable=protected-access
+    # we are delibrately accesing protected members her
     # and in _get_expression
     types = property(fget=lambda self: self.__oSubFilter.types,
                      doc="types supported by this filter")
@@ -201,7 +201,7 @@ class CachedFilter(Filter):
     """A filter which caches joins and expression lookups"""
 
     def __init__(self, oFilter):
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # We delibrately access the protected members here, as that's
         # the point
         self._oSubFilter = oFilter
@@ -214,8 +214,8 @@ class CachedFilter(Filter):
     def _get_joins(self):
         return self._aJoins
 
-    # pylint: disable=W0212
-    # W0212 - we are delibrately accesing protected members her
+    # pylint: disable=protected-access
+    # we are delibrately accesing protected members her
     types = property(fget=lambda self: self._oSubFilter.types,
                      doc="types supported by this filter")
 

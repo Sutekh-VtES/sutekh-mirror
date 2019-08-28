@@ -35,8 +35,8 @@ class CardSetManagementModel(gtk.TreeStore):
 
         self._aExcludedSet = set()
 
-    # pylint: disable=W0212, invalid-name
-    # W0212 - we explicitly allow access via these properties
+    # pylint: disable=protected-access, invalid-name
+    # we explicitly allow access via these properties
     # we allow these names
     applyfilter = property(fget=lambda self: self._bApplyFilter,
                            fset=lambda self, x: setattr(self,
@@ -55,7 +55,7 @@ class CardSetManagementModel(gtk.TreeStore):
                           doc="Cardset ID of card set list "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, invalid-name
+    # pylint: enable=protected-access, invalid-name
 
     # pylint: disable=no-self-use
     # this should be a method for consistency

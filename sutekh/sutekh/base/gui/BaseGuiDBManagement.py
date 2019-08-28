@@ -289,7 +289,7 @@ class BaseGuiDBManager(object):
             return False  # Nothing happened
         oProgressDialog = ProgressDialog()
         if sBackupFile is not None:
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we do want to catch all exceptions here
             try:
                 self.save_backup(sBackupFile, oProgressDialog)

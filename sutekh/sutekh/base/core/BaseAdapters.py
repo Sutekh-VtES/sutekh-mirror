@@ -123,8 +123,8 @@ def ILookupHint(oUnknown):
 # Abbreviation lookup based adapters
 class StrAdaptMeta(type):
     """Metaclass for the string adapters."""
-    # pylint: disable=W0231, C0203
-    # W0231 - no point in calling type's init
+    # pylint: disable=super-init-not-called, C0203
+    # no point in calling type's init
     # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
     def __init__(cls, _sName, _aBases, _dDict):

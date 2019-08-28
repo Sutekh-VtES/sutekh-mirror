@@ -4,8 +4,8 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-# pylint: disable=W0231, abstract-method, too-many-lines
-# W0231 - the base classes don't have useful __init__ methods, so we
+# pylint: disable=super-init-not-called, abstract-method, too-many-lines
+# the base classes don't have useful __init__ methods, so we
 # generally don't call __init__ when creating a new filter
 # not every abstract method is immediately overridden
 # the module is long, but keeping the filters together is the best
@@ -682,7 +682,7 @@ class CardFunctionFilter(DirectFilter):
                        ])
         return aVals
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # we access protexted members intentionally
     def _get_joins(self):
         """Joins for the constructed filter"""

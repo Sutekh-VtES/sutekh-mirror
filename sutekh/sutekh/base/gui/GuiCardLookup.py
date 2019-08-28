@@ -11,8 +11,7 @@ import gtk
 import pango
 import gobject
 from sqlobject import SQLObjectNotFound
-from ..core.BaseTables import (AbstractCard, PhysicalCard, Expansion,
-                               Printing)
+from ..core.BaseTables import AbstractCard, PhysicalCard, Printing
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
                                  IPrinting, IPrintingName)
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
@@ -350,8 +349,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             """emulate python 2.5's a = x if C else y"""
             if sName in dCards:
                 return dCards[sName]
-            else:
-                return dUnknownCards[sName]
+            return dUnknownCards[sName]
 
         return [new_card(sName) for sName in aNewNames]
 
@@ -493,8 +491,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
                 oIter = oModel.iter_next(oIter)
             return True
-        else:
-            return False
+        return False
 
     # pylint: disable=no-self-use
     # These are methods for convenience
@@ -654,9 +651,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                     dUnknownCards[sName] = oAbsCard
                 oIter = oModel.iter_next(oIter)
             return True
-        else:
-            return False
-
+        return False
 
     def _handle_unknown_printings(self, dUnknownPrintings, sInfo,
                                   dCardExpansions):
@@ -673,7 +668,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         # Find all known expansion / printing combos and sort them
         # by name
-        dKnownPrintings = dict([(IPrintingName(x), x) for x in Printing.select()])
+        dKnownPrintings = dict(
+            [(IPrintingName(x), x) for x in Printing.select()])
         dPrintingCards = {}
         for oCard in PhysicalCard.select():
             if oCard.printing:
@@ -723,7 +719,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
             oPopupExpList = gtk.Button('Show cards')
             oPopupExpList.connect('clicked', self._popup_exp, oSelector,
-                                  dKnownPrintings, dPrintingCards)
+                                  dPrintingCards)
 
             oBox.pack_start(dReplacement[tExpPrint])
             oBox.pack_start(oPopupExpList)
@@ -743,10 +739,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             for tUnknownExpPrint in dUnknownPrintings:
                 sNewPrint = dReplacement[tUnknownExpPrint].get_active_text()
                 if sNewPrint != NO_EXP_AND_PRINT:
-                    dUnknownPrintings[tUnknownExpPrint] = dKnownPrintings[sNewPrint]
+                    dUnknownPrintings[tUnknownExpPrint] = \
+                        dKnownPrintings[sNewPrint]
             return True
-        else:
-            return False
+        return False
 
     @staticmethod
     def _popup_list(_oButton, sCardText, sPrint):
@@ -763,7 +759,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oCardDialog.destroy()
 
     @staticmethod
-    def _popup_exp(_oButton, oSelector, dKnownPrintings, dPrintingCards):
+    def _popup_exp(_oButton, oSelector, dPrintingCards):
         """Popup the list of cards from the selected replacement expansion"""
         sNewName = oSelector.get_active_text()
         if sNewName == NO_EXP_AND_PRINT or sNewName is None:
@@ -772,7 +768,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oLabel = gtk.Label('No Expansion selected')
         else:
             sTitle = "Cards with expansion %s" % sNewName
-            oPrint = dKnownPrintings[sNewName]
             # Show all cards with the given printing
             aCards = dPrintingCards[sNewName]
             oLabel = gtk.Label('\n'.join(sorted(aCards)))

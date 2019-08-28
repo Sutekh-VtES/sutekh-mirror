@@ -66,7 +66,7 @@ class MultiPaneWindow(gtk.Window):
         self.show_all()
         self.connect('key-press-event', self.key_press)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     # Needed for Backup plugin
     focussed_pane = property(fget=lambda self: self._oFocussed,
@@ -74,7 +74,7 @@ class MultiPaneWindow(gtk.Window):
     mainwindow = property(fget=lambda self: self,
                           doc="Return reference to the main window")
 
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def _clear_frames(self):
         """Clear out all existing frames (loop over copies of the list)"""

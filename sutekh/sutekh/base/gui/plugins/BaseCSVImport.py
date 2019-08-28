@@ -113,7 +113,7 @@ class BaseCSVImport(BasePlugin):
         """Update the column selection options for a new file."""
         sFile = oFileChooser.get_filename()
 
-        # pylint: disable=W0703
+        # pylint: disable=broad-except
         # We want to catch all exceptions here
         try:
             fIn = open(sFile, "rb")
@@ -185,10 +185,10 @@ class BaseCSVImport(BasePlugin):
            """
         if oResponse == gtk.RESPONSE_OK:
 
-            # pylint: disable=W0632
+            # pylint: disable=unbalanced-tuple-unpacking
             # pylint thinks _get_cols isn't returning a list
             iCardNameColumn, iCountColumn, iExpansionColumn = self._get_cols()
-            # pylint: enable=W0632
+            # pylint: enable=unbalanced-tuple-unpacking
 
             if iCardNameColumn is None or iCountColumn is None:
                 sMsg = ("Importing a CSV file requires valid columns for both"
@@ -202,7 +202,7 @@ class BaseCSVImport(BasePlugin):
 
             sFile = self.oFileChooser.get_filename()
 
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # We want to catch all exceptions here
             try:
                 fIn = open(sFile, "rb")

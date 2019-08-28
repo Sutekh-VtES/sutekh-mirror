@@ -458,7 +458,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
                 sListHead = "%i." % self._aListCounters[-1]
             self._sText = sListHead + ' '
         elif sName == 'img':
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we want to catch all errors here
             try:
                 oFile = self._fLinkLoader(oAttrs['src'])
@@ -725,7 +725,7 @@ class HTMLViewDialog(SutekhDialog):
         else:
             sPos = None
         if sFile:
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we really do want all the exceptions
             try:
                 fInput = self._fLinkLoader(sFile)

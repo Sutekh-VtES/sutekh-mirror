@@ -41,13 +41,13 @@ class CardSetManagementFrame(BasicFrame):
 
         self.add_parts()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     view = property(fget=lambda self: self._oController.view,
                     doc="Associated View Object")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def add_parts(self):
         """Add a list object to the frame"""

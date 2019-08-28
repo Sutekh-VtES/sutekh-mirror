@@ -37,8 +37,7 @@ LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
 # Misc utility functions
 def get_filter_type(sKeyword):
     """Get the actual filter object from the type string"""
-    # pylint: disable=W0621
-    return [x for x in PARSER_FILTERS if x.keyword == sKeyword][0]
+    return [y for y in PARSER_FILTERS if y.keyword == sKeyword][0]
 
 
 def get_filters_for_type(sFilterType):
@@ -243,7 +242,7 @@ class FilterYaccParser(object):
 # Wrapper objects around the parser
 class FilterParser(object):
     """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
-    # pylint: disable=R0903
+    # pylint: disable=too-few-public-methods
     # This really does only need the 1 public method
     _oGlobalLexer = None
     _oGlobalParser = None
@@ -388,29 +387,25 @@ class FilterNode(AstBaseNode):
         """Get filter values"""
         if self.oExpression:
             return self.oExpression.get_values()
-        else:
-            return None
+        return None
 
     def get_filter(self):
         """Get filter"""
         if self.oExpression:
             return self.oExpression.get_filter()
-        else:
-            return None
+        return None
 
     def get_invalid_values(self):
         """Get values that are invalid for this filter"""
         if self.oExpression:
             return self.oExpression.get_invalid_values()
-        else:
-            return None
+        return None
 
     def get_type(self):
         """Get filter type"""
         if self.oExpression:
             return self.oExpression.get_type()
-        else:
-            return None
+        return None
 
 
 class OperatorNode(AstBaseNode):
@@ -635,8 +630,7 @@ class BinOpNode(OperatorNode):
             return aRight
         elif aRight is None:
             return aLeft
-        else:
-            return aLeft + aRight
+        return aLeft + aRight
 
     def get_values(self):
         """Get values from both children"""
@@ -646,13 +640,12 @@ class BinOpNode(OperatorNode):
             return aRight
         elif aRight is None:
             return aLeft
-        else:
-            # Add the extra brackets so the display in the dialog
-            # reflects the correct precedence
-            aResults = [ValueObject('(', None)] + aLeft + \
-                [ValueObject(') ' + self.oOp + ' (', self)] + \
-                aRight + [ValueObject(')', None)]
-            return aResults
+        # Add the extra brackets so the display in the dialog
+        # reflects the correct precedence
+        aResults = [ValueObject('(', None)] + aLeft + \
+            [ValueObject(') ' + self.oOp + ' (', self)] + \
+            aRight + [ValueObject(')', None)]
+        return aResults
 
     def get_filter(self):
         """Get the filter expression. Handle None children"""

@@ -44,7 +44,7 @@ class FilteredView(CustomDragIconView):
 
     # Introspection
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties (for plugins)
     mainwindow = property(fget=lambda self: self._oMainWin,
                           doc="The parent window used for dialogs, etc.")
@@ -54,7 +54,7 @@ class FilteredView(CustomDragIconView):
                      doc="The frame used by the view.")
     filterdialog = property(fget=lambda self: self._oFilterDialog,
                             doc="The filter dialog.")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def load(self):
         """Called when the model needs to be reloaded."""

@@ -100,7 +100,7 @@ class BaseBackup(BasePlugin):
 
     def handle_backup_response(self, sFilename):
         """Handle response from backup dialog"""
-        # pylint: disable=W0703
+        # pylint: disable=broad-except
         # we really do want all the exceptions
         try:
             oLogHandler = SutekhCountLogHandler()
@@ -169,7 +169,7 @@ class BaseBackup(BasePlugin):
                 self.parent.update_to_new_db()
                 oProgressDialog.destroy()
                 self.parent.restore_editable_panes(aEditable)
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we really do want all the exceptions
             except Exception as oException:
                 # Undo effects of prepare for

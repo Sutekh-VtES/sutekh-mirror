@@ -15,7 +15,6 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import ensure_dir_exists
-from sutekh.base.io.UrlOps import urlopen_with_timeout
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImageConfigDialog,
                                                 BaseImagePlugin,
@@ -151,6 +150,9 @@ class CardImageFrame(BaseImageFrame):
 
     def _parse_date_data(self, sDateData):
         """Parse date file into entries"""
+        # pylint: disable=broad-except
+        # We do want to catch all errors here, so we log failures
+        # correctly.
         try:
             self._dDateCache = {}
             for sLine in sDateData.splitlines():

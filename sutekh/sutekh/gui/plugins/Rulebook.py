@@ -216,7 +216,7 @@ class RulebookPlugin(SutekhPlugin):
         iResponse = oConfigDialog.run()
 
         if iResponse == gtk.RESPONSE_OK:
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we want to catch all errors here
             try:
                 sData = oConfigDialog.get_data()

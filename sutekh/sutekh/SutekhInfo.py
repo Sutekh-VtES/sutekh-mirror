@@ -10,7 +10,7 @@
 from pkg_resources import resource_string
 
 
-# pylint: disable=R0903,missing-docstring
+# pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo(object):
     VERSION = (0, 9, 5, 'alpha', 0)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])

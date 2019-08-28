@@ -42,7 +42,7 @@ class SLDeckParser(CardSetParser):
     oCardLineRegexp = re.compile(r'^(?P<num>[0-9]+)\s+(?P<name>.*)$')
 
     def __init__(self):
-        # pylint: disable=W0231
+        # pylint: disable=super-init-not-called
         # No need to call IOBase.__init__()
         self._dSectionParsers = {
             'title': self._title_section,

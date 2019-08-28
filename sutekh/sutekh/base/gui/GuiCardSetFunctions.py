@@ -203,7 +203,7 @@ def write_cs_to_file(oCardSet, oWriter, sFileName):
 
        Split out as a separate function so the plugins which tweak the
        Export Dialog can still use the same logic."""
-    # pylint: disable=W0703
+    # pylint: disable=broad-except
     # we really do want all the exceptions
     fOut = None
     try:
@@ -244,7 +244,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     """Create a card set from the given file object."""
     oHolder = CardSetHolder()
 
-    # pylint: disable=W0703
+    # pylint: disable=broad-except
     # we really do want all the exceptions
     try:
         oParser.parse(fIn, oHolder)
@@ -346,7 +346,7 @@ def _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
             if not check_cs_exists(sParentName):
                 # Missing parent, so it the file is invalid
                 return False
-        # pylint: disable=W0703
+        # pylint: disable=broad-except
         # we really do want all the exceptions
         try:
             oHolder = oZipFile.read_single_card_set(sFilename)

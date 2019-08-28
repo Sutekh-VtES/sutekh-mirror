@@ -204,7 +204,7 @@ class CardSetCardListModel(CardListModel):
         # No controller, so return consistent, but not per-pane unique, id
         return "pane-%s" % (self.cardset_id,)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
 
     frame_id = property(fget=__get_frame_id,
@@ -221,7 +221,7 @@ class CardSetCardListModel(CardListModel):
     cardset = property(fget=lambda self: self._oCardSet,
                        doc="Associated card set")
 
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def cleanup(self):
         # FIXME: We should make sure that all the references go
@@ -287,10 +287,10 @@ class CardSetCardListModel(CardListModel):
             self._bPhysicalFilter = self.configfilter.is_physical_card_only()
 
         oCardIter = self.get_card_iterator(self.get_current_filter())
-        # pylint: disable=W0632
+        # pylint: disable=unbalanced-tuple-unpacking
         # pylint misinterprets the number of iterms grouped_card_iter returns
         oGroupedIter, aCards = self.grouped_card_iter(oCardIter)
-        # pylint: enable=W0632
+        # pylint: enable=unbalanced-tuple-unpacking
         self.oEmptyIter = None
 
         # Disable sorting while we do the insertions
@@ -1132,10 +1132,10 @@ class CardSetCardListModel(CardListModel):
         oCardIter = self.get_card_iterator(oCardFilter)
 
         iCnt = 0  # Since we'll test this later, and may skip assigning it
-        # pylint: disable=W0632
+        # pylint: disable=unbalanced-tuple-unpacking
         # pylint misinterprets the number of iterms grouped_card_iter returns
         oGroupedIter, _aCards = self.grouped_card_iter(oCardIter)
-        # pylint: enable=W0632
+        # pylint: enable=unbalanced-tuple-unpacking
         bPostfix = self._oConfig.get_postfix_the_display()
 
         # Iterate over groups

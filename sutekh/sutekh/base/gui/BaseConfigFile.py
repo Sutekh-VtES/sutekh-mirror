@@ -407,8 +407,9 @@ class BaseConfigFile(object):
             return self._oConfig['filters'][sKey]['vars'].dict()
         return None
 
-    # pylint: disable=W0102
-    # W0102 - {} is the right thing here
+    # pylint: disable=dangerous-default-value
+    # {} is the default here, since we don't change it in the function
+    # and a dictionary is what the config file expects a dictionary.
     def add_filter(self, sKey, sQuery, dVars={}):
         """Add a filter to the config file."""
         sKey = sKey.lower()
@@ -420,7 +421,7 @@ class BaseConfigFile(object):
             self._oConfig['filters'][sKey] = dFilter
             MessageBus.publish(CONFIG_MSG, 'add_filter', sKey, sQuery)
 
-    # pylint: enable=W0102
+    # pylint: enable=dangerous-default-value
 
     def remove_filter(self, sKey, sFilter):
         """Remove a filter from the file"""

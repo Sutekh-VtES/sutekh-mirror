@@ -237,8 +237,8 @@ class BaseZipImport(BasePlugin):
     def _read_heart(self, oFile, dSelected, oLogger, iClashMode):
         """Heart of the reading loop - ensure we read parents before
            children, and correct for renames that occur."""
-        # pylint: disable=W0703, too-many-locals
-        # W0703: we really do want all the exceptions
+        # pylint: disable=broad-except, too-many-locals
+        # we really do want all the exceptions
         # Use track a lot of state, so many local variables
         dRemaining = {}
         dRenames = {}

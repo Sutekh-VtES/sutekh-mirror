@@ -207,7 +207,7 @@ class AppMainWindow(MultiPaneWindow):
 
     # pylint: enable=attribute-defined-outside-init
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     # Needed for Backup plugin
     cardLookup = property(fget=lambda self: self._oCardLookup,
@@ -226,7 +226,7 @@ class AppMainWindow(MultiPaneWindow):
     card_text_pane = property(fget=lambda self: self._oCardTextPane,
                               doc="Return reference to the card text pane")
 
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
         """Add a key to the list of menu items to manage."""

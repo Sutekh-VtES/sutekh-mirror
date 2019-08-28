@@ -66,10 +66,10 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def _check_cache_totals(self, oCS, oModelCache, oModelNoCache, sMode):
         """Reload the models and check the totals match"""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # allow access to _dCache for testing here
         oModelNoCache._dCache = {}
-        # pylint: enable=W0212
+        # pylint: enable=protected-access
         oModelCache.load()
         oModelNoCache.load()
         tCacheTotals = (
@@ -97,7 +97,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     # Need all these arguments here
     def _format_error(self, sErrType, oTest1, oTest2, oModel, oPCS=None):
         """Format an informative error message"""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # Need info from _oCardSet here
         if oPCS:
             sModel = "Changing card set %s\n" % oPCS.name
@@ -233,7 +233,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes(self, oPCS, aModels):
         """Loop over all the possible modes of the model, calling
            _add_remove_cards to test the model."""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access protected methods
         dCountInfo = {}
         for oModel in aModels:
@@ -269,8 +269,8 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable=W0212, R0101, too-many-branches, too-many-locals
-        # W0212 - We need to access protected methods
+        # pylint: disable=protected-access, R0101, too-many-branches, too-many-locals
+        # We need to access protected methods
         # R0101 - We need all these blocks to cover all the cases
         # covering all the cases requires a lot of branches and local vars
         for oModel in aModels:
@@ -347,7 +347,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_zero_filter_modes(self, oModel):
         """Loop over all the possible modes of the model, calling
            a zero result filters to test the model."""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access protected methods
         for bEditFlag in (False, True):
             oModel.bEditable = bEditFlag
@@ -435,7 +435,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                          (oEtienne.abstractCard.id, None, 1, 1))
         self.assertEqual(oModel.get_drag_info_from_path('0'),
                          (None, None, None, 0))
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access this protected methods
         oModel._change_level_mode(NO_SECOND_LEVEL)
         oModel.load()
@@ -454,7 +454,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_db_listeners(self):
         """Test that the model responds to changes to the card set hierarchy"""
         # We use an empty card set for these tests, to minimise time taken
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access protected methods
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
@@ -498,7 +498,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_config_listener(self):
         """Test that the model responds to the profile changes as expected"""
         # We use an empty card set for these tests, to minimise time taken
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access protected methods
         PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
@@ -612,7 +612,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                         BaseFilters.CardSetMultiCardCountFilter(
                             (['2', '3'], self.aNames[0])),
                        ):
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # we need to access protected methods
             oModel = self._get_model(self.aNames[0])
             oModel._oConfigFilter = oFilter
@@ -622,7 +622,7 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_cache_simple(self):
         """Test that the special persistent caches don't affect results"""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # we need to access protected methods
         _oCache = SutekhObjectCache()
         oPCS = self._setup_simple()
@@ -667,7 +667,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     def test_cache_complex(self):
         """Test that the special persistent caches don't affect results with
            more complex card set relationships"""
-        # pylint: disable=W0212, too-many-locals
+        # pylint: disable=protected-access, too-many-locals
         # we need to access protected methods
         # We loop over a lot of combinations, so lots of local variables
         _oCache = SutekhObjectCache()
@@ -966,7 +966,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                             (['2', '3'], self.aNames[0])),
                        ):
             for sName in self.aNames[:4]:
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # we need to access protected methods
                 oModel = self._get_model(sName)
                 oModel._oConfigFilter = oFilter
@@ -986,7 +986,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         for oFilter in (BaseFilters.CardTypeFilter('Vampire'),
                         BaseFilters.PhysicalExpansionFilter('Sabbat')):
             for sName in self.aNames[:4]:
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # we need to access protected methods
                 oModel = self._get_model(sName)
                 oModel._oConfigFilter = oConfigFilter
@@ -998,10 +998,10 @@ class CardSetListModelTests(ConfigSutekhTest):
 
     def test_filters(self):
         """Test filtering for the card set"""
-        # pylint: disable=too-many-statements, W0212
+        # pylint: disable=too-many-statements, protected-access
         # Want a long, sequential test case to reduce
         # repeated setups, so it has lots of lines
-        # W0212: We need to access protected methods
+        # We need to access protected methods
         # Note that these tests are with the illegal card filter enabled
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])

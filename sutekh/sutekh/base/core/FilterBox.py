@@ -24,7 +24,7 @@ class FilterBoxModel(list):
     AND, OR = 'and', 'or'
     # pylint: enable=invalid-name
 
-    # pylint: disable=W0231
+    # pylint: disable=super-init-not-called
     # no point to calling list's __init__
     def __init__(self, oAST, sFilterType, oVarNameMaker=None):
         """Initialise a filter box from an AST filter representation."""
@@ -303,10 +303,10 @@ class FilterBoxItem(object):
                 dVars[self.sVariableName] = ['"%s"' % escape(sValue)
                                              for sValue in self.aCurValues]
             elif self.iValueType == self.LIST_FROM:
-                # pylint: disable=W0632
+                # pylint: disable=unbalanced-tuple-unpacking
                 # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
-                # pylint: enable=W0632
+                # pylint: enable=unbalanced-tuple-unpacking
                 if aFrom:
                     aFrom = ['"%s"' % escape(x) for x in aFrom]
                     if aValues:
@@ -339,10 +339,10 @@ class FilterBoxItem(object):
                 sValues = ",".join(['"%s"' % escape(sValue) for sValue in
                                     self.aCurValues])
             elif self.iValueType == self.LIST_FROM:
-                # pylint: disable=W0632
+                # pylint: disable=unbalanced-tuple-unpacking
                 # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
-                # pylint: enable=W0632
+                # pylint: enable=unbalanced-tuple-unpacking
                 sFromValues = '"-1"'
                 sFrom = '""'  # Sentinals
                 if aValues:

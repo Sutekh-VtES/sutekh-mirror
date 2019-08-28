@@ -47,7 +47,7 @@ class DummyCardSetController(object):
     def __init__(self):
         self.bReload = False
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
 
     view = property(fget=lambda self: self)
@@ -55,7 +55,7 @@ class DummyCardSetController(object):
     pane_id = property(fget=lambda self: 10)
     config_frame_id = property(fget=lambda self: 'pane10')
 
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     # pylint: disable=no-self-use, missing-docstring
     # dummy functions, so they're empty
@@ -161,7 +161,7 @@ def get_card_names(oModel):
 
 def reset_modes(oModel):
     """Set the model to the minimal state."""
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # we need to access protected methods
     # The database signal handling means that all CardSetListModels
     # associated with a card set will update when send_changed_signal is

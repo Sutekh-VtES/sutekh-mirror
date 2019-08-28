@@ -6,10 +6,10 @@
 
 """classes needed for the progress dialog"""
 
-# pylint: disable=W0402
+# pylint: disable=deprecated-module
 # we need data from the string module
 import string
-# pylint: enable=W0402
+# pylint: enable=deprecated-module
 from logging import Handler
 
 import gtk

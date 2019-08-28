@@ -76,8 +76,8 @@ class CardSetHolder(object):
         """Set the name, ensuring we have santised any encoding issues"""
         self._sName = self._sanitise_text(sValue, 'the card set name', True)
 
-    # pylint: disable=W0212, invalid-name
-    # W0212: we delibrately allow access via these properties
+    # pylint: disable=protected-access, invalid-name
+    # we delibrately allow access via these properties
     # we use the column naming conventions
     name = property(fget=lambda self: self._sName,
                     fset=_set_name)
@@ -94,7 +94,7 @@ class CardSetHolder(object):
                       fset=lambda self, x: setattr(self, '_sParent', x))
     num_entries = property(fget=lambda self: len(self._dCards))
 
-    # pylint: enable=W0212, invalid-name
+    # pylint: enable=protected-access, invalid-name
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -192,7 +192,7 @@ class CardSetHolder(object):
 class CardSetWrapper(CardSetHolder):
     """CardSetHolder class which provides a read-only wrapper of a card set."""
 
-    # pylint: disable=W0231
+    # pylint: disable=super-init-not-called
     # We don't want to call the base __init__
     def __init__(self, oCS):
         self._oCS = oCS
@@ -227,8 +227,8 @@ class CardSetWrapper(CardSetHolder):
             return None
         return self._oCS.parent.name
 
-    # pylint: disable=W0212, invalid-name
-    # W0212: we delibrately allow access via these properties
+    # pylint: disable=protected-access, invalid-name
+    # we delibrately allow access via these properties
     # we use the column naming conventions
     name = property(fget=lambda self: self._get_cs_attr('name'))
     author = property(fget=lambda self: self._get_cs_attr('author'))
@@ -239,7 +239,7 @@ class CardSetWrapper(CardSetHolder):
     num_entries = property(fget=lambda self: len(self._oCS.cards))
     cards = property(fget=lambda self: self._oCS.cards)
 
-    # pylint: enable=W0212, invalid-name
+    # pylint: enable=protected-access, invalid-name
 
     def get_parent_pcs(self):
         """Get the parent PCS, or none if no parent exists."""
@@ -250,9 +250,11 @@ class CachedCardSetHolder(CardSetHolder):
     """CardSetHolder class which supports creating and using a
        cached dictionary of Lookup results.
        """
-    # pylint: disable=W0102, W0221
-    # W0102 - {} is the right thing here
-    # W0221 - We need the extra argument
+    # pylint: disable=dangerous-default-value, arguments-differ
+    # {} as default isn't great, but it gives us a persistent cache to use
+    # if one isn't provided, and allows us to maintain compatibility with
+    # code expecting a non-cached CardSetHolder
+    # We need the extra argument to support caching
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP, dLookupCache={}):
         """Create a Physical Card Set.
 

@@ -7,12 +7,13 @@
 """Menu for the Main Application Window"""
 
 import gtk
-from sqlobject import sqlhub
 from .ProfileManagement import ProfileMngDlg
 from .SutekhMenu import SutekhMenu
 from .SutekhFileWidget import ImportDialog
 from .GuiCardSetFunctions import import_cs
 from .SutekhDialog import do_complaint_error
+
+from ..Utility import is_memory_db
 
 
 class AppMenu(SutekhMenu):
@@ -43,13 +44,6 @@ class AppMenu(SutekhMenu):
 
         # subclasses need to provide this
         self.cIdentifyFile = None
-
-    def is_memory_db(self):
-        """Helper function to test if we are using a memory db.
-
-           returns True if this is a memory db"""
-        return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
-                                                  "sqlite:/:memory:"]
 
     # pylint: disable=attribute-defined-outside-init
     # these are called from __init__
@@ -147,7 +141,7 @@ class AppMenu(SutekhMenu):
             "Import new Full Card List and rulings",
             oDownloadMenu, self.do_import_new_card_list)
         # Need to have memory connection available for this
-        if self.is_memory_db():
+        if is_memory_db():
             oImportItem.set_sensitive(False)
 
     def _create_pane_menu(self):

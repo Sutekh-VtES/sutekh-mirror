@@ -158,13 +158,13 @@ class BaseCardTextView(gtk.TextView):
         logging.info('Pango Font Description : %s',
                      oContext.get_font_description())
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
 
     text_buffer = property(fget=lambda self: self._oBuf,
                            doc="Return reference to text buffer")
 
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def update_to_new_db(self):
         """Handle any database changes as required"""

@@ -14,8 +14,8 @@ from .BaseTables import LookupHints
 # Base Classes
 class AbbrevMeta(type):
     """Meta class for the abbreviation classes"""
-    # pylint: disable=W0231
-    # W0231 - no point in calling type's init
+    # pylint: disable=super-init-not-called
+    # no point in calling type's init
     def __init__(cls, _sName, _aBases, _dDict):
         if cls.dKeys:
             cls.make_lookup()

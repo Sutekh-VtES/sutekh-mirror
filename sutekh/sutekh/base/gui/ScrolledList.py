@@ -44,10 +44,10 @@ class ScrolledListView(CustomDragIconView):
         if bSpecialSelect:
             self._oSelection.connect('changed', self.row_selected)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # allow access via these properties
     store = property(fget=lambda self: self._oModel, doc="List of values")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def get_selected_data(self):
         """Get the list of selected values"""
@@ -95,11 +95,11 @@ class ScrolledList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # allow access via these properties
     view = property(fget=lambda self: self._oTreeView,
                     doc="Associated View Object")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def set_select_single(self):
         """set selection to single mode"""

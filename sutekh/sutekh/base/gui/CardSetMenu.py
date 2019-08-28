@@ -45,8 +45,8 @@ class CardSetMenu(CardListMenu):
         MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
 
-    # pylint: disable=W0212, invalid-name
-    # W0212: We allow access via these properties
+    # pylint: disable=protected-access, invalid-name
+    # We allow access via these properties
     # different convention for property names
     name = property(fget=lambda self: self._oController.view.sSetName,
                     doc="Associated Card Set Name")
@@ -59,7 +59,7 @@ class CardSetMenu(CardListMenu):
                           doc="Cardset ID of associated card set "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, invalid-name
+    # pylint: enable=protected-access, invalid-name
 
     # pylint: disable=attribute-defined-outside-init
     # these methods are called from __init__, so it's OK

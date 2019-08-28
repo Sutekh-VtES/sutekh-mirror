@@ -516,11 +516,11 @@ class DBUpgradeManager(BaseDBUpgradeManager):
     def _copy_discipline_pair(self, oOrigConn, oTrans):
         """Copy DisciplinePair, assuming versions match"""
         for oObj in DisciplinePair.select(connection=oOrigConn):
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _connection here
             # Force for SQLObject >= 0.11.4
             oObj._connection = oOrigConn
-            # pylint: enable=W0212
+            # pylint: enable=protected-access
             _oCopy = DisciplinePair(id=oObj.id, level=oObj.level,
                                     discipline=oObj.discipline,
                                     connection=oTrans)
@@ -548,20 +548,20 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 self._copy_rarity_pair(oOrigConn, oTrans)
             elif oVer.check_tables_and_versions([Expansion], [3], oOrigConn):
                 for oObj in RarityPair_Ev3.select(connection=oOrigConn):
-                    # pylint: disable=W0212
+                    # pylint: disable=protected-access
                     # Need to access _connection here
                     oObj._connection = oOrigConn
-                    # pylint: enable=W0212
+                    # pylint: enable=protected-access
                     _oCopy = RarityPair(id=oObj.id,
                                         expansionID=oObj.expansion.id,
                                         rarityID=oObj.rarity.id,
                                         connection=oTrans)
             elif oVer.check_tables_and_versions([Expansion], [4], oOrigConn):
                 for oObj in RarityPair_Ev4.select(connection=oOrigConn):
-                    # pylint: disable=W0212
+                    # pylint: disable=protected-access
                     # Need to access _connection here
                     oObj._connection = oOrigConn
-                    # pylint: enable=W0212
+                    # pylint: enable=protected-access
                     _oCopy = RarityPair(id=oObj.id,
                                         expansionID=oObj.expansion.id,
                                         rarityID=oObj.rarity.id,
@@ -653,11 +653,11 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             sqlhub.processConnection = oTempConn
             for oCard in AbstractCard_v5.select(
                     connection=oOrigConn).orderBy('id'):
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Need to access _connection here
                 # force issue for SQObject >= 0.11.4
                 oCard._connection = oOrigConn
-                # pylint: enable=W0212
+                # pylint: enable=protected-access
 
                 # pylint: disable=no-member
                 # SQLObject confuses pylint
@@ -694,7 +694,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 for oData in oCard.artists:
                     oCardCopy.addArtist(oData)
                 oCardCopy.syncUpdate()
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Need to access _parent here
                 oCardCopy._parent.syncUpdate()
                 oLogger.info('copied AC %s', oCardCopy.name)
@@ -704,11 +704,11 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             sqlhub.processConnection = oTempConn
             for oCard in AbstractCard_v6.select(
                     connection=oOrigConn).orderBy('id'):
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Need to access _connection here
                 # force issue for SQObject >= 0.11.4
                 oCard._connection = oOrigConn
-                # pylint: enable=W0212
+                # pylint: enable=protected-access
 
                 # pylint: disable=no-member
                 # SQLObject confuses pylint
@@ -745,7 +745,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 for oData in oCard.artists:
                     oCardCopy.addArtist(oData)
                 oCardCopy.syncUpdate()
-                # pylint: disable=W0212
+                # pylint: disable=protected-access
                 # Need to access _parent here
                 oCardCopy._parent.syncUpdate()
                 oLogger.info('copied AC %s', oCardCopy.name)

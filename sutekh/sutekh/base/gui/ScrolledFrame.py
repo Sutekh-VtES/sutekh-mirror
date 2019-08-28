@@ -32,10 +32,10 @@ class ScrolledFrame(BasicFrame):
         self.add_parts()
         self.set_name(self._sName.lower())
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # allow access via these properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def add_parts(self):
         """Add Widget + title widgets to the Frame."""

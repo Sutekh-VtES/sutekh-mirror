@@ -52,7 +52,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
         oIntermediateTable = Table(self.intermediateTable)
         oJoinColumn = getattr(oIntermediateTable, self.joinColumn)
         oOtherColumn = getattr(oIntermediateTable, self.otherColumn)
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # We need to access _connection here
         oConn = self.soClass._connection
 

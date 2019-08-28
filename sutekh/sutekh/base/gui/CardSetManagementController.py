@@ -28,14 +28,14 @@ class CardSetManagementController(object):
         self._oView = CardSetManagementView(self, oMainWindow)
         self._oModel = self._oView.get_model()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # explicitly allow access to these values via thesep properties
     view = property(fget=lambda self: self._oView, doc="Associated View")
     model = property(fget=lambda self: self._oModel, doc="View's Model")
     frame = property(fget=lambda self: self._oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
                           doc="Associated Type")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def create_new_card_set(self, _oWidget):
         """Create a new card set"""

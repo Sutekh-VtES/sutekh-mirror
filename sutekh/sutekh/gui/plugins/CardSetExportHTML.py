@@ -96,7 +96,7 @@ class CardSetExportHTML(SutekhPlugin):
         # pylint: disable=no-member
         # SQLObject methods confuse pylint
         if sFileName is not None:
-            # pylint: disable=W0703
+            # pylint: disable=broad-except
             # we do want to catch all exceptions here
             oCardSet = self._get_card_set()
             if not oCardSet:

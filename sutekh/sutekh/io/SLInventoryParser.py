@@ -36,7 +36,7 @@ class SLInventoryParser(CardSetParser):
         r'^(?P<have>[0-9]+)\s*;\s*(?P<want>[0-9]+)\s*;\s*(?P<name>.*)$')
 
     def __init__(self):
-        # pylint: disable=W0231
+        # pylint: disable=super-init-not-called
         # No need to call IOBase.__init__()
         self._dSectionParsers = {
             'crypt': self._crypt_section,

@@ -221,7 +221,8 @@ def main_with_args(aTheArgs):
     accordingly.
     """
     # Turn off some pylint refactoring warnings
-    # pylint: disable=too-many-statements, too-many-branches, R0911, too-many-locals
+    # pylint: disable=too-many-statements, too-many-branches
+    # pylint: disable=too-many-return-statements, too-many-locals
     oOptParser, (oOpts, aArgs) = parse_options(aTheArgs)
     sPrefsDir = prefs_dir(SutekhInfo.NAME)
 

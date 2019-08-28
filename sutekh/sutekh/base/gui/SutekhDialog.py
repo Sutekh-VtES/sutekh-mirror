@@ -182,11 +182,11 @@ class NotebookDialog(SutekhDialog):
 
         self.vbox.pack_start(self._oNotebook)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     notebook = property(fget=lambda self: self._oNotebook,
                         doc="Notebook Widget")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def add_widget_page(self, oWidget, sTabText, sMenuText=None,
                         bMarkup=False):

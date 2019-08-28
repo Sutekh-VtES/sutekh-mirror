@@ -95,8 +95,9 @@ class BasePluginManager(object):
             if issubclass(cPlugin, self.cAppPlugin):
                 # Skip plugins that don't support the current database
                 # schema
-                # We skip the check if we're not currently connected to a database,
-                # so we can import plugins to generate the docs and so forth.
+                # We skip the check if we're not currently connected to
+                # a database, so we can import plugins to generate
+                # the docs and so forth.
                 if hasattr(sqlhub, 'processConnection') and not cPlugin.check_versions():
                     continue
                 self._aPlugins.append(cPlugin)
@@ -119,7 +120,7 @@ class BasePluginManager(object):
 class PluginConfigFileListener(object):
     """Listen for messages and inform plugins when their config changes."""
 
-    # pylint: disable=W0231
+    # pylint: disable=super-init-not-called
     # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
@@ -195,7 +196,7 @@ class BasePlugin(object):
         MessageBus.subscribe(DATABASE_MSG, 'prepare_for_db_update',
                              self.prepare_for_db_update)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # we allow access to the members via these properties
     parent = property(fget=lambda self: self._oView.mainwindow,
                       doc="Parent window to use when creating dialogs.")
@@ -209,7 +210,7 @@ class BasePlugin(object):
                             doc="Icon manager.")
     config = property(fget=lambda self: self._oView.mainwindow.config_file,
                       doc="Configuration object.")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     # External API
     # These methods are entry points to the plugin

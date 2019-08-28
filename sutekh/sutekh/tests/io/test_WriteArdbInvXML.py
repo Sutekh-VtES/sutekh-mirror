@@ -15,9 +15,9 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
-# pylint: disable=W0511, C0301
-# W0511 - this is not a actual TODO item
-# C0301 - Ignore line length limits for this string
+# pylint: disable=fixme, line-too-long
+# this is not a actual TODO item
+# Ignore line length limits for this string, since it's for testing
 EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" generator="Sutekh [ %s ]">
   <date>DATE</date>
   <crypt size="6">
@@ -85,7 +85,7 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card>
   </library>
 </inventory>""" % (WriteArdbInvXML.sDatabaseVersion, SutekhInfo.VERSION_STR)
-# pylint: enable=W0511, C0301
+# pylint: enable=fixme, line-too-long
 
 
 class ArdbInvXMLWriterTests(SutekhTest):

@@ -97,11 +97,11 @@ class ScrolledProfileList(gtk.Frame):
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.show_all()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # allow access via these properties
     store = property(fget=lambda self: self._oStore, doc="List of values")
     view = property(fget=lambda self: self._oView, doc="List of values")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
 
 class ProfileMngDlg(NotebookDialog):

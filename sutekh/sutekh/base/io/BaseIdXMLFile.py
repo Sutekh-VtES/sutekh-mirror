@@ -37,7 +37,7 @@ class BaseIdXMLFile(object):
         self._sName = None
         self._sParent = None
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     name = property(fget=lambda self: self._sName,
                     doc='The name from the XML file')
@@ -52,7 +52,7 @@ class BaseIdXMLFile(object):
                           ' database')
     type = property(fget=lambda self: self._sType,
                     doc='The type of the XML data')
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def _identify_tree(self, oTree):
         """Process the ElementTree to identify the XML file type."""

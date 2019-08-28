@@ -29,14 +29,14 @@ class CardListFrame(BasicFrame):
         self._oController = None
         self._oMenu = None
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We allow access via these properties
     view = property(fget=lambda self: self._oController.view,
                     doc="Associated View Object")
     menu = property(fget=lambda self: self._oMenu, doc="Frame Menu")
     type = property(fget=lambda self: self._cModelType.sqlmeta.table,
                     doc="Frame Type")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def reload(self):
         """Reload frame contents"""

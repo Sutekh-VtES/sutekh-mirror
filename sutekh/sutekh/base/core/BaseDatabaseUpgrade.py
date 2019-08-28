@@ -329,10 +329,10 @@ class BaseDBUpgradeManager(object):
         """Copy RairtyPair, assuming versions match"""
         for oObj in LookupHints.select(connection=oOrigConn):
             # Force for SQLObject >= 0.11.4
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _connect here
             oObj._connection = oOrigConn
-            # pylint: enable=W0212
+            # pylint: enable=protected-access
             _oCopy = LookupHints(id=oObj.id, domain=oObj.domain,
                                  lookup=oObj.lookup, value=oObj.value,
                                  connection=oTrans)
@@ -341,10 +341,10 @@ class BaseDBUpgradeManager(object):
         """Copy RairtyPair, assuming versions match"""
         for oObj in RarityPair.select(connection=oOrigConn):
             # Force for SQLObject >= 0.11.4
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _connect here
             oObj._connection = oOrigConn
-            # pylint: enable=W0212
+            # pylint: enable=protected-access
             _oCopy = RarityPair(id=oObj.id, expansion=oObj.expansion,
                                 rarity=oObj.rarity, connection=oTrans)
 
@@ -413,11 +413,11 @@ class BaseDBUpgradeManager(object):
         for oCard in self.cAbstractCardCls.select(
                 connection=oOrigConn).orderBy('id'):
             # force issue for SQObject >= 0.11.4
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _parent and _connection here
             oCard._connection = oOrigConn
             oCard._parent._connection = oOrigConn
-            # pylint: enable=W0212
+            # pylint: enable=protected-access
             oCardCopy = self._make_abs_card(oCard, oTrans)
             # Copy the stuff defined in base
             for oData in oCard.rarity:
@@ -431,7 +431,7 @@ class BaseDBUpgradeManager(object):
             for oData in oCard.keywords:
                 oCardCopy.addKeyword(oData)
             oCardCopy.syncUpdate()
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _parent here
             oCardCopy._parent.syncUpdate()
             oLogger.info('copied AC %s', oCardCopy.name)
@@ -497,10 +497,10 @@ class BaseDBUpgradeManager(object):
         # SQLObject < 0.11.4 does this automatically, but later versions don't
         # We depend on this, so we force the issue
         for oSet in aSets:
-            # pylint: disable=W0212
+            # pylint: disable=protected-access
             # Need to access _connection here
             oSet._connection = oOrigConn
-            # pylint: enable=W0212
+            # pylint: enable=protected-access
         while not bDone:
             # We make sure we copy parent's before children
             # We need to be careful, since we don't retain card set IDs,
@@ -541,7 +541,7 @@ class BaseDBUpgradeManager(object):
 
     def _copy_old_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy PCS, upgrading as needed."""
-        # pylint: disable=no-member, E1103
+        # pylint: disable=no-member
         # SQLObject confuses pylint
         aMessages = []
         if oVer.check_tables_and_versions([PhysicalCardSet, PhysicalCard],

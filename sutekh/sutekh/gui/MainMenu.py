@@ -9,6 +9,8 @@
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.base.gui.AppMenu import AppMenu
 
+from sutekh.base.Utility import is_memory_db
+
 
 class MainMenu(AppMenu):
     """The Main application Menu.
@@ -28,7 +30,7 @@ class MainMenu(AppMenu):
         oCheckItem = self.create_menu_item('Check for updated cardlist',
                                            oDownloadMenu,
                                            self.check_updated_cardlist)
-        if self.is_memory_db():
+        if is_memory_db():
             # Need to have memory connection available for this
             oCheckItem.set_sensitive(False)
         self.create_menu_item('Download VTES icons', oDownloadMenu,

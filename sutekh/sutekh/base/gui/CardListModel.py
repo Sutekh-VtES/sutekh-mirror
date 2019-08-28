@@ -86,8 +86,8 @@ class CardListModel(gtk.TreeStore):
         MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
                              self.set_postfix_the_display)
 
-    # pylint: disable=W0212, invalid-name
-    # W0212 - we explicitly allow access via these properties
+    # pylint: disable=protected-access, invalid-name
+    # we explicitly allow access via these properties
     # we allow these names for properties
     cardclass = property(fget=lambda self: self._cCardClass,
                          fset=lambda self, x: setattr(self, '_cCardClass', x))
@@ -119,7 +119,7 @@ class CardListModel(gtk.TreeStore):
                           doc="Cardset ID of card list "
                               "(for selecting profiles)")
 
-    # pylint: enable=W0212, invalid-name
+    # pylint: enable=protected-access, invalid-name
 
     def cleanup(self):
         """Remove the config file listener if needed"""
@@ -363,7 +363,7 @@ class CardListModel(gtk.TreeStore):
 
            This is also responsible for handling the not legal filter case
            and any filter specified by the profile."""
-        # pylint: disable=R0911
+        # pylint: disable=too-many-return-statements
         # This is a bit combinational explosion'ish, I'm afraid, so
         # there are a lot of return statements
         if self.configfilter:

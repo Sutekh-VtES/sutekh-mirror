@@ -6,9 +6,10 @@
 
 """Parser for Lackey CCG deck format"""
 
-# pylint: disable=W0402
+# pylint: disable=deprecated-module
 # string.digits is OK
 import string
+# pylint: enable=deprecated-module
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.io.WriteLackeyCCG import lackey_name
 from sutekh.base.io.IOBase import BaseLineParser

@@ -25,7 +25,7 @@ class PhysicalCardController(object):
         self._sFilterType = 'PhysicalCard'
         self.model.set_controller(self)
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # We provide read access to these items via these properties
     view = property(fget=lambda self: self.__oView, doc="Associated View")
     model = property(fget=lambda self: self.__oModel,
@@ -33,7 +33,7 @@ class PhysicalCardController(object):
     frame = property(fget=lambda self: self.__oFrame, doc="Associated Frame")
     filtertype = property(fget=lambda self: self._sFilterType,
                           doc="Associated Type")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def cleanup(self):
         """Remove the signal handlers."""

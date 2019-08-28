@@ -51,9 +51,8 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_basic(self):
         """Set of simple tests of central part the Filter editor dialog"""
-        # pylint: disable=W0212, too-many-statements
-        # W0212: We directly access lots of internals details for testing
-        # setup
+        # pylint: disable=protected-access, too-many-statements
+        # We directly access lots of internals details for testing setup
         # Long test case to avoid repeated setups
         oParser = FilterParser()
         oDialog = DummyDialog()
@@ -170,9 +169,8 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_quoting(self):
         """Test that quotes are properly escaped from the gui widget"""
-        # pylint: disable=W0212, too-many-statements
-        # W0212: We directly access lots of internals details for testing
-        # setup
+        # pylint: disable=protected-access, too-many-statements
+        # We directly access lots of internals details for testing setup
         # Long test case to avoid repeated setups
         oParser = FilterParser()
         oDialog = DummyDialog()
@@ -203,7 +201,7 @@ class TestFilterModelPane(GuiSutekhTest):
 
     def test_widgets(self):
         """Test that various filters lead to the right type of widget"""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # We directly access lots of internals details for testing
         oParser = FilterParser()
         oDialog = DummyDialog()

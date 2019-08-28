@@ -335,8 +335,6 @@ class FakeCard(object):
            phrases and mostly handling the sect / title prefixes.
            Special cases and hard to automatically fix isses will be
            cleaned up in the special case code."""
-        # pylint: disable=E1103
-        # pyprotocols confuses pylint
         if ':' in self.oBase.text:
             sBaseText = self.oBase.text.split(':', 1)[1]
         else:

@@ -303,7 +303,7 @@ SPEC_TYPE_MAP = {
 
 def parse_spec(sConfigSpec, oValidator):
     """Parse a configobj spec into a parsed spec."""
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # While it's not ideal to use a protected method from the validator here,
     # there isn't another method for getting what we want, and upstream has
     # recommended using this method to other people

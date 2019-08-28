@@ -98,8 +98,8 @@ def pretty_xml(oElement, iIndentLevel=0):
             for oSubElement in oElement:
                 pretty_xml(oSubElement, iIndentLevel + 1)
             # Reset indentation level for last child element
-            # pylint: disable=W0631
-            # We know SubElement will exist because of the len check above
+            # pylint: disable=undefined-loop-variable
+            # We know SubElement will exist here because of the len check above
             if not oSubElement.tail or not oSubElement.tail.strip():
                 oSubElement.tail = sIndent
     else:
@@ -238,3 +238,13 @@ def get_expansion_date(oExp):
         if oPrint.name is None:
             return get_printing_date(oPrint)
     return None
+
+
+def is_memory_db():
+    """Helper function to test if we are using a memory db.
+
+       returns True if this is a memory db"""
+    return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
+                                              "sqlite:/:memory:"]
+
+

@@ -66,7 +66,7 @@ class BasicFrame(gtk.Frame):
 
         self.set_unique_id()
 
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
     # explicitly allow access to these values via thesep properties
     title = property(fget=lambda self: self._oTitleLabel.get_text(),
                      doc="Frame Title")
@@ -82,7 +82,7 @@ class BasicFrame(gtk.Frame):
                        doc="ID number for this pane (should be unique)")
     config_frame_id = property(fget=lambda self: "pane%s" % (self._iId,),
                                doc="Config frame id for this pane")
-    # pylint: enable=W0212
+    # pylint: enable=protected-access
 
     def set_unique_id(self):
         """Set a unique id for this pane"""
@@ -315,7 +315,7 @@ class BasicFrame(gtk.Frame):
 
     def minimize_to_toolbar(self, _oWidget, oEvent):
         """Minimize the frame to the toolbar on double-click."""
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         # We need to access _2BUTTON_PRESS
         if oEvent.type == gtk.gdk._2BUTTON_PRESS:
             self._oMainWindow.minimize_to_toolbar(self)

@@ -41,11 +41,11 @@ class ArdbInfo(object):
     sDatabaseVersion = 'Sutekh-20090410'
 
     sVersionString = SutekhInfo.VERSION_STR
-    # pylint: disable=W0511
+    # pylint: disable=fixme
     # this is not a actual TODO item
     # Claim same version as recent ARDB
     sFormatVersion = '-TODO-1.0'
-    # pylint: enable=W0511
+    # pylint: enable=fixme
 
     def _get_cards(self, oCardIter):
         """Create the dictionary of cards given the list of cards"""

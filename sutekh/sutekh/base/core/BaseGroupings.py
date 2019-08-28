@@ -41,10 +41,10 @@ class IterGrouping(object):
 # If you need to group PhysicalCards,
 # set fGetCard to lambda x: x.abstractCard
 
-# pylint: disable=E0602
+# pylint: disable=undefined-variable
 # pylint is confused by the lambda x: x construction
 DEF_GET_CARD = lambda x: x
-# pylint: enable=E0602
+# pylint: enable=undefined-variable
 
 
 # pylint: disable=missing-docstring
