@@ -1056,9 +1056,8 @@ class FilterBoxModelEditView(CustomDragIconView):
                oDropObj.sFilterName == oFilter.sFilterName:
             oDragContext.drag_status(oAction)
             return True
-        else:
-            oDragContext.drag_status(0)
-            return False
+        oDragContext.drag_status(0)
+        return False
 
     def _fix_highlight(self, tCurTarget):
         """Fix the highlighted row to match the actual drop target for
@@ -1071,6 +1070,8 @@ class FilterBoxModelEditView(CustomDragIconView):
             oDropPath = self._oStore.get_path(self._oStore.iter_parent(oIter))
             self.set_drag_dest_row(oDropPath, gtk.TREE_VIEW_DROP_AFTER)
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like us dropping the _'s used to mark unused parameters
     def drag_motion(self, _oWidget, oDragContext, iXPos, iYPos, _oTime):
         """Ensure we have correct row highlighted for the drag"""
         # We lift the idea of changing the drag target from
@@ -1127,6 +1128,7 @@ class FilterBoxModelEditView(CustomDragIconView):
         return True
 
     # pylint: enable=too-many-arguments
+    # pylint: enable=arguments-differ
 
     def _do_drop_value(self, sData, tRowInfo):
         """Handled dropping in new values"""

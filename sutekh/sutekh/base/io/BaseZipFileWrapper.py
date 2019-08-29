@@ -149,7 +149,7 @@ class BaseZipFileWrapper(object):
         # We try and restore the card sets ensuring parents exist
         dLookupCache = {}
         aToRead = self.oZip.infolist()
-        while len(aToRead) > 0:
+        while aToRead:
             aToRead = self.read_items(aToRead, oCardLookup, oLogger,
                                       dLookupCache)
         self._close_zip()

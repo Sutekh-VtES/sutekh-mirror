@@ -175,8 +175,7 @@ class CardListView(FilteredView):
             # no expansion info, so the expansion might as well be none.
             if iPhysCardID == -1:
                 return IPhysicalCard((oAbsCard, None))
-            else:
-                return PhysicalCard.get(iPhysCardID)
+            return PhysicalCard.get(iPhysCardID)
 
         sSource, aLines = \
             super(CardListView, self).split_selection_data(sSelectionData)
@@ -236,20 +235,19 @@ class CardListView(FilteredView):
             if self.row_expanded(oPath):
                 # Don't succeed for expanded top level items
                 return True
-            else:
-                # Need to check if any of the children match
-                oChildIter = self._oModel.iter_children(oIter)
-                while oChildIter:
-                    sChildName = self._oModel.get_name_from_iter(oChildIter)
-                    sChildName = sChildName[:iLenKey].lower()
-                    if (self.to_ascii(sChildName).startswith(sKey) or
-                            sChildName.startswith(sKey)):
-                        # Expand the row
-                        self.expand_to_path(oPath)
-                        # Bail out, as compare will find the match for us
-                        return True
-                    oChildIter = self._oModel.iter_next(oChildIter)
-                return True  # No matches, so bail
+            # Need to check if any of the children match
+            oChildIter = self._oModel.iter_children(oIter)
+            while oChildIter:
+                sChildName = self._oModel.get_name_from_iter(oChildIter)
+                sChildName = sChildName[:iLenKey].lower()
+                if (self.to_ascii(sChildName).startswith(sKey) or
+                        sChildName.startswith(sKey)):
+                    # Expand the row
+                    self.expand_to_path(oPath)
+                    # Bail out, as compare will find the match for us
+                    return True
+                oChildIter = self._oModel.iter_next(oChildIter)
+            return True  # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
         if (self.to_ascii(sCardName).startswith(sKey) or

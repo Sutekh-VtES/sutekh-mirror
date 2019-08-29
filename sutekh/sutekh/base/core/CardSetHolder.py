@@ -129,9 +129,10 @@ class CardSetHolder(object):
         aCardCnts = self._dCards.items()
         aAbsCards = oCardLookup.lookup([tCardCnt[0] for tCardCnt in aCardCnts],
                                        'Card Set "%s"' % self.name)
-        dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+        # Ordering is correct because of how we created aAbsCards
+        dNameCards = dict(zip(self._dCards, aAbsCards))
 
-        dPrintingLookup = oCardLookup.printing_lookup(self._dExpansions.keys(),
+        dPrintingLookup = oCardLookup.printing_lookup(self._dExpansions,
                                                       "Physical Card List",
                                                       self._dCardExpansions)
 
@@ -270,14 +271,11 @@ class CachedCardSetHolder(CardSetHolder):
             raise RuntimeError("No name for the card set")
 
         aCardCnts = self._dCards.items()
-        # pylint: disable=invalid-name
-        # name OK here
         aAbsCards = oCardLookup.lookup(
             [dLookupCache['cards'].get(tCardCnt[0], tCardCnt[0])
              for tCardCnt in aCardCnts],
             'Card Set "%s"' % self.name)
-        # pylint: enable=invalid-name
-        dNameCards = dict(zip(self._dCards.keys(), aAbsCards))
+        dNameCards = dict(zip(self._dCards, aAbsCards))
 
         # Update dLookupCache
         for oAbs, (sName, _iCnt) in zip(aAbsCards, aCardCnts):

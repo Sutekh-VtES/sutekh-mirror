@@ -331,6 +331,8 @@ class PhysicalCardSetParserTests(SutekhTest):
 
             # Check that the card sets have the same cards
             self.assertEqual(len(oRead.cards), len(oOrig.cards))
+            # pylint: disable=not-an-iterable
+            # SQLObject confuses pylint here
             for oCard in oOrig.cards:
                 self.assertTrue(oCard in oRead.cards,
                                 "%s and %s differ on card %s" % (

@@ -216,7 +216,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         oFullFilter = FilterAndBox([oCardFilter, oMapFilter])
 
         # pylint: disable=no-member
-        # Pyprotocols confuses pylint
+        # SQLObject confuses pylint
         dCardSets = {}
         for oMapCard in oFullFilter.select(MapPhysicalCardToPhysicalCardSet):
             oCS = oMapCard.physicalCardSet

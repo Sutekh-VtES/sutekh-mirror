@@ -19,9 +19,9 @@ from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 SpecificPhysCardIdFilter,
                                 MultiSpecificCardIdFilter,
                                 CachedFilter)
-# We use the adapters directly, rather than going through PyProtocols
+# We use the adapters directly, rather than going through singledispatch
 # because we know the types explicitly, and thus don't need the overhead
-# of PyPrortocols dispatch logic.
+# of the dispatch logic.
 from ..core.BaseTables import (PhysicalCard, PhysicalCardSet,
                                MapPhysicalCardToPhysicalCardSet)
 from ..core.BaseAdapters import (IPhysicalCard, IPhysicalCardSet,
@@ -157,10 +157,11 @@ class CardSetModelRow(object):
 
 
 class CardSetCardListModel(CardListModel):
-    # pylint: disable=too-many-public-methods, too-many-instance-attributes, W1001
+    # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # need local attributes for state
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """CardList Model specific to lists of physical cards.
 
        Handles the display of the cards, their expansions and child card set

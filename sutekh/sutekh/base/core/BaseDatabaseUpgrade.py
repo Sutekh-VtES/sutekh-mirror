@@ -583,6 +583,9 @@ class BaseDBUpgradeManager(object):
         for sCopyFunc, sName, bPassLogger in self.COPY_OLD_DB:
             fCopy = getattr(self, sCopyFunc)
             try:
+                # pylint: disable=too-many-function-args
+                # It's not possible for pylint to determine the number of
+                # parameters here
                 if bPassLogger:
                     (bOK, aNewMessages) = fCopy(oOrigConn, oTrans,
                                                 oLogger, oVer)
@@ -629,6 +632,9 @@ class BaseDBUpgradeManager(object):
             fCopy = getattr(self, sCopyFunc)
             try:
                 if bRes:
+                    # pylint: disable=too-many-function-args
+                    # It's not possible for pylint to determine the number of
+                    # parameters here
                     if bPassLogger:
                         fCopy(oOrigConn, oTrans, oLogger)
                     else:

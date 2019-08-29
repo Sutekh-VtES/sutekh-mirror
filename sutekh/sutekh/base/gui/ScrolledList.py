@@ -28,9 +28,10 @@ class ScrolledListStore(gtk.ListStore):
 
 
 class ScrolledListView(CustomDragIconView):
-    # pylint: disable=too-many-public-methods, W1001
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """Simple tree view for the ScrolledList widget"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
         if not oModel:
@@ -83,9 +84,10 @@ class ScrolledListView(CustomDragIconView):
 
 
 class ScrolledList(gtk.Frame):
-    # pylint: disable=too-many-public-methods, W1001
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
         super(ScrolledList, self).__init__(None)

@@ -169,9 +169,10 @@ def exception_handler(oType, oValue, oTraceback):
 
 class NotebookDialog(SutekhDialog):
     """Dialog with a notebook widget."""
-    # pylint: disable=too-many-public-methods, W1001
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
 
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
         super(NotebookDialog, self).__init__(sTitle, oParent, iFlags,

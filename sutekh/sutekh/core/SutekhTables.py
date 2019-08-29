@@ -7,7 +7,7 @@
 # pylint: disable=missing-docstring, too-many-lines
 # No point in docstrings for these classes, really
 
-"""The database definitions and pyprotocols adapters for Sutekh"""
+"""The Sutekh specific database definitions"""
 
 # pylint: disable=no-name-in-module
 # pylint doesn't parse sqlobject's column declaration magic correctly

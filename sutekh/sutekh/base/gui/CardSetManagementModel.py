@@ -14,9 +14,10 @@ from .BaseConfigFile import CARDSET_LIST
 
 
 class CardSetManagementModel(gtk.TreeStore):
-    # pylint: disable=too-many-public-methods, W1001
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so lots of public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """TreeModel for the card set list"""
     def __init__(self, oMainWindow):
         # We use 2 columns, one for markup, + one for the name, so we

@@ -7,7 +7,7 @@
 # pylint: disable=missing-docstring
 # No point in docstrings for these classes, really
 
-"""The base database definitions and pyprotocols adapters"""
+"""The base database definitions"""
 
 # pylint: disable=no-name-in-module
 # pylint doesn't parse sqlobject's column declaration magic correctly

@@ -246,5 +246,3 @@ def is_memory_db():
        returns True if this is a memory db"""
     return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
                                               "sqlite:/:memory:"]
-
-

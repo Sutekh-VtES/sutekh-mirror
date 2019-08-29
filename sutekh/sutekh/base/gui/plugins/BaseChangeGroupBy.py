@@ -65,7 +65,7 @@ class BaseGroupBy(BasePlugin):
     @classmethod
     def update_config(cls):
         """Add the correct list of options to the config"""
-        sOptions = ", ".join('"%s"' % sKey for sKey in cls.GROUPINGS.keys())
+        sOptions = ", ".join('"%s"' % sKey for sKey in cls.GROUPINGS)
         cls.dPerPaneConfig[cls.GROUP_BY] = ('option(%s, default="Card Type")' %
                                             sOptions)
 

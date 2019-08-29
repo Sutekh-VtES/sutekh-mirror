@@ -269,9 +269,10 @@ class CardSetListModelTests(ConfigSutekhTest):
     def _loop_modes_reparent(self, oPCS, oChildPCS, aModels):
         """Loop over all the possible modes of the models,
            reparenting the oChildPCS inbetween."""
-        # pylint: disable=protected-access, R0101, too-many-branches, too-many-locals
+        # pylint: disable=protected-access
         # We need to access protected methods
-        # R0101 - We need all these blocks to cover all the cases
+        # pylint: disable=too-many-nested-blocks, too-many-branches, too-many-locals
+        # We need all these blocks to cover all the cases
         # covering all the cases requires a lot of branches and local vars
         for oModel in aModels:
             # Ensure we start with a clean cache

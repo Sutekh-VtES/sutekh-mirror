@@ -361,7 +361,7 @@ class BaseOpeningDraw(BasePlugin):
         self._fill_hand(oHBox)
         return oHandBox
 
-    def _fill_hand(self, oBox):
+    def _fill_hand(self, oHBox):
         """Fill the Box with the details of the hand."""
         raise NotImplementedError("implement _fill_hand")
 

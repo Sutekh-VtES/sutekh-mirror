@@ -98,7 +98,8 @@ class BasePluginManager(object):
                 # We skip the check if we're not currently connected to
                 # a database, so we can import plugins to generate
                 # the docs and so forth.
-                if hasattr(sqlhub, 'processConnection') and not cPlugin.check_versions():
+                if hasattr(sqlhub, 'processConnection') and \
+                        not cPlugin.check_versions():
                     continue
                 self._aPlugins.append(cPlugin)
 
@@ -113,6 +114,7 @@ class BasePluginManager(object):
         return list(self._aPlugins)
 
     def get_plugins_for(self, cModelType):
+        """Get the list of plugins which support the given model type."""
         return [cPlugin for cPlugin in self._aPlugins
                 if cPlugin.check_model_type(cModelType)]
 
@@ -453,8 +455,7 @@ class BasePlugin(object):
            things."""
         if sInput:
             return markup_escape_text(sInput)
-        else:
-            return sInput  # pass None straight through
+        return sInput  # pass None straight through
 
     def _commit_cards(self, oCS, aCards):
         """Add a list of physiccal cards to the given card set"""

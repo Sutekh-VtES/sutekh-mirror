@@ -112,7 +112,7 @@ class SutekhMenu(gtk.MenuBar):
         # Add plugins
         for oPlugin in oPluginWindow.plugins:
             oPlugin.add_to_menu(self._dMenus, oMenu)
-        if len(oMenu.get_children()) == 0:
+        if not oMenu.get_children():
             self.remove(oMenuItem)
             del self._dMenus['Other']
         else:

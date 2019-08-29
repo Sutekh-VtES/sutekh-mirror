@@ -22,10 +22,11 @@ from .BasicFrame import BasicFrame
 
 class MultiPaneWindow(gtk.Window):
     """Window that has a configurable number of panes."""
-    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep a lot of state, so many instance attributes
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
         self.set_border_width(2)

@@ -76,12 +76,12 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
 
         for sType in MultiCardTypeFilter.get_values():
             aList = get_cards_filter(self.model, CardTypeFilter(sType))
-            if len(aList) > 0 and aList[0] in self.aLibrary:
+            if aList and aList[0] in self.aLibrary:
                 self.dCardTypes[sType] = set([oC.name for oC in aList])
 
         for sFunction in CardFunctionFilter.get_values():
             aList = get_cards_filter(self.model, CardFunctionFilter(sFunction))
-            if len(aList) > 0:
+            if aList:
                 self.dCardProperties[sFunction] = set([oC.name for oC in
                                                        aList])
         return True

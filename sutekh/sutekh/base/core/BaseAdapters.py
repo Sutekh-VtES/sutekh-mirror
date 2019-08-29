@@ -123,11 +123,12 @@ def ILookupHint(oUnknown):
 # Abbreviation lookup based adapters
 class StrAdaptMeta(type):
     """Metaclass for the string adapters."""
-    # pylint: disable=super-init-not-called, C0203
+    # pylint: disable=super-init-not-called
     # no point in calling type's init
-    # C0203 - pylint's buggy here, see
     # http://lists.logilab.org/pipermail/python-projects/2007-July/001249.html
     def __init__(cls, _sName, _aBases, _dDict):
+        # pylint: disable=no-value-for-parameter
+        # pylint incorrectly thinks this is an unbound call.
         cls.make_object_cache()
 
     # pylint: disable=attribute-defined-outside-init
@@ -263,8 +264,8 @@ class CardNameLookupAdapter(Adapter):
                         oCard = AbstractCard.byCanonicalName(
                             oLookup.value.encode('utf8').lower())
                     except SQLObjectNotFound:
-                        # Possible error in the lookup data - warn about it, but
-                        # we don't want to fail here.
+                        # Possible error in the lookup data - warn about it,
+                        # but we don't want to fail here.
                         logging.warn("Unable to create %s mapping (%s -> %s)",
                                      oLookup.domain, oLookup.lookup,
                                      oLookup.value)
@@ -292,6 +293,8 @@ class CardNameLookupAdapter(Adapter):
                 except SQLObjectNotFound as oExp:
                     # We will handle the failure case after the loop
                     continue
+            # pylint: disable=raising-bad-type
+            # We're only raising if this is not None, so we're OK
             if oExp:
                 raise oExp
         return oCard
@@ -415,6 +418,8 @@ class PrintingAdapter(Adapter):
         # pre-populate cache with mappings to default printings
         # (name is None)
         try:
+            # pylint: disable=singleton-comparison
+            # This comparison is a SQLObject construction
             for oPrinting in Printing.select(
                     PhysicalCard.q.name == None):
                 cls.__dCache[(oPrinting.expansionID, None)] = oPrinting

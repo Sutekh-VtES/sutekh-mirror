@@ -10,8 +10,6 @@
 
 """Display interesting statistics and properties of the card set."""
 
-import logging
-
 import gtk
 from sqlobject import SQLObjectNotFound
 
@@ -154,7 +152,7 @@ def _get_card_clan_multi(aCards):
                 dClan.setdefault(sClan, 0)
                 dClan[sClan] += 1
         aTypes = [x.name for x in oAbsCard.cardtype]
-        if len(aTypes) > 1:
+        if aTypes:
             sKey = "/".join(sorted(aTypes))
             dMulti.setdefault(sKey, 0)
             dMulti[sKey] += 1
@@ -333,8 +331,7 @@ def _group_backs(dCards, aCards, iNum, dBacks):
             bOK = False
     if not bOK:
         return sText, aCardsByExp
-    else:
-        return None, aCardsByExp
+    return None, aCardsByExp
 
 
 class DisciplineNumberSelect(gtk.HBox):
@@ -568,13 +565,13 @@ class AnalyzeCardList(SutekhPlugin):
                self.dCryptStats, using keys of the form 'vampire min sClass'"""
             sMax = 'max %s' % sClass
             sMin = 'min %s' % sClass
-            if len(aImbued):
+            if aImbued:
                 iIMax = self.dCryptStats['imbued ' + sMax] = max(aImbued)
                 iIMin = self.dCryptStats['imbued ' + sMin] = min(aImbued)
             else:
                 iIMax = -500
                 iIMin = 500
-            if len(aVampires):
+            if aVampires:
                 iVMax = self.dCryptStats['vampire ' + sMax] = max(aVampires)
                 iVMin = self.dCryptStats['vampire ' + sMin] = min(aVampires)
             else:
@@ -942,7 +939,7 @@ class AnalyzeCardList(SutekhPlugin):
         if iClanRequirement > 0:
             sText += '\n<span foreground = "blue">Clan/Creed</span>\n'
             sText += _format_clan('Master', iClanRequirement, dClan, iNum)
-        if len(dMulti) > 0:
+        if dMulti:
             sText += '\n' + _format_multi('Master', dMulti, iNum)
         return sText
 
@@ -976,11 +973,11 @@ class AnalyzeCardList(SutekhPlugin):
         sText += '\n<span foreground = "blue">Discipline/Virtues</span>\n'
         sText += ('Number of cards with no discipline/virtue requirement = '
                   '%d\n' % iNoneCount)
-        if len(dDisciplines) > 0:
+        if dDisciplines:
             sText += _format_disciplines('discipline', dDisciplines, iNum)
-        if len(dVirtues) > 0:
+        if dVirtues:
             sText += _format_disciplines('virtue', dVirtues, iNum)
-        if len(dMulti) > 0:
+        if dMulti:
             sText += '\n' + _format_multi(sType, dMulti, iNum)
         return sText
 

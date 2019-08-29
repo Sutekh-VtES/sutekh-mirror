@@ -18,6 +18,8 @@ class AbbrevMeta(type):
     # no point in calling type's init
     def __init__(cls, _sName, _aBases, _dDict):
         if cls.dKeys:
+            # pylint: disable=no-value-for-parameter
+            # pylint incorrectly things this is an ubbound call
             cls.make_lookup()
 
     # pylint: disable=attribute-defined-outside-init

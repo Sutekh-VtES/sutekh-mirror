@@ -135,7 +135,7 @@ def clean_empty(aMyList, aExistingList):
             # set not there, so skip
             continue
         # pylint: disable=no-member
-        # SQLObject + PyProtocols confuses pylint
+        # SQLObject confuses pylint
         if has_children(oCS):
             continue
         if len(oCS.cards) > 0:

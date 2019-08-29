@@ -94,8 +94,7 @@ class CostGrouping(IterGrouping):
             if oCard.cost:
                 if oCard.cost == -1:
                     return ['X %s' % oCard.costtype]
-                else:
-                    return ['%d %s' % (oCard.cost, oCard.costtype)]
+                return ['%d %s' % (oCard.cost, oCard.costtype)]
             return []
 
         super(CostGrouping, self).__init__(oIter, get_values)
@@ -111,8 +110,7 @@ class GroupGrouping(IterGrouping):
             if oCard.group:
                 if oCard.group != -1:
                     return ['Group %d' % oCard.group]
-                else:
-                    return ['Any Group']
+                return ['Any Group']
             return []
 
         super(GroupGrouping, self).__init__(oIter, get_values)
@@ -138,11 +136,9 @@ class GroupPairGrouping(IterGrouping):
                     elif oCard.group < iMax:
                         return [self.TEXT % (oCard.group - 1, oCard.group),
                                 self.TEXT % (oCard.group, oCard.group + 1)]
-                    else:
-                        return [self.TEXT % (oCard.group - 1, oCard.group)]
-                else:
-                    # Any Group is returned in all pairs
-                    return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
+                    return [self.TEXT % (oCard.group - 1, oCard.group)]
+                # Any Group is returned in all pairs
+                return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
             return []
 
         super(GroupPairGrouping, self).__init__(oIter, get_values)

@@ -38,10 +38,11 @@ from .DataFilesDialog import Result
 
 class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
-    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep a lot of state, so many instance attributes
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(AppMainWindow, self).__init__()
         self.set_border_width(2)
@@ -247,7 +248,7 @@ class AppMainWindow(MultiPaneWindow):
 
     def restore_from_config(self):
         """Restore all the frame form the config file."""
-        # pylint: disable=too-many-branches, too-many-locals, W9967
+        # pylint: disable=too-many-branches, too-many-locals
         # Need to consider all these cases, so many branches
         # Consequently, many local variables
         self._clear_frames()

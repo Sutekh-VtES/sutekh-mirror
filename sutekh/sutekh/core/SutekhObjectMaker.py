@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""The database definitions and pyprotocols adapters for Sutekh"""
+"""The Sutekh Card and related database objects creation helper"""
 
 from sqlobject import SQLObjectNotFound
 

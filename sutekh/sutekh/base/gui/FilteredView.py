@@ -15,10 +15,11 @@ from .CustomDragIconView import CustomDragIconView
 
 class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
-    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # We need to keep state, so many attrs
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,
         # when we come in from the GuiCardLookup, we just have oConfig

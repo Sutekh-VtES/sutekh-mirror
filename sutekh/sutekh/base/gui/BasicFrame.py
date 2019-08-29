@@ -13,9 +13,10 @@ from .MessageBus import MessageBus, DATABASE_MSG
 
 
 class BasicFrame(gtk.Frame):
-    # pylint: disable=too-many-public-methods, W1001
+    # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """The basic, blank frame for sutekh.
 
        Provides a default frame, and drag-n-drop handlind for

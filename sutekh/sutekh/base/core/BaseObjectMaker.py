@@ -4,7 +4,7 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""The base database definitions and pyprotocols adapters"""
+"""The base card and related objects creation helper"""
 
 from sqlobject import SQLObjectNotFound
 

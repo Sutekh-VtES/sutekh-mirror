@@ -16,8 +16,7 @@ from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL, EXTRA_CARD_URL,
 from sutekh.io.DataPack import find_data_pack
 from sutekh.SutekhUtility import (read_rulings, read_white_wolf_list,
                                   read_exp_info_file, read_lookup_data,
-                                  find_base_vampire, is_crypt_card,
-                                  is_vampire, do_card_checks)
+                                  do_card_checks)
 
 
 CARD_LIST_READER = DataFileReader(sName="cardlist.txt",

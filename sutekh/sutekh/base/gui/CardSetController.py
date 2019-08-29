@@ -93,7 +93,7 @@ class CardSetController(object):
             # Can't use PhysicalCardSet.remove, as that removes all the cards
             aCandCards = list(MapPhysicalCardToPhysicalCardSet.selectBy(
                 physicalCardID=oCard.id, physicalCardSetID=oThePCS.id))
-            if len(aCandCards) > 0:
+            if aCandCards:
                 # Found candidates, so remove last one
                 MapPhysicalCardToPhysicalCardSet.delete(aCandCards[-1].id)
                 oThePCS.syncUpdate()
@@ -220,8 +220,7 @@ class CardSetController(object):
             dOperation = {self.view.sSetName: aUndoCards}
             self._add_undo_operation(dOperation)
             return True
-        else:
-            return False
+        return False
 
     def change_selected_card_count(self, dSelectedData):
         """Helper function to set the selected cards to the specified number"""

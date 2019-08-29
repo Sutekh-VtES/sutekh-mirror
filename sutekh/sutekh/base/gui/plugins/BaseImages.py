@@ -180,10 +180,11 @@ class CardImagePopupMenu(gtk.Menu):
 
 
 class BaseImageFrame(BasicFrame):
-    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep quite a lot of internal state
     # can't not trigger these warning with pygtk
-    # W1001: gtk widgets aren't old-style, despite pylint's opinion
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """Frame which displays the image.
 
        We wrap a gtk.Image in an EventBox (for focus & DnD events)
@@ -552,7 +553,7 @@ class BaseImageFrame(BasicFrame):
         if sCardName != self._sCardName:
             self._set_expansion_info(oPhysCard.abstractCard)
             self._sCardName = sCardName
-        if len(self._aExpPrints) > 0:
+        if self._aExpPrints:
             if sExpPrintName in self._aExpPrints:
                 # Honour expansion from set_card_text
                 self._sCurExpPrint = sExpPrintName

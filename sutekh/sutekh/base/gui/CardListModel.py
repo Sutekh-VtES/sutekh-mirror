@@ -35,10 +35,11 @@ HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
 class CardListModel(gtk.TreeStore):
-    # pylint: disable=too-many-instance-attributes, too-many-public-methods, W1001
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # need local attributes for state
     # gtk.Widget, so many public methods
-    # W1001: gtk classes aren't old-style, but pylint thinks they are
+    # pylint: disable=property-on-old-class
+    # gtk classes aren't old-style, but pylint thinks they are
     """Provides a card list specific API for accessing a gtk.TreeStore."""
     # Use spaces to ensure it sorts first
     # Could possibly be more visually distinct, but users can filter
@@ -375,19 +376,16 @@ class CardListModel(gtk.TreeStore):
                 return FilterAndBox([self.configfilter, self.oLegalFilter])
             elif self.applyfilter and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter])
-            else:
-                # either not self.apply, or self.selectfilter is None
-                return self.configfilter
-        else:
-            if self.applyfilter and self._bHideIllegal and self.selectfilter:
-                return FilterAndBox([self.selectfilter, self.oLegalFilter])
-            elif self._bHideIllegal:
-                # either not self.apply, or self.selectfilter is None
-                return self.oLegalFilter
-            elif self.applyfilter:
-                return self.selectfilter
-            else:
-                return None
+            # either not self.apply, or self.selectfilter is None
+            return self.configfilter
+        elif self.applyfilter and self._bHideIllegal and self.selectfilter:
+            return FilterAndBox([self.selectfilter, self.oLegalFilter])
+        elif self._bHideIllegal:
+            # either not self.apply, or self.selectfilter is None
+            return self.oLegalFilter
+        elif self.applyfilter:
+            return self.selectfilter
+        return None
 
     def combine_filter_with_base(self, oOtherFilter):
         """Return the combination of oOtherFilter with the base filter.
@@ -399,8 +397,7 @@ class CardListModel(gtk.TreeStore):
             return oOtherFilter
         elif oOtherFilter is None:
             return self.basefilter
-        else:
-            return FilterAndBox([self.basefilter, oOtherFilter])
+        return FilterAndBox([self.basefilter, oOtherFilter])
 
     def get_card_name_from_path(self, oPath):
         """Get the card name associated with the current path. Handle the

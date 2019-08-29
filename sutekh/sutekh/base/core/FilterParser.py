@@ -530,8 +530,7 @@ class FilterPartNode(OperatorNode):
                     aRes.append(oVal.oValue)
         if len(aRes) > 0:
             return aRes
-        else:
-            return None
+        return None
 
     def set_values(self, aVals):
         """Set values for this filter"""

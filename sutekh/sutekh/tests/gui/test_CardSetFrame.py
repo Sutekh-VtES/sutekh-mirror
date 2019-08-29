@@ -334,6 +334,8 @@ class TestCardSetFrame(GuiSutekhTest):
             self.assertEqual(len(oColl.cards), iExpected)
         # Asset that all the remaining 2 cards are both Jyhad (No variant)
         # Ghoul retainers
+        # pylint: disable=not-an-iterable
+        # SQLObject confuses pylint here
         for oCard in oColl.cards:
             self.assertEqual(oCard.abstractCard.name, "Ghoul Retainer")
             self.assertEqual(IPrintingName(oCard), "Jyhad")
