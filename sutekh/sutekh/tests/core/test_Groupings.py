@@ -36,103 +36,129 @@ class GroupingsTests(SutekhTest):
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
 
-    def test_abstract_card_iterator(self):
-        """Test behaviour on abstract card lists"""
+    @classmethod
+    def setUpClass(cls):
+        """Setup some useful constants for the test cases"""
+        cls.aCards = list(AbstractCard.select())
 
-        aCards = list(AbstractCard.select())
+        cls.oSwallowed = IAbstractCard("Swallowed by the Night")
+        cls.oAshur = IAbstractCard("Ashur Tablets")
+        cls.oPath = IAbstractCard("The Path of Blood")
+        cls.oAire = IAbstractCard("Aire of Elation")
+        cls.oAabbt = IAbstractCard("Aabbt Kindred")
+        cls.oEarl = IAbstractCard('Earl "Shaka74" Deams')
+        cls.oShaEnnu = IAbstractCard("Sha-Ennu")
+        cls.oRaven = IAbstractCard("Raven Spy")
+        cls.oNewBlood = IAbstractCard("New Blood")
 
-        oSwallowed = IAbstractCard("Swallowed by the Night")
-        oAshur = IAbstractCard("Ashur Tablets")
-        oPath = IAbstractCard("The Path of Blood")
-        oAire = IAbstractCard("Aire of Elation")
-        oAabbt = IAbstractCard("Aabbt Kindred")
-        oEarl = IAbstractCard('Earl "Shaka74" Deams')
-        oShaEnnu = IAbstractCard("Sha-Ennu")
-        oRaven = IAbstractCard("Raven Spy")
-        oNewBlood = IAbstractCard("New Blood")
-
-        aGrp = list(NullGrouping(aCards, DEF_GET_CARD))
+    def test_null_grouping(self):
+        """Test behaviour of NullGrouping on abstract card list"""
+        aGrp = list(NullGrouping(self.aCards, DEF_GET_CARD))
         self.assertEqual(len(aGrp), 1)
-        self.assertEqual(len(aGrp[0][1]), len(aCards))
-        self.assertTrue(aGrp[0][1][0] in aCards)
+        self.assertEqual(len(aGrp[0][1]), len(self.aCards))
+        self.assertTrue(aGrp[0][1][0] in self.aCards)
 
-        aGrp = list(CardTypeGrouping(aCards, DEF_GET_CARD))
+    def test_card_type_grouping(self):
+        """Test behaviour of CardTypeGrouping on abstract card list"""
+        aGrp = list(CardTypeGrouping(self.aCards, DEF_GET_CARD))
         self.assertEqual(['Action', 'Action Modifier', 'Ally', 'Combat',
                           'Equipment', 'Imbued', 'Master',
                           'Political Action', 'Power', 'Reaction',
                           'Reflex', 'Retainer', 'Vampire'],
                          _get_top_levels(aGrp))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp,
-                                                           'Action Modifier'))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp,
-                                                      'Action Modifier'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, 'Combat'))
-        self.assertTrue(oAire not in _get_cards_for_group(aGrp, 'Combat'))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, 'Master'))
-        self.assertTrue(oPath in _get_cards_for_group(aGrp, 'Master'))
-        self.assertTrue(oAshur not in _get_cards_for_group(aGrp, 'Combat'))
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Imbued'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp, 'Imbued'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Vampire'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
+            aGrp, 'Action Modifier'))
+        self.assertTrue(self.oAire in _get_cards_for_group(
+            aGrp, 'Action Modifier'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
+            aGrp, 'Combat'))
+        self.assertTrue(self.oAire not in _get_cards_for_group(
+            aGrp, 'Combat'))
+        self.assertTrue(self.oAshur in _get_cards_for_group(
+            aGrp, 'Master'))
+        self.assertTrue(self.oPath in _get_cards_for_group(
+            aGrp, 'Master'))
+        self.assertTrue(self.oAshur not in _get_cards_for_group(
+            aGrp, 'Combat'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(
+            aGrp, 'Imbued'))
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(
+            aGrp, 'Imbued'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
+            aGrp, 'Vampire'))
 
-        aGrp = list(RarityGrouping(aCards, DEF_GET_CARD))
+    def test_rarity_grouping(self):
+        """Test behaviour of RarityGrouping on abstract card list"""
+        aGrp = list(RarityGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None not in aGrpNames)
         self.assertTrue('Fixed' in aGrpNames)
         self.assertTrue('Precon' in aGrpNames)
         self.assertTrue('Vampire' in aGrpNames)
 
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Uncommon'))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp, 'Vampire'))
-        self.assertTrue(oShaEnnu not in _get_cards_for_group(aGrp, 'Precon'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, 'Common'))
-        self.assertTrue(oRaven not in _get_cards_for_group(aGrp, 'Common'))
-        self.assertTrue(oRaven in _get_cards_for_group(aGrp, 'Precon'))
-        self.assertTrue(oRaven in _get_cards_for_group(aGrp, 'Uncommon'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, 'Uncommon'))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(aGrp, 'Vampire'))
+        self.assertTrue(self.oShaEnnu not in _get_cards_for_group(aGrp,
+                                                                  'Precon'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp,
+                                                                'Common'))
+        self.assertTrue(self.oRaven not in _get_cards_for_group(aGrp,
+                                                                'Common'))
+        self.assertTrue(self.oRaven in _get_cards_for_group(aGrp, 'Precon'))
+        self.assertTrue(self.oRaven in _get_cards_for_group(aGrp, 'Uncommon'))
 
-        aGrp = list(ExpansionGrouping(aCards, DEF_GET_CARD))
+        aGrp = list(ExpansionGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None not in aGrpNames)
         self.assertTrue('Anthology' in aGrpNames)
         self.assertTrue('Final Nights' in aGrpNames)
         self.assertTrue('Sabbat Wars' in aGrpNames)
 
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Final Nights'))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp,
-                                                         'Third Edition'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp,
-                                                           'Third Edition'))
-        self.assertTrue(oRaven in _get_cards_for_group(aGrp,
-                                                       'Lords of the Night'))
-        self.assertTrue(oRaven in _get_cards_for_group(aGrp, 'Third Edition'))
-        self.assertTrue(oRaven in _get_cards_for_group(aGrp, 'Jyhad'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
+            aGrp, 'Final Nights'))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(
+            aGrp, 'Third Edition'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
+            aGrp, 'Third Edition'))
+        self.assertTrue(self.oRaven in _get_cards_for_group(
+            aGrp, 'Lords of the Night'))
+        self.assertTrue(self.oRaven in _get_cards_for_group(
+            aGrp, 'Third Edition'))
+        self.assertTrue(self.oRaven in _get_cards_for_group(aGrp, 'Jyhad'))
 
-        aGrp = list(ArtistGrouping(aCards, DEF_GET_CARD))
+    def test_artist_grouping(self):
+        """Test behaviour of ArtistGrouping on abstract card list"""
+        aGrp = list(ArtistGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue('Rebecca Guay' in aGrpNames)
         self.assertTrue('Richard Thomas' in aGrpNames)
 
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp,
-                                                         'Richard Thomas'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(
+            aGrp, 'Richard Thomas'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
             aGrp, 'Thea Maia'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
             aGrp, 'Tom Biondillo'))
 
-        aGrp = list(KeywordGrouping(aCards, DEF_GET_CARD))
+    def test_keyword_grouping(self):
+        """Test behaviour of KeywordGrouping on abstract card list"""
+        aGrp = list(KeywordGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('3 bleed' in aGrpNames)
         self.assertTrue('trifle' in aGrpNames)
         self.assertTrue('unique' in aGrpNames)
 
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp, '3 bleed'))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp, '1 strength'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, '1 strength'))
-        self.assertTrue(oPath in _get_cards_for_group(aGrp, 'unique'))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(aGrp, '3 bleed'))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(aGrp,
+                                                              '1 strength'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp,
+                                                            '1 strength'))
+        self.assertTrue(self.oPath in _get_cards_for_group(aGrp, 'unique'))
 
-        aGrp = list(MultiTypeGrouping(aCards, DEF_GET_CARD))
-        aGrpNames = _get_top_levels(aGrp)
+    def test_multitype_grouping(self):
+        """Test behaviour of MultiTypeGrouping on abstract card list"""
+        aGrp = list(MultiTypeGrouping(self.aCards, DEF_GET_CARD))
         self.assertEqual(['Action', 'Action Modifier',
                           'Action Modifier / Combat',
                           'Ally', 'Combat', 'Combat / Reaction',
@@ -141,59 +167,80 @@ class GroupingsTests(SutekhTest):
                           'Reaction / Reflex',
                           'Retainer', 'Vampire'],
                          _get_top_levels(aGrp))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp, 'Action Modifier'))
-        self.assertTrue(oSwallowed not in _get_cards_for_group(
+        self.assertTrue(self.oAire in _get_cards_for_group(
             aGrp, 'Action Modifier'))
-        self.assertTrue(oSwallowed not in _get_cards_for_group(aGrp, 'Combat'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(
+        self.assertTrue(self.oSwallowed not in _get_cards_for_group(
+            aGrp, 'Action Modifier'))
+        self.assertTrue(self.oSwallowed not in _get_cards_for_group(
+            aGrp, 'Combat'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
             aGrp, 'Action Modifier / Combat'))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, 'Master'))
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Imbued'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Vampire'))
+        self.assertTrue(self.oAshur in _get_cards_for_group(aGrp, 'Master'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Imbued'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, 'Vampire'))
 
-        aGrp = list(ClanGrouping(aCards, DEF_GET_CARD))
+    def test_clan_grouping(self):
+        """Test behaviour of ClanGrouping on abstract card list"""
+        aGrp = list(ClanGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Abomination' in aGrpNames)
         self.assertTrue('Osebo' in aGrpNames)
         self.assertTrue('Pander' in aGrpNames)
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp,
-                                                       'Follower of Set'))
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Visionary'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
+            aGrp, 'Follower of Set'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Visionary'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp, None))
 
-        aGrp = list(DisciplineGrouping(aCards, DEF_GET_CARD))
+    def test_discipline_grouping(self):
+        """Test behaviour of DisciplineGrouping on abstract card list"""
+        aGrp = list(DisciplineGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Obfuscate' in aGrpNames)
         self.assertTrue('Vision' in aGrpNames)
 
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Vision'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, 'Obfuscate'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp, 'Obfuscate'))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Serpentis'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Presence'))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp, 'Presence'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Vision'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp,
+                                                                'Obfuscate'))
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(aGrp,
+                                                                'Obfuscate'))
+        self.assertTrue(self.oAshur in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp,
+                                                            'Serpentis'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, 'Presence'))
+        self.assertTrue(self.oAire in _get_cards_for_group(aGrp, 'Presence'))
 
-        aGrp = list(GroupPairGrouping(aCards, DEF_GET_CARD))
+    def test_group_pair_grouping(self):
+        """Test behaviour of GroupPairGrouping on abstract card list"""
+        aGrp = list(GroupPairGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Groups 1, 2' in aGrpNames)
         self.assertTrue('Groups 4, 5' in aGrpNames)
 
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Groups 4, 5'))
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Groups 3, 4'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Groups 1, 2'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Groups 2, 3'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp,
-                                                           'Groups 3, 4'))
-        self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 3, 4'))
-        self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 1, 2'))
-        self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Groups 5, 6'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(
+            aGrp, 'Groups 4, 5'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(
+            aGrp, 'Groups 3, 4'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
+            aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
+            aGrp, 'Groups 1, 2'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
+            aGrp, 'Groups 2, 3'))
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(
+            aGrp, 'Groups 3, 4'))
+        self.assertTrue(self.oNewBlood in _get_cards_for_group(
+            aGrp, 'Groups 3, 4'))
+        self.assertTrue(self.oNewBlood in _get_cards_for_group(
+            aGrp, 'Groups 1, 2'))
+        self.assertTrue(self.oNewBlood in _get_cards_for_group(
+            aGrp, 'Groups 5, 6'))
 
-        aGrp = list(ExpansionRarityGrouping(aCards, DEF_GET_CARD))
+    def test_expansion_rarity_grouping(self):
+        """Test behaviour of ExpansionRarityGrouping on abstract card list"""
+        aGrp = list(ExpansionRarityGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue('VTES : Vampire' in aGrpNames)
         self.assertTrue('Jyhad : Uncommon' in aGrpNames)
@@ -201,47 +248,55 @@ class GroupingsTests(SutekhTest):
         self.assertTrue('Sabbat Wars : Precon Only' in aGrpNames)
         self.assertTrue(None not in aGrpNames)
 
-        self.assertTrue(oAabbt in _get_cards_for_group(
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
             aGrp, 'Final Nights : Uncommon'))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(
             aGrp, 'Third Edition : Vampire'))
-        self.assertTrue(oShaEnnu not in _get_cards_for_group(
+        self.assertTrue(self.oShaEnnu not in _get_cards_for_group(
             aGrp, 'Third Edition : Precon'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
             aGrp, 'Third Edition : Common'))
-        self.assertTrue(oRaven not in _get_cards_for_group(
+        self.assertTrue(self.oRaven not in _get_cards_for_group(
             aGrp, 'Third Edition : Common'))
-        self.assertTrue(oRaven not in _get_cards_for_group(
+        self.assertTrue(self.oRaven not in _get_cards_for_group(
             aGrp, 'Third Edition : Uncommon'))
-        self.assertTrue(oRaven in _get_cards_for_group(
+        self.assertTrue(self.oRaven in _get_cards_for_group(
             aGrp, 'Third Edition : Precon'))
-        self.assertTrue(oRaven in _get_cards_for_group(
+        self.assertTrue(self.oRaven in _get_cards_for_group(
             aGrp, 'Lords of the Night : Precon'))
-        self.assertTrue(oRaven in _get_cards_for_group(
+        self.assertTrue(self.oRaven in _get_cards_for_group(
             aGrp, 'Third Edition : Precon Only'))
-        self.assertTrue(oRaven in _get_cards_for_group(
+        self.assertTrue(self.oRaven in _get_cards_for_group(
             aGrp, 'Jyhad : Uncommon'))
 
-        aGrp = list(CryptLibraryGrouping(aCards, DEF_GET_CARD))
+    def test_crypt_lib_grouping(self):
+        """Test behaviour of CryptLibraryGrouping on abstract card list"""
+        aGrp = list(CryptLibraryGrouping(self.aCards, DEF_GET_CARD))
         self.assertEqual(['Crypt', 'Library'], _get_top_levels(aGrp))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, 'Library'))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, 'Library'))
-        self.assertTrue(oPath in _get_cards_for_group(aGrp, 'Library'))
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Crypt'))
-        self.assertTrue(oEarl not in _get_cards_for_group(aGrp, 'Library'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(aGrp, 'Library'))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Crypt'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp,
+                                                                'Library'))
+        self.assertTrue(self.oAshur in _get_cards_for_group(aGrp, 'Library'))
+        self.assertTrue(self.oPath in _get_cards_for_group(aGrp, 'Library'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Crypt'))
+        self.assertTrue(self.oEarl not in _get_cards_for_group(aGrp,
+                                                               'Library'))
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(aGrp,
+                                                                'Library'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, 'Crypt'))
 
-        aGrp = list(SectGrouping(aCards, DEF_GET_CARD))
+    def test_sect_grouping(self):
+        """Test behaviour of SectGrouping on abstract card list"""
+        aGrp = list(SectGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue('Camarilla' in aGrpNames)
         self.assertTrue('Sabbat' in aGrpNames)
         self.assertTrue('Laibon' in aGrpNames)
 
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Independent'))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp, 'Sabbat'))
-        aGrp = list(TitleGrouping(aCards, DEF_GET_CARD))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp,
+                                                            'Independent'))
+        self.assertTrue(self.oAire in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(aGrp, 'Sabbat'))
+        aGrp = list(TitleGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
 
         self.assertTrue(None in aGrpNames)
@@ -249,57 +304,64 @@ class GroupingsTests(SutekhTest):
         self.assertTrue('Prince' in aGrpNames)
         self.assertTrue('Regent' in aGrpNames)
 
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oShaEnnu in _get_cards_for_group(aGrp, 'Regent'))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAire in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oShaEnnu in _get_cards_for_group(aGrp, 'Regent'))
 
-        aGrp = list(CostGrouping(aCards, DEF_GET_CARD))
+    def test_cost_grouping(self):
+        """Test behaviour of CostGrouping on abstract card list"""
+        aGrp = list(CostGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('1 pool' in aGrpNames)
         self.assertTrue('1 blood' in aGrpNames)
         self.assertTrue('3 conviction' in aGrpNames)
 
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAire in _get_cards_for_group(aGrp, '1 blood'))
-        self.assertTrue(oPath in _get_cards_for_group(aGrp, '1 pool'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAshur in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAire in _get_cards_for_group(aGrp, '1 blood'))
+        self.assertTrue(self.oPath in _get_cards_for_group(aGrp, '1 pool'))
 
-        aGrp = list(GroupGrouping(aCards, DEF_GET_CARD))
+    def test_group_grouping(self):
+        """Test behaviour of GroupGrouping on abstract card list"""
+        aGrp = list(GroupGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Group 1' in aGrpNames)
         self.assertTrue('Group 5' in aGrpNames)
         self.assertTrue('Any Group' in aGrpNames)
 
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Group 4'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAabbt in _get_cards_for_group(aGrp, 'Group 2'))
-        self.assertTrue(oNewBlood in _get_cards_for_group(aGrp, 'Any Group'))
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Group 4'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(aGrp, 'Group 2'))
+        self.assertTrue(self.oNewBlood in _get_cards_for_group(aGrp,
+                                                               'Any Group'))
 
-        aGrp = list(DisciplineLevelGrouping(aCards, DEF_GET_CARD))
+    def test_discipline_level_grouping(self):
+        """Test behaviour of DisciplineLevelGrouping on abstract card list"""
+        aGrp = list(DisciplineLevelGrouping(self.aCards, DEF_GET_CARD))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Obfuscate (inferior)' in aGrpNames)
         self.assertTrue('Obfuscate (superior)' in aGrpNames)
         self.assertTrue('Vision' in aGrpNames)
 
-        self.assertTrue(oEarl in _get_cards_for_group(aGrp, 'Vision'))
-        self.assertTrue(oSwallowed in _get_cards_for_group(
+        self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Vision'))
+        self.assertTrue(self.oSwallowed in _get_cards_for_group(
             aGrp, 'Obfuscate (superior)'))
-        self.assertTrue(oAshur in _get_cards_for_group(aGrp, None))
-        self.assertTrue(oAabbt in _get_cards_for_group(
+        self.assertTrue(self.oAshur in _get_cards_for_group(aGrp, None))
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
             aGrp, 'Serpentis (inferior)'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(
             aGrp, 'Serpentis (superior)'))
-        self.assertTrue(oAabbt in _get_cards_for_group(
+        self.assertTrue(self.oAabbt in _get_cards_for_group(
             aGrp, 'Presence (inferior)'))
-        self.assertTrue(oAabbt not in _get_cards_for_group(
+        self.assertTrue(self.oAabbt not in _get_cards_for_group(
             aGrp, 'Presence (superior)'))
-        self.assertTrue(oAire in _get_cards_for_group(
+        self.assertTrue(self.oAire in _get_cards_for_group(
             aGrp, 'Presence (superior)'))
-        self.assertTrue(oAire not in _get_cards_for_group(
+        self.assertTrue(self.oAire not in _get_cards_for_group(
             aGrp, 'Presence (inferior)'))
 
     def test_physical_card_iterator(self):
@@ -308,20 +370,19 @@ class GroupingsTests(SutekhTest):
         # We rely on the abstract card checks to cover the behaviour
         # This just sanity checks using physical card lists
 
-        aCards = list(PhysicalCard.select())
-        oAabbt = IAbstractCard("Aabbt Kindred")
+        aPhysCards = list(PhysicalCard.select())
         fGetCard = lambda x: x.abstractCard
 
-        aGrp = list(CryptLibraryGrouping(aCards, fGetCard))
+        aGrp = list(CryptLibraryGrouping(aPhysCards, fGetCard))
         self.assertEqual(len(aGrp), 2)
         self.assertEqual(['Crypt', 'Library'], _get_top_levels(aGrp))
 
-        aGrp = list(NullGrouping(aCards, fGetCard))
+        aGrp = list(NullGrouping(aPhysCards, fGetCard))
         self.assertEqual(len(aGrp), 1)
-        self.assertEqual(len(aGrp[0][1]), len(aCards))
-        self.assertTrue(aGrp[0][1][0] in aCards)
+        self.assertEqual(len(aGrp[0][1]), len(aPhysCards))
+        self.assertTrue(aGrp[0][1][0] in aPhysCards)
 
-        aGrp = list(ClanGrouping(aCards, fGetCard))
+        aGrp = list(ClanGrouping(aPhysCards, fGetCard))
         aGrpNames = _get_top_levels(aGrp)
         self.assertTrue(None in aGrpNames)
         self.assertTrue('Abomination' in aGrpNames)
@@ -330,4 +391,4 @@ class GroupingsTests(SutekhTest):
 
         aFollwers = [x.abstractCard for x in
                      _get_cards_for_group(aGrp, 'Follower of Set')]
-        self.assertTrue(oAabbt in aFollwers)
+        self.assertTrue(self.oAabbt in aFollwers)
