@@ -44,7 +44,7 @@ def replace_version(sText):
                          'Sutekh %s' % SutekhInfo.BASE_VERSION_STR)
 
 
-if __name__ == "__main__":
+def main():
     Utility.ensure_dir_exists('md')
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
@@ -52,3 +52,7 @@ if __name__ == "__main__":
     DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
     DocUtils.convert_to_markdown("textile", "md", aPlugins, replace_version)
     DocUtils.cleanup('textile')
+
+
+if __name__ == "__main__":
+    main()
