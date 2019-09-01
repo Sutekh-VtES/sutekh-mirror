@@ -71,8 +71,8 @@ def fill_string(dGroups, dInfo, dToCheck):
     sResult = ''
     aSortedList = sorted(dInfo.items(), key=lambda x: (x[1], x[0]),
                          reverse=True)
-    for sGroup, iNum in dGroups.iteritems():
-        sResult += u'%d \u00D7 %s\n' % (iNum, sGroup)
+    for sGroup, iGrpNum in dGroups.iteritems():
+        sResult += u'%d \u00D7 %s\n' % (iGrpNum, sGroup)
         for sCardName, iNum in aSortedList:
             if sCardName in dToCheck[sGroup]:
                 sResult += u'<i>\t%d \u00D7 %s</i>\n' % (iNum, sCardName)

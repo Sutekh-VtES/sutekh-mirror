@@ -20,23 +20,23 @@ class WriteArdbInvXML(WriteArdbXML):
     def _gen_tree(self, oHolder):
         """Creates the actual XML document into memory."""
         dCards = self._get_cards(oHolder.cards)
-        dVamps, dCryptStats = self._extract_crypt(dCards)
-        dLib, iLibSize = self._extract_library(dCards)
+        dBaseVamps, dCryptStats = self._extract_crypt(dCards)
+        dBaseLib, iLibSize = self._extract_library(dCards)
 
         oRoot = Element('inventory')
         self._add_date_version(oRoot)
 
         oCryptElem = SubElement(oRoot, 'crypt', size=str(dCryptStats['size']))
-        dCombinedVamps = self._group_sets(dVamps)
-        self.format_vamps(oCryptElem, dCombinedVamps)
+        dVamps = self._group_sets(dBaseVamps)
+        self.format_vamps(oCryptElem, dVamps)
         oLibElem = SubElement(oRoot, 'library', size=str(iLibSize))
-        dCombinedLib = self._group_sets(dLib)
-        self.format_library(oLibElem, dCombinedLib)
+        dLib = self._group_sets(dBaseLib)
+        self.format_library(oLibElem, dLib)
         return oRoot
 
-    def format_vamps(self, oCryptElem, dCombinedVamps):
+    def format_vamps(self, oCryptElem, dVamps):
         """Convert the Vampire dictionary into ElementTree representation."""
-        for oCard, (iNum, sSet) in sorted(dCombinedVamps.iteritems(),
+        for oCard, (iNum, sSet) in sorted(dVamps.iteritems(),
                                           key=lambda x: (x[0].name,
                                                          x[1][1], x[1][0])):
             # This won't match the ARDB ID's, unless by chance.
@@ -47,9 +47,9 @@ class WriteArdbInvXML(WriteArdbXML):
                                    spare='0', need='0')
             self._ardb_crypt_card(oCardElem, oCard, sSet)
 
-    def format_library(self, oLibElem, dCombinedLib):
+    def format_library(self, oLibElem, dLib):
         """Format the dictionary of library cards for the element tree."""
-        for oCard, (iNum, _sType, sSet) in sorted(dCombinedLib.iteritems(),
+        for oCard, (iNum, _sType, sSet) in sorted(dLib.iteritems(),
                                                   key=lambda x: (x[0].name,
                                                                  x[1][2],
                                                                  x[1][0])):

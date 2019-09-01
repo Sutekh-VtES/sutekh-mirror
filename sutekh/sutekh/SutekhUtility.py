@@ -182,6 +182,9 @@ def _check_ally_keywords(aKeywords, sKeywordType, sName):
 
 
 def do_card_checks(oAbsCard):
+    # pylint: disable=too-many-branches
+    # This is called as a single function, so there's not a lot of benfit
+    # to artifically dividing these checks further
     """Spot check cards for consisency after importing a new card list.
 
        We check the following things:

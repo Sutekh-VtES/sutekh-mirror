@@ -36,6 +36,8 @@ from sutekh.base.io.SutekhBaseHTMLParser import HolderState
 # HolderState Classes
 class NameAndAuthor(HolderState):
     """HolderState for extracting Name and Author."""
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Process the line for Name and Author - trnaisiotn to Description
            if needed."""
@@ -69,6 +71,8 @@ class NameAndAuthor(HolderState):
 
 class Description(HolderState):
     """HolderState for extracting description"""
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Process the line for the description and transition to Cards
            state if needed."""
@@ -91,6 +95,8 @@ class Cards(HolderState):
         r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
     _oAdvRe = re.compile(r'\sAdv\s')
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Extract the cards from the data.
 

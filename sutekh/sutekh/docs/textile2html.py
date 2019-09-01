@@ -44,6 +44,7 @@ def replace_version(sText):
 
 
 def main():
+    """Actually run the doc generation"""
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
     aPlugins = oPluginMngr.get_all_plugins()

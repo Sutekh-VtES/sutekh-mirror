@@ -724,6 +724,8 @@ def fix_clarification_markers(sLine):
 class WaitingForCardName(LogStateWithInfo):
     """State when we are not in a card."""
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Transition to PotentialCard if needed."""
         if sLine.startswith('Name:'):
@@ -766,6 +768,8 @@ class InCard(LogStateWithInfo):
         'weapon',
     ]
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         oCardText = None
         if ':' in sLine:
@@ -795,6 +799,8 @@ class InCard(LogStateWithInfo):
 class InExpansion(LogStateWithInfo):
     """In the expansions section."""
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Transition back to InCard if needed."""
         if sLine.startswith('[') and sLine.strip().endswith(']'):
@@ -812,6 +818,8 @@ class InExpansion(LogStateWithInfo):
 class InCardText(LogStateWithInfo):
     """In the card text section."""
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
         """Transition back to InCard if needed."""
         if sLine.startswith('Artist:') or not sLine.strip():

@@ -328,15 +328,18 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     # pylint: enable=too-many-arguments
 
+    def get_targets(self):
+        """Get the list of target anchors."""
+        return self._dTargets
+
+    # pylint: disbale=arguments-differ
+    # pylint doesn't like that we change the arguments to our naming
+    # convention
     def handle_data(self, sContent):
         """Process the character comments of an element."""
         if self._bInTitle:
             return
         self._sText += WHITE_SPACE_REGEX.sub(' ', sContent)
-
-    def get_targets(self):
-        """Get the list of target anchors."""
-        return self._dTargets
 
     # pylint: disable=too-many-branches, too-many-statements, too-many-locals
     # entity handler, so it is is a massive if..elif.. statement

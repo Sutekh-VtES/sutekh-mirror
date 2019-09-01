@@ -229,10 +229,11 @@ class BasePrint(BasePlugin):
             aMarkup.append("<u>%s:</u> (%d)" % (self._escape(sGroup), iCnt))
 
             # Fill in Cards
-            for sCardName, iCnt in sorted(dCardInfo.items()):
+            for sCardName, iCardCnt in sorted(dCardInfo.items()):
                 if self._iPrintExpansions in (NO_EXPANSION, LONG_INDENT):
                     aMarkup.append(
-                        u"  %i \u00D7 %s" % (iCnt, self._escape(sCardName)))
+                        u"  %i \u00D7 %s" % (iCardCnt,
+                                             self._escape(sCardName)))
                     if sCardName in dExpInfo:
                         for sExp, iCnt in sorted(dExpInfo[sCardName].items()):
                             aMarkup.append(

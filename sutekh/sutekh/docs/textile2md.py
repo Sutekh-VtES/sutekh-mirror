@@ -45,6 +45,7 @@ def replace_version(sText):
 
 
 def main():
+    """Actually run the doc generation"""
     Utility.ensure_dir_exists('md')
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()

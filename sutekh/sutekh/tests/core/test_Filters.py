@@ -64,6 +64,9 @@ class FilterTests(SutekhTest):
     aExpectedCards = test_WhiteWolfParser.WhiteWolfParserTests.aExpectedCards
 
     def _physical_test(self, tTest):
+        # pylint: disable=too-many-locals, too-many-branches
+        # This is a fairly linear function and everything is required,
+        # so there's not a lot of value to dividing it further
         """Convert the tuple describing the test as a filter and a list of
            card names and optional expansions into the correct
            filter on the physical card list and a list of expected
