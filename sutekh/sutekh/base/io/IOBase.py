@@ -135,6 +135,8 @@ class BaseXMLWriter(CardSetWriter):
 class SlienceFilter(logging.Filter):
     """Silence all logging during the cache updates"""
 
+    # pylint: disable=arguments-differ
+    # pylint doesn't like us marking the parameter as unused here
     def filter(self, _record):
         """We allow nothing through"""
         return 0

@@ -117,6 +117,12 @@ class WriteTWDAText(ArdbInfo):
 
            dCards is mapping of (card id, card name) -> card count.
            """
+        # pylint: disable=too-many-statements, too-many-branches
+        # pylint: disable=too-many-locals
+        # This has lots of complicated logic to try duplicate the
+        # formatting done by the unpublished ARDB template used
+        # in the TWDA. It's messy, largely because the TWDA uses
+        # tabs, which add complicated rules.
         (dVamps, dCryptStats) = self._extract_crypt(dCards)
         dCryptStats['formatted_avg'] = format_avg(dCryptStats['avg'])
         dCombinedVamps = self._group_sets(dVamps)
@@ -249,9 +255,8 @@ class WriteTWDAText(ArdbInfo):
                     sLib += "%s (%d)\n" % (sCandidate, iTotal)
 
                 # library cards are also normalised
-                for oCard, iCount in sorted(
-                        dCards.iteritems(),
-                        key=lambda x: move_articles_to_back(x[0].name).lower()):
+                fKey = lambda x: move_articles_to_back(x[0].name).lower()
+                for oCard, iCount in sorted(dCards.iteritems(), key=fKey):
                     sName = normalise_card_name(oCard.name)
                     sLib += "%dx %s\n" % (iCount, sName)
         return sLib

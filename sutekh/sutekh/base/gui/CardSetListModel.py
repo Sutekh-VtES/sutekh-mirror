@@ -1815,7 +1815,7 @@ class CardSetCardListModel(CardListModel):
                 # check if we need to add a entry
                 if sCardSetName in self._dCache['child card sets'] and \
                         oPhysCard in self._dCache['child card sets'][
-                            sCardSetName]:
+                                sCardSetName]:
                     iCnt = self._dCache['child card sets'][sCardSetName][
                         oPhysCard]
                 else:

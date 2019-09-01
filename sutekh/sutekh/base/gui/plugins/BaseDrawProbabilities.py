@@ -416,7 +416,7 @@ class BaseDrawProbPlugin(BasePlugin):
         return sLabel
 
     # subclasses will override these to do the right thing for the card game
-    def _check_selection(self, aSelectedCard):
+    def _check_selection(self, aSelectedCards):
         """Check that the selection is suitable.
            Return False if the list can't be used, True if it's acceptable"""
         raise NotImplementedError("Implement _check_selection")

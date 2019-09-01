@@ -237,8 +237,9 @@ class CardSetView(CardListView):
                 dSelectedData[oPhysCard][sCardSet] = [iCount, iNewCount]
         return dSelectedData
 
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, arguments-differ
     # elements required by function signature
+    # We change the argument names to match our naming convention
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
         bDragRes = True

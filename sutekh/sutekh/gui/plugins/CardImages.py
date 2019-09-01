@@ -117,8 +117,10 @@ class CardImageFrame(BaseImageFrame):
             sExpName = oExpansion.shortname.lower()
         if oPrinting:
             sExpName += '_' + oPrinting.name.lower()
-        # Normalise for storyline cards
-        sExpName = sExpName.replace(' ', '_').replace("'", '').replace('-', '_')
+        # Normalise storyline cards
+        sExpName = sExpName.replace(' ', '_').replace('-', '_')
+        # Strip quotes as well
+        sExpName = sExpName.replace("'", '')
         return sExpName
 
     def _make_card_urls(self, _sFullFilename):

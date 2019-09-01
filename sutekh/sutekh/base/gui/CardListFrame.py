@@ -60,8 +60,7 @@ class CardListFrame(BasicFrame):
             self.set_drop_handler(oToolbar)
             oToolbar.show_all()
             return oToolbar
-        else:
-            return None
+        return None
 
     def do_queued_reload(self):
         """Do a deferred reload if one was set earlier"""

@@ -3,6 +3,8 @@
 # Based on the card data published by WhiteWolf at:
 #  * http://www.white-wolf.com/vtes/index.php?line=cardlist
 #  * http://www.white-wolf.com/vtes/index.php?line=rulings
+# pylint: disable=too-many-lines
+# Don't care about the length here.
 
 """Data used for test cases"""
 # pylint: disable=invalid-name

@@ -94,8 +94,10 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
         super(SutekhBaseHTMLParser, self).reset()
         self._oState = BaseState()
 
-    # pylint: disable=missing-docstring
+    # pylint: disable=missing-docstring, arguments-differ
     # names are as listed in HTMLParser docs, so no need for docstrings
+    # We change the naming convention to match ours, so the argument names
+    # will differ
     def handle_starttag(self, sTag, aAttr):
         self._oState = self._oState.transition(sTag.lower(), dict(aAttr))
 
@@ -110,6 +112,8 @@ class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
 
     def handle_entityref(self, sName):
         pass
+
+    # pylint: enable=missing-docstring, arguments-differ
 
     def parse(self, fOpenFile):
         """Wrapper around feed to provide a consistent interface with

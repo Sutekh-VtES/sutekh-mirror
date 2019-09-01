@@ -57,8 +57,7 @@ class FilterEditor(gtk.Alignment):
         oAST = self.get_current_ast()
         if oAST is None:
             return None
-        else:
-            return oAST.get_filter()
+        return oAST.get_filter()
 
     def get_current_ast(self):
         """Get the current AST represented by the editor."""
