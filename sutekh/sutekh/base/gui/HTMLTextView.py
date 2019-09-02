@@ -332,7 +332,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
         """Get the list of target anchors."""
         return self._dTargets
 
-    # pylint: disbale=arguments-differ
+    # pylint: disable=arguments-differ
     # pylint doesn't like that we change the arguments to our naming
     # convention
     def handle_data(self, sContent):

@@ -282,7 +282,7 @@ class BaseOpeningDraw(BasePlugin):
         oDialog.add_button(gtk.STOCK_GO_FORWARD, self.FORWARD)
         oDialog.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         self.bShowDetails = False
-        if len(self.aDrawnHands) > 0:
+        if self.aDrawnHands:
             self.iCurHand = len(self.aDrawnHands)
             oHandBox = self._redraw_hand()
             if len(self.aDrawnHands) > 1:

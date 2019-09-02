@@ -258,7 +258,7 @@ class StarterInfoPlugin(SutekhPlugin):
         sPrefsValue = self.get_config_item('show starters')
         # Only check if we're meant to show the starters
         if sPrefsValue.lower() != 'yes':
-            return None
+            return
         aUrls, aDates, aHashes = find_all_data_packs(
             'starters', fErrorHandler=gui_error_handler)
 

@@ -215,7 +215,7 @@ class BaseZipImport(BasePlugin):
         dSelected = oSelDlg.get_selected()
         iClashMode = oSelDlg.get_clash_mode()
         oSelDlg.destroy()
-        if oResponse == gtk.RESPONSE_OK and len(dSelected) > 0:
+        if oResponse == gtk.RESPONSE_OK and dSelected:
             self.do_read_list(oFile, dSelected, iClashMode)
 
     def do_read_list(self, oFile, dSelected, iClashMode):
@@ -228,10 +228,8 @@ class BaseZipImport(BasePlugin):
         oLogHandler.set_dialog(oProgressDialog)
         oLogHandler.set_total(len(dSelected))
         oProgressDialog.show()
-        bDone = False
-        while not bDone:
+        while dSelected:
             dSelected = self._read_heart(oFile, dSelected, oLogger, iClashMode)
-            bDone = len(dSelected) == 0
         oProgressDialog.destroy()
 
     def _read_heart(self, oFile, dSelected, oLogger, iClashMode):

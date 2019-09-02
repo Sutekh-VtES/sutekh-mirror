@@ -687,22 +687,22 @@ class BaseDBUpgradeManager(object):
         (bOK, aMessages) = self.create_memory_copy(oTempConn, oLogHandler)
         if bOK:
             oLogger.info("Copied database to memory, performing upgrade.")
-            if len(aMessages) > 0:
+            if aMessages:
                 oLogger.info("Messages reported: %s", aMessages)
             (bOK, aMessages) = self.create_final_copy(oTempConn, oLogHandler)
             if bOK:
                 oLogger.info("Everything seems to have gone OK")
-                if len(aMessages) > 0:
+                if aMessages:
                     oLogger.info("Messages reported %s", aMessages)
                 return True
             else:
                 oLogger.critical("Unable to perform upgrade.")
-                if len(aMessages) > 0:
+                if aMessages:
                     oLogger.error("Errors reported: %s", aMessages)
                 oLogger.critical("!!YOUR DATABASE MAY BE CORRUPTED!!")
         else:
             oLogger.error(
                 "Unable to create memory copy. Database not upgraded.")
-            if len(aMessages) > 0:
+            if aMessages:
                 oLogger.error("Errors reported %s", aMessages)
         return False

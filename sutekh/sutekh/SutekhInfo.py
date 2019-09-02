@@ -9,6 +9,13 @@
 # pylint: disable=no-name-in-module
 from pkg_resources import resource_string
 
+# license constants to simplify things a bit
+
+GPL = 'License :: OSI Approved :: GNU General Public License (GPL)'
+LGPL = 'License :: OSI Approved :: GNU Library or Lesser General ' \
+    'Public License (LGPL)'
+MIT = 'License :: OSI Approved :: MIT License'
+PYTHON = 'License :: OSI Approved :: Python Software Foundation License',
 
 # pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo(object):
@@ -64,7 +71,7 @@ class SutekhInfo(object):
         'Environment :: X11 Applications :: GTK',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        GPL,
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
         'Programming Language :: Python :: 2.6',
@@ -79,8 +86,7 @@ class SutekhInfo(object):
     ]
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0, < 3.8',  # fetching the dev version requires svn
-                           # (which is a bit crazy as an install requirement)
+        'SQLObject >= 0.9.0',
         'singledispatch',
         'ply',
         'configobj',
@@ -107,21 +113,19 @@ class SutekhInfo(object):
     # )
     DEPENDENCY_LICENSES = {
         'SQLObject': (
-            'License :: OSI Approved :: GNU Library or Lesser '
-                'General Public License (LGPL)',
+            LGPL,
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 3'),
         'singledispath': (
             # While the functools.singledispatch part of the
             # python 3 is under the Python license, the
             # python 2 backport is relicensed to MIT
-            'License :: OSI Approved :: MIT License',
+            MIT,
             'https://bitbucket.org/ambv/singledispatch',
             'MIT License'),
         'ply': (
             # Note: ply changes to BSD license in version 3.2
-            'License :: OSI Approved :: GNU Library or Lesser '
-                'General Public License (LGPL)',
+            LGPL,
             'http://www.gnu.org/licenses/lgpl-2.1.html',
             'Version 2.1'),
         'configobj': (
@@ -129,29 +133,27 @@ class SutekhInfo(object):
             'http://www.voidspace.org.uk/python/configobj.html#license',
             'New-BSD license'),
         'keyring': (
-            'License :: OSI Approved :: MIT License',
+            MIT,
             'https://bitbucket.org/kang/python-keyring-lib/raw/tip/README.rst',
             'MIT license'),
         'setuptools': (
-            'License :: OSI Approved :: Python Software Foundation License',
+            PYTHON,
             'http://www.python.org/psf/license/',
             'Version 2'),
         'PyGTK': (
-            'License :: OSI Approved :: GNU Library or Lesser '
-                'General Public License (LGPL)',
+            LGPL,
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 2 or later'),
         'GTK': (
-            'License :: OSI Approved :: GNU Library or Lesser '
-                'General Public License (LGPL)',
+            LGPL,
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 2 or later'),
         'Python': (
-            'License :: OSI Approved :: Python Software Foundation License',
+            PYTHON,
             'http://www.python.org/psf/license/',
             'Version 2'),
         'ZipDLL': (  # NSIS Plugin
-            'License :: OSI Approved :: GNU General Public License (GPL)',
+            GPL,
             'http://www.gnu.org/copyleft/gpl.html',
             'Version 2 or later'),
     }

@@ -31,7 +31,7 @@ class DBUpgradeDialog(SutekhDialog):
         sLabel = "Memory Copy successfully created. Commit Changes?"
         oLabel = gtk.Label(sLabel)
         oHBox.pack_start(oLabel)
-        if len(aMessages) > 0:
+        if aMessages:
             sLabelInfo = ("The following messages were reported in creating"
                           " the copy:\n")
             for sStr in aMessages:

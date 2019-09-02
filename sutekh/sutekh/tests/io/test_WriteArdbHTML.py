@@ -2,6 +2,8 @@
 # vim:fileencoding=utf-8 ai ts=4 sts=4 et sw=4
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
+# pylint: disable=too-many-lines
+# HTML output is verbose and long when we include card texts
 
 """Test Writing a card set to an Ardb HTML file"""
 

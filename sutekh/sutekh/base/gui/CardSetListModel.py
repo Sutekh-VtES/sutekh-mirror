@@ -577,7 +577,6 @@ class CardSetCardListModel(CardListModel):
                 oChildIter = self.iter_next(oChildIter)
         else:
             # Need to get the cards in the specified card set
-            oIter = self.get_iter(oPath)
             oCard = self.get_abstract_card_from_iter(oIter)
             sCardSetName = self.get_name_from_iter(oIter)
             oCSFilter = FilterAndBox([self._dCache['child filters'][
@@ -2050,7 +2049,7 @@ class CardSetCardListModel(CardListModel):
                                          iChg)
         # Check if we need to cleanup any card entries
         bRemove = False
-        if len(self._dAbs2Iter[oAbsId]) > 0 and iChg < 0:
+        if self._dAbs2Iter[oAbsId] and iChg < 0:
             # Test if we need to remove entries
             oIter = self._dAbs2Iter[oAbsId][0]
             iParCnt = self.get_value(oIter, 2)

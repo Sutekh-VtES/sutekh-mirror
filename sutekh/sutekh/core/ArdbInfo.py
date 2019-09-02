@@ -144,7 +144,7 @@ class ArdbInfo(object):
 
     def _gen_disciplines(self, oCard):
         """Extract the discipline string from the card."""
-        if len(oCard.discipline) > 0:
+        if oCard.discipline:
             aDisc = []
             for oDisc in oCard.discipline:
                 if oDisc.level == 'superior':
@@ -153,7 +153,7 @@ class ArdbInfo(object):
                     aDisc.append(oDisc.discipline.name)
             aDisc.sort()  # May not be needed
             return " ".join(aDisc)
-        elif len(oCard.virtue) > 0:
+        elif oCard.virtue:
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
 
@@ -161,7 +161,7 @@ class ArdbInfo(object):
         """Create a dictionary with the basic elements of a crypt card line,
            handling clan, capacity and advanced status consistently."""
         dLine = {'count': iCount}
-        if len(oCard.creed) > 0:
+        if oCard.creed:
             dLine['clan'] = "%s (Imbued)" % \
                 [x.name for x in oCard.creed][0]
             dLine['capacity'] = oCard.life
@@ -174,7 +174,7 @@ class ArdbInfo(object):
             dLine['name'] = dLine['name'].replace(' (Advanced)', '')
             dLine['adv'] = 'Adv'
         dLine['title'] = '   '
-        if len(oCard.title):
+        if oCard.title:
             dLine['title'] = [oC.name for oC in oCard.title][0]
             dLine['title'] = dLine['title'].replace('Independent with ',
                                                     '')[:12]

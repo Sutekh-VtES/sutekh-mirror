@@ -139,6 +139,8 @@ class StatsModel(gtk.TreeStore):
     # pylint: disable=too-many-locals, too-many-branches
     # Lots of different cases and loops, so a lot of branches
     # We use lots of local variables for clarity
+    # pylint: disable=too-many-nested-blocks, too-many-statements
+    # Splitting logic into separate functions doesn't gain us much here
     def load(self, cSubGrping):
         """Populate the contents of the TreeStore"""
         self.clear()

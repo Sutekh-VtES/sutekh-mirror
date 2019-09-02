@@ -118,12 +118,12 @@ def _get_card_disciplines(aCards):
     dVirtues = {}
     iNoneCount = 0
     for oAbsCard in aCards:
-        if len(oAbsCard.discipline) > 0:
+        if oAbsCard.discipline:
             aThisDisc = [oP.discipline.fullname for oP
                          in oAbsCard.discipline]
         else:
             aThisDisc = []
-        if len(oAbsCard.virtue) > 0:
+        if oAbsCard.virtue:
             aThisVirtue = [oV.fullname for oV in oAbsCard.virtue]
         else:
             aThisVirtue = []
@@ -133,7 +133,7 @@ def _get_card_disciplines(aCards):
         for sVirtue in aThisVirtue:
             dVirtues.setdefault(sVirtue, 0)
             dVirtues[sVirtue] += 1
-        if len(oAbsCard.discipline) == 0 and len(oAbsCard.virtue) == 0:
+        if not oAbsCard.discipline and not oAbsCard.virtue:
             iNoneCount += 1
     return dDisciplines, dVirtues, iNoneCount
 
@@ -145,7 +145,7 @@ def _get_card_clan_multi(aCards):
     iClanRequirement = 0
     dMulti = {}
     for oAbsCard in aCards:
-        if len(oAbsCard.clan) > 0:
+        if oAbsCard.clan:
             iClanRequirement += 1
             aClans = [x.name for x in oAbsCard.clan]
             for sClan in aClans:
@@ -618,19 +618,19 @@ class AnalyzeCardList(SutekhPlugin):
             if len(oCard.cardtype) > 1:
                 self.dTypeNumbers['Multirole'] += 1
                 dCardLists['Multirole'].append(oCard)
-            if len(oCard.clan) > 0:
+            if oCard.clan:
                 aClans = [x.name for x in oCard.clan]
-            elif len(oCard.creed) > 0:
+            elif oCard.creed:
                 aClans = [x.name for x in oCard.creed]
             else:
                 aClans = ['No Clan']
             for sClan in aClans:
                 self.dLibStats['clan'].setdefault(sClan, 0)
                 self.dLibStats['clan'][sClan] += 1
-            if len(oCard.discipline) > 0:
+            if oCard.discipline:
                 aDisciplines = [oP.discipline.fullname for oP in
                                 oCard.discipline]
-            elif len(oCard.virtue) > 0:
+            elif oCard.virtue:
                 aDisciplines = [oV.fullname for oV in oCard.virtue]
             else:
                 aDisciplines = ['No Discipline']

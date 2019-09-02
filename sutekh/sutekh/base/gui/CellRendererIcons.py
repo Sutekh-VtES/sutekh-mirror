@@ -95,7 +95,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         self.aData = []
         if len(aIcons) != len(aText):
             # Can't handle this case
-            return False
+            return
         self.aData = zip(aText, aIcons)
         self.iMode = iMode
 

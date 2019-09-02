@@ -528,7 +528,7 @@ class FilterPartNode(OperatorNode):
                     continue
                 if oVal.oValue not in aValidVals:
                     aRes.append(oVal.oValue)
-        if len(aRes) > 0:
+        if aRes:
             return aRes
         return None
 

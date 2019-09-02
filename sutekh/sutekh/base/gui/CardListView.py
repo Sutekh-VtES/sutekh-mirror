@@ -91,7 +91,7 @@ class CardListView(FilteredView):
         # Check with helper function first
         oPath = self.row_selected(oSelection)
         if not oPath:
-            return False
+            return
 
         # Change card text view as required
         oPhysCard = self._oModel.get_physical_card_from_path(oPath)

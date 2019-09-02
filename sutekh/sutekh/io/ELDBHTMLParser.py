@@ -120,6 +120,9 @@ class ELDBHTMLParser(SutekhBaseHTMLParser):
         super(ELDBHTMLParser, self).reset()
         self._oState = Collecting(self._oHolder)
 
+    # pylint: disable=arguments-differ
+    # We change the function signature to match the BaseCardSetIO
+    # interface
     def parse(self, fIn, oHolder):
         """Parse a file into the given holder"""
         self._oHolder = oHolder

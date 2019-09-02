@@ -94,7 +94,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
             oDiscElem.text = self._gen_disciplines(oCard)
             oClanElem = SubElement(oCardElem, 'clan')
             oCapElem = SubElement(oCardElem, 'capacity')
-            if len(oCard.creed) > 0:
+            if oCard.creed:
                 # ARDB seems to treat all Imbued as being of the same clan
                 # Should we do an Imbued:Creed thing?
                 oClanElem.text = 'Imbued'
@@ -108,7 +108,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
             # No idea how ARDB represents independant titles -
             # this seems set when the ARDB database is created, and is
             # not in the ARDB codebase
-            if len(oCard.title) > 0:
+            if oCard.title:
                 oTitleElem = SubElement(oCardElem, 'title')
                 oTitleElem.text = [oC.name for oC in oCard.title][0]
             oTextElem = SubElement(oCardElem, 'text')
@@ -124,7 +124,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
             if oCard.costtype is not None:
                 oCostElem = SubElement(oCardElem, 'cost')
                 oCostElem.text = "%d %s" % (oCard.cost, oCard.costtype)
-            if len(oCard.clan) > 0:
+            if oCard.clan:
                 # ARDB also strores things like "requires a prince"
                 # we don't, so too bad
                 oReqElem = SubElement(oCardElem, 'requirement')
@@ -132,7 +132,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
             oTypeElem = SubElement(oCardElem, 'type')
             oTypeElem.text = sTypeString
             # Not sure if this does quite the right thing here
-            if len(oCard.discipline) > 0:
+            if oCard.discipline:
                 oDiscElem = SubElement(oCardElem, 'disciplines')
                 oDiscElem.text = self._gen_disciplines(oCard)
             oTextElem = SubElement(oCardElem, 'text')

@@ -170,13 +170,13 @@ def print_card_details(oCard, sEncoding):
     """Print the details of a given card"""
     # pylint: disable=too-many-branches
     # Several cases to consider, so many branches
-    if len(oCard.cardtype) == 0:
+    if not oCard.cardtype:
         print('CardType: Unknown')
     else:
         print('CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype]))
-    if len(oCard.clan) > 0:
+    if oCard.clan:
         print('Clan: %s' % ' / '.join([oC.name for oC in oCard.clan]))
-    if len(oCard.creed) > 0:
+    if oCard.creed:
         print('Creed: %s' % ' / '.join([oC.name for oC in oCard.creed]))
     if oCard.capacity:
         print('Capacity: %d' % oCard.capacity)
@@ -192,7 +192,7 @@ def print_card_details(oCard, sEncoding):
             print('Cost: X %s' % oCard.costtype)
         else:
             print('Cost: %d %s' % (oCard.cost, oCard.costtype))
-    if len(oCard.discipline) > 0:
+    if oCard.discipline:
         if is_crypt_card(oCard):
             aDisciplines = []
             aDisciplines.extend(sorted([oP.discipline.name for oP in
@@ -206,7 +206,7 @@ def print_card_details(oCard, sEncoding):
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
             sDisciplines = ' / '.join(aDisciplines)
         print('Discipline: %s' % sDisciplines)
-    if len(oCard.virtue) > 0:
+    if oCard.virtue:
         if is_crypt_card(oCard):
             print('Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue]))
         else:

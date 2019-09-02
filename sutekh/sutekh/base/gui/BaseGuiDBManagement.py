@@ -376,7 +376,7 @@ class BaseGuiDBManager(object):
 
     def do_db_upgrade(self, aLowerTables, aHigherTables):
         """Attempt to upgrade the database"""
-        if len(aHigherTables) > 0:
+        if aHigherTables:
             sMesg = ("Database version error. Cannot continue\n"
                      "The following tables have a higher version"
                      " than expected:\n")
@@ -444,7 +444,7 @@ class BaseGuiDBManager(object):
                 sMesg += "\nChanges Commited\n"
             else:
                 sMesg = "Changes Commited\n"
-            if len(aMessages) > 0:
+            if aMessages:
                 sMesg += "Messages from commiting changes are:"
                 for sStr in aMessages:
                     sMesg += '<b>%s</b>\n' % sStr

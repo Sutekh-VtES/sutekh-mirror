@@ -129,7 +129,7 @@ def _sort_vampires(dVamps):
     """Sort the vampires by number, then capacity."""
     aSortedVampires = []
     for oCard, (iCount, _sSet) in dVamps.iteritems():
-        if len(oCard.creed) > 0:
+        if oCard.creed:
             iCapacity = oCard.life
             sClan = "%s (Imbued)" % [x.name for x in oCard.creed][0]
         else:
@@ -320,7 +320,7 @@ class WriteArdbHTML(ArdbInfo):
             _add_span(oTD, self._gen_disciplines(oCard), 'tablevalue')
             # Title
             oTD = SubElement(oTR, "td")
-            if len(oCard.title) > 0:
+            if oCard.title:
                 _add_span(oTD, [oTitle.name for oTitle in oCard.title][0],
                           'tablevalue')
             # Clan
@@ -416,7 +416,7 @@ class WriteArdbHTML(ArdbInfo):
             oList = Element("ul")
             # Clan requirements
             aClan = [x.name for x in oCard.clan]
-            if len(aClan) > 0:
+            if aClan:
                 oListItem = SubElement(oList, "li")
                 _add_span(oListItem, 'Requires:', 'label')
                 _add_span(oListItem, "/".join(aClan), 'requirement')
@@ -443,9 +443,12 @@ class WriteArdbHTML(ArdbInfo):
                 oCardHead = SubElement(oCardText, "h5")
                 oCardHead.attrib["class"] = "cardname"
                 oCardHead.text = sName
-                oList = gen_requirements(oCard)
-                if len(oList) > 0:
+                oReqList = gen_requirements(oCard)
+                # pylint: disable=len-as-condition
+                # ElementTree is special, and and using bool to check
+                # for children is officially deprecated.
+                if len(oReqList):
                     # not empty, so add
-                    oCardText.append(oList)
+                    oCardText.append(oReqList)
                 # Text
                 _add_text(oCardText, oCard)

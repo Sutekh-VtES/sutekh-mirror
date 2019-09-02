@@ -65,15 +65,15 @@ def reparent_all_children(sCardSetName, aChildren):
 def check_ok_to_delete(oCardSet):
     """Check if the user is OK with deleting the card set."""
     bChildren = has_children(oCardSet)
-    bCards = len(oCardSet.cards) > 0
     iResponse = gtk.RESPONSE_OK
-    if bCards and bChildren:
-        iResponse = do_complaint_warning(
-            "Card Set %s Not Empty and Has Children."
-            " Really Delete?" % oCardSet.name)
-    elif bCards:
-        iResponse = do_complaint_warning(
-            "Card Set %s Not Empty. Really Delete?" % oCardSet.name)
+    if oCardSet.cards:
+        if bChildren:
+            iResponse = do_complaint_warning(
+                "Card Set %s Not Empty and Has Children."
+                " Really Delete?" % oCardSet.name)
+        else:
+            iResponse = do_complaint_warning(
+                "Card Set %s Not Empty. Really Delete?" % oCardSet.name)
     elif bChildren:
         iResponse = do_complaint_warning(
             "Card Set %s Has Children. Really Delete?" % oCardSet.name)
@@ -448,13 +448,11 @@ def unzip_files_into_db(aZipFiles, sProgDesc, oMainWindow, aToDelete,
     oProgressDialog.show()
     aCSList = []
     for oZipFile in aZipFiles:
-        bDone = False
         dList = oZipFile.get_all_entries()
-        while not bDone:
+        while dList:
             dRemaining = {}
             if _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
                              aExcluded):
-                bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
                 # Things have gone awry, so we do the minimum to ensure the gui

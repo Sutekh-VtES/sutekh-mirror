@@ -138,7 +138,7 @@ def clean_empty(aMyList, aExistingList):
         # SQLObject confuses pylint
         if has_children(oCS):
             continue
-        if len(oCS.cards) > 0:
+        if oCS.cards:
             continue  # has cards
         delete_physical_card_set(sName)
 

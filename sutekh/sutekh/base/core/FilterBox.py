@@ -83,8 +83,7 @@ class FilterBoxModel(list):
                   isinstance(oChild.oSubExpression, BinOpNode)):
                 self.append(FilterBoxModel(oChild, self.sFilterType,
                                            self.oVarNameMaker))
-            elif (isinstance(oChild, NotOpNode) or
-                  isinstance(oChild, FilterPartNode)):
+            elif isinstance(oChild, (FilterPartNode, NotOpNode)):
                 self.append(FilterBoxItem(oChild, self.oVarNameMaker))
             else:
                 raise ValueError("FilterBoxModel encountered unsupported AST"
@@ -111,7 +110,7 @@ class FilterBoxModel(list):
         aChildASTs = [oChild.get_ast() for oChild in self]
         aChildASTs = [oChild for oChild in aChildASTs if oChild is not None]
 
-        if len(aChildASTs) == 0:
+        if not aChildASTs:
             oAST = None
         elif len(aChildASTs) == 1:
             oAST = aChildASTs[0]
@@ -142,7 +141,7 @@ class FilterBoxModel(list):
         aChildTexts = [oChild.get_text() for oChild in self]
         aChildTexts = [sChild for sChild in aChildTexts if sChild]
 
-        if len(aChildTexts) == 0:
+        if not aChildTexts:
             sText = ''
         elif len(aChildTexts) == 1:
             sText = aChildTexts[0]

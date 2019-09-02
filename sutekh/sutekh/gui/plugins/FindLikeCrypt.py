@@ -121,12 +121,12 @@ class FindLikeVampires(SutekhPlugin):
         # pylint: disable=no-member
         # SQLObject confuses pylint
         if is_vampire(self.oSelCard):
-            if len(self.oSelCard.discipline) == 0:
+            if not self.oSelCard.discipline:
                 do_complaint_error("Please select a vampire with disciplines.")
                 return
             dGroups = self.find_vampires_like()
         else:
-            if len(self.oSelCard.virtue) == 0:
+            if not self.oSelCard.virtue:
                 do_complaint_error("Please select an Imbued with virtues.")
                 return
             dGroups = self.find_imbued_like()
@@ -229,7 +229,7 @@ class FindLikeVampires(SutekhPlugin):
         iRes = oDialog.run()
         if iRes == gtk.RESPONSE_CANCEL:
             oDialog.destroy()
-            return
+            return None
         bUseCardSet = oUseCardSet.get_active()
         iNum = int(oComboBox.get_active_text())
         bSuperior = oSuperior and oSuperior.get_active()
@@ -280,7 +280,7 @@ class FindLikeVampires(SutekhPlugin):
         iRes = oDialog.run()
         if iRes == gtk.RESPONSE_CANCEL:
             oDialog.destroy()
-            return
+            return None
         bUseCardSet = False
         if oUseCardSet.get_active():
             bUseCardSet = True

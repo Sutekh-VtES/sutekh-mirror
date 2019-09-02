@@ -177,6 +177,8 @@ class FrameProfileEditor(SutekhDialog):
 
     def _reset_active_profile(self):
         """Set the selector combo back to the current active profile."""
+        # pylint: disable=inconsistent-return-statements
+        # pylint gets confused by the interior function here
         if self.__sActiveProfile is None:
             return
 

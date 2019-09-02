@@ -135,7 +135,7 @@ class CreateCardSetDialog(SutekhDialog):
         if iResponse == gtk.RESPONSE_OK:
             self.sName = self.oName.get_text()
             self.sAuthor = self.oAuthor.get_text()
-            if len(self.sName) > 0:
+            if self.sName:
                 # We don't allow < or > in the name, since pango uses that for
                 # markup
                 self.sName = self.sName.replace("<", "(")

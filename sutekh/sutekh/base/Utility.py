@@ -92,6 +92,9 @@ def pretty_xml(oElement, iIndentLevel=0):
     http://effbot.org/zone/element-lib.htm [22/01/2008]
     """
     sIndent = "\n" + iIndentLevel * "  "
+    # pylint: disable=len-as-condition
+    # ElementTree is special here, and using bool to check for children is
+    # officially deprecated.
     if len(oElement):
         if not oElement.text or not oElement.text.strip():
             oElement.text = sIndent + "  "
