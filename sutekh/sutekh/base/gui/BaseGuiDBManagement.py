@@ -276,6 +276,8 @@ class BaseGuiDBManager(object):
         # lot of variables
         # There isn't much benefit to breaking this function up,
         # since it's a single process we're managing.
+        # pylint: disable=too-many-return-statements
+        # Bunch of different failure points we need to consider
         aEditable = self._oWin.get_editable_panes()
         dOldMap = get_cs_id_name_table()
         if not dFiles:
@@ -452,9 +454,8 @@ class BaseGuiDBManager(object):
                 sMesg += "Everything seems to have gone smoothly."
             do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
             return True
-        else:
-            sMesg = ("Unable to commit updated database!\nUpgrade Failed.\n"
-                     "Your database may be in an inconsistent state.")
-            logging.warn('\n'.join([sMesg] + aMessages))
-            do_complaint_error_details(sMesg, "\n".join(aMessages))
-            return False
+        sMesg = ("Unable to commit updated database!\nUpgrade Failed.\n"
+                 "Your database may be in an inconsistent state.")
+        logging.warn('\n'.join([sMesg] + aMessages))
+        do_complaint_error_details(sMesg, "\n".join(aMessages))
+        return False

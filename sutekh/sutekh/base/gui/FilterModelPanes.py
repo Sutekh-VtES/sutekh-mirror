@@ -680,7 +680,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         """Load the box model into the store"""
         self.clear()
         if oBoxModel is None:
-            return
+            return None
         # Walk the box model, creating items as we need them
         self._do_add_iter(None, oBoxModel, False)
         return self.get_path(self.get_iter_root())

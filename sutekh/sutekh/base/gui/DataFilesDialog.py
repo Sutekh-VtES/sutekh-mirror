@@ -48,8 +48,13 @@ class DataFilesDialog(SutekhDialog):
     # we keep a lot of internal state, so many instance variables
     """Dialog that asks for the Data files or urls as required"""
 
+    # pylint: disable=too-many-arguments
+    # We need these arguments
     def __init__(self, oParent, tReaders, bDisplayZip, sZippedUrl,
                  bDisableBackup):
+        # pylint: disable=too-many-locals, too-many-branches
+        # pylint: disable=too-many-statements
+        # Lots of stuff we need to setup to handle all the download options
         super(DataFilesDialog, self).__init__(
             "Choose CardList Files", oParent,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -145,6 +150,8 @@ class DataFilesDialog(SutekhDialog):
         self.connect("response", self.handle_response)
 
         self.sBackupFileName = None
+
+    # pylint: enable=too-many-arguments
 
     def handle_response(self, _oWidget, iResponse):
         """Extract the information from the dialog if the user presses OK"""
