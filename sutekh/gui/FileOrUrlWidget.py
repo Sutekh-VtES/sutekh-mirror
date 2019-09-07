@@ -171,7 +171,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         return fetch_data(oFile)
 
-    def get_binary_data(self, oOutFile=None):
+    def get_binary_data(self, oOutFile=None, dHeaders=None):
         """Open the selected file and retrieve the binary data.
 
            Will attempt to display a progress dialog if the file is a URL.
@@ -179,7 +179,11 @@ class FileOrUrlWidget(gtk.VBox):
         sUrl, bUrl = self.get_file_or_url()
 
         if bUrl:
-            oFile = urllib2.urlopen(sUrl)
+            oReq = urllib2.Request(sUrl)
+            if dHeaders:
+                for sHeader, sValue in dHeaders.items():
+                    oReq.add_header(sHeader, sValue)
+            oFile = urllib2.urlopen(oReq)
         else:
             oFile = file(sUrl, "rb")
 

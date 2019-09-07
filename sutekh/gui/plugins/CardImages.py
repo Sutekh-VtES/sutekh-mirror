@@ -478,7 +478,7 @@ class ImageConfigDialog(SutekhDialog):
         if sFile:
             oOutFile = tempfile.TemporaryFile()
             try:
-                self.oChoice.get_binary_data(oOutFile)
+                self.oChoice.get_binary_data(oOutFile, {'User-Agent': 'Sutekh Image Plugin'})
             except IOError:
                 do_exception_complaint('Unable to successfully download or '
                                        'open the card images')
