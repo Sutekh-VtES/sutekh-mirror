@@ -1,3 +1,8 @@
+07 Sep 2019
+ * Fix card images plugin triggering Cloudflare's user agent checks.
+ * Make failing to download card images less fatal.
+ * Fix Ubuntu deb builds.
+
 21 Aug 2019
  * Add "25th Anniversary" expansion name.
 
