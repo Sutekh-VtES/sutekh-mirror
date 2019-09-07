@@ -20,7 +20,7 @@ from sutekh.gui.ProgressDialog import ProgressDialog
 from sutekh.gui.CardTextView import CardTextViewListener
 from sutekh.gui.BasicFrame import BasicFrame
 from sutekh.gui.SutekhDialog import SutekhDialog, do_complaint_buttons, \
-        do_complaint_error
+        do_complaint_error, do_exception_complaint
 from sutekh.gui.AutoScrolledWindow import AutoScrolledWindow
 from sutekh.SutekhUtility import prefs_dir, ensure_dir_exists
 from sutekh.gui.FileOrUrlWidget import FileOrDirOrUrlWidget
@@ -477,7 +477,12 @@ class ImageConfigDialog(SutekhDialog):
             return sFile, True
         if sFile:
             oOutFile = tempfile.TemporaryFile()
-            self.oChoice.get_binary_data(oOutFile)
+            try:
+                self.oChoice.get_binary_data(oOutFile)
+            except IOError:
+                do_exception_complaint('Unable to successfully download or '
+                                       'open the card images')
+                return None, None
             return oOutFile, False
         return None, None
 
