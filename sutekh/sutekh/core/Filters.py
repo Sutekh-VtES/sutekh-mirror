@@ -587,7 +587,7 @@ class CardTextFilter(BaseCardTextFilter):
         # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         if self._bBraces:
-            super(CardTextFilter, self).get_expression()
+            return super(CardTextFilter, self)._get_expression()
         return LIKE(func.LOWER(self._oMapTable.q.search_text),
                     '%' + self._sPattern + '%')
 
