@@ -569,6 +569,12 @@ class WhiteWolfParserTests(SutekhTest):
         self.failUnless(IKeyword('1 intercept') in oHighTop.keywords)
         oGypsies = IAbstractCard('Gypsies')
         self.failUnless(IKeyword('1 stealth') in oGypsies.keywords)
+        # Check brace normalisation
+        self.failUnless('{strength' in oGypsies.text)
+        self.failUnless('{mortal' in oGypsies.text)
+        self.assertTrue('-{' not in oGypsies.text)
+        # check brace filtering
+        self.assertTrue('{' not in oGypsies.search_text)
         oRebekka = IAbstractCard('Rebekka, Chantry Elder of Munich')
         self.failUnless(IKeyword('1 stealth') in oRebekka.keywords)
         oProtracted = IAbstractCard('Protracted Investment')
