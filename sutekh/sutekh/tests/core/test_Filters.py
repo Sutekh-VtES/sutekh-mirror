@@ -411,6 +411,7 @@ class FilterTests(SutekhTest):
               u"Immortal Grapple", u"Ossian", u"Rock Cat",
               u'Scapelli, The Family "Mechanic"', u"Shade",
               u'Smite', u"Walk of Flame"]),
+            (Filters.CardTextFilter('{strength'), [u"Gypsies"]),
             (Filters.CardNameFilter(u'L\xe1z\xe1r'),
              [u"L\xe1z\xe1r Dobrescu"]),
             (Filters.NullFilter(), self.aExpectedCards),
