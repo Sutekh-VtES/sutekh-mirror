@@ -42,6 +42,7 @@ RATIO = (225, 300)
 DOWNLOAD_IMAGES = 'download images'
 CARD_IMAGE_PATH = 'card image path'
 DOWNLOAD_EXPANSIONS = 'download expansion images'
+LAST_DOWNLOADED = 'last downloaded'
 
 
 def _scale_dims(iImageWidth, iImageHeight, iPaneWidth, iPaneHeight):
@@ -234,7 +235,7 @@ class BaseImageFrame(BasicFrame):
         self._sCardName = ''
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
-        self._aFailedUrls = set()
+        self._aFailedUrls = {}
         self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
@@ -327,7 +328,7 @@ class BaseImageFrame(BasicFrame):
             # No date info, so we skip this
             return
         oLastFetched = self._dDateCache.get(
-            'last downloaded', datetime.datetime.utcfromtimestamp(0))
+            LAST_DOWNLOADED, datetime.datetime.utcfromtimestamp(0))
         if datetime.datetime.now() - oLastFetched < datetime.timedelta(days=1):
             # Cache fresh enough
             return
@@ -338,9 +339,16 @@ class BaseImageFrame(BasicFrame):
         if oFile:
             sDateData = progress_fetch_data(oFile)
             if self._parse_date_data(sDateData):
-                self._dDateCache["last downloaded"] = datetime.datetime.now()
+                self._dDateCache[LAST_DOWNLOADED] = datetime.datetime.now()
         else:
             logging.info("Failed to download date cache file")
+            logging.info("Delaying next download attempt for 3 hours")
+            # We don't want to spam the user with repeated failues, since this
+            # may be a network issues, so we delay our next download attempt.
+            # XXX: Should we have a dialog informing the user in addition
+            # to the log message?
+            self._dDateCache[LAST_DOWNLOADED] = \
+                    datetime.datetime.now() - datetime.timedelta(hours=21)
 
     def _check_outdated(self, sFullFilename):
         """Check if the image we're displaying has a more recent version
@@ -410,6 +418,11 @@ class BaseImageFrame(BasicFrame):
                     dHeaders=self._dReqHeaders)
             else:
                 # Skip this url, since it's already failed
+                oLastChecked = self._aFailedUrls[sUrl]
+                if datetime.datetime.now() - oLastChecked > datetime.timedelta(hours=2):
+                    # Will retry next time
+                    logging.info('Removing %s from the failed cache' % sUrl)
+                    del self._aFailedUrls[sUrl]
                 break
             if oFile:
                 # Ensure the directory exists, for expansions we
@@ -428,10 +441,13 @@ class BaseImageFrame(BasicFrame):
                     # We remove this from the url cache
                 else:
                     logging.info('Invalid image data from %s', sUrl)
-                    # Got bogus data, so skip this in future
-                    self._aFailedUrls.add(sUrl)
+                    # Got bogus data, so don't retry for a while
+                    self._aFailedUrls[sUrl] = datetime.datetime.now()
                 # Don't attempt to follow other urls
                 break
+            else:
+                # Cache failure
+                self._aFailedUrls[sUrl] = datetime.datetime.now()
         return True
 
     def _load_image(self, aFullFilenames):
