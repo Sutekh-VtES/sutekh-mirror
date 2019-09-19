@@ -585,14 +585,14 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            name."""
         if sNewExpName is not None:
             try:
-                iExpID = IExpansion(sNewExpName).id
+                iPrintID = IPrinting(sNewExpName).id
             except SQLObjectNotFound:
-                iExpID = None
+                iPrintID = None
         else:
-            iExpID = None
+            iPrintID = None
 
         oPhys = PhysicalCard.selectBy(abstractCardID=oAbsCard.id,
-                                      expansionID=iExpID).getOne()
+                                      printingID=iPrintID).getOne()
         return oPhys
 
     # pylint: enable=no-self-use
