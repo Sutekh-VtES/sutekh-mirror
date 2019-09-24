@@ -1,3 +1,22 @@
+24 Sep 2019
+ * Add an option to show / hide the '{' / '}' markers used for card errata.
+ * Update Ubuntu distribution list
+
+19 Sep 2019
+ * Fix a bug in selecting a replacement printing when importing a cardlist.
+
+18 Sep 2019
+ * Add test demonstrating the bug in the card text filter.
+ * Fix bugs in trying to filter on '{' and '}' in the card text.
+
+08 Sep 2019
+ * Don't crash if gtk.gdk.screen_height_mm returns a non-physical result, just use a
+   sensible default instead.
+
+31 Aug 2019
+ * Reorganise grouping tests.
+ * pylint driven cleanups.
+
 18 Aug 2019
  * Extend the "Starter plugin" to also show the contents of fixed sets like the 10th &
    25th anniversary sets.
