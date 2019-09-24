@@ -6,6 +6,8 @@
 
 """Menu for the Main Application Window"""
 
+import gtk
+
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.base.gui.AppMenu import AppMenu
 
@@ -36,6 +38,19 @@ class MainMenu(AppMenu):
         self.create_menu_item('Download VTES icons', oDownloadMenu,
                               self.download_icons)
 
+    def _add_prefs_menu(self, oPrefsMenu):
+        """Extend the Preferences menu"""
+        super(MainMenu, self)._add_prefs_menu(oPrefsMenu)
+        oShowErrata = gtk.CheckMenuItem(
+            'Show Errata Markers')
+        oShowErrata.set_inconsistent(False)
+        if self._oConfig.get_show_errata_markers():
+            oShowErrata.set_active(True)
+        else:
+            oShowErrata.set_active(False)
+        oShowErrata.connect('activate', self.do_show_errata)
+        oPrefsMenu.add(oShowErrata)
+
     def _add_help_items(self, oHelpMenu):
         """Create the menu for help items"""
         # setup sub menu
@@ -64,3 +79,8 @@ class MainMenu(AppMenu):
     def check_updated_cardlist(self, _oWidget):
         """Check for an updated cardlist datapack."""
         self._oMainWindow.check_updated_cardlist()
+
+    def do_show_errata(self, _oWidget):
+        """Save the current pane layout"""
+        bChoice = not self._oConfig.get_show_errata_markers()
+        self._oConfig.set_show_errata_markers(bChoice)

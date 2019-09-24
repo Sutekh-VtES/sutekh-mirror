@@ -9,6 +9,7 @@
 from sutekh.SutekhUtility import format_text
 from sutekh.base.gui.BaseCardTextView import (BaseCardTextBuffer,
                                               BaseCardTextView)
+from sutekh.base.gui.MessageBus import MessageBus, CONFIG_MSG
 
 
 class CardTextBuffer(BaseCardTextBuffer):
@@ -59,6 +60,7 @@ class CardTextView(BaseCardTextView):
     def __init__(self, oIconManager, oMainWindow):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager, oMainWindow)
+        MessageBus.subscribe(CONFIG_MSG, 'show_errata_markers', self._reload_card)
 
     # pylint: disable=too-many-branches, too-many-statements
     # We need to consider all cases for oCard, so need the branches
@@ -149,8 +151,13 @@ class CardTextView(BaseCardTextView):
                                      "virtue", dIcons)
 
         self._oBuf.tag_text("\n\n")
-        self._oBuf.tag_text(format_text(oCard.text),
-                            "card_text")
+        if self._oMainWindow.config_file.get_show_errata_markers():
+            self._oBuf.tag_text(format_text(oCard.text),
+                                "card_text")
+        else:
+            # Show the version with braces stripped.
+            self._oBuf.tag_text(format_text(oCard.search_text),
+                                "card_text")
 
         if oCard.rulings:
             self._oBuf.tag_text("\n")

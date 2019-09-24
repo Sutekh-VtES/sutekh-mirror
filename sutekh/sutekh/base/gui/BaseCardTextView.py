@@ -150,6 +150,8 @@ class BaseCardTextView(gtk.TextView):
         # Reference to top level so we can get config info and so on
         self._oMainWindow = oMainWindow
         self._oNameOffset = None
+        # Allow easy reparsing of the card if needed
+        self._oLastCard = None
 
         self.set_buffer(self._oBuf)
         self.set_editable(False)
@@ -177,11 +179,16 @@ class BaseCardTextView(gtk.TextView):
 
     def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
-        self.clear_text()
-        self.print_card_to_buffer(oPhysCard.abstractCard)
-        # Signal plugins that want to do something after text has been
-        # updated
-        MessageBus.publish(CARD_TEXT_MSG, 'post_set_text', oPhysCard)
+        self._oLastCard = oPhysCard
+        self._reload_card()
+
+    def _reload_card(self):
+        if self._oLastCard:
+            self.clear_text()
+            self.print_card_to_buffer(self._oLastCard.abstractCard)
+            # Signal plugins that want to do something after text has been
+            # updated
+            MessageBus.publish(CARD_TEXT_MSG, 'post_set_text', self._oLastCard)
 
     def add_button_to_text(self, oButton, sPrefix='\n'):
         """Adds a button to the text view."""
