@@ -146,6 +146,7 @@ with "The", "An" or "A" are displayed and sorted with the prefix at the end.
 ** _Save Pane Set on Exit_: Save the pane configuration when Sutekh exits.
 ** _Save Exact Pane Positions_: Save the exact pane positions on exit.
 ** _Save Window Size_: Save the window size on exit.
+** _Show Errata Markers_: Show the '{' and '}' errata markers in the card text.
 ** _Show Starter Information_: If the starter decks have been downloaded \
 into the database, this will add a list the starter decks a card has been \
 published in to the "Card Text":#card_text pane when the card is selected.
@@ -305,6 +306,9 @@ cost, the card type, the disciplines or virtues associated with the card, the
 clans and creeds associated with the card, vampire titles, sects and groups,
 capacity and the expansions in which the card was printed.
 
+By default, Sutekh filters out the '{' and '}' used to show errata in the official
+V:EKN list when showing the card text. You can change this behaviour via the
+_Show Errata Markers_ option under the Preferences menu.
 
 h2(#card_image). Card Images
 

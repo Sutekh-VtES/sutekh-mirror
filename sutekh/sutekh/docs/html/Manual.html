@@ -6,7 +6,7 @@
     <title>Sutekh Manual</title>
 </head>
 <body>
-	<h1>Manual for Sutekh 0.9.4</h1>
+	<h1>Manual for Sutekh 0.9.5</h1>
 
 	<p><img alt="Sutekh Icon" src="sutekh-icon.png" title="Sutekh Icon" /></p>
 
@@ -169,7 +169,6 @@ using the pane title.</p>
 			<li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the V:EKN website.</li>
 			<li><em>Download starter decks</em>: Download and import a list of the White Wolf preconstructed decks from the sutekh wiki. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the White Wolf Card List</a>), these will be greyed out and automatically excluded.</li>
 			<li><em>Download or Configure Card Images</em>: Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing zip file or directory of images.</li>
-			<li><a href="#importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</a></li>
 			<li><em>Download Rulebook Files</em>: Download the various files for the <a href="#rulebook">Rulebook</a> menu.</li>
 		</ul></li>
 		<li><em>Preferences</em>: Manage various preferences.
@@ -178,6 +177,7 @@ using the pane title.</p>
 			<li><em>Save Pane Set on Exit</em>: Save the pane configuration when Sutekh exits.</li>
 			<li><em>Save Exact Pane Positions</em>: Save the exact pane positions on exit.</li>
 			<li><em>Save Window Size</em>: Save the window size on exit.</li>
+			<li><em>Show Errata Markers</em>: Show the &#8216;{&#8217; and &#8216;}&#8217; errata markers in the card text.</li>
 			<li><em>Show Starter Information</em>: If the starter decks have been downloaded into the database, this will add a list the starter decks a card has been published in to the <a href="#card_text">Card Text</a> pane when the card is selected.</li>
 			<li><em>Export to <span class="caps">HTML</span> preferences</em>: Set the destination for the links created in the exported <span class="caps">HTML</span> files.</li>
 		</ul></li>
@@ -261,33 +261,6 @@ set or cancel the import.</p>
 	<p>If no cards are found in the card set, the card set 
 will not be created.</p>
 
-
-
-	<h4 id="importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</h4>
-
-	<p>This plugin allows you to import a <span class="caps">PDF</span> release from the 
-V:EKN as images. This is especially useful for ensuring 
-there are high resolution images available for printing 
-the card set.</p>
-
-	<p>The initial dialog allows you to choose a <span class="caps">PDF</span> file, 
-specify which expansion the <span class="caps">PDF</span> file corresponds 
-to and also specify the resolution to use for the 
-images.</p>
-
-	<p>The cards will then be extracted from the <span class="caps">PDF</span> file, and 
-then you will be presented with a dialog listing 
-the cards in the expansion on the left, and showing 
-the extracted image on the right.</p>
-
-	<p>You can move between the extracted images using 
-the <strong>Prev Image</strong> and <strong>Next Image</strong> image buttons. 
-For each image, you can select a card from the 
-list and choose <strong>Set image for selected card</strong> 
-to save the displayed image as the extracted 
-image for the card. Cards which have already 
-been choses will be marked with a tick-mark 
-next to their names.</p>
 
 
 
@@ -415,6 +388,9 @@ cost, the card type, the disciplines or virtues associated with the card, the
 clans and creeds associated with the card, vampire titles, sects and groups, 
 capacity and the expansions in which the card was printed.</p>
 
+	<p>By default, Sutekh filters out the &#8216;{&#8217; and &#8216;}&#8217; used to show errata in the official 
+V:EKN list when showing the card text. You can change this behaviour via the 
+<em>Show Errata Markers</em> option under the Preferences menu.</p>
 
 	<h2 id="card_image">Card Images</h2>
 
