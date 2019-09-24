@@ -143,10 +143,12 @@ class BaseCardTextView(gtk.TextView):
     # gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
     # gtk classes aren't old-style, but pylint thinks they are
-    def __init__(self, oBuffer, oIconManager):
+    def __init__(self, oBuffer, oIconManager, oMainWindow):
         super(BaseCardTextView, self).__init__()
         # Can be styled as frame_name.view
         self._oBuf = oBuffer
+        # Reference to top level so we can get config info and so on
+        self._oMainWindow = oMainWindow
         self._oNameOffset = None
 
         self.set_buffer(self._oBuf)

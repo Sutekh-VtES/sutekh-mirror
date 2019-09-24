@@ -16,5 +16,5 @@ class CardTextFrame(BaseCardTextFrame):
     # pylint: disable=too-many-public-methods
     # gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oIconManager):
-        oView = CardTextView(oIconManager)
+        oView = CardTextView(oIconManager, oMainWindow)
         super(CardTextFrame, self).__init__(oView, oMainWindow)

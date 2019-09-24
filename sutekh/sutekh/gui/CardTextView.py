@@ -56,9 +56,9 @@ class CardTextView(BaseCardTextView):
 
     # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
-    def __init__(self, oIconManager):
+    def __init__(self, oIconManager, oMainWindow):
         oBuffer = CardTextBuffer()
-        super(CardTextView, self).__init__(oBuffer, oIconManager)
+        super(CardTextView, self).__init__(oBuffer, oIconManager, oMainWindow)
 
     # pylint: disable=too-many-branches, too-many-statements
     # We need to consider all cases for oCard, so need the branches
