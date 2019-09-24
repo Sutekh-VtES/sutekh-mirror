@@ -19,7 +19,7 @@ if [ "x$BUILD_COUNTER" = "x" ] ; then
     BUILD_COUNTER="1"
 fi
 
-SUITES="cosmic bionic xenial trusty"
+SUITES="bionic xenial disco"
 SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
 DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.orig.tar.gz"
