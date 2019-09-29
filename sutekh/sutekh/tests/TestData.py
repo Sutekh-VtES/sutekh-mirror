@@ -38,6 +38,7 @@ Expansions,DS,Dark Sovereigns
 Expansions,KMW,Kindred Most Wanted
 Expansions,BSC,Blood Shadowed Court
 Expansions,Anthology,Anthology
+Expansions,AnthologyI,Anthology I Reprint Set
 Expansions,Tenth,Tenth Anniversary
 Expansions,TR,Twilight Rebellion
 Expansions,LK,Lost Kindred
