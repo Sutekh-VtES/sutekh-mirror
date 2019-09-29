@@ -15,7 +15,6 @@ from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
 
-
 BC_RARITIES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
                'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
 
@@ -424,6 +423,10 @@ class CardDict(dict):
             elif aPair[1].strip().startswith('Promo-'):
                 # Handle the TR:Promo special case
                 aExp.append((aPair[1].strip(), 'NA'))
+            elif 'anthology' in aPair[0].lower() and 'larp' not in aPair[1].lower():
+                # Add the Anthology reprint cases
+                aExp.append((aPair[0].strip(), aPair[1].strip()))
+                aExp.append(('AnthologyI', aPair[1].strip()))
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 
