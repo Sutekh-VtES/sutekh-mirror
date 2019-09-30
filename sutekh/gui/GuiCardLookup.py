@@ -37,6 +37,7 @@ SPECIAL_CASES = {
     'felix "fix" hessian (wraith)': 'felix "fix" hessian (wraith)',
     "jake washington (hunter)": "jake washington",
     "kherebutu (bane mummy)": "kherebutu",
+    "masquer (wraith)": "masquer",
     "mehemet of the ahl-i-batin (mage)": "mehemet of the ahl-i-batin",
     "mylan horseed (goblin)": "mylan horseed",
     "neighborhood watch commander (hunter)": "neighborhood watch commander",

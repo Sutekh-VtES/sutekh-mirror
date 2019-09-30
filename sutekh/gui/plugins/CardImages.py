@@ -43,6 +43,7 @@ RENAME_LOOKUPS = {
     "felixfixhessian.jpg": "felixfixhessianwraith.jpg",
     "jakewashington.jpg": "jakewashingtonhunter.jpg",
     "kherebutu.jpg": "kherebutubanemummy.jpg",
+    "masquer.jpg": "masquerwraith.jpg",
     "mehemetoftheahlibatin.jpg": "mehemetoftheahlibatinmage.jpg",
     "mylanhorseed.jpg": "mylanhorseedgoblin.jpg",
     "neighborhoodwatchcommander.jpg": "neighborhoodwatchcommanderhunter.jpg",
