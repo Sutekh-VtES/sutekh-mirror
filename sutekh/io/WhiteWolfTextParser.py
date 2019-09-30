@@ -408,6 +408,10 @@ class CardDict(dict):
             elif aPair[1].strip().startswith('Promo-'):
                 # Handle the TR:Promo special case
                 aExp.append((aPair[1].strip(), 'NA'))
+            elif 'anthology' in aPair[0].lower() and 'larp' not in aPair[1].lower():
+                # Add the Anthology reprint cases
+                aExp.append((aPair[0].strip(), aPair[1].strip()))
+                aExp.append(('AnthologyI', aPair[1].strip()))
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 

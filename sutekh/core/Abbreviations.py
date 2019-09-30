@@ -255,7 +255,7 @@ class Rarities(AbbreviationLookup):
         'Fixed': ['1', '2', '3', '4', '5', '6', '7', '8',
                   'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
                   'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A', 'B',
-                  'HB2'],
+                  'HB2', 'LARP1'],
         'BSC': ['X'],
         'Precon': ['P', 'PB', 'PA', 'PTo3', 'PTr', 'PG', 'PB2', 'PTo4', 'PAl2',
                    'PO3', 'DoF1', 'DoF2', 'DoF3', 'DoF4', 'DoF5', 'DoF6', 'LB1', 'LB2',
