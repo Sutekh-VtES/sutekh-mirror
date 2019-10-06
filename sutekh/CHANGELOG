@@ -1,3 +1,8 @@
+29 Sep 2019
+ * Update parser to deal with BC's new 'Anthology:X' and 'Anthology:LARP1' card rarity
+   meanings.
+ * Update tests to reflect this change.
+
 24 Sep 2019
  * Add an option to show / hide the '{' / '}' markers used for card errata.
  * Update Ubuntu distribution list
