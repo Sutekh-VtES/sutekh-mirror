@@ -1,3 +1,7 @@
+30 Sep 2019
+ * Add aliases for the 'Masquer (Wraith)' rename.
+ * Backport parser fixes from trunk.
+
 07 Sep 2019
  * Fix card images plugin triggering Cloudflare's user agent checks.
  * Make failing to download card images less fatal.
