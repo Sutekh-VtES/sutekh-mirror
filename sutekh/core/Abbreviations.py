@@ -183,9 +183,9 @@ class Expansions(AbbreviationLookup):
         'Anthology': [],
         'Anthology I Reprint Set': ['AnthologyI'],
         'Twenty-Fifth Anniversary': ['25th'],
+        'Black Chantry': ['Black Chantry Reprint', 'Sabbat Preconstructed', 'SP'],
         # Blackhand is an abbreviation so reading card sets from old versions
         # work
-        'Black Chantry': ['Black Chantry Reprint', 'Sabbat Preconstructed', 'SP'],
         'Black Hand': ['BH', 'Blackhand'],
         'Bloodlines': ['BL'],
         'Blood Shadowed Court': ['BSC'],
@@ -194,6 +194,7 @@ class Expansions(AbbreviationLookup):
         'Dark Sovereigns': ['DS'],
         'Ebony Kingdom': ['EK'],
         'Final Nights': ['FN'],
+        'First Blood': [],
         'Gehenna': [],
         'Heirs to the Blood': ['HttB'],
         'Humble Bundle 2018 Cards': ['HB2018', 'Promo-20181004'],
