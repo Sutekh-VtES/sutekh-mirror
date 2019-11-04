@@ -194,7 +194,7 @@ class Expansions(AbbreviationLookup):
         'Dark Sovereigns': ['DS'],
         'Ebony Kingdom': ['EK'],
         'Final Nights': ['FN'],
-        'First Blood': [],
+        'First Blood': ['FB'],
         'Gehenna': [],
         'Heirs to the Blood': ['HttB'],
         'Humble Bundle 2018 Cards': ['HB2018', 'Promo-20181004'],
