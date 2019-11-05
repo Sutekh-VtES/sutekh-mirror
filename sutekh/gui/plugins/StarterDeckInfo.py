@@ -257,7 +257,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         while not bDone:
             dRemaining = {}
             if self._unzip_list(oFile, dList, oLogger, dRemaining,
-                    bExcludeStoryDecks, bExcludeDemoDecks):
+                    bExcludeStoryDecks, bExcludeDemoDecks, sRemovedInfo):
                 bDone = len(dRemaining) == 0
                 dList = dRemaining
             else:
@@ -272,7 +272,7 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
         return True
 
     def _unzip_list(self, oZipFile, dList, oLogger, dRemaining,
-            bExcludeStoryDecks, bExcludeDemoDecks):
+            bExcludeStoryDecks, bExcludeDemoDecks, sRemovedInfo):
         """Extract the files left in the list."""
         if bExcludeStoryDecks and bExcludeDemoDecks:
             aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
@@ -312,9 +312,15 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
                     # pyprotocols confuses pylint
                     oCS = IPhysicalCardSet(oHolder.name)
                     aChildren = find_children(oCS)
-                    # Ensure we restore with the correct parent
+                    # Ensure we restore with the correct parent, assuming we're not renaming /
+                    # removing the parent
                     if oCS.parent:
-                        oHolder.parent = oCS.parent.name
+                        # We should be stricter in this check, but this is "good enough" here
+                        # since we've better logic for the 1.0 branch
+                        if oCS.parent.name not in sRemovedInfo.splitlines():
+                            oHolder.parent = oCS.parent.name
+                        # It looks like we're renaming the parent, so we assume the parent in
+                        # the Holder is correct
                     else:
                         oHolder.parent = None
                     delete_physical_card_set(oHolder.name)
