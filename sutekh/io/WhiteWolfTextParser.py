@@ -207,10 +207,11 @@ class CardDict(dict):
             'unique': re.compile('[Uu]nique [mM]aster|Master[:.] unique|'
                 'Unique\.|Unique location\.|Unique contract\.'),
             'trifle': re.compile('[tT]rifle\.'),
-            'discipline': re.compile('Master: Discipline\.'),
+            'discipline': re.compile(r'Master: Discipline\.|'
+                                     r'^Discipline\.'),
             'out-of-turn': re.compile('Master: out-of-turn|Out-of-turn\.'),
             'location': re.compile('Master[:.] (unique )?[Ll]ocation|'
-                                   'Unique location\.|Location\.'),
+                                   'Unique location\.|^Location\.'),
             'boon': re.compile('Boon\.'),
             'frenzy': re.compile('Frenzy\.'),
             'hunting ground': re.compile('\. Hunting [Gg]round'),
