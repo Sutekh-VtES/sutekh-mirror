@@ -37,6 +37,13 @@ from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.gui.PluginManager import SutekhPlugin
 
 
+DEMO_HOLDERS = ["Demo Decks", "White Wolf Demo Decks"]
+
+STORYLINE_HOLDERS = ["Storyline Decks", "White Wolf Storyline Decks"]
+
+STARTER_HOLDERS = ["White Wolf Starter Decks", "Starter Decks"]
+
+
 def _get_cs_to_remove(oZipFile):
     """Handle card sets that are marked as removed in the starter
        info file."""
@@ -52,6 +59,18 @@ def _get_cs_to_remove(oZipFile):
         sName = sLine.strip()
         aToDelete.append(sName)
     return aToDelete
+
+def find_holder(aHolders):
+    """Returns the first of the given holders that exists in the database, or None
+       if all are missing."""
+    for sCandidate in aHolders:
+        try:
+            oHolder = IPhysicalCardSet(sCandidate)
+            return oHolder
+        except SQLObjectNotFound:
+            # We silence the error and move on to the next candidate
+            pass
+    return None
 
 
 class StarterConfigDialog(SutekhDialog):
@@ -274,25 +293,15 @@ class StarterInfoPlugin(SutekhPlugin):
                 _oSkip = IRarityPair(('Nergal Storyline', 'Storyline'))
             except SQLObjectNotFound:
                 bExcludeStorylineDecks = True
-            try:
-                oHolder = IPhysicalCardSet("White Wolf Starter Decks")
-            except SQLObjectNotFound:
-                # No info, so download everything we can
-                oHolder = None
+            oHolder = find_holder(STARTER_HOLDERS)
             if oHolder:
                 # We assume missing Holders are due to user choice, so we
                 # try to honour those. People can always use the explicit
                 # download option to recover accidental deletions
                 if not bExcludeDemoDecks:
-                    try:
-                        _oSkip = IPhysicalCardSet("White Wolf Demo Decks")
-                    except SQLObjectNotFound:
-                        bExcludeDemoDecks = True
+                    bExcludeDemoDecks = find_holder(DEMO_HOLDERS) is None
                 if not bExcludeStorylineDecks:
-                    try:
-                        _oSkip = IPhysicalCardSet("White Wolf Storyline Decks")
-                    except SQLObjectNotFound:
-                        bExcludeStorylineDecks = True
+                    bExcludeStorylineDecks = find_holder(STORYLINE_HOLDERS) is None
             oFile = urlopen_with_timeout(aUrls[0],
                                          fErrorHandler=gui_error_handler)
             if oFile:
@@ -309,12 +318,12 @@ class StarterInfoPlugin(SutekhPlugin):
         """Check for any decks we need to download."""
         if not sUrl:
             return False
+        bResult = False
         # Check if we need to download this url
-        try:
-            oHolder = IPhysicalCardSet("White Wolf Starter Decks")
-        except SQLObjectNotFound:
+        bResult = find_holder(STARTER_HOLDERS) is None
+        if bResult:
             # No starters, so assume we need to download
-            return True
+            return bResult
         # Existing TWDA entry, so check dates
         try:
             oUrlDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
@@ -389,14 +398,11 @@ class StarterInfoPlugin(SutekhPlugin):
         if not bOK:
             return False  # No starters in zip file
 
-        if bExcludeStoryDecks and bExcludeDemoDecks:
-            aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
-        elif bExcludeStoryDecks:
-            aExcluded = ["White Wolf Storyline Decks"]
-        elif bExcludeDemoDecks:
-            aExcluded = ["White Wolf Demo Decks"]
-        else:
-            aExcluded = []
+        aExcluded = []
+        if bExcludeStoryDecks:
+            aExcluded.extend(STORYLINE_HOLDERS)
+        if bExcludeDemoDecks:
+            aExcluded.extend(DEMO_HOLDERS)
 
         aToDelete = _get_cs_to_remove(oZipFile)
 
