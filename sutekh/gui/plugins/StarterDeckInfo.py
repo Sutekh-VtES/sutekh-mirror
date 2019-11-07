@@ -32,6 +32,11 @@ from StringIO import StringIO
 from sqlobject import SQLObjectNotFound
 
 
+DEMO_HOLDERS = ["Demo Decks", "White Wolf Demo Decks"]
+
+STORYLINE_HOLDERS = ["Storyline Decks", "White Wolf Storyline Decks"]
+
+
 class StarterConfigDialog(SutekhDialog):
     # pylint: disable-msg=R0904
     # R0904 - gtk Widget, so has many public methods
@@ -275,11 +280,11 @@ class StarterInfoPlugin(SutekhPlugin, CardTextViewListener):
             bExcludeStoryDecks, bExcludeDemoDecks, sRemovedInfo):
         """Extract the files left in the list."""
         if bExcludeStoryDecks and bExcludeDemoDecks:
-            aExcluded = ["White Wolf Storyline Decks", "White Wolf Demo Decks"]
+            aExcluded = DEMO_HOLDERS + STORYLINE_HOLDERS
         elif bExcludeStoryDecks:
-            aExcluded = ["White Wolf Storyline Decks"]
+            aExcluded = STORYLINE_HOLDERS
         elif bExcludeDemoDecks:
-            aExcluded = ["White Wolf Demo Decks"]
+            aExcluded = DEMO_HOLDERS
         else:
             aExcluded = []
         for sName, tInfo in dList.iteritems():
