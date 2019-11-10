@@ -134,7 +134,7 @@ setup   (   # Metadata
                     # configobj
                     'configobj', 'validate',
                     # plugin only dependencies
-                    'webbrowser', 'csv',
+                    'webbrowser', 'csv', 'simplejson',
                     # plugins
                     'sutekh.gui.plugins.*',
                     # pkg_resources extra stuff
