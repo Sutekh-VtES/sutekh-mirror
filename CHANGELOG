@@ -1,3 +1,7 @@
+10 Nov 2019
+ * Add explicit 'simplejson' dependency to the windows build for the starter and
+   Rulebook plugins.
+
 07 Nov 2019
  * Update starter deck plugin for planned holder renaming.
 
