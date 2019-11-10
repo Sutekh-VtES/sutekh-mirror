@@ -1,3 +1,16 @@
+07 Nov 2019
+ * Update starter deck plugin for planned holder renaming.
+
+06 Nov 2019
+ * Fix parsing of "discipline" keyword on First Blood text.
+
+05 Nov 2019
+ * Fix a bug in how the starter deck plugin handles deck renames.
+
+04 Nov 2019
+ * Add "First Blood" expansion
+ * Add "eoan" as official Ubuntu release
+
 30 Sep 2019
  * Add aliases for the 'Masquer (Wraith)' rename.
  * Backport parser fixes from trunk.
