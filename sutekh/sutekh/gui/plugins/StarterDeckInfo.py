@@ -318,12 +318,11 @@ class StarterInfoPlugin(SutekhPlugin):
         """Check for any decks we need to download."""
         if not sUrl:
             return False
-        bResult = False
         # Check if we need to download this url
-        bResult = find_holder(STARTER_HOLDERS) is None
-        if bResult:
+        oHolder = find_holder(STARTER_HOLDERS)
+        if oHolder is None:
             # No starters, so assume we need to download
-            return bResult
+            return True
         # Existing TWDA entry, so check dates
         try:
             oUrlDate = datetime.datetime.strptime(sDate, '%Y-%m-%d')
