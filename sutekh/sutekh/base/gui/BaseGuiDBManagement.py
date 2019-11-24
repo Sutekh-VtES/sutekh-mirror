@@ -17,7 +17,8 @@ from sqlobject import sqlhub, connectionForURI
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
 from ..core.BaseTables import AbstractCard, PhysicalCardSet
-from ..core.DBUtility import flush_cache, get_cs_id_name_table, refresh_tables
+from ..core.DBUtility import (flush_cache, get_cs_id_name_table, refresh_tables,
+                              set_metadata_date, CARDLIST_UPDATE_DATE)
 
 from ..io.EncodedFile import EncodedFile
 from ..io.UrlOps import urlopen_with_timeout, HashError
@@ -246,15 +247,6 @@ class BaseGuiDBManager(object):
             # Import successful
             # Create the Physical Card Collection card set
             PhysicalCardSet(name='My Collection', parent=None)
-            # Set the update date to today, so we don't prompt the user
-            # immediately for a new update after we've started.
-            # This may introduce clock issues, but matches the behaviour for
-            # when the user manually refreshes the card list, rather than
-            # auto updating
-            oConfig.set_last_update_date(datetime.date.today())
-            # We have to save, since the re-validation after the plugins will
-            # reload the file
-            save_config(oConfig)
         return bRet
 
     def save_backup(self, sBackupFile, oProgressDialog):
@@ -365,12 +357,13 @@ class BaseGuiDBManager(object):
         # to ensure we handle the caches correctly
         self._oWin.update_to_new_db()
         self._oWin.restore_editable_panes(aEditable)
-        # Set the last update date
-        if not oUpdateDate:
-            # No date given, so set the last update date to today
-            oUpdateDate = datetime.date.today()
-        self._oWin.config_file.set_last_update_date(oUpdateDate)
-        # Saving immediately to ensure we record the update seems
+        # Update the cardlist update date if it's provided
+        if oUpdateDate:
+            # We assume the actual import has set the date to something
+            # sensible by default (probably today), so we only change it
+            # if we have specific information.
+            set_metadata_date(CARDLIST_UPDATE_DATE, oUpdateDate)
+        # Saving immediately to ensure we record the id updates seems
         # the safest thing to do here, although it's different from
         # how we usually treat the config file.
         save_config(self._oWin.config_file)

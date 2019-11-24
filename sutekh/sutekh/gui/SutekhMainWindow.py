@@ -14,7 +14,7 @@ import gtk
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseAdapters import IAbstractCard
-from sutekh.base.core.DBUtility import flush_cache
+from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, flush_cache, get_metadata_date
 
 from sutekh.base.gui.AppMainWindow import AppMainWindow
 from sutekh.base.gui.GuiDataPack import gui_error_handler
@@ -135,8 +135,8 @@ class SutekhMainWindow(AppMainWindow):
             # probable timeout, so bail
             return
         oCLDate = datetime.datetime.strptime(aDates[0], '%Y-%m-%d').date()
-        oLastDate = self.config_file.get_last_update_date()
-        if oLastDate < oCLDate:
+        oLastDate = get_metadata_date(CARDLIST_UPDATE_DATE)
+        if oLastDate is None or oLastDate < oCLDate:
             # There has been a cardlist update, so query the user
             oDlg = UpdateDialog(["CardList and Rulings"])
             iResponse = oDlg.run()
