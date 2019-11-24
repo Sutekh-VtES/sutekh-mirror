@@ -40,6 +40,21 @@ class VersionTable(SQLObject):
     tableversion = 1
 
 
+class Metadata(SQLObject):
+
+    # This is a simple key-value table, used to store any
+    # arbitary additional information that should be tied to the
+    # database but is hard to fit into other tables, such as
+    # "update date" for the cardlist and so on.
+    # Since this is a common requirement across different tools, this lives in
+    # base, even though the use cases are implementation specific.
+
+    tableversion = 1
+
+    key = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    value = UnicodeCol()
+
+
 class AbstractCard(InheritableSQLObject):
 
     tableversion = 7
@@ -307,6 +322,7 @@ class MapPrintingToPrintingProperty(SQLObject):
 BASE_TABLE_LIST = [AbstractCard, Expansion, Printing, PhysicalCard,
                    PhysicalCardSet, Rarity, RarityPair, CardType, Ruling,
                    Artist, Keyword, LookupHints, PrintingProperty,
+                   Metadata,
                    # Mapping tables from here on out
                    MapPhysicalCardToPhysicalCardSet,
                    MapAbstractCardToRarityPair,
