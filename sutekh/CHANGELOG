@@ -1,3 +1,10 @@
+24 Nov 2019
+ * Add Metadata table for storing arbitary data in the database.
+ * Move the 'cardlist updated' value into the database.
+
+11 Nov 2019
+ * Fix bug in starter deck plugins "new data to download" check.
+
 07 Nov 2019
  * Update starter deck plugin for planned future holder renaming.
 
