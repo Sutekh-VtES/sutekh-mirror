@@ -7,10 +7,13 @@
 
 """Text Parser for extracting cards from the online cardlist.txt."""
 
+import datetime
 import re
 from logging import Logger
 
 from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
+
+from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, set_metadata_date
 
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
@@ -873,6 +876,10 @@ class WhiteWolfTextParser(object):
         self.feed('')
         if hasattr(self._oState, 'flush'):
             self._oState.flush()
+            # We reached here without errors, so we set the update date to today
+            # as the most sensible default for most situations and assume the
+            # caller will fix it if that's not correct.
+            set_metadata_date(CARDLIST_UPDATE_DATE, datetime.datetime.today())
         else:
             raise IOError('Failed to parse card list - '
                           'unexpected state at end of file.\n'

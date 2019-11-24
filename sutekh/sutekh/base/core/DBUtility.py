@@ -8,13 +8,19 @@
 
 """Misc functions that influence the database in various ways."""
 
+import datetime
+import logging
 
-from .BaseTables import VersionTable, PhysicalCardSet, AbstractCard
+from sqlobject import SQLObjectNotFound
+
+from .BaseTables import VersionTable, PhysicalCardSet, AbstractCard, Metadata
 from .BaseAdapters import Adapter
 from .BaseAbbreviations import DatabaseAbbreviation
 from .DatabaseVersion import DatabaseVersion
 from .CachedRelatedJoin import SOCachedRelatedJoin
 from ..Utility import find_subclasses
+
+CARDLIST_UPDATE_DATE = "last cardlist update"
 
 
 def make_adapter_caches():
@@ -95,3 +101,28 @@ def get_cs_id_name_table():
     for oCS in PhysicalCardSet.select():
         dMapping[oCS.id] = oCS.name
     return dMapping
+
+
+def get_metadata_date(sKey):
+    """Read a date from the metadata date and return a datetime.date object,
+       or return None if the object can't be found or interpreted as a date."""
+    try:
+        oObj = Metadata.byKey(sKey)
+        sDate = oObj.value
+        return datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
+    except (SQLObjectNotFound, ValueError) as oErr:
+        # Log this for debugging purposes
+        logging.info('Failed to find a valid date for %s (err %s) - returning None', sKey, oErr)
+    return None
+
+
+def set_metadata_date(sKey, oDate):
+    """Write a datetime object as a string in the metadata table, creating the
+       object if needed"""
+    sDate = oDate.strftime('%Y-%m-%d')
+    try:
+        oObj = Metadata.byKey(sKey)
+        oObj.value = sDate
+        oObj.syncUpdate()
+    except SQLObjectNotFound:
+        oObj = Metadata(key=sKey, value=sDate)
