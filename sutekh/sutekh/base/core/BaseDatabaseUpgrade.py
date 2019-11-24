@@ -26,7 +26,7 @@ from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from .BaseTables import (PhysicalCard, AbstractCard,
                          PhysicalCardSet, Expansion,
                          Rarity, RarityPair, CardType,
-                         Ruling, Keyword, Artist,
+                         Ruling, Keyword, Artist, Metadata,
                          LookupHints, Printing, PrintingProperty)
 from .DBUtility import flush_cache, refresh_tables
 from .BaseDBManagement import UnknownVersion
@@ -65,6 +65,7 @@ class BaseDBUpgradeManager(object):
         'Printing': (Printing, (-1, Printing.tableversion,)),
         'PrintingProperty': (PrintingProperty,
                              (-1, PrintingProperty.tableversion,)),
+        'Metadata': (Metadata, (-1, Metadata.tableversion,)),
     }
 
     # List of functions for upgrading databases
@@ -72,6 +73,7 @@ class BaseDBUpgradeManager(object):
     # (probably inserting before the copy_old_abstract_card entry)
     COPY_OLD_DB = [
         ('_copy_old_lookup_hints', 'LookupHints table', False),
+        ('_copy_old_metadata', 'Metadata table', False),
         ('_copy_old_rarity', 'Rarity table', False),
         ('_copy_old_expansion', 'Expansion table', False),
         ('_copy_old_print_properties', 'PrintingProperty table', False),
@@ -90,6 +92,7 @@ class BaseDBUpgradeManager(object):
     # Subclasses should extend this as needed
     COPY_DB = [
         ('_copy_lookup_hints', 'LookupHints table', False),
+        ('_copy_metadata', 'Metadata table', False),
         ('_copy_rarity', 'Rarity table', False),
         ('_copy_expansion', 'Expansion table', False),
         ('_copy_print_properties', 'PrintingProperty table', False),
@@ -192,6 +195,32 @@ class BaseDBUpgradeManager(object):
                                           connection=oTrans)
         else:
             return (False, ["Unknown Version for LookupHints"])
+        return (True, aMessages)
+
+    def _copy_old_metadata(self, oOrigConn, oTrans, oVer):
+        """Copy Metadata table, upgrading versions as needed"""
+        if oVer.check_tables_and_versions([Metadata],
+                                          [Metadata.tableversion],
+                                          oOrigConn):
+            self._copy_metadata(oOrigConn, oTrans)
+        else:
+            return self._upgrade_metadata(oOrigConn, oTrans, oVer)
+        return (True, [])
+
+    def _upgrade_metadata(self, oOrigConn, oTrans, oVer):
+        """Upgrade Metadata table"""
+        if oVer.check_tables_and_versions([Metadata], [-1], oOrigConn):
+            # We're upgrading from no table, and so we don't have the data
+            # available in the database, so we can't fill the table.
+            # We just fall back onto the default warning, since that
+            # at least covers the most common use-case.
+            # 
+            # subclasses should extend/replace this if required.
+            aMessages = ["Incomplete information to fill the Metadata"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+        else:
+            return (False, ["Unknown Version for Metadata"])
         return (True, aMessages)
 
     def _copy_print_properties(self, oOrigConn, oTrans):
@@ -326,7 +355,7 @@ class BaseDBUpgradeManager(object):
         return (False, ["Unknown Ruling Version"])
 
     def _copy_lookup_hints(self, oOrigConn, oTrans):
-        """Copy RairtyPair, assuming versions match"""
+        """Copy LookupHints, assuming versions match"""
         for oObj in LookupHints.select(connection=oOrigConn):
             # Force for SQLObject >= 0.11.4
             # pylint: disable=protected-access
@@ -336,6 +365,18 @@ class BaseDBUpgradeManager(object):
             _oCopy = LookupHints(id=oObj.id, domain=oObj.domain,
                                  lookup=oObj.lookup, value=oObj.value,
                                  connection=oTrans)
+
+    def _copy_metadata(self, oOrigConn, oTrans):
+        """Copy Metadata, assuming versions match"""
+        for oObj in Metadata.select(connection=oOrigConn):
+            # Force for SQLObject >= 0.11.4
+            # pylint: disable=protected-access
+            # Need to access _connect here
+            oObj._connection = oOrigConn
+            # pylint: enable=protected-access
+            _oCopy = Metadata(id=oObj.id, key=oObj.key,
+                              value=oObj.value,
+                              connection=oTrans)
 
     def _copy_rarity_pair(self, oOrigConn, oTrans):
         """Copy RairtyPair, assuming versions match"""
