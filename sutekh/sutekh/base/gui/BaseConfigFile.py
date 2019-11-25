@@ -816,13 +816,3 @@ class BaseConfigFile(object):
     def get_socket_timeout(self):
         """Get the timeout config value"""
         return self._oConfig['main']['socket timeout']
-
-    def get_last_update_date(self):
-        """Get the last update date as a date object."""
-        return self._oConfig['main']['last cardlist update']
-
-    def set_last_update_date(self, oDate):
-        """Set the last update date."""
-        # str(oDate) will call oDate.isoformat(), so this will
-        # serialise to the format we expect.
-        self._oConfig['main']['last cardlist update'] = oDate

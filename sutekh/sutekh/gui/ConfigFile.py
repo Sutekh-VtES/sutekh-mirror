@@ -68,3 +68,6 @@ class ConfigFile(BaseConfigFile):
                            -1, None)
             self.add_frame(4, 'physical_card_set', 'My Collection', False,
                            False, -1, None)
+        # Remove the old 'last cardlist update' setting from the config file
+        if 'last cardlist update' in self._oConfig['main']:
+            self._oConfig['main'].pop('last cardlist update')
