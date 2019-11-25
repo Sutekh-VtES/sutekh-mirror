@@ -197,12 +197,11 @@ def find_subclasses(cClass):
 
 def setup_logging(bVerbose, sErrFile=None):
     """Setup the log handling for this run"""
-    # Only log critical messages by default
     oRootLogger = logging.getLogger()
-    oRootLogger.setLevel(level=logging.CRITICAL)
+    # We set the global level to debug, so the inbuilt GUI logger
+    # can catch everything
+    oRootLogger.setLevel(level=logging.DEBUG)
     if bVerbose or sErrFile:
-        # Change logging level to debug
-        oRootLogger.setLevel(logging.DEBUG)
         bSkipVerbose = False
         if sErrFile:
             try:
@@ -219,9 +218,10 @@ def setup_logging(bVerbose, sErrFile=None):
             oLogHandler = logging.StreamHandler(sys.stderr)
             oRootLogger.addHandler(oLogHandler)
     else:
-        # Setup fallback logger for critical messages
+        # Setup fallback stderr logger for critical messages
         oLogHandler = logging.StreamHandler(sys.stderr)
         oRootLogger.addHandler(oLogHandler)
+        oLogHandler.setLevel(level=logging.CRITICAL)
     return oRootLogger
 
 
