@@ -68,6 +68,10 @@ class TestQueueLogHandler(SutekhTest):
 
         # Attach the widget
         oHandler.set_widget(oFrame)
+        # Setting the widget should queue a reload to get the initial messages
+        self.assertEqual(oFrame.bNeedsReload, True)
+        oFrame.reload()
+        self.assertEqual(oFrame.bNeedsReload, False)
 
         # Check various log levels trigger a reload request
         logging.info("Test message")
