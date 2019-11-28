@@ -5,6 +5,7 @@
 
 """Test the white wolf card reader"""
 
+import datetime
 import unittest
 
 from sqlobject import SQLObjectNotFound
@@ -14,6 +15,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion, IRarity, IRarityPair,
                                            ICardType, IArtist, IKeyword,
                                            IPrinting)
+from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, get_metadata_date
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
                                         ITitle, ICreed, IVirtue)
@@ -122,6 +124,11 @@ class WhiteWolfParserTests(SutekhTest):
         """Basic WW list parser tests"""
         # pylint: disable=too-many-statements, too-many-locals
         # Want a long, sequential test case to minimise repeated setups
+
+        # Check that we've added the 'last updated' date entry
+        oToday = datetime.date.today()
+        self.assertEqual(get_metadata_date(CARDLIST_UPDATE_DATE), oToday)
+
         aCards = sorted(list(AbstractCard.select()), key=lambda oC: oC.name)
 
         # Check card names
