@@ -5,6 +5,8 @@
 
 """Widget for displaying the card text for the given card."""
 
+import logging
+
 import gtk
 import pango
 
@@ -17,6 +19,20 @@ class LogTextBuffer(gtk.TextBuffer):
     # gtk.Widget, so many public methods
     def __init__(self):
         super(LogTextBuffer, self).__init__(None)
+
+    def clear(self):
+        """Clear all messages"""
+        oStart, oEnd = self.get_bounds()
+        self.delete(oStart, oEnd)
+
+    def add_message(self, sMessage):
+        oEnd = self.get_end_iter()
+        self.insert(oEnd, sMessage)
+        self.insert(oEnd, '\n')
+
+    def get_all_text(self):
+        oStart, oEnd = self.get_bounds()
+        return self.get_text(oStart, oEnd)
 
 
 class LogTextView(gtk.TextView):
@@ -35,7 +51,21 @@ class LogTextView(gtk.TextView):
         self.set_editable(False)
         self.set_cursor_visible(False)
         self.set_wrap_mode(gtk.WRAP_WORD)
+        self._iFilterLevel = logging.NOTSET
 
     def set_log_messages(self, aMessages):
-        print("set_log_messages called")
-        print("With", aMessages)
+        """Populate the TextBuffer with the messages, honouring
+           the filter level"""
+        self._oBuf.clear()
+        for tMessage in aMessages:
+            if tMessage[0] >= self._iFilterLevel:
+                self._oBuf.add_message(tMessage[1])
+
+    def export_bufffer(self, oFile):
+        """Export all the text from the buffer to the given file object"""
+        sData = self._oBuf.get_all_text()
+        oFile.write(sData)
+
+    def set_filter_level(self, iNewLevel):
+        """Update the filter level."""
+        self._iFilterLevel = iNewLevel
