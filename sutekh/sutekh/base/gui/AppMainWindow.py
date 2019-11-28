@@ -25,6 +25,7 @@ from ..core.DatabaseVersion import DatabaseVersion
 from .MultiPaneWindow import MultiPaneWindow
 from .PhysicalCardFrame import PhysicalCardFrame
 from .CardSetFrame import CardSetFrame
+from .LogViewFrame import LogViewFrame
 from .GuiCardLookup import GuiLookup
 from .GuiCardSetFunctions import break_existing_loops
 from .CardSetManagementFrame import CardSetManagementFrame
@@ -33,6 +34,7 @@ from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import do_complaint_error_details, do_exception_complaint
 from .UpdateDialog import UpdateDialog
 from .DataFilesDialog import Result
+from .QueueLogHandler import QueueLogHandler
 # pylint: enable=wrong-import-position
 
 
@@ -72,6 +74,9 @@ class AppMainWindow(MultiPaneWindow):
         self._cDBManager = None
         # Name to use for resource lookups
         self._sResourceName = None
+        # Log Handler for the Gui Queue Logger
+        self._oGuiLogHandler = QueueLogHandler()
+        logging.getLogger().addHandler(self._oGuiLogHandler)
 
     def _verify_database(self):
         """Verify that the database is correctly populated"""
@@ -226,7 +231,8 @@ class AppMainWindow(MultiPaneWindow):
                                 " and card text frames.")
     card_text_pane = property(fget=lambda self: self._oCardTextPane,
                               doc="Return reference to the card text pane")
-
+    gui_log_handler = property(fget=lambda self: self._oGuiLogHandler,
+                               doc="Return reference to the log handler")
     # pylint: enable=protected-access
 
     def add_to_menu_list(self, sMenuFlag, oMenuActiveFunc):
@@ -284,6 +290,8 @@ class AppMainWindow(MultiPaneWindow):
                 oRestored = self.replace_with_physical_card_list(None)
             elif sType == 'Card Set List':
                 oRestored = self.replace_with_pcs_list(None)
+            elif sType == 'Log View Frame':
+                oRestored = self.replace_with_log_view_frame(None)
             else:
                 # See if one of the plugins claims this type
                 for oPlugin in self._aPlugins:
@@ -360,6 +368,21 @@ class AppMainWindow(MultiPaneWindow):
             if oPane.is_card_set(sSetName):
                 aPanes.append(oPane)
         return aPanes
+
+    def replace_with_log_view_frame(self, _oWidget, oOldFrame=None):
+        """Add a log view frame to the window"""
+        if self.is_open_by_menu_name("Log View Frame"):
+            return None
+        if oOldFrame is None:
+            oOldFrame = self._oFocussed
+        oPane = LogViewFrame(self)
+        self.replace_frame(oOldFrame, oPane)
+        return oPane
+
+    def add_new_log_view_frame(self, oMenuWidget):
+        """Add a new pane and replace it with the log view frame."""
+        oNewPane = self.add_pane_end()
+        return self.replace_with_log_view_frame(oMenuWidget, oNewPane)
 
     def replace_with_physical_card_set(self, sName, oFrame, bDoReloadPCS=True,
                                        bStartEditable=False):

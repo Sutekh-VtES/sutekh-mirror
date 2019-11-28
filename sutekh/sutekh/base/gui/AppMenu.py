@@ -39,6 +39,8 @@ class AppMenu(SutekhMenu):
                                  self.pcs_list_pane_set_sensitive)
         oWindow.add_to_menu_list("Card Text",
                                  self.add_card_text_set_sensitive)
+        oWindow.add_to_menu_list("Log View Frame",
+                                 self.add_log_pane_set_sensitive)
         # enable mnemonics + accelerators for the main menu
         self.activate_accels()
 
@@ -193,6 +195,11 @@ class AppMenu(SutekhMenu):
             self._oMainWindow.add_new_pcs_list)
         self._oAddPCSListPane.set_sensitive(True)
 
+        self._oAddLogPane = self.create_menu_item(
+            "Add Log Message Pane", oAddMenu,
+            self._oMainWindow.add_new_log_view_frame)
+        self._oAddLogPane.set_sensitive(True)
+
     def _add_replace_submenu(self, oMenuWidget):
         """Create a submenu for the replace pane options"""
         self._oReplaceMenu = self.create_submenu(oMenuWidget, 'Replace Pane')
@@ -211,6 +218,11 @@ class AppMenu(SutekhMenu):
             "Replace current pane with Card Set List", self._oReplaceMenu,
             self._oMainWindow.replace_with_pcs_list)
         self._oReplacePCSListPane.set_sensitive(True)
+
+        self._oReplaceLogPane = self.create_menu_item(
+            "Replace current pane with Log Message Pane", self._oReplaceMenu,
+            self._oMainWindow.replace_with_log_view_frame)
+        self._oReplaceLogPane.set_sensitive(True)
 
     def _create_rulebook_menu(self):
         """Create the menu for rulebook items"""
@@ -273,6 +285,11 @@ class AppMenu(SutekhMenu):
         """Set the options for adding the card collection to bValue"""
         self._oReplacePCLPane.set_sensitive(bValue)
         self._oAddPCLPane.set_sensitive(bValue)
+
+    def add_log_pane_set_sensitive(self, bValue):
+        """Set the options for adding the list of PhysicalCardSets to bValue"""
+        self._oAddLogPane.set_sensitive(bValue)
+        self._oReplaceLogPane.set_sensitive(bValue)
 
     def set_split_vertical_active(self, bValue):
         """Set the split vertical pane option to bValue"""
