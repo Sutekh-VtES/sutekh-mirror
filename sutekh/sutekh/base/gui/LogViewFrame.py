@@ -40,6 +40,11 @@ class LogViewFrame(BasicFrame):
 
         oMainWindow.gui_log_handler.set_widget(self)
 
+    # pylint: disable=protected-access
+    # explicitly allow access to these values via thesep properties
+    type = property(fget=lambda self: self._sName, doc="Frame Type")
+    # pylint: enable=protected-access
+
     def reload(self):
         """Reload frame contents"""
         self._oView.set_log_messages(self._oMainWindow.gui_log_handler.aQueue)
