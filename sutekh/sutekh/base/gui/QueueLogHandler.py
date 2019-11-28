@@ -32,7 +32,6 @@ class QueueLogHandler(Handler, object):
         self._oLogWidget = None
 
     def set_widget(self, oLogWidget):
-        print("Here", oLogWidget)
         self._oLogWidget = oLogWidget
         # Request a reload, so the window is populated
         oLogWidget.queue_reload()
