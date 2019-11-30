@@ -8,7 +8,6 @@
 import logging
 
 import gtk
-import pango
 
 
 class LogTextBuffer(gtk.TextBuffer):
@@ -26,12 +25,15 @@ class LogTextBuffer(gtk.TextBuffer):
         self.delete(oStart, oEnd)
 
     def add_message(self, sMessage):
+        """Append a message to the log"""
         oEnd = self.get_end_iter()
         self.insert(oEnd, sMessage)
         self.insert(oEnd, '\n')
 
     def get_all_text(self):
+        """Get everything shown in the buffer"""
         oStart, oEnd = self.get_bounds()
+        # This should be unicode
         return self.get_text(oStart, oEnd)
 
 
@@ -61,10 +63,17 @@ class LogTextView(gtk.TextView):
             if tMessage[0] >= self._iFilterLevel:
                 self._oBuf.add_message(tMessage[1])
 
-    def export_bufffer(self, oFile):
+    def export_buffer(self, oFile):
         """Export all the text from the buffer to the given file object"""
         sData = self._oBuf.get_all_text()
-        oFile.write(sData)
+        oFile.write(sData.encode('utf8'))
+
+    def save_to_file(self, sFileName):
+        """Handling opening a file and passing it to _export_buffer"""
+        if sFileName:
+            # We've already checked for permission to overwrite
+            with open(sFileName, 'wb') as oFile:
+                self.export_buffer(oFile)
 
     def set_filter_level(self, iNewLevel):
         """Update the filter level."""

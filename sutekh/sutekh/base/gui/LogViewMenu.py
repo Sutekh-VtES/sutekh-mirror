@@ -11,6 +11,7 @@ import logging
 import gtk
 
 from .SutekhMenu import SutekhMenu
+from .SutekhFileWidget import ExportDialog
 
 
 class LogViewMenu(SutekhMenu):
@@ -62,7 +63,10 @@ class LogViewMenu(SutekhMenu):
 
     def _save_to_file(self, _oWidget):
         """Popup the Save File dialog."""
-        # self._oLogFrame.save_to_file()
+        oDlg = ExportDialog("Save logs as", self._oMainWindow)
+        oDlg.add_filter_with_pattern("TXT files", ['*.txt'])
+        oDlg.run()
+        self._oLogFrame.view.save_to_file(oDlg.get_name())
 
     def _change_log_level(self, _oWidget, iNewLevel):
         """Pass the new log level to the view"""

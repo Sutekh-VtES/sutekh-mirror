@@ -7,7 +7,6 @@
 """Base class for Sutekh Frames"""
 
 import gtk
-import gobject
 
 from .AutoScrolledWindow import AutoScrolledWindow
 from .BasicFrame import BasicFrame
@@ -43,6 +42,7 @@ class LogViewFrame(BasicFrame):
     # pylint: disable=protected-access
     # explicitly allow access to these values via thesep properties
     type = property(fget=lambda self: self._sName, doc="Frame Type")
+    view = property(fget=lambda self: self._oView, doc="View")
     # pylint: enable=protected-access
 
     def reload(self):
@@ -78,5 +78,6 @@ class LogViewFrame(BasicFrame):
         return self._sName
 
     def set_filter_level(self, iNewLevel):
+        """Set the filter level and reload the messages"""
         self._oView.set_filter_level(iNewLevel)
         self.reload()
