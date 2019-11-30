@@ -76,3 +76,7 @@ class LogViewFrame(BasicFrame):
     def get_menu_name(self):
         """Get the menu key"""
         return self._sName
+
+    def set_filter_level(self, iNewLevel):
+        self._oView.set_filter_level(iNewLevel)
+        self.reload()

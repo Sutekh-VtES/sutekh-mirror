@@ -6,6 +6,8 @@
 
 """Menu for the card set pane"""
 
+import logging
+
 import gtk
 
 from .SutekhMenu import SutekhMenu
@@ -39,9 +41,29 @@ class LogViewMenu(SutekhMenu):
 
     def _create_filter_list(self, oSubMenu):
         """Create list of 'Filter' radio options."""
+        oAll = gtk.RadioMenuItem(None, "Show all log messages")
+        oInfo = gtk.RadioMenuItem(oAll, "Ignore debugging log messages")
+        oWarn = gtk.RadioMenuItem(oAll, "Also Ignore Info messages")
+        oError = gtk.RadioMenuItem(oAll, "Only show Error log messages")
+
+        oAll.connect('activate', self._change_log_level, logging.NOTSET)
+        oInfo.connect('activate', self._change_log_level, logging.INFO)
+        oWarn.connect('activate', self._change_log_level, logging.WARN)
+        oError.connect('activate', self._change_log_level, logging.ERROR)
+
+        oAll.set_active(True)
+
+        oSubMenu.add(oAll)
+        oSubMenu.add(oInfo)
+        oSubMenu.add(oWarn)
+        oSubMenu.add(oError)
 
     # pylint: enable=attribute-defined-outside-init
 
     def _save_to_file(self, _oWidget):
         """Popup the Save File dialog."""
-        # self._oFrame.save_to_file()
+        # self._oLogFrame.save_to_file()
+
+    def _change_log_level(self, _oWidget, iNewLevel):
+        """Pass the new log level to the view"""
+        self._oLogFrame.set_filter_level(iNewLevel)
