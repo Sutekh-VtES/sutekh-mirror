@@ -15,7 +15,7 @@ h2(#intro). The Initial Layout
 When you run Sutekh for the first time, it will display the following four
 panes:
 
-* White Wolf Card List
+* Full Card List
 * Card Text
 * Card Set List
 * My Collection
@@ -25,10 +25,10 @@ config file.  You can determine which panes are shown either by explicitly
 saving the layout using *Save current pane set* in *File->Preferences*, or by
 setting the *Save Pane Set on Exit* option save the configuration.
 
-h3. The White Wolf card list
+h3. The Full card list
 
 Sutekh maintains a list of all the cards published by the V:EKN as the
-_White Wolf Card List_. It lists the cards and the expansions in which each card
+_Full Card List_. It lists the cards and the expansions in which each card
 has appeared.
 
 h3. Card Text
@@ -56,7 +56,7 @@ adding cards to a card set, ensure that it is editable.
 
 For convenience, when a card set is first created, it is opened as editable.
 
-You can add cards by dragging them from the _White Wolf Card List_ to the pane
+You can add cards by dragging them from the _Full Card List_ to the pane
 of the card set. You can also use the copy and paste options from the edit menu.
 If you copy multiple cards, you will add a single copy of each distinct selected
 card to the destination set. If you have selected multiple copies of the same

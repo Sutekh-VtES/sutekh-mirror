@@ -14,8 +14,8 @@ h2. Contents
 ## "Rulebook":#rulebook
 ## "Keyboard Shortcuts":#keyboard
 ## "Minimizing Panes":#minimize_panes
-## "Refreshing the White Wolf Card List":#refresh
-# "White Wolf Card List":#ww
+## "Refreshing the Card List":#refresh
+# "Full Card List":#ww
 ## "Actions":#ww_actions
 ## "Edit":#ww_edit
 ## "Filter":#ww_filter
@@ -49,7 +49,7 @@ h2. Contents
 ## "Edit Profile":#edit_profile
 ## "Managing Profiles":#manage_profile
 :numbered:2:profile:groupby
-## "White Wolf Card List Profile Options":#ww_profile
+## "Full Card List Profile Options":#ww_profile
 :numbered:3:card_sets:profile
 ## "Card Set Profile Options":#cardset_profile
 ### "The Different Profiles":#different_profiles
@@ -90,7 +90,7 @@ You can split the main Sutekh window into a number of different panes.
 
 The following panes are supported:
 
-* "The White Wolf card list":#ww
+* "The Full Card List":#ww
 * "The Card Set List":#card_set_list
 * "Card Text":#card_text
 * "Card Image":#card_image
@@ -120,19 +120,16 @@ and expansion.
 :list:2:card_list:file
 * _Data Downloads_: This submenu allows you to update data from the various \
 external sources Sutekh uses.
-** _Import new White Wolf Card List and rulings_: Update the \
+** _Import new Card List and rulings_: Update the \
 database with a new cardlist and/or rulings file. You can either specify \
-local files, or opt to download them from the appropriate websites directly. \
-Sutekh may encounter problems when updating the card list after a new \
-expansion has been published -- this is discussed further in the section \
-"Refreshing the White Wolf Card List":#refresh.
+local files, or opt to download them from the appropriate website directly.
 ** _Download VTES icons_: Attempt to download the icons from the V:EKN \
 website.
-** _Download starter decks_: Download and import a list of the White Wolf \
-preconstructed decks from the sutekh wiki. The zip file also includes the \
+** _Download starter decks_: Download and import a list of the various \
+preconstructed decks from the sutekh download sit. The zip file also includes the \
 details of the storyline and demo decks released by WW, but these can be \
 excluded using the checkboxes. If you have not imported the details of \
-these extra cards (see "Refreshing the White Wolf Card List":#refresh), \
+these extra cards (see "Refreshing the Full Card List":#refresh), \
 these will be greyed out and automatically excluded.
 ** _Download or Configure Card Images_: Download images of the cards for the \
 "Card Images":#card_image pane, or use an existing zip file or directory of \
@@ -236,7 +233,7 @@ on a pane listed on the toolbar will unminimize it and place to the right of
 current set of open panes.
 
 
-h3(#refresh). Refreshing the White Wolf Card List
+h3(#refresh). Refreshing the Full Card List
 
 This allows Sutekh to update the card list to account for new cards, such
 as promos.
@@ -244,21 +241,18 @@ as promos.
 Sutekh parses the card list published on the V:EKN site for
 information about the cards. When new expansions are published, Sutekh may
 require an update to interpret major changes to the cardlist, such as
-new clans or card types. If the expansion does not introduce any significant
-changes, Sutekh may be able to import the new card list correctly, but may be
-unable to interpret the new expansion name. If this happens, Sutekh should
-continue working, but you may need to specify the correct mapping for the
-expansion when updating the database during your next upgrade.
+new clans, card types or significant formatting changes. For most changes,
+though, the update should work fine. 
 
 The _Storyline Card File_ provides information not included in the official
 V:EKN card list. This includes information about the various special storyline
 cards that have been printed, and also details various special expansions,
 such as those for the demonstration decks, that have been released.
 
-h2(#ww). White Wolf Card List
+h2(#ww). Full Card List
 
 This pane contains a list of all the cards imported from the official
-White Wolf card list.
+card list.
 
 h3(#ww_actions). Actions
 
@@ -291,7 +285,7 @@ The filter menu has three options:
 
 h3(#ww_analyze). Analyze
 
-The following analysis options are available for White Wolf Card List:
+The following analysis options are available for Full Card List:
 
 * "Cluster Cards":#cluster
 :list:1:card_list:analysis
@@ -515,14 +509,14 @@ importing a card set. Names vary ("Spirit's Touch",
 "The Spirit's Touch"), special characters can be missing, etc.. When
 this happens, Sutekh will prompt you for the correct card.
 
-The card lookup window displays two lists: the list of all White Wolf cards
+The card lookup window displays two lists: the full list of all known cards 
 and the list of unknown cards. Below the unknown card list are options
 to specify a "filter":#filters, to apply or unapply the filter, to show or
 hide cards not legal for tournament play or to "search":#searchdialog the card
 list.
 
 The unknown card list has two columns -- the name of the unknown card and
-the currently selected replacement from the White Wolf card list -- and three
+the currently selected replacement from the full card list -- and three
 buttons. Use the first button to replace the card with the currently selected
 card, the second button to mark the card as ignored, and the last to view a list
 of reasonable options (Sutekh finds these by applying a filter based on the
@@ -614,7 +608,7 @@ left hand pane to the right hand pane.
 
 h3(#card_filters). Card Filters
 
-These filters apply either to the White Wolf card list or a card set. The
+These filters apply either to the full card list or a card set. The
 following basic filters are supported:
 
 * _Card Type_: Filter on the type of card. You must specify a "list":#list of \
@@ -895,9 +889,9 @@ to the default profile.
 
 :text:3:profile:groupby
 
-h3(#ww_profile). White Wolf Card List Profile Options
+h3(#ww_profile). Full Card List Profile Options
 
-You can set the following options for the white wolf card list in the profile:
+You can set the following options for the full card list in the profile:
 
 * _Column mode_: This controls how information in the extra columns is \
 displayed. You can choose to only show test, only show icons (if applicable) \
@@ -910,7 +904,7 @@ this profile is selected.
 * _Hide cards not legal for tournament play_: Controls whether cards flagged \
 as not legal for tournament play (i.e. banned or storyline only cards) are \
 shown in the list.
-* _White Wolf Card List Count Mode_: By default, the White Wolf card list \
+* _Full Card List Count Mode_: By default, the full card list \
 doesn't show a count for cards. This option allows you to choose between the \
 default _Don't show card counts_ mode, _Show counts for each distinct card_ \
 and _Show counts for each expansion_. In _Show counts for each distinct card_, \
@@ -929,7 +923,7 @@ You can set the following options or a card set or frame profile:
 
 * _Cards To Show_: Set which cards are displayed. The options are:
 ** _This Set Only_: Show only the cards in this card set.
-** _Show All Cards_: Show all the cards in the White Wolf list. Cards not in \
+** _Show All Cards_: Show all the cards in the full card list. Cards not in \
 this card set will have a count of 0.
 ** _Show all cards in parent card set_: Show all the cards in this card set, \
 as well as any cards in the parent card set that are not in this card set.
