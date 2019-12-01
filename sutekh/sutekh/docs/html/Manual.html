@@ -28,9 +28,9 @@
 			<li><a href="#rulebook">Rulebook</a></li>
 			<li><a href="#keyboard">Keyboard Shortcuts</a></li>
 			<li><a href="#minimize_panes">Minimizing Panes</a></li>
-			<li><a href="#refresh">Refreshing the White Wolf Card List</a></li>
+			<li><a href="#refresh">Refreshing the Card List</a></li>
 		</ol></li>
-		<li><a href="#ww">White Wolf Card List</a>
+		<li><a href="#ww">Full Card List</a>
 		<ol>
 			<li><a href="#ww_actions">Actions</a></li>
 			<li><a href="#ww_edit">Edit</a></li>
@@ -39,6 +39,10 @@
 		</ol></li>
 		<li><a href="#card_text">Card Text</a></li>
 		<li><a href="#card_image">Card Image</a></li>
+		<li><a href="#log_view">Log View</a>
+		<ol>
+			<li><a href="#log_view_actions">Actions</a></li>
+		</ol></li>
 		<li><a href="#card_set_list">Card Set List</a>
 		<ol>
 			<li><a href="#card_set_list_actions">Actions</a></li>
@@ -84,7 +88,7 @@
 			<li><a href="#edit_profile">Edit Profile</a></li>
 			<li><a href="#manage_profile">Managing Profiles</a></li>
 			<li><a href="#cardgroupings">Card Groupings</a></li>
-			<li><a href="#ww_profile">White Wolf Card List Profile Options</a>
+			<li><a href="#ww_profile">Full Card List Profile Options</a>
 			<ol>
 				<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a></li>
 			</ol></li>
@@ -134,10 +138,11 @@ many other arrangements are possible.</p>
 	<p>The following panes are supported:</p>
 
 	<ul>
-		<li><a href="#ww">The White Wolf card list</a></li>
+		<li><a href="#ww">The Full Card List</a></li>
 		<li><a href="#card_set_list">The Card Set List</a></li>
 		<li><a href="#card_text">Card Text</a></li>
 		<li><a href="#card_image">Card Image</a></li>
+		<li><a href="#log_view">Log View</a></li>
 		<li><a href="#cardsets">Card Set</a> panes</li>
 	</ul>
 
@@ -165,9 +170,9 @@ using the pane title.</p>
 		</ul></li>
 		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
 		<ul>
-			<li><em>Import new White Wolf Card List and rulings</em>: Update the database with a new cardlist and/or rulings file. You can either specify local files, or opt to download them from the appropriate websites directly. Sutekh may encounter problems when updating the card list after a new expansion has been published &#8212; this is discussed further in the section <a href="#refresh">Refreshing the White Wolf Card List</a>.</li>
+			<li><em>Import new Card List and rulings</em>: Update the database with a new cardlist and/or rulings file. You can either specify local files, or opt to download them from the appropriate website directly.</li>
 			<li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the V:EKN website.</li>
-			<li><em>Download starter decks</em>: Download and import a list of the White Wolf preconstructed decks from the sutekh wiki. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the White Wolf Card List</a>), these will be greyed out and automatically excluded.</li>
+			<li><em>Download starter decks</em>: Download and import a list of the various preconstructed decks from the sutekh download sit. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the Full Card List</a>), these will be greyed out and automatically excluded.</li>
 			<li><em>Download or Configure Card Images</em>: Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing zip file or directory of images.</li>
 			<li><em>Download Rulebook Files</em>: Download the various files for the <a href="#rulebook">Rulebook</a> menu.</li>
 		</ul></li>
@@ -316,7 +321,7 @@ on a pane listed on the toolbar will unminimize it and place to the right of
 current set of open panes.</p>
 
 
-	<h3 id="refresh">Refreshing the White Wolf Card List</h3>
+	<h3 id="refresh">Refreshing the Full Card List</h3>
 
 	<p>This allows Sutekh to update the card list to account for new cards, such 
 as promos.</p>
@@ -324,21 +329,18 @@ as promos.</p>
 	<p>Sutekh parses the card list published on the V:EKN site for 
 information about the cards. When new expansions are published, Sutekh may 
 require an update to interpret major changes to the cardlist, such as 
-new clans or card types. If the expansion does not introduce any significant 
-changes, Sutekh may be able to import the new card list correctly, but may be 
-unable to interpret the new expansion name. If this happens, Sutekh should 
-continue working, but you may need to specify the correct mapping for the 
-expansion when updating the database during your next upgrade.</p>
+new clans, card types or significant formatting changes. For most changes, 
+though, the update should work fine. </p>
 
 	<p>The <em>Storyline Card File</em> provides information not included in the official 
 V:EKN card list. This includes information about the various special storyline 
 cards that have been printed, and also details various special expansions, 
 such as those for the demonstration decks, that have been released.</p>
 
-	<h2 id="ww">White Wolf Card List</h2>
+	<h2 id="ww">Full Card List</h2>
 
 	<p>This pane contains a list of all the cards imported from the official 
-White Wolf card list.</p>
+card list.</p>
 
 	<h3 id="ww_actions">Actions</h3>
 
@@ -370,7 +372,7 @@ White Wolf card list.</p>
 
 	<h3 id="ww_analyze">Analyze</h3>
 
-	<p>The following analysis options are available for White Wolf Card List:</p>
+	<p>The following analysis options are available for Full Card List:</p>
 
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
@@ -411,6 +413,35 @@ Sutekh will attempt to display the correct expansion for the selected card.
 You can cycle through the available expansions either by left-clicking 
 on the image, or by selecting the <em>Show next expansion image</em> and 
 <em>Show previous expansion image</em> options after right-clicking on the frame.</p>
+
+
+	<h2 id="log_view">Log View</h2>
+
+	<p>To help identify problems, this pane displays any log messages for the current Sutekh session. 
+By default, this shows all log messages, but the list can be filtered using the &#8220;Actions&#8221; menu. 
+There are 4 types of messages logged by Sutekh:</p>
+
+	<ul>
+		<li><em>Debugging</em>: These are messages to help debug the behaviour of sutekh.</li>
+		<li><em>Informational</em>: These messages are informational messages about actions Sutekh does. It includes things like checking for updates and so forth.</li>
+		<li><em>Warning</em>: These are messages from unexpected events that are not fatal, such as unexepcted network failures during a download.</li>
+		<li><em>Error</em>: These are more serious errors, and usually indicate that something has gone wrong.</li>
+	</ul>
+
+	<h3 id="log_view_actions">Actions</h3>
+
+	<p>The following actions are available:</p>
+
+	<ul>
+		<li><em>Filter log level</em>: This allows you to filter the messages displayed. The following levels are supported:
+		<ul>
+			<li><em>Show all log messages</em>: Show all the messages. This is the default.</li>
+			<li><em>Ignore debugging log messages</em>: This will exclude any <em>debugging</em> messages from the shown log.</li>
+			<li><em>Also Ignore Info messages</em>: In addition to excluding <em>debugging</em> messages, this will exclude <em>info</em> messages, showing <em>error</em> and <em>warning</em> messages.</li>
+			<li><em>Only show Error log messages</em>: This will exlude <em>warning</em> messages as well, only showing the <em>error</em> messages.</li>
+		</ul></li>
+		<li><em>Save current view to file</em>: This allows you to export the filtered list to a text file.</li>
+	</ul>
 
 	<h2 id="card_set_list">Card Set List</h2>
 
@@ -614,14 +645,14 @@ importing a card set. Names vary (&#8220;Spirit&#8217;s Touch&#8221;,
 &#8220;The Spirit&#8217;s Touch&#8221;), special characters can be missing, etc.. When 
 this happens, Sutekh will prompt you for the correct card.</p>
 
-	<p>The card lookup window displays two lists: the list of all White Wolf cards 
+	<p>The card lookup window displays two lists: the full list of all known cards  
 and the list of unknown cards. Below the unknown card list are options 
 to specify a <a href="#filters">filter</a>, to apply or unapply the filter, to show or 
 hide cards not legal for tournament play or to <a href="#searchdialog">search</a> the card 
 list.</p>
 
 	<p>The unknown card list has two columns &#8212; the name of the unknown card and 
-the currently selected replacement from the White Wolf card list &#8212; and three 
+the currently selected replacement from the full card list &#8212; and three 
 buttons. Use the first button to replace the card with the currently selected 
 card, the second button to mark the card as ignored, and the last to view a list 
 of reasonable options (Sutekh finds these by applying a filter based on the 
@@ -713,7 +744,7 @@ left hand pane to the right hand pane.</p>
 
 	<h3 id="card_filters">Card Filters</h3>
 
-	<p>These filters apply either to the White Wolf card list or a card set. The 
+	<p>These filters apply either to the full card list or a card set. The 
 following basic filters are supported:</p>
 
 	<ul>
@@ -1117,9 +1148,9 @@ to the default profile.</p>
 
 
 
-	<h3 id="ww_profile">White Wolf Card List Profile Options</h3>
+	<h3 id="ww_profile">Full Card List Profile Options</h3>
 
-	<p>You can set the following options for the white wolf card list in the profile:</p>
+	<p>You can set the following options for the full card list in the profile:</p>
 
 	<ul>
 		<li><em>Column mode</em>: This controls how information in the extra columns is displayed. You can choose to only show test, only show icons (if applicable) or to show both.</li>
@@ -1128,7 +1159,7 @@ to the default profile.</p>
 		<li><a href="#extracolumnscardsets">Extra Columns &#8212; card sets</a> Select which extra columns of data are shown. See the                   <strong>Extra Columns &#8212; card sets</strong> section for more details.</li>
 		<li><em>Filter</em>: Specify a saved <a href="#filters">filter</a> that is always applied when this profile is selected.</li>
 		<li><em>Hide cards not legal for tournament play</em>: Controls whether cards flagged as not legal for tournament play (i.e. banned or storyline only cards) are shown in the list.</li>
-		<li><em>White Wolf Card List Count Mode</em>: By default, the White Wolf card list doesn&#8217;t show a count for cards. This option allows you to choose between the default <em>Don&#8217;t show card counts</em> mode, <em>Show counts for each distinct card</em> and <em>Show counts for each expansion</em>. In <em>Show counts for each distinct card</em>, each distinct card has a count of 1, but expansions aren&#8217;t counted. This can be useful for determining statistics about the cards and so on, While in the <em>how counts for each expansion</em> mode, each printed expansion has a count of 1 (the <em>Unspecified Expansion</em> entries aren&#8217;t counted).</li>
+		<li><em>Full Card List Count Mode</em>: By default, the full card list doesn&#8217;t show a count for cards. This option allows you to choose between the default <em>Don&#8217;t show card counts</em> mode, <em>Show counts for each distinct card</em> and <em>Show counts for each expansion</em>. In <em>Show counts for each distinct card</em>, each distinct card has a count of 1, but expansions aren&#8217;t counted. This can be useful for determining statistics about the cards and so on, While in the <em>how counts for each expansion</em> mode, each printed expansion has a count of 1 (the <em>Unspecified Expansion</em> entries aren&#8217;t counted).</li>
 		<li><em>Show icons for grouping</em>: Controls whether icons are shown with the group name.</li>
 	</ul>
 
@@ -1181,7 +1212,7 @@ will affect all selected columns that can use icons.</p>
 		<li><em>Cards To Show</em>: Set which cards are displayed. The options are:
 		<ul>
 			<li><em>This Set Only</em>: Show only the cards in this card set.</li>
-			<li><em>Show All Cards</em>: Show all the cards in the White Wolf list. Cards not in this card set will have a count of 0.</li>
+			<li><em>Show All Cards</em>: Show all the cards in the full card list. Cards not in this card set will have a count of 0.</li>
 			<li><em>Show all cards in parent card set</em>: Show all the cards in this card set, as well as any cards in the parent card set that are not in this card set.</li>
 			<li><em>Show all cards in child card sets</em>: Show all the cards in this card set, as well as any cards in those child card sets marked as <em>In Use</em> that are not in this card set.</li>
 		</ul></li>

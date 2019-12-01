@@ -207,14 +207,14 @@ class BaseDBUpgradeManager(object):
             return self._upgrade_metadata(oOrigConn, oTrans, oVer)
         return (True, [])
 
-    def _upgrade_metadata(self, oOrigConn, oTrans, oVer):
+    def _upgrade_metadata(self, oOrigConn, _oTrans, oVer):
         """Upgrade Metadata table"""
         if oVer.check_tables_and_versions([Metadata], [-1], oOrigConn):
             # We're upgrading from no table, and so we don't have the data
             # available in the database, so we can't fill the table.
             # We just fall back onto the default warning, since that
             # at least covers the most common use-case.
-            # 
+            #
             # subclasses should extend/replace this if required.
             aMessages = ["Incomplete information to fill the Metadata"
                          " table. You will need to reimport the cardlist"

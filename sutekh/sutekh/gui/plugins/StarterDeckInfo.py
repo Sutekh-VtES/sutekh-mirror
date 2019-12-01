@@ -61,8 +61,8 @@ def _get_cs_to_remove(oZipFile):
     return aToDelete
 
 def find_holder(aHolders):
-    """Returns the first of the given holders that exists in the database, or None
-       if all are missing."""
+    """Returns the first of the given holders that exists in the database,
+       or None if all are missing."""
     for sCandidate in aHolders:
         try:
             oHolder = IPhysicalCardSet(sCandidate)

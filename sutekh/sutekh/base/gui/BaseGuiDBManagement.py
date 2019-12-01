@@ -17,8 +17,9 @@ from sqlobject import sqlhub, connectionForURI
 from ..core.BaseDBManagement import (UnknownVersion,
                                      copy_to_new_abstract_card_db)
 from ..core.BaseTables import AbstractCard, PhysicalCardSet
-from ..core.DBUtility import (flush_cache, get_cs_id_name_table, refresh_tables,
-                              set_metadata_date, CARDLIST_UPDATE_DATE)
+from ..core.DBUtility import (flush_cache, get_cs_id_name_table,
+                              refresh_tables, set_metadata_date,
+                              CARDLIST_UPDATE_DATE)
 
 from ..io.EncodedFile import EncodedFile
 from ..io.UrlOps import urlopen_with_timeout, HashError

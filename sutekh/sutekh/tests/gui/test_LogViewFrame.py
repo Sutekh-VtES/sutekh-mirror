@@ -12,8 +12,6 @@ from io import BytesIO
 
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
-from sutekh.base.gui.LogViewFrame import LogViewFrame
-
 from sutekh.base.core.BaseTables import PhysicalCardSet
 
 
@@ -31,7 +29,8 @@ class TestLogViewFrame(GuiSutekhTest):
         """Set of simple tests of the LogViewFrame"""
         # Add the log view frame
         oOutput = BytesIO()
-        oMyCollection = PhysicalCardSet(name='My Collection')  # Needed for default config
+        # 'My Collection' is needed for default config
+        _oMyCollection = PhysicalCardSet(name='My Collection')
         self.oWin.setup(self.oConfig)
         oNewFrame = self.oWin.add_new_log_view_frame(None)
         # Clear the log history of any existing entries

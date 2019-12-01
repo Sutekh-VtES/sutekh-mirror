@@ -11,7 +11,7 @@
 
 from collections import deque
 
-from logging import Handler, Formatter, WARNING, DEBUG
+from logging import Handler, Formatter, DEBUG
 
 
 QUEUE_LENGTH = 500
@@ -28,21 +28,26 @@ class QueueLogHandler(Handler, object):
         self.setLevel(DEBUG)
         # Set a fairly informative formatter for this
         self.formatter = Formatter(
-            "%(asctime)s - %(levelname)s - %(module)s.%(funcName)s: %(message)s")
+            "%(asctime)s - %(levelname)s - "
+            "%(module)s.%(funcName)s: %(message)s")
         self._oLogWidget = None
 
     def set_widget(self, oLogWidget):
+        """Associate with the correct display widget"""
         self._oLogWidget = oLogWidget
         # Request a reload, so the window is populated
         oLogWidget.queue_reload()
 
     def unset_widget(self):
+        """Remove the widget association"""
         self._oLogWidget = None
 
     def emit(self, oRecord):
         """Add message to the queue"""
-        # We record a tuple of log level (for filtering) and the formatted message
+        # We record a tuple of log level (for filtering) and the
+        # formatted message
         self.aQueue.append((oRecord.levelno, self.format(oRecord)))
-        # Queue a reload so the widget can refresh itself with the latest messages
+        # Queue a reload so the widget can refresh itself with
+        # the latest messages
         if self._oLogWidget:
             self._oLogWidget.queue_reload()

@@ -13,14 +13,17 @@ from sutekh.base.gui.QueueLogHandler import QueueLogHandler, QUEUE_LENGTH
 
 
 class DummyWidget(object):
+    """Fake the frame widget so we can check the log handler behaviour"""
 
     def __init__(self):
         self.bNeedsReload = False
 
     def reload(self):
+        """Clear reload status"""
         self.bNeedsReload = False
 
     def queue_reload(self):
+        """Mark that we need a reload"""
         self.bNeedsReload = True
 
 
@@ -31,6 +34,8 @@ class TestQueueLogHandler(SutekhTest):
 
     def test_basic(self):
         """Set of simple tests of the QueueLogHandler"""
+        # pylint: disable=too-many-statements, too-many-locals
+        # This is clearest as a single sequential test case
         oRootLogger = logging.getLogger()
         oHandler = QueueLogHandler()
         oRootLogger.addHandler(oHandler)
@@ -100,9 +105,10 @@ class TestQueueLogHandler(SutekhTest):
         self.assertEqual(oFrame.bNeedsReload, False)
 
         # Check queue behaviour
-        # We're not aiming to test deque here, just that we're using it correctly.
+        # We're not aiming to test deque here, just that we're
+        # using it correctly.
         for iNum in range(QUEUE_LENGTH+10):
-            logging.info("queue test %d" % iNum)
+            logging.info("queue test %d", iNum)
 
         self.assertEqual(len(oHandler.aQueue), QUEUE_LENGTH)
         self.assertTrue("queue test 10" in oHandler.aQueue[0][1])

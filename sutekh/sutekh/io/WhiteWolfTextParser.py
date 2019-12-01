@@ -876,9 +876,9 @@ class WhiteWolfTextParser(object):
         self.feed('')
         if hasattr(self._oState, 'flush'):
             self._oState.flush()
-            # We reached here without errors, so we set the update date to today
-            # as the most sensible default for most situations and assume the
-            # caller will fix it if that's not correct.
+            # We reached here without errors, so we set the update date to
+            # today as the most sensible default for most situations and
+            # assume the caller will fix it if that's not correct.
             set_metadata_date(CARDLIST_UPDATE_DATE, datetime.datetime.today())
         else:
             raise IOError('Failed to parse card list - '

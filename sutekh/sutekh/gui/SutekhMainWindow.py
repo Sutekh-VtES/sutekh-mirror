@@ -14,7 +14,8 @@ import gtk
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseAdapters import IAbstractCard
-from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, flush_cache, get_metadata_date
+from sutekh.base.core.DBUtility import (CARDLIST_UPDATE_DATE, flush_cache,
+                                        get_metadata_date)
 
 from sutekh.base.gui.AppMainWindow import AppMainWindow
 from sutekh.base.gui.GuiDataPack import gui_error_handler

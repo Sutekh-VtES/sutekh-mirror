@@ -107,12 +107,15 @@ def get_metadata_date(sKey):
     """Read a date from the metadata date and return a datetime.date object,
        or return None if the object can't be found or interpreted as a date."""
     try:
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oObj = Metadata.byKey(sKey)
         sDate = oObj.value
         return datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
     except (SQLObjectNotFound, ValueError) as oErr:
         # Log this for debugging purposes
-        logging.info('Failed to find a valid date for %s (err %s) - returning None', sKey, oErr)
+        logging.warn('Failed to find a valid date for %s '
+                     '(err %s) - returning None', sKey, oErr)
     return None
 
 
@@ -121,6 +124,8 @@ def set_metadata_date(sKey, oDate):
        object if needed"""
     sDate = oDate.strftime('%Y-%m-%d')
     try:
+        # pylint: disable=no-member
+        # SQLObject confuses pylint
         oObj = Metadata.byKey(sKey)
         oObj.value = sDate
         oObj.syncUpdate()
