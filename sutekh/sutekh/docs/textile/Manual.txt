@@ -22,6 +22,8 @@ h2. Contents
 ## "Analyze":#ww_analyze
 # "Card Text":#card_text
 # "Card Image":#card_image
+# "Log View":#log_view
+## "Actions":#log_view_actions
 # "Card Set List":#card_set_list
 ## "Actions":#card_set_list_actions
 ## "Edit":#card_set_list_edit
@@ -94,6 +96,7 @@ The following panes are supported:
 * "The Card Set List":#card_set_list
 * "Card Text":#card_text
 * "Card Image":#card_image
+* "Log View":#log_view
 * "Card Set":#cardsets panes
 
 Each pane may have an associated menu for actions specific to that pane.
@@ -322,6 +325,35 @@ Sutekh will attempt to display the correct expansion for the selected card.
 You can cycle through the available expansions either by left-clicking
 on the image, or by selecting the _Show next expansion image_ and
 _Show previous expansion image_ options after right-clicking on the frame.
+
+
+h2(#log_view). Log View
+
+To help identify problems, this pane displays any log messages for the current Sutekh session.
+By default, this shows all log messages, but the list can be filtered using the "Actions" menu.
+There are 4 types of messages logged by Sutekh:
+
+* _Debugging_: These are messages to help debug the behaviour of sutekh.
+* _Informational_: These messages are informational messages about actions Sutekh does. \
+It includes things like checking for updates and so forth.
+* _Warning_: These are messages from unexpected events that are not fatal, such as unexepcted \
+network failures during a download.
+* _Error_: These are more serious errors, and usually indicate that something has gone wrong.
+
+h3(#log_view_actions). Actions
+
+The following actions are available:
+
+* _Filter log level_: This allows you to filter the messages displayed. The \
+following levels are supported:
+** _Show all log messages_: Show all the messages. This is the default.
+** _Ignore debugging log messages_: This will exclude any _debugging_ messages from the \
+shown log.
+** _Also Ignore Info messages_: In addition to excluding _debugging_ messages, this will \
+exclude _info_ messages, showing _error_ and _warning_ messages.
+** _Only show Error log messages_: This will exlude _warning_ messages as well, only showing \
+the _error_ messages.
+* _Save current view to file_: This allows you to export the filtered list to a text file.
 
 h2(#card_set_list). Card Set List
 
