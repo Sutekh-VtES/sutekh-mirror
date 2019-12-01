@@ -25,7 +25,7 @@ class DummyWidget(object):
 
 
 class TestQueueLogHandler(SutekhTest):
-    """Class for the MultiPanewindow test cases"""
+    """Class for the QueueLogHandler test cases"""
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
 
