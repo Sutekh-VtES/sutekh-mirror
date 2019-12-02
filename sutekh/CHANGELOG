@@ -1,6 +1,26 @@
+02 Dec 2019
+ * Fix the bug where trying to remove cards from a card set when using a
+   filter on Physical Expansion would fail to remove the cards.
+
+01 Dec 2019
+ * Update the manual to consistently refer to 'Full Card List'.
+ * Add documentation for the log view to the manual.
+
+30 Nov 2019
+ * Allow filtering the log messages shown by the log level.
+
+28 Nov 2019
+ * Add a log view frame to display the logs while Sutekh is running.
+
+26 Nov 2019
+ * Add a QueueLogHandler, so we can record log messages for display in the gui.
+ * Change how we create the default logging for the gui so all messages go to
+   this handler.
+
 24 Nov 2019
  * Add Metadata table for storing arbitary data in the database.
  * Move the 'cardlist updated' value into the database.
+ * Ensure we update this date when using the CLI tools to update the cardlist as well.
 
 11 Nov 2019
  * Fix bug in starter deck plugins "new data to download" check.
