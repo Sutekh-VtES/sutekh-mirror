@@ -62,12 +62,12 @@ class RenameDialog(SutekhDialog):
             if not sNewName:
                 do_complaint_error("No name specified.\n"
                                    "Please choose a suitable name")
-                return self.run()  # Reprompt
+                self.run()  # Reprompt
             elif check_cs_exists(sNewName):
                 do_complaint_error("The name %s is in use.\n"
                                    "Please choose a different name" % sNewName)
                 # We reprompt the user, allowing them to fix things as
                 # required
-                return self.run()
+                self.run()
             else:
                 self.sNewName = sNewName
