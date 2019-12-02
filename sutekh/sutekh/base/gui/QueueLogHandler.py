@@ -42,6 +42,8 @@ class QueueLogHandler(Handler, object):
         """Remove the widget association"""
         self._oLogWidget = None
 
+    # pyline: disable=arguments-differ
+    # pyline gets confused here - I think because of the base classic class
     def emit(self, oRecord):
         """Add message to the queue"""
         # We record a tuple of log level (for filtering) and the

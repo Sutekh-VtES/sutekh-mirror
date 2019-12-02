@@ -421,7 +421,7 @@ class BaseImageFrame(BasicFrame):
                 oLastChecked = self._aFailedUrls[sUrl]
                 if datetime.datetime.now() - oLastChecked > datetime.timedelta(hours=2):
                     # Will retry next time
-                    logging.info('Removing %s from the failed cache' % sUrl)
+                    logging.info('Removing %s from the failed cache', sUrl)
                     del self._aFailedUrls[sUrl]
                 break
             if oFile:
