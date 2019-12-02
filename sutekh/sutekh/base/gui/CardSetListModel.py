@@ -612,12 +612,21 @@ class CardSetCardListModel(CardListModel):
                 self._init_expansions(oRow.dExpansions, oAbsCard)
             if not self.check_card_visible(oRow.oPhysCard):
                 # Fix the Row's Physical Card to point to the first
-                # expansion, in alphabetical order
+                # expansion, in alphabetical order for which we have a card
                 aPhysCards = [x for x in oAbsCard.physicalCards if
                               self.check_card_visible(x)]
                 # This is safe, since we know the None case has been excluded
                 aPhysCards.sort(key=IPrintingName)
-                oRow.oPhysCard = aPhysCards[0]
+                oRow.oPhysCard = None
+                for oCandPhysCard in aPhysCards:
+                    if MapPhysicalCardToPhysicalCardSet.selectBy(
+                            physicalCardID=oCandPhysCard.id,
+                            physicalCardSetID=self._oCardSet.id).count():
+                        oRow.oPhysCard = oCandPhysCard
+                        break
+                if not oRow.oPhysCard:
+                    # No cards, so just use the fist one
+                    oRow.oPhysCard = aPhysCards[0]
         else:
             oRow = dAbsCards[oPhysCard.abstractCardID]
         if bInc:
