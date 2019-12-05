@@ -215,6 +215,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
             self.vbox.remove(self.oDescLabel)
             self.vbox.remove(self.oChoice)
             self.vbox.remove(self.oDownload)
+            self.vbox.remove(self.oDownloadExpansions)
             self.oDescLabel.set_markup('<b>Choose how to configure the '
                                        'cardimages plugin</b>\n'
                                        'The card images plugin can now '
@@ -224,6 +225,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
                                        'again)?')
             self.vbox.pack_start(self.oDescLabel, False, False)
             self.vbox.pack_start(self.oDownload, False, False)
+            self.vbox.pack_start(self.oDownloadExpansions, False, False)
             self.set_size_request(400, 200)
             self.show_all()
 
