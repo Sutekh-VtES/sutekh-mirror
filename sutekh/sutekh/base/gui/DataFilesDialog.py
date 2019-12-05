@@ -79,6 +79,9 @@ class DataFilesDialog(SutekhDialog):
                     "Use default url (from %s)" % get_domain(oReader.sUrl))
                 oFileAlign = make_alignment(oFileLabel, oFileButton,
                                             oUrlButton)
+                # We assume that using the default file is the recommended
+                # option, so we select it by default
+                oUrlButton.set_active(True)
             else:
                 oUrlButton = None
                 oFileAlign = make_alignment(oFileLabel, oFileButton)
@@ -115,6 +118,12 @@ class DataFilesDialog(SutekhDialog):
                                                   get_domain(sZippedUrl))
                 oZipAlign = make_alignment(oZipLabel, oZipButton,
                                            oZipUrlCheckBox)
+                # We assume that using the default zip file is the recommended
+                # option, so we select it by default
+                oZipUrlCheckBox.set_active(True)
+                # The logic around the show / hide individual files and zip
+                # files ensures that the this doesn't clash with the indivual
+                # file defaults.
             else:
                 oZipUrlCheckBox = None
                 oZipAlign = make_alignment(oZipLabel, oZipButton)
