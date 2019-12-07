@@ -49,9 +49,11 @@ class Metadata(SQLObject):
     # Since this is a common requirement across different tools, this lives in
     # base, even though the use cases are implementation specific.
 
-    tableversion = 1
+    tableversion = 2
 
-    key = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    # The first version used 'key' here, but that breaks on mysql
+
+    dataKey = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     value = UnicodeCol()
 
 

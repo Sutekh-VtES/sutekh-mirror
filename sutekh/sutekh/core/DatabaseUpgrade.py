@@ -26,7 +26,7 @@ from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          PhysicalCardSet, Expansion,
                                          RarityPair, LookupHints,
                                          Rarity, CardType, PrintingProperty,
-                                         Printing,
+                                         Printing, Metadata,
                                          MAX_ID_LENGTH)
 from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Virtue,
                                       Discipline, Creed, DisciplinePair,
@@ -46,6 +46,17 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # pylint: disable=invalid-name, no-init
 # names set largely by SQLObject conventions, so ours don't apply
 # SQLObject classes don't have user defined __init__
+class Metadata_v1(SQLObject):
+    """Table used to upgrade from Metasa v1"""
+    # pylint: disable=old-style-class
+    class sqlmeta:
+        """meta class used to set the correct table"""
+        table = Metadata.sqlmeta.table
+
+    key = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    value = UnicodeCol()
+
+
 class AbstractCard_v5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
     # pylint: disable=old-style-class
@@ -300,6 +311,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                         (AbstractCard.tableversion, 5, 6))
     SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
                                            (PhysicalCardSet.tableversion, 6))
+    SUPPORTED_TABLES['Metadata'] = (Metadata, (-1, 1, Expansion.tableversion))
 
     COPY_OLD_DB = [
         ('_copy_old_discipline', 'Discipline table', False),
@@ -352,6 +364,30 @@ class DBUpgradeManager(BaseDBUpgradeManager):
     def cur_database_count(self, oConn):
         """Current number of items in the database."""
         return 14 + self._get_card_counts(oConn)
+
+    def _upgrade_metadata(self, oOrigConn, oTrans, oVer):
+        """Upgrade Metadata table"""
+        aMessages = []
+        if oVer.check_tables_and_versions([Metadata], [-1], oOrigConn):
+            # We're upgrading from no table, and so we don't have the data
+            # available in the database, so we can't fill the table.
+            # We just fall back onto the default warning, since that
+            # at least covers the most common use-case.
+            #
+            # subclasses should extend/replace this if required.
+            aMessages = ["Incomplete information to fill the Metadata"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+        elif oVer.check_tables_and_versions([Metadata], [1], oOrigConn):
+            # Rename the 'key' field to 'dataKey' so it works on mysql
+            for oObj in Metadata_v1.select(connection=oOrigConn):
+                oCopy = Metadata(id=oObj.id, dataKey=oObj.key,
+                                 value=oObj.value,
+                                 connection=oTrans)
+        else:
+            return (False, ["Unknown Version for Metadata"])
+        return (True, aMessages)
+
 
     def _upgrade_expansion(self, oOrigConn, oTrans, oVer):
         """Copy Expansion, updating as needed"""

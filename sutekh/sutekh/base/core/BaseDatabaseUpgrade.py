@@ -36,7 +36,7 @@ from .DatabaseVersion import DatabaseVersion
 # (arguablely overly) complex trickery to read old databases, and we create a
 # copy in sqlite memory database first, before commiting to the actual DB
 
-# We expect subclasses to handle all the upgrade logic. This will result in
+# We expect subclasses to handle most of the upgrade logic. This will result in
 # duplicated copies for upgrading base classes, but avoids issues of
 # when to remove upgrade logic from here.
 
@@ -65,7 +65,7 @@ class BaseDBUpgradeManager(object):
         'Printing': (Printing, (-1, Printing.tableversion,)),
         'PrintingProperty': (PrintingProperty,
                              (-1, PrintingProperty.tableversion,)),
-        'Metadata': (Metadata, (-1, Metadata.tableversion,)),
+        'Metadata': (Metadata, (-1, 1, Metadata.tableversion,)),
     }
 
     # List of functions for upgrading databases
@@ -374,7 +374,7 @@ class BaseDBUpgradeManager(object):
             # Need to access _connect here
             oObj._connection = oOrigConn
             # pylint: enable=protected-access
-            _oCopy = Metadata(id=oObj.id, key=oObj.key,
+            _oCopy = Metadata(id=oObj.id, dataKey=oObj.dataKey,
                               value=oObj.value,
                               connection=oTrans)
 

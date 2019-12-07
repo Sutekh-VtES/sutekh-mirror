@@ -109,7 +109,7 @@ def get_metadata_date(sKey):
     try:
         # pylint: disable=no-member
         # SQLObject confuses pylint
-        oObj = Metadata.byKey(sKey)
+        oObj = Metadata.byDataKey(sKey)
         sDate = oObj.value
         return datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
     except (SQLObjectNotFound, ValueError) as oErr:
@@ -126,8 +126,8 @@ def set_metadata_date(sKey, oDate):
     try:
         # pylint: disable=no-member
         # SQLObject confuses pylint
-        oObj = Metadata.byKey(sKey)
+        oObj = Metadata.byDataKey(sKey)
         oObj.value = sDate
         oObj.syncUpdate()
     except SQLObjectNotFound:
-        oObj = Metadata(key=sKey, value=sDate)
+        oObj = Metadata(dataKey=sKey, value=sDate)
