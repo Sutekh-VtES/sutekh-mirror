@@ -30,6 +30,10 @@ from sutekh.SutekhInfo import SutekhInfo
 SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
 IMAGE_DATE_FILE = "image_dates.txt"
 
+SUTEKH_USER_AGENT= {
+    'User-Agent': 'Sutekh Image Plugin'
+}
+
 
 class CardImageFrame(BaseImageFrame):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
@@ -49,9 +53,7 @@ class CardImageFrame(BaseImageFrame):
     ]
 
     # Cloudflare doesn't like the urllib2 default
-    _dReqHeaders = {
-        'User-Agent': 'Sutekh Image Plugin'
-    }
+    _dReqHeaders = SUTEKH_USER_AGENT
 
     def _have_expansions(self, sTestPath=''):
         """Test if directory contains expansion/image structure used by ARDB"""
@@ -208,6 +210,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
         # This is a bit horrible, but we stick the download upgrade logic
         # here, rather than cluttering up the generic ConfigDialog with
         # this entirely Sutekh specific logic
+        self.oChoice.set_request_headers(SUTEKH_USER_AGENT)
         if bDownloadUpgrade:
             # pylint: disable=no-member
             # pylint doesn't pick up vbox methods correctly

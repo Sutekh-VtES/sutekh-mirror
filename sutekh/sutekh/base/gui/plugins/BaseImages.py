@@ -724,10 +724,8 @@ class BaseImageConfigDialog(SutekhDialog):
         if sFile:
             oOutFile = tempfile.TemporaryFile()
             self.oChoice.get_binary_data(oOutFile)
-        else:
-            oOutFile = None
             return oOutFile, False, bDownload, bDownloadExpansions
-        return None, None, bDownload, bDownloadExpansions
+        return None, False, bDownload, bDownloadExpansions
 
     def _enable_exp(self, oButton):
         """Enable or disable the 'Expansion images' button as required."""

@@ -44,6 +44,8 @@ class FileOrUrlWidget(gtk.VBox):
             sTitle = 'Select file ...'
         self._sTitle = sTitle
 
+        self._dReqHeaders = {}
+
         assert(self.OTHER_URL not in self._dUrls)
 
         # setup src selector
@@ -148,6 +150,10 @@ class FileOrUrlWidget(gtk.VBox):
 
         return progress_fetch_data(oFile)
 
+    def set_request_headers(self, dNewHeaders):
+        """Set any specific headers required"""
+        self._dReqHeaders = dNewHeaders.copy()
+
     def get_binary_data(self, oOutFile=None):
         """Open the selected file and retrieve the binary data.
 
@@ -156,7 +162,8 @@ class FileOrUrlWidget(gtk.VBox):
         sUrl, bUrl = self.get_file_or_url()
 
         if bUrl:
-            oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler)
+            oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler,
+                                         dHeaders=self._dReqHeaders)
         else:
             oFile = open(sUrl, "rb")
 
