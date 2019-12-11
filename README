@@ -32,29 +32,31 @@ to load the WW cardlist the first time you run Sutekh. These instructions
 cover the command line tool sutekh-cli, while help for the gui can be found
 either by using the help menu, or in sutekh/docs/html/
 
-To get started, run:
+To get started, run:::
 
-sutekh-cli --help
-sutekh-cli -c -r vtes_card_file.txt
-sutekh-cli --ruling-file vtes_ruling_file.html (optional)
+    sutekh-cli --help
+    sutekh-cli -c -r vtes_card_file.txt
+    sutekh-cli --ruling-file vtes_ruling_file.html (optional)
 
 The card list and card sets can be manipulated and examined via the gui
 
-Its possible to query individual cards:
+Its possible to query individual cards:::
 
-sutekh-cli --print-card='Aching Beauty'
+    sutekh-cli --print-card='Aching Beauty'
 
-Likewise, it's also possible to export and read in card sets.
+Likewise, it's also possible to export and read in card sets.::
 
-sutekh-cli --save-cs "Toreador Deck" --cs-filename=deck.xml
-saves the card set called "Toreador Deck" to the file "deck.xml",
-while
-sutekh-cli --read-cs="vampires.xml"
+    sutekh-cli --save-cs "Toreador Deck" --cs-filename=deck.xml
+
+saves the card set called "Toreador Deck" to the file "deck.xml", while:::
+
+    sutekh-cli --read-cs="vampires.xml"
+
 loads the Card Set saved as vampires.xml
 
-A card set can be printed to screen using:
+A card set can be printed to screen using:::
 
-sutekh-cli --print-cs='Toreador Deck'
+    sutekh-cli --print-cs='Toreador Deck'
 
 The list of card sets can be seen using:
 
@@ -63,13 +65,13 @@ sutekh-cli --list-cs
 A --reload option exists for when re-importing the official cardlists and
 rulings.  This dumps and then reloads the card list and all the card sets.
 
-Typically used as:
-sutekh-cli -c --reload -r vtes_card_file.txt \
-      --ruling-file vtes_ruling_file.html
+Typically used as:::
 
-The command line tool can be used to run filters:
+    sutekh-cli -c --reload -r vtes_card_file.txt --ruling-file vtes_ruling_file.html
 
-sutekh-cli --filter='<Filter>'
+The command line tool can be used to run filters:::
+
+    sutekh-cli --filter='<Filter>'
 
 will filter the WW card list using the given filter
 
@@ -78,9 +80,9 @@ rather than just the names.
 
 The filters can also be run on a card set, by using the --filter-cs option
 
-So:
+So:::
 
-sutekh-cli --filter="CardText='stealth' and CardType='Action Modifier'" \
+    sutekh-cli --filter="CardText='stealth' and CardType='Action Modifier'" \
     --filter-cs='Tzimisce deck' --filter-detailed
 
 will list and print details of all action modifiers containing with 'stealth'
@@ -262,9 +264,11 @@ Of specific note, the pane title's are named 'frame_title' when not selected
 and 'selected_title' when the pane is selected. This allows customising
 the look of panes when selected easily. For instance, by putting:
 
-style "title_selected" {
-   fg[NORMAL] = "red"
-}
+::
+
+    style "title_selected" {
+       fg[NORMAL] = "red"
+    }
 
 widget "Sutekh.*.selected_title" style "title_selected"
 
