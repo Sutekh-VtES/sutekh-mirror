@@ -1,7 +1,2 @@
-/*.html
-/*.xml
-/*.db
-/dist
-/build
+/*.pyc
 /.coverage
-/Sutekh.egg-info
