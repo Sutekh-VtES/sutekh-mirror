@@ -158,7 +158,7 @@ class BaseDrawProbPlugin(BasePlugin):
         # Get currently selected cards
         aSelectedCards = self._get_selected_abs_cards()
 
-        if aSelectedCards:
+        if not aSelectedCards:
             do_complaint_error("No cards selected")
             return
 
