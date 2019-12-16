@@ -614,8 +614,9 @@ class MultiPaneWindow(gtk.Window):
         """Set the window cursor to indicate busy status"""
         # This needs to be on the top level widget, so has to be here
         # Safe-guard for if we're called while shutting down
-        if self.window:
-            self.window.set_cursor(self._oBusyCursor)
+        oWin = self.get_window()
+        if oWin:
+            oWin.set_cursor(self._oBusyCursor)
             # Since we're about to do a bunch of CPU grinding, tell gtk
             # to redraw now
             gtk.gdk.flush()
@@ -623,8 +624,9 @@ class MultiPaneWindow(gtk.Window):
     def restore_cursor(self):
         """Restore the ordinary cursor"""
         # Safe-guard for if we're called while shutting down
-        if self.window:
-            self.window.set_cursor(None)
+        oWin = self.get_window()
+        if oWin:
+            oWin.set_cursor(None)
 
     def minimize_to_toolbar(self, oFrame):
         """Minimize the given frame to the main menu"""

@@ -330,8 +330,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oImportDialog.destroy()
 
     def _draw_pdf_section(self, oDrawArea, _oEvent):
-        oContext = oDrawArea.window.cairo_create()
-        iWidth, iHeight = oDrawArea.window.get_size()
+        oContext = oDrawArea.get_window().cairo_create()
+        iWidth, iHeight = oDrawArea.get_window().get_size()
         self._render_pdf(oContext, iWidth, iHeight)
 
     def _render_pdf(self, oContext, iWidth, iHeight):
@@ -410,8 +410,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oPixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8,
                                  self._iScale * CARD_DIM[0],
                                  self._iScale * CARD_DIM[1])
-        oCMap = oDrawArea.window.get_colormap()
-        oImgPixmap = gtk.gdk.Pixmap(oDrawArea.window,
+        oCMap = oDrawArea.get_window().get_colormap()
+        oImgPixmap = gtk.gdk.Pixmap(oDrawArea.get_window(),
                                     self._iScale * CARD_DIM[0],
                                     self._iScale * CARD_DIM[1])
         # We re-render to a Pixmap, since oDrawArea may not be

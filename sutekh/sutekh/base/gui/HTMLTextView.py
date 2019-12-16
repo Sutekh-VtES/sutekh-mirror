@@ -603,7 +603,7 @@ class HTMLTextView(gtk.TextView):
 
     def __motion_notify_event(self, oWidget, _oEvent):
         """Change the cursor if the pointer is over a link"""
-        iXPos, iYPos, _oIgnore = oWidget.window.get_pointer()
+        iXPos, iYPos, _oIgnore = oWidget.get_window().get_pointer()
         iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
                                                        iXPos, iYPos)
         aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
