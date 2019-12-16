@@ -1,7 +1,14 @@
-For 1.0.0
+For 1.2.0
 ==========
 
  (see mailing list for the details, this is just a reminder list)
+
+Essential goals
+---------------
+
+* Port sutekh to use pygi + gtk3 instead of pygtk - this is needed before we can port to python 3
+* Port sutekh to python 3
+
 
 Stuff that's fairly easy (we think)
 -----------------------------------
@@ -10,6 +17,7 @@ Stuff that's fairly easy (we think)
  * reduce the number of FIXME's and TODO's in the code base
  * More Error handling/reporting
    - Include version number and other such useful info in the exception dialog
+   - Include this info in the exported logs?
  * Cluster Plugin Speed-up
  * Add more keyboard shortcuts
  * Right-click context menus
@@ -33,6 +41,10 @@ Needs planning
  * Real Plugin System
  * Abstract Card Editor
  * Stripped down UI for smart-phones
+ * Test support for the plugins
+ * Look at wrapping large-scale changes in a single transaction to speed them up
+   (Deleting multiple cards, etc)
+ * Rework filter dialog
 
 For the future
 ===============
@@ -65,14 +77,15 @@ Gui (Presentation):
  * Clean up the card set controller/model/view interactions
    - CardSetManagement stuff is still rather tangled
  * Parse in a GTK rc file? (http://www.moeraki.com/pygtktutorial/pygtk2tutorial/ch-GtkRcFiles.html)
+   - GTK3 does things differently - we will have to revist theming options after that port
  * Disable set_fixed_height_mode on TreeView cells so that the card text extra column
    can be changed to render across multiple lines without breaking layout. This
    will require some other way of dealing with the TreeView jumping bug.
+   - Hopefully much easier after the Gtk3 port
 
 Other Tasks:
  * Find some users and developers interested in Sutekh on Windows.
-
-Upstream:
- * File GTK bugs for:
-   - TreeView jumping.
-
+ * Investigate building sutekh for mac - gtk3's mac suupport is better, but we need access
+   to machines for testing / building
+   - Can use cloud services (AppVeyor, etc) for mac builds, but testing / debuggin requires
+     an actual machine / VM.
