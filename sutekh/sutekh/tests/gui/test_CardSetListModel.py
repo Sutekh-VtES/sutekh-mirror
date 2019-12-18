@@ -76,12 +76,14 @@ class CardSetListModelTests(ConfigSutekhTest):
             oModelCache.iter_n_children(None),
             count_all_cards(oModelCache),
             count_second_level(oModelCache))
-        aCacheList = get_all_counts(oModelCache)
+        # For speed, the model isn't sorted, so we need to sort the results
+        # for sanity
+        aCacheList = sorted(get_all_counts(oModelCache))
         tNoCacheTotals = (
             oModelNoCache.iter_n_children(None),
             count_all_cards(oModelNoCache),
             count_second_level(oModelNoCache))
-        aNoCacheList = get_all_counts(oModelNoCache)
+        aNoCacheList = sorted(get_all_counts(oModelNoCache))
         self.assertEqual(tCacheTotals, tNoCacheTotals,
                          self._format_error(
                              "Totals for cache and no-cache differ "
@@ -152,6 +154,8 @@ class CardSetListModelTests(ConfigSutekhTest):
            validating that the model works correctly"""
         # pylint: disable=too-many-locals
         # several local variables, as we test a number of conditions
+        # For speed, the model isn't sorted, so we need to sort the results
+        # for sanity
         dModelInfo = {}
         for oModel in aModels:
             oListener = TestListener(oModel, False)
@@ -160,7 +164,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.iter_n_children(None),
                 count_all_cards(oModel),
                 count_second_level(oModel))
-            aStartList = get_all_counts(oModel)
+            aStartList = sorted(get_all_counts(oModel))
             dModelInfo[oModel] = [oListener, tStartTotals, aStartList]
         for oCard in self.aPhysCards:
             # pylint: disable=no-member
@@ -173,13 +177,13 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.iter_n_children(None),
                 count_all_cards(oModel),
                 count_second_level(oModel))
-            aAddList = get_all_counts(oModel)
+            aAddList = sorted(get_all_counts(oModel))
             oModel.load()
             tLoadTotals = (
                 oModel.iter_n_children(None),
                 count_all_cards(oModel),
                 count_second_level(oModel))
-            aLoadList = get_all_counts(oModel)
+            aLoadList = sorted(get_all_counts(oModel))
             self.assertEqual(tAddTotals, tLoadTotals,
                              self._format_error(
                                  "Totals for inc_card and load differ",
@@ -213,7 +217,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                 oModel.iter_n_children(None),
                 count_all_cards(oModel),
                 count_second_level(oModel))
-            aDecList = get_all_counts(oModel)
+            aDecList = sorted(get_all_counts(oModel))
             # test that we've behaved sanely
             oListener, tStartTotals, aStartList = dModelInfo[oModel]
             self.assertEqual(aDecList, aStartList,
@@ -316,7 +320,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                                 oModel.iter_n_children(None),
                                 count_all_cards(oModel),
                                 count_second_level(oModel))
-                            aStartList = get_all_counts(oModel)
+                            aStartList = sorted(get_all_counts(oModel))
                             dModelInfo[oModel] = [tStartTotals, aStartList]
                         # get post-reload counts
                         for oModel in aModels:
@@ -325,7 +329,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                                 oModel.iter_n_children(None),
                                 count_all_cards(oModel),
                                 count_second_level(oModel))
-                            aLoadList = get_all_counts(oModel)
+                            aLoadList = sorted(get_all_counts(oModel))
                             tStartTotals, aStartList = dModelInfo[oModel]
                             self.assertEqual(
                                 aLoadList, aStartList,
@@ -1227,6 +1231,185 @@ class CardSetListModelTests(ConfigSutekhTest):
         self._loop_modes_reparent(oChildPCS, oChild2PCS,
                                   [oModel, oChildModel, oChild2Model])
         cleanup_models([oModel, oChildModel, oChild2Model])
+
+    def test_rename_child_card_set(self):
+        """Test that we re-act to child card sets being renamed
+           correctly"""
+        # This basically tests that we clear the caches correctly,
+        # since we turn the rename into a reload request
+        _oCache = SutekhObjectCache()
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        # Child card sets, to test rename logic
+        oChildPCS = PhysicalCardSet(name=self.aNames[1], parent=oPCS,
+                                    inuse=True)
+        oChild2PCS = PhysicalCardSet(name=self.aNames[3], parent=oPCS,
+                                     inuse=True)
+        oChild3PCS = PhysicalCardSet(name=self.aNames[2], parent=oPCS,
+                                     inuse=False)
+        oModel = self._get_model(self.aNames[0])
+        # Add some cards to parent + child card sets
+        aCards = [
+            ('Alexandra', 'CE'), ('Sha-Ennu', 'Third Edition'),
+            ('Alexandra', None), ('Bronwen', 'Sabbat'),
+            ('.44 Magnum', 'Jyhad'), ('.44 Magnum', 'Jyhad'),
+            ('Yvette, The Hopeless', 'CE'),
+            ('Yvette, The Hopeless', 'BSC')
+        ]
+        for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
+            oCard = make_card(sName, sExp)
+            oChild3PCS.addPhysicalCard(oCard.id)
+            if sName != 'Sha-Ennu':
+                oPCS.addPhysicalCard(oCard.id)
+            if sName != 'Yvette, The Hopeless':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChild2PCS.addPhysicalCard(oCard.id)
+            if sName == '.44 Magnum':
+                oChildPCS.addPhysicalCard(oCard.id)
+                oChildPCS.addPhysicalCard(oCard.id)
+        oPCS.syncUpdate()
+        oChildPCS.syncUpdate()
+        oChild2PCS.syncUpdate()
+        oChild3PCS.syncUpdate()
+        # Ensure we start with a clean cache
+        oController = DummyCardSetController()
+        oModel.set_controller(oController)
+        oModel._dCache = {}
+
+        oModel._change_count_mode(ALL_CARDS)
+        oModel._change_level_mode(SHOW_CARD_SETS)
+        oModel.load()
+
+        aLoadList = get_all_counts(oModel)
+
+        # rename the card set
+        oChildPCS.name = "New child name"
+        oChildPCS.syncUpdate()
+        # Reload
+        # We should have flagged a reload is required
+        self.assertEqual(oController.bReload, True)
+        oModel.load()
+        oController.bReload = False
+        aRenamedList = get_all_counts(oModel)
+
+        # Manually rename the loaded list
+        aManualList = []
+        for tItem in aLoadList:
+            tNewItem = (tItem[0], tItem[1], tItem[2].replace(self.aNames[1], "New child name"))
+            aManualList.append(tNewItem)
+
+        # Model is unsorted, so we need to sort here
+        self.assertEqual(sorted(aManualList), sorted(aRenamedList))
+
+        # Check that a non-inuse rename doesn't trigger a reload request
+        oChild3PCS.name = "New child 3 name"
+        oChild3PCS.syncUpdate()
+        self.assertEqual(oController.bReload, False)
+
+        cleanup_models([oModel])
+
+    def test_postfix(self):
+        """Test the behaviour of using the '..., the' postfix option"""
+        _oCache = SutekhObjectCache()
+        oPCS = PhysicalCardSet(name=self.aNames[0])
+        oModel = self._get_model(self.aNames[0])
+
+        aCards = [
+            ('Alexandra', 'CE'), 
+            ('The Ankara Citadel, Turkey', 'CE'),
+            ('An Anarch Manifesto', 'TR'),
+            ('Anson', 'Jyhad'),
+            ('The Path of Blood', 'FN'),
+            ('Raven Spy', 'LotN'),
+            ('Ossian', 'KMW'),
+            ('Walk of Flame', 'Jyhad'),
+        ]
+        for sName, sExp in aCards:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
+            oCard = make_card(sName, sExp)
+            oPCS.addPhysicalCard(oCard.id)
+        oPCS.syncUpdate()
+
+        oController = DummyCardSetController()
+        oModel.set_controller(oController)
+        oModel._dCache = {}
+
+        oModel._change_count_mode(THIS_SET_ONLY)
+        oModel._change_level_mode(NO_SECOND_LEVEL)
+        # These tests require sorted results
+        oModel.enable_sorting()
+        oModel.load()
+
+        aNormal = get_all_counts(oModel)
+
+        self.assertEqual(aNormal,
+                [(8, 0, 'All'),
+                 (1, 0, 'All:Alexandra'),
+                 (1, 0, 'All:An Anarch Manifesto'),
+                 (1, 0, 'All:Anson'),
+                 (1, 0, 'All:Ossian'),
+                 (1, 0, 'All:Raven Spy'),
+                 (1, 0, 'All:The Ankara Citadel, Turkey'),
+                 (1, 0, 'All:The Path of Blood'),
+                 (1, 0, 'All:Walk of Flame'),
+                ])
+        # Change the postfix mode
+        self.oConfig.set_postfix_the_display(True)
+        # We shouldn't need to reload anything becau
+        aPostfix = get_all_counts(oModel)
+        self.assertEqual(aPostfix,
+                [(8, 0, 'All'),
+                 (1, 0, 'All:Alexandra'),
+                 (1, 0, 'All:Anarch Manifesto, An'),
+                 (1, 0, 'All:Ankara Citadel, Turkey, The'),
+                 (1, 0, 'All:Anson'),
+                 (1, 0, 'All:Ossian'),
+                 (1, 0, 'All:Path of Blood, The'),
+                 (1, 0, 'All:Raven Spy'),
+                 (1, 0, 'All:Walk of Flame'),
+                ])
+        # Check that it is preserved across reloads
+        oModel.load()
+        aReload = get_all_counts(oModel)
+        self.assertEqual(aPostfix, aReload)
+        # Check that new entries are handled correctly
+        oCard = make_card('The SlaughterHouse', 'LoB')
+        for _iCnt in range(2):
+            oPCS.addPhysicalCard(oCard.id)
+            oPCS.syncUpdate()
+            send_changed_signal(oPCS, oCard, 1)
+        aUpdated = get_all_counts(oModel)
+        self.assertEqual(aUpdated,
+                [(10, 0, 'All'),
+                 (1, 0, 'All:Alexandra'),
+                 (1, 0, 'All:Anarch Manifesto, An'),
+                 (1, 0, 'All:Ankara Citadel, Turkey, The'),
+                 (1, 0, 'All:Anson'),
+                 (1, 0, 'All:Ossian'),
+                 (1, 0, 'All:Path of Blood, The'),
+                 (1, 0, 'All:Raven Spy'),
+                 (2, 0, 'All:Slaughterhouse, The'),
+                 (1, 0, 'All:Walk of Flame'),
+                ])
+        # Check that unsetting the option behaves as expected
+        self.oConfig.set_postfix_the_display(False)
+        aNormal = get_all_counts(oModel)
+        self.assertEqual(aNormal,
+                [(10, 0, 'All'),
+                 (1, 0, 'All:Alexandra'),
+                 (1, 0, 'All:An Anarch Manifesto'),
+                 (1, 0, 'All:Anson'),
+                 (1, 0, 'All:Ossian'),
+                 (1, 0, 'All:Raven Spy'),
+                 (1, 0, 'All:The Ankara Citadel, Turkey'),
+                 (1, 0, 'All:The Path of Blood'),
+                 (2, 0, 'All:The Slaughterhouse'),
+                 (1, 0, 'All:Walk of Flame'),
+                ])
+
+ 
 
 
 if __name__ == "__main__":

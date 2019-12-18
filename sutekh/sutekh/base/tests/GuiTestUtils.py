@@ -135,7 +135,7 @@ def _get_all_child_counts(oModel, oIter, sName=''):
 
 def get_all_counts(oModel):
     """Return a list of iCnt, iParCnt, sCardName tuples from the Model"""
-    return sorted(_get_all_child_counts(oModel, None))
+    return _get_all_child_counts(oModel, None)
 
 
 def count_top_level(oModel):
