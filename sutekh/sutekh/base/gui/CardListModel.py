@@ -523,10 +523,6 @@ class CardListModel(gtk.TreeStore):
         """Return the card count for a given iterator"""
         return self.get_value(oIter, 1)
 
-    def get_parent_count_from_iter(self, oIter):
-        """Return the parent count for a given iterator"""
-        return self.get_value(oIter, 2)
-
     def get_abstract_card_from_iter(self, oIter):
         """Extract the Abstract Card at oIter from the model"""
         while self.iter_depth(oIter) > 1:
