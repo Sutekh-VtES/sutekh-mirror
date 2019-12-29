@@ -135,6 +135,12 @@ class BaseCardTextBuffer(gtk.TextBuffer):
         if oMark:
             self._oIter = self.get_iter_at_mark(oMark)
 
+    def get_all_text(self):
+        """Get everything shown in the buffer"""
+        oStart, oEnd = self.get_bounds()
+        # This should be unicode
+        return self.get_text(oStart, oEnd)
+
 
 class BaseCardTextView(gtk.TextView):
     """Base class for TextView widget which holds the TextBuffer."""
