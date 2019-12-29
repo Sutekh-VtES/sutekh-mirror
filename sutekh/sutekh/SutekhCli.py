@@ -171,27 +171,34 @@ def print_card_details(oCard, sEncoding):
     # pylint: disable=too-many-branches
     # Several cases to consider, so many branches
     if not oCard.cardtype:
-        print('CardType: Unknown')
+        print(u'CardType: Unknown'.encode('sEncoding'))
     else:
-        print('CardType: %s' % ' / '.join([oT.name for oT in oCard.cardtype]))
+        sOutput = u'CardType: %s' % u' / '.join([oT.name for oT in oCard.cardtype])
+        print(sOutput.encode(sEncoding))
     if oCard.clan:
-        print('Clan: %s' % ' / '.join([oC.name for oC in oCard.clan]))
+        sOutput = u'Clan: %s' % u' / '.join([oC.name for oC in oCard.clan])
+        print(sOutput.encode(sEncoding))
     if oCard.creed:
-        print('Creed: %s' % ' / '.join([oC.name for oC in oCard.creed]))
+        sOutput = u'Creed: %s' % u' / '.join([oC.name for oC in oCard.creed])
+        print(sOutput.encode(sEncoding))
     if oCard.capacity:
-        print('Capacity: %d' % oCard.capacity)
+        sOutput = u'Capacity: %d' % oCard.capacity
+        print(sOutput.encode(sEncoding))
     if oCard.life:
-        print('Life: %d' % oCard.life)
+        sOutput = u'Life: %d' % oCard.life
+        print(sOutput.encode(sEncoding))
     if oCard.group:
         if oCard.group == -1:
-            print('Group: Any')
+            sOutput = u'Group: Any'
         else:
-            print('Group: %d' % oCard.group)
+            sOutput = u'Group: %d' % oCard.group
+        print(sOutput.encode(sEncoding))
     if oCard.cost is not None:
         if oCard.cost == -1:
-            print('Cost: X %s' % oCard.costtype)
+            sOutput = u'Cost: X %s' % oCard.costtype
         else:
-            print('Cost: %d %s' % (oCard.cost, oCard.costtype))
+            sOutput = u'Cost: %d %s' % (oCard.cost, oCard.costtype)
+        print(sOutput.encode(sEncoding))
     if oCard.discipline:
         if is_crypt_card(oCard):
             aDisciplines = []
@@ -201,17 +208,19 @@ def print_card_details(oCard, sEncoding):
             aDisciplines.extend(sorted([oP.discipline.name.upper() for oP in
                                         oCard.discipline if
                                         oP.level == 'superior']))
-            sDisciplines = ' '.join(aDisciplines)
+            sDisciplines = u' '.join(aDisciplines)
         else:
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
-            sDisciplines = ' / '.join(aDisciplines)
-        print('Discipline: %s' % sDisciplines)
+            sDisciplines = u' / '.join(aDisciplines)
+        sOutput = u'Discipline: %s' % sDisciplines
+        print(sOutput.encode(sEncoding))
     if oCard.virtue:
         if is_crypt_card(oCard):
-            print('Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue]))
+            sOutput = u'Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue])
         else:
-            print('Virtue: %s' % ' / '.join([oC.fullname for oC in
-                                             oCard.virtue]))
+            sOutput = u'Virtue: %s' % ' / '.join([oC.fullname for oC in
+                                             oCard.virtue])
+        print(sOutput.encode(sEncoding))
     print(format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace')))
 
 
