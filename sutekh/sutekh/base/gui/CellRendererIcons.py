@@ -8,6 +8,7 @@
 
 import gtk
 import pango
+import pangocairo
 import gobject
 
 # consts for the different display modes we need
@@ -99,7 +100,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         self.aData = zip(aText, aIcons)
         self.iMode = iMode
 
-    def on_get_size(self, oWidget, oCellArea):
+    def do_get_size(self, oWidget, oCellArea):
         """Handle get_size requests"""
         if not self.aData and not self.sText:
             return 0, 0, 0, 0
@@ -146,13 +147,13 @@ class CellRendererIcons(gtk.GenericCellRenderer):
 
     # pylint: disable=too-many-arguments
     # number of parameters needed by function signature
-    def on_render(self, oWindow, oWidget, _oBackgroundArea,
-                  oCellArea, oExposeArea, _iFlags):
+    def do_render(self, oCairoContext, oWidget, _oBackgroundArea,
+                  oCellArea, _iFlags):
         """Render the icons & text for the tree view"""
         oLayout = oWidget.create_pango_layout("")
         oPixRect = gtk.gdk.Rectangle()
         oPixRect.x, oPixRect.y, oPixRect.width, oPixRect.height = \
-            self.on_get_size(oWidget, oCellArea)
+            self.do_get_size(oWidget, oCellArea)
         # We want to always start at the left edge of the Cell, so this is
         # correct
         oPixRect.x = oCellArea.x
@@ -171,29 +172,36 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                     # Render icon
                     oDrawRect.width = oIcon.get_width()
                     oDrawRect.height = oIcon.get_height()
-                    oIconDrawRect = oCellArea.intersect(oDrawRect)
-                    oIconDrawRect = oExposeArea.intersect(oIconDrawRect)
-                    oWindow.draw_pixbuf(oWidget.style.black_gc, oIcon,
-                                        oIconDrawRect.x - oDrawRect.x,
-                                        oIconDrawRect.y - oDrawRect.y,
-                                        oIconDrawRect.x, oIconDrawRect.y,
-                                        -1, oIconDrawRect.height,
-                                        gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    oIconDrawRect = oCellArea.intersect(oDrawRect)[1]
+                    #oIconDrawRect = oExposeArea.intersect(oIconDrawRect)
+                    gtk.gdk.cairo_set_source_pixbuf(oCairoContext,
+                                                oIcon,
+                                                oIconDrawRect.x - oDrawRect.x,
+                                                oIconDrawRect.y - oDrawRect.y)
+                    #oWindow.draw_pixbuf(oWidget.style.black_gc, oIcon,
+                    #                    oIconDrawRect.x - oDrawRect.x,
+                    #                    oIconDrawRect.y - oDrawRect.y,
+                    #                    oIconDrawRect.x, oIconDrawRect.y,
+                    #                    -1, oIconDrawRect.height,
+                    #                    gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    oCairoContext.paint()
                     oDrawRect.x += oIcon.get_width() + self.iIconPad
                 if sText and (self.iMode != SHOW_ICONS_ONLY or oIcon is None):
                     # Render text
                     _layout_text(oLayout, sText)
                     oDrawRect.width, oDrawRect.height = \
                         oLayout.get_pixel_size()
-                    oWindow.draw_layout(oWidget.style.black_gc, oDrawRect.x,
-                                        oDrawRect.y, oLayout)
+                    oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
+                    pangocairo.show_layout(oCairoContext, oLayout)
+                    #oWidget.draw_layout(oWidget.style.black_gc, oDrawRect.x,
+                    #                    oDrawRect.y, oLayout)
                     oDrawRect.x += oDrawRect.width + self.iTextPad
         elif self.sText:
             # Render text
             _layout_text(oLayout, self.sText)
             oDrawRect.width, oDrawRect.height = oLayout.get_pixel_size()
-            oWindow.draw_layout(oWidget.style.black_gc, oDrawRect.x,
-                                oDrawRect.y, oLayout)
+            oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
+            pangocairo.show_layout(oCairoContext, oLayout)
             oDrawRect.x += oDrawRect.width + self.iTextPad
         return None
 
