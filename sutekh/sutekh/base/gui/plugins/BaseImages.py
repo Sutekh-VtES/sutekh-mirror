@@ -483,7 +483,7 @@ class BaseImageFrame(BasicFrame):
                 self.oExpPrintLabel.set_markup(
                     '<i>Image from expansion : </i> %s' % self._sCurExpPrint)
                 self.oExpPrintLabel.show()
-                iHeightOffset = self.oExpPrintLabel.allocation.height + 2
+                iHeightOffset = self.oExpPrintLabel.get_allocation().height + 2
             else:
                 self.oExpPrintLabel.hide()  # config changes can cause this
                 iHeightOffset = 0
