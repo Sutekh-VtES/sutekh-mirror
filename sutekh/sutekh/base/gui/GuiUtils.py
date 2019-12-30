@@ -21,11 +21,11 @@ def prepare_gui(sName):
         return False
 
     # check minimum pygtk version
-    sMessage = gtk.check_version(2, 16, 0)
+    sMessage = gtk.check_version(3, 2, 0)
     if sMessage is not None:
         do_complaint_error('Incorrect gtk version. %s requires at least'
-                           ' gtk 2.16.0.\nError reported %s' % (sName,
-                                                                sMessage))
+                           ' gtk 3.2.0.\nError reported %s' % (sName,
+                                                               sMessage))
         return False
 
     # Disable Unity's moving of menubars to the appmenu at

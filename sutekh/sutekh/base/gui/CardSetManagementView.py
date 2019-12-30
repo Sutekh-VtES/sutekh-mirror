@@ -30,8 +30,8 @@ class CardSetManagementView(CardSetsListView):
         self.set_select_single()
 
         # Drag and Drop
-        aTargets = [('STRING', 0, 0),      # second 0 means TARGET_STRING
-                    ('text/plain', 0, 0)]  # and here
+        aTargets = [gtk.TargetEntry('STRING', 0, 0),      # second 0 means TARGET_STRING
+                    gtk.TargetEntry('text/plain', 0, 0)]  # and here
 
         # Need this so we can drag the pane in the same way as the card list
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,

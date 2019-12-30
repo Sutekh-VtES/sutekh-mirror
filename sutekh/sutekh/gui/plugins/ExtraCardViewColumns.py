@@ -108,7 +108,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                 return " /|".join(aCreed).split("|"), aIcons
         return [], []
 
-    def _render_clan(self, _oColumn, oCell, _oModel, oIter):
+    def _render_clan(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the clan"""
         oCard = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_clan(oCard)
@@ -145,7 +145,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                     return aVirt, aIcons
         return [], []
 
-    def _render_disciplines(self, _oColumn, oCell, _oModel, oIter):
+    def _render_disciplines(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the card disciplines"""
         oCard = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_disciplines(oCard)
@@ -158,7 +158,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         # We use -1 for the any group, so flag with a very different number
         return -100, [None]
 
-    def _render_group(self, _oColumn, oCell, _oModel, oIter):
+    def _render_group(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display the group info"""
         oCard = self._get_iter_data(oIter)
         iGrp, aIcons = self._get_data_group(oCard)
@@ -178,7 +178,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
             return oCard.life, [None]
         return -1, [None]
 
-    def _render_capacity(self, _oColumn, oCell, _oModel, oIter):
+    def _render_capacity(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display capacity in the column"""
         oCard = self._get_iter_data(oIter)
         iCap, aIcons = self._get_data_capacity(oCard)
@@ -208,7 +208,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
             sKey = ""
         return sKey, aIcons
 
-    def _render_cost(self, _oColumn, oCell, _oModel, oIter):
+    def _render_cost(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display cost in the column"""
         oCard = self._get_iter_data(oIter)
         iCost, sCostType, aIcons = self._get_data_cost(oCard)
@@ -232,7 +232,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
             return aTitles, aIcons
         return [], []
 
-    def _render_title(self, _oColumn, oCell, _oModel, oIter):
+    def _render_title(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display title in the column"""
         oCard = self._get_iter_data(oIter)
         aTitles, aIcons = self._get_data_title(oCard)
@@ -249,7 +249,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
             return aSects, aIcons
         return [], []
 
-    def _render_sect(self, _oColumn, oCell, _oModel, oIter):
+    def _render_sect(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display sect in the column"""
         oCard = self._get_iter_data(oIter)
         aSects, aIcons = self._get_data_sect(oCard)

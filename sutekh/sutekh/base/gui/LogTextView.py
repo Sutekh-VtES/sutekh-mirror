@@ -17,7 +17,7 @@ class LogTextBuffer(gtk.TextBuffer):
     # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     def __init__(self):
-        super(LogTextBuffer, self).__init__(None)
+        super(LogTextBuffer, self).__init__()
 
     def clear(self):
         """Clear all messages"""
@@ -34,7 +34,7 @@ class LogTextBuffer(gtk.TextBuffer):
         """Get everything shown in the buffer"""
         oStart, oEnd = self.get_bounds()
         # This should be unicode
-        return self.get_text(oStart, oEnd)
+        return self.get_text(oStart, oEnd, False)
 
 
 class LogTextView(gtk.TextView):

@@ -55,8 +55,8 @@ class CardListView(FilteredView):
 
         # Drag and Drop
         # Trailing 0 means TARGET_STRING
-        aTargets = [('STRING', gtk.TARGET_SAME_APP, 0),
-                    ('text/plain', gtk.TARGET_SAME_APP, 0)]
+        aTargets = [gtk.TargetEntry('STRING', gtk.TARGET_SAME_APP, 0),
+                    gtk.TargetEntry('text/plain', gtk.TARGET_SAME_APP, 0)]
 
         self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
                              aTargets,
@@ -71,7 +71,7 @@ class CardListView(FilteredView):
         self.connect('drag_data_received', self.card_drop)
         self.bSelectTop = 0
 
-    def can_select(self, oPath):
+    def can_select(self, _oSelection, _oModel, oPath, _bCurrently):
         """disable selecting top level rows"""
         if self.bSelectTop > 0:
             # Buggy gtk version work-around

@@ -35,10 +35,10 @@ HTML_HEADING_TAGS = set(('h1', 'h2', 'h3', 'h4', 'h5', 'h6'))
 # don't throw an exception if no screen during import - we'll catch that later
 if gtk.gdk.screen_get_default() is None:
     SCREEN_RESOLUTION = 0
-elif gtk.gdk.screen_height_mm():
+elif gtk.gdk.screen_get_default().get_height_mm():
     #  pixels = points * SCREEN_RESOLUTION
-    SCREEN_RESOLUTION = 0.3514598 * (gtk.gdk.screen_height() /
-                                     float(gtk.gdk.screen_height_mm()))
+    SCREEN_RESOLUTION = 0.3514598 * (gtk.gdk.screen_get_default().get_height() /
+                                     float(gtk.gdk.screen_get_default().get_height_mm()))
 else:
     # We have a screen, but gtk.gdk.screen_height_mm is 0,
     # which seems to happen under gnome-shell

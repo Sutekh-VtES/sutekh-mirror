@@ -13,6 +13,10 @@ import sys
 import StringIO
 from logging import FileHandler
 
+import pygtkcompat
+pygtkcompat.enable()
+pygtkcompat.enable_gtk("3.0")
+
 import gtk
 from nose import SkipTest
 

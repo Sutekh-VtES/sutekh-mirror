@@ -518,9 +518,9 @@ class BaseImageFrame(BasicFrame):
                 oPixbuf = aPixbufs[0]
             if self._iZoomMode == FIT:
                 # Need to fix aspect ratios
-                iPaneHeight = (self._oView.get_vadjustment().page_size -
+                iPaneHeight = (self._oView.get_vadjustment().get_page_size() -
                                iHeightOffset)
-                iPaneWidth = self._oView.get_hadjustment().page_size
+                iPaneWidth = self._oView.get_hadjustment().get_page_size()
                 # don't centre image under label
                 self._oImage.set_alignment(0, 0.5)
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
@@ -529,8 +529,8 @@ class BaseImageFrame(BasicFrame):
                     self._oImage.set_from_pixbuf(
                         oPixbuf.scale_simple(iDestWidth, iDestHeight,
                                              gtk.gdk.INTERP_HYPER))
-                    self._tPaneSize = (self._oView.get_hadjustment().page_size,
-                                       self._oView.get_vadjustment().page_size)
+                    self._tPaneSize = (self._oView.get_hadjustment().get_page_size(),
+                                       self._oView.get_vadjustment().get_page_size())
             elif self._iZoomMode == VIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                                                       RATIO[0], RATIO[1])
@@ -631,8 +631,8 @@ class BaseImageFrame(BasicFrame):
     def _pane_adjust(self, _oAdjust):
         """Redraw the image if needed when the pane size changes."""
         if self._iZoomMode == FIT:
-            tCurSize = (self._oView.get_hadjustment().page_size,
-                        self._oView.get_vadjustment().page_size)
+            tCurSize = (self._oView.get_hadjustment().get_page_size(),
+                        self._oView.get_vadjustment().get_page_size())
             if tCurSize[0] != self._tPaneSize[0] or \
                     tCurSize[1] != self._tPaneSize[1]:
                 self._redraw(True)

@@ -32,7 +32,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def create_filter_menu(self):
         """Create the Filter Menu."""
-        oMenu = self.create_submenu(self, "F_ilter")
+        oMenu = self.create_submenu(self, "Filter")
         self.create_menu_item("_Specify Filter", oMenu, self.set_active_filter,
                               '<Ctrl>s')
         self.oApply = self.create_check_menu_item("_Apply Filter", oMenu,
@@ -42,7 +42,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu(self, "_Edit")
+        oMenu = self.create_submenu(self, "Edit")
         self.add_edit_menu_actions(oMenu)
 
     def set_active_filter(self, _oWidget):
@@ -51,7 +51,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def toggle_apply_filter(self, oWidget):
         """Toggle the filter applied state."""
-        self._oController.view.run_filter(oWidget.active)
+        self._oController.view.run_filter(oWidget.get_active())
 
     def set_apply_filter(self, bState):
         """Set the applied filter state to bState."""
@@ -59,7 +59,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def get_apply_filter(self):
         """Get the filter applied state"""
-        return self.oApply.active
+        return self.oApply.get_active()
 
     def add_common_actions(self, oMenu):
         """Actions common to all card lists"""
@@ -149,4 +149,4 @@ class CardListMenu(FilteredViewMenu):
 
     def create_analyze_menu(self):
         """Create the Analyze Menu, to be filled in by plugins"""
-        self.create_submenu(self, "Analy_ze")
+        self.create_submenu(self, "Analyze")

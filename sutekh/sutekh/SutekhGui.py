@@ -18,6 +18,11 @@ from sqlobject import sqlhub, connectionForURI
 # menus around
 os.environ["UBUNTU_MENUPROXY"] = "0"
 
+
+import pygtkcompat
+pygtkcompat.enable()
+pygtkcompat.enable_gtk("3.0")
+
 from sutekh.base.Utility import (prefs_dir, ensure_dir_exists, sqlite_uri,
                                  setup_logging)
 from sutekh.base.gui.SutekhDialog import exception_handler

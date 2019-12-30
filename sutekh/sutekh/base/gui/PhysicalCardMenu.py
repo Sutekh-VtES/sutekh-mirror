@@ -39,7 +39,7 @@ class PhysicalCardMenu(CardListMenu):
     def __create_physical_cl_menu(self):
         """Create the Actions menu for the card list."""
         # setup sub menu
-        oMenu = self.create_submenu(self, "_Actions")
+        oMenu = self.create_submenu(self, "Actions")
 
         # items
         self.create_check_menu_item('Show Card Expansions', oMenu,
@@ -54,7 +54,7 @@ class PhysicalCardMenu(CardListMenu):
 
     def create_edit_menu(self):
         """Create the edit menu and populate it"""
-        oMenu = self.create_submenu(self, "_Edit")
+        oMenu = self.create_submenu(self, "Edit")
         self.create_menu_item('Copy selection', oMenu, self.copy_selection,
                               '<Ctrl>c')
 

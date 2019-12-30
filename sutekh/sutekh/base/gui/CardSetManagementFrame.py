@@ -75,11 +75,13 @@ class CardSetManagementFrame(BasicFrame):
         # get the scroll widget position
         oVertAdj = self._oScrolledWindow.get_vadjustment()
         oHorzAdj = self._oScrolledWindow.get_hadjustment()
-        tVertVals = oVertAdj.value, oVertAdj.page_size
-        tHorzVals = oHorzAdj.value, oHorzAdj.page_size
+        tVertVals = oVertAdj.get_value(), oVertAdj.get_page_size()
+        tHorzVals = oHorzAdj.get_value(), oHorzAdj.get_page_size()
         self.view.reload_keep_expanded(True)
-        oVertAdj.value, oVertAdj.page_size = tVertVals
-        oHorzAdj.value, oHorzAdj.page_size = tHorzVals
+        oVertAdj.set_value(tVertVals[0])
+        oVertAdj.set_page_size(tVertVals[1])
+        oHorzAdj.set_value(tHorzVals[0])
+        oHorzAdj.set_page_size(tHorzVals[1])
         oVertAdj.changed()
         oHorzAdj.changed()
         oVertAdj.value_changed()

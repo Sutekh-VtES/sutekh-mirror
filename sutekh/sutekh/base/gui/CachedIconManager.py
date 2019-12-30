@@ -49,8 +49,8 @@ def _crop_alpha(oPixbuf):
     if iMinX >= iMaxX or iMinY >= iMaxY:
         # No transparency found
         return oPixbuf
-    return oPixbuf.subpixbuf(iMinX + 1, iMinY + 1, iMaxX - iMinX,
-                             iMaxY - iMinY)
+    return oPixbuf.new_subpixbuf(iMinX + 1, iMinY + 1, iMaxX - iMinX,
+                                 iMaxY - iMinY)
 
 
 class CachedIconManager(BaseIconManager):

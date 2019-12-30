@@ -69,7 +69,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
             return " /|".join(aTypes).split("|"), aIcons
         return [], []
 
-    def _render_card_type(self, _oColumn, oCell, _oModel, oIter):
+    def _render_card_type(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the card type(s)"""
         oCard = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_card_type(oCard, True)
@@ -87,7 +87,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
             return aExp, aIcons
         return [], []
 
-    def _render_expansions(self, _oColumn, oCell, _oModel, oIter):
+    def _render_expansions(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display expansion info"""
         oCard = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_expansions(oCard)
@@ -103,7 +103,7 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
             return aTexts, aIcons
         return [], []
 
-    def _render_card_text(self, _oColumn, oCell, _oModel, oIter):
+    def _render_card_text(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display card text in the column"""
         oCard = self._get_iter_data(oIter)
         aTexts, aIcons = self._get_data_card_text(oCard)

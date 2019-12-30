@@ -90,7 +90,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraCSListViewColumns):
             return iTotal, aIcons
         return -1, []
 
-    def _render_library(self, _oColumn, oCell, _oModel, oIter):
+    def _render_library(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the library count"""
         sCardSet = self._get_iter_data(oIter)
         iCount, aIcons = self._get_data_library(sCardSet, True)
@@ -116,7 +116,7 @@ class ExtraCardSetListViewColumns(SutekhPlugin, BaseExtraCSListViewColumns):
             return iTotal, aIcons
         return -1, []
 
-    def _render_crypt(self, _oColumn, oCell, _oModel, oIter):
+    def _render_crypt(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the crypt count"""
         sCardSet = self._get_iter_data(oIter)
         iCount, aIcons = self._get_data_crypt(sCardSet, True)

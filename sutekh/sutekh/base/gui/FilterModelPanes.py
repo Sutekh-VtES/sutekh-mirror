@@ -18,8 +18,8 @@ from .ScrolledList import ScrolledList
 from .CustomDragIconView import CustomDragIconView
 from .CardSetsListView import CardSetsListView
 
-DRAG_TARGETS = [('STRING', gtk.TARGET_SAME_APP, 0),
-                ('text/plain', gtk.TARGET_SAME_APP, 0)]
+DRAG_TARGETS = [gtk.TargetEntry('STRING', gtk.TARGET_SAME_APP, 0),
+                gtk.TargetEntry('text/plain', gtk.TARGET_SAME_APP, 0)]
 # Filters we pad values for to sort nicely
 PAD_FILTERS = set(('Capacity', 'CardCount: Count'))
 LIST_TYPES = set((FilterBoxItem.LIST, FilterBoxItem.LIST_FROM))
@@ -42,7 +42,8 @@ LEFT_RIGHT = LEFT.union(RIGHT)
 
 def unescape_markup(sMarkup):
     """Untiltiy function to strip markup from a string"""
-    _oAttr, sStripped, _oAccel = pango.parse_markup(sMarkup)
+    # _oRes, _oAttr, sStripped, _oAccel = pango.parse_markup(sMarkup, -1, "\0")
+    sStripped = pango.parse_markup(sMarkup, -1, "\0").text
     return sStripped
 
 
@@ -437,6 +438,7 @@ class FilterValuesBox(gtk.VBox):
 
     def switch_focus(self, oEvent, sSource):
         """Handle switching focus between the different filter bits"""
+        oKeyVal = oEvent.get_keyval()[1]
         if sSource in set(['Value', 'Entry', 'None', 'CardSet']):
             # Only one entry in the filter pane
             self._oBoxModelEditor.grab_focus()
@@ -451,7 +453,7 @@ class FilterValuesBox(gtk.VBox):
             if isinstance(self._oLastFilter, FilterBoxModel) or \
                     (isinstance(self._oLastFilter, FilterBoxItem) and
                      self._oLastFilter.iValueType == FilterBoxItem.LIST_FROM):
-                if oEvent.keyval in LEFT:
+                if oKeyVal in LEFT:
                     # bottom child needs the focus
                     oAutoScrolled = self._oWidget.get_children()[2]
                     oAutoScrolled.get_child().grab_focus()
@@ -459,12 +461,12 @@ class FilterValuesBox(gtk.VBox):
                     # top child needs the focus
                     self._oWidget.get_children()[0].view.grab_focus()
         elif sSource in set(['Count', 'Set', 'Filter Type', 'Filter']):
-            if oEvent.keyval in RIGHT and \
+            if oKeyVal in RIGHT and \
                     sSource in set(['Count', 'Filter Type']):
                 # Top child selected, so pass to bottom
                 oAutoScrolled = self._oWidget.get_children()[2]
                 oAutoScrolled.get_child().grab_focus()
-            elif oEvent.keyval in LEFT and \
+            elif oKeyVal in LEFT and \
                     sSource in set(['Filter', 'Set']):
                 # Bottom child selected, so pass to top
                 self._oWidget.get_children()[0].view.grab_focus()
@@ -475,12 +477,13 @@ class FilterValuesBox(gtk.VBox):
     def key_press(self, oWidget, oEvent, oFilter, sSource):
         """Handle key press events to do allow keyboard pasting"""
         # Alt-direction moves focus around
-        if oEvent.keyval in LEFT_RIGHT and \
-                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+        oKeyVal = oEvent.get_keyval()[1]
+        if oKeyVal in LEFT_RIGHT and \
+                (oEvent.get_state()[1] & gtk.gdk.MOD1_MASK):
             self.switch_focus(oEvent, sSource)
         # We flag on ctrl-enter
-        if oEvent.keyval not in ENTER_KEYS or not \
-                (oEvent.get_state() & gtk.gdk.CONTROL_MASK):
+        if oKeyVal not in ENTER_KEYS or not \
+                (oEvent.get_state()[1] & gtk.gdk.CONTROL_MASK):
             return
         if sSource == 'Filter':
             # Paste current filter into the current filter box
@@ -535,7 +538,7 @@ class FilterValuesBox(gtk.VBox):
 
         def _get_values(oAdj):
             """Get important values out of a gtk.Adjustment"""
-            return oAdj.value, oAdj.page_size
+            return oAdj.get_value(), oAdj.get_page_size()
 
         # We must always be calling this with a filter box model shown
         assert len(self._oWidget.get_children()) == 3
@@ -554,8 +557,8 @@ class FilterValuesBox(gtk.VBox):
            list"""
         def _set_values(oAdj, tInfo):
             """Set the values on an adjustment"""
-            oAdj.value = tInfo[0]
-            oAdj.page_size = tInfo[1]
+            oAdj.set_value(tInfo[0])
+            oAdj.set_page_size(tInfo[1])
             # Send required signals
             oAdj.changed()
             oAdj.value_changed()
@@ -683,7 +686,7 @@ class FilterBoxModelStore(gtk.TreeStore):
             return None
         # Walk the box model, creating items as we need them
         self._do_add_iter(None, oBoxModel, False)
-        return self.get_path(self.get_iter_root())
+        return self.get_path(self.get_iter_first())
 
     def _clear_iter(self, oSelectIter, oPath):
         """Clear the current iter, saving curently selected element"""
@@ -778,7 +781,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         """Get the correct iter from the drop info"""
         iIndex = 0
         if not tRowInfo:
-            oIter = self.get_iter_root()
+            oIter = self.get_iter_first()
             iIndex = -1
         else:
             oPath, iDropPos = tRowInfo
@@ -860,8 +863,8 @@ class FilterBoxModelEditView(CustomDragIconView):
 
     def key_press(self, _oWidget, oEvent):
         """Handle key-press events for the filter box model"""
-        if oEvent.keyval in LEFT_RIGHT and \
-                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
+        if oEvent.get_keyval()[1] in LEFT_RIGHT and \
+                (oEvent.get_state()[1] & gtk.gdk.MOD1_MASK):
             # Pass focus to the value widget
             self._oValuesWidget.switch_focus(oEvent, 'Editor')
 
@@ -1119,7 +1122,7 @@ class FilterBoxModelEditView(CustomDragIconView):
                 self.set_drag_dest_row(tCurTarget[0], tCurTarget[1])
             else:
                 # Set highlight on the root of the tree
-                oIter = self._oStore.get_iter_root()
+                oIter = self._oStore.get_iter_first()
                 oDropPath = self._oStore.get_path(oIter)
                 self.set_drag_dest_row(oDropPath, gtk.TREE_VIEW_DROP_AFTER)
             if bFixHighlight:

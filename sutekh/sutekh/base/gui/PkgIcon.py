@@ -16,7 +16,8 @@ class PkgIcon(object):
     """Load a gtk Pixbuf object from a package resource file."""
 
     def __init__(self, sPkg, sResource):
-        oLoader = gtk.gdk.PixbufLoader()
+        # FIXME: Work out how to get back to a generic loader after we move away from needing pygtkcompat
+        oLoader = gtk.gdk.PixbufLoader('svg')
         oFile = resource_stream(sPkg, sResource)
         oLoader.write(oFile.read())
         oFile.close()

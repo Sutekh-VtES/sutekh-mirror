@@ -110,7 +110,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
         try:
             # Strip markup from model
             sCardSetName = pango.parse_markup(
-                self.model.get_value(oIter, 0))[1]
+                self.model.get_value(oIter, 0), -1, "\0").text
             # Cache lookups, so we don't hit the database so hard when
             # sorting
             if sCardSetName not in self._dCache:
@@ -147,7 +147,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             return iTotal, aIcons
         return -1, []
 
-    def _render_total(self, _oColumn, oCell, _oModel, oIter):
+    def _render_total(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the total"""
         sCardSet = self._get_iter_data(oIter)
         iCount, aIcons = self._get_data_total(sCardSet, True)
@@ -170,7 +170,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             return iTotal, aIcons
         return -1, []
 
-    def _render_all_children(self, _oColumn, oCell, _oModel, oIter):
+    def _render_all_children(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the the number of children"""
         sCardSet = self._get_iter_data(oIter)
         iCount, aIcons = self._get_data_all_children(sCardSet, True)
@@ -193,7 +193,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             return iTotal, aIcons
         return -1, []
 
-    def _render_inuse_children(self, _oColumn, oCell, _oModel, oIter):
+    def _render_inuse_children(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """display the the number of In-Use children"""
         sCardSet = self._get_iter_data(oIter)
         iCount, aIcons = self._get_data_inuse_children(sCardSet, True)
@@ -217,7 +217,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             return [sAuthor], aIcons
         return [], []
 
-    def _render_author(self, _oColumn, oCell, _oModel, oIter):
+    def _render_author(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display the author column"""
         sCardSet = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_author(sCardSet, True)
@@ -240,7 +240,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
             return [sDesc], aIcons
         return [], []
 
-    def _render_description(self, _oColumn, oCell, _oModel, oIter):
+    def _render_description(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Display the card set comment"""
         sCardSet = self._get_iter_data(oIter)
         aText, aIcons = self._get_data_description(sCardSet, True)

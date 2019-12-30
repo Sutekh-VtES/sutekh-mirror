@@ -24,8 +24,8 @@ class BasicFrame(gtk.Frame):
        setting the active hint.
        """
 
-    aDragTargets = [('STRING', gtk.TARGET_SAME_APP, 0),
-                    ('text/plain', gtk.TARGET_SAME_APP, 0)]
+    aDragTargets = [gtk.TargetEntry('STRING', gtk.TARGET_SAME_APP, 0),
+                    gtk.TargetEntry('text/plain', gtk.TARGET_SAME_APP, 0)]
 
     _cModelType = None
 
@@ -224,41 +224,41 @@ class BasicFrame(gtk.Frame):
 
     def set_focussed_title(self):
         """Set the title to the correct style when focussed."""
-        oCurStyle = self._oTitleLabel.rc_get_style()
+        #oCurStyle = self._oTitleLabel.rc_get_style()
         self._oTitleLabel.set_name('selected_title')
         # We can't have this name be a superset of the title name,
         # otherwise any style set on 'title' automatically applies
         # here, which is not what we want.
 
-        oDefaultSutekhStyle = gtk.rc_get_style_by_paths(
-            self._oTitleLabel.get_settings(), self.path() + '.',
-            self.class_path(), self._oTitleLabel)
+        #oDefaultSutekhStyle = gtk.rc_get_style_by_paths(
+        #    self._oTitleLabel.get_settings(), self.path() + '.',
+        #    self.class_path(), self._oTitleLabel)
         # Bit of a hack, but get's matches to before the title specific bits
         # of the path
 
-        oSpecificStyle = self._oTitleLabel.rc_get_style()
-        if oSpecificStyle == oDefaultSutekhStyle or \
-                oDefaultSutekhStyle is None:
-            # No specific style which affects highlighted titles set, so create
-            # one
-            oMap = self._oTitleLabel.get_colormap()
-            sColour = 'purple'
-            if oMap.alloc_color(sColour).pixel == \
-                    oCurStyle.fg[gtk.STATE_NORMAL].pixel:
-                sColour = 'green'
-                # Prevent collisions. If the person is using
-                # purple on a green background, they deserve
-                # invisible text
-            sStyleInfo = """
-            style "internal_sutekh_hlstyle" {
-                fg[NORMAL] = "%(colour)s"
-                }
-            widget "%(path)s" style "internal_sutekh_hlstyle"
-            """ % {'colour': sColour, 'path': self._oTitleLabel.path()}
-            gtk.rc_parse_string(sStyleInfo)
-            # We use gtk's style machinery to do the update.
-            # This seems the only way of ensuring we will actually do
-            # the right thing with themes, while still allowing flexiblity
+        #oSpecificStyle = self._oTitleLabel.rc_get_style()
+        #if oSpecificStyle == oDefaultSutekhStyle or \
+        #        oDefaultSutekhStyle is None:
+        #    # No specific style which affects highlighted titles set, so create
+        #    # one
+        #    oMap = self._oTitleLabel.get_colormap()
+        #    sColour = 'purple'
+        #    if oMap.alloc_color(sColour).pixel == \
+        #            oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+        #        sColour = 'green'
+        #        # Prevent collisions. If the person is using
+        #        # purple on a green background, they deserve
+        #        # invisible text
+        #    sStyleInfo = """
+        #    style "internal_sutekh_hlstyle" {
+        #        fg[NORMAL] = "%(colour)s"
+        #        }
+        #    widget "%(path)s" style "internal_sutekh_hlstyle"
+        #    """ % {'colour': sColour, 'path': self._oTitleLabel.path()}
+        #    gtk.rc_parse_string(sStyleInfo)
+        #    # We use gtk's style machinery to do the update.
+        #    # This seems the only way of ensuring we will actually do
+        #    # the right thing with themes, while still allowing flexiblity
         # Here, as this forces gtk to re-asses styles of widget and children
         self._oTitle.set_name('selected_title')
 

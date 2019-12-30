@@ -295,20 +295,21 @@ class CardSetView(CardListView):
         """Change the number if 1-9 is pressed and we're editable or if + or
            - is pressed. We use the lists defined above to handle the keypad
            as well."""
-        if oEvent.keyval in NUM_KEYS:
+        oKeyVal = oEvent.get_keyval()[1]
+        if oKeyVal in NUM_KEYS:
             if self._oModel.bEditable:
-                iCnt = NUM_KEYS[oEvent.keyval]
+                iCnt = NUM_KEYS[oKeyVal]
                 dSelectedData = self._process_edit_selection(iSetNewCount=iCnt)
                 self._oController.change_selected_card_count(dSelectedData)
             # if we're not editable, we still ignore this, so we avoid funny
             # search behaviour
             return True
-        elif oEvent.keyval in PLUS_KEYS and self._oModel.bEditable:
+        elif oKeyVal in PLUS_KEYS and self._oModel.bEditable:
             # Special value to indicate we change the count
             dSelectedData = self._process_edit_selection(iChg=+1)
             self._oController.change_selected_card_count(dSelectedData)
             return True
-        elif oEvent.keyval in MINUS_KEYS and self._oModel.bEditable:
+        elif oKeyVal in MINUS_KEYS and self._oModel.bEditable:
             # Special value to indicate we change the count
             dSelectedData = self._process_edit_selection(iChg=-1)
             self._oController.change_selected_card_count(dSelectedData)
@@ -391,52 +392,52 @@ class CardSetView(CardListView):
                they're the same, false otherwise."""
             return oColor1.to_string() == oColor2.to_string()
 
-        oCurStyle = self.rc_get_style()
+        # oCurStyle = self.rc_get_style()
         # Styles don't seem to be applied to TreeView text, so we default
         # to black text for non-editable, and work out editable from the
         # style
         self.oCellColor = gtk.gdk.color_parse('black')
-        oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
-        self.set_name('editable_view')
-        oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
-                                                        '', self.class_path(),
-                                                        self)
+        # oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
+        # self.set_name('editable_view')
+        # oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
+        #                                                '', self.class_path(),
+        #                                                self)
         # We want the class style for this widget, ignoring set_name effects
-        oSpecificStyle = self.rc_get_style()
-        if (oSpecificStyle == oDefaultSutekhStyle or
-                oDefaultSutekhStyle is None):
-            # No specific style set
-            sColour = 'red'
-            if _compare_colors(gtk.gdk.color_parse(sColour),
-                               oCurStyle.fg[gtk.STATE_NORMAL]):
-                sColour = 'green'
-            # FIXME: rc_parse_string doesn't play nicely with
-            # theme changes, which cause a rcfile reparse.
-            sStyleInfo = """
-            style "internal_sutekh_editstyle" {
-                fg[NORMAL] = "%(colour)s"
-                }
-            widget "%(path)s" style "internal_sutekh_editstyle"
-            """ % {'colour': sColour, 'path': self.path()}
-            gtk.rc_parse_string(sStyleInfo)
-            # Need to force re-assesment of styles
-            self.set_name('editable_view')
-        oCurStyle = self.rc_get_style()
+        # oSpecificStyle = self.rc_get_style()
+        #if (oSpecificStyle == oDefaultSutekhStyle or
+        #        oDefaultSutekhStyle is None):
+        #    # No specific style set
+        #    sColour = 'red'
+        #    if _compare_colors(gtk.gdk.color_parse(sColour),
+        #                       oCurStyle.fg[gtk.STATE_NORMAL]):
+        #        sColour = 'green'
+        #    # FIXME: rc_parse_string doesn't play nicely with
+        #    # theme changes, which cause a rcfile reparse.
+        #    sStyleInfo = """
+        #    style "internal_sutekh_editstyle" {
+        #        fg[NORMAL] = "%(colour)s"
+        #        }
+        #    widget "%(path)s" style "internal_sutekh_editstyle"
+        #    """ % {'colour': sColour, 'path': self.path()}
+        #    gtk.rc_parse_string(sStyleInfo)
+        #    # Need to force re-assesment of styles
+        #    self.set_name('editable_view')
+        #oCurStyle = self.rc_get_style()
         # Force a hint on the number column as well
-        oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
-        oEditBackColor = oCurStyle.base[gtk.STATE_NORMAL]
-        if not _compare_colors(oEditColor, self.oCellColor) or \
-                not _compare_colors(oEditBackColor, oCurBackColor):
-            # Visiually distinct, so honour user's choice
-            self._oModel.oEditColour = oEditColor
-        else:
-            # If the theme change isn't visually distinct here, we go
-            # with red  as the default - this is safe,
-            # since CellRenderers aren't
-            # themed, so the default color will not be red
-            # (famous last words)
-            # If the default background color is red, too bad
-            self._oModel.oEditColour = gtk.gdk.color_parse('red')
+        # oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
+        # oEditBackColor = oCurStyle.base[gtk.STATE_NORMAL]
+        #if not _compare_colors(oEditColor, self.oCellColor) or \
+        #        not _compare_colors(oEditBackColor, oCurBackColor):
+        #    # Visiually distinct, so honour user's choice
+        #     self._oModel.oEditColour = oEditColor
+        #else:
+        #    # If the theme change isn't visually distinct here, we go
+        #    # with red  as the default - this is safe,
+        #    # since CellRenderers aren't
+        #    # themed, so the default color will not be red
+        #    # (famous last words)
+        #    # If the default background color is red, too bad
+        self._oModel.oEditColour = gtk.gdk.color_parse('red')
 
     def set_color_normal(self):
         """Unset the editable visual cue"""

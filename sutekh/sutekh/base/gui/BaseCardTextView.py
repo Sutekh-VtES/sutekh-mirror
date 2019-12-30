@@ -21,7 +21,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
     # pylint: disable=too-many-public-methods
     # gtk.Widget, so many public methods
     def __init__(self):
-        super(BaseCardTextBuffer, self).__init__(None)
+        super(BaseCardTextBuffer, self).__init__()
 
         # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
         # for some possible properties
@@ -139,7 +139,7 @@ class BaseCardTextBuffer(gtk.TextBuffer):
         """Get everything shown in the buffer"""
         oStart, oEnd = self.get_bounds()
         # This should be unicode
-        return self.get_text(oStart, oEnd)
+        return self.get_text(oStart, oEnd, False)
 
 
 class BaseCardTextView(gtk.TextView):

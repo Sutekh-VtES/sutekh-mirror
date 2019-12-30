@@ -468,7 +468,7 @@ class LikeCardsModel(gtk.ListStore):
 
     def remove_card(self, oCard):
         """Remove the card from the model"""
-        oIter = self.get_iter_root()
+        oIter = self.get_iter_first()
         while oIter is not None:
             # See comments in CardListModel for why we decode here
             sName = self.get_value(oIter, 0).decode('utf-8')

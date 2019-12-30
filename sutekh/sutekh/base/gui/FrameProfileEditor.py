@@ -76,7 +76,7 @@ class FrameProfileEditor(SutekhDialog):
     def set_selected_profile(self, sProfile):
         """Set the selected profile for editing to given one"""
         oModel = self.__oSelectorCombo.get_model()
-        oIter = oModel.get_iter_root()
+        oIter = oModel.get_iter_first()
         while oIter:
             if oModel.get_value(oIter, 0) == sProfile:
                 self.__oSelectorCombo.set_active_iter(oIter)

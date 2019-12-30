@@ -196,7 +196,7 @@ class CardSetManagementModel(gtk.TreeStore):
                 oChildIter = self.iter_next(oChildIter)
             return oPath
 
-        oIter = self.get_iter_root()
+        oIter = self.get_iter_first()
         while oIter:
             oPath = check_iter(oIter, sName)
             if oPath:
@@ -209,7 +209,7 @@ class CardSetManagementModel(gtk.TreeStore):
         oIter = self.get_iter(oPath)
         return self.get_name_from_iter(oIter)
 
-    def sort_column(self, _oModel, oIter1, oIter2):
+    def sort_column(self, _oModel, oIter1, oIter2, _oDummy):
         """Custom sort function - ensure that markup doesn't affect sort
            order"""
         oCardSet1 = self.get_name_from_iter(oIter1)

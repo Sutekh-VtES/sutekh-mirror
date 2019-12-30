@@ -44,7 +44,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oFrame.view.expand_all()  # needed so we can select deeper entries
         oSelection.unselect_all()
         # Walk the model, tracking the paths we wish to select
-        oIter = oModel.get_iter_root()
+        oIter = oModel.get_iter_first()
         while oIter:
             # loop over card level nodes
             oCardIter = oModel.iter_children(oIter)
@@ -143,19 +143,20 @@ class TestCardSetFrame(GuiSutekhTest):
         self._select_cards(oNewFrame, [(u'AK-47', None),
                                        (u'AK-47', u'Lords of the Night')])
         # Generate key_press event
-        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('4'))
+        oEvent = gtk.gdk.Event()
+        oEvent.type = gtk.gdk.EventType.KEY_PRESS
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('4'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 8)
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 8)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('1'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('1'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 2)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 4)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('minus'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 2)
         oNewFrame.view.key_press(oNewFrame, oEvent)
@@ -167,7 +168,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 1)
         self._select_cards(oNewFrame, [(u'AK-47', None)])
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 2)
         oNewFrame.view.del_selection()
@@ -227,19 +228,20 @@ class TestCardSetFrame(GuiSutekhTest):
         self._select_cards(oNewFrame, [(u'AK-47', ),
                                        (u'AK-47', None),
                                        (u'AK-47', 'Lords of the Night')])
-        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('4'))
+        oEvent = gtk.gdk.Event()
+        oEvent.type = gtk.gdk.EventType.KEY_PRESS
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('4'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 10)
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 10)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('1'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('1'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 7)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('plus'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 8)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('minus'))
         oNewFrame.view.key_press(oNewFrame, oEvent)
         self.assertEqual(len(oPCS2.cards), 7)
         # We should copy all the ones from My Collection
@@ -289,8 +291,9 @@ class TestCardSetFrame(GuiSutekhTest):
         # Test deleting with no filter works as expected
         self._select_cards(oMyColl, [(u'Ghoul Retainer', ),
                                      (u'Off Kilter', )])
-        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
-        oEvent.keyval = int(gtk.gdk.keyval_from_name('minus'))
+        oEvent = gtk.gdk.Event()
+        oEvent.type = gtk.gdk.EventType.KEY_PRESS
+        oEvent.key.keyval = int(gtk.gdk.keyval_from_name('minus'))
         # Check that we can delete all the way
         # We should remove 2 cards each time until we've removed
         # 5 Ghoul Retainers

@@ -45,7 +45,7 @@ class CardSetsListView(FilteredView):
         if bSpecialSelect:
             self._oSelection.connect('changed', self.row_selected)
 
-    def can_select(self, oPath):
+    def can_select(self, _oSelection, _oModel, oPath, _bCurrently):
         """disable selecting of excluded items"""
         sName = self._oModel.get_name_from_path(oPath)
         return not self._oModel.is_excluded(sName)

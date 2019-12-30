@@ -466,7 +466,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the list of
             # Physical Cards
-            oIter = oModel.get_iter_root()
+            oIter = oModel.get_iter_first()
             while oIter is not None:
                 sFullName, sNewFullName, oAbsCard = oModel.get(oIter, 1, 2, 4)
                 # GtK returns encoded strings - see get_name_from_iter in
@@ -640,7 +640,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
-            oIter = oModel.get_iter_root()
+            oIter = oModel.get_iter_first()
             while oIter is not None:
                 sName, oAbsCard = oModel.get(oIter, 1, 4)
                 if sName not in dUnknownCards:

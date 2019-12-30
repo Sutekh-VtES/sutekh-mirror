@@ -33,8 +33,8 @@ class LogViewMenu(SutekhMenu):
     # these methods are called from __init__, so it's OK
     def _create_actions_menu(self):
         """Create the Actions menu for Card Sets."""
-        oMenu = self.create_submenu(self, '_Actions')
-        oFilterList = self.create_submenu(oMenu, '_Filter log level')
+        oMenu = self.create_submenu(self, 'Actions')
+        oFilterList = self.create_submenu(oMenu, 'Filter log level')
         self._create_filter_list(oFilterList)
         oMenu.add(gtk.SeparatorMenuItem())
         self.create_menu_item("_Save current view to File", oMenu,

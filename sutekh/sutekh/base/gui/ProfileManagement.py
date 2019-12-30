@@ -39,7 +39,7 @@ class ProfileListStore(gtk.ListStore):
 
     def _find_iter(self, sProfile):
         """Find the correct iter for an entry"""
-        oIter = self.get_iter_root()
+        oIter = self.get_iter_first()
         while oIter:
             if sProfile == self.get_value(oIter, 0):
                 return oIter

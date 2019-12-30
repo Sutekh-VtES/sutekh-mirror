@@ -90,7 +90,7 @@ class ScrolledList(gtk.Frame):
     # gtk classes aren't old-style, but pylint thinks they are
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
-        super(ScrolledList, self).__init__(None)
+        super(ScrolledList, self).__init__()
         self._oTreeView = ScrolledListView(sTitle, oModel, bSpecialSelect)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)

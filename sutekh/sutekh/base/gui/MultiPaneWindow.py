@@ -167,11 +167,12 @@ class MultiPaneWindow(gtk.Window):
 
     def key_press(self, _oWidget, oEvent):
         """Move to the next frame on Tab"""
-        if oEvent.keyval == gtk.gdk.keyval_from_name('Tab') or \
-                oEvent.keyval == gtk.gdk.keyval_from_name('KP_Tab'):
+        oKeyVal = oEvent.get_keyval()[1]
+        if oKeyVal == gtk.gdk.keyval_from_name('Tab') or \
+                oKeyVal == gtk.gdk.keyval_from_name('KP_Tab'):
             self.move_to_frame(+1)
             return True
-        elif oEvent.keyval == gtk.gdk.keyval_from_name('ISO_Left_Tab'):
+        elif oKeyVal == gtk.gdk.keyval_from_name('ISO_Left_Tab'):
             # Shift & tab should always be this, AFAICT
             self.move_to_frame(-1)
             return True

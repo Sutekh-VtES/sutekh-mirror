@@ -38,7 +38,7 @@ class CardSetManagementMenu(FilteredViewMenu):
     # called from __init__, so OK
     def __create_actions_menu(self):
         """Add the Actions Menu"""
-        oMenu = self.create_submenu(self, "_Actions")
+        oMenu = self.create_submenu(self, "Actions")
         self.create_menu_item('Create New Card Set', oMenu,
                               self._oController.create_new_card_set)
         self.create_menu_item('Edit Card Set Properties', oMenu,
@@ -54,7 +54,7 @@ class CardSetManagementMenu(FilteredViewMenu):
 
     def create_edit_menu(self):
         """Create the edit menu and populate it"""
-        oMenu = self.create_submenu(self, "_Edit")
+        oMenu = self.create_submenu(self, "Edit")
 
         self.create_menu_item('Edit _Profiles', oMenu, self._edit_profiles)
 

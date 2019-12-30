@@ -115,9 +115,10 @@ class TestFilterModelPane(GuiSutekhTest):
         oList = oWidget.get_child()
         oList.set_selected_entry('Equipment')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
-        oEvent = gtk.gdk.Event(gtk.gdk.KEY_PRESS)
+        oEvent = gtk.gdk.Event()
+        oEvent.type = gtk.gdk.EventType.KEY_PRESS
         # ENTER_KEYS contains longs, but keyval needs int
-        oEvent.keyval = int(list(ENTER_KEYS)[0])
+        oEvent.key.keyval = int(list(ENTER_KEYS)[0])
         oEvent.state = gtk.gdk.CONTROL_MASK
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
                                            oEvent, oFilter, 'Value')
@@ -145,7 +146,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oToolbar = oWidget.get_child()
         oListStore = oToolbar._oListStore
         oSelection = oToolbar.get_selection()
-        oIter = oListStore.get_iter_root()
+        oIter = oListStore.get_iter_first()
         while oIter:
             if oListStore.get_value(oIter, 0) == 'Keyword':
                 oSelection.select_path(oListStore.get_path(oIter))

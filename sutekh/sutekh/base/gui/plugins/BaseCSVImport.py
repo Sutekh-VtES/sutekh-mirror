@@ -176,7 +176,7 @@ class BaseCSVImport(BasePlugin):
             for iRow, sHeading in aColumns:
                 oIter = oListStore.append(None)
                 oListStore.set(oIter, 0, iRow, 1, sHeading)
-            oCombo.set_active_iter(oListStore.get_iter_root())
+            oCombo.set_active_iter(oListStore.get_iter_first())
 
     def handle_response(self, _oWidget, oResponse):
         """Handle the user clicking OK on the dialog.

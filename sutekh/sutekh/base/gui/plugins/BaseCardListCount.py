@@ -199,10 +199,10 @@ class BaseCardListCount(BasePlugin):
                 return 1
         return 0
 
-    def _render_count(self, _oColumn, oCell, _oModel, oIter):
+    def _render_count(self, _oColumn, oCell, _oModel, oIter, _oDummy):
         """Render the count for the card"""
         iVal = self._get_count(oIter)
-        oCell.set_property('text', iVal)
+        oCell.set_property('text', '%d' % iVal)
 
     def _sort_count(self, _oModel, oIter1, oIter2):
         """Card count Comparision of oIter1 and oIter2.
