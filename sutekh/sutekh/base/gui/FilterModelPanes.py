@@ -479,11 +479,11 @@ class FilterValuesBox(gtk.VBox):
         # Alt-direction moves focus around
         oKeyVal = oEvent.get_keyval()[1]
         if oKeyVal in LEFT_RIGHT and \
-                (oEvent.get_state()[1] & gtk.gdk.MOD1_MASK):
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
             self.switch_focus(oEvent, sSource)
         # We flag on ctrl-enter
         if oKeyVal not in ENTER_KEYS or not \
-                (oEvent.get_state()[1] & gtk.gdk.CONTROL_MASK):
+                (oEvent.get_state() & gtk.gdk.CONTROL_MASK):
             return
         if sSource == 'Filter':
             # Paste current filter into the current filter box
@@ -864,7 +864,7 @@ class FilterBoxModelEditView(CustomDragIconView):
     def key_press(self, _oWidget, oEvent):
         """Handle key-press events for the filter box model"""
         if oEvent.get_keyval()[1] in LEFT_RIGHT and \
-                (oEvent.get_state()[1] & gtk.gdk.MOD1_MASK):
+                (oEvent.get_state() & gtk.gdk.MOD1_MASK):
             # Pass focus to the value widget
             self._oValuesWidget.switch_focus(oEvent, 'Editor')
 
