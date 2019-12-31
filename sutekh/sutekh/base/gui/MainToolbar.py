@@ -25,7 +25,10 @@ class MainToolbar(gtk.Toolbar):
     # Method for consistency
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):
         """Create a Toolbar button with the given action."""
-        oToolButton = gtk.ToolButton(oIcon, sLabel)
+        oToolButton = gtk.ToolButton()
+        oToolButton.set_label(sLabel)
+        if oIcon:
+            oToolButton.set_icon_widget(oIcon)
         if fAction is not None:
             oToolButton.connect('clicked', fAction)
         return oToolButton
