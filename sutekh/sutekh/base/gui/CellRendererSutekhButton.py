@@ -61,7 +61,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         else:
             raise AttributeError('unknown property %s' % oProp.name)
 
-    def on_get_size(self, _oWidget, oCellArea):
+    def do_get_size(self, _oWidget, oCellArea):
         """Handle get_size requests"""
         if self.oPixbuf is None:
             return 0, 0, 0, 0
@@ -81,7 +81,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     # pylint: disable=too-many-arguments
     # number of parameters needed by function signature
-    def on_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
+    def do_activate(self, _oEvent, _oWidget, oPath, oBackgroundArea,
                     _oCellArea, _iFlags):
         """Activate signal received from the TreeView"""
         # Note that we need to offset button
@@ -93,8 +93,8 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 
     # pylint: disable=too-many-arguments
     # number of parameters needed by function signature
-    def on_render(self, oWindow, oWidget, oBackgroundArea,
-                  oCellArea, oExposeArea, _iFlags):
+    def do_render(self, oCairoContext, oWidget, oBackgroundArea,
+                  oCellArea, _iFlags):
         """Render the icon for the button"""
         bDrawOffset = False
         # Need to ensure that self.bClicked is unset before any early return
@@ -113,7 +113,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             return None
         oPixRect = gtk.gdk.Rectangle()
         oPixRect.x, oPixRect.y, oPixRect.width, oPixRect.height = \
-            self.on_get_size(oWidget, oCellArea)
+            self.do_get_size(oWidget, oCellArea)
 
         oPixRect.x += oCellArea.x
         oPixRect.y += oCellArea.y
@@ -128,15 +128,13 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             gobject.timeout_add(200, self.restore_offset, oWindow,
                                 oBackgroundArea)
 
-        oDrawRect = oCellArea.intersect(oPixRect)
-        oDrawRect = oExposeArea.intersect(oDrawRect)
+        oDrawRect = oCellArea.intersect(oPixRect)[1]
 
-        oWindow.draw_pixbuf(oWidget.style.black_gc, self.oPixbuf,
-                            oDrawRect.x - oPixRect.x,
-                            oDrawRect.y - oPixRect.y,
-                            oDrawRect.x, oDrawRect.y,
-                            oDrawRect.width, oDrawRect.height,
-                            gtk.gdk.RGB_DITHER_NONE, 0, 0)
+        gtk.gdk.cairo_set_source_pixbuf(oCairoContext,
+                                        self.oPixbuf,
+                                        oDrawRect.x,
+                                        oDrawRect.y)
+        oCairoContext.paint()
         return None
 
     def restore_offset(self, oWindow, oArea):
