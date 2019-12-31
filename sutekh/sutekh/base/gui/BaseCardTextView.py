@@ -165,9 +165,9 @@ class BaseCardTextView(gtk.TextView):
         self.set_wrap_mode(gtk.WRAP_WORD)
         self._oIconManager = oIconManager
         oContext = self.get_pango_context()
-        logging.info('Pango Language : %s', oContext.get_language())
+        logging.info('Pango Language : %s', oContext.get_language().to_string())
         logging.info('Pango Font Description : %s',
-                     oContext.get_font_description())
+                     oContext.get_font_description().to_string())
 
     # pylint: disable=protected-access
     # We allow access via these properties
