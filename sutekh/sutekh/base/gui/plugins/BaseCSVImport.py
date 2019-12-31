@@ -154,7 +154,8 @@ class BaseCSVImport(BasePlugin):
     def _create_column_selector(self):
         """Create a combo box from which a column can be selected."""
         oListStore = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
-        oComboBox = gtk.ComboBox(oListStore)
+        oComboBox = gtk.ComboBox()
+        oComboBox.set_model(oListStore)
         oCell = gtk.CellRendererText()
         oComboBox.pack_start(oCell, True)
         oComboBox.add_attribute(oCell, 'text', 1)

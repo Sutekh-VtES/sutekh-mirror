@@ -191,7 +191,8 @@ class FilterDialog(SutekhDialog):
                 oIter = oFilterStore.append(None)
                 oFilterStore.set(oIter, 0, bDefault, 1, sName, 2, sFilter)
 
-        oFilterSelector = gtk.ComboBox(oFilterStore)
+        oFilterSelector = gtk.ComboBox()
+        oFilterSelector.set_model(oFilterStore)
 
         oCell = gtk.CellRendererText()
         oFilterSelector.pack_start(oCell, True)
