@@ -170,20 +170,10 @@ class CellRendererIcons(gtk.GenericCellRenderer):
             for sText, oIcon in self.aData:
                 if oIcon and self.iMode != SHOW_TEXT_ONLY:
                     # Render icon
-                    oDrawRect.width = oIcon.get_width()
-                    oDrawRect.height = oIcon.get_height()
-                    oIconDrawRect = oCellArea.intersect(oDrawRect)[1]
-                    #oIconDrawRect = oExposeArea.intersect(oIconDrawRect)
                     gtk.gdk.cairo_set_source_pixbuf(oCairoContext,
-                                                oIcon,
-                                                oIconDrawRect.x - oDrawRect.x,
-                                                oIconDrawRect.y - oDrawRect.y)
-                    #oWindow.draw_pixbuf(oWidget.style.black_gc, oIcon,
-                    #                    oIconDrawRect.x - oDrawRect.x,
-                    #                    oIconDrawRect.y - oDrawRect.y,
-                    #                    oIconDrawRect.x, oIconDrawRect.y,
-                    #                    -1, oIconDrawRect.height,
-                    #                    gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                                    oIcon,
+                                                    oDrawRect.x,
+                                                    oDrawRect.y)
                     oCairoContext.paint()
                     oDrawRect.x += oIcon.get_width() + self.iIconPad
                 if sText and (self.iMode != SHOW_ICONS_ONLY or oIcon is None):
@@ -191,15 +181,23 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                     _layout_text(oLayout, sText)
                     oDrawRect.width, oDrawRect.height = \
                         oLayout.get_pixel_size()
+                    oStyleContext = oWidget.get_style_context()
+                    oState = oWidget.get_state_flags()
+                    oColour = oStyleContext.get_color(oState)
+                    oCairoContext.set_source_rgba(oColour.red, oColour.green,
+                                                  oColour.blue, oColour.alpha)
                     oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
                     pangocairo.show_layout(oCairoContext, oLayout)
-                    #oWidget.draw_layout(oWidget.style.black_gc, oDrawRect.x,
-                    #                    oDrawRect.y, oLayout)
                     oDrawRect.x += oDrawRect.width + self.iTextPad
         elif self.sText:
             # Render text
             _layout_text(oLayout, self.sText)
             oDrawRect.width, oDrawRect.height = oLayout.get_pixel_size()
+            oStyleContext = oWidget.get_style_context()
+            oState = oWidget.get_state_flags()
+            oColour = oStyleContext.get_color(oState)
+            oCairoContext.set_source_rgba(oColour.red, oColour.green,
+                                          oColour.blue, oColour.alpha)
             oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
             pangocairo.show_layout(oCairoContext, oLayout)
             oDrawRect.x += oDrawRect.width + self.iTextPad
