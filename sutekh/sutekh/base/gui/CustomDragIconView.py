@@ -51,7 +51,8 @@ class CustomDragIconView(gtk.TreeView):
             # With gtk version 2.24, there doesn't appear to be any noticable
             # leaks but it is something to watch for
             oDrawable = self.create_row_drag_icon(aSelectedRows[0])
-            self.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
+            oPixbuf = gtk.gdk.pixbuf_get_from_surface(oDrawable, 0, 0, 100, 20)
+            self.drag_source_set_icon_pixbuf(oPixbuf)
         # We don't change anything in the nothing selected case
 
     # pylint: disable=no-self-use

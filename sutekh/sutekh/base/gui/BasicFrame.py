@@ -8,6 +8,7 @@
 
 import gtk
 import gobject
+import cairo
 
 from .MessageBus import MessageBus, DATABASE_MSG
 
@@ -323,5 +324,7 @@ class BasicFrame(gtk.Frame):
 
     def make_drag_icon(self, oWidget, _oDragContext):
         """Create an icon for dragging the pane from the titlebar"""
-        oDrawable = self._oTitleLabel.get_snapshot(None)
-        oWidget.drag_source_set_icon(oDrawable.get_colormap(), oDrawable)
+        iXOffset, iYOffset = self._oTitleLabel.get_layout_offsets()
+        oPixbuf = gtk.gdk.pixbuf_get_from_window(self._oTitleLabel.window, iXOffset, iYOffset,
+                                                 100, 20)
+        oWidget.drag_source_set_icon_pixbuf(oPixbuf)
