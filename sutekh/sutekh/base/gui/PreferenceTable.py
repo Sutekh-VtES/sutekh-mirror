@@ -9,6 +9,7 @@
    Used by the various Profile editor dialogs."""
 
 import gtk
+import gobject
 
 
 class PreferenceTable(gtk.Table):
@@ -212,9 +213,15 @@ class OptionParsedSpec(BaseParsedSpec):
 
     def create_widget(self):
         """Create a suitable widget (gtk.ComboBox)"""
-        oCombo = gtk.combo_box_new_text()
+        oCombo = gtk.ComboBox()
+        oModel = gtk.ListStore(gobject.TYPE_STRING)
+        oCombo.set_model(oModel)
+        oCell = gtk.CellRendererText()
+        oCombo.pack_start(oCell, True)
+        oCombo.add_attribute(oCell, 'text', 0)
         for sValue in self.aArgs:
-            oCombo.append_text(sValue)
+            oIter = oModel.append(None)
+            oModel.set(oIter, 0, sValue)
         return oCombo
 
     def set_value(self, oValue):
