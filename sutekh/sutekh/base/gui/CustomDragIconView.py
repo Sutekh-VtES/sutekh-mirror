@@ -24,8 +24,8 @@ class CustomDragIconView(gtk.TreeView):
 
         # We want to be at the end of the chain, so we can fiddle with the
         # icon after gtk_tree_view sets it
-        self.connect_after('drag_begin', self.make_drag_icon)
-        self.connect_after('drag_motion', self.drag_motion)
+        self.connect_after('drag-begin', self.make_drag_icon)
+        #self.connect_after('drag-motion', self.drag_motion)
 
     def make_drag_icon(self, _oWidget, _oDragContext):
         """Drag begin signal handler to set custom icon"""
