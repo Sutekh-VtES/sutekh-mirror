@@ -146,20 +146,20 @@ class TestCardSetFrame(GuiSutekhTest):
         oEvent = gtk.gdk.Event()
         oEvent.type = gtk.gdk.EventType.KEY_PRESS
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('4'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 8)
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 8)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('1'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 2)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 4)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('minus'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 2)
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 0)
         # Select all and delete it from the new card set
         oNewFrame.view.do_paste()
@@ -169,7 +169,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.assertEqual(len(oPCS2.cards), 1)
         self._select_cards(oNewFrame, [(u'AK-47', None)])
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 2)
         oNewFrame.view.del_selection()
         self.assertEqual(len(oPCS2.cards), 0)
@@ -231,18 +231,18 @@ class TestCardSetFrame(GuiSutekhTest):
         oEvent = gtk.gdk.Event()
         oEvent.type = gtk.gdk.EventType.KEY_PRESS
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('4'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 10)
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 10)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('1'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 7)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('plus'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 8)
         oEvent.key.keyval = int(gtk.gdk.keyval_from_name('minus'))
-        oNewFrame.view.key_press(oNewFrame, oEvent)
+        oNewFrame.view.key_press(oNewFrame, oEvent.key)
         self.assertEqual(len(oPCS2.cards), 7)
         # We should copy all the ones from My Collection
         # rename card set, and verify that everything gets updated properly
@@ -298,11 +298,11 @@ class TestCardSetFrame(GuiSutekhTest):
         # We should remove 2 cards each time until we've removed
         # 5 Ghoul Retainers
         for iExpected in range(10, 0, -2):
-            oMyColl.view.key_press(oMyColl, oEvent)
+            oMyColl.view.key_press(oMyColl, oEvent.key)
             self.assertEqual(len(oColl.cards), iExpected)
         # Then remove 1 card for the last 2
         for iExpected in range(1, -1, -1):
-            oMyColl.view.key_press(oMyColl, oEvent)
+            oMyColl.view.key_press(oMyColl, oEvent.key)
             self.assertEqual(len(oColl.cards), iExpected)
         oColl.syncUpdate()
         for oCard in aPhysCards:
@@ -320,12 +320,12 @@ class TestCardSetFrame(GuiSutekhTest):
         self._select_cards(oMyColl, [(u'Ghoul Retainer', )])
         # Each removal should remove 1 card
         for iExpected in range(11, 8, -1):
-            oMyColl.view.key_press(oMyColl, oEvent)
+            oMyColl.view.key_press(oMyColl, oEvent.key)
             self.assertEqual(len(oColl.cards), iExpected)
         # Further removals have no effect
-        oMyColl.view.key_press(oMyColl, oEvent)
+        oMyColl.view.key_press(oMyColl, oEvent.key)
         self.assertEqual(len(oColl.cards), 9)
-        oMyColl.view.key_press(oMyColl, oEvent)
+        oMyColl.view.key_press(oMyColl, oEvent.key)
         self.assertEqual(len(oColl.cards), 9)
         # Test deleting with physical expansion filter works as expected
         oFilter = BaseFilters.PhysicalExpansionFilter('Heirs to the Blood')
@@ -333,7 +333,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oMyColl.reload()
         self._select_cards(oMyColl, [(u'Off Kilter', )])
         for iExpected in range(8, 1, -1):
-            oMyColl.view.key_press(oMyColl, oEvent)
+            oMyColl.view.key_press(oMyColl, oEvent.key)
             self.assertEqual(len(oColl.cards), iExpected)
         # Asset that all the remaining 2 cards are both Jyhad (No variant)
         # Ghoul retainers

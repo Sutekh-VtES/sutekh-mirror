@@ -119,9 +119,9 @@ class TestFilterModelPane(GuiSutekhTest):
         oEvent.type = gtk.gdk.EventType.KEY_PRESS
         # ENTER_KEYS contains longs, but keyval needs int
         oEvent.key.keyval = int(list(ENTER_KEYS)[0])
-        oEvent.state = gtk.gdk.CONTROL_MASK
+        oEvent.key.state = gtk.gdk.CONTROL_MASK
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
-                                           oEvent, oFilter, 'Value')
+                                           oEvent.key, oFilter, 'Value')
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
 
@@ -154,7 +154,7 @@ class TestFilterModelPane(GuiSutekhTest):
             oIter = oListStore.iter_next(oIter)
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         # ENTER_KEYS contains longs, but keyval needs int
-        oFilterPanes._oSelectBar.key_press(oToolbar, oEvent, oFilter, 'Filter')
+        oFilterPanes._oSelectBar.key_press(oToolbar, oEvent.key, oFilter, 'Filter')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:2')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0:2')
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]
@@ -163,7 +163,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oList.set_selected_entry('location')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
-                                           oEvent, oFilter, 'Value')
+                                           oEvent.key, oFilter, 'Value')
         # ENTER_KEYS contains longs, but keyval needs int
         oFilterAST = oFilterPanes.get_ast_with_values()
         self._check_asts(oAST, oFilterAST)
