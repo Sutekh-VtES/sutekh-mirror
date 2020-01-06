@@ -113,14 +113,16 @@ class CreateCardSetDialog(SutekhDialog):
         """Get the comment value"""
         sComment = self.oCommentBuffer.get_text(
             self.oCommentBuffer.get_start_iter(),
-            self.oCommentBuffer.get_end_iter())
+            self.oCommentBuffer.get_end_iter(),
+            False)
         return sComment
 
     def get_annotations(self):
         """Get the comment value"""
         sAnnotations = self.oAnnotateBuffer.get_text(
             self.oAnnotateBuffer.get_start_iter(),
-            self.oAnnotateBuffer.get_end_iter())
+            self.oAnnotateBuffer.get_end_iter(),
+            False)
         return sAnnotations
 
     def get_parent(self):
