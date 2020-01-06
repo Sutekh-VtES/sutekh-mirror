@@ -174,7 +174,8 @@ def create_view(oStore, sHeading, iWidth):
 
 def fill_frame(sDetails, sHeading):
     """Draw a gtk.Frame for the given detail type"""
-    oFrame = gtk.Frame(sHeading)
+    oFrame = gtk.Frame()
+    oFrame.set_label(sHeading)
     oLabel = gtk.Label()
     oLabel.set_markup(sDetails)
     oFrame.add(oLabel)
