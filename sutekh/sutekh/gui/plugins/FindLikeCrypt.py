@@ -201,21 +201,28 @@ class FindLikeVampires(SutekhPlugin):
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
         if aSuperior:
-            oDisciplines = gtk.RadioButton(None, "Match Disciplines")
-            oSuperior = gtk.RadioButton(oDisciplines,
-                                        "Match Superior Disciplines")
+            oDisciplines = gtk.RadioButton(
+                    group=None, label="Match Disciplines")
+            oSuperior = gtk.RadioButton(
+                    group=oDisciplines, label="Match Superior Disciplines")
             oDisciplines.set_active(True)
         else:
             oDisciplines = gtk.Label("Match Disciplines")
             oSuperior = None
         oDialog.vbox.pack_start(oDisciplines)
-        oComboBox = gtk.combo_box_new_text()
+        oComboBox = gtk.ComboBox()
+        oModel = gtk.ListStore(gobject.TYPE_STRING)
+        oComboBox.set_model(oModel)
+        oCell = gtk.CellRendererText()
+        oComboBox.pack_start(oCell, True)
+        oComboBox.add_attribute(oCell, 'text', 0)
         if oSuperior:
             oDialog.vbox.pack_start(oSuperior)
             oDisciplines.connect('toggled', self._update_combo_box,
                                  oComboBox, aDisciplines, aSuperior)
         for iNum in range(1, len(aDisciplines) + 1):
-            oComboBox.append_text(str(iNum))
+            oIter = oModel.append(None)
+            oModel.set(oIter, 0, '%d' % iNum)
         if len(aDisciplines) > 1:
             oComboBox.set_active(1)
         else:
@@ -231,7 +238,9 @@ class FindLikeVampires(SutekhPlugin):
             oDialog.destroy()
             return None
         bUseCardSet = oUseCardSet.get_active()
-        iNum = int(oComboBox.get_active_text())
+        oIter = oComboBox.get_active_iter()
+        sText = oModel.get_value(oIter, 0)
+        iNum = int(sText)
         bSuperior = oSuperior and oSuperior.get_active()
         if bSuperior:
             oDisciplineFilter = MultiDisciplineLevelFilter(
@@ -264,9 +273,15 @@ class FindLikeVampires(SutekhPlugin):
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
         oDialog.vbox.pack_start(gtk.Label("Match Virtues"))
-        oComboBox = gtk.combo_box_new_text()
+        oComboBox = gtk.ComboBox()
+        oModel = gtk.ListStore(gobject.TYPE_STRING)
+        oComboBox.set_model(oModel)
+        oCell = gtk.CellRendererText()
+        oComboBox.pack_start(oCell, True)
+        oComboBox.add_attribute(oCell, 'text', 0)
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
-            oComboBox.append_text(str(iNum))
+            oIter = oModel.append(None)
+            oModel.set(oIter, 0, '%d' % iNum)
         if len(self.oSelCard.virtue) > 1:
             oComboBox.set_active(1)
         else:
@@ -284,7 +299,9 @@ class FindLikeVampires(SutekhPlugin):
         bUseCardSet = False
         if oUseCardSet.get_active():
             bUseCardSet = True
-        iNum = int(oComboBox.get_active_text())
+        oIter = oComboBox.get_active_iter()
+        sText = oModel.get_value(oIter, 0)
+        iNum = int(sText)
         oVirtueFilter = MultiVirtueFilter([x.fullname for x in
                                            self.oSelCard.virtue])
         aSets = _gen_subsets(self.oSelCard.virtue, iNum)
@@ -298,7 +315,10 @@ class FindLikeVampires(SutekhPlugin):
     def _update_combo_box(self, oDiscipline, oComboBox, aDisciplines,
                           aSuperior):
         """Update the combo box as required"""
-        iCurNum = int(oComboBox.get_active_text())
+        oModel = oComboBox.get_model()
+        oIter = oComboBox.get_active_iter()
+        sText = oModel.get_value(oIter, 0)
+        iCurNum = int(sText)
         if oDiscipline.get_active():
             # Set to inf
             iMax = len(aDisciplines)
@@ -308,11 +328,11 @@ class FindLikeVampires(SutekhPlugin):
             iMax = len(aSuperior)
             iOldMax = len(aDisciplines)
         # clear combo box
-        for iNum in range(0, iOldMax):
-            oComboBox.remove_text(0)
+        oModel.clear()
         # refill
         for iNum in range(1, iMax + 1):
-            oComboBox.append_text(str(iNum))
+            oIter = oModel.append(None)
+            oModel.set(oIter, 0, '%d' % iNum)
         if iCurNum <= iMax:
             oComboBox.set_active(iCurNum - 1)
         elif iMax >= 2:
