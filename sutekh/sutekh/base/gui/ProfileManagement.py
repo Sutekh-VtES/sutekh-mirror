@@ -90,7 +90,7 @@ class ScrolledProfileList(gtk.Frame):
     # gtk classes aren't old-style, but pylint thinks they are
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
-        super(ScrolledProfileList, self).__init__(None)
+        super(ScrolledProfileList, self).__init__()
         self._oView = ProfileListView(sTitle)
         self._oStore = self._oView.get_model()
         oMyScroll = AutoScrolledWindow(self._oView)
