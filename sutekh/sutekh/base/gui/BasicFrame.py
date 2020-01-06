@@ -25,9 +25,6 @@ class BasicFrame(gtk.Frame):
        setting the active hint.
        """
 
-    aDragTargets = [gtk.TargetEntry('STRING', gtk.TARGET_SAME_APP, 0),
-                    gtk.TargetEntry('text/plain', gtk.TARGET_SAME_APP, 0)]
-
     _cModelType = None
 
     def __init__(self, oMainWindow):
@@ -51,13 +48,11 @@ class BasicFrame(gtk.Frame):
 
         self._bNeedReload = False
 
-        self._oTitle.drag_source_set(
-            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK, self.aDragTargets,
-            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self._oTitle.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        self._oTitle.drag_source_set(gtk.gdk.ModifierType.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
 
-        self._oTitle.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                                   self.aDragTargets,
-                                   gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self._oTitle.drag_source_add_text_targets()
+        self._oTitle.drag_dest_add_text_targets()
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
@@ -110,20 +105,17 @@ class BasicFrame(gtk.Frame):
 
     def set_drop_handler(self, oWidget):
         """Setup the frame drop handler on the widget"""
-        oWidget.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                              self.aDragTargets,
-                              gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oWidget.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        oWidget.drag_dest_add_text_targets()
         oWidget.connect('drag-data-received', self.drag_drop_handler)
-        oWidget.connect('drag-motion', self.drag_motion)
 
     def set_drag_handler(self, oWidget):
         """Enable dragging of the frame via given widget"""
-        oWidget.drag_source_set(
-            gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-            self.aDragTargets,
-            gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        oWidget.drag_source_set(gtk.gdk.ModifierType.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        oWidget.drag_source_add_text_targets()
         oWidget.connect('drag-data-get', self.create_drag_data)
-        oWidget.connect_after('drag_begin', self.make_drag_icon)
+        oWidget.connect_after('drag-begin', self.make_drag_icon)
+        # oWidget.connect('drag-motion', self.drag_motion)
 
     def set_focus_handler(self, oFunc):
         """Set the button press handler for the frame"""
@@ -285,10 +277,12 @@ class BasicFrame(gtk.Frame):
 
            Allows panes to be sapped by dragging 'n dropping."""
         bDragRes = True
-        if not oSelectionData and oSelectionData.format != 8:
+        sData = oSelectionData.get_text()
+        if not sData:
+            # Not valid text
             bDragRes = False
         else:
-            aData = oSelectionData.data.splitlines()
+            aData = sData.splitlines()
             if aData[0] == 'Basic Pane:':
                 if not self.do_swap(aData):
                     bDragRes = False
@@ -303,7 +297,7 @@ class BasicFrame(gtk.Frame):
                          _oTime):
         """Fill in the needed data for drag-n-drop code"""
         sData = 'Basic Pane:\n%s' % self.pane_id
-        oSelectionData.set(oSelectionData.target, 8, sData)
+        oSelectionData.set_text(sData, -1)
 
     # pylint: disable=no-self-use
     # needs to be a method, as children can override this if needed

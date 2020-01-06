@@ -242,12 +242,13 @@ class CardSetView(CardListView):
     # We change the argument names to match our naming convention
     def card_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Handle drag-n-drop events."""
+        sData = oData.get_text()
         bDragRes = True
-        if not oData or oData.format != 8:
+        if not sData:
             # Don't accept invalid data
             bDragRes = False
         else:
-            sSource, aCardInfo = self.split_selection_data(oData.data)
+            sSource, aCardInfo = self.split_selection_data(sData)
             bSkip = False
             if sSource == "Basic Pane:" or sSource == "Card Set:":
                 self._oController.frame.drag_drop_handler(oWidget, oContext,

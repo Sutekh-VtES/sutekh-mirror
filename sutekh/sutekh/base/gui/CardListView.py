@@ -54,21 +54,15 @@ class CardListView(FilteredView):
         # Key combination for searching
 
         # Drag and Drop
-        # Trailing 0 means TARGET_STRING
-        aTargets = [gtk.TargetEntry('STRING', gtk.TARGET_SAME_APP, 0),
-                    gtk.TargetEntry('text/plain', gtk.TARGET_SAME_APP, 0)]
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        self.drag_source_add_text_targets()
 
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                             aTargets,
-                             gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        self.drag_dest_add_text_targets()
 
-        self.drag_dest_set(gtk.DEST_DEFAULT_ALL,
-                           aTargets,
-                           gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-
-        self.connect('drag_data_get', self.drag_card)
-        self.connect('drag_data_delete', self.drag_delete)
-        self.connect('drag_data_received', self.card_drop)
+        self.connect('drag-data-get', self.drag_card)
+        self.connect('drag-data-delete', self.drag_delete)
+        self.connect('drag-data-received', self.card_drop)
         self.bSelectTop = 0
 
     def can_select(self, _oSelection, _oModel, oPath, _bCurrently):
@@ -202,7 +196,7 @@ class CardListView(FilteredView):
                                                      oSelectionData, oInfo,
                                                      oTime)
             return
-        oSelectionData.set(oSelectionData.target, 8, sSelectData)
+        oSelectionData.set_text(sSelectData, -1)
 
     def drag_delete(self, oBtn, oContext):
         """Default drag-delete handler"""
