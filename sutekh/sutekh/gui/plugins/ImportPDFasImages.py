@@ -8,6 +8,9 @@
 
 import os
 
+import pygtkcompat
+pygtkcompat.enable_poppler()
+
 import gtk
 import glib
 import cairo
@@ -263,7 +266,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oDrawArea.set_size_request(self._iScale * CARD_DIM[0],
                                    self._iScale * CARD_DIM[1])
 
-        oDrawArea.connect('expose_event', self._draw_pdf_section)
+        oDrawArea.connect('expose-event', self._draw_pdf_section)
 
         # Import manipulation button area
         oOffsetBox = gtk.HBox()
