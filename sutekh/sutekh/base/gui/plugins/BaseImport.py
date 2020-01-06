@@ -72,7 +72,8 @@ class BaseImport(BasePlugin):
 
         self.oDlg.vbox.pack_start(gtk.Label("URL:"), expand=False)
 
-        self.oUri = gtk.Entry(150)
+        self.oUri = gtk.Entry()
+        self.oUri.set_max_length(150)
         self.oUri.connect("activate", self.handle_response, gtk.RESPONSE_OK)
         self.oDlg.vbox.pack_start(self.oUri, expand=False)
 
@@ -91,7 +92,7 @@ class BaseImport(BasePlugin):
 
         # If there's a 'Guess File Format' option, set it to the first button
         if GUESS_FILE_FORMAT in self.PARSERS:
-            self._oFirstBut = gtk.RadioButton(None, GUESS_FILE_FORMAT, False)
+            self._oFirstBut = gtk.RadioButton(group=None, label=GUESS_FILE_FORMAT)
             self._oFirstBut.set_active(True)
             self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
 
@@ -102,10 +103,10 @@ class BaseImport(BasePlugin):
             if sName == GUESS_FILE_FORMAT:
                 continue
             if self._oFirstBut:
-                oBut = gtk.RadioButton(self._oFirstBut, sName)
+                oBut = gtk.RadioButton(group=self._oFirstBut, label=sName)
             else:
                 # No first button (no 'Guess File Format' case) so add it
-                self._oFirstBut = gtk.RadioButton(None, sName, False)
+                self._oFirstBut = gtk.RadioButton(group=None, label=sName)
                 self._oFirstBut.set_active(True)
                 oBut = self._oFirstBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
