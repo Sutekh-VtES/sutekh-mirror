@@ -23,7 +23,8 @@ class RenameDialog(SutekhDialog):
 
     def __init__(self, sOldName):
         # Do this first, so we get the buttons right
-        self.oEntry = gtk.Entry(MAX_ID_LENGTH)
+        self.oEntry = gtk.Entry()
+        self.oEntry.set_max_length(MAX_ID_LENGTH)
         if sOldName:
             sMsg = ("Card Set %s already exists.\n"
                     "Please choose a new name or choose to replace the"

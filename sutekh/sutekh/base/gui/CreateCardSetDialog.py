@@ -47,7 +47,8 @@ class CreateCardSetDialog(SutekhDialog):
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
         oNameLabel = gtk.Label("Card Set Name : ")
-        self.oName = gtk.Entry(MAX_ID_LENGTH)
+        self.oName = gtk.Entry()
+        self.oName.set_max_length(MAX_ID_LENGTH)
         oAuthorLabel = gtk.Label("Author : ")
         self.oAuthor = gtk.Entry()
         oCommentriptionLabel = gtk.Label("Description : ")
