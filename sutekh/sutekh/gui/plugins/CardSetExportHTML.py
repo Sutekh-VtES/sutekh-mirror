@@ -46,7 +46,7 @@ class CardSetExportHTML(SutekhPlugin):
                                   ("Add links to VTES Monger", 'Monger'),
                                   ("Don't add links in the HTML file",
                                    'None')):
-                oItem = gtk.RadioMenuItem(oGroup, sString)
+                oItem = gtk.RadioMenuItem(group=oGroup, label=sString)
                 if not oGroup:
                     oGroup = oItem
                 oSubMenu.add(oItem)

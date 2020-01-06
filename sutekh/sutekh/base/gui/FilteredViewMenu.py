@@ -95,9 +95,10 @@ class FilteredViewMenu(SutekhMenu):
         oMenu = self.create_submenu(oParentMenu, sTitle)
         oConfig = self._oMainWindow.config_file
 
-        oGroup = gtk.RadioMenuItem(None,
-                                   oConfig.get_profile_option(sType,
-                                                              None, "name"))
+        oGroup = gtk.RadioMenuItem(group=None,
+                                   label=oConfig.get_profile_option(sType,
+                                                                    None,
+                                                                    "name"))
         oGroup.connect("toggled", fCallback, None)
         oMenu.append(oGroup)
 
@@ -126,7 +127,7 @@ class FilteredViewMenu(SutekhMenu):
                 oMenu.remove(oRadio)
 
         for sKey, sName in aProfiles:
-            oRadio = gtk.RadioMenuItem(oGroup, sName)
+            oRadio = gtk.RadioMenuItem(group=oGroup, label=sName)
             oRadio.connect("toggled", fCallback, sKey)
             if sKey == sProfile:
                 oRadio.set_active(True)

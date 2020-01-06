@@ -42,10 +42,10 @@ class LogViewMenu(SutekhMenu):
 
     def _create_filter_list(self, oSubMenu):
         """Create list of 'Filter' radio options."""
-        oAll = gtk.RadioMenuItem(None, "Show all log messages")
-        oInfo = gtk.RadioMenuItem(oAll, "Ignore debugging log messages")
-        oWarn = gtk.RadioMenuItem(oAll, "Also Ignore Info messages")
-        oError = gtk.RadioMenuItem(oAll, "Only show Error log messages")
+        oAll = gtk.RadioMenuItem(group=None, label="Show all log messages")
+        oInfo = gtk.RadioMenuItem(group=oAll, label="Ignore debugging log messages")
+        oWarn = gtk.RadioMenuItem(group=oAll, label="Also Ignore Info messages")
+        oError = gtk.RadioMenuItem(group=oAll, label="Only show Error log messages")
 
         oAll.connect('activate', self._change_log_level, logging.NOTSET)
         oInfo.connect('activate', self._change_log_level, logging.INFO)
