@@ -93,8 +93,10 @@ def create_card_set(oMainWindow):
         sComment = oDialog.get_comment()
         oParent = oDialog.get_parent()
         bInUse = oDialog.get_in_use()
+        sAnnotations = oDialog.get_annotations()
         _oCS = PhysicalCardSet(name=sName, author=sAuthor,
                                comment=sComment, parent=oParent,
+                               annotations=sAnnotations,
                                inuse=bInUse)
     return sName
 
