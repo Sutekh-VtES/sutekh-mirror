@@ -29,21 +29,16 @@ class CardSetManagementView(CardSetsListView):
         # Selecting rows
         self.set_select_single()
 
-        # Drag and Drop
-        aTargets = [gtk.TargetEntry('STRING', 0, 0),      # second 0 means TARGET_STRING
-                    gtk.TargetEntry('text/plain', 0, 0)]  # and here
-
         # Need this so we can drag the pane in the same way as the card list
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK | gtk.gdk.BUTTON3_MASK,
-                             aTargets,
-                             gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.drag_source_set(gtk.gdk.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        self.drag_source_add_text_targets()
 
-        self.enable_model_drag_dest(aTargets,
-                                    gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
+        self.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        self.drag_dest_add_text_targets()
 
-        self.connect('drag_data_get', self.drag_card_set)
-        self.connect('row_activated', self.row_clicked)
-        self.connect('drag_data_received', self.card_set_drop)
+        self.connect('drag-data-get', self.drag_card_set)
+        self.connect('row-activated', self.row_clicked)
+        self.connect('drag-data-received', self.card_set_drop)
 
         self.set_name('card set management view')
 
@@ -70,13 +65,18 @@ class CardSetManagementView(CardSetsListView):
                                                      oTime)
             return
         sData = "\n".join(['Card Set:', sSetName])
-        oSelectionData.set(oSelectionData.target, 8, sData)
+        oSelectionData.set_text(sData, -1)
 
     def card_set_drop(self, oWidget, oContext, iXPos, iYPos, oData, oInfo,
                       oTime):
         """Default drag-n-drop handler."""
         # Pass off to the Frame Handler
-        sSource, aData = self.split_selection_data(oData.data)
+        sData = oData.get_text()
+        if not sData:
+            # Abort
+            oContext.finish(False, False, oTime)
+            return
+        sSource, aData = self.split_selection_data(sData)
         bDragRes = False
         if sSource == "Basic Pane:":
             self._oController.frame.drag_drop_handler(oWidget, oContext,
@@ -86,7 +86,7 @@ class CardSetManagementView(CardSetsListView):
         elif sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
             # Need to do this to avoid headers and such confusing us
-            oPath = self.get_path_at_pointer()
+            oPath = self.get_path_at_pointer(oContext.get_device())
             if oPath:
                 sThisName = aData[1]
                 try:
@@ -115,9 +115,9 @@ class CardSetManagementView(CardSetsListView):
 
     # pylint: enable=too-many-arguments
 
-    def get_path_at_pointer(self):
+    def get_path_at_pointer(self, oDevice):
         """Get the path at the current pointer position"""
-        iXPos, iYPos, _oIgnore = self.get_bin_window().get_pointer()
+        _oWin, iXPos, iYPos, _oMask = self.get_bin_window().get_device_position(oDevice)
         tRes = self.get_path_at_pos(iXPos, iYPos)
         if tRes:
             return tRes[0]
