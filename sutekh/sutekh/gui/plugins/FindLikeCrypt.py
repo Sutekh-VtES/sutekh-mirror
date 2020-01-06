@@ -210,19 +210,13 @@ class FindLikeVampires(SutekhPlugin):
             oDisciplines = gtk.Label("Match Disciplines")
             oSuperior = None
         oDialog.vbox.pack_start(oDisciplines)
-        oComboBox = gtk.ComboBox()
-        oModel = gtk.ListStore(gobject.TYPE_STRING)
-        oComboBox.set_model(oModel)
-        oCell = gtk.CellRendererText()
-        oComboBox.pack_start(oCell, True)
-        oComboBox.add_attribute(oCell, 'text', 0)
+        oComboBox = gtk.ComboBoxText()
         if oSuperior:
             oDialog.vbox.pack_start(oSuperior)
             oDisciplines.connect('toggled', self._update_combo_box,
                                  oComboBox, aDisciplines, aSuperior)
         for iNum in range(1, len(aDisciplines) + 1):
-            oIter = oModel.append(None)
-            oModel.set(oIter, 0, '%d' % iNum)
+            oComboBox.append_text('%d' % iNum)
         if len(aDisciplines) > 1:
             oComboBox.set_active(1)
         else:
@@ -238,8 +232,7 @@ class FindLikeVampires(SutekhPlugin):
             oDialog.destroy()
             return None
         bUseCardSet = oUseCardSet.get_active()
-        oIter = oComboBox.get_active_iter()
-        sText = oModel.get_value(oIter, 0)
+        sText = oComboBox.get_active_text()
         iNum = int(sText)
         bSuperior = oSuperior and oSuperior.get_active()
         if bSuperior:
@@ -273,15 +266,9 @@ class FindLikeVampires(SutekhPlugin):
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
         oDialog.vbox.pack_start(gtk.Label("Match Virtues"))
-        oComboBox = gtk.ComboBox()
-        oModel = gtk.ListStore(gobject.TYPE_STRING)
-        oComboBox.set_model(oModel)
-        oCell = gtk.CellRendererText()
-        oComboBox.pack_start(oCell, True)
-        oComboBox.add_attribute(oCell, 'text', 0)
+        oComboBox = gtk.ComboBoxText()
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
-            oIter = oModel.append(None)
-            oModel.set(oIter, 0, '%d' % iNum)
+            oComboBox.append_text('%d' % iNum)
         if len(self.oSelCard.virtue) > 1:
             oComboBox.set_active(1)
         else:
@@ -299,8 +286,7 @@ class FindLikeVampires(SutekhPlugin):
         bUseCardSet = False
         if oUseCardSet.get_active():
             bUseCardSet = True
-        oIter = oComboBox.get_active_iter()
-        sText = oModel.get_value(oIter, 0)
+        sText = oComboBox.get_active_text()
         iNum = int(sText)
         oVirtueFilter = MultiVirtueFilter([x.fullname for x in
                                            self.oSelCard.virtue])
@@ -315,9 +301,7 @@ class FindLikeVampires(SutekhPlugin):
     def _update_combo_box(self, oDiscipline, oComboBox, aDisciplines,
                           aSuperior):
         """Update the combo box as required"""
-        oModel = oComboBox.get_model()
-        oIter = oComboBox.get_active_iter()
-        sText = oModel.get_value(oIter, 0)
+        sText = oComboBox.get_active_text()
         iCurNum = int(sText)
         if oDiscipline.get_active():
             # Set to inf
@@ -328,11 +312,10 @@ class FindLikeVampires(SutekhPlugin):
             iMax = len(aSuperior)
             iOldMax = len(aDisciplines)
         # clear combo box
-        oModel.clear()
+        oComboBox.remove_all()
         # refill
         for iNum in range(1, iMax + 1):
-            oIter = oModel.append(None)
-            oModel.set(oIter, 0, '%d' % iNum)
+            oComboBox.append_text('%d' % iNum)
         if iCurNum <= iMax:
             oComboBox.set_active(iCurNum - 1)
         elif iMax >= 2:

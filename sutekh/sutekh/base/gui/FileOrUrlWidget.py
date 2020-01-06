@@ -50,7 +50,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         # setup src selector
 
-        self._oSrcCombo = gtk.combo_box_new_text()
+        self._oSrcCombo = gtk.ComboBoxText()
         for sName in sorted(self._dUrls):
             self._oSrcCombo.append_text(sName)
 

@@ -349,15 +349,9 @@ class DisciplineNumberSelect(gtk.HBox):
         self._aSortedDisciplines = aSortedDisciplines
         # Never show more than 5 disciplines here - people can use the
         # discpline list in the combo box if they want more
-        self._oComboBox = gtk.ComboBox()
-        oModel = gtk.ListStore(gobject.TYPE_STRING)
-        self._oComboBox.set_model(oModel)
-        oCell = gtk.CellRendererText()
-        self._oComboBox.pack_start(oCell, True)
-        self._oComboBox.add_attribute(oCell, 'text', 0)
+        self._oComboBox = gtk.ComboBoxText()
         for iNum in range(1, min(5, len(aSortedDisciplines)) + 1):
-            oIter = oModel.append(None)
-            oModel.set(oIter, 0, '%d' % iNum)
+            self._oComboBox.append_text('%d' % iNum)
         self._oComboBox.append_text(self._sUseList)
         self._oComboBox.set_active(1)
         self.pack_start(gtk.Label('Number of Disciplines'))
@@ -372,9 +366,7 @@ class DisciplineNumberSelect(gtk.HBox):
 
     def _combo_changed(self, _oWidget):
         """Toggle the sensitivity of the Discipline select widget as needed"""
-        oModel = self._oComboBox.get_model()
-        oIter = self._oComboBox.get_active_iter()
-        sText = oModel.get_value(oIter, 0)
+        sText = self._oComboBox.get_active_text()
         if sText == self._sUseList:
             self._oDiscWidget.set_sensitive(True)
         else:
@@ -382,9 +374,7 @@ class DisciplineNumberSelect(gtk.HBox):
 
     def get_disciplines(self):
         """Get the list of disciplines to use."""
-        oModel = self._oComboBox.get_model()
-        oIter = self._oComboBox.get_active_iter()
-        sText = oModel.get_value(oIter, 0)
+        sText = self._oComboBox.get_active_text()
         if sText == 'Use list of disciplines':
             aTheseDiscs = self._oDiscWidget.get_selection()
         else:

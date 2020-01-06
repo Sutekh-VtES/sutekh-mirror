@@ -205,7 +205,7 @@ class BaseDrawProbPlugin(BasePlugin):
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
 
         oWidgetBox = gtk.HBox(False, 2)
-        oNumDraws = gtk.combo_box_new_text()
+        oNumDraws = gtk.ComboBoxText()
         iIndex = 0
         for iNum in range(1, self.iMax + 1):
             oNumDraws.append_text(str(iNum))
@@ -214,14 +214,14 @@ class BaseDrawProbPlugin(BasePlugin):
         oNumDraws.set_active(iIndex)
         oNumDraws.connect('changed', self._cols_changed)
 
-        oStepSize = gtk.combo_box_new_text()
+        oStepSize = gtk.ComboBoxText()
         for iNum in range(1, 11):
             oStepSize.append_text(str(iNum))
         oStepSize.set_active(0)
         oStepSize.connect('changed', self._steps_changed)
 
         iIndex = 0
-        oCardToDrawCount = gtk.combo_box_new_text()
+        oCardToDrawCount = gtk.ComboBoxText()
         for iNum in range(1, self.iSelectedCount + 1):
             oCardToDrawCount.append_text(str(iNum))
             if iNum < self.iCardsToDraw:

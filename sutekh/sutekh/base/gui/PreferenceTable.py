@@ -213,15 +213,9 @@ class OptionParsedSpec(BaseParsedSpec):
 
     def create_widget(self):
         """Create a suitable widget (gtk.ComboBox)"""
-        oCombo = gtk.ComboBox()
-        oModel = gtk.ListStore(gobject.TYPE_STRING)
-        oCombo.set_model(oModel)
-        oCell = gtk.CellRendererText()
-        oCombo.pack_start(oCell, True)
-        oCombo.add_attribute(oCell, 'text', 0)
+        oCombo = gtk.ComboBoxText()
         for sValue in self.aArgs:
-            oIter = oModel.append(None)
-            oModel.set(oIter, 0, sValue)
+            oCombo.append_text(sValue)
         return oCombo
 
     def set_value(self, oValue):
