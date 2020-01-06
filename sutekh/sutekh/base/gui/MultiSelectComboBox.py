@@ -16,7 +16,7 @@ from .ScrolledList import ScrolledListView
 def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
     (iXPos, iYPos) = oButton.get_pointer()  # mouse pos relative to button
-    oButtonGeom = oButton.allocation
+    oButtonGeom = oButton.get_allocation()
     return ((iXPos >= 0) and (iYPos >= 0) and
             (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height))
 
@@ -40,8 +40,7 @@ class MultiSelectComboBox(gtk.HBox):
         self._aOldSelection = []
 
         self._oDialog = gtk.Dialog(
-            "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_NO_SEPARATOR |
-            gtk.DIALOG_DESTROY_WITH_PARENT)
+            "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(oScrolled)
@@ -68,7 +67,7 @@ class MultiSelectComboBox(gtk.HBox):
                 sys.platform.startswith("win") and
                 oEvent.type == gtk.gdk.BUTTON_RELEASE):
             # Mouse clicked
-            if oEvent.button == 1:
+            if oEvent.button.button == 1:
                 if mouse_in_button(self._oButton):
                     # Left button
                     self.__hide_list()
@@ -95,8 +94,9 @@ class MultiSelectComboBox(gtk.HBox):
 
         tWinPos = oParent.get_origin()
         # Need coordinates relative to root window
-        tButtonPos = (self._oButton.allocation.x, self._oButton.allocation.y)
-        tShift = (5, self._oButton.allocation.height)
+        oGeom = self._oButton.get_allocation()
+        tButtonPos = (oGeom.x, oGeom.y)
+        tShift = (5, oGeom.height)
 
         tDialogPos = (tWinPos[0] + tButtonPos[0] + tShift[0],
                       tWinPos[1] + tButtonPos[1] + tShift[1])
