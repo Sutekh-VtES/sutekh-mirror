@@ -32,6 +32,28 @@ WHITE_SPACE_REGEX = re.compile("\\s+")
 # set for fast inclusion queries, since we hit this list multiple times
 HTML_HEADING_TAGS = set(('h1', 'h2', 'h3', 'h4', 'h5', 'h6'))
 
+# Scale factors
+# gi doesn't appear to expose the relevant pango constants anymore,
+# so we use the scaling factors described in the documentation
+SCALES = {
+    "xx-small": 1.0 / (1.2 * 1.2 * 1.2),
+    "x-small": 1.0 / (1.2 * 1.2),
+    "small": 1.0 / 1.2,
+    "smaller": 1.0 / 1.2,
+    "medium": 1.0,
+    "large": 1.2,
+    "larger": 1.2,
+    "x-large": 1.2 * 1.2,
+    "xx-large": 1.2 * 1.2 * 1.2,
+}
+
+
+class LocalTextAttributes(object):
+    """Fake attributes to work around gtk3 TextAttributes issues"""
+
+    __slots__ = ('font', 'font_size')
+
+
 # don't throw an exception if no screen during import - we'll catch that later
 if gtk.gdk.screen_get_default() is None:
     SCREEN_RESOLUTION = 0
@@ -87,10 +109,13 @@ class HtmlHandler(HTMLParser.HTMLParser):
 
     def _get_current_attributes(self):
         """Get current attributes."""
-        aAttrs = self._oTextView.get_default_attributes()
-        self._oIter.backward_char()
-        self._oIter.get_attributes(aAttrs)
-        self._oIter.forward_char()
+        # gi's handling of gtk.TextAttribute is a bit wonky, due
+        # to the way gtk3 does TextAttribute updates, so we fake
+        # it by using less efficient logic
+        oTag = self._get_style_tags()[-1]
+        aAttrs = LocalTextAttributes()
+        aAttrs.font = oTag.get_property('font-desc')
+        aAttrs.font_size = oTag.get_property('scale')
         return aAttrs
 
     def _parse_length(self, sValue, bFontRelative, fCallback, *args):
@@ -103,7 +128,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             fFrac = float(sValue[:-1]) / 100
             if bFontRelative:
                 oAttrs = self._get_current_attributes()
-                fFontSize = oAttrs.font.get_size() / pango.SCALE
+                fFontSize = oAttrs.font_size
                 fCallback(fFrac * SCREEN_RESOLUTION * fFontSize, *args)
             else:
                 # CSS says "Percentage values: refer to width of the closest
@@ -121,7 +146,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION, *args)
         elif sValue.endswith('em'):  # ems, the height of the element's font
             oAttrs = self._get_current_attributes()
-            fFontSize = oAttrs.font.get_size() / pango.SCALE
+            fFontSize = oAttrs.font_size
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                       *args)
         elif sValue.endswith('ex'):  # x-height, ~ the height of the letter 'x'
@@ -129,7 +154,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             # This isn't correct, but that doesn't matter for our use
             # case.
             oAttrs = self._get_current_attributes()
-            fFontSize = oAttrs.font.get_size() / pango.SCALE
+            fFontSize = oAttrs.font_size
             fCallback(float(sValue[:-2]) * SCREEN_RESOLUTION * fFontSize,
                       *args)
         elif sValue.endswith('px'):  # pixels
@@ -145,26 +170,12 @@ class HtmlHandler(HTMLParser.HTMLParser):
     def _parse_style_font_size(self, oTag, sValue):
         """Parse the font size attribute"""
         try:
-            iScale = {
-                "xx-small": pango.SCALE_XX_SMALL,
-                "x-small": pango.SCALE_X_SMALL,
-                "small": pango.SCALE_SMALL,
-                "medium": pango.SCALE_MEDIUM,
-                "large": pango.SCALE_LARGE,
-                "x-large": pango.SCALE_X_LARGE,
-                "xx-large": pango.SCALE_XX_LARGE,
-                }[sValue]
+            iScale = SCALES[sValue]
         except KeyError:
             pass
         else:
             oAttrs = self._get_current_attributes()
             oTag.set_property("scale", iScale / oAttrs.font_scale)
-            return
-        if sValue == 'smaller':
-            oTag.set_property("scale", pango.SCALE_SMALL)
-            return
-        if sValue == 'larger':
-            oTag.set_property("scale", pango.SCALE_LARGE)
             return
         self._parse_length(sValue, True, self.__parse_font_size_cb, oTag)
 
@@ -319,7 +330,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
     # Arguments needed by function signature
     def _anchor_event(self, _oTag, _oView, oEvent, _oIter, oHref, oType):
         """Something happened to a link, so see if we need to react."""
-        if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button == 1:
+        if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button.button == 1:
             self._oTextView.emit("url-clicked", oHref, oType)
             return True
         return False
@@ -399,10 +410,10 @@ class HtmlHandler(HTMLParser.HTMLParser):
             oTag.set_property('underline', pango.UNDERLINE_SINGLE)
             if sName == 'h1':
                 oTag.set_property('weight', pango.WEIGHT_HEAVY)
-                oTag.set_property('scale', pango.SCALE_X_LARGE)
+                oTag.set_property('scale', SCALES['x-large'])
             elif sName == 'h2':
                 oTag.set_property('weight', pango.WEIGHT_ULTRABOLD)
-                oTag.set_property('scale', pango.SCALE_LARGE)
+                oTag.set_property('scale', SCALES['large'])
             elif sName == 'h3':
                 oTag.set_property('weight', pango.WEIGHT_BOLD)
         elif sName == 'title':
@@ -417,10 +428,10 @@ class HtmlHandler(HTMLParser.HTMLParser):
         elif sName == 'font':
             oTag = self._oTextBuf.create_tag()
             dFontSize = {
-                '-2': pango.SCALE_X_SMALL,
-                '-1': pango.SCALE_SMALL,
-                '1': pango.SCALE_LARGE,
-                '2': pango.SCALE_X_LARGE,
+                '-2': SCALES['x-small'],
+                '-1': SCALES['small'],
+                '1': SCALES['large'],
+                '2': SCALES['x-large'],
             }
             if 'size' in oAttrs and oAttrs['size'] in dFontSize:
                 oTag.set_property('scale', dFontSize[oAttrs['size']])
@@ -428,7 +439,7 @@ class HtmlHandler(HTMLParser.HTMLParser):
             # indent 2em per list
             oTag = self._oTextBuf.create_tag()
             oTextAttrs = self._get_current_attributes()
-            fFontSize = oTextAttrs.font.get_size() / pango.SCALE
+            fFontSize = oTextAttrs.font_size
             iDepth = len(self._aListCounters)
             oTag.set_property('left-margin', 2.0 * iDepth * SCREEN_RESOLUTION
                               * fFontSize)
@@ -601,12 +612,11 @@ class HTMLTextView(gtk.TextView):
             oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
             self._bChangedCursor = False
 
-    def __motion_notify_event(self, oWidget, _oEvent):
+    def __motion_notify_event(self, oWidget, oEvent):
         """Change the cursor if the pointer is over a link"""
-        iXPos, iYPos, _oIgnore = oWidget.get_window().get_pointer()
-        iXPos, iYPos = oWidget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,
-                                                       iXPos, iYPos)
-        aTags = oWidget.get_iter_at_location(iXPos, iYPos).get_tags()
+        oWin = oWidget.get_window(gtk.TextWindowType.TEXT)
+        _oWin, iXPos, iYPos, _oIgnore = oWin.get_device_position(oEvent.get_device())
+        aTags = oWidget.get_iter_at_location(iXPos, iYPos)[1].get_tags()
         for oTag in aTags:
             if getattr(oTag, 'is_anchor', False):
                 bOverAnchor = True
