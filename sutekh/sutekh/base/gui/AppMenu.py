@@ -227,7 +227,7 @@ class AppMenu(SutekhMenu):
     def _create_rulebook_menu(self):
         """Create the menu for rulebook items"""
         # setup sub menu
-        self.create_menu_item_with_submenu(self, "Rulebook")
+        self.create_menu_item_with_submenu(self, "_Rulebook")
 
     def _create_help_menu(self):
         """Create the menu for help items"""

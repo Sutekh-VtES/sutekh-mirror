@@ -66,13 +66,13 @@ class CardSetMenu(CardListMenu):
     # these methods are called from __init__, so it's OK
     def _create_card_set_menu(self):
         """Create the Actions menu for Card Sets."""
-        oMenu = self.create_submenu(self, 'Actions')
+        oMenu = self.create_submenu(self, '_Actions')
         self.create_menu_item("Edit Card Set _Properties", oMenu,
                               self._edit_properties)
         self.create_menu_item("_Save Card Set to File", oMenu,
                               self._do_export)
         # Submenu for plugins
-        self.create_submenu(oMenu, "Export Card Set")
+        self.create_submenu(oMenu, "_Export Card Set")
 
         oMenu.add(gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
@@ -82,7 +82,7 @@ class CardSetMenu(CardListMenu):
 
     def create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu(self, "Edit")
+        oMenu = self.create_submenu(self, "_Edit")
         self._oEditable = self.create_check_menu_item('Card Set is Editable',
                                                       oMenu,
                                                       self.toggle_editable,

@@ -41,8 +41,7 @@ class SutekhMenu(gtk.MenuBar):
         self._oMainWindow.remove_accel_group(self._oAccelGroup)
         self._bAccelActive = False
         for oMenuLabel in self._dMenuLabels:
-            # get_text() doesn't contain the mnemonics, so this removes them
-            oMenuLabel.set_text(oMenuLabel.get_text())
+            oMenuLabel.set_text(oMenuLabel.get_text().replace('_', ''))
 
     def _add_accel(self, oMenuItem, sAccelKey):
         """Parse a accelerator description & add it to the menu item"""
@@ -56,7 +55,7 @@ class SutekhMenu(gtk.MenuBar):
 
            Create a menu item, connect it to fAction (if not None), and
            add an accelerator if specified."""
-        oMenuItem = gtk.MenuItem(sName)
+        oMenuItem = gtk.MenuItem.new_with_mnemonic(sName)
         if oMenu is not None:
             oMenu.add(oMenuItem)
         if fAction:
@@ -90,8 +89,8 @@ class SutekhMenu(gtk.MenuBar):
         oMenuItem = gtk.MenuItem(sName)
         oMenuLabel = oMenuItem.get_child()
         self._dMenuLabels[oMenuLabel] = oMenuLabel.get_label()
-        # Disable any that mnemonic exist
-        sStrippedName = oMenuItem.get_child().get_text()
+        # Disable any mnemonic's that exist
+        sStrippedName = oMenuItem.get_child().get_text().replace('_', '')
         oMenuLabel.set_text(sStrippedName)
         oMenu = gtk.Menu()
         self._dMenus[sStrippedName] = oMenu

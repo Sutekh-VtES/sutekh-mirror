@@ -32,7 +32,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def create_filter_menu(self):
         """Create the Filter Menu."""
-        oMenu = self.create_submenu(self, "Filter")
+        oMenu = self.create_submenu(self, "F_ilter")
         self.create_menu_item("_Specify Filter", oMenu, self.set_active_filter,
                               '<Ctrl>s')
         self.oApply = self.create_check_menu_item("_Apply Filter", oMenu,
@@ -42,7 +42,7 @@ class FilteredViewMenu(SutekhMenu):
 
     def create_edit_menu(self):
         """Create the 'Edit' menu, and populate it."""
-        oMenu = self.create_submenu(self, "Edit")
+        oMenu = self.create_submenu(self, "_Edit")
         self.add_edit_menu_actions(oMenu)
 
     def set_active_filter(self, _oWidget):
@@ -150,4 +150,4 @@ class CardListMenu(FilteredViewMenu):
 
     def create_analyze_menu(self):
         """Create the Analyze Menu, to be filled in by plugins"""
-        self.create_submenu(self, "Analyze")
+        self.create_submenu(self, "Analy_ze")
