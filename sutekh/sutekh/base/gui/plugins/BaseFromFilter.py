@@ -28,7 +28,7 @@ class BaseFromFilter(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Filter' Menu"""
-        oGenPCS = gtk.MenuItem("Card Set From Filter")
+        oGenPCS = gtk.MenuItem(label="Card Set From Filter")
         oGenPCS.connect("activate", self.activate)
         return ('Filter', oGenPCS)
 

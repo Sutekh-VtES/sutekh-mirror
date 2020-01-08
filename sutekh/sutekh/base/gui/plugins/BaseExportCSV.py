@@ -22,7 +22,7 @@ class BaseExportCSV(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' Menu"""
-        oExport = gtk.MenuItem("Export to CSV")
+        oExport = gtk.MenuItem(label="Export to CSV")
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 

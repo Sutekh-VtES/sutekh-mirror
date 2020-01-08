@@ -105,7 +105,7 @@ class BaseIndependence(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
-        oTest = gtk.MenuItem(self.sMenuName)
+        oTest = gtk.MenuItem(label=self.sMenuName)
         oTest.connect("activate", self.activate)
         return ('Analyze', oTest)
 
@@ -220,10 +220,10 @@ class BaseIndependence(BasePlugin):
                                                             oInfo.iCount,
                                                             iCount))
 
-        oPage = gtk.VBox(False)
+        oPage = gtk.VBox(homogeneous=False)
         oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList),
                                             True), True)
-        oButton = gtk.Button('Create Card Set from this list')
+        oButton = gtk.Button(label='Create Card Set from this list')
         oButton.connect('clicked', self.create_card_set,
                         dMissing)
         oPage.pack_start(oButton, False)

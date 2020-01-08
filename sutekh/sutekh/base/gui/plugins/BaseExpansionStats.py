@@ -57,7 +57,7 @@ class BaseExpansionStats(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oExpStats = gtk.MenuItem(self.sMenuName)
+        oExpStats = gtk.MenuItem(label=self.sMenuName)
         oExpStats.connect("activate", self.activate)
         return ('Analyze', oExpStats)
 
@@ -75,7 +75,7 @@ class BaseExpansionStats(BasePlugin):
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
 
-        self._oStatsVbox = gtk.VBox(False, 0)
+        self._oStatsVbox = gtk.VBox(homogeneous=False, spacing=0)
 
         oDlg.vbox.pack_start(self._oStatsVbox)
         oDlg.set_size_request(600, 400)

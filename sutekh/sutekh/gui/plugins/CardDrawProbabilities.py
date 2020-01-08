@@ -128,9 +128,9 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
     def _get_table_draw_title(self):
         """Set the label for the results tabel"""
         if self.bCrypt:
-            oLabel = gtk.Label('Opening Draw')
+            oLabel = gtk.Label(label='Opening Draw')
         else:
-            oLabel = gtk.Label('Opening Hand')
+            oLabel = gtk.Label(label='Opening Hand')
         return oLabel
 
 

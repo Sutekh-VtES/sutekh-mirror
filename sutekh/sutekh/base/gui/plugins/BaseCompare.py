@@ -91,7 +91,7 @@ class BaseCompare(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        oCompare = gtk.MenuItem(self.sMenuName)
+        oCompare = gtk.MenuItem(label=self.sMenuName)
         oCompare.connect("activate", self.activate)
         return ('Analyze', oCompare)
 
@@ -162,7 +162,7 @@ class BaseCompare(BasePlugin):
 
         def make_page(oList, dCardData):
             """Setup the list + button for the notebook"""
-            oPage = gtk.VBox(False)
+            oPage = gtk.VBox(homogeneous=False)
             oPage.pack_start(AutoScrolledWindow(oList, True), True)
             if dCardData:
                 oButton = gtk.Button('Create Card Set from this list')

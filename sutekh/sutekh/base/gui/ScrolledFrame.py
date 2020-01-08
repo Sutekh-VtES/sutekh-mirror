@@ -40,7 +40,7 @@ class ScrolledFrame(BasicFrame):
 
     def add_parts(self):
         """Add Widget + title widgets to the Frame."""
-        oBox = gtk.VBox(False, 2)
+        oBox = gtk.VBox(homogeneous=False, spacing=2)
         self.set_title(self._sName)
 
         oBox.pack_start(self._oTitle, False, False)

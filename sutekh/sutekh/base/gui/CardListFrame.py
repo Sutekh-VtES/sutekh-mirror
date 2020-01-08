@@ -46,7 +46,7 @@ class CardListFrame(BasicFrame):
 
     def get_toolbar_plugins(self):
         """Register plugins on the frame toolbar."""
-        oBox = gtk.VBox(False, 2)
+        oBox = gtk.VBox(homogeneous=False, spacing=2)
         bInsertToolbar = False
         for oPlugin in self._aPlugins:
             oWidget = oPlugin.get_toolbar_widget()
@@ -70,7 +70,7 @@ class CardListFrame(BasicFrame):
 
     def add_parts(self):
         """Add the elements to the Frame."""
-        oMbox = gtk.VBox(False, 2)
+        oMbox = gtk.VBox(homogeneous=False, spacing=2)
 
         oMbox.pack_start(self._oTitle, False, False)
         oMbox.pack_start(self._oMenu, False, False)

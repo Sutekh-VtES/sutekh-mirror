@@ -50,7 +50,7 @@ class BaseCountCSCards(BasePlugin):
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        self._oTextLabel = gtk.Label(self.TOT_FORMAT % self.dInfo)
+        self._oTextLabel = gtk.Label(label=self.TOT_FORMAT % self.dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % self.dInfo)
         self._oTextLabel.show()
         return self._oTextLabel

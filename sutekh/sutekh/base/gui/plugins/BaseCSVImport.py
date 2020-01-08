@@ -31,7 +31,7 @@ class BaseCSVImport(BasePlugin):
 
     def get_menu_item(self):
         """Overrides method from base class. Register on the 'Import' menu"""
-        oMenuItem = gtk.MenuItem("Import CSV File")
+        oMenuItem = gtk.MenuItem(label="Import CSV File")
         oMenuItem.connect("activate", self.activate)
         return ('Import Card Set', oMenuItem)
 
@@ -71,19 +71,19 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oLabel)
 
         oNameBox = gtk.HBox()
-        oNameBox.pack_start(gtk.Label("Card name:"))
+        oNameBox.pack_start(gtk.Label(label="Card name:"))
         self.oCardNameCombo = self._create_column_selector()
         oNameBox.pack_start(self.oCardNameCombo)
         self.oDlg.vbox.pack_start(oNameBox)
 
         oCountBox = gtk.HBox()
-        oCountBox.pack_start(gtk.Label("Card count:"))
+        oCountBox.pack_start(gtk.Label(label="Card count:"))
         self.oCountCombo = self._create_column_selector()
         oCountBox.pack_start(self.oCountCombo)
         self.oDlg.vbox.pack_start(oCountBox)
 
         oExpansionBox = gtk.HBox()
-        oExpansionBox.pack_start(gtk.Label("Expansion name (optional):"))
+        oExpansionBox.pack_start(gtk.Label(label="Expansion name (optional):"))
         self.oExpansionCombo = self._create_column_selector()
         oExpansionBox.pack_start(self.oExpansionCombo)
         self.oDlg.vbox.pack_start(oExpansionBox)
@@ -98,7 +98,7 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oLabel)
 
         oCardSetNameBox = gtk.HBox()
-        oCardSetNameBox.pack_start(gtk.Label("Card Set Name:"))
+        oCardSetNameBox.pack_start(gtk.Label(label="Card Set Name:"))
         self.oSetNameEntry = gtk.Entry()
         oCardSetNameBox.pack_start(self.oSetNameEntry)
         self.oDlg.vbox.pack_start(oCardSetNameBox)

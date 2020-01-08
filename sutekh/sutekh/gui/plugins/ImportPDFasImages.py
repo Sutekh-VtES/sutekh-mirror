@@ -118,7 +118,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def get_menu_item(self):
         """Add the menu item to the Data Downloads menu.
            """
-        oImport = gtk.MenuItem(self.sMenuName)
+        oImport = gtk.MenuItem(label=self.sMenuName)
         oImport.connect('activate', self.run_import_dialog)
         return [('Data Downloads', oImport)]
 
@@ -144,7 +144,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         # pylint: disable=no-member
         # vbox confuses pylint
-        self.oDlg.vbox.pack_start(gtk.Label("PDF File"), expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label(label="PDF File"), expand=False)
         self.oFileChooser = SutekhFileWidget(self.parent,
                                              gtk.FILE_CHOOSER_ACTION_OPEN)
         self.oFileChooser.add_filter_with_pattern('PDF Files', ['*.pdf'])
@@ -153,7 +153,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
 
         # Choose the expansion for the card set
 
-        self.oDlg.vbox.pack_start(gtk.Label("Expansion"), expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label(label="Expansion"), expand=False)
 
         aExpansions = [x.name for x in Expansion.select()
                        if x.name[:5] != 'Promo'] + ['Promo']
@@ -179,7 +179,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                 iXPos = 0
                 iYPos += 1
 
-        self.oDlg.vbox.pack_start(gtk.Label("Image Size to Use"), expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label(label="Image Size to Use"), expand=False)
         oTable = gtk.Table(len(SCALES) // 2, 2)
         self.oDlg.vbox.pack_start(oTable, expand=False)
         iXPos, iYPos = 0, 0
@@ -283,9 +283,9 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._oYOffset = gtk.SpinButton(oYOffAdj)
         self._oYOffset.set_value(0)
 
-        oOffsetBox.pack_start(gtk.Label("Horizontal Offset : "), False, False)
+        oOffsetBox.pack_start(gtk.Label(label="Horizontal Offset : "), False, False)
         oOffsetBox.pack_start(self._oXOffset, False, False)
-        oOffsetBox.pack_start(gtk.Label("Vertical Offset : "), False, False)
+        oOffsetBox.pack_start(gtk.Label(label="Vertical Offset : "), False, False)
         oOffsetBox.pack_start(self._oYOffset, False, False)
 
         oScaleBox = gtk.HBox()
@@ -300,9 +300,9 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._oYScale = gtk.SpinButton(oYScaleAdj)
         self._oYScale.set_value(CARD_DIM[1])
 
-        oScaleBox.pack_start(gtk.Label("Horizontal Size : "), False, False)
+        oScaleBox.pack_start(gtk.Label(label="Horizontal Size : "), False, False)
         oScaleBox.pack_start(self._oXScale, False, False)
-        oScaleBox.pack_start(gtk.Label("Vertical Size : "), False, False)
+        oScaleBox.pack_start(gtk.Label(label="Vertical Size : "), False, False)
         oScaleBox.pack_start(self._oYScale, False, False)
 
         oApplyButton = gtk.Button('Apply offsets')

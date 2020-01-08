@@ -14,7 +14,7 @@ import zipfile
 import zipimport
 
 import gtk
-from gobject import markup_escape_text
+from glib import markup_escape_text
 from sqlobject import sqlhub
 
 from ..core.DatabaseVersion import DatabaseVersion

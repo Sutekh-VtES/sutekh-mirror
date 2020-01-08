@@ -82,7 +82,7 @@ class BaseCardListCount(BasePlugin):
             dInfo = self._dCardTotals
         else:
             dInfo = self._dExpTotals
-        self._oTextLabel = gtk.Label(self.TOT_FORMAT % dInfo)
+        self._oTextLabel = gtk.Label(label=self.TOT_FORMAT % dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % dInfo)
 
         if self._iMode != self.NO_COUNT:

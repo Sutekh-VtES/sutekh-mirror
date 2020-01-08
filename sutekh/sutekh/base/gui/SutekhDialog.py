@@ -13,7 +13,7 @@ import sys
 import traceback
 
 import gtk
-from gobject import markup_escape_text
+from glib import markup_escape_text
 
 from sutekh.SutekhInfo import SutekhInfo as AppInfo
 
@@ -97,7 +97,7 @@ class DetailDialog(SutekhDialog):
             '%s has encounterd an error' % AppInfo.NAME,
             oButtons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oHBox = gtk.HBox(False, 2)
-        oMessageBox = gtk.VBox(False, 2)
+        oMessageBox = gtk.VBox(homogeneous=False, spacing=2)
         oImage = gtk.Image()
         oImage.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
         oImage.set_alignment(0, 0)

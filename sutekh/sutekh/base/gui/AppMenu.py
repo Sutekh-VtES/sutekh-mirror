@@ -90,7 +90,7 @@ class AppMenu(SutekhMenu):
         """Add the File Preferences menu"""
         self._dMenus["File Preferences"] = oPrefsMenu
 
-        oCheckForUpdates = gtk.CheckMenuItem('Check for Cardlist updates'
+        oCheckForUpdates = gtk.CheckMenuItem(label='Check for Cardlist updates'
                                              ' on startup')
         oCheckForUpdates.set_inconsistent(False)
         if self._oConfig.get_check_for_updates():
@@ -101,7 +101,7 @@ class AppMenu(SutekhMenu):
         oPrefsMenu.add(oCheckForUpdates)
 
         oNameDisplay = gtk.CheckMenuItem(
-            'Use "something ..., the" name display')
+            label='Use "something ..., the" name display')
         oNameDisplay.set_inconsistent(False)
         if self._oConfig.get_postfix_the_display():
             oNameDisplay.set_active(True)
@@ -110,7 +110,7 @@ class AppMenu(SutekhMenu):
         oNameDisplay.connect('activate', self.do_postfix_the_display)
         oPrefsMenu.add(oNameDisplay)
 
-        oSaveOnExit = gtk.CheckMenuItem('Save Pane Set on Exit')
+        oSaveOnExit = gtk.CheckMenuItem(label='Save Pane Set on Exit')
         oSaveOnExit.set_inconsistent(False)
         if self._oConfig.get_save_on_exit():
             oSaveOnExit.set_active(True)
@@ -119,7 +119,7 @@ class AppMenu(SutekhMenu):
         oSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
         oPrefsMenu.add(oSaveOnExit)
 
-        oSavePos = gtk.CheckMenuItem('Save Exact Pane Positions')
+        oSavePos = gtk.CheckMenuItem(label='Save Exact Pane Positions')
         oSavePos.set_inconsistent(False)
         if self._oConfig.get_save_precise_pos():
             oSavePos.set_active(True)
@@ -128,7 +128,7 @@ class AppMenu(SutekhMenu):
         oSavePos.connect('activate', self.do_toggle_save_precise_pos)
         oPrefsMenu.add(oSavePos)
 
-        oSaveWinSize = gtk.CheckMenuItem('Save Window Size')
+        oSaveWinSize = gtk.CheckMenuItem(label='Save Window Size')
         oSaveWinSize.set_inconsistent(False)
         if self._oConfig.get_save_window_size():
             oSaveWinSize.set_active(True)

@@ -32,7 +32,7 @@ class CardSetExportHTML(SutekhPlugin):
     def get_menu_item(self):
         """Register on the Plugins Menu"""
         if self._cModelType == "MainWindow":
-            oPrefs = gtk.MenuItem("Export to HTML preferences")
+            oPrefs = gtk.MenuItem(label="Export to HTML preferences")
             oSubMenu = gtk.Menu()
             oPrefs.set_submenu(oSubMenu)
             oGroup = None
@@ -56,7 +56,7 @@ class CardSetExportHTML(SutekhPlugin):
                 oItem.connect("toggled", self.change_prefs, sVal)
             return ('File Preferences', oPrefs)
 
-        oExport = gtk.MenuItem("Export to HTML")
+        oExport = gtk.MenuItem(label="Export to HTML")
         oExport.connect("activate", self.activate)
         return ('Export Card Set', oExport)
 
@@ -83,7 +83,7 @@ class CardSetExportHTML(SutekhPlugin):
         oDlg.add_filter_with_pattern('HTML Files', ['*.html'])
         # pylint: disable=no-member
         # vbox confuses pylint
-        self.oTextButton = gtk.CheckButton("Include Card _Texts?")
+        self.oTextButton = gtk.CheckButton(label="Include Card _Texts?")
         self.oTextButton.set_active(False)
         oDlg.vbox.pack_start(self.oTextButton, False, False)
         oDlg.show_all()

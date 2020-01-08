@@ -61,9 +61,9 @@ class BaseBackup(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        oBackup = gtk.MenuItem("Save a Full Backup")
+        oBackup = gtk.MenuItem(label="Save a Full Backup")
         oBackup.connect("activate", self.activate_backup)
-        oRestore = gtk.MenuItem("Restore a Full Backup")
+        oRestore = gtk.MenuItem(label="Restore a Full Backup")
         oRestore.connect("activate", self.activate_restore)
 
         return [('Backup', oBackup), ('Backup', oRestore)]

@@ -83,7 +83,7 @@ class PrintProxyPlugin(SutekhPlugin):
         """Register on the 'Actions' Menu"""
         if not self._oImageFrame:
             return None
-        oPrint = gtk.MenuItem("Print Card Set as Proxies")
+        oPrint = gtk.MenuItem(label="Print Card Set as Proxies")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)
 
@@ -213,7 +213,7 @@ class PrintProxyPlugin(SutekhPlugin):
 
     def _add_print_widgets(self, _oOp, dCustomData):
         """Add widgets to the custom options tab"""
-        oVBox = gtk.VBox(False, 2)
+        oVBox = gtk.VBox(homogeneous=False, spacing=2)
 
         oLabel = gtk.Label()
         oLabel.set_markup("<b>Proxy printing Options:</b>")

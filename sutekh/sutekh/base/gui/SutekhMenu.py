@@ -72,7 +72,7 @@ class SutekhMenu(gtk.MenuBar):
 
            Create a check menu item, connect it to fAction (if not None), and
            add an accelerator if specified."""
-        oMenuItem = gtk.CheckMenuItem(sName)
+        oMenuItem = gtk.CheckMenuItem(label=sName)
         oMenu.add(oMenuItem)
         oMenuItem.set_inconsistent(False)
         oMenuItem.set_active(bState)
@@ -86,7 +86,7 @@ class SutekhMenu(gtk.MenuBar):
 
     def create_menu_item_with_submenu(self, oTopLevelMenu, sName):
         """Create a MenuItem and a submenu, returning the menu_item"""
-        oMenuItem = gtk.MenuItem(sName)
+        oMenuItem = gtk.MenuItem(label=sName)
         oMenuLabel = oMenuItem.get_child()
         self._dMenuLabels[oMenuLabel] = oMenuLabel.get_label()
         # Disable any mnemonic's that exist

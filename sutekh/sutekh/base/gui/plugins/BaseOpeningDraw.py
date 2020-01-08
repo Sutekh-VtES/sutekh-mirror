@@ -207,7 +207,7 @@ class BaseOpeningDraw(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oCardDraw = gtk.MenuItem(self.sMenuName)
+        oCardDraw = gtk.MenuItem(label=self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
@@ -350,7 +350,7 @@ class BaseOpeningDraw(BasePlugin):
 
     def _redraw_hand(self):
         """Create a gtk.HBox holding a hand"""
-        oHandBox = gtk.VBox(False, 2)
+        oHandBox = gtk.VBox(homogeneous=False, spacing=2)
         oDrawLabel = gtk.Label()
         oDrawLabel.set_markup('<b>Hand Number %d :</b>' % self.iCurHand)
         oHandBox.pack_start(oDrawLabel, False, False)

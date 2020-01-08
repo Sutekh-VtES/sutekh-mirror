@@ -58,7 +58,7 @@ class BaseImport(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Import' Menu"""
-        oImport = gtk.MenuItem("Import Card Set in other formats")
+        oImport = gtk.MenuItem(label="Import Card Set in other formats")
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
@@ -70,14 +70,14 @@ class BaseImport(BasePlugin):
                                  (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        self.oDlg.vbox.pack_start(gtk.Label("URL:"), expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label(label="URL:"), expand=False)
 
         self.oUri = gtk.Entry()
         self.oUri.set_max_length(150)
         self.oUri.connect("activate", self.handle_response, gtk.RESPONSE_OK)
         self.oDlg.vbox.pack_start(self.oUri, expand=False)
 
-        self.oDlg.vbox.pack_start(gtk.Label("OR"), expand=False)
+        self.oDlg.vbox.pack_start(gtk.Label(label="OR"), expand=False)
 
         self.oFileChooser = SutekhFileWidget(self.parent,
                                              gtk.FILE_CHOOSER_ACTION_OPEN)

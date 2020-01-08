@@ -150,8 +150,8 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         oCryptLabel = gtk.Label()
         oCryptLabel.set_markup(self.aDrawnHands[self.iCurHand - 1].sCrypt)
 
-        oCryptInfoBox = gtk.VBox(False, 0)
-        oHandInfoBox = gtk.VBox(False, 0)
+        oCryptInfoBox = gtk.VBox(homogeneous=False, spacing=0)
+        oHandInfoBox = gtk.VBox(homogeneous=False, spacing=0)
         oHandInfoBox.pack_start(oHandLabel, True, True)
         oMoreCards = gtk.Button('Next 5')
         oMoreCards.connect('clicked', self._more_lib, oHandInfoBox)
@@ -202,7 +202,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
 
     def _redraw_detail_box(self):
         """Fill in the details for the given hand"""
-        oDetailBox = gtk.VBox(False, 2)
+        oDetailBox = gtk.VBox(homogeneous=False, spacing=2)
         oHBox = gtk.HBox(False, 2)
         oHBox.pack_start(fill_frame(
             self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'))

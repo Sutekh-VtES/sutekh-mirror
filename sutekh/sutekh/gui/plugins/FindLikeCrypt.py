@@ -101,7 +101,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        oGenFilter = gtk.MenuItem(self.sMenuName)
+        oGenFilter = gtk.MenuItem(label=self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
@@ -193,7 +193,7 @@ class FindLikeVampires(SutekhPlugin):
                                (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDialog.vbox.pack_start(
-            gtk.Label('Find Vampires like %s' % self.oSelCard.name),
+            gtk.Label(label='Find Vampires like %s' % self.oSelCard.name),
             False, False)
         aDisciplines = [oP.discipline for oP in self.oSelCard.discipline]
         aSuperior = [oP.discipline for oP in self.oSelCard.discipline if
@@ -207,7 +207,7 @@ class FindLikeVampires(SutekhPlugin):
                     group=oDisciplines, label="Match Superior Disciplines")
             oDisciplines.set_active(True)
         else:
-            oDisciplines = gtk.Label("Match Disciplines")
+            oDisciplines = gtk.Label(label="Match Disciplines")
             oSuperior = None
         oDialog.vbox.pack_start(oDisciplines)
         oComboBox = gtk.ComboBoxText()
@@ -222,9 +222,9 @@ class FindLikeVampires(SutekhPlugin):
         else:
             oComboBox.set_active(0)
         oHBox = gtk.HBox(False, 2)
-        oHBox.pack_start(gtk.Label('Use '))
+        oHBox.pack_start(gtk.Label(label='Use '))
         oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(' Disciplines'))
+        oHBox.pack_start(gtk.Label(label=' Disciplines'))
         oDialog.vbox.pack_start(oHBox)
         oDialog.show_all()
         iRes = oDialog.run()
@@ -261,11 +261,11 @@ class FindLikeVampires(SutekhPlugin):
                                (gtk.STOCK_OK, gtk.RESPONSE_OK,
                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         oDialog.vbox.pack_start(
-            gtk.Label('Find Imbued like %s' % self.oSelCard.name),
+            gtk.Label(label='Find Imbued like %s' % self.oSelCard.name),
             False, False)
         oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet)
-        oDialog.vbox.pack_start(gtk.Label("Match Virtues"))
+        oDialog.vbox.pack_start(gtk.Label(label="Match Virtues"))
         oComboBox = gtk.ComboBoxText()
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
             oComboBox.append_text('%d' % iNum)
@@ -274,9 +274,9 @@ class FindLikeVampires(SutekhPlugin):
         else:
             oComboBox.set_active(0)
         oHBox = gtk.HBox(False, 2)
-        oHBox.pack_start(gtk.Label('Use '))
+        oHBox.pack_start(gtk.Label(label='Use '))
         oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(' Virtues'))
+        oHBox.pack_start(gtk.Label(label=' Virtues'))
         oDialog.vbox.pack_start(oHBox)
         oDialog.show_all()
         iRes = oDialog.run()
@@ -352,7 +352,7 @@ class FindLikeVampires(SutekhPlugin):
         oToggle = gtk.CheckButton('Include original card')
         oToggle.connect('toggled', self._update_notebook, oResults)
         oActions.pack_start(oToggle)
-        oCreateCardSet = gtk.Button('Create card set from selection')
+        oCreateCardSet = gtk.Button(label='Create card set from selection')
         oCreateCardSet.connect('clicked', self._make_cs, oResults)
         oActions.pack_start(oCreateCardSet)
         oResults.vbox.pack_start(oActions, expand=False)

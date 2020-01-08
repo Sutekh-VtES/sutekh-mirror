@@ -7,7 +7,7 @@
 """Base class for Sutekh Frames"""
 
 import gtk
-import gobject
+import glib
 import cairo
 
 from .MessageBus import MessageBus, DATABASE_MSG
@@ -37,7 +37,7 @@ class BasicFrame(gtk.Frame):
         # Ensure new panes aren't completely hidden
 
         self._oTitle = gtk.EventBox()
-        self._oTitleLabel = gtk.Label('Blank Frame')
+        self._oTitleLabel = gtk.Label(label='Blank Frame')
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.add(self._oTitleLabel)
         # Allows setting background colours for title easily
@@ -97,7 +97,7 @@ class BasicFrame(gtk.Frame):
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
-        self._oTitleLabel.set_markup(gobject.markup_escape_text(sTitle))
+        self._oTitleLabel.set_markup(glib.markup_escape_text(sTitle))
 
     def set_id(self, iNewId):
         """Set the id of the pane to the correct value"""
@@ -206,7 +206,7 @@ class BasicFrame(gtk.Frame):
 
     def add_parts(self):
         """Add the basic widgets (title, & placeholder) to the frame."""
-        oMbox = gtk.VBox(False, 2)
+        oMbox = gtk.VBox(homogeneous=False, spacing=2)
 
         oMbox.pack_start(self._oTitle, False, False)
         # Blanks view placeholder fills everything it can

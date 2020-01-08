@@ -13,7 +13,7 @@ import pygtk
 # This needs to be before we import gtk
 pygtk.require('2.0')
 import gtk
-import gobject
+import glib
 
 from .MainToolbar import MainToolbar
 from .BasicFrame import BasicFrame
@@ -28,7 +28,7 @@ class MultiPaneWindow(gtk.Window):
     # pylint: disable=property-on-old-class
     # gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
-        super(MultiPaneWindow, self).__init__(gtk.WINDOW_TOPLEVEL)
+        super(MultiPaneWindow, self).__init__(type=gtk.WINDOW_TOPLEVEL)
         self.set_border_width(2)
 
         # This always increments when panes are added, so the number is unique
@@ -57,7 +57,7 @@ class MultiPaneWindow(gtk.Window):
         """Setup the intial vbox and connect the key_press event"""
         self._oToolbar = MainToolbar(self)
 
-        self._oVBox = gtk.VBox(False, 1)
+        self._oVBox = gtk.VBox(homogeneous=False, spacing=1)
         if self._oMenu:
             self._oVBox.pack_start(self._oMenu, False, False)
         self._oVBox.pack_start(self._oToolbar, False, False)
@@ -104,7 +104,7 @@ class MultiPaneWindow(gtk.Window):
             # done with the current main_loop iteration.
             # In most situations, this is will be enough, and we have
             # additional protections for the complex cases.
-            gobject.timeout_add(30, self.do_all_queued_reloads)
+            glib.timeout_add(30, self.do_all_queued_reloads)
 
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
@@ -116,7 +116,7 @@ class MultiPaneWindow(gtk.Window):
             # This workaround avoids triggering "database locked" errors
             # when updating sqlite DBs on some systems, but it's a good
             # idea to avoid reloading during a update on any system.
-            gobject.timeout_add(100, self.do_all_queued_reloads)
+            glib.timeout_add(100, self.do_all_queued_reloads)
             return
         self._bQueue = False
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):

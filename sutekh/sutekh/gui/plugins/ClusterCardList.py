@@ -51,7 +51,7 @@ class ClusterCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        oCluster = gtk.MenuItem("Cluster Cards")
+        oCluster = gtk.MenuItem(label="Cluster Cards")
         oCluster.connect("activate", self.activate)
         return ('Analyze', oCluster)
 
@@ -125,7 +125,7 @@ class ClusterCardList(SutekhPlugin):
 
             for iProp, sName in enumerate(aPropNames):
                 if iProp % iPropsPerCol == 0:
-                    oVbx = gtk.VBox(False, 0)
+                    oVbx = gtk.VBox(homogeneous=False, spacing=0)
                     oHbx.pack_start(oVbx)
 
                 oBut = gtk.CheckButton(sName)
@@ -141,7 +141,7 @@ class ClusterCardList(SutekhPlugin):
         """Populate a tab on the notebook with the parameters and options for
            the clustering algorithm.
            """
-        oVbx = gtk.VBox(False, 0)
+        oVbx = gtk.VBox(homogeneous=False, spacing=0)
 
         # K-Means is the only clustering solution for the moment
         oHeading = gtk.Label()
@@ -149,7 +149,7 @@ class ClusterCardList(SutekhPlugin):
         oVbx.pack_start(oHeading, False, False, 5)  # top align
 
         # Number of iterations
-        oNumIterLabel = gtk.Label("Number of Iterations:")
+        oNumIterLabel = gtk.Label(label="Number of Iterations:")
         self._oNumIterSpin = gtk.SpinButton()
         self._oNumIterSpin.set_range(1, 50)
         self._oNumIterSpin.set_increments(1, 10)
@@ -166,7 +166,7 @@ class ClusterCardList(SutekhPlugin):
         oVbx.pack_start(oHbox, False)
 
         # Number of clusters
-        oNumClustersLabel = gtk.Label("Number of Clusters:")
+        oNumClustersLabel = gtk.Label(label="Number of Clusters:")
         self._oNumClustersSpin = gtk.SpinButton()
         self._oNumClustersSpin.set_range(2, 50)
         self._oNumClustersSpin.set_increments(1, 10)
@@ -214,8 +214,8 @@ class ClusterCardList(SutekhPlugin):
     def _make_results_section(self):
         """Create a widget in the notebook which can be used to display
            the clustering results."""
-        oVbx = gtk.VBox(False, 0)
-        self._oResultsVbox = gtk.VBox(False, 0)
+        oVbx = gtk.VBox(homogeneous=False, spacing=0)
+        self._oResultsVbox = gtk.VBox(homogeneous=False, spacing=0)
 
         # Results Heading
         oHeading = gtk.Label()
@@ -223,7 +223,7 @@ class ClusterCardList(SutekhPlugin):
         oVbx.pack_start(oHeading, False)  # top align
 
         # No Results Yet
-        oLabel = gtk.Label("No results yet.")
+        oLabel = gtk.Label(label="No results yet.")
         self._oResultsVbox.pack_start(oLabel)
         oVbx.pack_start(self._oResultsVbox)
 

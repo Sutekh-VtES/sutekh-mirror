@@ -138,7 +138,7 @@ class BaseDrawProbPlugin(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oCardDraw = gtk.MenuItem(self.sMenuName)
+        oCardDraw = gtk.MenuItem(label=self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
@@ -242,7 +242,7 @@ class BaseDrawProbPlugin(BasePlugin):
         oWidgetBox.pack_start(gtk.Label(' : '))
         oWidgetBox.pack_start(oRecalcButton)
 
-        oDescLabel = gtk.Label("Columns are number of draws (X)\n"
+        oDescLabel = gtk.Label(label="Columns are number of draws (X)\n"
                                "rows are the number of cards (Y)\n"
                                "For the first row (0 cards), the "
                                "entry is the possiblity of "
@@ -258,7 +258,7 @@ class BaseDrawProbPlugin(BasePlugin):
                                "starting draw")
 
         oTitleLabel = gtk.Label('Draw results :')
-        oResultsBox = gtk.VBox(False, 2)
+        oResultsBox = gtk.VBox(homogeneous=False, spacing=2)
         oResultsBox.pack_start(oTitleLabel, False, False)
 
         oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,

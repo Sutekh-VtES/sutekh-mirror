@@ -234,7 +234,7 @@ class StarterInfoPlugin(SutekhPlugin):
         oCardTextView = self.parent.card_text_pane.view
         oCardTextView.text_buffer.add_list_tag('starters')
 
-        self.oToggle = gtk.CheckMenuItem("Show Starter Information")
+        self.oToggle = gtk.CheckMenuItem(label="Show Starter Information")
         self.oToggle.connect('toggled', self._toggle_starter)
         self.oToggle.set_active(False)
         if self.check_enabled():
@@ -243,7 +243,7 @@ class StarterInfoPlugin(SutekhPlugin):
                 self.oToggle.set_active(True)
         else:
             self.oToggle.set_sensitive(False)
-        oDownload = gtk.MenuItem("Download starter decks")
+        oDownload = gtk.MenuItem(label="Download starter decks")
         oDownload.connect('activate', self.do_download)
         return [('Preferences', self.oToggle), ('Data Downloads', oDownload)]
 

@@ -132,7 +132,7 @@ class RulebookPlugin(SutekhPlugin):
             self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
             self.set_config_item('rulebook path', self._sPrefsPath)
 
-        oConfigMenuItem = gtk.MenuItem("Download Rulebook Files")
+        oConfigMenuItem = gtk.MenuItem(label="Download Rulebook Files")
         oConfigMenuItem.connect("activate", self.config_activate)
 
         aMenuList = [('Data Downloads', oConfigMenuItem)]
@@ -148,11 +148,11 @@ class RulebookPlugin(SutekhPlugin):
            """
         aItems = []
         for sFilename, sTitle in self._read_index():
-            oItem = gtk.MenuItem(sTitle)
+            oItem = gtk.MenuItem(label=sTitle)
             oItem.connect("activate", self.rulebook_activate, sFilename)
             aItems.append(oItem)
         if not aItems:
-            oItem = gtk.MenuItem('No rulebooks')
+            oItem = gtk.MenuItem(label='No rulebooks')
             oItem.set_sensitive(False)
             aItems.append(oItem)
         self._oFirstMenuItem = aItems[0]

@@ -68,7 +68,7 @@ class ImportExportBase(SutekhDialog):
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
 
         self.vbox.pack_start(
-            gtk.Label("%s ..." % (sSourcePhrase,)), False, False)
+            gtk.Label(label="%s ..." % (sSourcePhrase,)), False, False)
         self.vbox.pack_start(self._oAsDeckButton, False, False)
         self.vbox.pack_start(self._oAsInvButton, False, False)
 
@@ -86,7 +86,7 @@ class ImportExportBase(SutekhDialog):
         self._oUrlEntry.append_text(SecretLibrary.SL_API_URL)
         self._oUrlEntry.set_active(0)
 
-        self.vbox.pack_start(gtk.Label("Secret Library API URL"), False, False)
+        self.vbox.pack_start(gtk.Label(label="Secret Library API URL"), False, False)
         self.vbox.pack_start(self._oUrlEntry, False, False)
 
         # Username
@@ -95,7 +95,7 @@ class ImportExportBase(SutekhDialog):
         if sUsername:
             self._oUsernameEntry.set_text(sUsername)
 
-        self.vbox.pack_start(gtk.Label("Username"), False, False)
+        self.vbox.pack_start(gtk.Label(label="Username"), False, False)
         self.vbox.pack_start(self._oUsernameEntry)
 
         # Password
@@ -105,7 +105,7 @@ class ImportExportBase(SutekhDialog):
         if sPassword:
             self._oPasswordEntry.set_text(sPassword)
 
-        self.vbox.pack_start(gtk.Label("Password"), False, False)
+        self.vbox.pack_start(gtk.Label(label="Password"), False, False)
         self.vbox.pack_start(self._oPasswordEntry)
 
     # pylint: enable=attribute-defined-outside-init
@@ -158,7 +158,7 @@ class ImportDialog(ImportExportBase):
 
         self._oDeckId = gtk.Entry()
         aDeckWidgets = [
-            gtk.Label("Deck Id Number"),
+            gtk.Label(label="Deck Id Number"),
             self._oDeckId,
         ]
 
@@ -236,11 +236,11 @@ class SecretLibrary(SutekhPlugin):
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
         if self.model is None:
-            oMenuItem = gtk.MenuItem("Import from Secret Library")
+            oMenuItem = gtk.MenuItem(label="Import from Secret Library")
             oMenuItem.connect("activate", self.make_import_dialog)
             sSection = 'Import Card Set'
         else:
-            oMenuItem = gtk.MenuItem("Export to Secret Library")
+            oMenuItem = gtk.MenuItem(label="Export to Secret Library")
             oMenuItem.connect("activate", self.make_export_dialog)
             sSection = 'Export Card Set'
 

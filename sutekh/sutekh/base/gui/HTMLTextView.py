@@ -583,7 +583,7 @@ class HTMLTextView(gtk.TextView):
     """TextView subclass to display HTML"""
     __gtype_name__ = 'HTMLTextView'
     __gsignals__ = {
-        'url-clicked': (gobject.SIGNAL_RUN_LAST, None, (str, str)),
+        'url-clicked': (gobject.SignalFlags.RUN_LAST, None, (str, str)),
         # href, type
     }
 

@@ -203,7 +203,7 @@ class BaseImageFrame(BasicFrame):
     def __init__(self, oImagePlugin):
         super(BaseImageFrame, self).__init__(oImagePlugin.parent)
         self._oImagePlugin = oImagePlugin
-        oVBox = gtk.VBox(False, 2)
+        oVBox = gtk.VBox(homogeneous=False, spacing=2)
         oBox = gtk.EventBox()
         self.oExpPrintLabel = gtk.Label()
         oVBox.pack_start(self.oExpPrintLabel, False, False)
@@ -785,15 +785,15 @@ class BaseImagePlugin(BasePlugin):
            """
         self.init_image_frame()
         # Add listener
-        self._oReplaceItem = gtk.MenuItem("Replace with Card Image Frame")
+        self._oReplaceItem = gtk.MenuItem(label="Replace with Card Image Frame")
         self._oReplaceItem.connect("activate", self.replace_pane)
 
-        self._oAddItem = gtk.MenuItem("Add Card Image Frame")
+        self._oAddItem = gtk.MenuItem(label="Add Card Image Frame")
         self._oAddItem.connect("activate", self.add_pane)
         self.parent.add_to_menu_list('Card Image Frame',
                                      self.add_image_frame_active)
         self._oConfigMenuItem = gtk.MenuItem(
-            "Download or Configure Card Images")
+            label="Download or Configure Card Images")
         self._oConfigMenuItem.connect("activate", self.config_activate)
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images

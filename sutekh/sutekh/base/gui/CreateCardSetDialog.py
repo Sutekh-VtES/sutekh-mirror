@@ -46,18 +46,18 @@ class CreateCardSetDialog(SutekhDialog):
             (gtk.STOCK_OK, gtk.RESPONSE_OK,
              gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        oNameLabel = gtk.Label("Card Set Name : ")
+        oNameLabel = gtk.Label(label="Card Set Name : ")
         self.oName = gtk.Entry()
         self.oName.set_max_length(MAX_ID_LENGTH)
-        oAuthorLabel = gtk.Label("Author : ")
+        oAuthorLabel = gtk.Label(label="Author : ")
         self.oAuthor = gtk.Entry()
-        oCommentriptionLabel = gtk.Label("Description : ")
+        oCommentriptionLabel = gtk.Label(label="Description : ")
         self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
                                                               'comment')
-        oParentLabel = gtk.Label("This card set is a subset of : ")
+        oParentLabel = gtk.Label(label="This card set is a subset of : ")
         self.oParentList = CardSetsListView(None, self)
         self.oParentList.set_size_request(100, 200)
-        oAnnotateLabel = gtk.Label("Annotations : ")
+        oAnnotateLabel = gtk.Label(label="Annotations : ")
         self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
                                                                 'annotations')
 

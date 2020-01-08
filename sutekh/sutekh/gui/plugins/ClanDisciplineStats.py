@@ -62,7 +62,7 @@ class ClanDisciplineStats(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oClanStats = gtk.MenuItem(self.sMenuName)
+        oClanStats = gtk.MenuItem(label=self.sMenuName)
         oClanStats.connect("activate", self.activate)
         return ('Analyze', oClanStats)
 
@@ -80,7 +80,7 @@ class ClanDisciplineStats(SutekhPlugin):
         oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
 
-        self._oStatsVbox = gtk.VBox(False, 0)
+        self._oStatsVbox = gtk.VBox(homogeneous=False, spacing=0)
 
         # pylint: disable=no-member
         # vbox methods not seen

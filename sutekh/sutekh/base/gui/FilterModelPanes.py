@@ -6,6 +6,7 @@
 
 """Handle the panes for the filter editor"""
 
+import glib
 import gobject
 import gtk
 import pango
@@ -149,9 +150,9 @@ class FilterValuesBox(gtk.VBox):
         self._oParent = oDialog
         self._sFilterType = sFilterType
         self._oEmptyWidget.pack_start(
-            gtk.Label('Select an active\nfilter element'), expand=False)
+            gtk.Label(label='Select an active\nfilter element'), expand=False)
         self._oNoneWidget.pack_start(
-            gtk.Label('No values for this filter'), expand=False)
+            gtk.Label(label='No values for this filter'), expand=False)
         # Handle removing none file elements
         self._set_drop_for_widget(self._oNoneWidget)
         self._oFilter = None
@@ -160,9 +161,9 @@ class FilterValuesBox(gtk.VBox):
         self._oLastFilter = None
         oCheckBox = gtk.HBox()
 
-        self._oDisable = gtk.CheckButton('Disable (Ctrl-space)')
-        self._oNegate = gtk.CheckButton('Negate (Alt-space)')
-        self._oDelete = gtk.Button('Delete Filter or Value (del)')
+        self._oDisable = gtk.CheckButton(label='Disable (Ctrl-space)')
+        self._oNegate = gtk.CheckButton(label='Negate (Alt-space)')
+        self._oDelete = gtk.Button(label='Delete Filter or Value (del)')
 
         add_accel_to_button(self._oDisable, "<Ctl>space", oDialog.accel_group)
         add_accel_to_button(self._oNegate, "<Alt>space", oDialog.accel_group)
@@ -223,7 +224,7 @@ class FilterValuesBox(gtk.VBox):
         oFilterTypes.view.connect('key-press-event', self.key_press, oFilter,
                                   'Filter Type')
         self._oWidget.pack_start(oFilterTypes, expand=False)
-        self._oWidget.pack_start(gtk.Label('Or Drag Filter Element'),
+        self._oWidget.pack_start(gtk.Label(label='Or Drag Filter Element'),
                                  expand=False)
         oSubFilterList = FilterEditorToolbar(self._sFilterType)
         oSubFilterList.connect('key-press-event', self.key_press, oFilter,
@@ -277,7 +278,7 @@ class FilterValuesBox(gtk.VBox):
         """Create a text entry widget"""
         self._oWidget = gtk.VBox()
         self._set_drop_for_widget(self._oWidget)
-        self._oWidget.pack_start(gtk.Label('Enter Text'), expand=False)
+        self._oWidget.pack_start(gtk.Label(label='Enter Text'), expand=False)
         oEntry = gtk.Entry()
         self._oWidget.pack_start(oEntry, expand=False)
         if oFilter.aCurValues:
@@ -582,8 +583,8 @@ class BoxModelPopupMenu(gtk.Menu):
 
     def __init__(self, oBoxModelEditor):
         super(BoxModelPopupMenu, self).__init__()
-        self._oDis = gtk.MenuItem("Disable / Enable Filter")
-        self._oNeg = gtk.MenuItem("Negate Filter Element")
+        self._oDis = gtk.MenuItem(label="Disable / Enable Filter")
+        self._oNeg = gtk.MenuItem(label="Negate Filter Element")
         self._oDel = gtk.MenuItem("Delete filter or value")
 
         self._oDis.connect("activate", oBoxModelEditor.toggle_disabled)
@@ -617,7 +618,7 @@ class FilterBoxModelStore(gtk.TreeStore):
             if aValues:
                 for sValue in aValues:
                     self.append(oFilterIter,
-                                (gobject.markup_escape_text(sValue), None,
+                                (glib.markup_escape_text(sValue), None,
                                  oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
@@ -625,18 +626,18 @@ class FilterBoxModelStore(gtk.TreeStore):
             if aFrom:
                 for sValue in aFrom:
                     self.append(oFilterIter,
-                                (gobject.markup_escape_text(sValue), None,
+                                (glib.markup_escape_text(sValue), None,
                                  oColour))
             else:
                 self.append(oFilterIter, (self.NO_VALUE, None, oColour))
         elif oModel.aCurValues and oModel.aValues:
             for sValue in oModel.aCurValues:
                 self.append(oFilterIter,
-                            (gobject.markup_escape_text(sValue),
+                            (glib.markup_escape_text(sValue),
                              None, oColour))
         elif oModel.aCurValues:
             self.append(oFilterIter,
-                        (gobject.markup_escape_text(oModel.aCurValues[0]),
+                        (glib.markup_escape_text(oModel.aCurValues[0]),
                          None, oColour))
         elif oModel.iValueType == oModel.NONE:
             self.append(oFilterIter, (self.NONE_VALUE, None, oColour))
@@ -724,7 +725,7 @@ class FilterBoxModelStore(gtk.TreeStore):
                 oChild = self._add_list_iter(iPos, iIndex, oSelectIter,
                                              oCurIter)
                 if sValue is not None:
-                    self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                    self.set(oChild, 0, glib.markup_escape_text(sValue),
                              1, None, 2, self.BLACK)
                 else:
                     self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
@@ -741,7 +742,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         for sValue in aCounts:
             oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
             if sValue is not None:
-                self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                self.set(oChild, 0, glib.markup_escape_text(sValue),
                          1, None, 2, self.BLACK)
             else:
                 self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
@@ -752,7 +753,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         for sValue in aNames:
             oChild = self._add_list_iter(iPos, iIndex, oSelectIter, oCurIter)
             if sValue is not None:
-                self.set(oChild, 0, gobject.markup_escape_text(sValue),
+                self.set(oChild, 0, glib.markup_escape_text(sValue),
                          1, None, 2, self.BLACK)
             else:
                 self.set(oChild, 0, self.NO_VALUE, 1, None, 2, self.BLACK)
@@ -769,7 +770,7 @@ class FilterBoxModelStore(gtk.TreeStore):
         if not sText:
             sText = self.NO_VALUE
         else:
-            sText = gobject.markup_escape_text(sText)
+            sText = glib.markup_escape_text(sText)
         self.set(oChild, 0, sText, 1, None)
         return self.get_path(oChild)
 

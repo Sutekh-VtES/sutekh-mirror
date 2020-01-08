@@ -6,7 +6,7 @@
 """gtk.TreeModel class the card set list."""
 
 import gtk
-import gobject
+import glib
 from ..core.BaseTables import PhysicalCardSet
 from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.BaseFilters import NullFilter
@@ -72,7 +72,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def _format_set(self, oSet):
         """Format the card set name for display"""
-        sMarkup = gobject.markup_escape_text(oSet.name)
+        sMarkup = glib.markup_escape_text(oSet.name)
         if oSet.name in self._aExcludedSet:
             sMarkup = '<span foreground="grey">%s</span>' % sMarkup
         elif hasattr(self._oMainWin, 'find_cs_pane_by_set_name') and \

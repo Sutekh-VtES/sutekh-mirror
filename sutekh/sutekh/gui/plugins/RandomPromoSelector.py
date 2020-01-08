@@ -44,7 +44,7 @@ class RandomPromoDialog(SutekhDialog):
         self._oResultsBuffer = gtk.TextBuffer()
 
         oHbox = gtk.HBox()
-        oHbox.pack_start(gtk.Label("Cards per group:"), expand=False,
+        oHbox.pack_start(gtk.Label(label="Cards per group:"), expand=False,
                          padding=5)
         oHbox.pack_start(self._oCardsPerGroup, expand=False)
         # pylint: disable=no-member
@@ -52,15 +52,15 @@ class RandomPromoDialog(SutekhDialog):
         self.vbox.pack_start(oHbox, expand=False)
 
         oHbox = gtk.HBox()
-        oHbox.pack_start(gtk.Label("Number of groups:"), expand=False,
+        oHbox.pack_start(gtk.Label(label="Number of groups:"), expand=False,
                          padding=5)
         oHbox.pack_start(self._oNumberOfGroups, expand=False)
         self.vbox.pack_start(oHbox, expand=False)
 
-        oResampleButton = gtk.Button("Resample")
+        oResampleButton = gtk.Button(label="Resample")
         self.vbox.pack_start(oResampleButton, expand=False)
 
-        self.vbox.pack_start(gtk.Label("Groups:"), expand=False)
+        self.vbox.pack_start(gtk.Label(label="Groups:"), expand=False)
         oResults = gtk.TextView(self._oResultsBuffer)
         oResults.set_editable(False)
         self.vbox.pack_start(AutoScrolledWindow(oResults))
@@ -104,7 +104,7 @@ class RandomPromoSelector(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' menu"""
-        oCardDraw = gtk.MenuItem("Generate random groups of cards")
+        oCardDraw = gtk.MenuItem(label="Generate random groups of cards")
         oCardDraw.connect("activate", self.activate)
         return ('Actions', oCardDraw)
 

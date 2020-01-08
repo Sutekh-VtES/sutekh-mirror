@@ -165,7 +165,7 @@ class ReplacementTreeView(gtk.TreeView):
            fClicked."""
         oCell = CellRendererSutekhButton(bShowIcon=True)
         oCell.load_icon(oIcon, self)
-        oLabel = gtk.Label(sLabel)
+        oLabel = gtk.Label(label=sLabel)
         oColumn = gtk.TreeViewColumn("", oCell)
         oColumn.set_widget(oLabel)
         oColumn.set_fixed_width(22)
@@ -508,13 +508,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
 
-        oMesgLabel1 = gtk.Label(sLabelText)
+        oMesgLabel1 = gtk.Label(label=sLabelText)
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
 
         oHBox = gtk.HBox()
         oUnknownDialog.vbox.pack_start(oHBox, True, True)
 
-        oMesgLabel2 = gtk.Label("OK creates the card set, Cancel "
+        oMesgLabel2 = gtk.Label(label="OK creates the card set, Cancel "
                                 "aborts the creation of the card set")
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
@@ -678,11 +678,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 dPrintingCards[sKey].append(oCard.abstractCard.name)
 
         oMesgLabel1 = gtk.Label(
-            "While importing %s\n"
+            label="While importing %s\n"
             "The following expansions and printings could not be found:\n"
             "Choose how to handle these printings?\n" % (sInfo))
         oMesgLabel2 = gtk.Label(
-            "OK continues the card set creation process, "
+            label="OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
 
         oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
@@ -699,7 +699,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 if tExpPrint in dCardExpansions[sCard]:
                     aCards.append('%s [%s]' % (sCard, sPrintInfo))
             oBox = gtk.HBox()
-            oLabel = gtk.Label("%s is Unknown: " % sPrintInfo)
+            oLabel = gtk.Label(label="%s is Unknown: " % sPrintInfo)
             oBox.pack_start(oLabel)
 
             oPopup = gtk.Button('Show cards')
@@ -707,7 +707,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                            '\n'.join(sorted(aCards)), sPrintInfo)
             oBox.pack_start(oPopup)
 
-            oLabel2 = gtk.Label("Replace with ")
+            oLabel2 = gtk.Label(label="Replace with ")
             oBox.pack_start(oLabel2)
 
             oSelector = gtk.combo_box_new_text()
@@ -751,7 +751,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             "Cards with unknown expansion and print: %s" % sPrint, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oLabel = gtk.Label(sCardText)
+        oLabel = gtk.Label(label=sCardText)
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()
@@ -765,12 +765,12 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         if sNewName == NO_EXP_AND_PRINT or sNewName is None:
             # No cards to show, so do nothing
             sTitle = "No Expansion Selected"
-            oLabel = gtk.Label('No Expansion selected')
+            oLabel = gtk.Label(label='No Expansion selected')
         else:
             sTitle = "Cards with expansion %s" % sNewName
             # Show all cards with the given printing
             aCards = dPrintingCards[sNewName]
-            oLabel = gtk.Label('\n'.join(sorted(aCards)))
+            oLabel = gtk.Label(label='\n'.join(sorted(aCards)))
         oCardDialog = SutekhDialog(
             sTitle, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,

@@ -15,7 +15,7 @@ class CustomDragIconView(gtk.TreeView):
 
     def __init__(self, oModel):
         self._oModel = oModel
-        super(CustomDragIconView, self).__init__(self._oModel)
+        super(CustomDragIconView, self).__init__(model=self._oModel)
 
         # Selecting rows
         self._oSelection = self.get_selection()

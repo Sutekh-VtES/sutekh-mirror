@@ -9,6 +9,7 @@ from logging import Logger
 
 import gtk
 import gobject
+import glib
 
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,
@@ -54,7 +55,7 @@ class ZipFileDirStore(gtk.TreeStore):
                 sParent = dEscapedList[sEntry][3]
                 if sParent:
                     # Need escaped version for comparisons
-                    sParent = gobject.markup_escape_text(sParent)
+                    sParent = glib.markup_escape_text(sParent)
                 oIter = None
                 if sParent in dAdded:
                     oParIter = dAdded[sParent]
@@ -100,7 +101,7 @@ class SelectZipFileContents(SutekhDialog):
                            self.dEscapedList)
         oUnSelectAll.connect('clicked', _set_selected_rows, self.oScrolledList,
                              [])
-        oSelectButtons = gtk.VBox(False, 2)
+        oSelectButtons = gtk.VBox(homogeneous=False, spacing=2)
         oSelectButtons.pack_start(oSelectAll, expand=False)
         oSelectButtons.pack_start(oUnSelectAll, expand=False)
         self.oPrompt = gtk.RadioButton(None, 'Always Ask', False)
@@ -112,7 +113,7 @@ class SelectZipFileContents(SutekhDialog):
         self.oRename = gtk.RadioButton(self.oPrompt,
                                        'Always create unique name', False)
         self.oRename.set_active(False)
-        oRadioButs = gtk.VBox(False, 2)
+        oRadioButs = gtk.VBox(homogeneous=False, spacing=2)
         oRadioLabel = gtk.Label()
         oRadioLabel.set_markup('<b>How to handle card set name conflicts?</b>')
         oRadioButs.pack_start(oRadioLabel)
@@ -175,7 +176,7 @@ class BaseZipImport(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        oImport = gtk.MenuItem(self.sMenuName)
+        oImport = gtk.MenuItem(label=self.sMenuName)
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 

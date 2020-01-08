@@ -31,7 +31,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
     # is visible or not
     __gproperties__ = {
         'showicon': (gobject.TYPE_BOOLEAN, 'showicon property',
-                     'whether to show the icon', 0, gobject.PARAM_READWRITE),
+                     'whether to show the icon', 0, gobject.ParamFlags.READWRITE),
     }
 
     def __init__(self, bShowIcon=False):
@@ -157,7 +157,7 @@ gobject.type_register(CellRendererSutekhButton)
 # dict in the class, but I couldn't find good documentation for
 # that approach.
 gobject.signal_new("clicked", CellRendererSutekhButton,
-                   gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_ACTION,
+                   gobject.SignalFlags.RUN_FIRST | gobject.SignalFlags.ACTION,
                    gobject.TYPE_NONE,
                    (gobject.TYPE_STRING,))
 # the callback is called as callback (self, oPath)

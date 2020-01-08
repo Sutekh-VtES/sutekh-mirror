@@ -172,17 +172,17 @@ class TWDAInfoPlugin(SutekhPlugin):
            """
         if self.model is None:
             # Add entry to the data download menu
-            oDownload = gtk.MenuItem("Download TWDA decks")
+            oDownload = gtk.MenuItem(label="Download TWDA decks")
             oDownload.connect('activate', self.do_download)
             return ('Data Downloads', oDownload)
         # Add entries to the analyze list
-        oTWDMenu = gtk.MenuItem(self.sMenuName + ' ... ')
+        oTWDMenu = gtk.MenuItem(label=self.sMenuName + ' ... ')
         oSubMenu = gtk.Menu()
         oTWDMenu.set_submenu(oSubMenu)
-        self.oAllTWDA = gtk.MenuItem("ALL selected cards")
+        self.oAllTWDA = gtk.MenuItem(label="ALL selected cards")
         oSubMenu.add(self.oAllTWDA)
         self.oAllTWDA.connect("activate", self.find_twda, "all")
-        self.oAnyTWDA = gtk.MenuItem("ANY selected cards")
+        self.oAnyTWDA = gtk.MenuItem(label="ANY selected cards")
         oSubMenu.add(self.oAnyTWDA)
         self.oAnyTWDA.connect("activate", self.find_twda, "any")
         if self.check_enabled():
@@ -261,24 +261,24 @@ class TWDAInfoPlugin(SutekhPlugin):
         # We create tabs for each year, and then list card
         # sets below them
         for sName in sorted(aParents):
-            oInfo = gtk.VBox(False, 2)
+            oInfo = gtk.VBox(homogeneous=False, spacing=2)
             oDlg.add_widget_page(AutoScrolledWindow(oInfo, True),
                                  sName.replace("TWDA ", ""))
-            oInfo.pack_start(gtk.Label(sMatchText), expand=False, padding=6)
+            oInfo.pack_start(gtk.Label(label=sMatchText), expand=False, padding=6)
             iCardSets = len([x for x in dCardSets if x.parent.name == sName])
-            oInfo.pack_start(gtk.Label("%d Card Sets" % iCardSets),
+            oInfo.pack_start(gtk.Label(label="%d Card Sets" % iCardSets),
                              expand=False, padding=4)
             dPages[sName] = oInfo
 
         for oCS in sorted(dCardSets, key=lambda x: x.name):
             oInfo = dPages[oCS.parent.name]
-            oName = gtk.Label(oCS.name)
+            oName = gtk.Label(label=oCS.name)
             aCardInfo = []
             for sName in sorted(dCardSets[oCS]):
                 aCardInfo.append(
                     u"  - %s \u00D7 %d" % (sName, dCardSets[oCS][sName]))
-            oCards = gtk.Label('\n'.join(aCardInfo))
-            oButton = gtk.Button("Open cardset")
+            oCards = gtk.Label(label='\n'.join(aCardInfo))
+            oButton = gtk.Button(label="Open cardset")
             oButton.connect('clicked', self._open_card_set, oCS)
             oInfo.pack_start(oName, expand=False)
             oInfo.pack_start(oCards, expand=False)
@@ -294,7 +294,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                             gtk.DIALOG_DESTROY_WITH_PARENT,
                             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oDlg.connect('response', lambda dlg, but: dlg.destroy())
-        oLabel = gtk.Label("No decks found statisfying %s" % sMatchText)
+        oLabel = gtk.Label(label="No decks found statisfying %s" % sMatchText)
         oDlg.vbox.pack_start(oLabel)
         return oDlg
 

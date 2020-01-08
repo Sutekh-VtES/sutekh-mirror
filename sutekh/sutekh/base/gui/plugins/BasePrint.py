@@ -54,7 +54,7 @@ class BasePrint(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        oPrint = gtk.MenuItem("Print Card Set")
+        oPrint = gtk.MenuItem(label="Print Card Set")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)
 
@@ -252,7 +252,7 @@ class BasePrint(BasePlugin):
 
     def _add_print_widgets(self, _oOp, dCustomData):
         """Add widgets to the custom options tab"""
-        oVBox = gtk.VBox(False, 2)
+        oVBox = gtk.VBox(homogeneous=False, spacing=2)
 
         oLabel = gtk.Label()
         oLabel.set_markup("<b>Expansion Information:</b>")

@@ -8,7 +8,7 @@
 import os
 
 import gtk
-import gobject
+import glib
 
 from ..io.BaseIconManager import BaseIconManager
 from .ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -87,7 +87,7 @@ class CachedIconManager(BaseIconManager):
                 iWidth = int(iSize / fAspect)
             oPixbuf = oPixbuf.scale_simple(iWidth, iHeight,
                                            gtk.gdk.INTERP_TILES)
-        except gobject.GError:
+        except glib.GError:
             oPixbuf = None
         self._dIconCache[sFileName] = oPixbuf
         return oPixbuf

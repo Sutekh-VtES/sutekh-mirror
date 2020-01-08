@@ -30,7 +30,7 @@ class FilterEditor(gtk.Alignment):
 
         self.__sFilterType = sFilterType
 
-        oNameLabel = gtk.Label("Filter name:")
+        oNameLabel = gtk.Label(label="Filter name:")
         self.__oNameEntry = gtk.Entry()
         self.__oNameEntry.set_width_chars(30)
 

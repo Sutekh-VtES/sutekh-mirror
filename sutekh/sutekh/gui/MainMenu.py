@@ -42,7 +42,7 @@ class MainMenu(AppMenu):
         """Extend the Preferences menu"""
         super(MainMenu, self)._add_prefs_menu(oPrefsMenu)
         oShowErrata = gtk.CheckMenuItem(
-            'Show Errata Markers')
+            label='Show Errata Markers')
         oShowErrata.set_inconsistent(False)
         if self._oConfig.get_show_errata_markers():
             oShowErrata.set_active(True)

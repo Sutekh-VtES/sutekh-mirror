@@ -27,7 +27,7 @@ def make_alignment(oLabel, oFileButton, oUseButton=None):
     """Helper function for constructing the import dialog"""
     oAlign = gtk.Alignment(yalign=0.5, xscale=1.0)
     oAlign.set_padding(0, 15, 0, 0)
-    oVBox = gtk.VBox(False, 2)
+    oVBox = gtk.VBox(homogeneous=False, spacing=2)
     oVBox.pack_start(oLabel)
     oVBox.pack_start(oFileButton)
     if oUseButton:
@@ -95,7 +95,7 @@ class DataFilesDialog(SutekhDialog):
         self.oBackupFileButton = gtk.CheckButton(
             label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
-        self.oBackupFileLabel = gtk.Label("(None)")
+        self.oBackupFileLabel = gtk.Label(label="(None)")
         if bDisableBackup:
             self.oBackupFileButton.set_sensitive(False)
             self.oBackupFileLabel.set_sensitive(False)  # For consistency

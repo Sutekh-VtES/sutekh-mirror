@@ -56,7 +56,7 @@ class LogViewFrame(BasicFrame):
 
     def add_parts(self):
         """Add the menu and text view to the frame"""
-        oMbox = gtk.VBox(False, 2)
+        oMbox = gtk.VBox(homogeneous=False, spacing=2)
 
         oMbox.pack_start(self._oTitle, False, False)
         oMbox.pack_start(self._oMenu, False, False)

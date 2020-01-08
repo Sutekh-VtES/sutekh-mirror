@@ -33,7 +33,7 @@ class BaseCardSetExport(BasePlugin):
         aMenuItems = []
         for sKey, tInfo in self.EXPORTERS.iteritems():
             sMenuText = tInfo[1]
-            oExport = gtk.MenuItem(sMenuText)
+            oExport = gtk.MenuItem(label=sMenuText)
             oExport.connect("activate", self.make_dialog, sKey)
             aMenuItems.append(('Export Card Set', oExport))
         return aMenuItems

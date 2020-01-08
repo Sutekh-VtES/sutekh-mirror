@@ -354,9 +354,9 @@ class DisciplineNumberSelect(gtk.HBox):
             self._oComboBox.append_text('%d' % iNum)
         self._oComboBox.append_text(self._sUseList)
         self._oComboBox.set_active(1)
-        self.pack_start(gtk.Label('Number of Disciplines'))
+        self.pack_start(gtk.Label(label='Number of Disciplines'))
         self.pack_start(self._oComboBox)
-        self.pack_start(gtk.Label(' : '))
+        self.pack_start(gtk.Label(label=' : '))
         self._oDiscWidget = MultiSelectComboBox(oDlg)
         self._oDiscWidget.fill_list(self._aSortedDisciplines)
         self._oDiscWidget.set_sensitive(False)
@@ -438,9 +438,9 @@ class AnalyzeCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        oAnalyze = gtk.MenuItem(self.sMenuName)
+        oAnalyze = gtk.MenuItem(label=self.sMenuName)
         oAnalyze.connect("activate", self.activate)
-        oAnalyzeRT = gtk.MenuItem("Analyze Deck (Rapids Thoughts)")
+        oAnalyzeRT = gtk.MenuItem(label="Analyze Deck (Rapids Thoughts)")
         oAnalyzeRT.connect("activate", self.activate_rt)
         return [('Analyze', oAnalyze), ('Analyze', oAnalyzeRT)]
 
@@ -509,7 +509,7 @@ class AnalyzeCardList(SutekhPlugin):
                     self.dTypeNumbers[sCardType] = len(aAllPhysCards)
                 dCardLists[sCardType] = aAllPhysCards
 
-        oHappyBox = gtk.VBox(False, 2)
+        oHappyBox = gtk.VBox(homogeneous=False, spacing=2)
 
         self.iTotNumber = len(aAllCards)
         self.dCryptStats = {}
@@ -523,7 +523,7 @@ class AnalyzeCardList(SutekhPlugin):
         self.happy_families_init(oHappyBox, oDlg)
 
         # Fill the dialog with the results
-        oMainBox = gtk.VBox(False, 2)
+        oMainBox = gtk.VBox(homogeneous=False, spacing=2)
         oDlg.add_widget_page(oMainBox, 'Basic Info')
         oDlg.add_widget_page(oHappyBox, 'Happy Families Analysis')
 
@@ -662,7 +662,7 @@ class AnalyzeCardList(SutekhPlugin):
         if not sDesc:
             sDesc = "<i>No description</i>"
         oDesc = wrap(sDesc)
-        oScrolledBox = gtk.VBox(False, 1)
+        oScrolledBox = gtk.VBox(homogeneous=False, spacing=1)
         oDescTitle = gtk.Label()
         oDescTitle.set_markup("<b>Description:</b>")
         oScrolledBox.pack_start(oDescTitle, False)
@@ -756,7 +756,7 @@ class AnalyzeCardList(SutekhPlugin):
                 'Multirole', 'cards', self.dTypeNumbers['Multirole'],
                 self.iLibSize)
         oLibNotebook.append_page(wrap(sTypeText),
-                                 gtk.Label('Card Types'))
+                                 gtk.Label(label='Card Types'))
         # Stats by discipline
         sDiscText = _format_card_line('Master', 'cards',
                                       self.dTypeNumbers['Master'],
@@ -773,7 +773,7 @@ class AnalyzeCardList(SutekhPlugin):
                 sDiscText += _format_card_line(sDiscDesc, '', iNum,
                                                self.iLibSize)
         oLibNotebook.append_page(wrap(sDiscText),
-                                 gtk.Label('Disciplines'))
+                                 gtk.Label(label='Disciplines'))
         # Stats by clan requirement
         sClanText = _format_card_line('cards with No clan requirement', '',
                                       self.dLibStats['clan']['No Clan'],
@@ -784,7 +784,7 @@ class AnalyzeCardList(SutekhPlugin):
                 sClanText += _format_card_line(sClanDesc, '', iNum,
                                                self.iLibSize)
         oLibNotebook.append_page(wrap(sClanText),
-                                 gtk.Label('Clan Requirements'))
+                                 gtk.Label(label='Clan Requirements'))
         return oLibNotebook
 
     def _process_vampire(self, aCards):
@@ -1252,7 +1252,7 @@ class AnalyzeCardList(SutekhPlugin):
         oDiscSelect = DisciplineNumberSelect(aSortedDiscs, oDlg)
         oHFVBox.pack_start(oDiscSelect, False, False)
         oResLabel = gtk.Label()
-        oButton = gtk.Button('Recalculate Happy Family Analysis')
+        oButton = gtk.Button(label='Recalculate Happy Family Analysis')
         oButton.connect('clicked', self._redo_happy_family, oDiscSelect,
                         oResLabel)
         oHFVBox.pack_start(oButton, False, False)

@@ -27,7 +27,7 @@ class BaseSetExpansion(BasePlugin):
 
     def get_menu_item(self):
         """Return a gtk.MenuItem to activate this plugin."""
-        oMenuItem = gtk.MenuItem("Set selected cards to a single expansion")
+        oMenuItem = gtk.MenuItem(label="Set selected cards to a single expansion")
         oMenuItem.connect("activate", self.activate)
         return ('Actions', oMenuItem)
 

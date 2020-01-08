@@ -10,6 +10,7 @@ import gtk
 import pango
 import pangocairo
 import gobject
+import glib
 
 # consts for the different display modes we need
 SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
@@ -17,7 +18,7 @@ SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
 
 def _layout_text(oLayout, sText):
     """Helper function to ensure consistency in calling layout"""
-    oLayout.set_markup("<i>%s </i>" % gobject.markup_escape_text(sText))
+    oLayout.set_markup("<i>%s </i>" % glib.markup_escape_text(sText))
     oLayout.set_alignment(pango.ALIGN_LEFT)
 
 
@@ -33,12 +34,12 @@ class CellRendererIcons(gtk.GenericCellRenderer):
 
     __gproperties__ = {
         'text': (gobject.TYPE_STRING, 'text property',
-                 'text to render', '', gobject.PARAM_READWRITE),
+                 'text to render', '', gobject.ParamFlags.READWRITE),
         'textlist': (gobject.TYPE_PYOBJECT, 'textlist property',
                      'list of text strings to render',
-                     gobject.PARAM_READWRITE),
+                     gobject.ParamFlags.READWRITE),
         'icons': (gobject.TYPE_PYOBJECT, 'icons property',
-                  'icons to render', gobject.PARAM_READWRITE),
+                  'icons to render', gobject.ParamFlags.READWRITE),
     }
 
     def __init__(self, iIconPad=2):
