@@ -40,9 +40,6 @@ class FilteredView(CustomDragIconView):
 
         self.set_name('filtered_view')
 
-        # Enable rules hints
-        self.set_rules_hint(True)
-
     # Introspection
 
     # pylint: disable=protected-access
