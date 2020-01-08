@@ -556,9 +556,6 @@ class FilterValuesBox(gtk.VBox):
             """Set the values on an adjustment"""
             oAdj.set_value(tInfo[0])
             oAdj.set_page_size(tInfo[1])
-            # Send required signals
-            oAdj.changed()
-            oAdj.value_changed()
 
         # FIXME: fix selection behaviour so we select the correct
         # filter box model in this case, rather than the newly added
