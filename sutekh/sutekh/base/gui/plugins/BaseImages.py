@@ -212,8 +212,8 @@ class BaseImageFrame(BasicFrame):
         self._oView.get_hadjustment().connect('changed', self._pane_adjust)
         self._oView.get_vadjustment().connect('changed', self._pane_adjust)
         self._oImage = gtk.Image()
-        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                                    gtk.ICON_SIZE_DIALOG)
+        self._oImage.set_from_icon_name(gtk.STOCK_MISSING_IMAGE,
+                                        gtk.ICON_SIZE_DIALOG)
         oBox.add(self._oImage)
 
         # Enable DnD handling, same as for BasicFrame
