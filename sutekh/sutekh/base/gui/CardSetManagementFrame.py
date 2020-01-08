@@ -82,10 +82,13 @@ class CardSetManagementFrame(BasicFrame):
         oVertAdj.set_page_size(tVertVals[1])
         oHorzAdj.set_value(tHorzVals[0])
         oHorzAdj.set_page_size(tHorzVals[1])
-        oVertAdj.changed()
-        oHorzAdj.changed()
-        oVertAdj.value_changed()
-        oHorzAdj.value_changed()
+        if self.get_mapped():
+            # There's no value to sending the changed signals if we're not mapped
+            # (mainly for the test suite)
+            oVertAdj.changed()
+            oHorzAdj.changed()
+            oVertAdj.value_changed()
+            oHorzAdj.value_changed()
 
     def get_menu_name(self):
         """Get the menu key"""
