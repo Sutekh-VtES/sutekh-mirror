@@ -16,13 +16,10 @@ class AutoScrolledWindow(gtk.ScrolledWindow):
        Set the Scrollbar property to Autmoatic, so scrollbars only so up
        when needed. The widget can also be wrapped in a viewport if needed
        """
-    def __init__(self, oWidgetToWrap, bUseViewport=False):
+    def __init__(self, oWidgetToWrap, _bUseViewport=False):
         super(AutoScrolledWindow, self).__init__()
 
         self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.set_shadow_type(gtk.SHADOW_IN)
 
-        if bUseViewport:
-            self.add_with_viewport(oWidgetToWrap)
-        else:
-            self.add(oWidgetToWrap)
+        self.add(oWidgetToWrap)
