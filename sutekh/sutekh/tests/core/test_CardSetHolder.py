@@ -46,7 +46,7 @@ class CardSetHolderTests(SutekhTest):
                 oThisPrint = None
             aExpectedPrintings.extend([oThisPrint] * iCnt)
 
-        aExpectedPrintings.sort()
+        aExpectedPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertRaises(RuntimeError, oCSH.create_pcs)
         oCSH.name = 'Test Set 1'
         oCSH.create_pcs()
@@ -64,7 +64,7 @@ class CardSetHolderTests(SutekhTest):
             MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
         aPrintings = [oCard.printing for oCard in oCS.cards]
-        aPrintings.sort()
+        aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
 
         oCSH.name = 'Test Set 2'
@@ -161,7 +161,7 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
 
         aPrintings = [oCard.printing for oCard in oCS.cards]
-        aPrintings.sort()
+        aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
 
     def test_cache(self):
@@ -190,7 +190,7 @@ class CardSetHolderTests(SutekhTest):
                 oThisPrint = None
             aExpectedPrintings.extend([oThisPrint] * iCnt)
 
-        aExpectedPrintings.sort()
+        aExpectedPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertRaises(RuntimeError, oCSH.create_pcs)
         oCSH.name = 'Test Set 1'
         oCSH.create_pcs(dLookupCache=dLookupCache)
@@ -210,7 +210,7 @@ class CardSetHolderTests(SutekhTest):
                         MapPhysicalCardToPhysicalCardSet).distinct()]
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
         aPrintings = [oCard.printing for oCard in oCS.cards]
-        aPrintings.sort()
+        aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
         self.assertEqual(dLookupCache['cards'][u'Abbot'], u'abbot')
         self.assertEqual(dLookupCache['printings'][(u'LotN', None)],
@@ -309,7 +309,7 @@ class CardSetHolderTests(SutekhTest):
         self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
 
         aPrintings = [oCard.printing for oCard in oCS.cards]
-        aPrintings.sort()
+        aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
 
         self.assertEqual(dLookupCache['printings'][('Legacy of Bllod', None)],

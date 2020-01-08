@@ -28,7 +28,9 @@ def _get_cards_for_group(aGrouping, sName):
 
 
 def _get_top_levels(aGrouping):
-    return sorted([x[0] for x in aGrouping])
+    """Get a sorted list of the top level groupings"""
+    # We use the custom key to handle None values sensibly
+    return sorted([x[0] for x in aGrouping], key=lambda x: x if x else "")
 
 
 class GroupingsTests(SutekhTest):
