@@ -43,9 +43,10 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         self.bClicked = False
         self.oClickedBackgroundArea = None
 
-    def load_icon(self, sName, oWidget):
+    def load_icon(self, sName, _oWidget):
         """Load the icon specified in name"""
-        self.oPixbuf = oWidget.render_icon(sName, gtk.ICON_SIZE_MENU)
+        oIconTheme = gtk.IconTheme.get_default()
+        self.oPixbuf = oIconTheme.load_icon(sName, gtk.ICON_SIZE_MENU, 0)
 
     def do_get_property(self, oProp):
         """Allow reading the showicon property"""
