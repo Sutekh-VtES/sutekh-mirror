@@ -39,8 +39,10 @@ class RandomPromoDialog(SutekhDialog):
                                             step_incr=1)
 
         self._aCards = aCards
-        self._oCardsPerGroup = gtk.SpinButton(oCardsPerGroupAdj)
-        self._oNumberOfGroups = gtk.SpinButton(oNumberOfGroupsAdj)
+        self._oCardsPerGroup = gtk.SpinButton()
+        self._oCardsPerGroup.set_adjustment(oCardsPerGroupAdj)
+        self._oNumberOfGroups = gtk.SpinButton()
+        self._oNumberOfGroups.set_adjustment(oNumberOfGroupsAdj)
         self._oResultsBuffer = gtk.TextBuffer()
 
         oHbox = gtk.HBox()
@@ -61,7 +63,8 @@ class RandomPromoDialog(SutekhDialog):
         self.vbox.pack_start(oResampleButton, expand=False)
 
         self.vbox.pack_start(gtk.Label(label="Groups:"), expand=False)
-        oResults = gtk.TextView(self._oResultsBuffer)
+        oResults = gtk.TextView()
+        oResults.set_buffer(self._oResultsBuffer)
         oResults.set_editable(False)
         self.vbox.pack_start(AutoScrolledWindow(oResults))
 
