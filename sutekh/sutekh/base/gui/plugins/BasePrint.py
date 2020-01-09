@@ -7,6 +7,8 @@
 
 import gtk
 import pango
+import pangocairo
+
 from ...core.BaseTables import PhysicalCardSet
 from ...core.BaseAdapters import (IAbstractCard, IPhysicalCard, IPrintingName,
                                   IExpansion)
@@ -97,7 +99,7 @@ class BasePrint(BasePlugin):
         fWidth, fHeight = oContext.get_width(), oContext.get_height()
 
         oLayout = oContext.create_pango_layout()
-        oLayout.set_font_description(pango.FontDescription(self._sFontName))
+        oLayout.set_font_description(pango.FontDescription.from_string(self._sFontName))
         oLayout.set_width(int(fWidth * pango.SCALE))
 
         oLayout.set_markup(self.cardlist_markup())
@@ -112,7 +114,7 @@ class BasePrint(BasePlugin):
             _oInkRect, oLogicalRect = oLine.get_extents()
 
             # line height / SCALE
-            fLineHeight = float(oLogicalRect[3]) / pango.SCALE
+            fLineHeight = float(oLogicalRect.height) / pango.SCALE
 
             if fPageHeight + fLineHeight > fHeight:
                 aPageBreaks.append(iThisLine)
@@ -149,9 +151,9 @@ class BasePrint(BasePlugin):
         else:
             iEndPageLine = oLayout.get_line_count()
 
-        oContext = oContext.get_cairo_context()
-        oContext.set_source_rgb(0, 0, 0)
-        oContext.set_line_width(0.1)
+        oCairoContext = oContext.get_cairo_context()
+        oCairoContext.set_source_rgb(0, 0, 0)
+        oCairoContext.set_line_width(0.1)
 
         oIter = oLayout.get_iter()
 
@@ -160,7 +162,9 @@ class BasePrint(BasePlugin):
 
         while True:
             if iLine >= iStartPageLine:
-                oLine = oIter.get_line()
+                # oIter.get_line is a bit buggy with pygtkcompat,
+                # so we side step it by querying the layout directly
+                oLine = oLayout.get_line(iLine)
                 _oInkRect, oLogicalRect = oLine.get_extents()
 
                 fBaseLine = float(oIter.get_baseline()) / pango.SCALE
@@ -169,15 +173,15 @@ class BasePrint(BasePlugin):
                     fStartPos = fBaseLine
 
                 # line x co-ordinate / SCALE
-                fXPos = float(oLogicalRect[0]) / pango.SCALE
+                fXPos = float(oLogicalRect.x) / pango.SCALE
                 # baseline - start pos - line y-co-ordinate / SCALE
-                fYPos = fBaseLine - fStartPos - (float(oLogicalRect[1]) /
+                fYPos = fBaseLine - fStartPos - (float(oLogicalRect.y) /
                                                  pango.SCALE)
 
-                oContext.move_to(fXPos, fYPos)
-                oContext.layout_line_path(oLine)
-                oContext.stroke_preserve()
-                oContext.fill()
+                oCairoContext.move_to(fXPos, fYPos)
+                pangocairo.layout_line_path(oCairoContext, oLine)
+                oCairoContext.stroke_preserve()
+                oCairoContext.fill()
 
             iLine += 1
             if not (iLine < iEndPageLine and oIter.next_line()):
