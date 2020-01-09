@@ -202,10 +202,10 @@ class PrintProxyPlugin(SutekhPlugin):
             # We probably should be cleverer with scaling here
             oPixbuf = oPixbuf.scale_simple(IMG_WIDTH, IMG_HEIGHT,
                                            gtk.gdk.INTERP_HYPER)
-            oCairoContext.set_source_pixbuf(oPixbuf, iOffsetX, iOffsetY)
+            gtk.gdk.cairo_set_source_pixbuf(oCairoContext, oPixbuf, iOffsetX, iOffsetY)
             oCairoContext.rectangle(iOffsetX, iOffsetY,
                                     IMG_WIDTH, IMG_HEIGHT)
-            oCairoContext.fill()
+            oCairoContext.paint()
             iOffsetX += IMG_WIDTH + 5
             if iOffsetX > 3 * IMG_WIDTH:
                 iOffsetX = 0
