@@ -63,12 +63,12 @@ class BaseShowExported(BasePlugin):
         oFirstBut = None
         for sName in sorted(self.EXPORTERS):
             if not oFirstBut:
-                oBut = gtk.RadioButton(None, sName)
+                oBut = gtk.RadioButton(group=None, label=sName)
                 oFirstBut = oBut
                 oFirstBut.set_active(True)
                 self._set_text(sName, oCardSet, oTextBuffer)
             else:
-                oBut = gtk.RadioButton(oFirstBut, sName)
+                oBut = gtk.RadioButton(group=oFirstBut, label=sName)
             oBut.connect('toggled', self._button_toggled, sName, oCardSet,
                          oTextBuffer)
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -105,7 +105,7 @@ class ExportBuffer(gtk.TextBuffer):
     """Buffer object for showing the exported card set text"""
 
     def __init__(self):
-        super(ExportBuffer, self).__init__(None)
+        super(ExportBuffer, self).__init__()
         self.create_tag("text", left_margin=0)
 
     def set_text(self, sCardSetText):
