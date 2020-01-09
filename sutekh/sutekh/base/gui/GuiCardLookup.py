@@ -30,7 +30,7 @@ NO_EXP_AND_PRINT = "No Expansion and Printing"
 
 
 
-def _sort_replacement(oModel, oIter1, oIter2):
+def _sort_replacement(oModel, oIter1, oIter2, _oCol):
     """Sort replacement, honouring spaces"""
     oVal1 = oModel.get_value(oIter1, 2)
     oVal2 = oModel.get_value(oIter2, 2)
@@ -182,7 +182,7 @@ class ReplacementTreeView(gtk.TreeView):
         sToolTip = None
         # The positions passed in aren't relative to the right window for
         # get_path, so we query position directly
-        iXPos, iYPos, _oIgnore = self.get_bin_window().get_pointer()
+        _oMask, iXPos, iYPos, _oIgnore = self.get_bin_window().get_pointer()
         tRes = self.get_path_at_pos(iXPos, iYPos)
         if tRes:
             # path returned may be none
