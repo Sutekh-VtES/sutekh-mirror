@@ -9,7 +9,13 @@
 import os
 
 import pygtkcompat
-pygtkcompat.enable_poppler()
+try:
+    pygtkcompat.enable_poppler()
+except ValueError as oExp:
+    # Missing poppler libraries will trigger a ValueError here
+    # We turn it into an ImportError, since that's the more
+    # correct error
+    raise ImportError("Failed to load poppler bindings: %s" % oExp)
 
 import gtk
 import glib
