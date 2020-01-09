@@ -104,14 +104,13 @@ class SelectZipFileContents(SutekhDialog):
         oSelectButtons = gtk.VBox(homogeneous=False, spacing=2)
         oSelectButtons.pack_start(oSelectAll, expand=False)
         oSelectButtons.pack_start(oUnSelectAll, expand=False)
-        self.oPrompt = gtk.RadioButton(None, 'Always Ask', False)
+        self.oPrompt = gtk.RadioButton(group=None, label='Always Ask')
         self.oPrompt.set_active(True)
-        self.oReplace = gtk.RadioButton(self.oPrompt,
-                                        'Always replace with new card set',
-                                        False)
+        self.oReplace = gtk.RadioButton(group=self.oPrompt,
+                                        label='Always replace with new card set')
         self.oReplace.set_active(False)
-        self.oRename = gtk.RadioButton(self.oPrompt,
-                                       'Always create unique name', False)
+        self.oRename = gtk.RadioButton(group=self.oPrompt,
+                                       label='Always create unique name')
         self.oRename.set_active(False)
         oRadioButs = gtk.VBox(homogeneous=False, spacing=2)
         oRadioLabel = gtk.Label()

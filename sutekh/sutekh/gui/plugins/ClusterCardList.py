@@ -199,12 +199,12 @@ class ClusterCardList(SutekhPlugin):
 
         oIter = Vector.METRICS.iterkeys()
         for sName in oIter:
-            oFirstBut = gtk.RadioButton(None, sName, False)
+            oFirstBut = gtk.RadioButton(group=None, label=sName)
             oVbx.pack_start(oFirstBut, False)
             break
 
         for sName in oIter:
-            oBut = gtk.RadioButton(oFirstBut, sName)
+            oBut = gtk.RadioButton(group=oFirstBut, label=sName)
             oVbx.pack_start(oBut, False)
 
         self._aDistanceMeasureGroup = oFirstBut.get_group()

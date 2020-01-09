@@ -63,8 +63,8 @@ class ImportExportBase(SutekhDialog):
         # Deck / Inventory Selector
 
         self._sNewName = ""
-        self._oAsDeckButton = gtk.RadioButton(None, "Deck")
-        self._oAsInvButton = gtk.RadioButton(self._oAsDeckButton, "Inventory")
+        self._oAsDeckButton = gtk.RadioButton(group=None, label="Deck")
+        self._oAsInvButton = gtk.RadioButton(group=self._oAsDeckButton, label="Inventory")
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
 
         self.vbox.pack_start(

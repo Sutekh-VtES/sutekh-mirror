@@ -260,14 +260,14 @@ class BasePrint(BasePlugin):
         oVBox.pack_start(oLabel, expand=False, padding=10)
         aExpButtons = []
 
-        oFirstBut = gtk.RadioButton(None, 'No Expansion info', False)
+        oFirstBut = gtk.RadioButton(group=None, label='No Expansion info')
         oFirstBut.set_active(True)
         oVBox.pack_start(oFirstBut, expand=False)
         aExpButtons.append(oFirstBut)
         for sText in self.dOptions:
             if sText == oFirstBut.get_label():
                 continue
-            oBut = gtk.RadioButton(oFirstBut, sText, False)
+            oBut = gtk.RadioButton(group=oFirstBut, label=sText)
             oBut.set_active(False)
             oVBox.pack_start(oBut, expand=False)
             aExpButtons.append(oBut)

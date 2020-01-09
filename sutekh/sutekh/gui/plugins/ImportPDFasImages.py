@@ -165,12 +165,10 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         iXPos, iYPos = 0, 0
         for sName in aExpansions:
             if self._oFirstBut:
-                oBut = gtk.RadioButton(self._oFirstBut, sName,
-                                       use_underline=False)
+                oBut = gtk.RadioButton(group=self._oFirstBut, label=sName)
             else:
                 # No first button
-                self._oFirstBut = gtk.RadioButton(None, sName,
-                                                  use_underline=False)
+                self._oFirstBut = gtk.RadioButton(group=None, label=sName)
                 self._oFirstBut.set_sensitive(True)
                 oBut = self._oFirstBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -185,9 +183,9 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         iXPos, iYPos = 0, 0
         for sScale in sorted(SCALES):
             if self._oFirstScaleBut:
-                oBut = gtk.RadioButton(self._oFirstScaleBut, sScale)
+                oBut = gtk.RadioButton(group=self._oFirstScaleBut, label=sScale)
             else:
-                self._oFirstScaleBut = gtk.RadioButton(None, sScale, False)
+                self._oFirstScaleBut = gtk.RadioButton(group=None, label=sScale)
                 self._oFirstScaleBut.set_sensitive(True)
                 oBut = self._oFirstScaleBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
