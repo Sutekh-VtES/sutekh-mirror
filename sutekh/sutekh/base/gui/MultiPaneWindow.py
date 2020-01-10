@@ -8,10 +8,6 @@
 
 from itertools import chain
 
-import pygtk
-# pylint: disable=wrong-import-position
-# This needs to be before we import gtk
-pygtk.require('2.0')
 import gtk
 import glib
 

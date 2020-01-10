@@ -10,10 +10,6 @@ import logging
 import socket
 from itertools import chain
 
-import pygtk
-# pylint: disable=wrong-import-position
-# This check needs to be before we import gtk
-pygtk.require('2.0')
 import gtk
 # pylint: disable=no-name-in-module
 # pylint doesn't see resource_stream here, for some reason
