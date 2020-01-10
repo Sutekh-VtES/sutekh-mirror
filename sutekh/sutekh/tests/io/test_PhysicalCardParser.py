@@ -7,7 +7,7 @@
 
 import unittest
 import os
-from StringIO import StringIO
+from io import BytesIO
 
 from sutekh.base.tests.TestUtils import make_card
 from sutekh.tests.io import test_WhiteWolfParser
@@ -27,8 +27,8 @@ def make_example_pcxml():
     """Create the example XML File"""
     oPC = make_card(ABSTRACT_CARDS[0][0], None)
 
-    sExample = ('<cards sutekh_xml_version="%s"><card count="1" '
-                'expansion="None Specified" id="%d" name="%s" /></cards>'
+    sExample = (b'<cards sutekh_xml_version="%s"><card count="1" '
+                b'expansion="None Specified" id="%d" name="%s" /></cards>'
                 % (LAST_WRITER_VERSION, oPC.id, ABSTRACT_CARDS[0][0]))
     return sExample
 
@@ -45,7 +45,7 @@ class PhysicalCardTests(SutekhTest):
         sExample = make_example_pcxml()
         oParser = PhysicalCardParser()
         oHolder = CardSetHolder()
-        oParser.parse(StringIO(sExample), oHolder)
+        oParser.parse(BytesIO(sExample), oHolder)
         oHolder.create_pcs()
 
         oMyCollection = IPhysicalCardSet("My Collection")
@@ -66,14 +66,14 @@ class PhysicalCardTests(SutekhTest):
         # Test incorrect input
         oHolder = CardSetHolder()
         self.assertRaises(IOError, oParser.parse,
-                          StringIO('<ccaardd sutekh_xml_version="1.0"><card'
-                                   ' count="1" expansion="None Specified"'
-                                   ' id="12" name="Abbot" /></ccaardd>'),
+                          BytesIO(b'<ccaardd sutekh_xml_version="1.0"><card'
+                                   b' count="1" expansion="None Specified"'
+                                   b' id="12" name="Abbot" /></ccaardd>'),
                           oHolder)
         self.assertRaises(IOError, oParser.parse,
-                          StringIO('<cards sutekh_xml_version="5.0"><card'
-                                   ' count="1" expansion="None Specified"'
-                                   ' id="12" name="Abbot" /></cards>'),
+                          BytesIO(b'<cards sutekh_xml_version="5.0"><card'
+                                  b' count="1" expansion="None Specified"'
+                                  b' id="12" name="Abbot" /></cards>'),
                           oHolder)
 
         # Check read results

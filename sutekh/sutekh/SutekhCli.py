@@ -14,7 +14,7 @@ import sys
 import optparse
 import os
 import tempfile
-import StringIO
+from StringIO import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST, AbstractCard
@@ -363,7 +363,7 @@ def main_with_args(aTheArgs):
     if oOpts.print_cs is not None:
         try:
             oCS = IPhysicalCardSet(oOpts.print_cs)
-            fPrint = StringIO.StringIO()
+            fPrint = StringIO()
             oPrinter = WriteArdbText()
             oPrinter.write(fPrint, CardSetWrapper(oCS))
             print(fPrint.getvalue().encode(oOpts.print_encoding,

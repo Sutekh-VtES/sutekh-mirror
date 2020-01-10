@@ -9,7 +9,7 @@ import logging
 import datetime
 import zipfile
 from collections import namedtuple
-from StringIO import StringIO
+from io import StringIO
 
 import gtk
 from sqlobject import sqlhub, connectionForURI

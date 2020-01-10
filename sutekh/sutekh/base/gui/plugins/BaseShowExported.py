@@ -6,7 +6,7 @@
 """Plugin for displaying the exported version of a card set in a gtk.TextView.
    Intended to make cutting and pasting easier."""
 
-import StringIO
+from io import StringIO
 
 import gtk
 
@@ -93,7 +93,7 @@ class BaseShowExported(BasePlugin):
         """Internals of setting the buffer to the correct text"""
         cWriter = self.EXPORTERS[sName]
         oWriter = cWriter()
-        fOut = StringIO.StringIO()
+        fOut = StringIO()
         oWriter.write(fOut, CardSetWrapper(oCardSet))
         oTextBuffer.set_text(fOut.getvalue())
         fOut.close()

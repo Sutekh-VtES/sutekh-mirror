@@ -8,7 +8,7 @@
 import re
 import datetime
 from logging import Logger
-from StringIO import StringIO
+from io import StringIO
 
 import gtk
 from sqlobject import SQLObjectNotFound

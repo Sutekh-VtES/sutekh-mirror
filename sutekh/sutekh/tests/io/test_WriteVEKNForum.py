@@ -15,7 +15,7 @@ from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.tests.core.test_PhysicalCardSet import make_set_1
 
-VEKN_EXPECTED_1 = """[size=18][b]Deck Name : Test Set 1[/b][/size]
+VEKN_EXPECTED_1 = b"""[size=18][b]Deck Name : Test Set 1[/b][/size]
 [b][u]Author :[/u][/b] A test author
 [b][u]Description :[/u][/b]
 A test comment

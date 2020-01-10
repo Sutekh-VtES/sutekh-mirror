@@ -18,7 +18,7 @@
 import re
 import warnings
 import HTMLParser
-from cStringIO import StringIO
+from io import StringIO
 
 import gtk
 import gobject

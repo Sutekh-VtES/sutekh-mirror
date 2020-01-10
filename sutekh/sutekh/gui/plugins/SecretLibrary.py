@@ -6,7 +6,7 @@
 """Plugin for interacting with the Secret Library website."""
 
 import urllib
-import StringIO
+from io import StringIO
 import re
 import logging
 
@@ -377,7 +377,7 @@ class SecretLibrary(SutekhPlugin):
             # so we just bail out of this
             return
         try:
-            fIn = StringIO.StringIO(fReq.read())
+            fIn = StringIO(fReq.read())
         finally:
             fReq.close()
 
@@ -398,7 +398,7 @@ class SecretLibrary(SutekhPlugin):
             # Probable timeout
             return
         try:
-            fIn = StringIO.StringIO(fReq.read())
+            fIn = StringIO(fReq.read())
         finally:
             fReq.close()
 

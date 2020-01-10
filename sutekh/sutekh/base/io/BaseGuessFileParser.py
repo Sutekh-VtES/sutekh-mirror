@@ -10,7 +10,7 @@
    parsers.
    """
 
-import StringIO
+from io import BytesIO
 from ..core.CardSetHolder import CardSetHolder
 
 
@@ -44,7 +44,7 @@ class BaseGuessFileParser(object):
         """attempt arse a file into the given holder"""
         # Cache file, (for network cases, etc.)
         # Is this completely safe?
-        oCopy = StringIO.StringIO(fIn.read())
+        oCopy = BytesIO(fIn.read())
         # Save choice, so it can be reported to the user if need be
         self.oChosenParser = self.guess_format(oCopy)
         if not self.oChosenParser:

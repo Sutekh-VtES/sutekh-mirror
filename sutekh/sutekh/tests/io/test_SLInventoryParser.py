@@ -6,7 +6,7 @@
 """Test reading a card set from an Secret Library inventory file"""
 
 import unittest
-import StringIO
+from io import BytesIO
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import DummyHolder
 from sutekh.io.SLInventoryParser import SLInventoryParser
@@ -17,7 +17,7 @@ class TestSLInventoryParser(SutekhTest):
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
 
-    sTestText1 = """
+    sTestText1 = b"""
         ***SL***CRYPT***
         2;2;Abebe
         2;2;Alan Sovereign (Adv)
@@ -34,7 +34,7 @@ class TestSLInventoryParser(SutekhTest):
     def test_basic(self):
         """Run the Secret Library inventory input test."""
         oHolder = DummyHolder()
-        fIn = StringIO.StringIO(self.sTestText1)
+        fIn = BytesIO(self.sTestText1)
         oParser = SLInventoryParser()
         oParser.parse(fIn, oHolder)
 

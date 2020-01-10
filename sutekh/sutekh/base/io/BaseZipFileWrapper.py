@@ -11,7 +11,7 @@
 
 import zipfile
 import datetime
-from StringIO import StringIO
+from io import BytesIO
 from logging import Logger
 
 from sqlobject import sqlhub
@@ -28,7 +28,7 @@ def parse_string(oParser, sIn, oHolder):
     """Utility function for reading zip files.
 
        Allows oParser.parse to be called on a string."""
-    oFile = StringIO(sIn)
+    oFile = BytesIO(sIn)
     oParser.parse(oFile, oHolder)
 
 
@@ -37,14 +37,14 @@ def write_string(oWriter, oPCSet):
 
        Generate a string from the Writer."""
     oHolder = CardSetWrapper(oPCSet)
-    oFile = StringIO()
+    oFile = BytesIO()
     oWriter.write(oFile, oHolder)
     oString = oFile.getvalue()
     oFile.close()
     return oString
 
 
-class ZipEntryProxy(StringIO, object):
+class ZipEntryProxy(BytesIO, object):
     """A proxy that provides a suitable open method so
        these can be passed to the card reading routines."""
 

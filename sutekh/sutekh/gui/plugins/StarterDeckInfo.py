@@ -7,7 +7,7 @@
 
 import re
 import datetime
-from StringIO import StringIO
+from io import StringIO
 
 import gtk
 from sqlobject import SQLObjectNotFound

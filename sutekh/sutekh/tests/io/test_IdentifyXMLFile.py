@@ -6,7 +6,7 @@
 """Test IdentifyXMLFile handling"""
 
 import unittest
-from StringIO import StringIO
+from io import BytesIO
 
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.tests.TestCore import SutekhTest
@@ -34,16 +34,16 @@ class TestIdentifyXMLFile(SutekhTest):
         oIdFile.id_file(sTempFileName)
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
-        oIdFile.parse(StringIO(sExample), None)
+        oIdFile.parse(BytesIO(sExample), None)
         self.assertEqual(oIdFile.type, 'PhysicalCard')
 
-        oIdFile.parse(StringIO('garbage input'))
+        oIdFile.parse(BytesIO('garbage input'))
         self.assertEqual(oIdFile.type, 'Unknown')
 
-        oIdFile.parse(StringIO(ACS_EXAMPLE_1))
+        oIdFile.parse(BytesIO(ACS_EXAMPLE_1))
         self.assertEqual(oIdFile.type, 'AbstractCardSet')
 
-        oIdFile.parse(StringIO(PCS_EXAMPLE_1))
+        oIdFile.parse(BytesIO(PCS_EXAMPLE_1))
         self.assertEqual(oIdFile.type, 'PhysicalCardSet')
 
 

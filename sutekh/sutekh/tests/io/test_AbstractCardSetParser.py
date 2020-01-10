@@ -7,7 +7,7 @@
 
 import unittest
 import os
-from StringIO import StringIO
+from io import BytesIO
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
@@ -21,21 +21,21 @@ from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
                                                     ABSTRACT_CARDS)
 from sutekh.tests.TestCore import SutekhTest
 
-ACS_EXAMPLE_1 = ('<abstractcardset author="A test author" '
-                 'comment="A test comment" name="Test Set 1" '
-                 'sutekh_xml_version="1.1"><annotations /><card count="1" '
-                 'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
-                 '/><card count="1" id="1" name=".44 Magnum" /><card '
-                 'count="1" id="2" name="AK-47" /><card count="1" id="14" '
-                 'name="Abombwe" /></abstractcardset>')
+ACS_EXAMPLE_1 = (b'<abstractcardset author="A test author" '
+                 b'comment="A test comment" name="Test Set 1" '
+                 b'sutekh_xml_version="1.1"><annotations /><card count="1" '
+                 b'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
+                 b'/><card count="1" id="1" name=".44 Magnum" /><card '
+                 b'count="1" id="2" name="AK-47" /><card count="1" id="14" '
+                 b'name="Abombwe" /></abstractcardset>')
 
-ACS_EXAMPLE_2 = ('<abstractcardset author="A test author" '
-                 'comment="A test comment" name="Test Set 2" '
-                 'sutekh_xml_version="1.1"><annotations /><card count="2" '
-                 'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
-                 '/><card count="2" id="2" name=".44 Magnum" /><card '
-                 'count="2" id="2" name="AK-47" /><card count="2" id="14" '
-                 'name="Abombwe" /></abstractcardset>')
+ACS_EXAMPLE_2 = (b'<abstractcardset author="A test author" '
+                 b'comment="A test comment" name="Test Set 2" '
+                 b'sutekh_xml_version="1.1"><annotations /><card count="2" '
+                 b'id="11" name="Abebe" /><card count="1" id="8" name="Abbot" '
+                 b'/><card count="2" id="2" name=".44 Magnum" /><card '
+                 b'count="2" id="2" name="AK-47" /><card count="2" id="14" '
+                 b'name="Abombwe" /></abstractcardset>')
 
 
 class AbstractCardSetParserTest(SutekhTest):
@@ -57,7 +57,7 @@ class AbstractCardSetParserTest(SutekhTest):
         fOut.close()
 
         oHolder = CardSetHolder()
-        oParser.parse(StringIO(ACS_EXAMPLE_2), oHolder)
+        oParser.parse(BytesIO(ACS_EXAMPLE_2), oHolder)
         oHolder.create_pcs()
         fIn = open(sTempFileName, 'rU')
         oHolder = CardSetHolder()
@@ -92,7 +92,7 @@ class AbstractCardSetParserTest(SutekhTest):
         self.assertRaises(RuntimeError, oFile.write, '(ACS) Test Set 1')
 
         oHolder = CardSetHolder()
-        self.assertRaises(IOError, oParser.parse, StringIO(
+        self.assertRaises(IOError, oParser.parse, BytesIO(
             '<caarrd>%s</caarrd>' % ACS_EXAMPLE_1), oHolder)
 
 

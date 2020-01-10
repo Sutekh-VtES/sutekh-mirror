@@ -6,7 +6,7 @@
 """Downloads rulebook HTML pages and makes them available via the Help menu."""
 
 import os
-import StringIO
+from io import StringIO
 import webbrowser
 import zipfile
 from logging import Logger
@@ -221,7 +221,7 @@ class RulebookPlugin(SutekhPlugin):
             try:
                 sData = oConfigDialog.get_data()
                 if sData:
-                    oRawFile = StringIO.StringIO(sData)
+                    oRawFile = StringIO(sData)
                     oZipFile = zipfile.ZipFile(oRawFile, 'r')
                     self._unpack_zip_with_prog_bar(oZipFile)
                 # else is the error path, but we'll have already shown

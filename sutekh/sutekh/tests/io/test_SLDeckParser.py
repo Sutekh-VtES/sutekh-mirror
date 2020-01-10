@@ -6,7 +6,7 @@
 """Test reading a card set from a Secret Library deck file"""
 
 import unittest
-import StringIO
+from io import BytesIO
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import DummyHolder
 from sutekh.io.SLDeckParser import SLDeckParser
@@ -17,7 +17,7 @@ class TestSLDeckParser(SutekhTest):
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
 
-    sTestText1 = """
+    sTestText1 = b"""
         ***SL***TITLE***
         NAME OF THE DECK
         ***SL***AUTHOR***
@@ -41,7 +41,7 @@ class TestSLDeckParser(SutekhTest):
     def test_basic(self):
         """Run the Secret Library deck input test."""
         oHolder = DummyHolder()
-        fIn = StringIO.StringIO(self.sTestText1)
+        fIn = BytesIO(self.sTestText1)
         oParser = SLDeckParser()
         oParser.parse(fIn, oHolder)
 
