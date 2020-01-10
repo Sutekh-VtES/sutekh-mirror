@@ -57,7 +57,7 @@ class WritePmwiki(ArdbInfo):
         sCrypt = "!! Crypt [%(size)d vampires]\n" % dCryptStats
 
         aCryptLines = []
-        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.items(),
                                              key=self._crypt_sort_key):
             dLine = self._format_crypt_line(oCard, iCount)
             aCryptLines.append(dLine)
@@ -85,7 +85,7 @@ class WritePmwiki(ArdbInfo):
 
             sLib += "!!! %s [%d]\n" % (sTypeString, iTotal)
 
-            for oCard, iCount in sorted(dCards.iteritems(),
+            for oCard, iCount in sorted(dCards.items(),
                                         key=lambda x: x[0].name):
                 sLib += " %dx %s\n" % (iCount, oCard.name)
 

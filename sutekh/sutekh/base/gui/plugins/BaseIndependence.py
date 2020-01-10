@@ -193,7 +193,7 @@ class BaseIndependence(BasePlugin):
                                     (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         dFormatted = {}
         aParentList = []
-        for oCard, oInfo in sorted(dMissing.iteritems(),
+        for oCard, oInfo in sorted(dMissing.items(),
                                    key=lambda x: IAbstractCard(x[0]).name):
             sCardName = self._escape(IAbstractCard(oCard).name)
             if not hasattr(oCard, 'printing'):
@@ -209,7 +209,7 @@ class BaseIndependence(BasePlugin):
                                '</span> copies (used in %s)'
                                % (sCardName, sPrinting, oInfo.iCount,
                                   self._escape(oInfo.format_cs())))
-            for sCardSet, iCount in oInfo.dCardSets.iteritems():
+            for sCardSet, iCount in oInfo.dCardSets.items():
                 dFormatted.setdefault(sCardSet, [])
                 dFormatted[sCardSet].append('<span foreground="blue">%s%s'
                                             '</span>: Missing '
@@ -231,7 +231,7 @@ class BaseIndependence(BasePlugin):
             oPage, 'Missing from %s' % self._escape(oParentCS.name),
             bMarkup=True)
 
-        for sCardSet, aMsgs in dFormatted.iteritems():
+        for sCardSet, aMsgs in dFormatted.items():
             oResultDlg.add_widget_page(
                 AutoScrolledWindow(_make_align_list(aMsgs), True),
                 'Missing in %s' % self._escape(sCardSet), bMarkup=True)
@@ -250,7 +250,7 @@ class BaseIndependence(BasePlugin):
         dParent = {}
         _get_cards(oParentCS, dParent, bIgnoreExpansions)
         dMissing = {}
-        for oCard, oInfo in dCards.iteritems():
+        for oCard, oInfo in dCards.items():
             if oCard not in dParent:
                 dMissing[oCard] = oInfo
             elif dParent[oCard].iCount < oInfo.iCount:
@@ -271,7 +271,7 @@ class BaseIndependence(BasePlugin):
         oCardSet = IPhysicalCardSet(sCSName)
         # Turn data into a list of cards to add
         aCards = []
-        for oCard, oInfo in dMissing.iteritems():
+        for oCard, oInfo in dMissing.items():
             if not hasattr(oCard, 'printing'):
                 # Dealing with abstract cards in the list
                 oPhysCard = IPhysicalCard((oCard, None))

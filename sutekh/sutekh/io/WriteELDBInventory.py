@@ -37,7 +37,7 @@ class WriteELDBInventory(object):
         for oCard in oHolder.cards:
             oAbsCard = IAbstractCard(oCard)
             dCards[oAbsCard] += 1
-        for oCard, iNum in dCards.iteritems():
+        for oCard, iNum in dCards.items():
             sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
                                                 type_of_card(oCard))
         return sResult

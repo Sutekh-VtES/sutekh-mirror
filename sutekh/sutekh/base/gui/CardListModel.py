@@ -349,7 +349,7 @@ class CardListModel(gtk.TreeStore):
                 dExpanInfo.setdefault(oPhysCard, 0)
                 dExpanInfo[oPhysCard] += 1
 
-        aAbsCards = list(dAbsCards.iteritems())
+        aAbsCards = list(dAbsCards.items())
 
         # Iterate over groups
         return (fGetCard, fGetCount, fGetExpanInfo,

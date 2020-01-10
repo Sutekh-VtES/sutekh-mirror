@@ -292,7 +292,7 @@ class CachedCardSetHolder(CardSetHolder):
         dCardExpansions = {}
         for sName in self._dCardExpansions:
             dCardExpansions[sName] = {}
-            for tExpPrint, iCnt in self._dCardExpansions[sName].iteritems():
+            for tExpPrint, iCnt in self._dCardExpansions[sName].items():
                 tNewExpPrint = dLookupCache['printings'].get(tExpPrint,
                                                              tExpPrint)
                 dCardExpansions[sName][tNewExpPrint] = iCnt
@@ -301,7 +301,7 @@ class CachedCardSetHolder(CardSetHolder):
                                                       "Physical Card List",
                                                       dCardExpansions)
         # Update printing lookups using the cache
-        for tExpPrint, oPrinting in dPrintingLookup.iteritems():
+        for tExpPrint, oPrinting in dPrintingLookup.items():
             if not oPrinting:
                 dLookupCache['printings'][tExpPrint] = (None, None)
             else:

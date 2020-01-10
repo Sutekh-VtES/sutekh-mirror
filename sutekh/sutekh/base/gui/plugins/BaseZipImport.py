@@ -25,7 +25,7 @@ from ..GuiCardSetFunctions import (reparent_all_children,
 def _do_rename_parent(sOldName, sNewName, dRemaining):
     """Handle the renaming of a parent card set in the unprocessed list."""
     dResult = {}
-    for sName, tInfo in dRemaining.iteritems():
+    for sName, tInfo in dRemaining.items():
         if tInfo[3] == sOldName:
             dResult[sName] = (tInfo[0], tInfo[1], tInfo[2], sNewName)
         else:
@@ -206,7 +206,7 @@ class BaseZipImport(BasePlugin):
         # pylint: enable=not-callable
         dList = oFile.get_all_entries()
         dEscapedList = {}
-        for sName, tInfo in dList.iteritems():
+        for sName, tInfo in dList.items():
             dEscapedList[self._escape(sName)] = (sName, tInfo[0], tInfo[1],
                                                  tInfo[2])
 
@@ -240,7 +240,7 @@ class BaseZipImport(BasePlugin):
         # Use track a lot of state, so many local variables
         dRemaining = {}
         dRenames = {}
-        for sEscapedName, tInfo in dSelected.iteritems():
+        for sEscapedName, tInfo in dSelected.items():
             sName, sFilename, bParentExists, sParentName = tInfo
             # We aim to ensure that we always keep loaded card sets together,
             # so if the parent name clashes, we want to follow the renamed

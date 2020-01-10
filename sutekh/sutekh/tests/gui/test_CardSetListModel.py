@@ -516,7 +516,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.oConfig.set_profile_option(CARDSET, 'test2', SHOW_CARD_OPTION,
                                         sTestValue)
         # Check changing deck profile
-        for sValue, iMode in SHOW_CARD_LOOKUP.iteritems():
+        for sValue, iMode in SHOW_CARD_LOOKUP.items():
             iCurMode = oModel._iShowCardMode
             self.oConfig.set_profile_option(CARDSET, 'test', SHOW_CARD_OPTION,
                                             sValue)
@@ -530,17 +530,17 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Check listener on card set profile changes
         self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'test')
         self.oConfig.set_profile(FRAME, oModel.frame_id, 'test2')
-        for sValue, iMode in EXTRA_LEVEL_LOOKUP.iteritems():
+        for sValue, iMode in EXTRA_LEVEL_LOOKUP.items():
             self.oConfig.set_profile_option(CARDSET, 'test',
                                             EXTRA_LEVEL_OPTION, sValue)
             self.assertEqual(oModel._iExtraLevelsMode, iMode)
         # Check listener on frame profile changes
-        for sValue, iMode in PARENT_COUNT_LOOKUP.iteritems():
+        for sValue, iMode in PARENT_COUNT_LOOKUP.items():
             self.oConfig.set_profile_option(CARDSET, 'test2',
                                             PARENT_COUNT_MODE, sValue)
             self.assertEqual(oModel._iParentCountMode, iMode)
         # Check listener on local frame profile changes
-        for sValue, iMode in PARENT_COUNT_LOOKUP.iteritems():
+        for sValue, iMode in PARENT_COUNT_LOOKUP.items():
             self.oConfig.set_local_frame_option(oModel.frame_id,
                                                 PARENT_COUNT_MODE, sValue)
             self.assertEqual(oModel._iParentCountMode, iMode)

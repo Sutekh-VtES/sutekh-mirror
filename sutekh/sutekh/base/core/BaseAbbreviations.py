@@ -27,7 +27,7 @@ class AbbrevMeta(type):
     def make_lookup(cls):
         """Create a lookup table for the class."""
         cls._dLook = {}
-        for sKey, aAlts in cls.dKeys.iteritems():
+        for sKey, aAlts in cls.dKeys.items():
             cls._dLook[sKey] = sKey
             for sAlt in aAlts:
                 cls._dLook[sAlt] = sKey

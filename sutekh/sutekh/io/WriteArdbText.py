@@ -63,7 +63,7 @@ class WriteArdbText(ArdbInfo):
         # so we need to keep track and format later
         iDiscJust = 0
         iTitleJust = 0
-        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.items(),
                                              key=self._crypt_sort_key):
             dLine = self._format_crypt_line(oCard, iCount)
             if dLine['clan'].endswith('antitribu'):
@@ -118,7 +118,7 @@ class WriteArdbText(ArdbInfo):
             else:
                 sLib += "%s [%d]\n" % (sTypeString, iTotal)
 
-            for oCard, iCount in sorted(dCards.iteritems(),
+            for oCard, iCount in sorted(dCards.items(),
                                         key=lambda x: x[0].name):
                 sLib += " %dx %s\n" % (iCount, oCard.name)
 

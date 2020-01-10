@@ -470,7 +470,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
         # Find the card in the starter decks
         dInfo = {'Starters': [], 'Demos': [], 'Fixed': []}
-        for sType, aResults in dMatches.iteritems():
+        for sType, aResults in dMatches.items():
             for oCS, sExpName, sDeckName in sorted(aResults,
                                                    key=lambda x: (x[1], x[2])):
                 # Sort by exp, name

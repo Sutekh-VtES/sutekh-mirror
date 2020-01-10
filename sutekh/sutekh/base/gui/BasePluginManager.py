@@ -237,7 +237,7 @@ class BasePlugin(object):
         """Check whether the plugin supports the current version of
            the Sutekh database tables."""
         oDBVer = DatabaseVersion()
-        for oTable, aVersions in cls.dTableVersions.iteritems():
+        for oTable, aVersions in cls.dTableVersions.items():
             if not oDBVer.check_table_in_versions(oTable, aVersions):
                 logging.warn("Skipping plugin %s due to version error (%s)",
                              cls, oTable)

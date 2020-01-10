@@ -86,7 +86,7 @@ class WriteVEKNForum(ArdbInfo):
         aCryptLines = []
         # ARDB's discipline & title padding are based on the longest entry
         # so we need to keep track and format later
-        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.items(),
                                              key=self._crypt_sort_key):
             dLine = self._format_crypt_line(oCard, iCount)
             add_clan_symbol(dLine)
@@ -146,7 +146,7 @@ class WriteVEKNForum(ArdbInfo):
             else:
                 sLib += "[b][u]%s [%d][/u][/b]\n" % (sTypeString, iTotal)
 
-            for oCard, iCount in sorted(dCards.iteritems(),
+            for oCard, iCount in sorted(dCards.items(),
                                         key=lambda x: x[0].name):
                 sUrl = secret_library_url(oCard, False)
                 sLib += " %dx [url=%s]%s[/url]\n" % (iCount, sUrl, oCard.name)

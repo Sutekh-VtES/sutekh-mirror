@@ -67,7 +67,7 @@ class ArdbInfo(object):
            in the XML file, so we need to combine things so there's only 1
            entry per card."""
         dCombinedCards = {}
-        for tKey, iNum in sorted(dCards.iteritems(),
+        for tKey, iNum in sorted(dCards.items(),
                                  key=lambda x: (x[0][0].name, x[0][-1])):
             oCard = tKey[0]
             dCombinedCards.setdefault(oCard, [0] + list(tKey[1:]))
@@ -77,7 +77,7 @@ class ArdbInfo(object):
     def _group_types(self, dCombinedLib):
         """Group the cards together by card type."""
         dTypes = {}
-        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.iteritems():
+        for oCard, (iCount, sTypeString, _sSet) in dCombinedLib.items():
             if sTypeString not in dTypes:
                 dTypes[sTypeString] = {}
             dTypes[sTypeString].setdefault(oCard, 0)
@@ -87,7 +87,7 @@ class ArdbInfo(object):
     def _count_trifles(self, dCards):
         """Given the result of _extract_library, count the trifles."""
         iCount = 0
-        for tKey, iNum in dCards.iteritems():
+        for tKey, iNum in dCards.items():
             oCard = tKey[0]
             if is_trifle(oCard):
                 iCount += iNum
@@ -105,7 +105,7 @@ class ArdbInfo(object):
         }
         dVamps = {}
         aCaps = []
-        for tKey, iCount in dCards.iteritems():
+        for tKey, iCount in dCards.items():
             oCard = tKey[0]
             if is_crypt_card(oCard):
                 dVamps[tKey] = iCount
@@ -130,7 +130,7 @@ class ArdbInfo(object):
         """Extract the library cards from the list."""
         iSize = 0
         dLib = {}
-        for tKey, iCount in dCards.iteritems():
+        for tKey, iCount in dCards.items():
             oCard, sSet = tKey
             if not is_crypt_card(oCard):
                 aTypes = sorted([x.name for x in oCard.cardtype])

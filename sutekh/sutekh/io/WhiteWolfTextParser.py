@@ -278,16 +278,16 @@ class CardDict(dict):
         # Correct special cases
         if self['name'] in self.dCryptKeywordSpecial:
             for sKeyword, iVal in \
-                    self.dCryptKeywordSpecial[self['name']].iteritems():
+                    self.dCryptKeywordSpecial[self['name']].items():
                 dKeywords[sKeyword] = iVal
         # Make sure we don't detect merged properties
         sText = strip_braces(self['text'].split('[MERGED]')[0])
         for sNum, sType in self.oCryptInfoRgx.findall(sText):
             dKeywords[sType] += int(sNum)
-        for sType, iNum in dKeywords.iteritems():
+        for sType, iNum in dKeywords.items():
             self._add_keyword(oCard, '%d %s' % (iNum, sType))
         # Check for "Black Hand", "Infernal", "Red List", "Seraph",
-        for sKeyword, oRegexp in self.dCryptProperties.iteritems():
+        for sKeyword, oRegexp in self.dCryptProperties.items():
             oMatch = oRegexp.search(sText)
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
@@ -298,7 +298,7 @@ class CardDict(dict):
         if self['cardtype'] == 'Imbued':
             self._add_keyword(oCard, 'mortal')
         # Check for full text keywords
-        for sKeyword, oRegexp in self.dCryptFullTextProperties.iteritems():
+        for sKeyword, oRegexp in self.dCryptFullTextProperties.items():
             oMatch = oRegexp.search(self['text'])
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
@@ -340,9 +340,9 @@ class CardDict(dict):
             if oMatch:
                 self._add_keyword(oCard, sKeyword)
 
-        for sKeyword, oRegexp in dProps.iteritems():
+        for sKeyword, oRegexp in dProps.items():
             _do_match(sKeyword, oRegexp)
-        for sKeyword, oRegexp in self.dLibProperties.iteritems():
+        for sKeyword, oRegexp in self.dLibProperties.items():
             _do_match(sKeyword, oRegexp)
 
     def _parse_text(self, oCard):

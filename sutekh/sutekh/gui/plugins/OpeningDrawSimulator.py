@@ -117,7 +117,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
             dLibCount[oCard.name] += 1
         dLibProbs = {}
         iTot = len(self.aLibrary)
-        for sName, iCount in dLibCount.iteritems():
+        for sName, iCount in dLibCount.items():
             dLibProbs[sName] = hypergeometric_mean(iCount, 7, iTot)
         return dLibProbs
 

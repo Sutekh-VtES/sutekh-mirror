@@ -227,7 +227,7 @@ class CardSetController(object):
         dOperation = {}
         for oPhysCard in dSelectedData:
             for sCardSetName, (iCardCount, iNewCnt) in \
-                    dSelectedData[oPhysCard].iteritems():
+                    dSelectedData[oPhysCard].items():
                 aCards = []
                 if iNewCnt < iCardCount:
                     # remove cards
@@ -259,7 +259,7 @@ class CardSetController(object):
         if not self._aUndoList:
             return
         dOperation = self._aUndoList.pop()
-        for sCardSetName, aCards in dOperation.iteritems():
+        for sCardSetName, aCards in dOperation.items():
             for oPhysCard, iCnt in aCards:
                 if iCnt < 0:
                     self.dec_card(oPhysCard, sCardSetName, False)
@@ -273,7 +273,7 @@ class CardSetController(object):
         if not self._aRedoList:
             return
         dOperation = self._aRedoList.pop()
-        for sCardSetName, aCards in dOperation.iteritems():
+        for sCardSetName, aCards in dOperation.items():
             for oPhysCard, iCnt in aCards:
                 # Logic is reversed from Undo list
                 if iCnt > 0:

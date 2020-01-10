@@ -90,7 +90,7 @@ class ClusterCardList(SutekhPlugin):
         dPropFuncs = CardListTabulator.get_default_prop_funcs()
         self._dGroups = {}
 
-        for sName, fProp in dPropFuncs.iteritems():
+        for sName, fProp in dPropFuncs.items():
             aParts = sName.split(":")
             if len(aParts) == 1:
                 self._dGroups.setdefault("Miscellaneous",
@@ -197,7 +197,7 @@ class ClusterCardList(SutekhPlugin):
         oDistLabel.set_markup("<b>Distance Measure for Clustering</b>")
         oVbx.pack_start(oDistLabel, False, False, 5)
 
-        oIter = Vector.METRICS.iterkeys()
+        oIter = Vector.METRICS.keys()
         for sName in oIter:
             oFirstBut = gtk.RadioButton(group=None, label=sName)
             oVbx.pack_start(oFirstBut, False)
@@ -313,7 +313,7 @@ class ClusterCardList(SutekhPlugin):
 
     def handle_make_card_sets(self, _oSomeObj):
         """Create card a suitable card set from the chosen clusters"""
-        for iId, oBut in self._dCardSetMakingButtons.iteritems():
+        for iId, oBut in self._dCardSetMakingButtons.items():
             if oBut.get_active():
                 self._fMakeCardSetFromCluster(iId)
 
@@ -397,8 +397,8 @@ class ClusterCardList(SutekhPlugin):
 
         # gather property functions
         dPropFuncs = {}
-        for sGroup, dButtons in self._dPropButtons.iteritems():
-            for sName, oBut in dButtons.iteritems():
+        for sGroup, dButtons in self._dPropButtons.items():
+            for sName, oBut in dButtons.items():
                 if oBut.get_active():
                     dPropFuncs[sGroup + ": " + sName] = \
                         self._dGroups[sGroup][sName]

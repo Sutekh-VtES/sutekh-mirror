@@ -137,7 +137,7 @@ class WriteTWDAText(ArdbInfo):
         iNameJust = 8
         iDiscJust = 0
         iTitleJust = 0
-        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.iteritems(),
+        for oCard, (iCount, _sSet) in sorted(dCombinedVamps.items(),
                                              key=self._crypt_sort_key):
             dLine = self._format_crypt_line(oCard, iCount)
             if 'Imbued' in dLine['clan']:
@@ -256,7 +256,7 @@ class WriteTWDAText(ArdbInfo):
 
                 # library cards are also normalised
                 fKey = lambda x: move_articles_to_back(x[0].name).lower()
-                for oCard, iCount in sorted(dCards.iteritems(), key=fKey):
+                for oCard, iCount in sorted(dCards.items(), key=fKey):
                     sName = normalise_card_name(oCard.name)
                     sLib += "%dx %s\n" % (iCount, sName)
         return sLib

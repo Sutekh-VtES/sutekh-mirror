@@ -34,8 +34,8 @@ def get_cards_filter(oModel, oFilter):
 
 def get_grouped_probs(dProbs, dToCheck, dGroupedProbs):
     """Calculate the probabilities for the card groups"""
-    for sCardName, fMean in dProbs.iteritems():
-        for sGroup, aCards in dToCheck.iteritems():
+    for sCardName, fMean in dProbs.items():
+        for sGroup, aCards in dToCheck.items():
             if sCardName in aCards:
                 dGroupedProbs.setdefault(sGroup, {'avg': 0.0, 'cards': []})
                 # Cumlative average
@@ -52,15 +52,15 @@ def get_flat_probs(aCards, iDraw):
         dCount[oCard.name] += 1
     dProbs = {}
     iTot = len(aCards)
-    for sName, iCount in dCount.iteritems():
+    for sName, iCount in dCount.items():
         dProbs[sName] = hypergeometric_mean(iCount, iDraw, iTot)
     return dProbs
 
 
 def check_cards(dHand, dToCheck, dCount):
     """Check if a card is in the list and set dCount correctly."""
-    for sCardName, iCount in dHand.iteritems():
-        for sToCheck, aList in dToCheck.iteritems():
+    for sCardName, iCount in dHand.items():
+        for sToCheck, aList in dToCheck.items():
             if sCardName in aList:
                 dCount.setdefault(sToCheck, 0)
                 dCount[sToCheck] += iCount
@@ -71,7 +71,7 @@ def fill_string(dGroups, dInfo, dToCheck):
     sResult = ''
     aSortedList = sorted(dInfo.items(), key=lambda x: (x[1], x[0]),
                          reverse=True)
-    for sGroup, iGrpNum in dGroups.iteritems():
+    for sGroup, iGrpNum in dGroups.items():
         sResult += u'%d \u00D7 %s\n' % (iGrpNum, sGroup)
         for sCardName, iNum in aSortedList:
             if sCardName in dToCheck[sGroup]:
@@ -99,7 +99,7 @@ def hypergeometric_mean(iItems, iDraws, iTotal):
 
 def fill_store(oStore, dProbs, dGroupedProbs):
     """Fill oStore with the grouped stats about the opening hand"""
-    for sName, dEntry in dGroupedProbs.iteritems():
+    for sName, dEntry in dGroupedProbs.items():
         fMean = dEntry['avg']
         sVal = '%2.2f' % fMean
         oParentIter = oStore.append(None, (sName, sVal, 100 * fMean / 7))

@@ -520,7 +520,7 @@ class SecretLibrary(SutekhPlugin):
 
         # create crypt strings
         aCrypt = []
-        for oAbsCard, iCnt in dCrypt.iteritems():
+        for oAbsCard, iCnt in dCrypt.items():
             sCsvName = canonical_to_sl(oAbsCard.name)
             sCsvName = sCsvName.replace('(Advanced)', '(Adv)')
             # Secret library doesn't like "'s here, it seems.
@@ -532,7 +532,7 @@ class SecretLibrary(SutekhPlugin):
 
         # create library strings
         aLibrary = []
-        for oAbsCard, iCnt in dLibrary.iteritems():
+        for oAbsCard, iCnt in dLibrary.items():
             sCsvName = canonical_to_sl(oAbsCard.name)
             # See above
             sCsvName = sCsvName.replace('"', '')

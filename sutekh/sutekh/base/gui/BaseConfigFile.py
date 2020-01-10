@@ -289,7 +289,7 @@ class BaseConfigFile(object):
         # default profile
         for sId in dOldProfiles:
             self.set_profile(FRAME, sId, None)
-        for sOldId, sNewId in dPaneMap.iteritems():
+        for sOldId, sNewId in dPaneMap.items():
             if sOldId in dOldProfiles:
                 # use set_profile to ensure we call the message bus
                 self.set_profile(FRAME, sNewId, dOldProfiles[sOldId])
@@ -589,11 +589,11 @@ class BaseConfigFile(object):
         """Update the card set profiles to a new id -> name mapping"""
         # We need to reverse of dNewMapping. Since both name and id are
         # unique, this is safe
-        dNewRev = dict(zip(dNewMap.itervalues(), dNewMap.iterkeys()))
+        dNewRev = dict(zip(dNewMap.values(), dNewMap.keys()))
         dOldProfiles = self._oConfig['per_deck']['cardset_profiles'].copy()
         dProfiles = self._oConfig['per_deck']['cardset_profiles']
         dProfiles.clear()
-        for sId, sProfile in dOldProfiles.iteritems():
+        for sId, sProfile in dOldProfiles.items():
             iId = int(sId[2:])  # cs<cardset id>
             if iId not in dOldMap:
                 # ini file out of synce with database, so skip this entry
@@ -698,7 +698,7 @@ class BaseConfigFile(object):
             for dProfiles in (self._oConfig['per_deck']['cardset_profiles'],
                               self._oConfig['per_deck']['frame_profiles'],
                              ):
-                for sId, sCurProfile in dProfiles.iteritems():
+                for sId, sCurProfile in dProfiles.items():
                     if sProfile == sCurProfile:
                         aUsers.append(sId)
             return aUsers

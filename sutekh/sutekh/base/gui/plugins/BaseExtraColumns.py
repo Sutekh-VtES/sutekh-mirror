@@ -67,7 +67,7 @@ class BaseExtraColumns(BasePlugin):
         self._dWidths = {}
         self._dSortDataFuncs = {}
 
-        for sKey, (iWidth, sRender, sData) in self.COLUMNS.iteritems():
+        for sKey, (iWidth, sRender, sData) in self.COLUMNS.items():
             self._dWidths[sKey] = iWidth
             self._dCols[sKey] = getattr(self, sRender)
             self._dSortDataFuncs[sKey] = getattr(self, sData)

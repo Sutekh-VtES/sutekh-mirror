@@ -30,7 +30,7 @@ class SutekhMenu(gtk.MenuBar):
             return
         self._oMainWindow.add_accel_group(self._oAccelGroup)
         self._bAccelActive = True
-        for oMenuLabel, sMarkup in self._dMenuLabels.iteritems():
+        for oMenuLabel, sMarkup in self._dMenuLabels.items():
             oMenuLabel.set_use_underline(True)
             oMenuLabel.set_label(sMarkup)
 

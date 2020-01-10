@@ -829,18 +829,18 @@ class AnalyzeCardList(SutekhPlugin):
         sVampText += ("Average Capacity is : %2.3f\n\n" %
                       (sum([x.capacity for x in aCards]) / float(iNum)))
         sVampText += '<span foreground = "blue">Clans</span>\n'
-        for oClan, iCount in dDeckDetails['clans'].iteritems():
+        for oClan, iCount in dDeckDetails['clans'].items():
             sVampText += ("%d Vampires of clan %s %s\n" %
                           (iCount, oClan.name,
                            _percentage(iCount, self.iCryptSize, "Crypt")))
         sVampText += '<span foreground = "blue">Sects</span>\n'
-        for oSect, iCount in dDeckDetails['sects'].iteritems():
+        for oSect, iCount in dDeckDetails['sects'].items():
             sVampText += ("%d %s vampires %s\n" %
                           (iCount, oSect.name,
                            _percentage(iCount, self.iCryptSize, "Crypt")))
         sVampText += '\n<span foreground = "blue">Titles</span>\n'
         iTotalTitles = 0
-        for oTitle, iCount in dDeckDetails['titles'].iteritems():
+        for oTitle, iCount in dDeckDetails['titles'].items():
             sVampText += ("%d vampires with the title %s (%d votes)\n" %
                           (iCount, oTitle.name,
                            Titles.vote_value(oTitle.name)))
@@ -854,7 +854,7 @@ class AnalyzeCardList(SutekhPlugin):
                        dDeckDetails['votes'] / float(iNum)))
         sVampText += '\n<span foreground = "blue">Disciplines</span>\n'
         for oDisc, aInfo in sorted(
-                self.dCryptStats['crypt discipline'].iteritems(),
+                self.dCryptStats['crypt discipline'].items(),
                 key=_disc_sort_key):
             if aInfo[0] == 'discipline':
                 sVampText += ("%(infcount)d Vampires with %(disc)s %(iper)s,"
@@ -899,12 +899,12 @@ class AnalyzeCardList(SutekhPlugin):
                         self.dCryptStats['imbued max cost'])
         sImbuedText += "Average Life is : %2.3f\n\n" % (
             sum([x.life for x in aCards]) / float(iNum))
-        for oCreed, iCount in dDeckCreed.iteritems():
+        for oCreed, iCount in dDeckCreed.items():
             sImbuedText += "%d Imbued of creed %s %s\n" % (
                 iCount, oCreed.name, _percentage(iCount, self.iCryptSize,
                                                  "Crypt"))
         for oVirtue, aInfo in sorted(
-                self.dCryptStats['crypt discipline'].iteritems(),
+                self.dCryptStats['crypt discipline'].items(),
                 key=_disc_sort_key):
             if aInfo[0] == 'virtue':
                 sImbuedText += "%d Imbued with %s %s\n" % (
@@ -1012,7 +1012,7 @@ class AnalyzeCardList(SutekhPlugin):
             sType = oCard.text.split('.', 1)[0]  # first word is type
             dEventTypes.setdefault(sType, 0)
             dEventTypes[sType] += 1
-        for sType, iCount in dEventTypes.iteritems():
+        for sType, iCount in dEventTypes.items():
             sEventText += '%d of type %s : %s (%s) \n' % (
                 iCount, sType, _percentage(iCount, iNumEvents, 'Events'),
                 _percentage(iCount, self.iLibSize, 'Library'))

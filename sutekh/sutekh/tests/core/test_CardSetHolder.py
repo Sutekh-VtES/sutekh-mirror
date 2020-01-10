@@ -36,7 +36,7 @@ class CardSetHolderTests(SutekhTest):
         oCSH = CardSetHolder()
         aExpectedPrintings = []
 
-        for sCardName, aInfo in dSet1.iteritems():
+        for sCardName, aInfo in dSet1.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
@@ -98,7 +98,7 @@ class CardSetHolderTests(SutekhTest):
             'Abede': [3, 'LoB'],
         }
         oCSH = CardSetHolder()
-        for sCardName, aInfo in dSet2.iteritems():
+        for sCardName, aInfo in dSet2.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
 
@@ -130,7 +130,7 @@ class CardSetHolderTests(SutekhTest):
         }
 
         oCSH = CardSetHolder()
-        for sCardName, aInfo in dSet3.iteritems():
+        for sCardName, aInfo in dSet3.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
 
@@ -180,7 +180,7 @@ class CardSetHolderTests(SutekhTest):
         aExpectedPrintings = []
         dLookupCache = {}
 
-        for sCardName, aInfo in dSet1.iteritems():
+        for sCardName, aInfo in dSet1.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
             if sExpName:
@@ -249,7 +249,7 @@ class CardSetHolderTests(SutekhTest):
             'Abede': [3, 'LoB'],
         }
         oCSH = CachedCardSetHolder()
-        for sCardName, aInfo in dSet2.iteritems():
+        for sCardName, aInfo in dSet2.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
 
@@ -283,7 +283,7 @@ class CardSetHolderTests(SutekhTest):
         dLookupCache = {}
 
         oCSH = CachedCardSetHolder()
-        for sCardName, aInfo in dSet3.iteritems():
+        for sCardName, aInfo in dSet3.items():
             iCnt, sExpName = aInfo
             oCSH.add(iCnt, sCardName, sExpName, None)
 

@@ -337,7 +337,7 @@ class FilterValuesBox(gtk.VBox):
     # Methods for consistency
     def set_box_model_value(self, oBoxModel, oWidget):
         """Set the correct selection for this box model"""
-        for sDesc, tInfo in BOXTYPE.iteritems():
+        for sDesc, tInfo in BOXTYPE.items():
             sBoxType, bNegate = tInfo
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
                 oWidget.set_selected_entry(sDesc)
@@ -349,7 +349,7 @@ class FilterValuesBox(gtk.VBox):
         aSelected = oList.get_selection()
         if not aSelected:
             return  # We don't do anything special if nothing's selected
-        for sDesc, tInfo in BOXTYPE.iteritems():
+        for sDesc, tInfo in BOXTYPE.items():
             if sDesc == aSelected[0]:
                 oBoxModel.sBoxType, oBoxModel.bNegate = tInfo
         self._oBoxModelEditor.update_box_text(oBoxModel)
@@ -664,7 +664,7 @@ class FilterBoxModelStore(gtk.TreeStore):
             if oModel.bDisabled or bDisabled:
                 oColour = self.GREY
                 bDisabled = True
-            for sDesc, tInfo in BOXTYPE.iteritems():
+            for sDesc, tInfo in BOXTYPE.items():
                 sBoxType, bNegate = tInfo
                 if oModel.sBoxType == sBoxType \
                         and oModel.bNegate == bNegate:
@@ -957,7 +957,7 @@ class FilterBoxModelEditView(CustomDragIconView):
 
     def update_box_text(self, oBoxModel):
         """Update the listing for the given box model"""
-        for sDesc, tInfo in BOXTYPE.iteritems():
+        for sDesc, tInfo in BOXTYPE.items():
             sBoxType, bNegate = tInfo
             if oBoxModel.sBoxType == sBoxType and oBoxModel.bNegate == bNegate:
                 self._oStore.set(self.oCurSelectIter, 0, sDesc)

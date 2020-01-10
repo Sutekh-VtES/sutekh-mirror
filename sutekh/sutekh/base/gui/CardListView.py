@@ -148,7 +148,7 @@ class CardListView(FilteredView):
         # Need to bung everything into a string, alas
         sSelectData = self.sDragPrefix
         for oAbsCardID in dSelectedData:
-            for oPhysCardId, iCount in dSelectedData[oAbsCardID].iteritems():
+            for oPhysCardId, iCount in dSelectedData[oAbsCardID].items():
                 sSelectData += '\n%(count)d x  %(abscard)d x %(physcard)d' % {
                     'count': iCount,
                     'abscard': oAbsCardID,

@@ -128,7 +128,7 @@ a:hover {
 def _sort_vampires(dVamps):
     """Sort the vampires by number, then capacity."""
     aSortedVampires = []
-    for oCard, (iCount, _sSet) in dVamps.iteritems():
+    for oCard, (iCount, _sSet) in dVamps.items():
         if oCard.creed:
             iCapacity = oCard.life
             sClan = "%s (Imbued)" % [x.name for x in oCard.creed][0]
@@ -150,7 +150,7 @@ def _sort_lib(dLib):
     """Extract a list of cards sorted into types from the library"""
     dTypes = {}
     # Group by type
-    for oCard, (iCount, sType, _sSet) in dLib.iteritems():
+    for oCard, (iCount, sType, _sSet) in dLib.items():
         dTypes.setdefault(sType, [0])
         dTypes[sType][0] += iCount
         dTypes[sType].append((iCount, oCard.name))

@@ -160,7 +160,7 @@ class CardSetView(CardListView):
                 # Remove anything already assigned to this
                 dSelectedData[iAbsID].clear()
                 for iPhysID, iCnt in \
-                        oModel.get_drag_child_info(oPath).iteritems():
+                        oModel.get_drag_child_info(oPath).items():
                     dSelectedData[iAbsID][iPhysID] = iCnt
             elif not iPhysID:
                 # If the expansion is unknown, see if there are interesting
@@ -170,7 +170,7 @@ class CardSetView(CardListView):
                 # selected multiple times because it's in different groupings
                 dChildInfo = oModel.get_drag_child_info(oPath)
                 if dChildInfo:
-                    for iPhysID, iCnt in dChildInfo.iteritems():
+                    for iPhysID, iCnt in dChildInfo.items():
                         dSelectedData[iAbsID][iPhysID] = iCnt
                 else:
                     # Pass through as unknown
