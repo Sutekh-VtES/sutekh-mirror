@@ -54,54 +54,47 @@ def run_filter(sFilter, sCardSet):
     return dResults
 
 
-def print_card_filter_list(dResults, fPrintCard, bDetailed, sEncoding):
+def print_card_filter_list(dResults, fPrintCard, bDetailed):
     """Print a dictionary of cards returned by runfilter"""
 
     for oCard in sorted(dResults, key=lambda x: x.name):
         iCnt = dResults[oCard]
         if iCnt:
-            print(b'%3d x %s' % (
-                iCnt, oCard.name.encode(sEncoding, 'xmlcharrefreplace')))
+            print('%3d x %s' % (iCnt, oCard.name))
         else:
-            print(oCard.name.encode(sEncoding, 'xmlcharrefreplace'))
+            print(oCard.name)
         if bDetailed:
-            fPrintCard(oCard, sEncoding)
+            fPrintCard(oCard)
 
 
-def print_card_list(sTreeRoot, sEncoding):
+def print_card_list(sTreeRoot):
     """Print a a list of card sets, handling potential encoding issues
        and a starting point for the tree."""
     if sTreeRoot is not None:
         try:
             oCS = IPhysicalCardSet(sTreeRoot)
-            print(' %s' % oCS.name.encode(sEncoding, 'xmlcharrefreplace'))
-            print(format_cs_list(oCS, '    ').encode(sEncoding,
-                                                     'xmlcharrefreplace'))
+            print(oCS.name)
+            print(format_cs_list(oCS, '    '))
         except SQLObjectNotFound:
             print('Unable to load card set', sTreeRoot)
             return False
     else:
-        print(format_cs_list().encode(sEncoding, 'xmlcharrefreplace'))
+        print(format_cs_list())
     return True
 
 
-def do_print_card(sCardName, fPrintCard, sEncoding):
+def do_print_card(sCardName, fPrintCard):
     """Print a card, handling possible encoding issues."""
     make_adapter_caches()  # Needed for lookups to work
     try:
         try:
             oCard = IAbstractCard(sCardName)
         except UnicodeDecodeError as oErr:
-            if sEncoding != 'ascii':
-                # Are there better choices than --print-encoding?
-                oCard = IAbstractCard(sCardName.decode(sEncoding))
-            else:
-                print('Unable to interpret card name:')
-                print(oErr)
-                print('Please specify a suitable --print-encoding')
-                return False
-        print(oCard.name.encode(sEncoding, 'xmlcharrefreplace'))
-        fPrintCard(oCard, sEncoding)
+            print('Unable to interpret card name:')
+            print(oErr)
+            return False
+        print(oCard.name)
+        fPrintCard(oCard)
     except SQLObjectNotFound:
         print('Unable to find card %s' % sCardName)
         return False

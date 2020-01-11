@@ -6,7 +6,7 @@
 """Test some of the cli interface functionality"""
 
 import unittest
-from io import BytesIO
+from io import StringIO
 
 from mock import patch
 
@@ -73,27 +73,27 @@ class CliUtilsTests(SutekhTest):
         PhysicalCardSet(name='GC 3', parent=oChild1)
         PhysicalCardSet(name='GC 4', parent=oChild2)
 
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            print_card_list('Root', 'utf8')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            print_card_list('Root')
             self.assertEqual(oMock.getvalue(), TREE_1)
 
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            print_card_list('Child 1', 'utf8')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            print_card_list('Child 1')
             self.assertEqual(oMock.getvalue(), TREE_2)
 
     def test_print_card_details(self):
         """Test printing a card"""
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            do_print_card('Alexandra', print_card_details, 'ascii')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('Alexandra', print_card_details)
             self.assertEqual(oMock.getvalue(), CARD_DETAILS_1)
 
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            do_print_card('Swallowed by the Night', print_card_details, 'ascii')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('Swallowed by the Night', print_card_details)
             self.assertEqual(oMock.getvalue(), CARD_DETAILS_2)
 
         # Check error case
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            do_print_card('Swallowed', print_card_details, 'ascii')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('Swallowed', print_card_details)
             self.assertEqual(oMock.getvalue(), 'Unable to find card Swallowed\n')
 
     def test_run_filter_abstract_card(self):
@@ -135,6 +135,6 @@ class CliUtilsTests(SutekhTest):
     def test_print_card_filter_list(self):
         """Test printing the results of a filter list"""
         dResults = run_filter("CardType = 'Reaction'", None)
-        with patch('sys.stdout', new_callable=BytesIO) as oMock:
-            print_card_filter_list(dResults, None, False, 'ascii')
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            print_card_filter_list(dResults, None, False)
             self.assertEqual(oMock.getvalue(), FILTER_LIST)

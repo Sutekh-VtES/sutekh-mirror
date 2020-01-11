@@ -166,39 +166,39 @@ def parse_options(aArgs):
     return oOptParser, oOptParser.parse_args(aArgs)
 
 
-def print_card_details(oCard, sEncoding):
+def print_card_details(oCard):
     """Print the details of a given card"""
     # pylint: disable=too-many-branches
     # Several cases to consider, so many branches
     if not oCard.cardtype:
-        print(u'CardType: Unknown'.encode('sEncoding'))
+        print(u'CardType: Unknown')
     else:
         sOutput = u'CardType: %s' % u' / '.join([oT.name for oT in oCard.cardtype])
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.clan:
         sOutput = u'Clan: %s' % u' / '.join([oC.name for oC in oCard.clan])
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.creed:
         sOutput = u'Creed: %s' % u' / '.join([oC.name for oC in oCard.creed])
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.capacity:
         sOutput = u'Capacity: %d' % oCard.capacity
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.life:
         sOutput = u'Life: %d' % oCard.life
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.group:
         if oCard.group == -1:
             sOutput = u'Group: Any'
         else:
             sOutput = u'Group: %d' % oCard.group
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.cost is not None:
         if oCard.cost == -1:
             sOutput = u'Cost: X %s' % oCard.costtype
         else:
             sOutput = u'Cost: %d %s' % (oCard.cost, oCard.costtype)
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.discipline:
         if is_crypt_card(oCard):
             aDisciplines = []
@@ -213,15 +213,15 @@ def print_card_details(oCard, sEncoding):
             aDisciplines = [oP.discipline.fullname for oP in oCard.discipline]
             sDisciplines = u' / '.join(aDisciplines)
         sOutput = u'Discipline: %s' % sDisciplines
-        print(sOutput.encode(sEncoding))
+        print(sOutput)
     if oCard.virtue:
         if is_crypt_card(oCard):
             sOutput = u'Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue])
         else:
             sOutput = u'Virtue: %s' % ' / '.join([oC.fullname for oC in
                                              oCard.virtue])
-        print(sOutput.encode(sEncoding))
-    print(format_text(oCard.text.encode(sEncoding, 'xmlcharrefreplace')))
+        print(sOutput)
+    print(format_text(oCard.text))
 
 
 def main_with_args(aTheArgs):
@@ -366,14 +366,13 @@ def main_with_args(aTheArgs):
             fPrint = StringIO()
             oPrinter = WriteArdbText()
             oPrinter.write(fPrint, CardSetWrapper(oCS))
-            print(fPrint.getvalue().encode(oOpts.print_encoding,
-                                           'xmlcharrefreplace'))
+            print(fPrint.getvalue())
         except SQLObjectNotFound:
             print('Unable to load card set', oOpts.print_cs)
             return 1
 
     if oOpts.list_cs:
-        if not print_card_list(oOpts.limit_list, oOpts.print_encoding):
+        if not print_card_list(oOpts.limit_list):
             return 1
     elif oOpts.limit_list is not None:
         print("Can't use limit-list-to without list-cs")
@@ -382,11 +381,10 @@ def main_with_args(aTheArgs):
     if oOpts.filter_string is not None:
         dResults = run_filter(oOpts.filter_string, oOpts.filter_cs)
         print_card_filter_list(dResults, print_card_details,
-                               oOpts.filter_detailed, oOpts.print_encoding)
+                               oOpts.filter_detailed)
 
     if oOpts.print_card is not None:
-        if not do_print_card(oOpts.print_card, print_card_details,
-                             oOpts.print_encoding):
+        if not do_print_card(oOpts.print_card, print_card_details):
             return 1
 
     if oOpts.read_cs is not None:
