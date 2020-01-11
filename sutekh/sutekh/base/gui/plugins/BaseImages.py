@@ -10,7 +10,7 @@ import logging
 import os
 import tempfile
 import unicodedata
-import urllib2
+from urllib.error import HTTPError
 import zipfile
 
 import gobject
@@ -86,7 +86,7 @@ def unaccent(sCardName):
 def image_gui_error_handler(oExp):
     """We filter out 404 not found so we don't loop endlessly on
        card images that aren't available"""
-    if isinstance(oExp, urllib2.HTTPError) and oExp.code == 404:
+    if isinstance(oExp, HTTPError) and oExp.code == 404:
         return
     gui_error_handler(oExp)
 

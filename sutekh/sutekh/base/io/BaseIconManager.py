@@ -9,7 +9,8 @@ from __future__ import print_function
 
 import os
 from logging import Logger
-from urllib2 import urlopen, HTTPError
+from urllib.parse import urlopen
+from urllib.error import HTTPError
 from ..Utility import ensure_dir_exists
 
 

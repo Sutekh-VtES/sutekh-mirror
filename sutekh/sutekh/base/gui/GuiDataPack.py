@@ -5,7 +5,7 @@
 
 """Wrap various functions from base.io.UrlOps with timeout handling"""
 
-import urllib2
+from urllib.error import URLError
 import socket
 from ..io.UrlOps import fetch_data
 from .SutekhDialog import do_exception_complaint
@@ -16,7 +16,7 @@ def gui_error_handler(oExp):
     """Default error handler for url fetching operations."""
     if isinstance(oExp, socket.timeout):
         do_exception_complaint('Connection Timeout')
-    elif isinstance(oExp, urllib2.URLError) and \
+    elif isinstance(oExp, URLError) and \
             isinstance(oExp.reason, socket.timeout):
         do_exception_complaint('Connection Timeout')
     else:

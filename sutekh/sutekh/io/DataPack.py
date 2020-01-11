@@ -11,7 +11,7 @@
 
 import datetime
 import json
-import urllib2
+from urllib import URLError
 import urlparse
 import socket
 
@@ -54,7 +54,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
         return None, None, None
     try:
         dIndex = json.load(oFile)
-    except (urllib2.URLError, socket.timeout, ValueError) as oExp:
+    except (URLError, socket.timeout, ValueError) as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
             return None, None, None

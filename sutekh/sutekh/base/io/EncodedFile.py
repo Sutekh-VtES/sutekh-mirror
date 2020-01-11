@@ -7,7 +7,7 @@
    conventions."""
 
 import codecs
-import urllib2
+from urllib.parse from urlopen
 import logging
 
 
@@ -33,6 +33,7 @@ def guess_encoding(sData, sFile):
 class EncodedFile(object):
     """EncodedFile is a convenience class which has an .open(..) method which
        returns a file-like object with the encoding set correctly.
+       read() will return unicode data.
        """
 
     # pylint: disable=invalid-name
@@ -56,14 +57,13 @@ class EncodedFile(object):
         if self.bFileObj:
             return self.sfFile
         elif self.bUrl:
-            oFile = urllib2.urlopen(self.sfFile)
+            oFile = urlopen(self.sfFile)
             sData = oFile.read(1000)
             sFileEnc = guess_encoding(sData, self.sfFile)
             oFile.close()
-            return codecs.EncodedFile(urllib2.urlopen(self.sfFile), 'utf8',
-                                      sFileEnc)
-        oFile = open(self.sfFile, 'rU')
+            return codecs.lookup(sFileEnc).streamreader(urlopen(self.sfFile))
+        oFile = open(self.sfFile, 'rbU')
         sData = oFile.read(1000)
         sFileEnc = guess_encoding(sData, self.sfFile)
         oFile.close()
-        return codecs.EncodedFile(open(self.sfFile, 'rU'), 'utf8', sFileEnc)
+        return codecs.lookup(sFileEnc).streamreader(open(self.sfFile, 'rbU'))

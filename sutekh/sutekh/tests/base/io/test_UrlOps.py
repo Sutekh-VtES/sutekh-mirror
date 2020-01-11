@@ -6,7 +6,7 @@
 """Test the UrlOps utilities"""
 
 import unittest
-import urllib2
+from urllib.error import URLError
 import socket
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.tests.TestUtils import FailFile
@@ -36,13 +36,13 @@ class UrlOpsTest(SutekhTest):
 
         del aErrors[:]
 
-        oFile = FailFile(urllib2.URLError('aaa'))
+        oFile = FailFile(URLError('aaa'))
         fetch_data(oFile, fErrorHandler=error_handler)
         # pylint: disable=unbalanced-tuple-unpacking
         # by construction, this unpacking is safe
         [oExp] = aErrors
         # pylint: enable=unbalanced-tuple-unpacking
-        self.assertTrue(isinstance(oExp, urllib2.URLError))
+        self.assertTrue(isinstance(oExp, URLError))
 
 
 if __name__ == "__main__":
