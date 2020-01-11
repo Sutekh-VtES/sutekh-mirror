@@ -8,7 +8,7 @@
 """Test database upgrading"""
 
 from logging import StreamHandler
-from StringIO import StringIO
+from io import StringIO
 import sys
 
 from sqlobject import sqlhub, connectionForURI
