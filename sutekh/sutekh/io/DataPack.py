@@ -11,8 +11,8 @@
 
 import datetime
 import json
-from urllib import URLError
-import urlparse
+from urllib.error import URLError
+from urllib.parse import urljoin
 import socket
 
 from sutekh.base.io.UrlOps import urlopen_with_timeout
@@ -66,7 +66,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
     for dPack in dIndex["datapacks"]:
         if dPack.get("tag") != sTag:
             continue
-        aZipUrls.append(urlparse.urljoin(sDocUrl, dPack["file"]))
+        aZipUrls.append(urljoin(sDocUrl, dPack["file"]))
         aHashes.append(dPack["sha256"])
         oDate = parse_datapack_date(dPack["updated_at"])
         aDates.append(oDate.strftime("%Y-%m-%d"))
