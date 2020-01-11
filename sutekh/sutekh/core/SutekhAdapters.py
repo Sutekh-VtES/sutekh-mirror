@@ -72,7 +72,7 @@ class ClanAdapter(Adapter, metaclass=StrAdaptMeta):
 
 IClan.register(Clan, passthrough)
 
-IClan.register(basestring, ClanAdapter.lookup)
+IClan.register(str, ClanAdapter.lookup)
 
 
 class CreedAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -84,7 +84,7 @@ class CreedAdapter(Adapter, metaclass=StrAdaptMeta):
 
 ICreed.register(Creed, passthrough)
 
-ICreed.register(basestring, CreedAdapter.lookup)
+ICreed.register(str, CreedAdapter.lookup)
 
 
 class DisciplineAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -96,7 +96,7 @@ class DisciplineAdapter(Adapter, metaclass=StrAdaptMeta):
 
 IDiscipline.register(Discipline, passthrough)
 
-IDiscipline.register(basestring, DisciplineAdapter.lookup)
+IDiscipline.register(str, DisciplineAdapter.lookup)
 
 
 class SectAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -108,7 +108,7 @@ class SectAdapter(Adapter, metaclass=StrAdaptMeta):
 
 ISect.register(Sect, passthrough)
 
-ISect.register(basestring, SectAdapter.lookup)
+ISect.register(str, SectAdapter.lookup)
 
 
 class TitleAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -120,7 +120,7 @@ class TitleAdapter(Adapter, metaclass=StrAdaptMeta):
 
 ITitle.register(Title, passthrough)
 
-ITitle.register(basestring, TitleAdapter.lookup)
+ITitle.register(str, TitleAdapter.lookup)
 
 
 class VirtueAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -132,7 +132,7 @@ class VirtueAdapter(Adapter, metaclass=StrAdaptMeta):
 
 IVirtue.register(Virtue, passthrough)
 
-IVirtue.register(basestring, VirtueAdapter.lookup)
+IVirtue.register(str, VirtueAdapter.lookup)
 
 # Other Adapters
 

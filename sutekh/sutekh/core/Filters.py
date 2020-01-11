@@ -177,7 +177,7 @@ class MultiDisciplineLevelFilter(MultiFilter):
 
     def __init__(self, aDiscLevels):
         self._aIds = []
-        if isinstance(aDiscLevels[0], basestring):
+        if isinstance(aDiscLevels[0], str):
             aValues = split_list(aDiscLevels)
         else:
             aValues = aDiscLevels

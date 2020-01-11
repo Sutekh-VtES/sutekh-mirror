@@ -375,7 +375,7 @@ class MultiExpansionRarityFilter(MultiFilter):
     def __init__(self, aExpansionRarities):
         """  Called with a list of Expansion + Rarity pairs"""
         self._aIds = []
-        if isinstance(aExpansionRarities[0], basestring):
+        if isinstance(aExpansionRarities[0], str):
             aValues = split_list(aExpansionRarities)
         else:
             aValues = aExpansionRarities

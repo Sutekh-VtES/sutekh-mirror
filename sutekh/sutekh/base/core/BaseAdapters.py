@@ -160,7 +160,7 @@ class CardTypeAdapter(Adapter, metaclass=StrAdaptMeta):
 
 ICardType.register(CardType, passthrough)
 
-ICardType.register(basestring, CardTypeAdapter.lookup)
+ICardType.register(str, CardTypeAdapter.lookup)
 
 
 class ExpansionAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -172,7 +172,7 @@ class ExpansionAdapter(Adapter, metaclass=StrAdaptMeta):
 
 IExpansion.register(Expansion, passthrough)
 
-IExpansion.register(basestring, ExpansionAdapter.lookup)
+IExpansion.register(str, ExpansionAdapter.lookup)
 
 
 @IExpansion.register(Printing)
@@ -191,7 +191,7 @@ class RarityAdapter(Adapter, metaclass=StrAdaptMeta):
 IRarity.register(Rarity, passthrough)
 
 
-IRarity.register(basestring, RarityAdapter.lookup)
+IRarity.register(str, RarityAdapter.lookup)
 
 
 # Other Adapters
@@ -291,7 +291,7 @@ class CardNameLookupAdapter(Adapter):
         return oCard
 
 
-IAbstractCard.register(basestring, CardNameLookupAdapter.lookup)
+IAbstractCard.register(str, CardNameLookupAdapter.lookup)
 
 
 IRuling.register(Ruling, passthrough)
@@ -309,7 +309,7 @@ def ruling_from_tuple(tData):
 IKeyword.register(Keyword, passthrough)
 
 
-@IKeyword.register(basestring)
+@IKeyword.register(str)
 def keyword_from_string(sKeyword):
     """Adapter for string -> Keyword"""
     # pylint: disable=no-member
@@ -320,7 +320,7 @@ def keyword_from_string(sKeyword):
 IArtist.register(Artist, passthrough)
 
 
-@IArtist.register(basestring)
+@IArtist.register(str)
 def artist_from_string(sArtistName):
     """Adapter for string -> Artist"""
     # pylint: disable=no-member
@@ -331,7 +331,7 @@ def artist_from_string(sArtistName):
 IPrintingProperty.register(PrintingProperty, passthrough)
 
 
-@IPrintingProperty.register(basestring)
+@IPrintingProperty.register(str)
 def print_property_from_string(sPropertyValue):
     """Adapter for string -> Artist"""
     # pylint: disable=no-member
@@ -343,7 +343,7 @@ def print_property_from_string(sPropertyValue):
 IPhysicalCardSet.register(PhysicalCardSet, passthrough)
 
 
-@IPhysicalCardSet.register(basestring)
+@IPhysicalCardSet.register(str)
 def phys_card_set_from_string(sName):
     """Adapter for string -> PhysicalCardSet"""
     # pylint: disable=no-member
@@ -498,7 +498,7 @@ class PrintingStringAdapter(Adapter):
         return cls.__dCache[sName]
 
 
-IPrinting.register(basestring, PrintingStringAdapter.lookup)
+IPrinting.register(str, PrintingStringAdapter.lookup)
 
 
 class PhysicalCardMappingToAbstractCardAdapter(Adapter):
