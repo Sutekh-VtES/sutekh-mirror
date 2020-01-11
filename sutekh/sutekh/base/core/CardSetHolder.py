@@ -153,10 +153,7 @@ class CardSetHolder(object):
 
            bIncludeFallback controls how any encoding errors are logged."""
         try:
-            if sText:
-                sSane = sText.encode('utf8')
-            else:
-                sSane = sText  # Nothing to do in this case
+            sSane = sText
         except UnicodeDecodeError:
             sSane = sText.decode('ascii', 'replace').encode('ascii',
                                                             'replace')
