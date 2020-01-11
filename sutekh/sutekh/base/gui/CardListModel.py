@@ -512,11 +512,8 @@ class CardListModel(gtk.TreeStore):
     def get_name_from_iter(self, oIter):
         """Extract the value at oIter from the model, correcting for encoding
            issues."""
-        # For some reason the string comes back from the
-        # tree store having been encoded *again* despite
-        # displaying correctly, so we decode it here.
-        # I hope all systems encode with utf-8. :(
-        sName = self.get_value(oIter, 0).decode("utf-8")
+        # With gtk3, we're supposed to always get unicode back here.
+        sName = self.get_value(oIter, 0)
         return sName
 
     def get_card_count_from_iter(self, oIter):

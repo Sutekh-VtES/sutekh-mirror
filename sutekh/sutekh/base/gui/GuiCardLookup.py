@@ -471,8 +471,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 sFullName, sNewFullName, oAbsCard = oModel.get(oIter, 1, 2, 4)
                 # GtK returns encoded strings - see get_name_from_iter in
                 # CardListModel
-                sNewFullName = sNewFullName.decode('utf-8')
-                sFullName = sFullName.decode('utf-8')
+                sNewFullName = sNewFullName
+                sFullName = sFullName
                 sName, sExpPrintName = \
                     oReplacementView.parse_card_name(sFullName)
 
@@ -646,7 +646,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 if sName not in dUnknownCards:
                     # GtK sometimes returns encoded strings - see
                     # get_name_from_iter in CardListModel,
-                    sName = sName.decode('utf-8')
+                    sName = sName
                 if oAbsCard is not None:
                     dUnknownCards[sName] = oAbsCard
                 oIter = oModel.iter_next(oIter)

@@ -177,7 +177,7 @@ class CardSetManagementModel(gtk.TreeStore):
         sCardSetName = self.get_value(oIter, 1)
         if sCardSetName:
             # We can be None when card sets are being deleted.
-            sCardSetName = sCardSetName.decode("utf-8")
+            sCardSetName = sCardSetName
         return sCardSetName
 
     def get_path_from_name(self, sName):
