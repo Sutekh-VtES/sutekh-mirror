@@ -139,7 +139,7 @@ class StrAdaptMeta(type):
     def fetch(cls, sName, oCls):
         oObj = cls.__dCache.get(sName, None)
         if oObj is None:
-            oObj = oCls.byName(sName.encode('utf8'))
+            oObj = oCls.byName(sName)
             cls.__dCache[sName] = oObj
 
         return oObj
@@ -248,21 +248,13 @@ class CardNameLookupAdapter(Adapter):
                     oCard = AbstractCard.byCanonicalName(
                         oLookup.value.lower())
                 except SQLObjectNotFound:
-                    # Try encoded version, for older SQLObject versions
-                    try:
-                        # pylint: disable=no-member
-                        # SQLObject confuses pylint
-                        oCard = AbstractCard.byCanonicalName(
-                            oLookup.value.encode('utf8').lower())
-                    except SQLObjectNotFound:
-                        # Possible error in the lookup data - warn about it,
-                        # but we don't want to fail here.
-                        logging.warn("Unable to create %s mapping (%s -> %s)",
-                                     oLookup.domain, oLookup.lookup,
-                                     oLookup.value)
+                   # Possible error in the lookup data - warn about it,
+                   # but we don't want to fail here.
+                   logging.warn("Unable to create %s mapping (%s -> %s)",
+                                oLookup.domain, oLookup.lookup,
+                                oLookup.value)
                 if oCard is not None:
-                    for sKey in [oLookup.lookup,
-                                 oLookup.lookup.encode('utf8')]:
+                    for sKey in [oLookup.lookup]:
                         cls.__dCache[sKey] = oCard
                         cls.__dCache[sKey.lower()] = oCard
 
@@ -273,16 +265,15 @@ class CardNameLookupAdapter(Adapter):
             # pylint: disable=no-member
             # SQLObject confuses pylint
             oExp = None
-            for sCand in [sName, move_articles_to_front(sName),
-                          sName.encode('utf8'),
-                          move_articles_to_front(sName.encode('utf8'))]:
+            for sCand in [sName, move_articles_to_front(sName)]:
                 try:
                     oCard = AbstractCard.byCanonicalName(sCand.lower())
                     cls.__dCache[sCand] = oCard
                     oExp = None
                     break
-                except SQLObjectNotFound as oExp:
+                except SQLObjectNotFound as oError:
                     # We will handle the failure case after the loop
+                    oExp = oError
                     continue
             # pylint: disable=raising-bad-type
             # We're only raising if this is not None, so we're OK
@@ -303,7 +294,7 @@ def ruling_from_tuple(tData):
     # pylint: disable=no-member
     # SQLObject confuses pylint
     sText, _sCode = tData
-    return Ruling.byText(sText.encode('utf8'))
+    return Ruling.byText(sText)
 
 
 IKeyword.register(Keyword, passthrough)
@@ -314,7 +305,7 @@ def keyword_from_string(sKeyword):
     """Adapter for string -> Keyword"""
     # pylint: disable=no-member
     # SQLObject confuses pylint
-    return Keyword.byKeyword(sKeyword.encode('utf8'))
+    return Keyword.byKeyword(sKeyword)
 
 
 IArtist.register(Artist, passthrough)
@@ -325,7 +316,7 @@ def artist_from_string(sArtistName):
     """Adapter for string -> Artist"""
     # pylint: disable=no-member
     # SQLObject confuses pylint
-    return Artist.byCanonicalName(sArtistName.encode('utf8').lower())
+    return Artist.byCanonicalName(sArtistName.lower())
 
 
 IPrintingProperty.register(PrintingProperty, passthrough)
@@ -337,7 +328,7 @@ def print_property_from_string(sPropertyValue):
     # pylint: disable=no-member
     # SQLObject confuses pylint
     return PrintingProperty.byCanonicalValue(
-        sPropertyValue.encode('utf8').lower())
+        sPropertyValue.lower())
 
 
 IPhysicalCardSet.register(PhysicalCardSet, passthrough)
@@ -348,7 +339,7 @@ def phys_card_set_from_string(sName):
     """Adapter for string -> PhysicalCardSet"""
     # pylint: disable=no-member
     # SQLObject confuses pylint
-    return PhysicalCardSet.byName(sName.encode('utf8'))
+    return PhysicalCardSet.byName(sName)
 
 
 class PhysicalCardToAbstractCardAdapter(Adapter):
