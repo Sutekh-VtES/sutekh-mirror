@@ -74,7 +74,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 else:
                     self.aData = [(None, x) for x in oValue]
             else:
-                raise AttributeError('Incorrect type for icons')
+                raise AttributeError('Incorrect type for icons: %s' % type(oValue))
         elif oProp.name == 'textlist':
             if oValue is None:
                 # Special case
@@ -85,7 +85,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 else:
                     self.aData = [(x, None) for x in oValue]
             else:
-                raise AttributeError('Incorrect type of textlist')
+                raise AttributeError('Incorrect type of textlist: %s' % type(oValue))
         elif oProp.name == 'text':
             # Just the text string, so no icon info possible
             self.sText = oValue
