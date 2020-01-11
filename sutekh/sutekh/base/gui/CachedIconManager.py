@@ -37,7 +37,7 @@ def _crop_alpha(oPixbuf):
     for cPixel in oPixbuf.get_pixels():
         if iXPos % 4 == 3:
             # Data is ordered RGBA, so this is the alpha channel
-            if ord(cPixel) == 255:
+            if cPixel == 255:
                 # Is opaque, so update margins
                 iMaxX, iMinX = _check_margins(iXPos // 4, iMaxX, iMinX)
                 iMaxY, iMinY = _check_margins(iYPos, iMaxY, iMinY)
