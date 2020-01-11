@@ -73,7 +73,7 @@ def print_card_list(sTreeRoot):
     if sTreeRoot is not None:
         try:
             oCS = IPhysicalCardSet(sTreeRoot)
-            print(oCS.name)
+            print(' %s' % oCS.name)
             print(format_cs_list(oCS, '    '))
         except SQLObjectNotFound:
             print('Unable to load card set', sTreeRoot)
