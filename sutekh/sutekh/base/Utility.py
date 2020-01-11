@@ -14,7 +14,7 @@ import os
 import re
 import sys
 import tempfile
-import urlparse
+from urllib.parse import urlsplit, urlunsplit
 
 from sqlobject import sqlhub
 
@@ -122,12 +122,12 @@ def get_database_url():
     """Return the database url, with the password stripped out if
        needed"""
     sDBuri = sqlhub.processConnection.uri()
-    tParsed = urlparse.urlsplit(sDBuri)
+    tParsed = urlsplit(sDBuri)
     if tParsed.password:
         tCombined = (tParsed.scheme,
                      tParsed.netloc.replace(tParsed.password, '****'),
                      tParsed.path, tParsed.query, tParsed.fragment)
-        sUrl = urlparse.urlunsplit(tCombined)
+        sUrl = urlunsplit(tCombined)
     else:
         sUrl = sDBuri
     return sUrl

@@ -9,7 +9,8 @@
 
 """Provide tools for handling downloading data from urls."""
 
-import urllib2
+from urllib.error import URLError
+from urllib.request import urlopen, Request
 import socket
 from logging import Logger
 # pylint: disable=no-name-in-module
@@ -29,18 +30,18 @@ class HashError(Exception):
 
 
 def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
-    """Wrap urllib2.urlopen to handle timeouts nicely"""
+    """Wrap urlopen to handle timeouts nicely"""
     # Note: The global timeout is currently set to the
     # config value at startup
-    oReq = urllib2.Request(sUrl)
+    oReq = Request(sUrl)
     if dHeaders:
         for sHeader, sValue in dHeaders.items():
             oReq.add_header(sHeader, sValue)
     if sData:
         oReq.add_data(sData)
     try:
-        return urllib2.urlopen(oReq)
-    except urllib2.URLError as oExp:
+        return urlopen(oReq)
+    except URLError as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
         else:
@@ -96,7 +97,7 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
                 sData = None
             else:
                 sData = oFile.read()
-    except urllib2.URLError as oExp:
+    except URLError as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
             sData = None
