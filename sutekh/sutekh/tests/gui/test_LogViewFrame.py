@@ -20,10 +20,10 @@ class TestLogViewFrame(GuiSutekhTest):
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
 
-    INFO_MSG = 'Info message 1'
-    DEBUG_MSG = 'Debug message 2'
-    ERROR_MSG = 'Error message 3'
-    WARN_MSG = 'Warn message 4'
+    INFO_MSG = b'Info message 1'
+    DEBUG_MSG = b'Debug message 2'
+    ERROR_MSG = b'Error message 3'
+    WARN_MSG = b'Warn message 4'
 
     def test_basic(self):
         """Set of simple tests of the LogViewFrame"""
@@ -48,10 +48,10 @@ class TestLogViewFrame(GuiSutekhTest):
         oNewFrame.reload()
         oNewFrame.view.export_buffer(oOutput)
         sResult = oOutput.getvalue()
-        self.assertTrue('ERROR' in sResult)
-        self.assertTrue('WARN' in sResult)
-        self.assertTrue('INFO' in sResult)
-        self.assertTrue('DEBUG' in sResult)
+        self.assertTrue(b'ERROR' in sResult)
+        self.assertTrue(b'WARN' in sResult)
+        self.assertTrue(b'INFO' in sResult)
+        self.assertTrue(b'DEBUG' in sResult)
 
         self.assertTrue(self.ERROR_MSG in sResult)
         self.assertTrue(self.WARN_MSG in sResult)
@@ -64,13 +64,13 @@ class TestLogViewFrame(GuiSutekhTest):
         oNewFrame.set_filter_level(logging.WARN)
         oNewFrame.view.export_buffer(oOutput)
         sResult = oOutput.getvalue()
-        self.assertTrue('ERROR' in sResult)
-        self.assertTrue('WARN' in sResult)
+        self.assertTrue(b'ERROR' in sResult)
+        self.assertTrue(b'WARN' in sResult)
         self.assertTrue(self.ERROR_MSG in sResult)
         self.assertTrue(self.WARN_MSG in sResult)
 
-        self.assertTrue('INFO' not in sResult)
-        self.assertTrue('DEBUG' not in sResult)
+        self.assertTrue(b'INFO' not in sResult)
+        self.assertTrue(b'DEBUG' not in sResult)
         self.assertTrue(self.INFO_MSG not in sResult)
         self.assertTrue(self.DEBUG_MSG not in sResult)
 
