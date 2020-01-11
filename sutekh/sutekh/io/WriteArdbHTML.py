@@ -198,7 +198,7 @@ class WriteArdbHTML(ArdbInfo):
                    'xhtml1-strict.dtd">\n')
         sData = tostring(oRoot)
         sData = norm_xml_quotes(sData)
-        fOut.write(sData)
+        fOut.write(sData.decode('ascii'))
 
     def _gen_tree(self, oHolder):
         """Convert the Cards to a element tree containing 'nice' HTML"""

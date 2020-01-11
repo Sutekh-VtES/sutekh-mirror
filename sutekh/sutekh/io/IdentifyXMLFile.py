@@ -29,16 +29,15 @@ class IdentifyXMLFile(BaseIdXMLFile):
             self._sType = 'AbstractCardSet'
             # Same reasoning as on database upgrades
             self._sName = '(ACS) ' + oRoot.attrib['name']
-            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
+            self._bSetExists = check_cs_exists(self._sName)
             self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'physicalcardset':
             self._sType = 'PhysicalCardSet'
             self._sName = oRoot.attrib['name']
-            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
+            self._bSetExists = check_cs_exists(self._sName)
             if 'parent' in oRoot.attrib:
                 self._sParent = oRoot.attrib['parent']
-                self._bParentExists = check_cs_exists(
-                    self._sParent.encode('utf8'))
+                self._bParentExists = check_cs_exists(self._sParent)
             else:
                 self._bParentExists = True  # Top level card set
         elif oRoot.tag == 'cards':
@@ -46,7 +45,7 @@ class IdentifyXMLFile(BaseIdXMLFile):
             # Old Physical Card Collection XML file - it exists if a card
             # set called 'My Collection' exists
             self._sName = 'My Collection'
-            self._bSetExists = check_cs_exists(self._sName.encode('utf8'))
+            self._bSetExists = check_cs_exists(self._sName)
             self._bParentExists = True  # Always a top level card set
         elif oRoot.tag == 'cardmapping':
             # This is ignored now

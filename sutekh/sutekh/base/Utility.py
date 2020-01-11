@@ -115,7 +115,7 @@ def norm_xml_quotes(sData):
        differences"""
     # Because of how ElementTree adds quotes internally, this should always
     # be safe
-    return sData.replace('&apos;', "'")
+    return sData.replace(b'&apos;', b"'")
 
 
 def get_database_url():

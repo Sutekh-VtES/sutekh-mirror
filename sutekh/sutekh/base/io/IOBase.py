@@ -129,7 +129,9 @@ class BaseXMLWriter(CardSetWriter):
         sData = tostring(oRoot)
         # Standardise quotes
         sData = norm_xml_quotes(sData)
-        fOut.write(sData)
+        # tostring has made this into a bytes array, but we need a unidoce
+        # string for writing
+        fOut.write(sData.decode('ascii'))
 
 
 class SlienceFilter(logging.Filter):
