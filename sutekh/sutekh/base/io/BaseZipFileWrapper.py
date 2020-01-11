@@ -11,7 +11,7 @@
 
 import zipfile
 import datetime
-from io import BytesIO
+from io import StringIO
 from logging import Logger
 
 from sqlobject import sqlhub
@@ -28,7 +28,9 @@ def parse_string(oParser, sIn, oHolder):
     """Utility function for reading zip files.
 
        Allows oParser.parse to be called on a string."""
-    oFile = BytesIO(sIn)
+    # We encode data to ascii when writing, so
+    # this should be correct
+    oFile = StringIO(sIn.decode('ascii'))
     oParser.parse(oFile, oHolder)
 
 
@@ -37,14 +39,14 @@ def write_string(oWriter, oPCSet):
 
        Generate a string from the Writer."""
     oHolder = CardSetWrapper(oPCSet)
-    oFile = BytesIO()
+    oFile = StringIO()
     oWriter.write(oFile, oHolder)
     oString = oFile.getvalue()
     oFile.close()
     return oString
 
 
-class ZipEntryProxy(BytesIO, object):
+class ZipEntryProxy(StringIO):
     """A proxy that provides a suitable open method so
        these can be passed to the card reading routines."""
 
@@ -98,7 +100,7 @@ class BaseZipFileWrapper(object):
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
             sZipName = '%s.xml' % sZName
-            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace')
+            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace').decode('ascii')
             aList.append(sZipName)
             # ZipInfo will just use the 1st 6 fields in tTime
             oInfoObj = zipfile.ZipInfo(sZipName, tTime)
