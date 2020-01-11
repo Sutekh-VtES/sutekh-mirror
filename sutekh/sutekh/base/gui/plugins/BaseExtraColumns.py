@@ -115,11 +115,12 @@ class BaseExtraColumns(BasePlugin):
         if isinstance(oVal1, list):
             oVal1 = " ".join(oVal1)
             oVal2 = " ".join(oVal2)
-        iRes = cmp(oVal1, oVal2)
-        if iRes == 0:
-            # Values agree, so do fall back sort
-            return self.model.sort_equal_iters(oIter1, oIter2)
-        return iRes
+        if oVal1 < oVal2:
+            return -1
+        elif oVal1 > oVal2:
+            return 1
+        # Values agree, so do fall back sort
+        return self.model.sort_equal_iters(oIter1, oIter2)
 
     # Actions
 

@@ -118,7 +118,9 @@ class CardSetManagementModel(gtk.TreeStore):
         oVal2 = self.get_value(oIter2, 0)
         # Col 0 is the name column, and we require unique card set names,
         # so this should be safe
-        return cmp(oVal1, oVal2)
+        if oVal1 < oVal2:
+            return -1
+        return 1
 
     def load(self):
         """Load the card sets into the card view"""
@@ -215,7 +217,9 @@ class CardSetManagementModel(gtk.TreeStore):
         oCardSet1 = self.get_name_from_iter(oIter1)
         oCardSet2 = self.get_name_from_iter(oIter2)
         # get_name_from_iter strips markup for us
-        return cmp(oCardSet1, oCardSet2)
+        if oCardSet1 < oCardSet2:
+            return -1
+        return 1
 
     def _get_empty_text(self):
         """Get the correct text for an empty model."""

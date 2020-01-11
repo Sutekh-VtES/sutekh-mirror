@@ -29,12 +29,15 @@ NO_CARD = "  No Card"
 NO_EXP_AND_PRINT = "No Expansion and Printing"
 
 
-
 def _sort_replacement(oModel, oIter1, oIter2, _oCol):
     """Sort replacement, honouring spaces"""
     oVal1 = oModel.get_value(oIter1, 2)
     oVal2 = oModel.get_value(oIter2, 2)
-    return cmp(oVal1, oVal2)
+    if oVal1 < oVal2:
+        return -1
+    elif oVal1 > oVal2:
+        return 1
+    return 0
 
 
 class DummyController(object):

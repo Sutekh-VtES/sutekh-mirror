@@ -142,10 +142,11 @@ class CardListModel(gtk.TreeStore):
         """Default sort function for model"""
         oVal1 = self.get_value(oIter1, iCol)
         oVal2 = self.get_value(oIter2, iCol)
-        iRes = cmp(oVal1, oVal2)
-        if iRes == 0:
-            iRes = self.sort_equal_iters(oIter1, oIter2)
-        return iRes
+        if oVal1 < oVal2:
+            return -1
+        elif oVal1 > oVal2:
+            return 1
+        return self.sort_equal_iters(oIter1, oIter2)
 
     def sort_equal_iters(self, oIter1, oIter2):
         """Default sort on names (card names, expansion names, etc.)"""
@@ -156,7 +157,9 @@ class CardListModel(gtk.TreeStore):
         # since col 0 is the name column, and we have unique names at all
         # levels (group names, card name, expansion or card set names),
         # this will always give a non-zero result
-        return cmp(oVal1, oVal2)
+        if oVal1 < oVal2:
+            return -1
+        return 1
 
     def enable_sorting(self):
         """Enable default sorting setup"""
