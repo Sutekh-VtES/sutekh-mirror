@@ -45,7 +45,10 @@ def norm_name(oCard):
         # usual ELDB quoting
         sName = sName.replace('"', "`")
         sName = sName.replace("'", "`")
-    return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
+    sNormed = unicodedata.normalize('NFKD', sName)
+    # Bounce through ascii to get rid of quote characters
+    sName = sNormed.encode('ascii', 'ignore').decode('ascii')
+    return sName
 
 
 def gen_name_lookups():

@@ -37,7 +37,8 @@ def lackey_name(oCard):
         sName = sName.replace('"', "''")
     else:
         sName = sName.replace('"', "'")
-    sName = unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
+    # Bounce through ascii to strip accents, etc.
+    sName = unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore').decode('ascii')
     return sName
 
 
