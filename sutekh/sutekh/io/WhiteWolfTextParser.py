@@ -888,5 +888,5 @@ class WhiteWolfTextParser(object):
     def feed(self, sLine):
         """Feed the line to the current state"""
         # Strip BOM from line start
-        sLine = sLine.decode('utf8').lstrip(u'\ufeff')
+        sLine = sLine.lstrip(u'\ufeff')
         self._oState = self._oState.transition(sLine, None)
