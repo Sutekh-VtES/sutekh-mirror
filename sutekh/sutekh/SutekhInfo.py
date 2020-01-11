@@ -74,8 +74,7 @@ class SutekhInfo(object):
         GPL,
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Games/Entertainment',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
@@ -87,7 +86,6 @@ class SutekhInfo(object):
 
     INSTALL_REQUIRES = [
         'SQLObject >= 0.9.0',
-        'singledispatch',
         'ply',
         'configobj',
         'keyring',  # Needed to store the SecretLibrary password
@@ -96,8 +94,7 @@ class SutekhInfo(object):
     # Install these manually
     NON_EGG_REQUIREMENTS = [
         'setuptools',
-        'pysqlite',  # sqlite3 is installed by default in Python >= 2.5
-        'PyGTK',
+        'gobject-introspection',
     ]
 
     # Currently this allows us license the Windows build (which
@@ -116,13 +113,6 @@ class SutekhInfo(object):
             LGPL,
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 3'),
-        'singledispath': (
-            # While the functools.singledispatch part of the
-            # python 3 is under the Python license, the
-            # python 2 backport is relicensed to MIT
-            MIT,
-            'https://bitbucket.org/ambv/singledispatch',
-            'MIT License'),
         'ply': (
             # Note: ply changes to BSD license in version 3.2
             LGPL,
@@ -140,7 +130,7 @@ class SutekhInfo(object):
             PYTHON,
             'http://www.python.org/psf/license/',
             'Version 2'),
-        'PyGTK': (
+        'gibject-introspection': (
             LGPL,
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 2 or later'),
