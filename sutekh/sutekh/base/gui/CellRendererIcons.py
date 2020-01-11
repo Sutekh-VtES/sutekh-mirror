@@ -70,7 +70,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 self.aData = []
             elif isinstance(oValue, list):
                 if self.aData and len(oValue) == len(self.aData):
-                    self.aData = zip([x[0] for x in self.aData], oValue)
+                    self.aData = list(zip([x[0] for x in self.aData], oValue))
                 else:
                     self.aData = [(None, x) for x in oValue]
             else:
@@ -81,7 +81,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 self.aData = []
             elif isinstance(oValue, list):
                 if self.aData and len(self.aData) == len(oValue):
-                    self.aData = zip(oValue, [x[1] for x in self.aData])
+                    self.aData = list(zip(oValue, [x[1] for x in self.aData]))
                 else:
                     self.aData = [(x, None) for x in oValue]
             else:
@@ -98,7 +98,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
         if len(aIcons) != len(aText):
             # Can't handle this case
             return
-        self.aData = zip(aText, aIcons)
+        self.aData = list(zip(aText, aIcons))
         self.iMode = iMode
 
     def do_get_size(self, oWidget, oCellArea):
