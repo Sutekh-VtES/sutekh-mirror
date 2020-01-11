@@ -56,7 +56,7 @@ class CSVParser(object):
 
         oIter = iter(oCsvFile)
         if self.bHasHeader:
-            oIter.next()
+            next(oIter)
 
         for aRow in oIter:
             try:
