@@ -151,10 +151,7 @@ class Adapter(object):
     pass
 
 
-class CardTypeAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class CardTypeAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -166,10 +163,7 @@ ICardType.register(CardType, passthrough)
 ICardType.register(basestring, CardTypeAdapter.lookup)
 
 
-class ExpansionAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class ExpansionAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -187,10 +181,7 @@ def exp_name_from_print(oPrint):
     return oPrint.expansion
 
 
-class RarityAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class RarityAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):

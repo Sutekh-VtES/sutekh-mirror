@@ -63,10 +63,7 @@ def IVirtue(oUnknown):
 
 
 # Abbreviation lookup based adapters
-class ClanAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class ClanAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -78,10 +75,7 @@ IClan.register(Clan, passthrough)
 IClan.register(basestring, ClanAdapter.lookup)
 
 
-class CreedAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class CreedAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -93,10 +87,7 @@ ICreed.register(Creed, passthrough)
 ICreed.register(basestring, CreedAdapter.lookup)
 
 
-class DisciplineAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class DisciplineAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -108,10 +99,7 @@ IDiscipline.register(Discipline, passthrough)
 IDiscipline.register(basestring, DisciplineAdapter.lookup)
 
 
-class SectAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class SectAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -123,10 +111,7 @@ ISect.register(Sect, passthrough)
 ISect.register(basestring, SectAdapter.lookup)
 
 
-class TitleAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class TitleAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
@@ -138,10 +123,7 @@ ITitle.register(Title, passthrough)
 ITitle.register(basestring, TitleAdapter.lookup)
 
 
-class VirtueAdapter(Adapter):
-    # pylint: disable=no-member
-    # metaclass confuses pylint
-    __metaclass__ = StrAdaptMeta
+class VirtueAdapter(Adapter, metaclass=StrAdaptMeta):
 
     @classmethod
     def lookup(cls, sName):
