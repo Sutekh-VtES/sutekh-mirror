@@ -18,6 +18,8 @@ from logging import Logger
 from hashlib import sha256
 # pylint: enable=no-name-in-module
 
+from .EncodedFile import EncodedFile
+
 
 class HashError(Exception):
     """Thrown when a checksum check fails"""
@@ -40,7 +42,7 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
     if sData:
         oReq.add_data(sData)
     try:
-        return urlopen(oReq)
+        return EncodedFile(oReq, bUrl=True).open()
     except URLError as oExp:
         if fErrorHandler:
             fErrorHandler(oExp)
@@ -59,7 +61,7 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
     """Fetch data from a file'ish object (EncodedFile, urlopen or file)"""
     try:
         if hasattr(oFile, 'info') and callable(oFile.info):
-            sLength = oFile.info().getheader('Content-Length')
+            sLength = oFile.info().get('Content-Length')
         else:
             sLength = None
 
