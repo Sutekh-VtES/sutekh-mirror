@@ -76,11 +76,9 @@ def unaccent(sCardName):
     """Remove Unicode accents."""
     # Inspired by a post by renaud turned up by google
     # Unicode Normed decomposed form
-    sNormed = unicodedata.normalize('NFD',
-                                    unicode(sCardName.encode('utf8'),
-                                            encoding='utf-8'))
+    sNormed = unicodedata.normalize('NFD', sCardName)
     # Drop non-ascii characters
-    return "".join(b for b in sNormed.encode('utf8') if ord(b) < 128)
+    return "".join(b for b in sNormed if ord(b) < 128)
 
 
 def image_gui_error_handler(oExp):
