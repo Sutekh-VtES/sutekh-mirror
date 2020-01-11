@@ -8,7 +8,7 @@
 """File selection dialog for choosing cardlist and rulings files"""
 
 from collections import namedtuple
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 import gtk
 from .SutekhDialog import SutekhDialog
