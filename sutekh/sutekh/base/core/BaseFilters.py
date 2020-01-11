@@ -564,7 +564,7 @@ class BaseCardTextFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sPattern):
-        self._sPattern = sPattern.lower().encode('utf-8')
+        self._sPattern = sPattern.lower()
 
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -590,15 +590,7 @@ class CardNameFilter(DirectFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sPattern):
-        try:
-            self.__sPattern = sPattern.lower().encode('utf-8')
-        except UnicodeDecodeError:
-            # Terminal encoding issues, so we rework the pattern to replace
-            # special chars with _
-            # We stomp on any ?'s in the original pattern, but that's
-            # too bad
-            sTemp = sPattern.decode('utf-8', 'replace').replace('?', '_')
-            self.__sPattern = sTemp.lower()
+        self.__sPattern = sPattern.lower()
 
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -1149,7 +1141,7 @@ class CardSetNameFilter(DirectFilter):
     types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern.lower().encode('utf-8')
+        self.__sPattern = sPattern.lower()
         self.oTable = Table('physical_card_set')
 
     # pylint: disable=missing-docstring
@@ -1174,7 +1166,7 @@ class CardSetDescriptionFilter(DirectFilter):
     types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern.lower().encode('utf-8')
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self.oTable = Table('physical_card_set')
 
@@ -1200,7 +1192,7 @@ class CardSetAuthorFilter(DirectFilter):
     types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern.lower().encode('utf-8')
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self.oTable = Table('physical_card_set')
 
@@ -1226,7 +1218,7 @@ class CardSetAnnotationsFilter(DirectFilter):
     types = ('PhysicalCardSet',)
 
     def __init__(self, sPattern):
-        self.__sPattern = sPattern.lower().encode('utf-8')
+        self.__sPattern = sPattern.lower()
         # Subclasses will replace this with the correct table
         self.oTable = Table('physical_card_set')
 
