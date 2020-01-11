@@ -6,7 +6,7 @@
 
 """Common base classes for the different HTML Parsers"""
 
-import HTMLParser
+from html.parser from import HTMLParser
 from logging import Logger
 
 
@@ -80,10 +80,9 @@ class HolderState(BaseState):
 # pylint complains about error not being overridden, but HTMLParser
 # does provide it - the class inheritence structure involved just
 # confuses pylint
-class SutekhBaseHTMLParser(HTMLParser.HTMLParser, object):
+class SutekhBaseHTMLParser(HTMLParser):
     """Base Parser for the Sutekh HTML parsers"""
 
-    # We explicitly inherit from object, since HTMLParser is a classic class
     def __init__(self):
         """Create an SutekhBaseHTMLParser."""
         self._oState = BaseState()

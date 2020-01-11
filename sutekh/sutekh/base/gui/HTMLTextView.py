@@ -17,7 +17,7 @@
 
 import re
 import warnings
-import HTMLParser
+from html.parser import HTMLParser
 from io import StringIO
 
 import gtk
@@ -76,14 +76,14 @@ def _parse_css_color(sColor):
     return gtk.gdk.color_parse(sColor)
 
 
-class HtmlHandler(HTMLParser.HTMLParser):
+class HtmlHandler(HTMLParser):
     # pylint: disable=no-self-use, too-many-instance-attributes, too-many-public-methods
     # can't break these into functions
     # We need to keep a lot of state to handle HTML properly
     # Lots of public methods from HTMLParser
     """Parse the HTML input and update the gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
-        HTMLParser.HTMLParser.__init__(self)
+        super(HtmlHandler, self).__init__()
         self._oTextBuf = oTextView.get_buffer()
         self._oTextView = oTextView
         self._oIter = oStartIter
