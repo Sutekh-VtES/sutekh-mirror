@@ -30,7 +30,7 @@ class IterGrouping(object):
             else:
                 dKeyItem.setdefault(None, []).append(oItem)
 
-        aList = dKeyItem.keys()
+        aList = list(dKeyItem.keys())
         aList.sort(key=lambda x: x if x else "")
 
         for oKey in aList:
