@@ -45,7 +45,7 @@ def create_tmp_file(sDir, sData):
 
     if sData:
         fTmp = open(sFilename, "wb")
-        fTmp.write(sData)
+        fTmp.write(sData.encode('utf8'))
         fTmp.close()
 
     return sFilename
