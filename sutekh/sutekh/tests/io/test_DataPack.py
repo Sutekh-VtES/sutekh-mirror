@@ -6,9 +6,9 @@
 """Test the Data Pack utilities"""
 
 import json
-import urllib
+from urllib.request import pathname2url
 import unittest
-import urlparse
+from urllib.parse import urljoin
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
 
@@ -60,7 +60,7 @@ class DataPackTest(SutekhTest):
         fFile = open(sTempFileName, 'w')
         fFile.write(sData)
         fFile.close()
-        sTempUrl = 'file://%s' % urllib.pathname2url(sTempFileName)
+        sTempUrl = 'file://%s' % pathname2url(sTempFileName)
         return sTempUrl
 
     def test_find_data_pack(self):
@@ -69,14 +69,14 @@ class DataPackTest(SutekhTest):
 
         sUrl, sHash = find_data_pack('starters', sTempUrl)
 
-        self.assertEqual(sUrl, urlparse.urljoin(
+        self.assertEqual(sUrl, urljoin(
             sTempUrl, "Starters/Starters_SW_to_HttB.zip"))
 
         self.assertEqual(sHash, 'aaabb')
 
         sUrl, sHash = find_data_pack('rulebooks', sTempUrl)
 
-        self.assertEqual(sUrl, urlparse.urljoin(
+        self.assertEqual(sUrl, urljoin(
             sTempUrl, "Rulebooks/Rulebooks.zip"))
 
         self.assertEqual(sHash, 'dddeee')
@@ -90,16 +90,16 @@ class DataPackTest(SutekhTest):
         self.assertEqual('2013-12-10', aDates[0])
         self.assertEqual('2013-12-20', aDates[1])
 
-        self.assertEqual(aUrls[0], urlparse.urljoin(
+        self.assertEqual(aUrls[0], urljoin(
             sTempUrl, "TWD/TWDA_2009.zip"))
-        self.assertEqual(aUrls[1], urlparse.urljoin(
+        self.assertEqual(aUrls[1], urljoin(
             sTempUrl, "TWD/TWDA_2010.zip"))
         self.assertEqual(aHashes[0], 'a')
         self.assertEqual(aHashes[1], 'b')
 
         sUrl, sHash = find_data_pack('twd', sTempUrl)
         # We return the last one in this case
-        self.assertEqual(sUrl, urlparse.urljoin(
+        self.assertEqual(sUrl, urljoin(
             sTempUrl, "TWD/TWDA_2010.zip"))
         self.assertEqual(sHash, 'b')
 

@@ -5,7 +5,7 @@
 
 """Test Writing Card Set handling"""
 
-from io import BytesIO
+from io import StringIO
 import unittest
 
 from sutekh.base.core.BaseAdapters import IPhysicalCardSet
@@ -21,7 +21,7 @@ from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
 
 # pylint: disable=line-too-long
 # Long lines for this test data ease comparison with the actual files produced
-EXPECTED_1 = b"""<physicalcardset author="A test author" name="Test Set 1" sutekh_xml_version="1.4">
+EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh_xml_version="1.4">
   <comment>A test comment</comment>
   <annotations />
   <card count="1" expansion="Jyhad" name=".44 Magnum" printing="No Printing" />
@@ -54,7 +54,7 @@ EXPECTED_1 = b"""<physicalcardset author="A test author" name="Test Set 1" sutek
   <card count="1" expansion="Third Edition" name="Walk of Flame" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_2 = b"""<physicalcardset author="A test author" name="Test Set 2" sutekh_xml_version="1.4">
+EXPECTED_2 = """<physicalcardset author="A test author" name="Test Set 2" sutekh_xml_version="1.4">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -68,7 +68,7 @@ A third line</comment>
   <card count="2" expansion="Dark Sovereigns" name="Alexandra" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_3 = b"""<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.4">
+EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.4">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -82,7 +82,7 @@ A third line</comment>
   <card count="2" expansion="Dark Sovereigns" name="Alexandra" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_4 = b"""<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.4">
+EXPECTED_4 = """<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.4">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -115,7 +115,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         # Check output
 
         oWriter = PhysicalCardSetWriter()
-        oFile = BytesIO()
+        oFile = StringIO()
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet1))
         sWriterXML = oFile.getvalue()
         oFile.close()
@@ -130,7 +130,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
         oPhysCardSet2 = make_set_2()
 
-        oFile = BytesIO()
+        oFile = StringIO()
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
         sWriterXML = oFile.getvalue()
         oFile.close()
@@ -147,7 +147,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
         # Unset the author
         oPhysCardSet2.author = None
-        oFile = BytesIO()
+        oFile = StringIO()
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
         sWriterXML = oFile.getvalue()
         oFile.close()
@@ -158,7 +158,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter = PhysicalCardSetWriter()
 
         oPhysCardSet3 = make_set_3()
-        oFile = BytesIO()
+        oFile = StringIO()
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet3))
         sWriterXML = oFile.getvalue()
         oFile.close()

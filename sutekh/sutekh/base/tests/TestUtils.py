@@ -10,7 +10,7 @@ import unittest
 import tempfile
 import os
 import sys
-from io import BytesIO
+from io import StringIO
 from logging import FileHandler
 
 import pygtkcompat
@@ -121,7 +121,7 @@ class BaseTestCase(unittest.TestCase):
 
            common operation for the parser tests"""
         oHolder = DummyHolder()
-        oParser.parse(BytesIO(sString), oHolder)
+        oParser.parse(StringIO(sString), oHolder)
         return oHolder
 
 
