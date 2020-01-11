@@ -60,7 +60,7 @@ def print_card_filter_list(dResults, fPrintCard, bDetailed, sEncoding):
     for oCard in sorted(dResults, key=lambda x: x.name):
         iCnt = dResults[oCard]
         if iCnt:
-            print('%3d x %s' % (
+            print(b'%3d x %s' % (
                 iCnt, oCard.name.encode(sEncoding, 'xmlcharrefreplace')))
         else:
             print(oCard.name.encode(sEncoding, 'xmlcharrefreplace'))
