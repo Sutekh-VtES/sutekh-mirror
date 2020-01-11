@@ -14,7 +14,7 @@ import sys
 import optparse
 import os
 import tempfile
-from StringIO import StringIO
+from io import StringIO
 from logging import StreamHandler
 from sqlobject import sqlhub, connectionForURI, SQLObjectNotFound
 from sutekh.base.core.BaseTables import Ruling, PHYSICAL_LIST, AbstractCard
