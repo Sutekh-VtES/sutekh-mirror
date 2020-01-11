@@ -1040,8 +1040,8 @@ class CardSetCardListModel(CardListModel):
         if oAbsId not in self._dAbsSecondLevel2Iter:
             # Nothing to clean up (not showing second level, etc.)
             return
-        aSecondLevelKeys = self._dAbsSecondLevel2Iter[oAbsId].keys()
         # We remove values in the loop, so we need this copy
+        aSecondLevelKeys = list(self._dAbsSecondLevel2Iter[oAbsId].keys())
         for sValue in aSecondLevelKeys:
             self._remove_second_level(oAbsId, sValue)
 
