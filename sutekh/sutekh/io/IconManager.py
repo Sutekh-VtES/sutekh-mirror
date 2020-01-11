@@ -169,7 +169,7 @@ class IconManager(BaseIconManager):
             aText = [sText]
             dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
             # Only 1 icon
-            aIcons = dIcons.values()
+            aIcons = list(dIcons.values())
         elif cGrouping is MultiTypeGrouping:
             aText = sText.split(' / ')
             dIcons = self._get_card_type_icons([ICardType(x) for x in aText])
@@ -182,12 +182,12 @@ class IconManager(BaseIconManager):
                 oDisVirt = IDisciplinePair((sText, 'superior'))
                 dIcons = self._get_discipline_icons([oDisVirt])
                 # We know there's only 1 icon, so this is OK
-                aIcons = dIcons.values()
+                aIcons = list(dIcons.values())
             except KeyError:
                 try:
                     oDisVirt = IVirtue(sText)
                     dIcons = self._get_virtue_icons([oDisVirt])
-                    aIcons = dIcons.values()
+                    aIcons = list(dIcons.values())
                 except KeyError:
                     aIcons = [None]
         elif cGrouping is ClanGrouping:
@@ -196,12 +196,12 @@ class IconManager(BaseIconManager):
                 oClanCreed = IClan(sText)
                 dIcons = self._get_clan_icons([oClanCreed])
                 # We know there's only 1 icon, so this is OK
-                aIcons = dIcons.values()
+                aIcons = list(dIcons.values())
             except KeyError:
                 try:
                     oClanCreed = ICreed(sText)
                     dIcons = self._get_creed_icons([oClanCreed])
-                    aIcons = dIcons.values()
+                    aIcons = list(dIcons.values())
                 except KeyError:
                     aIcons = [None]
         return aText, aIcons
