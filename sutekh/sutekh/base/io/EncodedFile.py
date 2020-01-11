@@ -7,7 +7,7 @@
    conventions."""
 
 import codecs
-from urllib.parse import urlopen
+from urllib.request import urlopen
 import logging
 
 
