@@ -6,7 +6,7 @@
 
 """Common base classes for the different HTML Parsers"""
 
-from html.parser from import HTMLParser
+from html.parser import HTMLParser
 from logging import Logger
 
 
