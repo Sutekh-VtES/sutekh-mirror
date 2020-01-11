@@ -95,7 +95,7 @@ A third line
 Crypt (3 cards, min=30, max=30, avg=10)
 ---------------------------------------
 2x Alexandra\t\t11  ANI AUS CEL PRE dom\tinner circle\tToreador:2
-1x \xc3\x89tienne Fauberge\t8   ANI CEL CHI FOR\t\t\tRavnos:3
+1x Étienne Fauberge\t8   ANI CEL CHI FOR\t\t\tRavnos:3
 
 Library (5 cards)
 Master (1; 1 trifle)
