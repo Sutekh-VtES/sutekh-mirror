@@ -114,8 +114,8 @@ class DataPackTest(SutekhTest):
         # by construction, this unpacking is safe
         [oExp] = aErrors
         # pylint: enable=unbalanced-tuple-unpacking
-        self.assertTrue(isinstance(oExp, ValueError))
-        self.assertEqual(str(oExp), "No JSON object could be decoded")
+        self.assertTrue(isinstance(oExp, json.decoder.JSONDecodeError))
+        self.assertTrue('Expecting value:' in str(oExp))
 
 
 if __name__ == "__main__":
