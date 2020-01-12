@@ -172,7 +172,7 @@ class FilteredView(CustomDragIconView):
     @staticmethod
     def to_ascii(sName):
         """Convert a Name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore')
+        return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore').decode('ascii')
 
     # pylint: disable=too-many-arguments
     # Various arguments required by function signatures
