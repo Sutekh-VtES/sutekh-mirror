@@ -110,7 +110,7 @@ class CardTextView(BaseCardTextView):
                 oIcon = self._oIconManager.get_icon_by_name(oItem.keyword)
                 dIcons[oItem.keyword] = oIcon
                 aInfo.append(oItem.keyword)
-            self._oBuf.labelled_list("Keywords:", aInfo,
+            self._oBuf.labelled_list("Keywords", aInfo,
                                      "keywords", dIcons)
 
         if oCard.clan:
