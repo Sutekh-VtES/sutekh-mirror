@@ -39,11 +39,11 @@ Capacity: 11
 Group: 2
 Card Type:
 *\tVampire
-Keywords::
-*\t0 stealth
-*\t1 strength
+Keywords:
 *\t3 bleed
 *\t0 intercept
+*\t0 stealth
+*\t1 strength
 Clan:
 *\tToreador
 Sect: Camarilla
@@ -63,6 +63,80 @@ Expansions:
 
 Artists:
 *\tLawrence Snelly"""
+
+
+GYPSIES = """Gypsies
+Cost: 3 pool
+Life: 1
+Card Type:
+*\tAlly
+Keywords:
+*\t1 bleed
+*\t1 stealth
+*\t1 strength
+*\tmortal
+*\tunique
+Clan:
+*\tGangrel
+
+Unique mortal with 1 life. 1 strength, 1 bleed.
+Gypsies get +1 stealth on each of their actions.
+
+Expansions:
+*\tJyhad (Uncommon)
+*\tVTES (Uncommon)
+
+Artists:
+*\tPete Venters"""
+
+GYPSIES_ERRATA = """Gypsies
+Cost: 3 pool
+Life: 1
+Card Type:
+*\tAlly
+Keywords:
+*\t1 bleed
+*\t1 stealth
+*\t1 strength
+*\tmortal
+*\tunique
+Clan:
+*\tGangrel
+
+Unique {mortal} with 1 life. 1 {strength}, 1 bleed.
+Gypsies get +1 stealth on each of their actions.
+
+Expansions:
+*\tJyhad (Uncommon)
+*\tVTES (Uncommon)
+
+Artists:
+*\tPete Venters"""
+
+
+HIGH_TOP = """High Top
+Cost: 4 pool
+Life: 3
+Card Type:
+*\tAlly
+Keywords:
+*\t0 bleed
+*\t1 intercept
+*\t1 strength
+*\tunique
+*\twerewolf
+Clan:
+*\tAhrimane
+
+Unique werewolf with 3 life. 1 strength, 0 bleed.
+High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your unlock phase, he gains 1 life.
+
+Expansions:
+*\tBloodlines (Rare)
+*\tLegacy of Blood (Rare)
+
+Artists:
+*\tMark Nelson"""
 
 
 class TestCardTextFrame(GuiSutekhTest):
@@ -89,11 +163,38 @@ class TestCardTextFrame(GuiSutekhTest):
         oCardTextFrame.set_card_text(oCard)
         sCardText = oCardTextFrame.view._oBuf.get_all_text()
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), AIRE)
-        # Check different card
+        # Check different cards
         oCard = make_card('Alexandra', None)
         oCardTextFrame.set_card_text(oCard)
         sCardText = oCardTextFrame.view._oBuf.get_all_text()
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), ALEXANDRA)
+
+        oCard = make_card('Gypsies', None)
+        oCardTextFrame.set_card_text(oCard)
+        sCardText = oCardTextFrame.view._oBuf.get_all_text()
+        self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), GYPSIES)
+
+        oCard = make_card('High Top', None)
+        oCardTextFrame.set_card_text(oCard)
+        sCardText = oCardTextFrame.view._oBuf.get_all_text()
+        self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), HIGH_TOP)
+
+    def test_show_errata(self):
+        """Test with 'show errata markers' set"""
+        # 'My Collection' is needed for default config
+        _oMyCollection = PhysicalCardSet(name='My Collection')
+        self.oWin.setup(self.oConfig)
+        # Get the card text frame
+        oCardTextFrame =  self.oWin._oCardTextPane
+        # Card text should start empty
+        self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), "")
+        # Set the 'show errata markers' option
+        self.oConfig.set_show_errata_markers(True)
+
+        oCard = make_card('Gypsies', None)
+        oCardTextFrame.set_card_text(oCard)
+        sCardText = oCardTextFrame.view._oBuf.get_all_text()
+        self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), GYPSIES_ERRATA)
 
 
 if __name__ == "__main__":

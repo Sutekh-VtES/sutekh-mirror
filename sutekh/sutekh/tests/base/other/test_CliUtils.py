@@ -40,6 +40,7 @@ CardType: Vampire
 Clan: Toreador
 Capacity: 11
 Group: 2
+Keywords: 3 bleed   0 intercept   0 stealth   1 strength
 Discipline: dom ANI AUS CEL PRE
 Camarilla Inner Circle: Once during your turn, you may lock or unlock another ready Toreador. +2 bleed.
 """
@@ -49,6 +50,26 @@ CardType: Action Modifier / Combat
 Discipline: Obfuscate
 [obf] [ACTION MODIFIER] +1 stealth.
 [OBF] [COMBAT] Maneuver.
+"""
+
+CARD_DETAILS_3 = """Gypsies
+CardType: Ally
+Clan: Gangrel
+Life: 1
+Cost: 3 pool
+Keywords: 1 bleed   1 stealth   1 strength   mortal   unique
+Unique {mortal} with 1 life. 1 {strength}, 1 bleed.
+Gypsies get +1 stealth on each of their actions.
+"""
+
+CARD_DETAILS_4 = """High Top
+CardType: Ally
+Clan: Ahrimane
+Life: 3
+Cost: 4 pool
+Keywords: 0 bleed   1 intercept   1 strength   unique   werewolf
+Unique werewolf with 3 life. 1 strength, 0 bleed.
+High Top gets +1 intercept. High Top may enter combat with any minion controlled by another Methuselah as a (D) action. High Top gets an additional strike each round and an optional maneuver once each combat. He may play cards requiring basic Celerity [cel] as a vampire with a capacity of 4. If High Top has less than 3 life during your unlock phase, he gains 1 life.
 """
 
 FILTER_LIST = """Abandoning the Flesh
@@ -90,6 +111,14 @@ class CliUtilsTests(SutekhTest):
         with patch('sys.stdout', new_callable=StringIO) as oMock:
             do_print_card('Swallowed by the Night', print_card_details)
             self.assertEqual(oMock.getvalue(), CARD_DETAILS_2)
+
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('Gypsies', print_card_details)
+            self.assertEqual(oMock.getvalue(), CARD_DETAILS_3)
+
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('High Top', print_card_details)
+            self.assertEqual(oMock.getvalue(), CARD_DETAILS_4)
 
         # Check error case
         with patch('sys.stdout', new_callable=StringIO) as oMock:
