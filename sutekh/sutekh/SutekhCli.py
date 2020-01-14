@@ -28,7 +28,8 @@ import sutekh.core.Filters
 from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   gen_temp_dir, is_crypt_card,
                                   format_text, read_exp_info_file,
-                                  read_lookup_data, do_card_checks)
+                                  read_lookup_data, do_card_checks,
+                                  keyword_sort_key)
 from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
                                  setup_logging)
@@ -199,6 +200,11 @@ def print_card_details(oCard):
         else:
             sOutput = u'Cost: %d %s' % (oCard.cost, oCard.costtype)
         print(sOutput)
+    if oCard.keywords:
+        aKeywords = [oK.keyword for oK in oCard.keywords]
+        aKeywords.sort(key=keyword_sort_key)
+        sOutput = u'   '.join(aKeywords)
+        print(u'Keywords: %s' % sOutput)
     if oCard.discipline:
         if is_crypt_card(oCard):
             aDisciplines = []

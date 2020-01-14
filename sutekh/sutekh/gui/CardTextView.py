@@ -6,7 +6,7 @@
 
 """Widget for displaying the card text for the given card."""
 
-from sutekh.SutekhUtility import format_text
+from sutekh.SutekhUtility import format_text, keyword_sort_key
 from sutekh.base.gui.BaseCardTextView import (BaseCardTextBuffer,
                                               BaseCardTextView)
 from sutekh.base.gui.MessageBus import MessageBus, CONFIG_MSG
@@ -110,6 +110,7 @@ class CardTextView(BaseCardTextView):
                 oIcon = self._oIconManager.get_icon_by_name(oItem.keyword)
                 dIcons[oItem.keyword] = oIcon
                 aInfo.append(oItem.keyword)
+            aInfo.sort(key=keyword_sort_key)
             self._oBuf.labelled_list("Keywords", aInfo,
                                      "keywords", dIcons)
 
