@@ -8,6 +8,7 @@
 
 import gtk
 from ...io.UrlOps import urlopen_with_timeout
+from ...io.EncodedFile import EncodedFile
 from ...core.BaseTables import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import SutekhDialog
@@ -153,7 +154,8 @@ class BaseImport(BasePlugin):
 
     def make_cs_from_file(self, sFile, cParser):
         """From an file, create an Card Set"""
-        fIn = open(sFile, "rb")
+        oFile = EncodedFile(sFile)
+        fIn = oFile.open()
         try:
             import_cs(fIn, cParser(), self.parent)
         finally:
