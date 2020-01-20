@@ -50,7 +50,7 @@ class SutekhHTMLLogHandler(SutekhLogHandler):
         if sString.startswith('Card: The '):
             return
         sBase = sString[6:8]
-        sStart = string.upper(sBase)
+        sStart = sBase.upper()
         # The cardlist considers case in ordering - AK before Aabat, etc.
         # This causes jumps, so we ignore these, as there aren't enough
         # to make this worthwhile (9 out 3009, Jan 2008 - NM)
