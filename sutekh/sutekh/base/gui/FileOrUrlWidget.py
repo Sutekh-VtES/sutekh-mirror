@@ -139,14 +139,21 @@ class FileOrUrlWidget(gtk.VBox):
         # something weird happened
         return None, False
 
-    def get_wwfile_data(self):
+    def get_unicode_data(self):
         """Open the selected file as a EncodedFile and retrieve the data.
 
            Will attempt to display a progress dialog if the file is a URL.
            """
         sUrl, bUrl = self.get_file_or_url()
 
-        oFile = EncodedFile(sUrl, bUrl=bUrl).open()
+        if bUrl:
+            oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler,
+                                         dHeaders=self._dReqHeaders, bBinary=False)
+        else:
+            oFile = EncodedFile(sUrl, bUrl=bUrl).open()
+
+        if not oFile:
+            return None
 
         return progress_fetch_data(oFile)
 
@@ -163,7 +170,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         if bUrl:
             oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler,
-                                         dHeaders=self._dReqHeaders)
+                                         dHeaders=self._dReqHeaders, bBinary=True)
         else:
             oFile = open(sUrl, "rb")
 
