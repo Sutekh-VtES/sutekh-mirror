@@ -31,8 +31,13 @@ class HashError(Exception):
         self.sData = sData
 
 
-def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
-    """Wrap urlopen to handle timeouts nicely"""
+def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None,
+                         bBinary=False):
+    """Wrap urlopen to handle timeouts nicely.
+    
+       If bBinary is False, this will return an wrapped object that returns unicode
+       data, otherwise, if bBinary is True, it will return raw a file that returns raw
+       bytes."""
     # Note: The global timeout is currently set to the
     # config value at startup
     oReq = Request(sUrl)
@@ -42,6 +47,8 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None):
     if sData:
         oReq.add_data(sData)
     try:
+        if bBinary:
+            return urlopen(oReq)
         return EncodedFile(oReq, bUrl=True).open()
     except URLError as oExp:
         if fErrorHandler:
@@ -91,7 +98,10 @@ def fetch_data(oFile, oOutFile=None, sHash=None, oLogHandler=None,
             if oOutFile:
                 sData = None
             else:
-                sData = ''.join(aData)
+                if isinstance(aData[0], str):
+                    sData = ''.join(aData)
+                else:
+                    sData = b''.join(aData)
         else:
             # Just try and download
             if oOutFile:
