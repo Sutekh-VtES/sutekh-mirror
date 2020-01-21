@@ -146,7 +146,8 @@ class StarterConfigDialog(SutekhDialog):
                 # Error getting the data pack, so we fail
                 return None
             oFile = urlopen_with_timeout(sZipUrl,
-                                         fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler,
+                                         bBinary=True)
             if oFile:
                 sData = progress_fetch_data(oFile, None, sHash)
             else:
@@ -303,7 +304,8 @@ class StarterInfoPlugin(SutekhPlugin):
                 if not bExcludeStorylineDecks:
                     bExcludeStorylineDecks = find_holder(STORYLINE_HOLDERS) is None
             oFile = urlopen_with_timeout(aUrls[0],
-                                         fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler,
+                                         bBinary=True)
             if oFile:
                 sData = progress_fetch_data(oFile, None, aHashes[0])
             else:

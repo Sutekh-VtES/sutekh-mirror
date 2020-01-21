@@ -9,7 +9,7 @@ import logging
 import datetime
 import zipfile
 from collections import namedtuple
-from io import StringIO
+from io import BytesIO
 
 import gtk
 from sqlobject import sqlhub, connectionForURI
@@ -142,7 +142,8 @@ class BaseGuiDBManager(object):
         aReaderNames = [x.sName for x in self.tReaders]
         if oZipDetails.bIsUrl:
             oFile = urlopen_with_timeout(oZipDetails.sName,
-                                         fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler,
+                                         bBinary=True)
             try:
                 sData = progress_fetch_data(oFile, sHash=sHash,
                                             sDesc="Downloading zipfile")
@@ -158,14 +159,16 @@ class BaseGuiDBManager(object):
             fIn = file(oZipDetails.sName, 'rb')
             sData = fIn.read()
             fIn.close()
-        oZipFile = zipfile.ZipFile(StringIO(sData), 'r')
+        oZipFile = zipfile.ZipFile(BytesIO(sData), 'r')
         aNames = oZipFile.namelist()
         dFiles = {}
         for sName in aNames:
             # We rely on the later checks to catch missing files, but
             # we only include files we have readers for here
             if sName in aReaderNames:
-                oFile = ZipEntryProxy(oZipFile.read(sName))
+                # This may be a bit dangerous, but zip documentation suggests
+                # it is correct for text data, which is what we expect here.
+                oFile = ZipEntryProxy(oZipFile.read(sName).decode('utf8'))
                 dFiles[sName] = oFile
         if not dFiles:
             do_complaint_error("Aborting the import."

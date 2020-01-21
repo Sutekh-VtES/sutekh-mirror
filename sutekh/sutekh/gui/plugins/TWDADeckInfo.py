@@ -8,7 +8,7 @@
 import re
 import datetime
 from logging import Logger
-from io import StringIO
+from io import BytesIO
 
 import gtk
 from sqlobject import SQLObjectNotFound
@@ -463,7 +463,8 @@ class TWDAInfoPlugin(SutekhPlugin):
         # We sort the list of urls to download for cosmetic reasons
         for sUrl, sTWDA, sHash in sorted(aToUnzip, key=lambda x: x[1]):
             oFile = urlopen_with_timeout(sUrl,
-                                         fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler,
+                                         bBinary=True)
             oProgressDialog.set_description('Downloading %s' % sTWDA)
             try:
 
@@ -476,7 +477,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                 # Don't delete this, since we're not replacing it
                 aToReplace.remove(sTWDA)
                 continue
-            oZipFile = ZipFileWrapper(StringIO(sData))
+            oZipFile = ZipFileWrapper(BytesIO(sData))
             aZipHolders.append(oZipFile)
             oBinLogHandler.inc_cur_bin()
         oProgressDialog.destroy()

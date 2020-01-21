@@ -143,7 +143,8 @@ class BaseImport(BasePlugin):
     def make_cs_from_uri(self, sUri, cParser):
         """From an URI, create an Card Set"""
         fIn = urlopen_with_timeout(sUri,
-                                   fErrorHandler=gui_error_handler)
+                                   fErrorHandler=gui_error_handler,
+                                   bBinary=False)
         if not fIn:
             # probable timeout, so bail
             return

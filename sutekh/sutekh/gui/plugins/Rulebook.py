@@ -6,7 +6,7 @@
 """Downloads rulebook HTML pages and makes them available via the Help menu."""
 
 import os
-from io import StringIO
+from io import BytesIO
 import webbrowser
 import zipfile
 from logging import Logger
@@ -76,7 +76,8 @@ class RulebookConfigDialog(SutekhDialog):
                 # failed to get datapack
                 return None
             oFile = urlopen_with_timeout(sZipUrl,
-                                         fErrorHandler=gui_error_handler)
+                                         fErrorHandler=gui_error_handler,
+                                         bBinary=True)
             if oFile:
                 sData = progress_fetch_data(oFile, None, sHash)
             else:
@@ -221,7 +222,7 @@ class RulebookPlugin(SutekhPlugin):
             try:
                 sData = oConfigDialog.get_data()
                 if sData:
-                    oRawFile = StringIO(sData)
+                    oRawFile = BytesIO(sData)
                     oZipFile = zipfile.ZipFile(oRawFile, 'r')
                     self._unpack_zip_with_prog_bar(oZipFile)
                 # else is the error path, but we'll have already shown

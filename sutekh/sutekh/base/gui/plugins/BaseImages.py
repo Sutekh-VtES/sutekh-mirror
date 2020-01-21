@@ -333,7 +333,7 @@ class BaseImageFrame(BasicFrame):
         logging.info('Downloading date cache from %s', sDateUrl)
         oFile = urlopen_with_timeout(
             sDateUrl, fErrorHandler=image_gui_error_handler,
-            dHeaders=self._dReqHeaders)
+            dHeaders=self._dReqHeaders, bBinary=False)
         if oFile:
             sDateData = progress_fetch_data(oFile)
             if self._parse_date_data(sDateData):
@@ -413,7 +413,7 @@ class BaseImageFrame(BasicFrame):
                              sUrl, sFullFilename)
                 oFile = urlopen_with_timeout(
                     sUrl, fErrorHandler=image_gui_error_handler,
-                    dHeaders=self._dReqHeaders)
+                    dHeaders=self._dReqHeaders, bBinary=True)
             else:
                 # Skip this url, since it's already failed
                 oLastChecked = self._aFailedUrls[sUrl]
