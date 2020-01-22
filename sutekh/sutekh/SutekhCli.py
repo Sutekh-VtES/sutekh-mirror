@@ -174,7 +174,8 @@ def print_card_details(oCard):
     if not oCard.cardtype:
         print(u'CardType: Unknown')
     else:
-        sOutput = u'CardType: %s' % u' / '.join([oT.name for oT in oCard.cardtype])
+        sOutput = u'CardType: %s' % u' / '.join(
+            [oT.name for oT in oCard.cardtype])
         print(sOutput)
     if oCard.clan:
         sOutput = u'Clan: %s' % u' / '.join([oC.name for oC in oCard.clan])
@@ -222,10 +223,11 @@ def print_card_details(oCard):
         print(sOutput)
     if oCard.virtue:
         if is_crypt_card(oCard):
-            sOutput = u'Virtue: %s' % ' '.join([oC.name for oC in oCard.virtue])
+            sOutput = u'Virtue: %s' % ' '.join(
+                [oC.name for oC in oCard.virtue])
         else:
-            sOutput = u'Virtue: %s' % ' / '.join([oC.fullname for oC in
-                                             oCard.virtue])
+            sOutput = u'Virtue: %s' % ' / '.join(
+                [oC.fullname for oC in oCard.virtue])
         print(sOutput)
     print(format_text(oCard.text))
 
