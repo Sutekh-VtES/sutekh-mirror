@@ -11,7 +11,7 @@ from .BaseTables import (AbstractCard, RarityPair, Rarity, CardType,
 from .DBUtility import init_cache
 
 
-class ObjectCache(object):
+class ObjectCache:
     """Holds references to commonly used database objects so that they don't
        get removed from the cache during big reads.
 

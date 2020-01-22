@@ -10,7 +10,7 @@ from .PhysicalCardView import PhysicalCardView
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 
 
-class PhysicalCardController(object):
+class PhysicalCardController:
     """Controller for the Physical Card Collection.
 
        Provide settings needed for the Physical Card List,

@@ -29,7 +29,7 @@ class HTMLStateError(StateError):
             self._sInfo, self._sData, self._sTag)
 
 
-class BaseState(object):
+class BaseState:
     """Base class for parser states"""
 
     def __init__(self):

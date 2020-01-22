@@ -18,7 +18,7 @@ MIT = 'License :: OSI Approved :: MIT License'
 PYTHON = 'License :: OSI Approved :: Python Software Foundation License',
 
 # pylint: disable=too-few-public-methods, missing-docstring
-class SutekhInfo(object):
+class SutekhInfo:
     VERSION = (1, 1, 0, 'alpha', 1)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])
     VERSION_STR = {

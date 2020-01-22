@@ -20,7 +20,7 @@ from .BaseAbbreviations import CardTypes, Expansions, Rarities
 # Object Maker API
 # pylint: disable=missing-docstring
 # No point in docstrings for these methods, really
-class BaseObjectMaker(object):
+class BaseObjectMaker:
     """Creates all kinds of program Objects from simple strings.
 
        All the methods will return either a copy of an existing object

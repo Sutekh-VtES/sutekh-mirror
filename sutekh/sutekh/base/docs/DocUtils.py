@@ -79,7 +79,7 @@ def _make_link(sName):
     return sLinkTag
 
 
-class FilterGroup(object):
+class FilterGroup:
     """Fake filter for Filter Group help."""
 
     description = "Filter Group"

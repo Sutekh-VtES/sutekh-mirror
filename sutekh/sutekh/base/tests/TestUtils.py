@@ -125,7 +125,7 @@ class BaseTestCase(unittest.TestCase):
         return oHolder
 
 
-class DummyHolder(object):
+class DummyHolder:
     """Emulate CardSetHolder for test purposes."""
     # pylint: disable=invalid-name
     # placeholder names for CardSetHolder attributes
@@ -190,7 +190,7 @@ def make_null_handler():
     return FileHandler('/dev/null')
 
 
-class FailFile(object):
+class FailFile:
     """File'ish that raises exceptions for checking error handler stuff"""
 
     def __init__(self, oExp):

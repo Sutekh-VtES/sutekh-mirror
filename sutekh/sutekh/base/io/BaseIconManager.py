@@ -14,7 +14,7 @@ from urllib.error import HTTPError
 from ..Utility import ensure_dir_exists
 
 
-class BaseIconManager(object):
+class BaseIconManager:
     """Manager for the card info Icons.
 
        Provides the basic support for managing and downloading icons.

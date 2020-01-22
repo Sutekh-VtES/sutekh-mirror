@@ -62,7 +62,7 @@ SL_FIXES = {
 }
 
 
-class WriteSLDeck(object):
+class WriteSLDeck:
     """Create a string in SL import format representing a card set."""
 
     # pylint: disable=no-self-use

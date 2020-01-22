@@ -16,7 +16,7 @@ class LookupFailed(Exception):
     pass
 
 
-class AbstractCardLookup(object):
+class AbstractCardLookup:
     """Base class for objects which translate card names into abstract card
        objects.
        """
@@ -32,7 +32,7 @@ class AbstractCardLookup(object):
         raise NotImplementedError
 
 
-class PhysicalCardLookup(object):
+class PhysicalCardLookup:
     """Base class for objects which translate card and expansion names
        into physical card objects
        """
@@ -59,7 +59,7 @@ class PhysicalCardLookup(object):
         raise NotImplementedError
 
 
-class PrintingLookup(object):
+class PrintingLookup:
     """Base class for objects which translate expansion + print names
        into printing objects
        """

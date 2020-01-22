@@ -16,7 +16,7 @@
    """
 
 
-class WriteCSV(object):
+class WriteCSV:
     """Create a string in CSV format representing a card set."""
 
     def __init__(self, bIncludeHeader=True, bIncludeExpansion=True):

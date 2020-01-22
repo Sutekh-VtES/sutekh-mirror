@@ -145,7 +145,7 @@ class StrAdaptMeta(type):
         return oObj
 
 
-class Adapter(object):
+class Adapter:
     """Base class for adapter objects.
        Makes introspection less messy,"""
     pass

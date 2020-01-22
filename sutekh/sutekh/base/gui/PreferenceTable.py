@@ -64,7 +64,7 @@ class PreferenceTable(gtk.Table):
         return dict((oOpt.sKey, oOpt.get_value()) for oOpt in self._aOptions)
 
 
-class PreferenceOption(object):
+class PreferenceOption:
     """An option for a preference table."""
 
     def __init__(self, sKey, sConfigSpec, oValidator):
@@ -121,7 +121,7 @@ class PreferenceOption(object):
             self.oEntry.set_sensitive(self.bEditable)
 
 
-class BaseParsedSpec(object):
+class BaseParsedSpec:
     """Object holding the result of parsing a ConfigSpec check."""
 
     def __init__(self, sType, aArgs, dKwargs, sDefault):

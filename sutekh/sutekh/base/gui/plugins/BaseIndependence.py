@@ -20,7 +20,7 @@ from ..GuiCardSetFunctions import create_card_set
 
 
 # helper functions and classes
-class CardInfo(object):
+class CardInfo:
     """Helper class to hold card set info"""
     def __init__(self):
         self.iCount = 0

@@ -105,7 +105,7 @@ class ClanDisciplineStats(SutekhPlugin):
         self._oStatsVbox.show_all()
 
 
-class GroupStats(object):
+class GroupStats:
     """Manage statistics for a set of vampire groups."""
 
     def __init__(self):
@@ -142,7 +142,7 @@ class GroupStats(object):
         return [self.dDisciplines[oId] for oId, _iScore in aScores]
 
 
-class ClanStats(object):
+class ClanStats:
     """Manage combined statistics for a clan"""
 
     def __init__(self, iMaxGrp):

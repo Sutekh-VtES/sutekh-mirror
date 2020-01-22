@@ -14,7 +14,7 @@ from logging import Logger
 from ..core.BaseTables import LookupHints
 
 
-class LookupCSVParser(object):
+class LookupCSVParser:
     """Parse lookup info from a CSV file and add the required
        LookupHints entries to the database."""
 

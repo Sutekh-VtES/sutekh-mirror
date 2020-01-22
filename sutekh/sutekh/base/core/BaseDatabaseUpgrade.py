@@ -41,7 +41,7 @@ from .DatabaseVersion import DatabaseVersion
 # when to remove upgrade logic from here.
 
 
-class BaseDBUpgradeManager(object):
+class BaseDBUpgradeManager:
     """Convience class to define and manage all the various aspects
        around database upgrades."""
 

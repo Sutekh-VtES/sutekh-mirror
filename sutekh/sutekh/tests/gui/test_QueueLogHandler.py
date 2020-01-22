@@ -12,7 +12,7 @@ from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.gui.QueueLogHandler import QueueLogHandler, QUEUE_LENGTH
 
 
-class DummyWidget(object):
+class DummyWidget:
     """Fake the frame widget so we can check the log handler behaviour"""
 
     def __init__(self):

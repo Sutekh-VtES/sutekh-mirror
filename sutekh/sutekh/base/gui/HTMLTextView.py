@@ -48,7 +48,7 @@ SCALES = {
 }
 
 
-class LocalTextAttributes(object):
+class LocalTextAttributes:
     """Fake attributes to work around gtk3 TextAttributes issues"""
 
     __slots__ = ('font', 'font_size')

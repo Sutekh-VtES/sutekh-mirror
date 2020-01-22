@@ -40,7 +40,7 @@ def is_date_format(sValue):
     return oDate
 
 
-class BaseConfigFile(object):
+class BaseConfigFile:
     """Handle the setup and management of the config file.
 
        Ensure that the needed sections exist, and that sensible

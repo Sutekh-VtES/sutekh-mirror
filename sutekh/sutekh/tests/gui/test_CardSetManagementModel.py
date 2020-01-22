@@ -13,7 +13,7 @@ from sutekh.base.core import BaseFilters
 from sutekh.base.gui.CardSetManagementModel import CardSetManagementModel
 
 
-class DummyWindow(object):
+class DummyWindow:
     """Dummy main window object"""
 
     # pylint: disable=no-self-use

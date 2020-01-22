@@ -21,7 +21,7 @@ from sutekh.base.core.BaseFilters import (MultiCardTypeFilter,
                                           CardTypeFilter, FilterNot)
 
 
-class HandDetails(object):
+class HandDetails:
     """Convience class for holding drawn hand details"""
     # pylint: disable=too-many-arguments
     # Use all this for showing the results

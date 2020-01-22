@@ -17,7 +17,7 @@ from logging import Handler, Formatter, DEBUG
 QUEUE_LENGTH = 500
 
 
-class QueueLogHandler(Handler, object):
+class QueueLogHandler(Handler):
     """Simple log handler that adds messages to a queue"""
     # We explicitly inherit from object, since Handler is a classic class
 

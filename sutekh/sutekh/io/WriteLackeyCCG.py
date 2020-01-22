@@ -42,7 +42,7 @@ def lackey_name(oCard):
     return sName
 
 
-class WriteLackeyCCG(object):
+class WriteLackeyCCG:
     """Create a string in Lackey CCG format representing a card set."""
 
     # pylint: disable=no-self-use

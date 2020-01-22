@@ -35,7 +35,7 @@ def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
     return None
 
 
-class PhysicalCardXmlFile(object):
+class PhysicalCardXmlFile:
     """Class for handling PhysicalCard XML Files"""
     def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
         self.oCardLookup = oLookup
@@ -63,7 +63,7 @@ class PhysicalCardXmlFile(object):
         os.remove(self.sXmlFile)
 
 
-class AbstractCardSetXmlFile(object):
+class AbstractCardSetXmlFile:
     """Class for handling Abstract Card Set XML files"""
     def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
         self.oCardLookup = oLookup
@@ -91,7 +91,7 @@ class AbstractCardSetXmlFile(object):
         os.remove(self.sXmlFile)
 
 
-class PhysicalCardSetXmlFile(object):
+class PhysicalCardSetXmlFile:
     """Class for handling Physical Card Set XML files"""
     def __init__(self, sFileName=None, oLookup=DEFAULT_LOOKUP):
         self.oCardLookup = oLookup

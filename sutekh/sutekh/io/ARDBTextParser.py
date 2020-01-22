@@ -117,7 +117,7 @@ class Cards(HolderState):
 
 
 # Parser
-class ARDBTextParser(object):
+class ARDBTextParser:
     """Parser for the ARDB Text format."""
     def __init__(self):
         """Create an ARDBTextParser.

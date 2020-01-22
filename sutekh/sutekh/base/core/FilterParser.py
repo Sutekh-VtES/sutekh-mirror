@@ -49,7 +49,7 @@ def get_filters_for_type(sFilterType):
 # We define an object for the lex parser
 # pylint is never going to like the naming conventions here,
 # which are based on ply examples
-class ParseFilterDefinitions(object):
+class ParseFilterDefinitions:
     """Provides the lexer used by PLY"""
     # pylint: disable=invalid-name, no-self-use
     aKeywords = set([x.keyword for x in PARSER_FILTERS])
@@ -129,7 +129,7 @@ class ParseFilterDefinitions(object):
 
 
 # Define a yacc parser to produce the abstract syntax tree
-class FilterYaccParser(object):
+class FilterYaccParser:
     """Provide the parser used by PLY"""
     # pylint: disable=invalid-name, no-self-use
     tokens = ParseFilterDefinitions.tokens
@@ -240,7 +240,7 @@ class FilterYaccParser(object):
 
 
 # Wrapper objects around the parser
-class FilterParser(object):
+class FilterParser:
     """Entry point for filter parsing. Wraps Lexer and Parser Objects"""
     # pylint: disable=too-few-public-methods
     # This really does only need the 1 public method
@@ -300,7 +300,7 @@ def unescape(sData):
 
 # Object used by get_values representation
 # Should be made more robust
-class ValueObject(object):
+class ValueObject:
     """Object to represent values extracted from the AST"""
 
     def __init__(self, oValue, oNode):
@@ -332,7 +332,7 @@ class ValueObject(object):
 
 # AST object (formulation inspired by Simon Cross's example, and notes
 # from the ply documentation)
-class AstBaseNode(object):
+class AstBaseNode:
     """Basic node class for the AST. Other nodes inherit from this"""
 
     def __init__(self, aChildren):

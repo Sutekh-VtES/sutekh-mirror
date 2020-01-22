@@ -454,7 +454,7 @@ class ClusterCardList(SutekhPlugin):
         self._open_cs(sDeckName, True)
 
 
-class Vector(object):
+class Vector:
     """Really simple class representing a row of card table data."""
 
     METRICS = {}

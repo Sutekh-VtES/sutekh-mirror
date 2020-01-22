@@ -10,7 +10,7 @@ from sutekh.core.ELDBUtilities import gen_name_lookups
 
 
 # State Classes
-class State(object):
+class State:
     """Base class for the State Objects."""
     def __init__(self, oHolder, dNameCache):
         self._sData = ""
@@ -87,7 +87,7 @@ class Cards(State):
         return self
 
 
-class ELDBDeckFileParser(object):
+class ELDBDeckFileParser:
     """Parser for the ELDB Deck format."""
 
     def __init__(self):

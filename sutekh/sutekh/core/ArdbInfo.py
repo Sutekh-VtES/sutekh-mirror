@@ -33,7 +33,7 @@ def unescape_ardb_expansion_name(sExpName):
     return sExpName
 
 
-class ArdbInfo(object):
+class ArdbInfo:
     """Create a string in ARDB's text format representing a dictionary
        of cards."""
 

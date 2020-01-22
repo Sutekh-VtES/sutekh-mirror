@@ -33,7 +33,7 @@ class AbbrevMeta(type):
                 cls._dLook[sAlt] = sKey
 
 
-class AbbreviationLookup(object, metaclass=AbbrevMeta):
+class AbbreviationLookup(metaclass=AbbrevMeta):
     """Base class for specific abbreviation tables."""
 
     # Subclass should define a dictionary of keys:
@@ -61,7 +61,7 @@ class AbbreviationLookup(object, metaclass=AbbrevMeta):
         raise NotImplementedError
 
 
-class DatabaseAbbreviation(object):
+class DatabaseAbbreviation:
     """Base class for database backed abbrevations"""
 
     _dLook = {}

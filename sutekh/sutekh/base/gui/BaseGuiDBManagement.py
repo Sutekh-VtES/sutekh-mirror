@@ -58,7 +58,7 @@ DataFileReader = namedtuple('DataFileReader', ['sName', 'sUrl',
                                                'bCountLogger', 'fReader'])
 
 
-class BaseGuiDBManager(object):
+class BaseGuiDBManager:
     """Base class for handling gui DB Upgrades."""
     # Tuple about files and associated reader functions and details
     # We use a tuple so this is ordered, and files will be read from

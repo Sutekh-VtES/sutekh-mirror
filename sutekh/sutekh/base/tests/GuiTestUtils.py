@@ -14,7 +14,7 @@ from ..gui.CardSetListModel import (IGNORE_PARENT, NO_SECOND_LEVEL,
 # Useful mock classes
 
 
-class TestListener(object):
+class TestListener:
     """Listener used in the test cases.
 
        Pass bKeepCards to keep a copy of the all the cards passed to the
@@ -41,7 +41,7 @@ class TestListener(object):
         self.iCnt += iChg
 
 
-class DummyCardSetController(object):
+class DummyCardSetController:
     """Dummy controller object for config tests"""
 
     def __init__(self):

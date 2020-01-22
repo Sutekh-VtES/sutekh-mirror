@@ -20,7 +20,7 @@ def _get_connection(oConn):
     return oConn
 
 
-class DatabaseVersion(object):
+class DatabaseVersion:
     """Class to handle all the database manipulation aspects."""
 
     _dCache = {}

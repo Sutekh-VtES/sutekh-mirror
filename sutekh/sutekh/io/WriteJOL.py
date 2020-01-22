@@ -21,7 +21,7 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.core.ELDBUtilities import type_of_card
 
 
-class WriteJOL(object):
+class WriteJOL:
     """Create a string in JOL format representing a card set."""
 
     # pylint: disable=no-self-use

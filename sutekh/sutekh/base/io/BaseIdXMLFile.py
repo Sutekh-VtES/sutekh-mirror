@@ -18,7 +18,7 @@ except ImportError:
 # pylint: enable=no-name-in-module, import-error
 
 
-class BaseIdXMLFile(object):
+class BaseIdXMLFile:
     """Tries to identify the XML file type.
 
        Parse the file into an ElementTree, and then tests the Root element

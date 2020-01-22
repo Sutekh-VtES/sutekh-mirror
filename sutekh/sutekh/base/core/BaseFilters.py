@@ -50,7 +50,7 @@ def IN(oCol, oListOrSelect):
 
 
 # Filter Base Class
-class Filter(object):
+class Filter:
     """Base class for all filters"""
 
     types = ()

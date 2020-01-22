@@ -40,7 +40,7 @@ def _sort_replacement(oModel, oIter1, oIter2, _oCol):
     return 0
 
 
-class DummyController(object):
+class DummyController:
     """Dummy controller class, so we can use the card views directly"""
     def __init__(self, sFilterType):
         self.sFilterType = sFilterType

@@ -19,7 +19,7 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.core.ELDBUtilities import norm_name, type_of_card
 
 
-class WriteELDBInventory(object):
+class WriteELDBInventory:
     """Create a string in ELDB inventory format representing a card set."""
 
     # pylint: disable=no-self-use

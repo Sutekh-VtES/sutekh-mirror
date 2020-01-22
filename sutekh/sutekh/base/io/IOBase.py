@@ -24,7 +24,7 @@ from ..Utility import pretty_xml, norm_xml_quotes
 from ..core.DBUtility import flush_cache
 
 
-class CardSetParser(object):
+class CardSetParser:
     """Parent class for card set parsers.
 
        Card set parser classes need not subclass this class, only
@@ -44,7 +44,7 @@ class CardSetParser(object):
         raise NotImplementedError("CardSetParser should be sub-classed")
 
 
-class CardSetWriter(object):
+class CardSetWriter:
     """Parent class for card set writers.
 
        Card set writer classes need not subclass this class, only
@@ -72,7 +72,7 @@ class CardSetWriter(object):
         raise NotImplementedError("CardSetWriter should be sub-classed")
 
 
-class BaseXMLParser(object):
+class BaseXMLParser:
     """Base object for the various XML Parser classes.
 
        classes just implement a _convert_tree class to fill in the

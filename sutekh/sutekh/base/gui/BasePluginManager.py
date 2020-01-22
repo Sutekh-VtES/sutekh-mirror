@@ -54,7 +54,7 @@ def submodules(oPackage):
     return list(aModules)
 
 
-class BasePluginManager(object):
+class BasePluginManager:
     """Base class for managing plugins.
 
        Plugin modules should be placed in the plugins package directory and
@@ -119,7 +119,7 @@ class BasePluginManager(object):
                 if cPlugin.check_model_type(cModelType)]
 
 
-class PluginConfigFileListener(object):
+class PluginConfigFileListener:
     """Listen for messages and inform plugins when their config changes."""
 
     # pylint: disable=super-init-not-called
@@ -172,7 +172,7 @@ class PluginConfigFileListener(object):
             self._oPlugin.perpane_config_updated()
 
 
-class BasePlugin(object):
+class BasePlugin:
     """Base class for plugins.
 
        Applications to derive their own subclass of this for their plugins."""

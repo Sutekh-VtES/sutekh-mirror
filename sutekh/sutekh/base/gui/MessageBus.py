@@ -14,7 +14,7 @@
 CONFIG_MSG, CARD_TEXT_MSG, DATABASE_MSG = range(3)
 
 
-class MessageBus(object):
+class MessageBus:
     """The actual message bus"""
 
     _dSubscriptions = {}

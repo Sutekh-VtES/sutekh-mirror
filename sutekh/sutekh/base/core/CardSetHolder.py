@@ -12,7 +12,7 @@ from .CardLookup import DEFAULT_LOOKUP
 from .BaseTables import PhysicalCardSet
 
 
-class CardSetHolder(object):
+class CardSetHolder:
     # pylint: disable=too-many-instance-attributes
     # Need to keep state of card set, so many attributes
     """Holder for Card Sets.

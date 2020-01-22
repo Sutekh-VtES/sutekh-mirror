@@ -8,7 +8,7 @@
 # Base Grouping Class
 
 
-class IterGrouping(object):
+class IterGrouping:
     """Bass class for the groupings"""
     def __init__(self, oIter, fKeys):
         """Create the grouping

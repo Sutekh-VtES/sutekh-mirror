@@ -193,7 +193,7 @@ class FilterBoxModel(list):
         return False
 
 
-class FilterBoxItem(object):
+class FilterBoxItem:
     """A item in the filter editor.
 
        This represents either a single FilterPart or a single

@@ -22,7 +22,7 @@ from sutekh.core.SutekhAdapters import ITitle, ISect, IDisciplinePair
 from sutekh.gui.PluginManager import SutekhPlugin
 
 
-class FakeTitle(object):
+class FakeTitle:
     """Fake titles not in the database"""
 
     def __init__(self, sText):
@@ -31,7 +31,7 @@ class FakeTitle(object):
         self.name = sText
 
 
-class MergedKeyword(object):
+class MergedKeyword:
     """Fake a 'merged' keyword"""
 
     def __init__(self):
@@ -58,7 +58,7 @@ def make_replace_keywords():
     return dReplaceKeywordMap
 
 
-class FakeCard(object):
+class FakeCard:
     """Class which fakes being an AbstractCard for the text view."""
     # pylint: disable=too-many-instance-attributes
     # Need all the attributes to match AbstractCard

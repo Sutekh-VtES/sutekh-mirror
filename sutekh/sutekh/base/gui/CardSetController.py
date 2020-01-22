@@ -18,7 +18,7 @@ from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.CardSetUtilities import delete_physical_card_set
 
 
-class CardSetController(object):
+class CardSetController:
     """Controller class for the Card Sets."""
     _sFilterType = 'PhysicalCard'
 

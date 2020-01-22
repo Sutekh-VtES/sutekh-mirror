@@ -14,7 +14,7 @@ from sutekh.base.core.BaseAdapters import (IExpansion, IPrinting,
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 
 
-class ExpInfoParser(object):
+class ExpInfoParser:
     """Parse expansion and printing info from a JSON file and update the
        database with the correct information."""
 

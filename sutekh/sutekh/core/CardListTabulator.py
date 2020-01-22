@@ -10,7 +10,7 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.core.SutekhTables import Discipline, Clan
 
 
-class CardListTabulator(object):
+class CardListTabulator:
     """Creates a table of cards from a card list.
 
        Each row of the table corresponds to a card in the list.

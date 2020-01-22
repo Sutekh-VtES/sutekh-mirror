@@ -12,7 +12,7 @@ from pkg_resources import resource_stream
 import gtk
 
 
-class PkgIcon(object):
+class PkgIcon:
     """Load a gtk Pixbuf object from a package resource file."""
 
     def __init__(self, sPkg, sResource):

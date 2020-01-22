@@ -9,7 +9,7 @@
 import csv
 
 
-class CSVParser(object):
+class CSVParser:
     """Parser cards from a CSV file into a CardSetHolder.
 
        Cards should be listed in columns and specify at least the card name and

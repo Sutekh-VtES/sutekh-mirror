@@ -854,7 +854,7 @@ class InCardText(LogStateWithInfo):
 
 
 # Parser
-class WhiteWolfTextParser(object):
+class WhiteWolfTextParser:
     """Actual Parser for the WW cardlist text file(s)."""
 
     def __init__(self, oLogHandler):

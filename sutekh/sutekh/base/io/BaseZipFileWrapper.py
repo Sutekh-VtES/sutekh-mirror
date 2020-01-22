@@ -56,7 +56,7 @@ class ZipEntryProxy(StringIO):
         return self
 
 
-class BaseZipFileWrapper(object):
+class BaseZipFileWrapper:
     """The zip file wrapper.
 
        This provides useful functions for dumping + extracting the

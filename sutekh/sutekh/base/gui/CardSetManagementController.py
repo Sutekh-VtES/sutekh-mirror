@@ -14,7 +14,7 @@ from .GuiCardSetFunctions import (create_card_set, update_card_set,
                                   check_ok_to_delete, break_existing_loops)
 
 
-class CardSetManagementController(object):
+class CardSetManagementController:
     """Controller object for the card set list."""
     # pylint: disable=too-many-public-methods
     # gtk.Widget, so lots of public methods

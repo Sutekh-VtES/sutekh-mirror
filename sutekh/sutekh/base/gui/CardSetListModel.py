@@ -84,7 +84,7 @@ BOTH_EXP_CARD_SETS = set([CARD_SETS_AND_EXP, EXP_AND_CARD_SETS])
 PARENT_OR_MINUS = set([PARENT_COUNT, MINUS_THIS_SET])
 
 
-class CardSetModelRow(object):
+class CardSetModelRow:
     """Object which holds the data needed for a card set row."""
     # pylint: disable=too-many-instance-attributes
     # We do want all these attributes

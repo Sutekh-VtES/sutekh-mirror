@@ -18,7 +18,7 @@ from sutekh.base.Utility import move_articles_to_front
 from sutekh.core.ArdbInfo import unescape_ardb_expansion_name
 
 
-class ARDBInvXMLState(object):
+class ARDBInvXMLState:
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
     # We try and honour set info, although current ARDB seems a bit odd in
@@ -107,7 +107,7 @@ class ARDBInvXMLState(object):
                 self._sData = sText
 
 
-class ARDBXMLInvParser(object):
+class ARDBXMLInvParser:
     """Parser for the ARDB Inventory XML format."""
     _cState = ARDBInvXMLState
 

@@ -30,7 +30,7 @@ def guess_encoding(sData, sFile):
     raise RuntimeError('Unable to indentify correct encoding for %s' % sFile)
 
 
-class EncodedFile(object):
+class EncodedFile:
     """EncodedFile is a convenience class which has an .open(..) method which
        returns a file-like object with the encoding set correctly.
        read() will return unicode data.

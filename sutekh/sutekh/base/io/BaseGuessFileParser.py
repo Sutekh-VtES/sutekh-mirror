@@ -14,7 +14,7 @@ from io import StringIO
 from ..core.CardSetHolder import CardSetHolder
 
 
-class BaseGuessFileParser(object):
+class BaseGuessFileParser:
     """Parser which guesses the file type"""
 
     # Subclasses should provide this list
