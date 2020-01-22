@@ -150,7 +150,7 @@ class TestCardTextFrame(GuiSutekhTest):
         _oMyCollection = PhysicalCardSet(name='My Collection')
         self.oWin.setup(self.oConfig)
         # Get the card text frame
-        oCardTextFrame =  self.oWin._oCardTextPane
+        oCardTextFrame = self.oWin._oCardTextPane
         # Card text should start empty
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), "")
         # Set a card
@@ -185,7 +185,7 @@ class TestCardTextFrame(GuiSutekhTest):
         _oMyCollection = PhysicalCardSet(name='My Collection')
         self.oWin.setup(self.oConfig)
         # Get the card text frame
-        oCardTextFrame =  self.oWin._oCardTextPane
+        oCardTextFrame = self.oWin._oCardTextPane
         # Card text should start empty
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), "")
         # Set the 'show errata markers' option
