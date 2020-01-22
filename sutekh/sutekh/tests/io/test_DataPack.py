@@ -6,9 +6,11 @@
 """Test the Data Pack utilities"""
 
 import json
-from urllib.request import pathname2url
 import unittest
+
 from urllib.parse import urljoin
+from urllib.request import pathname2url
+
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
 

@@ -5,7 +5,6 @@
 
 """Test some of the cli interface functionality"""
 
-import unittest
 from io import StringIO
 
 from mock import patch
