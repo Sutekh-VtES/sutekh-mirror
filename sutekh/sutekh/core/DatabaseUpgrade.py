@@ -48,7 +48,7 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # SQLObject classes don't have user defined __init__
 class Metadata_v1(SQLObject):
     """Table used to upgrade from Metasa v1"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = Metadata.sqlmeta.table
@@ -59,7 +59,7 @@ class Metadata_v1(SQLObject):
 
 class AbstractCard_v5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
@@ -110,7 +110,7 @@ class AbstractCard_v5(SQLObject):
 
 class AbstractCard_v6(SQLObject):
     """Table used to upgrade AbstractCard from v6"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = AbstractCard.sqlmeta.table
@@ -161,7 +161,7 @@ class AbstractCard_v6(SQLObject):
 
 class PhysicalCard_ACv5(SQLObject):
     """Table used to upgrade AbstractCard from v5"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
@@ -176,7 +176,7 @@ class PhysicalCard_ACv5(SQLObject):
 
 class PhysicalCard_ACv6(SQLObject):
     """Table used to upgrade AbstractCard from v6"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
@@ -192,7 +192,6 @@ class PhysicalCard_ACv6(SQLObject):
 class Expansion_v3(SQLObject):
     """Table used to update Expansion from v3"""
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = Expansion.sqlmeta.table
@@ -206,7 +205,6 @@ class Expansion_v3(SQLObject):
 class RarityPair_Ev3(SQLObject):
     """Table used to update Expansion from v3"""
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = RarityPair.sqlmeta.table
@@ -218,7 +216,7 @@ class RarityPair_Ev3(SQLObject):
 
 class PhysicalCard_v2(SQLObject):
     """Table used to upgrade PhysicalCard from v2"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = PhysicalCard.sqlmeta.table
@@ -233,7 +231,7 @@ class PhysicalCard_v2(SQLObject):
 
 class PhysicalCardSet_PCv3(SQLObject):
     """Physical Card Set to update from Physical Card v2"""
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         """meta class used to set the correct table"""
         table = PhysicalCardSet.sqlmeta.table
@@ -252,7 +250,6 @@ class PhysicalCardSet_PCv3(SQLObject):
 class Expansion_v4(SQLObject):
     """Table used to update Expansion from v4"""
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = Expansion.sqlmeta.table
@@ -267,7 +264,6 @@ class Expansion_v4(SQLObject):
 class RarityPair_Ev4(SQLObject):
     """Table used to update Expansion from v4"""
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         """meta class used to set the correct table"""
         table = RarityPair.sqlmeta.table

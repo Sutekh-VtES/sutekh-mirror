@@ -205,7 +205,6 @@ class Keyword(SQLObject):
 
 class MapPhysicalCardToPhysicalCardSet(SQLObject):
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'physical_map'
 
@@ -220,7 +219,7 @@ class MapPhysicalCardToPhysicalCardSet(SQLObject):
 
 
 class MapAbstractCardToRarityPair(SQLObject):
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         table = 'abs_rarity_pair_map'
 
@@ -234,7 +233,7 @@ class MapAbstractCardToRarityPair(SQLObject):
 
 
 class MapAbstractCardToRuling(SQLObject):
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         table = 'abs_ruling_map'
 
@@ -248,7 +247,7 @@ class MapAbstractCardToRuling(SQLObject):
 
 
 class MapAbstractCardToCardType(SQLObject):
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         table = 'abs_type_map'
 
@@ -262,7 +261,7 @@ class MapAbstractCardToCardType(SQLObject):
 
 
 class MapAbstractCardToArtist(SQLObject):
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         table = 'abs_artist_map'
 
@@ -276,7 +275,7 @@ class MapAbstractCardToArtist(SQLObject):
 
 
 class MapAbstractCardToKeyword(SQLObject):
-    # pylint: disable=old-style-class
+
     class sqlmeta:
         table = 'abs_keyword_map'
 
@@ -306,7 +305,6 @@ class LookupHints(SQLObject):
 
 class MapPrintingToPrintingProperty(SQLObject):
 
-    # pylint: disable=old-style-class
     class sqlmeta:
         table = 'printing_data_map'
 
