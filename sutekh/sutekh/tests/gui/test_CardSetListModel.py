@@ -1316,7 +1316,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel = self._get_model(self.aNames[0])
 
         aCards = [
-            ('Alexandra', 'CE'), 
+            ('Alexandra', 'CE'),
             ('The Ankara Citadel, Turkey', 'CE'),
             ('An Anarch Manifesto', 'TR'),
             ('Anson', 'Jyhad'),
@@ -1409,7 +1409,6 @@ class CardSetListModelTests(ConfigSutekhTest):
                  (1, 0, 'All:Walk of Flame'),
                 ])
 
- 
 
 
 if __name__ == "__main__":
