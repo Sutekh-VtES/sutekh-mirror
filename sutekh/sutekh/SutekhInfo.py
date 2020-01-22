@@ -15,7 +15,7 @@ GPL = 'License :: OSI Approved :: GNU General Public License (GPL)'
 LGPL = 'License :: OSI Approved :: GNU Library or Lesser General ' \
     'Public License (LGPL)'
 MIT = 'License :: OSI Approved :: MIT License'
-PYTHON = 'License :: OSI Approved :: Python Software Foundation License',
+PYTHON = 'License :: OSI Approved :: Python Software Foundation License'
 
 # pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo:
