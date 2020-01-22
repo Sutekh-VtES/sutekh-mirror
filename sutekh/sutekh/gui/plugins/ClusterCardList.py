@@ -289,7 +289,7 @@ class ClusterCardList(SutekhPlugin):
             oTable.attach(oCenterLabel, 3, 4, iRow, iRow + 1)
 
         # top align, using viewport to scroll
-        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable, True))
+        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable))
 
         oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
                                          " Clusters")

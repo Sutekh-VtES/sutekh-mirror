@@ -755,7 +755,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         oLabel = gtk.Label(label=sCardText)
-        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel))
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()
         oCardDialog.run()
@@ -778,7 +778,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             sTitle, None,
             gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel, True))
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel))
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()
         oCardDialog.run()

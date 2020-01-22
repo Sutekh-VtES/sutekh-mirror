@@ -261,8 +261,7 @@ class BaseDrawProbPlugin(BasePlugin):
         oResultsBox = gtk.VBox(homogeneous=False, spacing=2)
         oResultsBox.pack_start(oTitleLabel, False, False)
 
-        oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable,
-                                                  True))
+        oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable))
 
         oDialog.vbox.pack_start(oMainTitle, False, False)
         oDialog.vbox.pack_start(gtk.Label('Card Probablities'), False, False)

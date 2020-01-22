@@ -206,7 +206,7 @@ class BaseImageFrame(BasicFrame):
         self.oExpPrintLabel = gtk.Label()
         oVBox.pack_start(self.oExpPrintLabel, False, False)
         oVBox.pack_start(oBox)
-        self._oView = AutoScrolledWindow(oVBox, True)
+        self._oView = AutoScrolledWindow(oVBox)
         self._oView.get_hadjustment().connect('changed', self._pane_adjust)
         self._oView.get_vadjustment().connect('changed', self._pane_adjust)
         self._oImage = gtk.Image()

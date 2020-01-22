@@ -163,7 +163,7 @@ class BaseCompare(BasePlugin):
         def make_page(oList, dCardData):
             """Setup the list + button for the notebook"""
             oPage = gtk.VBox(homogeneous=False)
-            oPage.pack_start(AutoScrolledWindow(oList, True), True)
+            oPage.pack_start(AutoScrolledWindow(oList), True)
             if dCardData:
                 oButton = gtk.Button('Create Card Set from this list')
                 oButton.connect('clicked', self.create_card_set,

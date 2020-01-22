@@ -233,7 +233,7 @@ class BaseIndependence(BasePlugin):
 
         for sCardSet, aMsgs in dFormatted.items():
             oResultDlg.add_widget_page(
-                AutoScrolledWindow(_make_align_list(aMsgs), True),
+                AutoScrolledWindow(_make_align_list(aMsgs)),
                 'Missing in %s' % self._escape(sCardSet), bMarkup=True)
         oResultDlg.set_size_request(600, 600)
         oResultDlg.show_all()

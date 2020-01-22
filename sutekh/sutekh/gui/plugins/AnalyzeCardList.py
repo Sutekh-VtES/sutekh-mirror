@@ -666,7 +666,7 @@ class AnalyzeCardList(SutekhPlugin):
         oDescTitle = gtk.Label()
         oDescTitle.set_markup("<b>Description:</b>")
         oScrolledBox.pack_start(oDescTitle, False)
-        oScrolledBox.pack_start(AutoScrolledWindow(oDesc, True), True)
+        oScrolledBox.pack_start(AutoScrolledWindow(oDesc), True)
 
         if bRapid:
             sMainText = '<i>Rapid Thoughts Analysis</i>\n'

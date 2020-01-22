@@ -69,7 +69,7 @@ class FilterModelPanes(gtk.HBox):
         self._oSelectBar = FilterValuesBox(oDialog, sFilterType)
         self._oEditBox = FilterBoxModelEditBox(self._oSelectBar)
 
-        self.pack_start(AutoScrolledWindow(self._oEditBox, True), expand=True)
+        self.pack_start(AutoScrolledWindow(self._oEditBox), expand=True)
         self.pack_start(self._oSelectBar, expand=True)
 
     def replace_ast(self, oAST):
@@ -250,14 +250,14 @@ class FilterValuesBox(gtk.VBox):
         oLabel = gtk.Label()
         oLabel.set_markup('<b>From</b>')
         self._oWidget.pack_start(oLabel, expand=False)
-        self._oWidget.pack_start(AutoScrolledWindow(oSetList, False),
+        self._oWidget.pack_start(AutoScrolledWindow(oSetList),
                                  expand=True)
 
     def _make_card_set_list(self, oFilter):
         """Create a card set list widget"""
         oSetList = CardSetsListView(None, self._oParent, bSpecialSelect=True)
         oSetList.set_select_multiple()
-        self._oWidget = AutoScrolledWindow(oSetList, False)
+        self._oWidget = AutoScrolledWindow(oSetList)
         oSetList.connect('key-press-event', self.key_press, oFilter, 'CardSet')
         self._set_drag_for_widget(oSetList, self.update_set_list, oFilter)
         self._set_drop_for_widget(oSetList)

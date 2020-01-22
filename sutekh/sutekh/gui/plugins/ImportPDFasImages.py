@@ -314,7 +314,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oVBox.pack_start(oOffsetBox, False, False)
         oVBox.pack_start(oScaleBox, False, False)
         oVBox.pack_start(oApplyButton, False, False)
-        oVBox.pack_start(AutoScrolledWindow(oDrawArea, True), True, True)
+        oVBox.pack_start(AutoScrolledWindow(oDrawArea), True, True)
 
         self._oNextButton = gtk.Button('Next Image')
         self._oNextButton.connect('pressed', self.chg_img, oDrawArea, +1)

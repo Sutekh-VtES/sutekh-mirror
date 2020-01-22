@@ -101,7 +101,7 @@ class ClanDisciplineStats(SutekhPlugin):
         oView = StatsView(self.model.hideillegal)
 
         # top align, using viewport to scroll
-        self._oStatsVbox.pack_start(AutoScrolledWindow(oView, True))
+        self._oStatsVbox.pack_start(AutoScrolledWindow(oView))
         self._oStatsVbox.show_all()
 
 

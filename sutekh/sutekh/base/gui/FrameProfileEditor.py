@@ -59,8 +59,7 @@ class FrameProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable,
-                                                bUseViewport=True))
+        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable))
 
         self.set_default_size(600, 550)
         self.connect("response", self._button_response)

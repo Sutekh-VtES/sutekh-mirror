@@ -262,7 +262,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         # sets below them
         for sName in sorted(aParents):
             oInfo = gtk.VBox(homogeneous=False, spacing=2)
-            oDlg.add_widget_page(AutoScrolledWindow(oInfo, True),
+            oDlg.add_widget_page(AutoScrolledWindow(oInfo),
                                  sName.replace("TWDA ", ""))
             oInfo.pack_start(gtk.Label(label=sMatchText), expand=False, padding=6)
             iCardSets = len([x for x in dCardSets if x.parent.name == sName])
