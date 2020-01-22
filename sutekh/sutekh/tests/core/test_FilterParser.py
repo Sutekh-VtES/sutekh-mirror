@@ -252,9 +252,11 @@ class FilterParserTests(SutekhTest):
 
         for sFilter, oEquivFilter in aPhysicalCardSetTests:
             oFilter = self._parse_filter(sFilter)
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             aExpectedSets = sorted(
-                oEquivFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+                oEquivFilter.select(PhysicalCardSet).distinct(),
+                key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))
@@ -266,15 +268,18 @@ class FilterParserTests(SutekhTest):
             # Test get_text round-trip
             oFilter = self._parse_filter(oBoxModel.get_text())
             aExpectedSets = sorted(
-                oEquivFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+                oEquivFilter.select(PhysicalCardSet).distinct(),
+                key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))
             # test get_ast + get_values round-trip
             oAST = oBoxModel.get_ast_with_values()
             oFilter = oAST.get_filter()
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))
@@ -299,7 +304,8 @@ class FilterParserTests(SutekhTest):
 
         for sFilter, oEquivFilter in aPhysicalCardSetTests:
             oFilter = self._parse_filter(sFilter)
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             aExpectedSets = sorted(oEquivFilter.select(
                 PhysicalCardSet).distinct(), key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
@@ -314,14 +320,16 @@ class FilterParserTests(SutekhTest):
             oFilter = self._parse_filter(oBoxModel.get_text())
             aExpectedSets = sorted(oEquivFilter.select(
                 PhysicalCardSet).distinct(), key=lambda x: x.id)
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))
             # test get_ast + get_values round-trip
             oAST = oBoxModel.get_ast_with_values()
             oFilter = oAST.get_filter()
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))

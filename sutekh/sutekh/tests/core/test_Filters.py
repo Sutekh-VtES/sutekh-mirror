@@ -71,7 +71,7 @@ class FilterTests(SutekhTest):
            card names and optional expansions into the correct
            filter on the physical card list and a list of expected
            PhysicalCard objects."""
-        if len(tTest) < 1 or len(tTest) > 4:
+        if len(tTest) < 2 or len(tTest) > 4:
             raise RuntimeError("Invalid input to _physical_test: %s" % tTest)
         if len(tTest) == 2:
             oFilter, aExpectedNames = tTest
@@ -506,7 +506,8 @@ class FilterTests(SutekhTest):
                           'Third Edition (Sketch)'])
         # Test the physical card filtering
         for oFilter, aExpectedCards in aPhysicalTests:
-            aCards = sorted(oFilter.select(PhysicalCard).distinct(), key=lambda x: x.id)
+            aCards = sorted(oFilter.select(PhysicalCard).distinct(),
+                            key=lambda x: x.id)
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCards, aExpectedCards))
@@ -593,7 +594,8 @@ class FilterTests(SutekhTest):
 
         for tTest in aExpansionTests:
             oFilter, aExpectedCards = self._physical_test(tTest)
-            aCards = sorted(oFilter.select(PhysicalCard).distinct(), key=lambda x: x.id)
+            aCards = sorted(oFilter.select(PhysicalCard).distinct(),
+                            key=lambda x: x.id)
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter,
@@ -712,9 +714,11 @@ class FilterTests(SutekhTest):
         ]
 
         for oFilter, oEquivFilter in aTests:
-            aCards = sorted(oFilter.select(AbstractCard).distinct(), key=lambda x: x.id)
+            aCards = sorted(oFilter.select(AbstractCard).distinct(),
+                            key=lambda x: x.id)
             aExpectedCards = sorted(
-                oEquivFilter.select(AbstractCard).distinct(), key=lambda x: x.id)
+                oEquivFilter.select(AbstractCard).distinct(),
+                key=lambda x: x.id)
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCards, aExpectedCards))
@@ -729,9 +733,11 @@ class FilterTests(SutekhTest):
         ]
 
         for oFilter, oEquivFilter in aExpansionTests:
-            aCards = sorted(oFilter.select(PhysicalCard).distinct(), key=lambda x: x.id)
+            aCards = sorted(oFilter.select(PhysicalCard).distinct(),
+                            key=lambda x: x.id)
             aExpectedCards = sorted(
-                oEquivFilter.select(PhysicalCard).distinct(), key=lambda x: x.id)
+                oEquivFilter.select(PhysicalCard).distinct(),
+                key=lambda x: x.id)
             self.assertEqual(aCards, aExpectedCards,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCards, aExpectedCards))
@@ -744,7 +750,8 @@ class FilterTests(SutekhTest):
         aPCSs = make_physical_card_sets()
         aPhysicalCardSetTests = [
             (Filters.CardSetNameFilter('Test 1'), [aPCSs[0]]),
-            (Filters.CardSetNameFilter('Test'), sorted(aPCSs, key=lambda x: x.id)),
+            (Filters.CardSetNameFilter('Test'), sorted(aPCSs,
+                                                       key=lambda x: x.id)),
             (Filters.CSPhysicalCardSetInUseFilter(),
              [aPCSs[2]]),
             (Filters.CardSetAuthorFilter('Author A'),
@@ -756,7 +763,8 @@ class FilterTests(SutekhTest):
         ]
 
         for oFilter, aExpectedSets in aPhysicalCardSetTests:
-            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(), key=lambda x: x.id)
+            aCardSets = sorted(oFilter.select(PhysicalCardSet).distinct(),
+                               key=lambda x: x.id)
             self.assertEqual(aCardSets, aExpectedSets,
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aCardSets, aExpectedSets))
@@ -823,7 +831,8 @@ class FilterTests(SutekhTest):
             aCSCards = sorted(
                 [IPhysicalCard(x) for x in
                  oFullFilter.select(
-                     MapPhysicalCardToPhysicalCardSet).distinct()], key=lambda x: x.id)
+                     MapPhysicalCardToPhysicalCardSet).distinct()],
+                key=lambda x: x.id)
             aExpectedPhysCards = self._convert_to_phys_cards(aExpectedCards)
             aExpectedPhysCards.sort(key=lambda x: x.id)
             self.assertEqual(aCSCards, aExpectedPhysCards,
