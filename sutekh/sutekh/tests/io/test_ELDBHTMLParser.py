@@ -51,16 +51,16 @@ class ELDBHTMLParserTests(SutekhTest):
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
-        self.failUnless(oHolder.comment.startswith("Simple test deck."))
+        self.assertTrue(oHolder.comment.startswith("Simple test deck."))
 
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 5)
-        self.failUnless(("Test Vamp 1", 1) in aCards)
-        self.failUnless(("Test Vamp 2", 2) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 3) in aCards)
-        self.failUnless(("Test Card 3", 2) in aCards)
+        self.assertTrue(("Test Vamp 1", 1) in aCards)
+        self.assertTrue(("Test Vamp 2", 2) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 3) in aCards)
+        self.assertTrue(("Test Card 3", 2) in aCards)
 
 
 if __name__ == "__main__":

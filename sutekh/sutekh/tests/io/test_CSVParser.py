@@ -38,16 +38,16 @@ class TestCSVParser(SutekhTest):
             aCards = oHolder.get_cards()
 
             self.assertEqual(len(aCards), 18)
-            self.failUnless((".44 Magnum", 4) in aCards)
-            self.failUnless(("Abebe", 1) in aCards)
-            self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
-            self.failUnless(("Aaron's Feeding Razor", 1) in aCards)
-            self.failUnless(('Inez "Nurse216" Villagrande', 1) in aCards)
-            self.failUnless(('Scapelli, The Family "Mechanic"', 1) in aCards)
-            self.failUnless(('Swallowed by the Night', 2) in aCards)
-            self.failUnless(("The Siamese", 2) in aCards)
-            self.failUnless(("Abbot", 2) in aCards)
-            self.failUnless(("Immortal Grapple", 4) in aCards)
+            self.assertTrue((".44 Magnum", 4) in aCards)
+            self.assertTrue(("Abebe", 1) in aCards)
+            self.assertTrue(("Alan Sovereign (Advanced)", 1) in aCards)
+            self.assertTrue(("Aaron's Feeding Razor", 1) in aCards)
+            self.assertTrue(('Inez "Nurse216" Villagrande', 1) in aCards)
+            self.assertTrue(('Scapelli, The Family "Mechanic"', 1) in aCards)
+            self.assertTrue(('Swallowed by the Night', 2) in aCards)
+            self.assertTrue(("The Siamese", 2) in aCards)
+            self.assertTrue(("Abbot", 2) in aCards)
+            self.assertTrue(("Immortal Grapple", 4) in aCards)
 
 
 if __name__ == "__main__":

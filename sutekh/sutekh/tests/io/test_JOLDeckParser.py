@@ -48,16 +48,16 @@ class TestJOLDeckParser(SutekhTest):
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 10)
-        self.failUnless(("Test Vamp 1", 3) in aCards)
-        self.failUnless(("Test Vamp 2", 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
-        self.failUnless(("Test Card 5", 12) in aCards)
-        self.failUnless(("Test Card 6", 2) in aCards)
-        self.failUnless(("The Path of Blood", 2) in aCards)
-        self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 3) in aCards)
+        self.assertTrue(("Test Vamp 2", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Test Card 5", 12) in aCards)
+        self.assertTrue(("Test Card 6", 2) in aCards)
+        self.assertTrue(("The Path of Blood", 2) in aCards)
+        self.assertTrue(("Alan Sovereign (Advanced)", 1) in aCards)
 
 
 if __name__ == "__main__":

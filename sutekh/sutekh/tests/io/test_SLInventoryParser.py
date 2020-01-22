@@ -41,14 +41,14 @@ class TestSLInventoryParser(SutekhTest):
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 8)
-        self.failUnless(("Abebe", 2) in aCards)
-        self.failUnless(("Alan Sovereign (Advanced)", 2) in aCards)
-        self.failUnless(("Fran\xc3\xa7ois Warden Loehr", 4) in aCards)
-        self.failUnless(("Absimiliard's Army", 1) in aCards)
-        self.failUnless(("Ahriman's Demesne", 5) in aCards)
-        self.failUnless(("Atonement", 4) in aCards)
-        self.failUnless(("The Textbook Damnation", 1) in aCards)
-        self.failUnless(("Watch Commander", 8) in aCards)
+        self.assertTrue(("Abebe", 2) in aCards)
+        self.assertTrue(("Alan Sovereign (Advanced)", 2) in aCards)
+        self.assertTrue(("Fran\xc3\xa7ois Warden Loehr", 4) in aCards)
+        self.assertTrue(("Absimiliard's Army", 1) in aCards)
+        self.assertTrue(("Ahriman's Demesne", 5) in aCards)
+        self.assertTrue(("Atonement", 4) in aCards)
+        self.assertTrue(("The Textbook Damnation", 1) in aCards)
+        self.assertTrue(("Watch Commander", 8) in aCards)
 
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
                           'random stuff')

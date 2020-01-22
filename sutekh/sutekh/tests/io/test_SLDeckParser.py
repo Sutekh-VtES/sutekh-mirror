@@ -48,12 +48,12 @@ class TestSLDeckParser(SutekhTest):
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless(("Count Germaine", 2) in aCards)
-        self.failUnless(("Count Germaine (Advanced)", 2) in aCards)
-        self.failUnless(("Fran\xc3\xa7ois Warden Loehr", 2) in aCards)
-        self.failUnless(("Cloak the Gathering", 10) in aCards)
-        self.failUnless(("The Coven", 2) in aCards)
-        self.failUnless(("Carlton Van Wyk (Hunter)", 2) in aCards)
+        self.assertTrue(("Count Germaine", 2) in aCards)
+        self.assertTrue(("Count Germaine (Advanced)", 2) in aCards)
+        self.assertTrue(("Fran\xc3\xa7ois Warden Loehr", 2) in aCards)
+        self.assertTrue(("Cloak the Gathering", 10) in aCards)
+        self.assertTrue(("The Coven", 2) in aCards)
+        self.assertTrue(("Carlton Van Wyk (Hunter)", 2) in aCards)
         self.assertEqual(oHolder.name, "NAME OF THE DECK")
         self.assertEqual(oHolder.author, "CREATOR OF THE DECK")
         self.assertEqual(oHolder.comment, "\n".join([

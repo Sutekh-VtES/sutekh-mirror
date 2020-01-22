@@ -39,12 +39,12 @@ class TestELDBInventoryParser(SutekhTest):
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless(("Test Vamp 1", 2) in aCards)
-        self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 2) in aCards)
+        self.assertTrue((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
         # We don't need to test that the 0,0 entries have been skipped, as
         # that's covered by the len test
 

@@ -107,7 +107,7 @@ class ArdbTextWriterTests(SutekhTest):
         # pylint: enable=not-an-iterable
 
         for sName, iCnt in dSetCards.items():
-            self.failUnless((sName, iCnt) in aCards)
+            self.assertTrue((sName, iCnt) in aCards)
 
 
 if __name__ == "__main__":

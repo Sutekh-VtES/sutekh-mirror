@@ -59,23 +59,23 @@ class TestELDBDeckFileParser(SutekhTest):
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
-        self.failUnless(oHolder.comment.startswith(
+        self.assertTrue(oHolder.comment.startswith(
             "Simple test deck."))
-        self.failUnless(oHolder.comment.endswith("in/description"))
+        self.assertTrue(oHolder.comment.endswith("in/description"))
 
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 10)
-        self.failUnless(("Test Vamp 1", 2) in aCards)
-        self.failUnless((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.failUnless(('Inez "Nurse216" Villagrande', 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
-        self.failUnless(("Alan Sovereign (Advanced)", 1) in aCards)
-        self.failUnless(('Scapelli, The Family "Mechanic"', 1) in aCards)
-        self.failUnless(("The Path of Blood", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 2) in aCards)
+        self.assertTrue((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
+        self.assertTrue(('Inez "Nurse216" Villagrande', 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.assertTrue(('Scapelli, The Family "Mechanic"', 1) in aCards)
+        self.assertTrue(("The Path of Blood", 1) in aCards)
 
 
 if __name__ == "__main__":

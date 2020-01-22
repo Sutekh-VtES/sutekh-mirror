@@ -84,14 +84,14 @@ class ArdbXMLInvParserTests(SutekhTest):
         aCards = oHolder.get_cards_exps()
 
         self.assertEqual(len(aCards), 8)
-        self.failUnless((("Test Vamp 1", "CE", None), 2) in aCards)
-        self.failUnless((("Test Vamp 2", "SW", None), 1) in aCards)
-        self.failUnless((("Test Card 1", "Sabbat", None), 4) in aCards)
-        self.failUnless((("Test Card 2", "BH", None), 2) in aCards)
-        self.failUnless((("Test Card 3", "BH", None), 12) in aCards)
-        self.failUnless((("Test Card 4", None, None), 1) in aCards)
-        self.failUnless((("The Path of Blood", None, None), 1) in aCards)
-        self.failUnless(
+        self.assertTrue((("Test Vamp 1", "CE", None), 2) in aCards)
+        self.assertTrue((("Test Vamp 2", "SW", None), 1) in aCards)
+        self.assertTrue((("Test Card 1", "Sabbat", None), 4) in aCards)
+        self.assertTrue((("Test Card 2", "BH", None), 2) in aCards)
+        self.assertTrue((("Test Card 3", "BH", None), 12) in aCards)
+        self.assertTrue((("Test Card 4", None, None), 1) in aCards)
+        self.assertTrue((("The Path of Blood", None, None), 1) in aCards)
+        self.assertTrue(
             (("Alan Sovereign (Advanced)", 'Promo-20051001', None), 1)
             in aCards)
 

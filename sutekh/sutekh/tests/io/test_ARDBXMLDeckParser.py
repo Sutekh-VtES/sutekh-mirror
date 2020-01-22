@@ -108,21 +108,21 @@ class ArdbXMLDeckParserTests(SutekhTest):
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
-        self.failUnless(oHolder.comment.startswith("Simple test deck."))
-        self.failUnless(oHolder.comment.endswith("in/description"))
+        self.assertTrue(oHolder.comment.startswith("Simple test deck."))
+        self.assertTrue(oHolder.comment.endswith("in/description"))
 
         aCards = oHolder.get_cards_exps()
 
         self.assertEqual(len(aCards), 8)
-        self.failUnless((("Test Vamp 1", "CE", None), 2) in aCards)
-        self.failUnless((("Test Vamp 2", "SW", None), 1) in aCards)
-        self.failUnless(
+        self.assertTrue((("Test Vamp 1", "CE", None), 2) in aCards)
+        self.assertTrue((("Test Vamp 2", "SW", None), 1) in aCards)
+        self.assertTrue(
             (("Test Vamp 2 (Advanced)", "Promo-20051001", None), 1) in aCards)
-        self.failUnless((("Test Card 1", "Sabbat", None), 4) in aCards)
-        self.failUnless((("Test Card 2", "BH", None), 2) in aCards)
-        self.failUnless((("Test Card 3", "BH", None), 12) in aCards)
-        self.failUnless((("Test Card 4", None, None), 1) in aCards)
-        self.failUnless((("The Test Card 5", None, None), 1) in aCards)
+        self.assertTrue((("Test Card 1", "Sabbat", None), 4) in aCards)
+        self.assertTrue((("Test Card 2", "BH", None), 2) in aCards)
+        self.assertTrue((("Test Card 3", "BH", None), 12) in aCards)
+        self.assertTrue((("Test Card 4", None, None), 1) in aCards)
+        self.assertTrue((("The Test Card 5", None, None), 1) in aCards)
 
         oParser = ARDBXMLDeckParser()
         self.assertRaises(IOError, self._make_holder_from_string, oParser,

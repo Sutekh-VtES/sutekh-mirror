@@ -28,13 +28,13 @@ class RulingParserTests(SutekhTest):
         self.assertEqual([oR.code for oR in aRulings], self.aExpectedRulings)
 
         oRuling = aRulings[0]
-        self.failUnless(oRuling.text.startswith(u"Cannot use his "))
+        self.assertTrue(oRuling.text.startswith(u"Cannot use his "))
 
         oRuling = aRulings[1]
-        self.failUnless(oRuling.text.startswith(u"Cannot be used "))
+        self.assertTrue(oRuling.text.startswith(u"Cannot be used "))
 
         oRuling = aRulings[2]
-        self.failUnless(oRuling.text.startswith(u"The AK-47 provides "))
+        self.assertTrue(oRuling.text.startswith(u"The AK-47 provides "))
 
         oRuling = IRuling((aRulings[0].text, aRulings[0].code))
         self.assertEqual(oRuling.code, self.aExpectedRulings[0])

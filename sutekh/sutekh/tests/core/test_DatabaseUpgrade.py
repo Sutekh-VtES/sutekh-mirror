@@ -1598,7 +1598,7 @@ class DatabaseUpgradeTests(SutekhTest):
         bResult, _aMsgs = oDBUpgrade.create_final_copy(oNewConn, oLogHandler)
 
         # Check
-        self.failUnless(bResult)
+        self.assertTrue(bResult)
 
         assert list(AbstractCard.select())
         assert list(PhysicalCardSet.select())

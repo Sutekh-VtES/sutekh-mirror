@@ -99,36 +99,36 @@ class ARDBTextParserTests(SutekhTest):
 
         self.assertEqual(oHolder.name, "Test Deck")
         self.assertEqual(oHolder.author, "Anon Y Mous")
-        self.failUnless(oHolder.comment.startswith(
+        self.assertTrue(oHolder.comment.startswith(
             "    Simple test deck."))
-        self.failUnless(oHolder.comment.endswith("in/description\n\n"))
+        self.assertTrue(oHolder.comment.endswith("in/description\n\n"))
 
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless(("Test Vamp 1", 2) in aCards)
-        self.failUnless(("Test Vamp 2", 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 2) in aCards)
+        self.assertTrue(("Test Vamp 2", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
 
         oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_2)
 
         self.assertEqual(oHolder.name, "Test Deck 2")
         self.assertEqual(oHolder.author, "Anon Y Mous")
-        self.failUnless(oHolder.comment.startswith(
+        self.assertTrue(oHolder.comment.startswith(
             "Simple test deck."))
 
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless(("Test Vamp 1", 2) in aCards)
-        self.failUnless(("Test Vamp 2", 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 2) in aCards)
+        self.assertTrue(("Test Vamp 2", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
 
         oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_3)
 
@@ -138,12 +138,12 @@ class ARDBTextParserTests(SutekhTest):
         aCards = oHolder.get_cards()
 
         self.assertEqual(len(aCards), 6)
-        self.failUnless(("Test Vamp 1", 2) in aCards)
-        self.failUnless(("Test Vamp 2", 1) in aCards)
-        self.failUnless(("Test Card 1", 2) in aCards)
-        self.failUnless(("Test Card 2", 4) in aCards)
-        self.failUnless(("Test Card 3", 12) in aCards)
-        self.failUnless(("Test Card 4", 1) in aCards)
+        self.assertTrue(("Test Vamp 1", 2) in aCards)
+        self.assertTrue(("Test Vamp 2", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+        self.assertTrue(("Test Card 3", 12) in aCards)
+        self.assertTrue(("Test Card 4", 1) in aCards)
 
 
 if __name__ == "__main__":
