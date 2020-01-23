@@ -216,7 +216,7 @@ class StatsModel(gtk.TreeStore):
 
             # pylint: disable=invalid-name
             # atGrps doesn't match the regexp, but is a valid name
-            atGrps = oClanStats.dSubStats.keys()
+            atGrps = list(oClanStats.dSubStats.keys())
             atGrps.sort()
 
             for tGrps in atGrps:
