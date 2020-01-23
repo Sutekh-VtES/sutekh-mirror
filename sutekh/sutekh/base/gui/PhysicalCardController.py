@@ -46,13 +46,3 @@ class PhysicalCardController:
         MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
 
     # pylint: enable=no-self-use
-
-    def toggle_expansion(self, oWidget):
-        """Toggle whether the expansion information is shown."""
-        self.__oModel.bExpansions = oWidget.get_active()
-        self.__oView.reload_keep_expanded()
-
-    def toggle_icons(self, oWidget):
-        """Toggle the icons display"""
-        self.__oModel.bUseIcons = oWidget.get_active()
-        self.__oView.reload_keep_expanded()
