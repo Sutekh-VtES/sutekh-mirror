@@ -7,7 +7,6 @@
 
 import tempfile
 import os
-import gc
 
 from sutekh.base.tests.TestUtils import GuiBaseTest
 from sutekh.tests.TestCore import SutekhTest
@@ -64,9 +63,6 @@ class ConfigSutekhTest(SutekhTest):
         os.rmdir(os.path.join(self.sPluginDir, 'clans'))
         os.rmdir(self.sPluginDir)
         super(ConfigSutekhTest, self).tearDown()
-        # FIXME: This helps the test suite, but I'm not sure why
-        # This warrants further investigation at some point
-        gc.collect()
 
 
 class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
