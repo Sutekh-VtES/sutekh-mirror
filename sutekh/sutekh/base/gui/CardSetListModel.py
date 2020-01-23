@@ -250,10 +250,10 @@ class CardSetCardListModel(CardListModel):
         if self._iParentCountMode != IGNORE_PARENT:
             if (self._iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
                     iParCnt < 0:
-                self.set(oIter, 7, RED)
+                self.set_value(oIter, 7, RED)
             else:
                 # Needed so we fix colours when editing
-                self.set(oIter, 7, BLACK)
+                self.set_value(oIter, 7, BLACK)
 
     def _check_if_empty(self):
         """Add the empty entry if needed"""
@@ -312,14 +312,12 @@ class CardSetCardListModel(CardListModel):
             sGroup = self._fix_group_name(sGroup)
 
             # Create Group Section
-            oSectionIter = self.prepend(None)
+            oSectionIter = self.insert_with_values(None, 0, [0], [sGroup])
             self._dGroupName2Iter[sGroup] = oSectionIter
 
             # Fill in Cards
             iGrpCnt = 0
             iParGrpCnt = 0
-            # We prepend rather than append -
-            # this is a lot faster for long lists.
             for _oId, oRow in oGroupIter:
                 oCard = oRow.oAbsCard
                 iCnt = oRow.iCount
@@ -327,33 +325,25 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.prepend(oSectionIter)
                 # Direct lookup, for same reason as in CardListModel
                 # We skip name here, as that gets reset in _set_display_name
                 sName = oCard.name
                 if bPostfix:
                     sName = move_articles_to_back(sName)
-                self.set(oChildIter,
-                         0, sName,
-                         1, iCnt, 2, iParCnt,
-                         3, bIncCard, 4, bDecCard,
-                         8, oCard,
-                         9, oRow.oPhysCard,
-                        )
+                oChildIter = self.insert_with_values(oSectionIter, 0, [0, 1, 2, 3, 4, 8, 9],
+                                                     [sName, iCnt, iParCnt, bIncCard, bDecCard,
+                                                      oCard, oRow.oPhysCard])
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
                 self._add_children(oChildIter, oRow)
             # Update Group Section
             aTexts, aIcons = self.lookup_icons(sGroup)
             if aTexts:
-                self.set(oSectionIter, 0, sGroup,
-                         1, iGrpCnt, 2, iParGrpCnt,
+                self.set(oSectionIter, 1, iGrpCnt, 2, iParGrpCnt,
                          5, aTexts, 6, aIcons,
                         )
             else:
-                self.set(oSectionIter, 0, sGroup,
-                         1, iGrpCnt, 2, iParGrpCnt,
-                        )
+                self.set(oSectionIter, 1, iGrpCnt, 2, iParGrpCnt)
 
             self.set_par_count_colour(oSectionIter, iParGrpCnt, iGrpCnt)
 
@@ -427,12 +417,11 @@ class CardSetCardListModel(CardListModel):
         """Add an extra level iterator to the card list model."""
         iCnt, iParCnt, oPhysCard, bIncCard, bDecCard = tInfo
         iDepth, oKey = tKeyInfo
-        oIter = self.prepend(oParIter)
         # Rely on the defaults to handle icons + textlist
         # Since we skip the handling here, this is about 15% faster on
         # large loads such as All Cards + Expansions + Card Sets
-        self.set(oIter, 0, sName, 1, iCnt, 2, iParCnt, 3, bIncCard,
-                 4, bDecCard, 9, oPhysCard)
+        oIter = self.insert_with_values(oParIter, 0, [0, 1, 2, 3, 4, 9],
+                                        [sName, iCnt, iParCnt, bIncCard, bDecCard, oPhysCard])
         self.set_par_count_colour(oIter, iParCnt, iCnt)
         if iDepth == 2:
             self._dAbsSecondLevel2Iter.setdefault(oKey, {})
@@ -1175,15 +1164,13 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                oChildIter = self.prepend(oSectionIter)
                 # We don't do the full _set_display_name for speed here.
                 sName = oCard.name
                 if bPostfix:
                     sName = move_articles_to_back(sName)
-                self.set(oChildIter, 0, sName,
-                         1, iCnt, 2, iParCnt, 3, bIncCard, 4, bDecCard,
-                         8, oCard, 9, oRow.oPhysCard,
-                        )
+                oChildIter = self.insert_with_values(oSectionIter, 0, [0, 1, 2, 3, 4, 8, 9],
+                                                     [sName, iCnt, iParCnt, bIncCard, bDecCard,
+                                                      oCard, oRow.oPhysCard])
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
                 # Handle as for loading
