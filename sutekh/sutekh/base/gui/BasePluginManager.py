@@ -13,6 +13,11 @@ import re
 import zipfile
 import zipimport
 
+# Needed so we can import this into the documentation generator
+import pygtkcompat
+pygtkcompat.enable()
+pygtkcompat.enable_gtk("3.0")
+
 import gtk
 from glib import markup_escape_text
 from sqlobject import sqlhub
