@@ -7,33 +7,30 @@
 Convert Sutekh textile documentation into Markdown pages for the wiki.
 """
 
-import imp
+import importlib
 import os
+import sys
 
 # pylint: disable=invalid-name
 # We ignore our usual conventions for all the import fiddling, since
 # we want to end up with global module names for consistency elsewhere in the
 # code base
-sInfoPath = os.path.join(os.path.dirname(__file__), '..', 'SutekhInfo.py')
-SutekhInfo = imp.load_source("SutekhInfo", sInfoPath).SutekhInfo
+sInfoPath = os.path.join(os.path.dirname(__file__), '..')
+sModPath = os.path.join(os.path.dirname(__file__), '..', '..')
+sys.path.append(sInfoPath)
+sys.path.append(sModPath)
+SutekhInfo = importlib.import_module("SutekhInfo").SutekhInfo
+sutekh_package = importlib.import_module("sutekh")
 
 # Import filter info
-sModPath = os.path.join(os.path.dirname(__file__), '..', '..')
-oFile, sModname, oDescription = imp.find_module('sutekh', [sModPath])
-sutekh_package = imp.load_module('sutekh', oFile, sModname, oDescription)
 Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
-sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
-                        'DocUtils.py')
-sUtilPath = os.path.join(os.path.dirname(__file__), '..', 'base',
-                         'Utility.py')
-DocUtils = imp.load_source('DocUtils', sDocPath)
-Utility = imp.load_source('Utility', sUtilPath)
-# Import plugins
-sPluginPath = os.path.join(os.path.dirname(__file__), '..', 'gui',
-                           'PluginManager.py')
-PluginManager = imp.load_source('sutekh.gui.PluginManager', sPluginPath)
+# Import docutils
+DocUtils = importlib.import_module('.base.docs.DocUtils', 'sutekh')
 
+# Import plugins
+PluginManager = importlib.import_module('.gui.PluginManager', 'sutekh')
+Utility = importlib.import_module('.base.Utility', 'sutekh')
 
 # pylint: enable=invalid-name
 
@@ -46,13 +43,13 @@ def replace_version(sText):
 
 def main():
     """Actually run the doc generation"""
-    Utility.ensure_dir_exists('md')
+    Utility.ensure_dir_exists('md_docs')
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
     aPlugins = oPluginMngr.get_all_plugins()
-    DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
-    DocUtils.convert_to_markdown("textile", "md", aPlugins, replace_version)
-    DocUtils.cleanup('textile')
+    DocUtils.make_filter_txt('textile_docs', FilterParser.PARSER_FILTERS)
+    DocUtils.convert_to_markdown("textile_docs", "md_docs", aPlugins, replace_version)
+    DocUtils.cleanup('textile_docs')
 
 
 if __name__ == "__main__":

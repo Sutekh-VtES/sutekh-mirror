@@ -6,7 +6,7 @@
     <title>Sutekh Manual</title>
 </head>
 <body>
-	<h1>Manual for Sutekh 1.0.0</h1>
+	<h1>Manual for Sutekh 1.1.0</h1>
 
 	<p><img alt="Sutekh Icon" src="sutekh-icon.png" title="Sutekh Icon" /></p>
 
@@ -20,9 +20,9 @@
 			<li><a href="#main_file">File</a>
 			<ol>
 				<li><a href="#import_csv">Import <span class="caps">CSV</span> file</a></li>
+				<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 				<li><a href="#backup">Backup</a></li>
 				<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
-				<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 			</ol></li>
 			<li><a href="#main_pane_actions">Pane Actions</a></li>
 			<li><a href="#rulebook">Rulebook</a></li>
@@ -73,15 +73,15 @@
 		<li><a href="#analysis">Analysis Tools</a>
 		<ol>
 			<li><a href="#cluster">Cluster Cards</a></li>
-			<li><a href="#expansionstats">Expansion Stats</a></li>
 			<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
+			<li><a href="#expansionstats">Expansion Stats</a></li>
 			<li><a href="#analyzedeck">Analyze Deck</a></li>
-			<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 			<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
-			<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
-			<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
-			<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+			<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 			<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
+			<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+			<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+			<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 		</ol></li>
 		<li><a href="#profiles">Profiles</a>
 		<ol>
@@ -164,9 +164,9 @@ using the pane title.</p>
 		<ul>
 			<li><em>Load Card Set from File</em>: Load a card set saved in Sutekh&#8217;s <span class="caps">XML</span> file format.</li>
 			<li><em>Import <span class="caps">CSV</span> File</em>: <a href="#import_csv">Import a card set from a comma-separated value file</a>, as produced by a spreadsheet. You can select the columns for card set, number and expansion.</li>
+			<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
 			<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
 			<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
-			<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a> Import a file saved by another deck management tool.                   You may specify the correct type of file as                   well as the file name.</li>
 		</ul></li>
 		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
 		<ul>
@@ -207,6 +207,26 @@ the columns and their contents.</p>
 	<p>If Sutekh cannot correctly interpret a name or expansion, it will prompt you to 
 resolve the situation using the <a href="#lookup">Card Lookup Dialog</a>.</p>
 
+	<h4 id="importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</h4>
+
+	<p>This allows you to import files produced by <span class="caps">ARDB</span>, 
+<span class="caps">JOL</span>, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt 
+to identify the file format automatically, this 
+isn&#8217;t always reliable, so you have the option of 
+specifying the format manually.</p>
+
+	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you 
+will also need to specify a card set name for the 
+imported file.</p>
+
+	<p>If the name of the card set clashes with an existing 
+name, you will be asked to rename the imported card 
+set or cancel the import.</p>
+
+	<p>If no cards are found in the card set, the card set 
+will not be created.</p>
+
+
 	<h4 id="backup">Backup</h4>
 
 	<p>This allows you either to save or to restore a full backup 
@@ -246,26 +266,6 @@ that card set.</p>
 	<p>If a card set to be imported has a parent card set, and 
 that set cannot be found, the card set will be imported 
 with no parent set.</p>
-
-
-	<h4 id="importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</h4>
-
-	<p>This allows you to import files produced by <span class="caps">ARDB</span>, 
-JOL, Lackey <span class="caps">CCG</span> or <span class="caps">FELDB</span>.  While Sutekh will attempt 
-to identify the file format automatically, this 
-isn&#8217;t always reliable, so you have the option of 
-specifying the format manually.</p>
-
-	<p>For some types of file, such as <span class="caps">ARDB</span> inventories, you 
-will also need to specify a card set name for the 
-imported file.</p>
-
-	<p>If the name of the card set clashes with an existing 
-name, you will be asked to rename the imported card 
-set or cancel the import.</p>
-
-	<p>If no cards are found in the card set, the card set 
-will not be created.</p>
 
 
 
@@ -404,8 +404,8 @@ card list.</p>
 
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
-		<li><a href="#expansionstats">Expansion Stats</a></li>
 		<li><a href="#clandisciplinestats">Clan Discipline Stats</a></li>
+		<li><a href="#expansionstats">Expansion Stats</a></li>
 	</ul>
 
 	<h2 id="card_text">Card Text</h2>
@@ -639,12 +639,12 @@ be opened automatically and will be set editable.</p>
 	<ul>
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#analyzedeck">Analyze Deck</a></li>
-		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 		<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
-		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
-		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
-		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
+		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
+		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 	</ul>
 
 	<h3 id="cardsets_keyboard">Keyboard Shortcuts</h3>
@@ -927,28 +927,11 @@ which clusters correspond to the created card sets. The third column shows how
 many cards are present in each cluster, and the last lists the property 
 values of the cluster center (property values of zero are omitted).</p>
 
-	<h3 id="expansionstats">Expansion Stats</h3>
-
-	<p>This lists some statistics about the different 
-expansions and rarities.</p>
-
-	<p>For each expansion, this lists the number of cards of each 
-rarity. It also notes which cards are found only in the 
-preconstructed decks for that expansion if needed. For each 
-rarity, the individual cards are list, grouped according 
-to the current grouping of the full card list.</p>
-
-	<p>Note that this will only include cards not legal for 
-tournament play (such as banned cards or storyline only 
-cards) if the current profile for the full card list shows 
-those cards.</p>
-
-
 	<h3 id="clandisciplinestats">Clan Discipline Stats</h3>
 
 	<p>This shows an analysis of all the different clans in the 
 White Wolf card list. For each clan, it displays the total 
-number of vampires in the clan, the sum of the vampires&#8216; 
+number of vampires in the clan, the sum of the vampires&#8217; 
 capacities, and the most common disciplines. It also shows 
 the score for the disciplines, and various stats about how 
 the disciplines are distributed.</p>
@@ -961,6 +944,23 @@ common disciplines are within the clan. Vampires without
 a discipline score 0 for that discipline, vampires with 
 the inferior discipline score 1 and vampires with the 
 superior discipline score 2.</p>
+
+	<p>Note that this will only include cards not legal for 
+tournament play (such as banned cards or storyline only 
+cards) if the current profile for the full card list shows 
+those cards.</p>
+
+
+	<h3 id="expansionstats">Expansion Stats</h3>
+
+	<p>This lists some statistics about the different 
+expansions and rarities.</p>
+
+	<p>For each expansion, this lists the number of cards of each 
+rarity. It also notes which cards are found only in the 
+preconstructed decks for that expansion if needed. For each 
+rarity, the individual cards are list, grouped according 
+to the current grouping of the full card list.</p>
 
 	<p>Note that this will only include cards not legal for 
 tournament play (such as banned cards or storyline only 
@@ -986,37 +986,6 @@ consider specific card types.</p>
 	<p>The happy family implementation allows you either to 
 select the number of disciplines to use, or to select 
 the disciplines to consider manually.</p>
-
-
-	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
-
-	<p>This tool tests the current card set against other card 
-sets with the same parent, and considers whether there 
-are enough cards in the parent card set to simultaneously 
-construct all the selected sets. Multiple decks can be 
-selected from the list of card sets.</p>
-
-	<p>You can test the current card set against all sets with the 
-same parent which are marked as <em>In Use</em> by checking the 
-<em>Test against all card sets marked as in use</em> checkbox when 
-selecting decks for comparison. This checkbox overrides any 
-selected entries in the list.</p>
-
-	<p>By default the independence test is strict and checks 
-whether the parent set contains enough cards to build all 
-the selected child sets with exactly the card expansions 
-specified. A less strict check which ignores expansions may 
-be selected by checking <em>Ignore card expansions</em>.</p>
-
-	<p>The first tab of the results displays the full list of cards 
-of which there is a shortage in the parent card set. For 
-each selected set which includes any of these cards, the 
-list of cards relevant to that set is shown in a separate 
-tab.</p>
-
-	<p>The full list of cards has a &#8216;Create Card Set&#8217; button, 
-which can be used to create a card set containing the 
-specific cards listed.</p>
 
 
 	<h3 id="carddrawprobabilities">Card Draw probabilities</h3>
@@ -1050,17 +1019,45 @@ cards (shown in brackets).</p>
 the <em>recalculate table</em> button.</p>
 
 
-	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
+	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
 
-	<p>This allows you to find crypt cards that are similar to the 
-current selected crypt card. It will search for cards in a 
-compatible grouping that share the specified number of 
-disciplines or virtues with the selected crypt card.</p>
+	<p>This tool tests the current card set against other card 
+sets with the same parent, and considers whether there 
+are enough cards in the parent card set to simultaneously 
+construct all the selected sets. Multiple decks can be 
+selected from the list of card sets.</p>
 
-	<p>More complex queries are possible by frist filtering the 
-card set and then using the &#8216;Only match cards visible in 
-this pane&#8217; option to restrict the results of the crypt card 
-search to match the filter.</p>
+	<p>You can test the current card set against all sets with the 
+same parent which are marked as <em>In Use</em> by checking the 
+<em>Test against all card sets marked as in use</em> checkbox when 
+selecting decks for comparison. This checkbox overrides any 
+selected entries in the list.</p>
+
+	<p>By default the independence test is strict and checks 
+whether the parent set contains enough cards to build all 
+the selected child sets with exactly the card expansions 
+specified. A less strict check which ignores expansions may 
+be selected by checking <em>Ignore card expansions</em>.</p>
+
+	<p>The first tab of the results displays the full list of cards 
+of which there is a shortage in the parent card set. For 
+each selected set which includes any of these cards, the 
+list of cards relevant to that set is shown in a separate 
+tab.</p>
+
+	<p>The full list of cards has a &#8216;Create Card Set&#8217; button, 
+which can be used to create a card set containing the 
+specific cards listed.</p>
+
+
+	<h3 id="simulateopeninghand">Simulate opening hand</h3>
+
+	<p>This tool treats the card set as a completed deck, and 
+displays the expected distribution of cards in the opening 
+hand and crypt. It is intended to give you some idea of how 
+the deck will work in practice. In addition, you can 
+generate example opening hands and crypts by clicking the 
+<em>Draw sample hand</em> button.</p>
 
 
 	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
@@ -1083,6 +1080,19 @@ card set.</p>
 the &#8216;Create Card Set from this list&#8217; button.</p>
 
 
+	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
+
+	<p>This allows you to find crypt cards that are similar to the 
+current selected crypt card. It will search for cards in a 
+compatible grouping that share the specified number of 
+disciplines or virtues with the selected crypt card.</p>
+
+	<p>More complex queries are possible by frist filtering the 
+card set and then using the &#8216;Only match cards visible in 
+this pane&#8217; option to restrict the results of the crypt card 
+search to match the filter.</p>
+
+
 	<h3 id="findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</h3>
 
 	<p>If you have downloaded the database of tournament winning 
@@ -1101,16 +1111,6 @@ decks can be opened as new panes by choosing the
 	<p>The results dialog in not modal, so it&#8217;s possible to 
 examine the opened card sets closely without closing 
 the search results.</p>
-
-
-	<h3 id="simulateopeninghand">Simulate opening hand</h3>
-
-	<p>This tool treats the card set as a completed deck, and 
-displays the expected distribution of cards in the opening 
-hand and crypt. It is intended to give you some idea of how 
-the deck will work in practice. In addition, you can 
-generate example opening hands and crypts by clicking the 
-<em>Draw sample hand</em> button.</p>
 
 
 

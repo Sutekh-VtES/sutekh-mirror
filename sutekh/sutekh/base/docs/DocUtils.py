@@ -179,7 +179,7 @@ def textile2markdown(aLines, fProcessText):
 
 def _load_textile(sTextilePath):
     """Load lines from the textile file."""
-    fTextile = open(sTextilePath, "rb")
+    fTextile = open(sTextilePath, "r")
 
     # NB: Late night fast 'n dirty hack alert
     # Annoyingly, python-textile 2.1 doesn't handle list elements split
@@ -297,7 +297,7 @@ def convert(sTextileDir, sHtmlDir, cAppInfo, aPlugins, fProcessText):
             'title': "%s %s" % (cAppInfo.NAME, sFilename.replace('_', ' ')),
         }
 
-        fHtml = open(sHtmlPath, "wb")
+        fHtml = open(sHtmlPath, "w")
 
         aLines = _load_textile(sTextilePath)
 
@@ -321,7 +321,7 @@ def convert_to_markdown(sTextileDir, sMarkdownDir, aPlugins, fProcessText):
         sFilename, _sExt = os.path.splitext(sBasename)
         sMarkdownPath = os.path.join(sMarkdownDir, sFilename + ".md")
 
-        fMarkdown = open(sMarkdownPath, "wb")
+        fMarkdown = open(sMarkdownPath, "w")
 
         aLines = _load_textile(sTextilePath)
 
@@ -393,8 +393,8 @@ def make_filter_txt(sDir, aFilters):
         aOutput = []
         iTocIndex = 0
 
-        fTemplate = open(sTemplatePath, "rb")
-        fTextile = open(sTextilePath, "wb")
+        fTemplate = open(sTemplatePath, "r")
+        fTextile = open(sTextilePath, "w")
 
         for sLine in fTemplate.readlines():
             sKeyword = sLine.strip()

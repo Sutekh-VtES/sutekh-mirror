@@ -7,31 +7,29 @@
 Convert Sutekh textile documentation into HTML pages.
 """
 
-import imp
+import importlib
 import os
+import sys
 
 # pylint: disable=invalid-name
 # We ignore our usual conventions for all the import fiddling, since
 # we want to end up with global module names for consistency elsewhere in the
 # code base
-sInfoPath = os.path.join(os.path.dirname(__file__), '..', 'SutekhInfo.py')
-SutekhInfo = imp.load_source("SutekhInfo", sInfoPath).SutekhInfo
+sInfoPath = os.path.join(os.path.dirname(__file__), '..')
+sModPath = os.path.join(os.path.dirname(__file__), '..', '..')
+sys.path.append(sInfoPath)
+sys.path.append(sModPath)
+SutekhInfo = importlib.import_module("SutekhInfo").SutekhInfo
+sutekh_package = importlib.import_module("sutekh")
 
 # Import filter info
-sModPath = os.path.join(os.path.dirname(__file__), '..', '..')
-oFile, sModname, oDescription = imp.find_module('sutekh', [sModPath])
-sutekh_package = imp.load_module('sutekh', oFile, sModname, oDescription)
 Filters = sutekh_package.core.Filters
 FilterParser = sutekh_package.base.core.FilterParser
 # Import docutils
-sDocPath = os.path.join(os.path.dirname(__file__), '..', 'base', 'docs',
-                        'DocUtils.py')
-DocUtils = imp.load_source('DocUtils', sDocPath)
+DocUtils = importlib.import_module('.base.docs.DocUtils', 'sutekh')
 
 # Import plugins
-sPluginPath = os.path.join(os.path.dirname(__file__), '..', 'gui',
-                           'PluginManager.py')
-PluginManager = imp.load_source('sutekh.gui.PluginManager', sPluginPath)
+PluginManager = importlib.import_module('.gui.PluginManager', 'sutekh')
 
 
 # pylint: enable=invalid-name
@@ -48,10 +46,10 @@ def main():
     oPluginMngr = PluginManager.PluginManager()
     oPluginMngr.load_plugins()
     aPlugins = oPluginMngr.get_all_plugins()
-    DocUtils.make_filter_txt('textile', FilterParser.PARSER_FILTERS)
-    DocUtils.convert("textile", "html", SutekhInfo, aPlugins,
+    DocUtils.make_filter_txt('textile_docs', FilterParser.PARSER_FILTERS)
+    DocUtils.convert("textile_docs", "html_docs", SutekhInfo, aPlugins,
                      replace_version)
-    DocUtils.cleanup('textile')
+    DocUtils.cleanup('textile_docs')
 
 
 if __name__ == "__main__":
