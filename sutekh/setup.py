@@ -108,7 +108,7 @@ setup   (   # Metadata
                 # Include LICENSE information for sutekh package
                 # Include everything under the docs directory
                 'sutekh': ['COPYING'],
-                'sutekh.docs.html': ['*'],
+                'sutekh.docs.html_docs': ['*'],
             },
             entry_points = {
                 'console_scripts' : ['sutekh-cli = sutekh.SutekhCli:main'],
