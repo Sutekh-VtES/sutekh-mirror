@@ -221,8 +221,8 @@ class BaseIndependence(BasePlugin):
                                                             iCount))
 
         oPage = gtk.VBox(homogeneous=False)
-        oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList),
-                                            True), True)
+        oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList)),
+                         True)
         oButton = gtk.Button(label='Create Card Set from this list')
         oButton.connect('clicked', self.create_card_set,
                         dMissing)
