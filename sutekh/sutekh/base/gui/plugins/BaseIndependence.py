@@ -144,7 +144,6 @@ class BaseIndependence(BasePlugin):
         self.oCSView.set_filter(oFilter, None)
         self.oCSView.load()
         self.oCSView.expand_to_entry(self.view.sSetName)
-        self.oCSView.set_size_request(450, 300)
         self.oIgnoreExpansions = gtk.CheckButton(
             label="Ignore card expansions")
         oDlg.vbox.pack_start(self.oIgnoreExpansions, False, False)
@@ -154,6 +153,7 @@ class BaseIndependence(BasePlugin):
             oDlg.vbox.pack_start(self.oInUseButton, False, False)
             self.oInUseButton.connect("toggled", self.show_hide_list)
         oDlg.connect("response", self.handle_response)
+        oDlg.set_size_request(600, 600)
         oDlg.show_all()
         return oDlg
 

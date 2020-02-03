@@ -106,10 +106,10 @@ class BaseCompare(BasePlugin):
         oCSView.exclude_set(self.view.sSetName)
         oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
         oIgnoreExpansions = gtk.CheckButton("Ignore Expansions")
-        oDlg.vbox.pack_start(oIgnoreExpansions)
-        oCSView.set_size_request(450, 300)
+        oDlg.vbox.pack_start(oIgnoreExpansions, expand=False)
         oDlg.connect("response", self.handle_response, oCSView,
                      oIgnoreExpansions)
+        oDlg.set_size_request(600, 600)
         oDlg.show_all()
         oDlg.run()
         oDlg.destroy()
