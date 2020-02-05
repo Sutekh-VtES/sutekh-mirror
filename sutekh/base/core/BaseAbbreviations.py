@@ -98,9 +98,11 @@ class DatabaseAbbreviation(object):
     def canonical(cls, sName):
         """Translate a possibly abbreviated name into a canonical one.
            """
-        for sPrefix, sLookup in cls._dPrefix.items():
-            if sName.startswith(sPrefix):
-                return sLookup
+        if sName not in cls._dLook:
+            # Only look for prefix matches if we don't have an explicit lookup
+            for sPrefix, sLookup in cls._dPrefix.items():
+                if sName.startswith(sPrefix):
+                    return sLookup
         return cls._dLook[sName]
 
     @classmethod

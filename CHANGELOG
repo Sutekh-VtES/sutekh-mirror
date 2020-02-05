@@ -1,3 +1,7 @@
+05 Feb 2020
+ * Backport tweak to Adapters to prefer explicit matches over prefix matches.
+ * Backport "search_text" attribute fix from trunk.
+
 11 Dec 2019
  * Fix bug where the Card Draw Probablity incorrectly interpreted selections
    as being empty.
