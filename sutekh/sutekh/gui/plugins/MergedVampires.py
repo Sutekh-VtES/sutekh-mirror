@@ -109,6 +109,8 @@ class FakeCard:
         self._fix_special_cases()
         self._fix_keywords()
 
+    search_text = property(fget=lambda self: self.text, doc="Fake search text")
+
     def _fix_keywords(self):
         """Fix keywords to remove duplicates and merge things as
            approriates."""
