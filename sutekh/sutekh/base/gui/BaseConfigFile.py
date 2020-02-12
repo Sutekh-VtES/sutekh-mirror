@@ -118,6 +118,8 @@ class BaseConfigFile:
                                        encoding='utf8')
             # Merge overrides from the application
             oConfigSpec.merge(oAppConfigSpec)
+            fAppConfigSpec.close()
+        fConfigSpec.close()
 
         for sPlugin, dGlobal in self._dPluginSpecs.items():
             oConfigSpec['plugins_main'][sPlugin] = dGlobal
