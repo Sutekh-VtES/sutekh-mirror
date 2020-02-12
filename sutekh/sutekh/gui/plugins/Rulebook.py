@@ -115,11 +115,12 @@ class RulebookPlugin(SutekhPlugin):
         if not os.path.isfile(sIndexFile):
             return []
         aRulebooks = []
-        for sLine in open(sIndexFile, 'rU'):
-            sFilename, sSep, sTitle = sLine.partition(':')
-            if not sSep:
-                continue
-            aRulebooks.append((sFilename.strip(), sTitle.strip()))
+        with open(sIndexFile, 'r') as oFile:
+            for sLine in oFile:
+                sFilename, sSep, sTitle = sLine.partition(':')
+                if not sSep:
+                    continue
+                aRulebooks.append((sFilename.strip(), sTitle.strip()))
         return aRulebooks
 
     def get_menu_item(self):
