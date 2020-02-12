@@ -348,7 +348,7 @@ class BaseGuiDBManager:
             sMesg = ("There was a problem updating the database\n"
                      "Your database may be in an inconsistent state -"
                      " sorry")
-            logging.warn('\n'.join([sMesg] + aErrors))
+            logging.warning('\n'.join([sMesg] + aErrors))
             do_complaint_error_details(sMesg, "\n".join(aErrors))
         else:
             sMesg = "Import Completed\n"
@@ -418,7 +418,7 @@ class BaseGuiDBManager:
                     return True
             else:
                 sMesg = "Unable to create memory copy!\nUpgrade Failed."
-                logging.warn('\n'.join([sMesg] + aMessages))
+                logging.warning('\n'.join([sMesg] + aMessages))
                 do_complaint_error_details(sMesg, "\n".join(aMessages))
         except UnknownVersion as oErr:
             oProgressDialog.destroy()
@@ -453,6 +453,6 @@ class BaseGuiDBManager:
             return True
         sMesg = ("Unable to commit updated database!\nUpgrade Failed.\n"
                  "Your database may be in an inconsistent state.")
-        logging.warn('\n'.join([sMesg] + aMessages))
+        logging.warning('\n'.join([sMesg] + aMessages))
         do_complaint_error_details(sMesg, "\n".join(aMessages))
         return False

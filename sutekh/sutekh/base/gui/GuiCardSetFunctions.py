@@ -271,7 +271,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
     if aWarnings:
         sMsg = "The following warnings were reported:\n%s" % \
                "\n".join(aWarnings)
-        logging.warn(sMsg)
+        logging.warning(sMsg)
         iResponse = do_complaint_warning("%s\nContinue with the import?"
                                          % sMsg)
         if iResponse != gtk.RESPONSE_OK:
@@ -294,7 +294,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
             sMsg = ("Card Set Created.\n"
                     "The following warnings were reported during the final"
                     " import:\n%s" % "\n".join(aWarnings))
-            logging.warn(sMsg)
+            logging.warning(sMsg)
             do_complaint(sMsg, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
     except RuntimeError as oExp:
         sMsg = ("Creating the card set failed with the following error:\n"

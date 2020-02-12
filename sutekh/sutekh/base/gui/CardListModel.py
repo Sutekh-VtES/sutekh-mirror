@@ -430,8 +430,8 @@ class CardListModel(gtk.TreeStore):
         except ValueError:
             # Something bad has happened, and we have an invalid path
             # log this and return None
-            logging.warn('Invalid path (%s) in get_physical_card_from_path',
-                         oPath)
+            logging.warning('Invalid path (%s) in get_physical_card_from_path',
+                            oPath)
             return None
 
     def check_card_visible(self, oPhysCard):

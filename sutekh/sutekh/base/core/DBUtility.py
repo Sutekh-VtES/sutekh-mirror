@@ -114,8 +114,8 @@ def get_metadata_date(sKey):
         return datetime.datetime.strptime(sDate, '%Y-%m-%d').date()
     except (SQLObjectNotFound, ValueError) as oErr:
         # Log this for debugging purposes
-        logging.warn('Failed to find a valid date for %s '
-                     '(err %s) - returning None', sKey, oErr)
+        logging.warning('Failed to find a valid date for %s '
+                        '(err %s) - returning None', sKey, oErr)
     return None
 
 

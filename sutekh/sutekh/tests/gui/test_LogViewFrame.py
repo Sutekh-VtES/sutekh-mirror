@@ -43,7 +43,7 @@ class TestLogViewFrame(GuiSutekhTest):
         logging.info(self.INFO_MSG)
         logging.debug(self.DEBUG_MSG)
         logging.error(self.ERROR_MSG)
-        logging.warn(self.WARN_MSG)
+        logging.warning(self.WARN_MSG)
         # Assert that they're all present
         oNewFrame.reload()
         oNewFrame.view.export_buffer(oOutput)

@@ -44,7 +44,7 @@ class TestQueueLogHandler(SutekhTest):
 
         # Check that we get log messages in the handler
         logging.info("message 1")
-        logging.warn("message 2")
+        logging.warning("message 2")
         logging.debug("message 3")
         logging.error("message 4")
 
@@ -89,7 +89,7 @@ class TestQueueLogHandler(SutekhTest):
         oFrame.reload()
         self.assertEqual(oFrame.bNeedsReload, False)
 
-        logging.warn("Test message")
+        logging.warning("Test message")
         self.assertEqual(oFrame.bNeedsReload, True)
         oFrame.reload()
         self.assertEqual(oFrame.bNeedsReload, False)

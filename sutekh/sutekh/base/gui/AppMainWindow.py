@@ -166,8 +166,8 @@ class AppMainWindow(MultiPaneWindow):
         oValidationResults = oConfig.validate()
         aErrors = oConfig.validation_errors(oValidationResults)
         if aErrors:
-            logging.warn('Configuration file validation errors:\n%s',
-                         "\n".join(aErrors))
+            logging.warning('Configuration file validation errors:\n%s',
+                            "\n".join(aErrors))
             do_complaint_error_details(
                 "The configuration file validation failed:",
                 "\n".join(aErrors))

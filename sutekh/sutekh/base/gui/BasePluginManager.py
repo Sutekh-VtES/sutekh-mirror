@@ -84,16 +84,16 @@ class BasePluginManager:
                 mPlugin = __import__("%s.%s" % (self.sPluginDir, sPluginName),
                                      None, None, [aPlugins])
             except ImportError as oExp:
-                logging.warn("Failed to load plugin %s (%s).",
-                             sPluginName, oExp, exc_info=1)
+                logging.warning("Failed to load plugin %s (%s).",
+                                sPluginName, oExp, exc_info=1)
                 continue
 
             # find plugin class
             try:
                 cPlugin = mPlugin.plugin
             except AttributeError as oExp:
-                logging.warn("Plugin module %s appears not to contain a"
-                             " plugin (%s).", sPluginName, oExp, exc_info=1)
+                logging.warning("Plugin module %s appears not to contain a"
+                                " plugin (%s).", sPluginName, oExp, exc_info=1)
                 continue
 
             # add to appropriate plugin lists
@@ -244,8 +244,8 @@ class BasePlugin:
         oDBVer = DatabaseVersion()
         for oTable, aVersions in cls.dTableVersions.items():
             if not oDBVer.check_table_in_versions(oTable, aVersions):
-                logging.warn("Skipping plugin %s due to version error (%s)",
-                             cls, oTable)
+                logging.warning("Skipping plugin %s due to version error (%s)",
+                                cls, oTable)
                 return False
         # If nothing is specified, currently we assume everything is A-OK
         return True

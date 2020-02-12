@@ -439,8 +439,8 @@ class MergedVampirePlugin(SutekhPlugin):
                 "Unable to created merged vampire for %s"
                 % self._oAbsCard.name)
             self._aExcluded.add(self._oAbsCard)
-            logging.warn("Merged vampire creation failed (%s).", oExc,
-                         exc_info=1)
+            logging.warning("Merged vampire creation failed (%s).", oExc,
+                            exc_info=1)
             return
         oCardTextView = self.parent.card_text_pane.view
         # Button logic

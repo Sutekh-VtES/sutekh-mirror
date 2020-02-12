@@ -65,7 +65,7 @@ class SutekhMainWindow(AppMainWindow):
             _oCard = IAbstractCard('Ossian')
         except SQLObjectNotFound:
             # Log error so verbose picks it up
-            logging.warn('Ossian not found in the database')
+            logging.warning('Ossian not found in the database')
             # Inform the user
             iResponse = do_complaint(
                 'Database is missing cards. Try import the cardlist now?',

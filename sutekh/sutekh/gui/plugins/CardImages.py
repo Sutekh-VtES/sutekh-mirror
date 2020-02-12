@@ -109,8 +109,8 @@ class CardImageFrame(BaseImageFrame):
             # This can happen because we cache the expansion name and
             # a new database import may cause that to vanish.
             # We return just return a blank path segment, as the safest choice
-            logging.warn('Expansion %s no longer found in the database',
-                         sExpansionName)
+            logging.warning('Expansion %s no longer found in the database',
+                            sExpansionName)
             return ''
         # check special cases
         if oExpansion.name in self.SPECIAL_PROMOS:
@@ -174,7 +174,7 @@ class CardImageFrame(BaseImageFrame):
             if len(self._dDateCache) > 100:
                 return True
         except Exception as oErr:
-            logging.warn('Error parsing date cache file %s', oErr)
+            logging.warning('Error parsing date cache file %s', oErr)
         return False
 
     def _norm_cardname(self, sCardName):
