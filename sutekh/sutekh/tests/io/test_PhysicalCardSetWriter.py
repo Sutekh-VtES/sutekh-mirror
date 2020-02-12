@@ -140,7 +140,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         sTempFileName = self._create_tmp_file()
         oFileXML = PhysicalCardSetXmlFile(sTempFileName)
         oFileXML.write(CARD_SET_NAMES[1])
-        fIn = open(sTempFileName, 'rU')
+        fIn = open(sTempFileName, 'r')
         sData = fIn.read()
         self.assertEqual(len(sData), len(EXPECTED_2))
         self.assertEqual(sData, EXPECTED_2)

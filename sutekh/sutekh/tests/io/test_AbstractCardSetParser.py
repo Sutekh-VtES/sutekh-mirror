@@ -59,7 +59,7 @@ class AbstractCardSetParserTest(SutekhTest):
         oHolder = CardSetHolder()
         oParser.parse(StringIO(ACS_EXAMPLE_2), oHolder)
         oHolder.create_pcs()
-        fIn = open(sTempFileName, 'rU')
+        fIn = open(sTempFileName, 'r')
         oHolder = CardSetHolder()
         oParser.parse(fIn, oHolder)
         oHolder.create_pcs()

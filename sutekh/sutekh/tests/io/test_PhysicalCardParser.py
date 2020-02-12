@@ -57,7 +57,7 @@ class PhysicalCardTests(SutekhTest):
         fOut.write(sExample)
         fOut.close()
 
-        fIn = open(sTempFileName, 'rU')
+        fIn = open(sTempFileName, 'r')
         oHolder = CardSetHolder()
         oParser.parse(fIn, oHolder)
         fIn.close()

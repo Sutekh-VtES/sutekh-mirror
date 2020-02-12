@@ -162,7 +162,7 @@ class PhysicalCardSetParserTests(SutekhTest):
         fIn = open(sTempFileName, 'w')
         fIn.write(PCS_EXAMPLE_2)
         fIn.close()
-        fIn = open(sTempFileName, 'rU')
+        fIn = open(sTempFileName, 'r')
         oHolder = CardSetHolder()
         oParser.parse(fIn, oHolder)
         oHolder.create_pcs()

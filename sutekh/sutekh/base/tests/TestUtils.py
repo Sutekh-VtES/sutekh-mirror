@@ -109,7 +109,7 @@ class BaseTestCase(unittest.TestCase):
         oWriter.write(fOut, oObj)
         fOut.close()
 
-        fIn = open(sTempFile, 'rU')
+        fIn = open(sTempFile, 'r')
         sData = fIn.read()
         fIn.close()
         return sData

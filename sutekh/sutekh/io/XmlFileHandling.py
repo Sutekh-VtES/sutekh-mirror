@@ -28,7 +28,7 @@ from sutekh.io.PhysicalCardSetWriter import PhysicalCardSetWriter
 def _do_read(oParser, sFileName, oLookup, bIgnoreWarnings):
     """Helper function to read from a parser"""
     oHolder = CardSetHolder()
-    oParser.parse(open(sFileName, 'rU'), oHolder)
+    oParser.parse(open(sFileName, 'r'), oHolder)
     oHolder.create_pcs(oLookup)
     if not bIgnoreWarnings:
         return oHolder.get_warnings()
