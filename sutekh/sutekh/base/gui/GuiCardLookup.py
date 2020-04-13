@@ -694,6 +694,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         # Fill in the Printings and options
         dReplacement = {}
+        aKnownPrintings = sorted(dKnownPrintings)
+        # Insert 'No choice' at the front
+        aKnownPrintings.insert(0, NO_EXP_AND_PRINT)
         for tExpPrint in dUnknownPrintings:
             # Find the corresponding cards
             aCards = []
@@ -713,9 +716,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oLabel2 = gtk.Label(label="Replace with ")
             oBox.pack_start(oLabel2)
 
-            oSelector = gtk.combo_box_new_text()
-            oSelector.append_text(NO_EXP_AND_PRINT)
-            for sPrintName in sorted(dKnownPrintings):
+            oSelector = gtk.ComboBoxText()
+            for sPrintName in aKnownPrintings:
                 oSelector.append_text(sPrintName)
 
             dReplacement[tExpPrint] = oSelector
@@ -740,7 +742,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         if iResponse == gtk.RESPONSE_OK:
             # For cards marked as replaced, add them to the Holder
             for tUnknownExpPrint in dUnknownPrintings:
-                sNewPrint = dReplacement[tUnknownExpPrint].get_active_text()
+                iPos = dReplacement[tUnknownExpPrint].get_active()
+                if iPos < 0 or iPos >= len(aKnownPrintings):
+                    sNewPrint = NO_EXP_AND_PRINT
+                else:
+                    sNewPrint = aKnownPrintins[iPos]
                 if sNewPrint != NO_EXP_AND_PRINT:
                     dUnknownPrintings[tUnknownExpPrint] = \
                         dKnownPrintings[sNewPrint]
