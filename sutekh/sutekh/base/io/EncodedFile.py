@@ -7,7 +7,7 @@
    conventions."""
 
 import codecs
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 import logging
 
 
@@ -36,6 +36,10 @@ class EncodedFile:
        read() will return unicode data.
        """
 
+    # Callers needing something different can construct their
+    # own request with header
+    HEADER = "Sutekh URL Client"
+
     # pylint: disable=invalid-name
     # we accept sfFile here
     def __init__(self, sfFile, bUrl=False, bFileObj=False):
@@ -57,11 +61,17 @@ class EncodedFile:
         if self.bFileObj:
             return self.sfFile
         elif self.bUrl:
-            oFile = urlopen(self.sfFile)
+            if isinstance(self.sfFile, str):
+                # Only create a custom Request if we have a bare url
+                oReq = Request(self.sfFile)
+                oReq.add_header('User-Agent', self.HEADER)
+            else:
+                oReq = self.sfFile
+            oFile = urlopen(oReq)
             sData = oFile.read(1000)
             sFileEnc = guess_encoding(sData, self.sfFile)
             oFile.close()
-            return codecs.lookup(sFileEnc).streamreader(urlopen(self.sfFile))
+            return codecs.lookup(sFileEnc).streamreader(urlopen(oReq))
         oFile = open(self.sfFile, 'rb')
         sData = oFile.read(1000)
         sFileEnc = guess_encoding(sData, self.sfFile)
