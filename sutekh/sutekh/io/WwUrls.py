@@ -8,17 +8,17 @@
 
 WW_CARDLIST_DATAPACK = "cardlist"
 
-WW_CARDLIST_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                   "raw/tip/CardList/cardlist-data/cardlist.txt")
+WW_CARDLIST_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
+                   "-/raw/master/CardList/cardlist-data/cardlist.txt")
 
-EXTRA_CARD_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                  "raw/tip/extra_list.txt")
+EXTRA_CARD_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
+                  "-/raw/master/extra_list.txt")
 
-WW_RULINGS_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                  "raw/tip/Rulebooks/rulebook-data/rulings.html")
+WW_RULINGS_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
+                  "-/raw/master/Rulebooks/rulebook-data/rulings.html")
 
-EXP_DATA_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                "raw/tip/ExpansionDates/expansion-data/expansions.json")
+EXP_DATA_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
+                "-/raw/master/ExpansionDates/expansion-data/expansions.json")
 
-LOOKUP_DATA_URL = ("http://bitbucket.org/hodgestar/sutekh-extras/"
-                   "raw/tip/Lookups/lookup.csv")
+LOOKUP_DATA_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
+                   "-/raw/master/Lookups/lookup.csv")
