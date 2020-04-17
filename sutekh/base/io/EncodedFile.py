@@ -35,6 +35,10 @@ class EncodedFile(object):
        returns a file-like object with the encoding set correctly.
        """
 
+    # Callers needing something different can construct their
+    # own request with header
+    HEADER = "Sutekh URL Client"
+
     # pylint: disable=invalid-name
     # we accept sfFile here
     def __init__(self, sfFile, bUrl=False, bFileObj=False):
@@ -56,11 +60,17 @@ class EncodedFile(object):
         if self.bFileObj:
             return self.sfFile
         elif self.bUrl:
-            oFile = urllib2.urlopen(self.sfFile)
+            if isinstance(self.sfFile, str):
+                # Only create a custom Request if we have a bare url
+                oReq = urllib2.Request(self.sfFile)
+                oReq.add_header('User-Agent', self.HEADER)
+            else:
+                oReq = self.sfFile
+            oFile = urllib2.urlopen(oReq)
             sData = oFile.read(1000)
             sFileEnc = guess_encoding(sData, self.sfFile)
             oFile.close()
-            return codecs.EncodedFile(urllib2.urlopen(self.sfFile), 'utf8',
+            return codecs.EncodedFile(urllib2.urlopen(oReq), 'utf8',
                                       sFileEnc)
         oFile = open(self.sfFile, 'rU')
         sData = oFile.read(1000)
