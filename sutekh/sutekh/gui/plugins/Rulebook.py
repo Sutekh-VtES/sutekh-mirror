@@ -5,6 +5,7 @@
 
 """Downloads rulebook HTML pages and makes them available via the Help menu."""
 
+import datetime
 import os
 from io import BytesIO
 import webbrowser
@@ -22,7 +23,7 @@ from sutekh.base.gui.SutekhFileWidget import add_filter
 from sutekh.base.gui.ProgressDialog import (ProgressDialog,
                                             SutekhCountLogHandler)
 
-from sutekh.io.DataPack import DOC_URL, find_data_pack
+from sutekh.io.DataPack import DOC_URL, find_data_pack, find_all_data_packs
 from sutekh.gui.PluginManager import SutekhPlugin
 
 
@@ -143,6 +144,47 @@ class RulebookPlugin(SutekhPlugin):
             aMenuList.append(('Rulebook', oItem))
 
         return aMenuList
+
+    def check_for_updates(self):
+        """Check to see if the rulebooks need to be updated."""
+        sIndexFile = os.path.join(self._sPrefsPath, 'index.txt')
+        if not os.path.isfile(sIndexFile):
+            return None
+        aUrls, aDates, _aHashes = find_all_data_packs(
+            'rulebooks', fErrorHandler=gui_error_handler)
+        if not aUrls:
+            # Timeout means we skip trying anything
+            return None
+        try:
+            oUrlDate = datetime.datetime.strptime(aDates[0], '%Y-%m-%d')
+        except ValueError:
+            # Maybe should error here
+            return None
+        # We use the date of the index file as reference point
+        oFileDate = datetime.datetime.fromtimestamp(os.path.getmtime(sIndexFile))
+        if oFileDate < oUrlDate:
+            return "Updated rulebook and rulings available"
+        return None
+
+    def do_update(self):
+        """Download rulebooks and update the menu"""
+        sZipUrl, sHash = find_data_pack('rulebooks', fErrorHandler=gui_error_handler)
+        if not sZipUrl:
+            return
+        oFile = urlopen_with_timeout(sZipUrl,
+                                     fErrorHandler=gui_error_handler,
+                                     bBinary=True)
+        if not oFile:
+            return
+        try:
+            sData = progress_fetch_data(oFile, None, sHash)
+            oRawFile = BytesIO(sData)
+            oZipFile = zipfile.ZipFile(oRawFile, 'r')
+            self._unpack_zip_with_prog_bar(oZipFile)
+        except Exception:
+            do_exception_complaint('Unable to successfully download or '
+                                   'the rulebook files')
+        self._update_menu()
 
     def _recreate_menu_items(self):
         """Read the index file, update the first menu item hack
