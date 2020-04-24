@@ -155,7 +155,6 @@ def exception_handler(oType, oValue, oTraceback):
 
     sMessage = "%s reported an unhandled exception:\n%s\n" % (AppInfo.NAME,
                                                               str(oValue))
-    print(sMessage)
     aTraceback = traceback.format_exception(oType, oValue, oTraceback)
     sDetails = "".join(aTraceback)
 
