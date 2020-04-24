@@ -320,6 +320,6 @@ class BasicFrame(Gtk.Frame):
     def make_drag_icon(self, oWidget, _oDragContext):
         """Create an icon for dragging the pane from the titlebar"""
         iXOffset, iYOffset = self._oTitleLabel.get_layout_offsets()
-        oPixbuf = Gdk.pixbuf_get_from_window(self._oTitleLabel.window, iXOffset, iYOffset,
-                                                 100, 20)
+        oPixbuf = Gdk.pixbuf_get_from_window(self._oTitleLabel.get_window(),
+                                             iXOffset, iYOffset, 100, 20)
         oWidget.drag_source_set_icon_pixbuf(oPixbuf)
