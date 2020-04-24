@@ -9,15 +9,14 @@
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream
 # pylint: enable=no-name-in-module
-import gtk
+from gi.repository import GdkPixbuf
 
 
 class PkgIcon:
     """Load a gtk Pixbuf object from a package resource file."""
 
     def __init__(self, sPkg, sResource):
-        # FIXME: Work out how to get back to a generic loader after we move away from needing pygtkcompat
-        oLoader = gtk.gdk.PixbufLoader('svg')
+        oLoader = GdkPixbuf.PixbufLoader.new_with_type('svg')
         oFile = resource_stream(sPkg, sResource)
         oLoader.write(oFile.read())
         oFile.close()

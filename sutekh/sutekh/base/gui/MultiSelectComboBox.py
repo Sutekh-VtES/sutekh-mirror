@@ -7,7 +7,7 @@
 
 import sys
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 from .AutoScrolledWindow import AutoScrolledWindow
 from .ScrolledList import ScrolledListView
@@ -21,29 +21,29 @@ def mouse_in_button(oButton):
             (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height))
 
 
-class MultiSelectComboBox(gtk.HBox):
+class MultiSelectComboBox(Gtk.HBox):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Implementation of a multiselect combo box widget."""
 
     def __init__(self, oParentWin):
         super(MultiSelectComboBox, self).__init__()
 
-        self._oButton = gtk.Button(" - ")
+        self._oButton = Gtk.Button(" - ")
         self._oButton.connect('clicked', self.__show_list)
-        self.pack_start(self._oButton)
+        self.pack_start(self._oButton, True, True, 0)
 
         self._oTreeView = ScrolledListView(" ... ")
-        self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self._oTreeView.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
 
         oScrolled = AutoScrolledWindow(self._oTreeView)
         self._aOldSelection = []
 
-        self._oDialog = gtk.Dialog(
-            "Select ...", None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+        self._oDialog = Gtk.Dialog(
+            "Select ...", None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
         self._oDialog.action_area.set_size_request(-1, 0)
-        self._oDialog.vbox.pack_start(oScrolled)
+        self._oDialog.vbox.pack_start(oScrolled, True, True, 0)
         self._oDialog.connect('key-press-event', self.__hide_on_return)
         # Catch tail of the event queue to handle pressing to close
         self._oDialog.connect('event-after', self.__grab_event)
@@ -63,9 +63,9 @@ class MultiSelectComboBox(gtk.HBox):
         # limited non-modality here by testing for each event of interest
         # ourselves. This will all go away if the popup is redone as a
         # widget, rather than as a tweaked dialog window
-        if oEvent.type == gtk.gdk.BUTTON_PRESS or (
+        if oEvent.type == Gdk.EventType.BUTTON_PRESS or (
                 sys.platform.startswith("win") and
-                oEvent.type == gtk.gdk.BUTTON_RELEASE):
+                oEvent.type == Gdk.EventType.BUTTON_RELEASE):
             # Mouse clicked
             if oEvent.button.button == 1:
                 if mouse_in_button(self._oButton):
@@ -73,15 +73,15 @@ class MultiSelectComboBox(gtk.HBox):
                     self.__hide_list()
                 # Ignore other buttons
                 # Should right button act the same as escape?
-        elif oEvent.type == gtk.gdk.ENTER_NOTIFY:
+        elif oEvent.type == Gdk.EventType.ENTER_NOTIFY:
             # Mouse has entered the button, so mark as active
             if mouse_in_button(self._oButton):
                 self._bInButton = True
-                self._oButton.set_state(gtk.STATE_PRELIGHT)
-        elif oEvent.type == gtk.gdk.LEAVE_NOTIFY and self._bInButton:
+                self._oButton.set_state(Gtk.StateFlags.PRELIGHT)
+        elif oEvent.type == Gdk.EventType.LEAVE_NOTIFY and self._bInButton:
             # Leave the button, so unhighlight
             self._bInButton = False
-            self._oButton.set_state(gtk.STATE_NORMAL)
+            self._oButton.set_state(Gtk.StateFlags.NORMAL)
         # always propogate events onward, which should be completely
         # safe, since we're in event-after
         return False
@@ -111,8 +111,8 @@ class MultiSelectComboBox(gtk.HBox):
 
     def __hide_on_return(self, _oWidget, oEvent):
         """Hide the list when return or escape is pressed."""
-        if oEvent.type is gtk.gdk.KEY_PRESS:
-            sKeyName = gtk.gdk.keyval_name(oEvent.keyval)
+        if oEvent.type is Gdk.EventType.KEY_PRESS:
+            sKeyName = Gdk.keyval_name(oEvent.keyval)
             if sKeyName in ('Return', 'Escape'):
                 if sKeyName == 'Escape':
                     self.set_selected_rows(self._aOldSelection)

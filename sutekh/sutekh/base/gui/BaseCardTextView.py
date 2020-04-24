@@ -8,31 +8,30 @@
 
 import logging
 
-import gtk
-import pango
+from gi.repository import Gtk, Pango
 
 from .MessageBus import MessageBus, CARD_TEXT_MSG
 
 
-class BaseCardTextBuffer(gtk.TextBuffer):
+class BaseCardTextBuffer(Gtk.TextBuffer):
     """Base class for buffer object which holds the actual card text.
        """
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self):
         super(BaseCardTextBuffer, self).__init__()
 
-        # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
+        # See http://www.pyGtk.org/pyGtk2reference/class-Gtktexttag.html
         # for some possible properties
 
-        self._oIconTabs = pango.TabArray(1, True)
+        self._oIconTabs = Pango.TabArray(1, True)
         # Icons are scaled to 15'ish
-        self._oIconTabs.set_tab(0, pango.TAB_LEFT, 15)
+        self._oIconTabs.set_tab(0, Pango.TabAlign.LEFT, 15)
 
-        self.create_tag("label", underline=pango.UNDERLINE_SINGLE)
+        self.create_tag("label", underline=Pango.Underline.SINGLE)
 
-        self.create_tag("card_name", weight=pango.WEIGHT_BOLD)
+        self.create_tag("card_name", weight=Pango.Weight.BOLD)
 
         self._oIter = None
 
@@ -44,12 +43,12 @@ class BaseCardTextBuffer(gtk.TextBuffer):
 
     def add_tag(self, sTag):
         """Add a simple tag"""
-        self.create_tag(sTag, style=pango.STYLE_ITALIC)
+        self.create_tag(sTag, style=Pango.Style.ITALIC)
         self.create_mark(sTag, self.get_start_iter(), True)
 
     def add_list_tag(self, sTag):
         """Add a tag with the list style indents"""
-        self.create_tag(sTag, style=pango.STYLE_ITALIC, left_margin=15,
+        self.create_tag(sTag, style=Pango.Style.ITALIC, left_margin=15,
                         tabs=self._oIconTabs)
         self.create_mark(sTag, self.get_start_iter(), True)
 
@@ -142,13 +141,13 @@ class BaseCardTextBuffer(gtk.TextBuffer):
         return self.get_text(oStart, oEnd, False)
 
 
-class BaseCardTextView(gtk.TextView):
+class BaseCardTextView(Gtk.TextView):
     """Base class for TextView widget which holds the TextBuffer."""
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oBuffer, oIconManager, oMainWindow):
         super(BaseCardTextView, self).__init__()
         # Can be styled as frame_name.view
@@ -162,7 +161,7 @@ class BaseCardTextView(gtk.TextView):
         self.set_buffer(self._oBuf)
         self.set_editable(False)
         self.set_cursor_visible(False)
-        self.set_wrap_mode(gtk.WRAP_WORD)
+        self.set_wrap_mode(Gtk.WrapMode.WORD)
         self._oIconManager = oIconManager
         oContext = self.get_pango_context()
         logging.info('Pango Language : %s', oContext.get_language().to_string())

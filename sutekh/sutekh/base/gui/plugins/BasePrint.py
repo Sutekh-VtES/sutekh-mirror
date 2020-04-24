@@ -5,9 +5,7 @@
 
 """Plugin for simple, direct printing of the card set."""
 
-import gtk
-import pango
-import pangocairo
+from gi.repository import Gtk, Pango, PangoCairo
 
 from ...core.BaseTables import PhysicalCardSet
 from ...core.BaseAdapters import (IAbstractCard, IPhysicalCard, IPrintingName,
@@ -32,7 +30,7 @@ def _card_expansion_details(oCard, iMode):
 class BasePrint(BasePlugin):
     """Plugin for printing the card sets.
 
-       Use gtk's Printing support to print out a simple list of the cards
+       Use Gtk's Printing support to print out a simple list of the cards
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
@@ -56,13 +54,13 @@ class BasePrint(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' Menu"""
-        oPrint = gtk.MenuItem(label="Print Card Set")
+        oPrint = Gtk.MenuItem(label="Print Card Set")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)
 
     def activate(self, _oWidget):
         """In response to the menu choice, do the actual print operation."""
-        oPrintOp = gtk.PrintOperation()
+        oPrintOp = Gtk.PrintOperation()
 
         if self._oSettings is not None:
             oPrintOp.set_print_settings(self._oSettings)
@@ -79,12 +77,12 @@ class BasePrint(BasePlugin):
         oPrintOp.connect('custom-widget-apply', self._get_print_widgets,
                          dCustomData)
 
-        oRes = oPrintOp.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG,
+        oRes = oPrintOp.run(Gtk.PrintOperationAction.PRINT_DIALOG,
                             self.parent)
 
-        if oRes == gtk.PRINT_OPERATION_RESULT_ERROR:
+        if oRes == Gtk.PrintOperationResult.ERROR:
             do_complaint_error("Error printing card set:\n")
-        elif oRes == gtk.PRINT_OPERATION_RESULT_APPLY:
+        elif oRes == Gtk.PrintOperationResult.APPLY:
             self._oSettings = oPrintOp.get_print_settings()
 
     def begin_print(self, oPrintOp, oContext):
@@ -93,14 +91,14 @@ class BasePrint(BasePlugin):
            This includes determining pagination and the number of pages.
            """
         oPrintOp.set_use_full_page(False)
-        oPrintOp.set_unit(gtk.UNIT_MM)
+        oPrintOp.set_unit(Gtk.Units.MM)
         oPrintOp.set_n_pages(1)  # safety net in case error occur later on
 
         fWidth, fHeight = oContext.get_width(), oContext.get_height()
 
         oLayout = oContext.create_pango_layout()
-        oLayout.set_font_description(pango.FontDescription.from_string(self._sFontName))
-        oLayout.set_width(int(fWidth * pango.SCALE))
+        oLayout.set_font_description(Pango.FontDescription.from_string(self._sFontName))
+        oLayout.set_width(int(fWidth * Pango.SCALE))
 
         oLayout.set_markup(self.cardlist_markup())
 
@@ -114,7 +112,7 @@ class BasePrint(BasePlugin):
             _oInkRect, oLogicalRect = oLine.get_extents()
 
             # line height / SCALE
-            fLineHeight = float(oLogicalRect.height) / pango.SCALE
+            fLineHeight = float(oLogicalRect.height) / Pango.SCALE
 
             if fPageHeight + fLineHeight > fHeight:
                 aPageBreaks.append(iThisLine)
@@ -162,24 +160,24 @@ class BasePrint(BasePlugin):
 
         while True:
             if iLine >= iStartPageLine:
-                # oIter.get_line is a bit buggy with pygtkcompat,
+                # oIter.get_line is a bit buggy with pyGtkcompat,
                 # so we side step it by querying the layout directly
                 oLine = oLayout.get_line(iLine)
                 _oInkRect, oLogicalRect = oLine.get_extents()
 
-                fBaseLine = float(oIter.get_baseline()) / pango.SCALE
+                fBaseLine = float(oIter.get_baseline()) / Pango.SCALE
 
                 if iLine == iStartPageLine:
                     fStartPos = fBaseLine
 
                 # line x co-ordinate / SCALE
-                fXPos = float(oLogicalRect.x) / pango.SCALE
+                fXPos = float(oLogicalRect.x) / Pango.SCALE
                 # baseline - start pos - line y-co-ordinate / SCALE
                 fYPos = fBaseLine - fStartPos - (float(oLogicalRect.y) /
-                                                 pango.SCALE)
+                                                 Pango.SCALE)
 
                 oCairoContext.move_to(fXPos, fYPos)
-                pangocairo.layout_line_path(oCairoContext, oLine)
+                PangoCairo.layout_line_path(oCairoContext, oLine)
                 oCairoContext.stroke_preserve()
                 oCairoContext.fill()
 
@@ -256,34 +254,34 @@ class BasePrint(BasePlugin):
 
     def _add_print_widgets(self, _oOp, dCustomData):
         """Add widgets to the custom options tab"""
-        oVBox = gtk.VBox(homogeneous=False, spacing=2)
+        oVBox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Expansion Information:</b>")
         oLabel.set_alignment(0.0, 0.5)
-        oVBox.pack_start(oLabel, expand=False, padding=10)
+        oVBox.pack_start(oLabel, False, False, 10)
         aExpButtons = []
 
-        oFirstBut = gtk.RadioButton(group=None, label='No Expansion info')
+        oFirstBut = Gtk.RadioButton(group=None, label='No Expansion info')
         oFirstBut.set_active(True)
-        oVBox.pack_start(oFirstBut, expand=False)
+        oVBox.pack_start(oFirstBut, False, True, 0)
         aExpButtons.append(oFirstBut)
         for sText in self.dOptions:
             if sText == oFirstBut.get_label():
                 continue
-            oBut = gtk.RadioButton(group=oFirstBut, label=sText)
+            oBut = Gtk.RadioButton(group=oFirstBut, label=sText)
             oBut.set_active(False)
-            oVBox.pack_start(oBut, expand=False)
+            oVBox.pack_start(oBut, False, True, 0)
             aExpButtons.append(oBut)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Font:</b>")
         oLabel.set_alignment(0.0, 0.5)
-        oVBox.pack_start(oLabel, expand=False, padding=10)
+        oVBox.pack_start(oLabel, False, False, 10)
 
-        oFontSel = gtk.FontSelection()
+        oFontSel = Gtk.FontSelection()
         oFontSel.set_font_name(self._sFontName)
-        oVBox.pack_start(oFontSel, expand=False)
+        oVBox.pack_start(oFontSel, False, True, 0)
 
         dCustomData["aExpButtons"] = aExpButtons
         dCustomData["oFontSel"] = oFontSel

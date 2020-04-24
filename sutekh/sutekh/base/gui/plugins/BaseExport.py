@@ -5,7 +5,7 @@
 
 """Plugin for exporting to standard writers"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet
 from ..BasePluginManager import BasePlugin
 from ..GuiCardSetFunctions import export_cs
@@ -33,7 +33,7 @@ class BaseCardSetExport(BasePlugin):
         aMenuItems = []
         for sKey, tInfo in self.EXPORTERS.items():
             sMenuText = tInfo[1]
-            oExport = gtk.MenuItem(label=sMenuText)
+            oExport = Gtk.MenuItem(label=sMenuText)
             oExport.connect("activate", self.make_dialog, sKey)
             aMenuItems.append(('Export Card Set', oExport))
         return aMenuItems

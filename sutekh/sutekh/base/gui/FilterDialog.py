@@ -7,8 +7,7 @@
 
 """Allow the user to specify a filter."""
 
-import gtk
-import gobject
+from gi.repository import GObject, Gtk
 
 from ..core import FilterParser
 from .SutekhDialog import (SutekhDialog, do_complaint_error,
@@ -30,9 +29,9 @@ class FilterDialog(SutekhDialog):
        """
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we keep a lot of internal state, so many instance variables
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
 
     RESPONSE_CLEAR = 1
     RESPONSE_REVERT = 2
@@ -45,9 +44,9 @@ class FilterDialog(SutekhDialog):
     def __init__(self, oParent, oConfig, sFilterType, sDefaultFilter=None):
         super(FilterDialog, self).__init__("Specify Filter",
                                            oParent,
-                                           gtk.DIALOG_DESTROY_WITH_PARENT)
+                                           Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
-        self._oAccelGroup = gtk.AccelGroup()
+        self._oAccelGroup = Gtk.AccelGroup()
         self.__oParent = oParent
         self.__bWasCancelled = False
         self.__oParser = FilterParser.FilterParser()
@@ -73,12 +72,12 @@ class FilterDialog(SutekhDialog):
         self.add_button("Save", self.RESPONSE_SAVE)
         self.add_button("Delete", self.RESPONSE_DELETE)
 
-        self.action_area.pack_start(gtk.VSeparator(), expand=True)
+        self.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
 
-        self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        self.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
-        self.vbox.pack_start(self.__oFilterEditor)
+        self.vbox.pack_start(self.__oFilterEditor, True, True, 0)
 
         # set initial filter
 
@@ -131,7 +130,7 @@ class FilterDialog(SutekhDialog):
            handling, and prevent anything propogating to the
            window waiting for the dialog.
            """
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             # construct the final filter (may be None)
             self.__bWasCancelled = False
             self.__oFilter = self.__oFilterEditor.get_filter()
@@ -165,17 +164,17 @@ class FilterDialog(SutekhDialog):
     def __run_load_dialog(self):
         """Display a dialog for loading a filter."""
         oLoadDialog = SutekhDialog("Load Filter", self.__oParent,
-                                   gtk.DIALOG_MODAL |
-                                   gtk.DIALOG_DESTROY_WITH_PARENT)
+                                   Gtk.DialogFlags.MODAL |
+                                   Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         oLoadDialog.set_keep_above(True)
 
-        oLoadDialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        oLoadDialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        oLoadDialog.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        oLoadDialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
         # default (True or False), filter name (str), query string (str)
-        oFilterStore = gtk.ListStore(gobject.TYPE_BOOLEAN, gobject.TYPE_STRING,
-                                     gobject.TYPE_STRING)
+        oFilterStore = Gtk.ListStore(GObject.TYPE_BOOLEAN, GObject.TYPE_STRING,
+                                     GObject.TYPE_STRING)
 
         def iter_to_text(_oLayout, oCell, oModel, oIter):
             """Convert the model entry at oIter into the correct text"""
@@ -191,21 +190,21 @@ class FilterDialog(SutekhDialog):
                 oIter = oFilterStore.append(None)
                 oFilterStore.set(oIter, 0, bDefault, 1, sName, 2, sFilter)
 
-        oFilterSelector = gtk.ComboBox()
+        oFilterSelector = Gtk.ComboBox()
         oFilterSelector.set_model(oFilterStore)
 
-        oCell = gtk.CellRendererText()
+        oCell = Gtk.CellRendererText()
         oFilterSelector.pack_start(oCell, True)
         oFilterSelector.set_cell_data_func(oCell, iter_to_text)
 
-        oLoadDialog.vbox.pack_start(oFilterSelector)
+        oLoadDialog.vbox.pack_start(oFilterSelector, True, True, 0)
         oLoadDialog.show_all()
 
         try:
             iResponse = oLoadDialog.run()
             oIter = oFilterSelector.get_active_iter()
 
-            if iResponse == gtk.RESPONSE_OK and oIter:
+            if iResponse == Gtk.ResponseType.OK and oIter:
                 sName = oFilterStore.get_value(oIter, 1)
                 sFilter = oFilterStore.get_value(oIter, 2)
                 oAST = self.__oParser.apply(sFilter)
@@ -301,10 +300,10 @@ class FilterDialog(SutekhDialog):
         if sConfigFilter is not None:
             iResponse = do_complaint_buttons(
                 "Replace existing filter '%s'?" % (sName,),
-                gtk.MESSAGE_QUESTION,
-                (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                 gtk.STOCK_NO, gtk.RESPONSE_NO))
-            if iResponse == gtk.RESPONSE_YES:
+                Gtk.MessageType.QUESTION,
+                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+            if iResponse == Gtk.ResponseType.YES:
                 self.__oConfig.replace_filter(sName, sConfigFilter, sFilter)
                 bSaved = True
         else:
@@ -340,9 +339,9 @@ class FilterDialog(SutekhDialog):
                 iResponse = do_complaint_buttons(
                     "Filter '%s' used in the followin profiles:\n%s\n"
                     "Really delete?" % (sName, sProfiles),
-                    gtk.MESSAGE_QUESTION, (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                                           gtk.STOCK_NO, gtk.RESPONSE_NO))
-                if iResponse == gtk.RESPONSE_YES:
+                    Gtk.MessageType.QUESTION, (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                                           Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                if iResponse == Gtk.ResponseType.YES:
                     self.__oConfig.remove_filter(sName, sConfigFilter)
                 else:
                     # Cancelled, so skip out

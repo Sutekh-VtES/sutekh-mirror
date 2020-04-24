@@ -6,12 +6,12 @@
 
 """Base class for the menus"""
 
-import gtk
+from gi.repository import Gtk
 
 
-class SutekhMenu(gtk.MenuBar):
+class SutekhMenu(Gtk.MenuBar):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Base class for Menus
 
        This provides useful methods for handling accelerators.
@@ -20,7 +20,7 @@ class SutekhMenu(gtk.MenuBar):
         super(SutekhMenu, self).__init__()
         self._dMenuLabels = {}
         self._dMenus = {}
-        self._oAccelGroup = gtk.AccelGroup()
+        self._oAccelGroup = Gtk.AccelGroup()
         self._oMainWindow = oMainWindow
         self._bAccelActive = False
 
@@ -45,17 +45,17 @@ class SutekhMenu(gtk.MenuBar):
 
     def _add_accel(self, oMenuItem, sAccelKey):
         """Parse a accelerator description & add it to the menu item"""
-        (iKeyVal, iMod) = gtk.accelerator_parse(sAccelKey)
+        (iKeyVal, iMod) = Gtk.accelerator_parse(sAccelKey)
         if iKeyVal != 0:
             oMenuItem.add_accelerator('activate', self._oAccelGroup,
-                                      iKeyVal, iMod, gtk.ACCEL_VISIBLE)
+                                      iKeyVal, iMod, Gtk.AccelFlags.VISIBLE)
 
     def create_menu_item(self, sName, oMenu, fAction, sAccelKey=None):
         """Utiltiy function for creatng menu items.
 
            Create a menu item, connect it to fAction (if not None), and
            add an accelerator if specified."""
-        oMenuItem = gtk.MenuItem.new_with_mnemonic(sName)
+        oMenuItem = Gtk.MenuItem.new_with_mnemonic(sName)
         if oMenu is not None:
             oMenu.add(oMenuItem)
         if fAction:
@@ -72,7 +72,7 @@ class SutekhMenu(gtk.MenuBar):
 
            Create a check menu item, connect it to fAction (if not None), and
            add an accelerator if specified."""
-        oMenuItem = gtk.CheckMenuItem.new_with_mnemonic(label=sName)
+        oMenuItem = Gtk.CheckMenuItem.new_with_mnemonic(label=sName)
         oMenu.add(oMenuItem)
         oMenuItem.set_inconsistent(False)
         oMenuItem.set_active(bState)
@@ -86,13 +86,13 @@ class SutekhMenu(gtk.MenuBar):
 
     def create_menu_item_with_submenu(self, oTopLevelMenu, sName):
         """Create a MenuItem and a submenu, returning the menu_item"""
-        oMenuItem = gtk.MenuItem(label=sName)
+        oMenuItem = Gtk.MenuItem(label=sName)
         oMenuLabel = oMenuItem.get_child()
         self._dMenuLabels[oMenuLabel] = oMenuLabel.get_label()
         # Disable any mnemonic's that exist
         sStrippedName = oMenuItem.get_child().get_text().replace('_', '')
         oMenuLabel.set_text(sStrippedName)
-        oMenu = gtk.Menu()
+        oMenu = Gtk.Menu()
         self._dMenus[sStrippedName] = oMenu
         oMenuItem.set_submenu(oMenu)
         oTopLevelMenu.add(oMenuItem)
@@ -123,7 +123,7 @@ class SutekhMenu(gtk.MenuBar):
         def get_name(oWidget):
             """Get the text label from an menu item by descending the
                children"""
-            if isinstance(oWidget, gtk.Label):
+            if isinstance(oWidget, Gtk.Label):
                 return oWidget.get_text()
             if not hasattr(oWidget, 'get_children'):
                 return None

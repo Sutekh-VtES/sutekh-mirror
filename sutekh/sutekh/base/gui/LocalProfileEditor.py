@@ -8,7 +8,7 @@
 """This handles editing the local profile editor, (for temporary options)"""
 
 
-import gtk
+from gi.repository import Gtk
 
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
@@ -20,7 +20,7 @@ class LocalProfileEditor(SutekhDialog):
     """Dialog which allows the user to set temporary option profiles.
        """
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     RESPONSE_CLOSE = 1
     RESPONSE_CANCEL = 2
@@ -28,7 +28,7 @@ class LocalProfileEditor(SutekhDialog):
     def __init__(self, oParent, oConfig, sFrame, sCardSet):
         super(LocalProfileEditor, self).__init__(
             "Edit Local Profile", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -45,7 +45,7 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable))
+        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable), True, True, 0)
 
         self.set_default_size(600, 550)
         self.connect("response", self._button_response)

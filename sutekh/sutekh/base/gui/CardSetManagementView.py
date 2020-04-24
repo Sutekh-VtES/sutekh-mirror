@@ -3,10 +3,12 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView class for the card set list."""
+"""Gtk.TreeView class for the card set list."""
 
-import gtk
+from gi.repository import Gtk, Gdk
+
 from sqlobject import SQLObjectNotFound
+
 from ..core.BaseAdapters import IPhysicalCardSet
 from .GuiCardSetFunctions import reparent_card_set
 from .CardSetsListView import CardSetsListView
@@ -16,11 +18,11 @@ from .FilterDialog import FilterDialog
 class CardSetManagementView(CardSetsListView):
     """Tree View for the management of card set list."""
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
     # pylint: disable=too-many-ancestors
     # many ancestors, due to our object hierachy on top of the quite
-    # deep gtk one
+    # deep Gtk one
 
     def __init__(self, oController, oMainWindow):
         super(CardSetManagementView, self).__init__(oController,
@@ -30,10 +32,10 @@ class CardSetManagementView(CardSetsListView):
         self.set_select_single()
 
         # Need this so we can drag the pane in the same way as the card list
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
 
-        self.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.drag_dest_add_text_targets()
 
         self.connect('drag-data-get', self.drag_card_set)

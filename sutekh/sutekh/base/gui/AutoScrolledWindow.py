@@ -3,15 +3,15 @@
 # Copyright 2006 Simon Cross <hodgestar@gmail.com>
 # GPL - see COPYING for details
 
-"""Utility wrapper around gtk.ScrolledWindow"""
+"""Utility wrapper around Gtk.ScrolledWindow"""
 
-import gtk
+from gi.repository import Gtk
 
 
-class AutoScrolledWindow(gtk.ScrolledWindow):
+class AutoScrolledWindow(Gtk.ScrolledWindow):
     # pylint: disable=too-many-public-methods
-    # gtk widget, so many public methods
-    """Wrap a widget in a gtk.ScrolledWindow.
+    # Gtk widget, so many public methods
+    """Wrap a widget in a Gtk.ScrolledWindow.
 
        Set the Scrollbar property to Autmoatic, so scrollbars only so up
        when needed. The widget can also be wrapped in a viewport if needed
@@ -19,7 +19,7 @@ class AutoScrolledWindow(gtk.ScrolledWindow):
     def __init__(self, oWidgetToWrap):
         super(AutoScrolledWindow, self).__init__()
 
-        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.set_shadow_type(gtk.SHADOW_IN)
+        self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.set_shadow_type(Gtk.ShadowType.IN)
 
         self.add(oWidgetToWrap)

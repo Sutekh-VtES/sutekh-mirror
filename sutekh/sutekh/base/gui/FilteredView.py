@@ -8,7 +8,7 @@
 
 import unicodedata
 
-import gtk
+from gi.repository import Gtk
 
 from .CustomDragIconView import CustomDragIconView
 
@@ -17,9 +17,9 @@ class FilteredView(CustomDragIconView):
     """Base class for all card and card set views in Sutekh"""
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # We need to keep state, so many attrs
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,
         # when we come in from the GuiCardLookup, we just have oConfig
@@ -244,22 +244,22 @@ class FilteredView(CustomDragIconView):
         if oModel.iter_n_children(oIter) > 0:
             # row has children, so need to check if any of the children match
             check_children(oModel, oIter, sKey, iLenKey)
-        # Fell through - the gtk continue search behaviour will find child
+        # Fell through - the Gtk continue search behaviour will find child
         # matches
         return True
 
     # helpers for selection management
     def set_select_none(self):
         """set selection to single mode"""
-        self._oSelection.set_mode(gtk.SELECTION_NONE)
+        self._oSelection.set_mode(Gtk.SelectionMode.NONE)
 
     def set_select_single(self):
         """set selection to single mode"""
-        self._oSelection.set_mode(gtk.SELECTION_SINGLE)
+        self._oSelection.set_mode(Gtk.SelectionMode.SINGLE)
 
     def set_select_multiple(self):
         """set selection to multiple mode"""
-        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+        self._oSelection.set_mode(Gtk.SelectionMode.MULTIPLE)
 
     def set_filter(self, oFilter, oMenu=None):
         """Set the current filter to oFilter & apply it."""

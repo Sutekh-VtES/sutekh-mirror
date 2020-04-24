@@ -6,33 +6,34 @@
 
 """Database to prompt for datapack updates and so forth."""
 
-import gtk
+from gi.repository import Gtk
+
 from .SutekhDialog import SutekhDialog
 
 
 class UpdateDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Dialog which prompts the user if datapack or other updates
        are available."""
     def __init__(self, aMessages):
         # Create Dialog
         super(UpdateDialog, self).__init__(
             "Updates available", None,
-            gtk.DIALOG_MODAL, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                               gtk.STOCK_OK, gtk.RESPONSE_OK))
-        oHBox = gtk.HBox(False, 0)
-        oIcon = gtk.Image()
-        oIcon.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_DIALOG)
-        oHBox.pack_start(oIcon)
-        self.vbox.pack_start(oHBox)
+            Gtk.DialogFlags.MODAL, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                               Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        oHBox = Gtk.HBox(False, 0)
+        oIcon = Gtk.Image()
+        oIcon.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
+        oHBox.pack_start(oIcon, True, True, 0)
+        self.vbox.pack_start(oHBox, True, True, 0)
         sLabel = "Updates are available. Download now?"
-        oLabel = gtk.Label(sLabel)
-        oHBox.pack_start(oLabel)
+        oLabel = Gtk.Label(sLabel)
+        oHBox.pack_start(oLabel, True, True, 0)
         sLabelInfo = "The following updates are available:\n\n"
         sLabelInfo += "\n".join(aMessages)
-        oInfolabel = gtk.Label()
+        oInfolabel = Gtk.Label()
         oInfolabel.set_markup(sLabelInfo)
-        self.vbox.pack_start(oInfolabel)
-        self.set_default_response(gtk.RESPONSE_OK)
+        self.vbox.pack_start(oInfolabel, True, True, 0)
+        self.set_default_response(Gtk.ResponseType.OK)
         self.show_all()

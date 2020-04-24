@@ -8,7 +8,7 @@
 import datetime
 import logging
 
-import gtk
+from gi.repository import Gtk
 from sqlobject import sqlhub
 
 from ..core.CardSetHolder import CardSetHolder, CardSetWrapper
@@ -44,7 +44,7 @@ def reparent_card_set(oCardSet, oNewParent):
                 'Changing parent of %s to %s introduces a'
                 ' loop. Leaving the parent unchanged.' %
                 (oCardSet.name, oNewParent.name),
-                gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+                Gtk.MessageType.WARNING, Gtk.ButtonsType.CLOSE)
         else:
             return True
     else:
@@ -65,7 +65,7 @@ def reparent_all_children(sCardSetName, aChildren):
 def check_ok_to_delete(oCardSet):
     """Check if the user is OK with deleting the card set."""
     bChildren = has_children(oCardSet)
-    iResponse = gtk.RESPONSE_OK
+    iResponse = Gtk.ResponseType.OK
     if oCardSet.cards:
         if bChildren:
             iResponse = do_complaint_warning(
@@ -77,7 +77,7 @@ def check_ok_to_delete(oCardSet):
     elif bChildren:
         iResponse = do_complaint_warning(
             "Card Set %s Has Children. Really Delete?" % oCardSet.name)
-    return iResponse == gtk.RESPONSE_OK
+    return iResponse == Gtk.ResponseType.OK
 
 
 def create_card_set(oMainWindow):
@@ -274,7 +274,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
         logging.warning(sMsg)
         iResponse = do_complaint_warning("%s\nContinue with the import?"
                                          % sMsg)
-        if iResponse != gtk.RESPONSE_OK:
+        if iResponse != Gtk.ResponseType.OK:
             return  # bail out
         oHolder.clear_warnings()
 
@@ -295,7 +295,7 @@ def import_cs(fIn, oParser, oMainWindow, sSetName=None):
                     "The following warnings were reported during the final"
                     " import:\n%s" % "\n".join(aWarnings))
             logging.warning(sMsg)
-            do_complaint(sMsg, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+            do_complaint(sMsg, Gtk.MessageType.WARNING, Gtk.ButtonsType.CLOSE)
     except RuntimeError as oExp:
         sMsg = ("Creating the card set failed with the following error:\n"
                 "%s\nAborting" % oExp)
@@ -321,7 +321,7 @@ def break_existing_loops():
             do_complaint(
                 'Loop %s in the card sets relationships.\n'
                 'Breaking at %s' % (sLoop, sBreakName),
-                gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE)
+                Gtk.MessageType.WARNING, Gtk.ButtonsType.CLOSE)
             # We break the loop, and let the user fix things,
             # rather than try and be too clever
 

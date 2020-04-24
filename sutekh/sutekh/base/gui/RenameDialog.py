@@ -8,7 +8,7 @@
 """Dialog to handle the Rename / Replace / Cancel options when importing
    a card set with a name that's already in use."""
 
-import gtk
+from gi.repository import Gtk
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from ..core.CardSetUtilities import check_cs_exists
 from ..core.BaseTables import MAX_ID_LENGTH
@@ -18,12 +18,12 @@ RENAME, REPLACE, PROMPT = 1, 2, 3
 
 class RenameDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk widget, so has many public methods
+    # Gtk widget, so has many public methods
     """Class to handle the card set renaming"""
 
     def __init__(self, sOldName):
         # Do this first, so we get the buttons right
-        self.oEntry = gtk.Entry()
+        self.oEntry = Gtk.Entry()
         self.oEntry.set_max_length(MAX_ID_LENGTH)
         if sOldName:
             sMsg = ("Card Set %s already exists.\n"
@@ -31,28 +31,28 @@ class RenameDialog(SutekhDialog):
                     " card set.\n"
                     "Choose cancel to abort this import." % sOldName)
             tButtons = ('Rename card set', RENAME, 'Replace Existing Card Set',
-                        REPLACE, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+                        REPLACE, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
             self.oEntry.set_text(sOldName)
         else:
             sMsg = ("No name given for the card set\n"
                     "Please specify a name.\n"
                     "Choose cancel to abort this import.")
-            tButtons = ('Name card set', RENAME, gtk.STOCK_CANCEL,
-                        gtk.RESPONSE_CANCEL)
+            tButtons = ('Name card set', RENAME, Gtk.STOCK_CANCEL,
+                        Gtk.ResponseType.CANCEL)
         super(RenameDialog, self).__init__("Choose New Card Set Name",
                                            None,
-                                           gtk.DIALOG_MODAL |
-                                           gtk.DIALOG_DESTROY_WITH_PARENT,
+                                           Gtk.DialogFlags.MODAL |
+                                           Gtk.DialogFlags.DESTROY_WITH_PARENT,
                                            tButtons)
-        oLabel = gtk.Label(sMsg)
+        oLabel = Gtk.Label(sMsg)
         self.sNewName = ""
 
         # Need this so entry box works as expected
         self.oEntry.connect("activate", self.handle_response, RENAME)
         self.connect("response", self.handle_response)
 
-        self.vbox.pack_start(oLabel)
-        self.vbox.pack_start(self.oEntry)
+        self.vbox.pack_start(oLabel, True, True, 0)
+        self.vbox.pack_start(self.oEntry, True, True, 0)
         self.show_all()
 
     def handle_response(self, _oWidget, oResponse):

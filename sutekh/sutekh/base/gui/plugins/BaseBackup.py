@@ -6,7 +6,7 @@
 
 import os
 
-import gtk
+from gi.repository import Gtk
 
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_warning, do_exception_complaint
@@ -61,9 +61,9 @@ class BaseBackup(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        oBackup = gtk.MenuItem(label="Save a Full Backup")
+        oBackup = Gtk.MenuItem(label="Save a Full Backup")
         oBackup.connect("activate", self.activate_backup)
-        oRestore = gtk.MenuItem(label="Restore a Full Backup")
+        oRestore = Gtk.MenuItem(label="Restore a Full Backup")
         oRestore.connect("activate", self.activate_restore)
 
         return [('Backup', oBackup), ('Backup', oRestore)]
@@ -92,7 +92,7 @@ class BaseBackup(BasePlugin):
         """Create file dialog for backup"""
         sName = "Choose a file to save the full backup to ..."
 
-        oDlg = ZipFileDialog(self.parent, sName, gtk.FILE_CHOOSER_ACTION_SAVE)
+        oDlg = ZipFileDialog(self.parent, sName, Gtk.FileChooserAction.SAVE)
         oDlg.set_do_overwrite_confirmation(True)
         oDlg.show_all()
 
@@ -123,11 +123,11 @@ class BaseBackup(BasePlugin):
         """Create file chooser dialog for restore"""
         sName = "Restore a Full Backup ...."
 
-        oDlg = ZipFileDialog(self.parent, sName, gtk.FILE_CHOOSER_ACTION_OPEN)
+        oDlg = ZipFileDialog(self.parent, sName, Gtk.FileChooserAction.OPEN)
 
-        oWarning = gtk.Label()
+        oWarning = Gtk.Label()
         oWarning.set_markup("<b>This will delete all existing Card Sets</b>")
-        oDlg.vbox.pack_start(oWarning, expand=False)
+        oDlg.vbox.pack_start(oWarning, False, True, 0)
         oDlg.vbox.reorder_child(oWarning, 0)
         oDlg.show_all()
 
@@ -140,7 +140,7 @@ class BaseBackup(BasePlugin):
         if not os.path.exists(sFilename):
             bContinue = do_complaint_warning(
                 "Backup file %s does not seem to exist."
-                % sFilename) != gtk.RESPONSE_CANCEL
+                % sFilename) != Gtk.ResponseType.CANCEL
 
         if bContinue:
             dOldMap = get_cs_id_name_table()

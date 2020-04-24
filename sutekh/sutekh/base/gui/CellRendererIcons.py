@@ -6,11 +6,7 @@
 
 """Render a list of icons and text in a TreeView"""
 
-import gtk
-import pango
-import pangocairo
-import gobject
-import glib
+from gi.repository import Gdk, GLib, GObject, Gtk, Pango, PangoCairo
 
 # consts for the different display modes we need
 SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
@@ -18,28 +14,28 @@ SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
 
 def _layout_text(oLayout, sText):
     """Helper function to ensure consistency in calling layout"""
-    oLayout.set_markup("<i>%s </i>" % glib.markup_escape_text(sText))
-    oLayout.set_alignment(pango.ALIGN_LEFT)
+    oLayout.set_markup("<i>%s </i>" % GLib.markup_escape_text(sText))
+    oLayout.set_alignment(Pango.Alignment.LEFT)
 
 
-class CellRendererIcons(gtk.GenericCellRenderer):
+class CellRendererIcons(Gtk.CellRenderer):
     """Render a list of icons and text in a cell in a TreeView.
 
        Used to render the icons in the CardListViews
        """
     # pylint: disable=too-many-public-methods
-    # gtk widget, so we must have a lot of public methods
+    # Gtk widget, so we must have a lot of public methods
     # Pad constant
     iTextPad = 4
 
     __gproperties__ = {
-        'text': (gobject.TYPE_STRING, 'text property',
-                 'text to render', '', gobject.ParamFlags.READWRITE),
-        'textlist': (gobject.TYPE_PYOBJECT, 'textlist property',
+        'text': (GObject.TYPE_STRING, 'text property',
+                 'text to render', '', GObject.ParamFlags.READWRITE),
+        'textlist': (GObject.TYPE_PYOBJECT, 'textlist property',
                      'list of text strings to render',
-                     gobject.ParamFlags.READWRITE),
-        'icons': (gobject.TYPE_PYOBJECT, 'icons property',
-                  'icons to render', gobject.ParamFlags.READWRITE),
+                     GObject.ParamFlags.READWRITE),
+        'icons': (GObject.TYPE_PYOBJECT, 'icons property',
+                  'icons to render', GObject.ParamFlags.READWRITE),
     }
 
     def __init__(self, iIconPad=2):
@@ -143,7 +139,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                 oCellArea.width - fCalcWidth - self.get_property("xpad")))
             iYOffset = int(self.get_property("yalign") * (
                 oCellArea.height - fCalcHeight - self.get_property("ypad")))
-        # gtk want's ints here
+        # Gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
     # pylint: disable=too-many-arguments
@@ -152,17 +148,17 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                   oCellArea, _iFlags):
         """Render the icons & text for the tree view"""
         oLayout = oWidget.create_pango_layout("")
-        oPixRect = gtk.gdk.Rectangle()
+        oPixRect = Gdk.Rectangle()
         oPixRect.x, oPixRect.y, oPixRect.width, oPixRect.height = \
             self.do_get_size(oWidget, oCellArea)
         # We want to always start at the left edge of the Cell, so this is
         # correct
         oPixRect.x = oCellArea.x
         oPixRect.y += oCellArea.y
-        # xpad, ypad are floats, but gtk.gdk.Rectangle needs int's
+        # xpad, ypad are floats, but Gdk.Rectangle needs int's
         oPixRect.width -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
-        oDrawRect = gtk.gdk.Rectangle()
+        oDrawRect = Gdk.Rectangle()
         oDrawRect.x = int(oPixRect.x)
         oDrawRect.y = int(oPixRect.y)
         oDrawRect.width = 0
@@ -171,7 +167,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
             for sText, oIcon in self.aData:
                 if oIcon and self.iMode != SHOW_TEXT_ONLY:
                     # Render icon
-                    gtk.gdk.cairo_set_source_pixbuf(oCairoContext,
+                    Gdk.cairo_set_source_pixbuf(oCairoContext,
                                                     oIcon,
                                                     oDrawRect.x,
                                                     oDrawRect.y)
@@ -188,7 +184,7 @@ class CellRendererIcons(gtk.GenericCellRenderer):
                     oCairoContext.set_source_rgba(oColour.red, oColour.green,
                                                   oColour.blue, oColour.alpha)
                     oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
-                    pangocairo.show_layout(oCairoContext, oLayout)
+                    PangoCairo.show_layout(oCairoContext, oLayout)
                     oDrawRect.x += oDrawRect.width + self.iTextPad
         elif self.sText:
             # Render text
@@ -200,9 +196,9 @@ class CellRendererIcons(gtk.GenericCellRenderer):
             oCairoContext.set_source_rgba(oColour.red, oColour.green,
                                           oColour.blue, oColour.alpha)
             oCairoContext.move_to(oDrawRect.x, oDrawRect.y)
-            pangocairo.show_layout(oCairoContext, oLayout)
+            PangoCairo.show_layout(oCairoContext, oLayout)
             oDrawRect.x += oDrawRect.width + self.iTextPad
         return None
 
 
-gobject.type_register(CellRendererIcons)
+GObject.type_register(CellRendererIcons)

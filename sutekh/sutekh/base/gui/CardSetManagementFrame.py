@@ -6,7 +6,7 @@
 
 """Pane for a list of card sets"""
 
-import gtk
+from gi.repository import Gtk
 from ..core.BaseTables import PhysicalCardSet
 from .BasicFrame import BasicFrame
 from .CardSetManagementController import CardSetManagementController
@@ -16,9 +16,9 @@ from .AutoScrolledWindow import AutoScrolledWindow
 
 class CardSetManagementFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Pane for the List of card sets.
 
        Provides the actions associated with this Pane - creating new
@@ -52,15 +52,15 @@ class CardSetManagementFrame(BasicFrame):
 
     def add_parts(self):
         """Add a list object to the frame"""
-        oMbox = gtk.VBox(homogeneous=False, spacing=2)
+        oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
         self.set_title(self._sName)
-        oMbox.pack_start(self._oTitle, False, False)
+        oMbox.pack_start(self._oTitle, False, False, 0)
 
-        oMbox.pack_start(self._oMenu, False, False)
+        oMbox.pack_start(self._oMenu, False, False, 0)
 
         self._oScrolledWindow = AutoScrolledWindow(self._oController.view)
-        oMbox.pack_start(self._oScrolledWindow, expand=True)
+        oMbox.pack_start(self._oScrolledWindow, True, True, 0)
 
         # setup default targets
 

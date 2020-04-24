@@ -6,16 +6,17 @@
 
 """Basic Card List Frame."""
 
-import gtk
+from gi.repository import Gtk
+
 from .AutoScrolledWindow import AutoScrolledWindow
 from .BasicFrame import BasicFrame
 
 
 class CardListFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Base class for all the Card Lists.
 
        Provide common methods and basic parameters common to all the
@@ -46,15 +47,15 @@ class CardListFrame(BasicFrame):
 
     def get_toolbar_plugins(self):
         """Register plugins on the frame toolbar."""
-        oBox = gtk.VBox(homogeneous=False, spacing=2)
+        oBox = Gtk.VBox(homogeneous=False, spacing=2)
         bInsertToolbar = False
         for oPlugin in self._aPlugins:
             oWidget = oPlugin.get_toolbar_widget()
             if oWidget is not None:
-                oBox.pack_start(oWidget)
+                oBox.pack_start(oWidget, False, True, 0)
                 bInsertToolbar = True
         if bInsertToolbar:
-            oToolbar = gtk.EventBox()
+            oToolbar = Gtk.EventBox()
             oToolbar.add(oBox)
             self.set_drag_handler(oToolbar)
             self.set_drop_handler(oToolbar)
@@ -70,13 +71,13 @@ class CardListFrame(BasicFrame):
 
     def add_parts(self):
         """Add the elements to the Frame."""
-        oMbox = gtk.VBox(homogeneous=False, spacing=2)
+        oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False)
-        oMbox.pack_start(self._oMenu, False, False)
+        oMbox.pack_start(self._oTitle, False, False, 0)
+        oMbox.pack_start(self._oMenu, False, False, 0)
 
         oMbox.pack_end(AutoScrolledWindow(self._oController.view),
-                       expand=True)
+                       True, True, 0)
 
         self.add(oMbox)
         self.show_all()
@@ -85,7 +86,7 @@ class CardListFrame(BasicFrame):
         # or not, so we need to call this after show_all
         oToolbar = self.get_toolbar_plugins()
         if oToolbar is not None:
-            oMbox.pack_start(oToolbar, False, False)
+            oMbox.pack_start(oToolbar, False, False, 0)
 
         self._oController.view.load()
 

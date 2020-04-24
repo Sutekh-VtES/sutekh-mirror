@@ -8,14 +8,13 @@
 
    Used by the various Profile editor dialogs."""
 
-import gtk
-import gobject
+from gi.repository import Gtk
 
 
-class PreferenceTable(gtk.Table):
+class PreferenceTable(Gtk.Table):
     """A widget for editing a list of options."""
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     COLUMNS = 3
     KEY_COL, ENTRY_COL, INHERIT_COL = range(COLUMNS)
@@ -35,7 +34,7 @@ class PreferenceTable(gtk.Table):
         self.set_row_spacings(5)
 
         dAttachOpts = {
-            "xoptions": gtk.FILL,
+            "xoptions": Gtk.AttachOptions.FILL,
             "yoptions": 0,
         }
         for iRow, oOpt in enumerate(self._aOptions):
@@ -71,10 +70,10 @@ class PreferenceOption:
         self.sKey = sKey
         self.oSpec = parse_spec(sConfigSpec, oValidator)
         self.oEntry = self.oSpec.oEntry
-        self.oLabel = gtk.Label(sKey.capitalize())
+        self.oLabel = Gtk.Label(sKey.capitalize())
         self.oLabel.set_alignment(0, 0)
         self.bInheritable = True
-        self.oInherit = gtk.CheckButton("use default")
+        self.oInherit = Gtk.CheckButton("use default")
         self.oInherit.connect("toggled", self._inherit_toggled)
         self.bEditable = True
 
@@ -157,9 +156,9 @@ class UneditableSpec(BaseParsedSpec):
     # we define _oOrigValue outside __init__, but it's OK because create_widget
     # is called in init
     def create_widget(self):
-        """Create a suitable widget (gtk.Label)"""
+        """Create a suitable widget (Gtk.Label)"""
         self._oOrigValue = None
-        return gtk.Label()
+        return Gtk.Label()
 
     def set_value(self, oValue):
         """Set the label value"""
@@ -175,8 +174,8 @@ class StringParsedSpec(BaseParsedSpec):
     """Class for a option taking an arbitrary string"""
 
     def create_widget(self):
-        """Create suitable widget (gtk.Entry)"""
-        return gtk.Entry()
+        """Create suitable widget (Gtk.Entry)"""
+        return Gtk.Entry()
 
     def set_value(self, oValue):
         """Set the entry widget value"""
@@ -193,8 +192,8 @@ class BooleanParsedSpec(BaseParsedSpec):
     """Class for a Boolean option in the spec"""
 
     def create_widget(self):
-        """Create a a suitable widget (gtk.CheckBox)"""
-        return gtk.CheckButton()
+        """Create a a suitable widget (Gtk.CheckBox)"""
+        return Gtk.CheckButton()
 
     def set_value(self, oValue):
         """Set the checkbox correctly for the given value"""
@@ -212,8 +211,8 @@ class OptionParsedSpec(BaseParsedSpec):
     """Widget for dealing with a list of exclusive options"""
 
     def create_widget(self):
-        """Create a suitable widget (gtk.ComboBox)"""
-        oCombo = gtk.ComboBoxText()
+        """Create a suitable widget (Gtk.ComboBox)"""
+        oCombo = Gtk.ComboBoxText()
         for sValue in self.aArgs:
             oCombo.append_text(sValue)
         return oCombo
@@ -238,10 +237,10 @@ class OptionListParsedSpec(BaseParsedSpec):
     """Class for dealing with a list of non-exclusive options"""
 
     def create_widget(self):
-        """Create suitable widget (list of gtk.CheckBoxes)"""
-        oContainer = gtk.VBox()
+        """Create suitable widget (list of Gtk.CheckBoxes)"""
+        oContainer = Gtk.VBox()
         for sValue in self.aArgs:
-            oContainer.pack_start(gtk.CheckButton(sValue))
+            oContainer.pack_start(Gtk.CheckButton(sValue), True, True, 0)
         return oContainer
 
     # pylint: disable=no-self-use
@@ -270,12 +269,12 @@ class IntegerParsedSpec(BaseParsedSpec):
     """Class for dealing with integer valued options"""
 
     def create_widget(self):
-        """Create suitable widget (gtk.Adjustment)"""
+        """Create suitable widget (Gtk.Adjustment)"""
         iMin = self.dKwargs.get("min", 0)
         iMax = self.dKwargs.get("max", 100)
 
-        oAdj = gtk.Adjustment(iMin, iMin, iMax, 1.0, 5.0, 0.0)
-        oSpin = gtk.SpinButton(oAdj, 0, 0)
+        oAdj = Gtk.Adjustment(iMin, iMin, iMax, 1.0, 5.0, 0.0)
+        oSpin = Gtk.SpinButton(oAdj, 0, 0)
         oSpin.set_numeric(True)
         return oSpin
 
@@ -289,7 +288,7 @@ class IntegerParsedSpec(BaseParsedSpec):
             self.oEntry.set_value(oValue)
 
     def get_value(self):
-        """Get the value form the gtk.Adjustment"""
+        """Get the value form the Gtk.Adjustment"""
         return self.oEntry.get_value_as_int()
 
 

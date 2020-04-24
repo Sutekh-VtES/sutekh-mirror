@@ -7,7 +7,7 @@
 
 """Menu for the card set list"""
 
-import gtk
+from gi.repository import Gtk
 from .FilteredViewMenu import FilteredViewMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .BaseConfigFile import CARDSET_LIST
@@ -18,7 +18,7 @@ class CardSetManagementMenu(FilteredViewMenu):
     """Card Set List Management menu.
        """
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
         super(CardSetManagementMenu, self).__init__(oFrame, oWindow,
                                                     oController)
@@ -47,7 +47,7 @@ class CardSetManagementMenu(FilteredViewMenu):
                               self._oController.toggle_in_use_flag)
         self.create_menu_item('Delete selected Card Set', oMenu,
                               self._oController.delete_card_set, 'Delete')
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
     # pylint: enable=attribute-defined-outside-init

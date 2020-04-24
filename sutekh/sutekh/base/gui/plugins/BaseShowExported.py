@@ -3,12 +3,12 @@
 # Copyright 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Plugin for displaying the exported version of a card set in a gtk.TextView.
+"""Plugin for displaying the exported version of a card set in a Gtk.TextView.
    Intended to make cutting and pasting easier."""
 
 from io import StringIO
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 from ...core.BaseTables import PhysicalCardSet
 from ...core.CardSetHolder import CardSetWrapper
@@ -36,7 +36,7 @@ class BaseShowExported(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oShowExported = gtk.MenuItem(label="Display card set in alternative format")
+        oShowExported = Gtk.MenuItem(label="Display card set in alternative format")
         oShowExported.connect("activate", self.activate)
         return ('Actions', oShowExported)
 
@@ -46,29 +46,29 @@ class BaseShowExported(BasePlugin):
         if not oCardSet:
             return
         oDlg = SutekhDialog("Exported CardSet: %s" % self.view.sSetName,
-                            self.parent, gtk.DIALOG_DESTROY_WITH_PARENT)
+                            self.parent, Gtk.DialogFlags.DESTROY_WITH_PARENT)
         oDlg.set_default_size(700, 600)
         # Add scrolled window for text
         oTextBuffer = ExportBuffer()
-        oTextView = gtk.TextView()
+        oTextView = Gtk.TextView()
         oTextView.set_buffer(oTextBuffer)
         oTextView.set_editable(False)
-        oTextView.set_wrap_mode(gtk.WRAP_NONE)  # preserve long lines
+        oTextView.set_wrap_mode(Gtk.WrapMode.NONE)  # preserve long lines
         oTextView.set_border_width(5)
-        oTextView.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("white"))
-        oDlg.vbox.pack_start(AutoScrolledWindow(oTextView))
+        oTextView.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse("white"))
+        oDlg.vbox.pack_start(AutoScrolledWindow(oTextView), True, True, 0)
         # Add the radio buttons
-        oTable = gtk.Table(len(self.EXPORTERS) // 2, 2)
+        oTable = Gtk.Table(len(self.EXPORTERS) // 2, 2)
         iXPos, iYPos = 0, 0
         oFirstBut = None
         for sName in sorted(self.EXPORTERS):
             if not oFirstBut:
-                oBut = gtk.RadioButton(group=None, label=sName)
+                oBut = Gtk.RadioButton(group=None, label=sName)
                 oFirstBut = oBut
                 oFirstBut.set_active(True)
                 self._set_text(sName, oCardSet, oTextBuffer)
             else:
-                oBut = gtk.RadioButton(group=oFirstBut, label=sName)
+                oBut = Gtk.RadioButton(group=oFirstBut, label=sName)
             oBut.connect('toggled', self._button_toggled, sName, oCardSet,
                          oTextBuffer)
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -76,8 +76,8 @@ class BaseShowExported(BasePlugin):
             if iXPos > 1:
                 iXPos = 0
                 iYPos += 1
-        oDlg.vbox.pack_start(oTable, False)
-        oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        oDlg.vbox.pack_start(oTable, False, True, True, 0)
+        oDlg.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
         oDlg.show_all()
         oDlg.run()
@@ -99,9 +99,9 @@ class BaseShowExported(BasePlugin):
         fOut.close()
 
 
-class ExportBuffer(gtk.TextBuffer):
+class ExportBuffer(Gtk.TextBuffer):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Buffer object for showing the exported card set text"""
 
     def __init__(self):

@@ -5,7 +5,7 @@
 # GPL - see COPYING for details
 """Compare the contents of two card sets"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCard, PhysicalCardSet
 from ...core.BaseAdapters import (IPhysicalCard, IAbstractCard,
                                   IPhysicalCardSet, IPrintingName)
@@ -62,7 +62,7 @@ def _get_card_set_list(aCardSetNames, bIgnoreExpansions):
 class BaseCompare(BasePlugin):
     """Compare Two Card Sets
 
-       Display a gtk.Notebook containing tabs for common cards, and cards
+       Display a Gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
        """
     dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
@@ -91,22 +91,22 @@ class BaseCompare(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        oCompare = gtk.MenuItem(label=self.sMenuName)
+        oCompare = Gtk.MenuItem(label=self.sMenuName)
         oCompare.connect("activate", self.activate)
         return ('Analyze', oCompare)
 
     def activate(self, _oWidget):
         """Create the dialog for choosing the second card set."""
         oDlg = SutekhDialog("Choose Card Set to Compare with", self.parent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         oCSView = CardSetsListView(None, oDlg)
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
-        oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), expand=True)
-        oIgnoreExpansions = gtk.CheckButton("Ignore Expansions")
-        oDlg.vbox.pack_start(oIgnoreExpansions, expand=False)
+        oDlg.vbox.pack_start(AutoScrolledWindow(oCSView), True, True, 0)
+        oIgnoreExpansions = Gtk.CheckButton("Ignore Expansions")
+        oDlg.vbox.pack_start(oIgnoreExpansions, False, True, 0)
         oDlg.connect("response", self.handle_response, oCSView,
                      oIgnoreExpansions)
         oDlg.set_size_request(600, 600)
@@ -116,7 +116,7 @@ class BaseCompare(BasePlugin):
 
     def handle_response(self, _oWidget, iResponse, oCSView, oIgnoreExpansions):
         """Handle response from the dialog."""
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             aCardSetNames = [self.view.sSetName]
             sSet = oCSView.get_selected_card_set()
             if not sSet:
@@ -130,8 +130,8 @@ class BaseCompare(BasePlugin):
         """Display the results of comparing the card sets."""
         def format_list(dCardInfo, sColor):
             """Format the list of cards for display."""
-            oLabel = gtk.Label()
-            oAlign = gtk.Alignment()
+            oLabel = Gtk.Label()
+            oAlign = Gtk.Alignment()
             oAlign.add(oLabel)
             oAlign.set_padding(0, 0, 5, 0)  # offset from the left edge
             oGroupedCards = self.model.groupby(dCardInfo, IAbstractCard)
@@ -162,21 +162,21 @@ class BaseCompare(BasePlugin):
 
         def make_page(oList, dCardData):
             """Setup the list + button for the notebook"""
-            oPage = gtk.VBox(homogeneous=False)
-            oPage.pack_start(AutoScrolledWindow(oList), True)
+            oPage = Gtk.VBox(homogeneous=False)
+            oPage.pack_start(AutoScrolledWindow(oList), True, True, 0)
             if dCardData:
-                oButton = gtk.Button('Create Card Set from this list')
+                oButton = Gtk.Button('Create Card Set from this list')
                 oButton.connect('clicked', self.create_card_set,
                                 dCardData)
-                oPage.pack_start(oButton, False)
+                oPage.pack_start(oButton, False, True, 0)
             return oPage
 
         (dDifferences, dCommon) = _get_card_set_list(aCardSetNames,
                                                      bIgnoreExpansions)
         oResultDlg = NotebookDialog("Card Comparison", self.parent,
-                                    gtk.DIALOG_MODAL |
-                                    gtk.DIALOG_DESTROY_WITH_PARENT,
-                                    (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                    Gtk.DialogFlags.MODAL |
+                                    Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                    (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         sTabTitle = 'Common Cards'
         sMarkup = '<span foreground = "blue">%s</span>' % sTabTitle
         oComm = format_list(dCommon, 'green')

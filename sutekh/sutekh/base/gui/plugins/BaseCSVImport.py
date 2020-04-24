@@ -7,8 +7,7 @@
 
 import csv
 
-import gtk
-import gobject
+from gi.repository import GObject, Gtk
 
 from ...core.BaseTables import PhysicalCardSet
 from ...io.CSVParser import CSVParser
@@ -31,7 +30,7 @@ class BaseCSVImport(BasePlugin):
 
     def get_menu_item(self):
         """Overrides method from base class. Register on the 'Import' menu"""
-        oMenuItem = gtk.MenuItem(label="Import CSV File")
+        oMenuItem = Gtk.MenuItem(label="Import CSV File")
         oMenuItem.connect("activate", self.activate)
         return ('Import Card Set', oMenuItem)
 
@@ -49,59 +48,59 @@ class BaseCSVImport(BasePlugin):
            use for card name, card count and expansions.
            """
         self.oDlg = SutekhDialog("Choose CSV File", None,
-                                 gtk.DIALOG_MODAL |
-                                 gtk.DIALOG_DESTROY_WITH_PARENT,
-                                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oLabel = gtk.Label()
+                                 Gtk.DialogFlags.MODAL |
+                                 Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Select CSV File ...</b>")
         oLabel.set_alignment(0.0, 0.5)
-        self.oDlg.vbox.pack_start(oLabel, padding=5)
+        self.oDlg.vbox.pack_start(oLabel, False, False, 5)
 
         self.oFileChooser = SutekhFileButton(self.parent, "Select a CSV File")
         self.oFileChooser.connect("selection-changed",
                                   self._selected_file_changed)
-        self.oDlg.vbox.pack_start(self.oFileChooser)
+        self.oDlg.vbox.pack_start(self.oFileChooser, True, True, 0)
 
-        self.oDlg.vbox.pack_start(gtk.HSeparator(), padding=5)
+        self.oDlg.vbox.pack_start(Gtk.HSeparator(), False, False, 5)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Select columns containing ...</b>")
         oLabel.set_alignment(0.0, 0.5)
-        self.oDlg.vbox.pack_start(oLabel)
+        self.oDlg.vbox.pack_start(oLabel, True, True, 0)
 
-        oNameBox = gtk.HBox()
-        oNameBox.pack_start(gtk.Label(label="Card name:"))
+        oNameBox = Gtk.HBox()
+        oNameBox.pack_start(Gtk.Label(label="Card name:"))
         self.oCardNameCombo = self._create_column_selector()
-        oNameBox.pack_start(self.oCardNameCombo)
-        self.oDlg.vbox.pack_start(oNameBox)
+        oNameBox.pack_start(self.oCardNameCombo, True, True, 0)
+        self.oDlg.vbox.pack_start(oNameBox, True, True, 0)
 
-        oCountBox = gtk.HBox()
-        oCountBox.pack_start(gtk.Label(label="Card count:"))
+        oCountBox = Gtk.HBox()
+        oCountBox.pack_start(Gtk.Label(label="Card count:"))
         self.oCountCombo = self._create_column_selector()
-        oCountBox.pack_start(self.oCountCombo)
-        self.oDlg.vbox.pack_start(oCountBox)
+        oCountBox.pack_start(self.oCountCombo, True, True, 0)
+        self.oDlg.vbox.pack_start(oCountBox, True, True, 0)
 
-        oExpansionBox = gtk.HBox()
-        oExpansionBox.pack_start(gtk.Label(label="Expansion name (optional):"))
+        oExpansionBox = Gtk.HBox()
+        oExpansionBox.pack_start(Gtk.Label(label="Expansion name (optional):"), True, True, 0)
         self.oExpansionCombo = self._create_column_selector()
-        oExpansionBox.pack_start(self.oExpansionCombo)
-        self.oDlg.vbox.pack_start(oExpansionBox)
+        oExpansionBox.pack_start(self.oExpansionCombo, True, True, 0)
+        self.oDlg.vbox.pack_start(oExpansionBox, True, True, 0)
 
         self._clear_column_selectors()
 
-        self.oDlg.vbox.pack_start(gtk.HSeparator(), padding=5)
+        self.oDlg.vbox.pack_start(Gtk.HSeparator(), False, False, 5)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Import as ...</b>")
         oLabel.set_alignment(0.0, 0.5)
-        self.oDlg.vbox.pack_start(oLabel)
+        self.oDlg.vbox.pack_start(oLabel, True, True, 0)
 
-        oCardSetNameBox = gtk.HBox()
-        oCardSetNameBox.pack_start(gtk.Label(label="Card Set Name:"))
-        self.oSetNameEntry = gtk.Entry()
-        oCardSetNameBox.pack_start(self.oSetNameEntry)
-        self.oDlg.vbox.pack_start(oCardSetNameBox)
+        oCardSetNameBox = Gtk.HBox()
+        oCardSetNameBox.pack_start(Gtk.Label(label="Card Set Name:"))
+        self.oSetNameEntry = Gtk.Entry()
+        oCardSetNameBox.pack_start(self.oSetNameEntry, True, True, 0)
+        self.oDlg.vbox.pack_start(oCardSetNameBox, True, True, 0)
 
         self.oDlg.connect("response", self.handle_response)
         self.oDlg.set_size_request(400, 400)
@@ -146,17 +145,17 @@ class BaseCSVImport(BasePlugin):
         else:
             aColumns = [(-1, '-')] + [(i, str(i)) for i in range(len(aRow))]
 
-        self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, True)
+        self.oDlg.set_response_sensitive(Gtk.ResponseType.OK, True)
         self._set_column_selectors(aColumns)
 
     # pylint: disable=no-self-use
     # A method for consistency
     def _create_column_selector(self):
         """Create a combo box from which a column can be selected."""
-        oListStore = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
-        oComboBox = gtk.ComboBox()
+        oListStore = Gtk.ListStore(GObject.TYPE_INT, GObject.TYPE_STRING)
+        oComboBox = Gtk.ComboBox()
         oComboBox.set_model(oListStore)
-        oCell = gtk.CellRendererText()
+        oCell = Gtk.CellRendererText()
         oComboBox.pack_start(oCell, True)
         oComboBox.add_attribute(oCell, 'text', 1)
         return oComboBox
@@ -165,7 +164,7 @@ class BaseCSVImport(BasePlugin):
     def _clear_column_selectors(self):
         """Clear the column selection lists."""
         # can't click ok until a valid CSV file is chosen
-        self.oDlg.set_response_sensitive(gtk.RESPONSE_OK, False)
+        self.oDlg.set_response_sensitive(Gtk.ResponseType.OK, False)
         self._set_column_selectors([(-1, '-')])
 
     def _set_column_selectors(self, aColumns):
@@ -184,7 +183,7 @@ class BaseCSVImport(BasePlugin):
 
            Do the actual import.
            """
-        if oResponse == gtk.RESPONSE_OK:
+        if oResponse == Gtk.ResponseType.OK:
 
             # pylint: disable=unbalanced-tuple-unpacking
             # pylint thinks _get_cols isn't returning a list

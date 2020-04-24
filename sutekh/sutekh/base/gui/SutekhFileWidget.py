@@ -10,7 +10,7 @@
    directory as appropriate
    """
 
-import gtk
+from gi.repository import Gtk
 
 
 def _changed_dir(oFileChooser, oParentWin):
@@ -26,7 +26,7 @@ def _changed_dir(oFileChooser, oParentWin):
 def add_filter(oFileChooser, sFilterName, aFilterPatterns):
     """Add  filter to the widget, using the list of patterns in
        aFilterPatterns"""
-    oFilter = gtk.FileFilter()
+    oFilter = Gtk.FileFilter()
     oFilter.set_name(sFilterName)
     for sPattern in aFilterPatterns:
         oFilter.add_pattern(sPattern)
@@ -46,13 +46,13 @@ def _mapped(oFileWidget, oParent):
         oFileWidget.set_current_folder(sWorkingDir)
 
 
-class SutekhFileDialog(gtk.FileChooserDialog):
+class SutekhFileDialog(Gtk.FileChooserDialog):
     # pylint: disable=too-many-public-methods
-    # gtk widget, so has many public methods
-    """Wrapper for the gtk.FileChooseDialog which updates the
+    # Gtk widget, so has many public methods
+    """Wrapper for the Gtk.FileChooseDialog which updates the
        working dir of Sutekh."""
 
-    def __init__(self, oParent, sTitle, oAction=gtk.FILE_CHOOSER_ACTION_OPEN,
+    def __init__(self, oParent, sTitle, oAction=Gtk.FileChooserAction.OPEN,
                  oButtons=None):
         super(SutekhFileDialog, self).__init__(sTitle, oParent, oAction,
                                                oButtons)
@@ -74,12 +74,12 @@ class SutekhFileDialog(gtk.FileChooserDialog):
         self.set_filter(self._oAllFilter)
 
 
-class SutekhFileWidget(gtk.FileChooserWidget):
+class SutekhFileWidget(Gtk.FileChooserWidget):
     # pylint: disable=too-many-public-methods
-    # gtk widget, so has many public methods
-    """Wrapper for the gtk.FileChooseWidget which updates the
+    # Gtk widget, so has many public methods
+    """Wrapper for the Gtk.FileChooseWidget which updates the
        working dir of Sutekh."""
-    def __init__(self, oParent, oAction=gtk.FILE_CHOOSER_ACTION_OPEN):
+    def __init__(self, oParent, oAction=Gtk.FileChooserAction.OPEN):
         super(SutekhFileWidget, self).__init__(oAction)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
@@ -98,16 +98,16 @@ class SutekhFileWidget(gtk.FileChooserWidget):
         self.set_filter(self._oAllFilter)
 
 
-class SutekhFileButton(gtk.FileChooserButton):
+class SutekhFileButton(Gtk.FileChooserButton):
     # pylint: disable=too-many-public-methods
-    # gtk widget, so has many public methods
-    """Wrapper class for gtk.FileChooserButton which updates the
+    # Gtk widget, so has many public methods
+    """Wrapper class for Gtk.FileChooserButton which updates the
        working directory."""
 
     def __init__(self, oParent, sTitle):
         self.oDialog = SutekhFileDialog(
-            oParent, sTitle, oButtons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                       gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            oParent, sTitle, oButtons=(Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                       Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         super(SutekhFileButton, self).__init__(self.oDialog)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
@@ -125,13 +125,13 @@ class SutekhFileButton(gtk.FileChooserButton):
 
 class SimpleFileDialog(SutekhFileDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """A simple file dialog, which just returns the file name"""
     def __init__(self, oParent, sTitle, oAction):
         super(SimpleFileDialog, self).__init__(
             oParent, sTitle, oAction,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         self.connect("response", self.button_response)
         self.set_local_only(True)
         self.set_select_multiple(False)
@@ -139,7 +139,7 @@ class SimpleFileDialog(SutekhFileDialog):
 
     def button_response(self, _oWidget, iResponse):
         """Handle button press events"""
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             self.sName = self.get_filename()
         self.destroy()
 
@@ -150,20 +150,20 @@ class SimpleFileDialog(SutekhFileDialog):
 
 class ImportDialog(SimpleFileDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Prompt the user for a file name to import"""
     def __init__(self, sTitle, oParent):
         super(ImportDialog, self).__init__(oParent, sTitle,
-                                           gtk.FILE_CHOOSER_ACTION_OPEN)
+                                           Gtk.FileChooserAction.OPEN)
 
 
 class ExportDialog(SimpleFileDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Prompt the user for a filename to export to"""
     def __init__(self, sTitle, oParent, sDefaultFileName=None):
         super(ExportDialog, self).__init__(oParent, sTitle,
-                                           gtk.FILE_CHOOSER_ACTION_SAVE)
+                                           Gtk.FileChooserAction.SAVE)
         self.set_do_overwrite_confirmation(True)
         if sDefaultFileName:
             self.set_current_name(sDefaultFileName)
@@ -171,7 +171,7 @@ class ExportDialog(SimpleFileDialog):
 
 class ZipFileDialog(SimpleFileDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Prompt the user for a zip file name"""
     def __init__(self, oParent, sTitle, oAction):
         super(ZipFileDialog, self).__init__(oParent, sTitle, oAction)

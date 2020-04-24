@@ -12,7 +12,7 @@ import string
 # pylint: enable=deprecated-module
 from logging import Handler
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 
 class SutekhLogHandler(Handler):
@@ -91,9 +91,9 @@ class SutekhCountLogHandler(SutekhLogHandler):
         self.oDialog.update_bar(fBarPos)
 
 
-class ProgressDialog(gtk.Window):
+class ProgressDialog(Gtk.Window):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Show a window with a single progress bar."""
     # This is not a proper dialog, since we don't want the blocking
     # behaviour of Dialog.run()
@@ -101,30 +101,30 @@ class ProgressDialog(gtk.Window):
         super(ProgressDialog, self).__init__()
         self.set_title('Progress')
         self.set_name('Sutekh.dialog')
-        self.oProgressBar = gtk.ProgressBar()
-        self.oProgressBar.set_orientation(gtk.ORIENTATION_HORIZONTAL)
+        self.oProgressBar = Gtk.ProgressBar()
+        self.oProgressBar.set_orientation(Gtk.Orientation.HORIZONTAL)
         self.oProgressBar.set_inverted(False)
         self.oProgressBar.set_text('% done')
         self.oProgressBar.set_fraction(0.0)
         self.oProgressBar.set_size_request(350, 50)
         self.set_default_size(400, 100)
-        self.oVBox = gtk.VBox()
-        self.oDescription = gtk.Label('Unknown')
-        self.oVBox.pack_start(self.oDescription)
+        self.oVBox = Gtk.VBox()
+        self.oDescription = Gtk.Label('Unknown')
+        self.oVBox.pack_start(self.oDescription, False, True, 0)
         # Centre the progress bar horizontally
-        oAlign = gtk.Alignment(xalign=0.5, yalign=0.0)
+        oAlign = Gtk.Alignment(xalign=0.5, yalign=0.0)
         oAlign.add(self.oProgressBar)
-        self.oVBox.pack_end(oAlign)
+        self.oVBox.pack_end(oAlign, False, True, 0)
         self.add(self.oVBox)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_UTILITY)
+        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
         self.show_all()
         self.set_modal(True)
 
     def set_description(self, sDescription):
         """Change the description of a dialog"""
         self.oVBox.remove(self.oDescription)
-        self.oDescription = gtk.Label(sDescription)
-        self.oVBox.pack_start(self.oDescription)
+        self.oDescription = Gtk.Label(sDescription)
+        self.oVBox.pack_start(self.oDescription, False, True, 0)
         self.show_all()
 
     def reset(self):
@@ -148,7 +148,7 @@ class ProgressDialog(gtk.Window):
             self.oProgressBar.set_fraction(fStep)
             self.oProgressBar.set_text('%2.0f%% complete' % (fStep * 100))
         # Since Sutekh is single threaded, and some IO bound
-        # task has the gtk.main loop process, we fudge the
+        # task has the Gtk.main loop process, we fudge the
         # required behaviour to get the update drawn
-        while gtk.events_pending():
-            gtk.main_iteration()
+        while Gtk.events_pending():
+            Gtk.main_iteration()

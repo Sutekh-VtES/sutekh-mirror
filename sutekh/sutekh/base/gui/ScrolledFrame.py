@@ -7,16 +7,16 @@
 
 """Simple frame that holds a widget in a scrolled window."""
 
-import gtk
+from gi.repository import Gtk
 from .AutoScrolledWindow import AutoScrolledWindow
 from .BasicFrame import BasicFrame
 
 
 class ScrolledFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame which holds a view in a scrolled window.
 
        Provides basic frame actions (drag-n-drop, focus behaviour), and
@@ -26,7 +26,7 @@ class ScrolledFrame(BasicFrame):
     _sName = 'scrolled'
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so lots of public methods
+    # Gtk.Widget, so lots of public methods
     def __init__(self, oView, oMainWindow):
         super(ScrolledFrame, self).__init__(oMainWindow)
         self._oView = oView
@@ -40,12 +40,12 @@ class ScrolledFrame(BasicFrame):
 
     def add_parts(self):
         """Add Widget + title widgets to the Frame."""
-        oBox = gtk.VBox(homogeneous=False, spacing=2)
+        oBox = Gtk.VBox(homogeneous=False, spacing=2)
         self.set_title(self._sName)
 
-        oBox.pack_start(self._oTitle, False, False)
+        oBox.pack_start(self._oTitle, False, False, 0)
 
-        oBox.pack_start(AutoScrolledWindow(self._oView), True, True)
+        oBox.pack_start(AutoScrolledWindow(self._oView), True, True, 0)
 
         self.set_drop_handler(self._oView)
 

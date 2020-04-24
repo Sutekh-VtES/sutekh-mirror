@@ -10,7 +10,8 @@ import logging
 import socket
 from itertools import chain
 
-import gtk
+from gi.repository import Gtk
+
 # pylint: disable=no-name-in-module
 # pylint doesn't see resource_stream here, for some reason
 from pkg_resources import resource_stream, resource_exists
@@ -38,9 +39,9 @@ class AppMainWindow(MultiPaneWindow):
     """Window that has a configurable number of panes."""
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep a lot of state, so many instance attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(AppMainWindow, self).__init__()
         self.set_border_width(2)
@@ -265,8 +266,8 @@ class AppMainWindow(MultiPaneWindow):
             self.resize(iWidth, iHeight)
             # Process the resize event before continuing,
             # otherwise the size may be wrong in the following code
-            while gtk.events_pending():
-                gtk.main_iteration()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
         # Reset the pane number count, since we're starting afresh
         self._iCount = 0
         dPaneMap = {}
@@ -336,7 +337,7 @@ class AppMainWindow(MultiPaneWindow):
             oDialog = UpdateDialog(aMessages)
             iResponse = oDialog.run()
             oDialog.destroy()
-            if iResponse != gtk.RESPONSE_OK:
+            if iResponse != Gtk.ResponseType.OK:
                 return
             for oPlugin in aUpdatePlugins:
                 oPlugin.do_update()
@@ -517,7 +518,7 @@ class AppMainWindow(MultiPaneWindow):
             self._oMenu.set_split_horizontal_active(True)
             self._oMenu.replace_pane_set_sensitive(True)
             # But we can't split vertically more than once
-            if isinstance(self._oFocussed.get_parent(), gtk.VPaned):
+            if isinstance(self._oFocussed.get_parent(), Gtk.VPaned):
                 self._oMenu.set_split_vertical_active(False)
             else:
                 self._oMenu.set_split_vertical_active(True)
@@ -551,8 +552,8 @@ class AppMainWindow(MultiPaneWindow):
     # pylint: disable=no-self-use
     # making this a function would not be convient
     def run(self):
-        """gtk entry point"""
-        gtk.main()
+        """Gtk entry point"""
+        Gtk.main()
 
     def action_quit(self, _oWidget):
         """Exit the app"""
@@ -563,10 +564,10 @@ class AppMainWindow(MultiPaneWindow):
             oPlugin.cleanup()
         # don't hold references to plugins here either
         self._aPlugins = []
-        # Don't call gtk.main_quit when the main loop isn't running (true in
+        # Don't call Gtk.main_quit when the main loop isn't running (true in
         # the tests)
-        if gtk.main_level() > 0:
-            gtk.main_quit()
+        if Gtk.main_level() > 0:
+            Gtk.main_quit()
 
     def _link_resource(self, sLocalUrl):
         """Return a file-like object which sLocalUrl can be read from."""

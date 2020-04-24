@@ -7,7 +7,7 @@
 
 import os.path
 
-import gtk
+from gi.repository import Gtk
 
 from ..io.EncodedFile import EncodedFile
 from ..io.UrlOps import urlopen_with_timeout
@@ -15,17 +15,17 @@ from .SutekhFileWidget import SutekhFileButton
 from .GuiDataPack import gui_error_handler, progress_fetch_data
 
 
-class FileOrUrlWidget(gtk.VBox):
+class FileOrUrlWidget(Gtk.VBox):
     """Compound widget for loading a file from either a URL or a local file."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     OTHER_FILE = 'Select file ...'
     OTHER_URL = 'Enter other URL ...'
 
     # pylint: disable=too-many-arguments, invalid-name
     # Need this many arguments
-    # Use gtk naming conventions here for consistency when called
+    # Use Gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, dUrls=None,
                  homogeneous=False, spacing=0):
         """Create a FileOrUrlWidget.
@@ -50,7 +50,7 @@ class FileOrUrlWidget(gtk.VBox):
 
         # setup src selector
 
-        self._oSrcCombo = gtk.ComboBoxText()
+        self._oSrcCombo = Gtk.ComboBoxText()
         for sName in sorted(self._dUrls):
             self._oSrcCombo.append_text(sName)
 
@@ -58,28 +58,28 @@ class FileOrUrlWidget(gtk.VBox):
         self._oSrcCombo.append_text(self.OTHER_URL)
         self._oSrcCombo.connect('changed', self._src_combo_updated)
 
-        self._oSubBox = gtk.VBox(homogeneous=homogeneous, spacing=spacing)
+        self._oSubBox = Gtk.VBox(homogeneous=homogeneous, spacing=spacing)
 
-        self._oUrlLabel = gtk.Label()  # for displaying suggested URLs
-        self._oUrlLabel.set_justify(gtk.JUSTIFY_LEFT)
+        self._oUrlLabel = Gtk.Label()  # for displaying suggested URLs
+        self._oUrlLabel.set_justify(Gtk.Justification.LEFT)
         self._oUrlLabel.set_line_wrap(True)
         self._oUrlLabel.set_alignment(0.0, 0.5)
         self._oUrlLabel.set_padding(10, 10)
         self._oUrlLabel.set_selectable(True)
 
-        self._oUrlEntry = gtk.Entry()  # for entering custom URLs
+        self._oUrlEntry = Gtk.Entry()  # for entering custom URLs
         self._oFileButton = SutekhFileButton(oParent, sTitle)
 
         # pack
 
         if self._sTitle:
-            oLabel = gtk.Label()
-            oLabel.set_justify(gtk.JUSTIFY_LEFT)
+            oLabel = Gtk.Label()
+            oLabel.set_justify(Gtk.Justification.LEFT)
             oLabel.set_markup('<b>%s</b>' % (sTitle,))
             oLabel.set_alignment(0.0, 0.5)
-            self.pack_start(oLabel)
-        self.pack_start(self._oSrcCombo)
-        self.pack_start(self._oSubBox)
+            self.pack_start(oLabel, True, True, 0)
+        self.pack_start(self._oSrcCombo, True, True, 0)
+        self.pack_start(self._oSubBox, True, True, 0)
 
         self._oSrcCombo.set_active(0)
         self._src_combo_updated(self._oSrcCombo)
@@ -94,12 +94,12 @@ class FileOrUrlWidget(gtk.VBox):
             self._oSubBox.remove(oChild)
 
         if sName == self.OTHER_URL:
-            self._oSubBox.pack_start(self._oUrlEntry)
+            self._oSubBox.pack_start(self._oUrlEntry, True, True, 0)
         elif sName == self.OTHER_FILE:
-            self._oSubBox.pack_start(self._oFileButton)
+            self._oSubBox.pack_start(self._oFileButton, True, True, 0)
         elif sName in self._dUrls:
             self._oUrlLabel.set_text(self._dUrls[sName])
-            self._oSubBox.pack_start(self._oUrlLabel)
+            self._oSubBox.pack_start(self._oUrlLabel, True, True, 0)
         else:
             # something weird happened
             pass
@@ -194,13 +194,13 @@ class FileOrUrlWidget(gtk.VBox):
 class FileOrDirOrUrlWidget(FileOrUrlWidget):
     """Allow the user to select either a file, an url or a directory"""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     OTHER_DIR = 'Select directory ...'
 
     # pylint: disable=too-many-arguments, invalid-name
     # Need this many arguments
-    # Use gtk naming conventions here for consistency when called
+    # Use Gtk naming conventions here for consistency when called
     def __init__(self, oParent, sTitle=None, sDirTitle=None,
                  sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
         """Create a FileOrDirOrUrlWidget.
@@ -212,7 +212,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
         if not sDirTitle:
             sDirTitle = 'Select directory ...'
         self._oDirButton = SutekhFileButton(oParent, sDirTitle)
-        self._oDirButton.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+        self._oDirButton.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
         if sDefaultDir and os.path.exists(sDefaultDir) and \
                 os.path.isdir(sDefaultDir):
             # File widget doesn't like being pointed at non-dirs
@@ -231,7 +231,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
 
         # Only need to consider this case
         if sName == self.OTHER_DIR:
-            self._oSubBox.pack_start(self._oDirButton)
+            self._oSubBox.pack_start(self._oDirButton, True, True, 0)
             self._oSubBox.show_all()
 
     def get_file_or_dir_or_url(self):

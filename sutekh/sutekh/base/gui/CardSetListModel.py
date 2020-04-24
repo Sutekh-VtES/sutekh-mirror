@@ -7,9 +7,9 @@
 # This covers a lot of cases, and splitting it into multiple
 # files won't gain any clarity
 
-"""The gtk.TreeModel for the card set lists."""
+"""The Gtk.TreeModel for the card set lists."""
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter,
@@ -44,8 +44,8 @@ THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
 # Different Parent card count modes (iParentCountMode)
 IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 # Colour constants to save constant lookups
-BLACK = gtk.gdk.color_parse('black')
-RED = gtk.gdk.color_parse('red')
+BLACK = Gdk.color_parse('black')
+RED = Gdk.color_parse('red')
 
 #
 # config text lookup -- keep in sync with configspec.ini
@@ -159,9 +159,9 @@ class CardSetModelRow:
 class CardSetCardListModel(CardListModel):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # need local attributes for state
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """CardList Model specific to lists of physical cards.
 
        Handles the display of the cards, their expansions and child card set
@@ -300,7 +300,7 @@ class CardSetCardListModel(CardListModel):
         # None => defaults, so we do nothing, but 0 is a column to sort on
         # so we do need to unset in that case
         if iSortColumn is not None:
-            # gtk+ docs says this disables sorting
+            # Gtk+ docs says this disables sorting
             self.set_sort_column_id(-2, 0)
 
         # Iterate over groups

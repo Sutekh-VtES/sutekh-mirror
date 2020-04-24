@@ -6,14 +6,14 @@
 
 """Base class for the pane menus"""
 
-import gtk
+from gi.repository import Gtk
 
 from .SutekhMenu import SutekhMenu
 
 
 class FilteredViewMenu(SutekhMenu):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Base class for individual FilteredView menus
 
        This provides handling for enabling and disabling the menus
@@ -95,7 +95,7 @@ class FilteredViewMenu(SutekhMenu):
         oMenu = self.create_submenu(oParentMenu, sTitle)
         oConfig = self._oMainWindow.config_file
 
-        oGroup = gtk.RadioMenuItem(group=None,
+        oGroup = Gtk.RadioMenuItem(group=None,
                                    label=oConfig.get_profile_option(sType,
                                                                     None,
                                                                     "name"))
@@ -127,7 +127,7 @@ class FilteredViewMenu(SutekhMenu):
                 oMenu.remove(oRadio)
 
         for sKey, sName in aProfiles:
-            oRadio = gtk.RadioMenuItem(group=oGroup, label=sName)
+            oRadio = Gtk.RadioMenuItem(group=oGroup, label=sName)
             oRadio.connect("toggled", fCallback, sKey)
             if sKey == sProfile:
                 oRadio.set_active(True)
@@ -137,7 +137,7 @@ class FilteredViewMenu(SutekhMenu):
 
 class CardListMenu(FilteredViewMenu):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Base class for Card List Menus
 
        Adds some common methods for dealing with the card lists -

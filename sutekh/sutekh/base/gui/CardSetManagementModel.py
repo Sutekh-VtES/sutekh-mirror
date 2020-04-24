@@ -3,21 +3,21 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeModel class the card set list."""
+"""Gtk.TreeModel class the card set list."""
 
-import gtk
-import glib
+from gi.repository import GLib, Gtk
+
 from ..core.BaseTables import PhysicalCardSet
 from ..core.BaseAdapters import IPhysicalCardSet
 from ..core.BaseFilters import NullFilter
 from .BaseConfigFile import CARDSET_LIST
 
 
-class CardSetManagementModel(gtk.TreeStore):
+class CardSetManagementModel(Gtk.TreeStore):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so lots of public methods
+    # Gtk.Widget, so lots of public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """TreeModel for the card set list"""
     def __init__(self, oMainWindow):
         # We use 2 columns, one for markup, + one for the name, so we
@@ -72,7 +72,7 @@ class CardSetManagementModel(gtk.TreeStore):
 
     def _format_set(self, oSet):
         """Format the card set name for display"""
-        sMarkup = glib.markup_escape_text(oSet.name)
+        sMarkup = GLib.markup_escape_text(oSet.name)
         if oSet.name in self._aExcludedSet:
             sMarkup = '<span foreground="grey">%s</span>' % sMarkup
         elif hasattr(self._oMainWin, 'find_cs_pane_by_set_name') and \
@@ -91,7 +91,7 @@ class CardSetManagementModel(gtk.TreeStore):
         if oPath:
             oIter = self.get_iter(oPath)
             sMarkup = self._format_set(IPhysicalCardSet(sSetName))
-            # gtk signals will do the rest for us
+            # Gtk signals will do the rest for us
             self.set(oIter, 0, sMarkup)
 
     def unexclude_set(self, sSetName):
@@ -108,7 +108,7 @@ class CardSetManagementModel(gtk.TreeStore):
         # see CardListModel.py for more info
         self.set_sort_func(0, self.sort_column)
         # sort on card set name by default, for consistency elsewhere
-        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        self.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
     def sort_equal_iters(self, oIter1, oIter2):
         """Default sort on names (card names, expansion names, etc.)"""
@@ -185,7 +185,7 @@ class CardSetManagementModel(gtk.TreeStore):
     def get_path_from_name(self, sName):
         """Get the tree path corresponding to the name"""
         def check_iter(oIter, sName):
-            """Recursively descend the children of the given gtk.TreeIter,
+            """Recursively descend the children of the given Gtk.TreeIter,
                looking for a path matching sName."""
             oPath = None
             if sName == self.get_name_from_iter(oIter):

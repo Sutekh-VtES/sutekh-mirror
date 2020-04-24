@@ -6,7 +6,7 @@
 # GPL - see COPYING for details
 """Display extra columns in the tree view"""
 
-import gtk
+from gi.repository import Gtk
 from ..BasePluginManager import BasePlugin
 from ..CellRendererIcons import (CellRendererIcons, SHOW_TEXT_ONLY,
                                  SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT)
@@ -136,9 +136,9 @@ class BaseExtraColumns(BasePlugin):
 
         for iNum, sCol in enumerate(aCols):
             oCell = CellRendererIcons()
-            oColumn = gtk.TreeViewColumn(sCol, oCell)
+            oColumn = Gtk.TreeViewColumn(sCol, oCell)
             oColumn.set_cell_data_func(oCell, self._dCols[sCol])
-            oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+            oColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             oColumn.set_fixed_width(self._dWidths.get(sCol, 100))
             oColumn.set_resizable(True)
             iOffset = iNum + self.POS_COLUMN_OFFSET

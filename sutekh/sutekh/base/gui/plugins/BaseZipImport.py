@@ -7,9 +7,7 @@
 import os
 from logging import Logger
 
-import gtk
-import gobject
-import glib
+from gi.repository import GLib, GObject, Gtk
 
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import (SutekhDialog, do_complaint_error,
@@ -38,12 +36,12 @@ def _set_selected_rows(_oButton, oScrolledList, aData):
     oScrolledList.set_selected_rows(aData)
 
 
-class ZipFileDirStore(gtk.TreeStore):
+class ZipFileDirStore(Gtk.TreeStore):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Simple tree store to show card set hierachy in a ScrolledList widget"""
     def __init__(self):
-        super(ZipFileDirStore, self).__init__(gobject.TYPE_STRING)
+        super(ZipFileDirStore, self).__init__(GObject.TYPE_STRING)
 
     def fill_list(self, dEscapedList):
         """Fill the list"""
@@ -55,7 +53,7 @@ class ZipFileDirStore(gtk.TreeStore):
                 sParent = dEscapedList[sEntry][3]
                 if sParent:
                     # Need escaped version for comparisons
-                    sParent = glib.markup_escape_text(sParent)
+                    sParent = GLib.markup_escape_text(sParent)
                 oIter = None
                 if sParent in dAdded:
                     oParIter = dAdded[sParent]
@@ -68,20 +66,20 @@ class ZipFileDirStore(gtk.TreeStore):
                 self.set(oIter, 0, sEntry)
                 dAdded[sEntry] = oIter
                 aNames.remove(sEntry)
-        self.set_sort_column_id(0, gtk.SORT_ASCENDING)  # Sort the display
+        self.set_sort_column_id(0, Gtk.SortType.ASCENDING)  # Sort the display
 
 
 class SelectZipFileContents(SutekhDialog):
     """Dialog for querying contents of the zip file"""
     # pylint: disable=too-many-public-methods
-    # gtk.Dialog, so lots of public methods
+    # Gtk.Dialog, so lots of public methods
 
     def __init__(self, dEscapedList, oParent):
         super(SelectZipFileContents, self).__init__(
             "Select Card Sets to Import", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         self.dEscapedList = dEscapedList
 
@@ -89,41 +87,41 @@ class SelectZipFileContents(SutekhDialog):
 
         # Ask user to select entries to import
         self.oScrolledList = ScrolledList('Available Card Sets', oModel)
-        self.vbox.pack_start(self.oScrolledList)
+        self.vbox.pack_start(self.oScrolledList, True, True, 0)
         self.oScrolledList.set_size_request(450, 300)
         self.oScrolledList.fill_list(self.dEscapedList)
         self.oScrolledList.view.expand_all()
         # Add the various buttons
         # Select all and unselect all
-        oSelectAll = gtk.Button('Select All')
-        oUnSelectAll = gtk.Button('Unselect All')
+        oSelectAll = Gtk.Button('Select All')
+        oUnSelectAll = Gtk.Button('Unselect All')
         oSelectAll.connect('clicked', _set_selected_rows, self.oScrolledList,
                            self.dEscapedList)
         oUnSelectAll.connect('clicked', _set_selected_rows, self.oScrolledList,
                              [])
-        oSelectButtons = gtk.VBox(homogeneous=False, spacing=2)
-        oSelectButtons.pack_start(oSelectAll, expand=False)
-        oSelectButtons.pack_start(oUnSelectAll, expand=False)
-        self.oPrompt = gtk.RadioButton(group=None, label='Always Ask')
+        oSelectButtons = Gtk.VBox(homogeneous=False, spacing=2)
+        oSelectButtons.pack_start(oSelectAll, False, True, 0)
+        oSelectButtons.pack_start(oUnSelectAll, False, True, 0)
+        self.oPrompt = Gtk.RadioButton(group=None, label='Always Ask')
         self.oPrompt.set_active(True)
-        self.oReplace = gtk.RadioButton(group=self.oPrompt,
+        self.oReplace = Gtk.RadioButton(group=self.oPrompt,
                                         label='Always replace with new card set')
         self.oReplace.set_active(False)
-        self.oRename = gtk.RadioButton(group=self.oPrompt,
+        self.oRename = Gtk.RadioButton(group=self.oPrompt,
                                        label='Always create unique name')
         self.oRename.set_active(False)
-        oRadioButs = gtk.VBox(homogeneous=False, spacing=2)
-        oRadioLabel = gtk.Label()
+        oRadioButs = Gtk.VBox(homogeneous=False, spacing=2)
+        oRadioLabel = Gtk.Label()
         oRadioLabel.set_markup('<b>How to handle card set name conflicts?</b>')
-        oRadioButs.pack_start(oRadioLabel)
-        oRadioButs.pack_start(self.oPrompt, expand=False)
-        oRadioButs.pack_start(self.oReplace, expand=False)
-        oRadioButs.pack_start(self.oRename, expand=False)
+        oRadioButs.pack_start(oRadioLabel, True, True, 0)
+        oRadioButs.pack_start(self.oPrompt, False, True, 0)
+        oRadioButs.pack_start(self.oReplace, False, True, 0)
+        oRadioButs.pack_start(self.oRename, False, True, 0)
 
-        oButtons = gtk.HBox(False, 2)
-        oButtons.pack_start(oSelectButtons, expand=False)
-        oButtons.pack_start(oRadioButs)
-        self.vbox.pack_start(oButtons, expand=False)
+        oButtons = Gtk.HBox(False, 2)
+        oButtons.pack_start(oSelectButtons, False, True, 0)
+        oButtons.pack_start(oRadioButs, True, True, 0)
+        self.vbox.pack_start(oButtons, False, True, 0)
 
         self.show_all()
 
@@ -175,7 +173,7 @@ class BaseZipImport(BasePlugin):
 
     def get_menu_item(self):
         """Register on the Plugins menu"""
-        oImport = gtk.MenuItem(label=self.sMenuName)
+        oImport = Gtk.MenuItem(label=self.sMenuName)
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
@@ -185,7 +183,7 @@ class BaseZipImport(BasePlugin):
         """Create the dialog used to select the zip file"""
         sName = "Select zip file to import from."
 
-        oDlg = ZipFileDialog(self.parent, sName, gtk.FILE_CHOOSER_ACTION_OPEN)
+        oDlg = ZipFileDialog(self.parent, sName, Gtk.FileChooserAction.OPEN)
         oDlg.show_all()
         oDlg.run()
 
@@ -215,7 +213,7 @@ class BaseZipImport(BasePlugin):
         dSelected = oSelDlg.get_selected()
         iClashMode = oSelDlg.get_clash_mode()
         oSelDlg.destroy()
-        if oResponse == gtk.RESPONSE_OK and dSelected:
+        if oResponse == Gtk.ResponseType.OK and dSelected:
             self.do_read_list(oFile, dSelected, iClashMode)
 
     def do_read_list(self, oFile, dSelected, iClashMode):

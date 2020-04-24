@@ -4,9 +4,10 @@
 # Copyright 2006, 2007 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView classes for displaying the card list."""
+"""Gtk.TreeView classes for displaying the card list."""
 
-import gtk
+from gi.repository import Gtk, Gdk
+
 from .FilteredView import FilteredView
 from .FilterDialog import FilterDialog
 from ..core.BaseTables import PhysicalCard, AbstractCard
@@ -16,11 +17,11 @@ from ..core.BaseAdapters import IPhysicalCard
 class CardListView(FilteredView):
     """Base class for all the card list views in Sutekh."""
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
     # pylint: disable=too-many-ancestors
     # many ancestors, due to our object hierachy on top of the quite
-    # deep gtk one
+    # deep Gtk one
 
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         super(CardListView, self).__init__(oController, oMainWindow,
@@ -36,15 +37,6 @@ class CardListView(FilteredView):
             oModel.oIconManager = oMainWindow.icon_manager
 
         self._oSelection.set_select_function(self.can_select)
-        tGtkVersion = gtk.gtk_version
-        if tGtkVersion[0] == 2 and \
-                ((tGtkVersion[1] > 6 and tGtkVersion[1] < 12) or
-                 (tGtkVersion[1] == 12 and tGtkVersion[2] == 0)):
-            # gtk versions from 2.8 to 2.12.0 have a bug with handling
-            # cursor movements, excluded selects and multiple select mode
-            # ( http://bugzilla.gnome.org/show_bug.cgi?id=483730 )
-            # We kludge around it via move_cursr
-            self.connect('move-cursor', self.force_cursor_move)
 
         # Activating rows
         self.connect('row-activated', self.card_activated)
@@ -54,10 +46,10 @@ class CardListView(FilteredView):
         # Key combination for searching
 
         # Drag and Drop
-        self.drag_source_set(gtk.gdk.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
 
-        self.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.drag_dest_add_text_targets()
 
         self.connect('drag-data-get', self.drag_card)
@@ -68,7 +60,7 @@ class CardListView(FilteredView):
     def can_select(self, _oSelection, _oModel, oPath, _bCurrently):
         """disable selecting top level rows"""
         if self.bSelectTop > 0:
-            # Buggy gtk version work-around
+            # Buggy Gtk version work-around
             self.bSelectTop -= 1
             return True
         # In general, we don't allow the top level nodes to be selected
@@ -139,7 +131,7 @@ class CardListView(FilteredView):
     def get_selection_as_string(self):
         """Get a string representing the current selection.
 
-           Because of how pygtk handles drag-n-drop data, we need to
+           Because of how pyGtk handles drag-n-drop data, we need to
            create a string representating the card data."""
         if self._oSelection.count_selected_rows() < 1:
             return ''
@@ -262,7 +254,7 @@ class CardListView(FilteredView):
     # Selecting
 
     def force_cursor_move(self, _oTreeView, _iStep, _iCount):
-        """Special handling for move events for buggy gtk events.
+        """Special handling for move events for buggy Gtk events.
 
            We need to allow the selection of top level items when
            moving the cursor over them
@@ -275,7 +267,7 @@ class CardListView(FilteredView):
             # I don't quite understand why this works this way, but it
             # does
             self._oSelection.select_path(oCurPath)
-        # Let gtk handle the rest of the move, since we're not doing
+        # Let Gtk handle the rest of the move, since we're not doing
         # anything else funky
         return False
 
@@ -294,9 +286,9 @@ class CardListView(FilteredView):
         # STOCK_DND for single row selected
         iNumSelected = self._oSelection.count_selected_rows()
         if iNumSelected > 1:
-            self.drag_source_set_icon_stock(gtk.STOCK_DND_MULTIPLE)
+            self.drag_source_set_icon_stock(Gtk.STOCK_DND_MULTIPLE)
         elif iNumSelected == 1:
-            self.drag_source_set_icon_stock(gtk.STOCK_DND)
+            self.drag_source_set_icon_stock(Gtk.STOCK_DND)
         else:
             # Nothing selected, so we're dragging the entire pane, so use
             # the pane icon

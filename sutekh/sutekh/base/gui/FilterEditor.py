@@ -7,14 +7,14 @@
 
 """Widget for editing filters."""
 
-import gtk
+from gi.repository import Gtk
 
 from .FilterModelPanes import FilterModelPanes, add_accel_to_button
 
 
-class FilterEditor(gtk.Alignment):
+class FilterEditor(Gtk.Alignment):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """GTK component for editing Sutekh filter ASTs.
 
        Provides a graphical representation of the filter as nested boxes,
@@ -30,23 +30,23 @@ class FilterEditor(gtk.Alignment):
 
         self.__sFilterType = sFilterType
 
-        oNameLabel = gtk.Label(label="Filter name:")
-        self.__oNameEntry = gtk.Entry()
+        oNameLabel = Gtk.Label(label="Filter name:")
+        self.__oNameEntry = Gtk.Entry()
         self.__oNameEntry.set_width_chars(30)
 
-        oHelpButton = gtk.Button("Help")
+        oHelpButton = Gtk.Button("Help")
         oHelpButton.connect("clicked", self.__show_help_dialog)
         add_accel_to_button(oHelpButton, 'F1', oFilterDialog.accel_group)
 
-        oHBox = gtk.HBox(spacing=5)
-        oHBox.pack_start(oNameLabel, expand=False)
-        oHBox.pack_start(self.__oNameEntry, expand=False)
-        oHBox.pack_end(oHelpButton, expand=False)
+        oHBox = Gtk.HBox(spacing=5)
+        oHBox.pack_start(oNameLabel, False, True, 0)
+        oHBox.pack_start(self.__oNameEntry, False, True, 0)
+        oHBox.pack_end(oHelpButton, False, False, 0)
 
-        self.__oVBox = gtk.VBox(spacing=5)
-        self.__oVBox.pack_end(oHBox, expand=False)
-        self.__oVBox.pack_end(gtk.HSeparator(), expand=False)
-        self.__oVBox.pack_start(self.__oPanes, expand=True)
+        self.__oVBox = Gtk.VBox(spacing=5)
+        self.__oVBox.pack_end(oHBox, False, False, 0)
+        self.__oVBox.pack_end(Gtk.HSeparator(), False, False, 0)
+        self.__oVBox.pack_start(self.__oPanes, True, True, 0)
 
         self.add(self.__oVBox)
 
@@ -93,7 +93,7 @@ class FilterEditor(gtk.Alignment):
     def __show_help_dialog(self, _oHelpButton):
         """Show a dialog window with the helptext from the filters."""
         # FIXME: Is there a better way to find the main window
-        oMainWindow = gtk.window_list_toplevels()[0]
+        oMainWindow = Gtk.window_list_toplevels()[0]
         if self.__sFilterType == 'PhysicalCard':
             oMainWindow.show_card_filter_help()
         elif self.__sFilterType == 'PhysicalCardSet':

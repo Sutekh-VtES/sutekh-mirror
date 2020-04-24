@@ -6,7 +6,7 @@
 
 """Base class for Sutekh Frames"""
 
-import gtk
+from gi.repository import Gtk
 
 from .AutoScrolledWindow import AutoScrolledWindow
 from .BasicFrame import BasicFrame
@@ -16,9 +16,9 @@ from .LogTextView import LogTextView
 
 class LogViewFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """The frame holding the log message view.
 
        The LogHandler is created by the main window, so it's
@@ -56,11 +56,11 @@ class LogViewFrame(BasicFrame):
 
     def add_parts(self):
         """Add the menu and text view to the frame"""
-        oMbox = gtk.VBox(homogeneous=False, spacing=2)
+        oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False)
-        oMbox.pack_start(self._oMenu, False, False)
-        oMbox.pack_end(AutoScrolledWindow(self._oView), expand=True)
+        oMbox.pack_start(self._oTitle, False, False, 0)
+        oMbox.pack_start(self._oMenu, False, False, 0)
+        oMbox.pack_end(AutoScrolledWindow(self._oView), True, False, 0)
 
         self.add(oMbox)
         self.show_all()

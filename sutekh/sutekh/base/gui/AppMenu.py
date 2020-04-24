@@ -6,7 +6,7 @@
 
 """Menu for the Main Application Window"""
 
-import gtk
+from gi.repository import Gtk
 from .ProfileManagement import ProfileMngDlg
 from .SutekhMenu import SutekhMenu
 from .SutekhFileWidget import ImportDialog
@@ -23,7 +23,7 @@ class AppMenu(SutekhMenu):
        global file actions, the help system, and any global plugins.
        """
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(AppMenu, self).__init__(oWindow)
@@ -60,12 +60,12 @@ class AppMenu(SutekhMenu):
         self.create_menu_item("Load Saved Card Set from File", oImport,
                               self.do_import_card_set)
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
 
         oDownloadMenu = self.create_submenu(oMenu, 'Data Downloads')
         self._add_download_menu(oDownloadMenu)
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
 
         oPrefsMenu = self.create_submenu(oMenu, 'Preferences')
         self._add_prefs_menu(oPrefsMenu)
@@ -79,7 +79,7 @@ class AppMenu(SutekhMenu):
         self.create_menu_item('Restore saved configuration', oMenu,
                               self.do_restore)
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
 
         self.create_menu_item(
             "_Quit", oMenu,
@@ -90,7 +90,7 @@ class AppMenu(SutekhMenu):
         """Add the File Preferences menu"""
         self._dMenus["File Preferences"] = oPrefsMenu
 
-        oCheckForUpdates = gtk.CheckMenuItem(label='Check for Cardlist updates'
+        oCheckForUpdates = Gtk.CheckMenuItem(label='Check for Cardlist updates'
                                              ' on startup')
         oCheckForUpdates.set_inconsistent(False)
         if self._oConfig.get_check_for_updates():
@@ -100,7 +100,7 @@ class AppMenu(SutekhMenu):
         oCheckForUpdates.connect('activate', self.do_toggle_check_for_updates)
         oPrefsMenu.add(oCheckForUpdates)
 
-        oNameDisplay = gtk.CheckMenuItem(
+        oNameDisplay = Gtk.CheckMenuItem(
             label='Use "something ..., the" name display')
         oNameDisplay.set_inconsistent(False)
         if self._oConfig.get_postfix_the_display():
@@ -110,7 +110,7 @@ class AppMenu(SutekhMenu):
         oNameDisplay.connect('activate', self.do_postfix_the_display)
         oPrefsMenu.add(oNameDisplay)
 
-        oSaveOnExit = gtk.CheckMenuItem(label='Save Pane Set on Exit')
+        oSaveOnExit = Gtk.CheckMenuItem(label='Save Pane Set on Exit')
         oSaveOnExit.set_inconsistent(False)
         if self._oConfig.get_save_on_exit():
             oSaveOnExit.set_active(True)
@@ -119,7 +119,7 @@ class AppMenu(SutekhMenu):
         oSaveOnExit.connect('activate', self.do_toggle_save_on_exit)
         oPrefsMenu.add(oSaveOnExit)
 
-        oSavePos = gtk.CheckMenuItem(label='Save Exact Pane Positions')
+        oSavePos = Gtk.CheckMenuItem(label='Save Exact Pane Positions')
         oSavePos.set_inconsistent(False)
         if self._oConfig.get_save_precise_pos():
             oSavePos.set_active(True)
@@ -128,7 +128,7 @@ class AppMenu(SutekhMenu):
         oSavePos.connect('activate', self.do_toggle_save_precise_pos)
         oPrefsMenu.add(oSavePos)
 
-        oSaveWinSize = gtk.CheckMenuItem(label='Save Window Size')
+        oSaveWinSize = Gtk.CheckMenuItem(label='Save Window Size')
         oSaveWinSize.set_inconsistent(False)
         if self._oConfig.get_save_window_size():
             oSaveWinSize.set_active(True)
@@ -166,7 +166,7 @@ class AppMenu(SutekhMenu):
         self._add_add_submenu(oMenu)
         self._add_replace_submenu(oMenu)
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
 
         self._oDelPane = self.create_menu_item(
             "_Remove current pane", oMenu,
@@ -244,7 +244,7 @@ class AppMenu(SutekhMenu):
         self.oHelpLast = self.create_menu_item(
             "Last shown help page", oMenu, self._oMainWindow.show_last_help)
         self.oHelpLast.set_sensitive(False)
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self._add_about_dialog(oMenu)
 
     def _add_help_items(self, oHelpMenu):
@@ -343,7 +343,7 @@ class AppMenu(SutekhMenu):
         """Toggle the 'Save Pane layout on exit' option"""
         bChoice = not self._oConfig.get_save_on_exit()
         self._oConfig.set_save_on_exit(bChoice)
-        # gtk can handle the rest for us
+        # Gtk can handle the rest for us
 
     def do_toggle_check_for_updates(self, _oWidget):
         """Toggle the 'Check for Updates on startup' option"""

@@ -6,7 +6,8 @@
 
 """View object for card sets."""
 
-import gtk
+from gi.repository import Gdk, Gtk
+
 from .CellRendererSutekhButton import CellRendererSutekhButton
 from .CellRendererIcons import CellRendererIcons
 from .CardListView import CardListView
@@ -14,43 +15,43 @@ from .CardSetListModel import CardSetCardListModel
 from ..core.BaseTables import PhysicalCardSet
 
 NUM_KEYS = {
-    gtk.gdk.keyval_from_name('1'): 1,
-    gtk.gdk.keyval_from_name('KP_1'): 1,
-    gtk.gdk.keyval_from_name('2'): 2,
-    gtk.gdk.keyval_from_name('KP_2'): 2,
-    gtk.gdk.keyval_from_name('3'): 3,
-    gtk.gdk.keyval_from_name('KP_3'): 3,
-    gtk.gdk.keyval_from_name('4'): 4,
-    gtk.gdk.keyval_from_name('KP_4'): 4,
-    gtk.gdk.keyval_from_name('5'): 5,
-    gtk.gdk.keyval_from_name('KP_5'): 5,
-    gtk.gdk.keyval_from_name('6'): 6,
-    gtk.gdk.keyval_from_name('KP_6'): 6,
-    gtk.gdk.keyval_from_name('7'): 7,
-    gtk.gdk.keyval_from_name('KP_7'): 7,
-    gtk.gdk.keyval_from_name('8'): 8,
-    gtk.gdk.keyval_from_name('KP_8'): 8,
-    gtk.gdk.keyval_from_name('9'): 9,
-    gtk.gdk.keyval_from_name('KP_9'): 9,
+    Gdk.keyval_from_name('1'): 1,
+    Gdk.keyval_from_name('KP_1'): 1,
+    Gdk.keyval_from_name('2'): 2,
+    Gdk.keyval_from_name('KP_2'): 2,
+    Gdk.keyval_from_name('3'): 3,
+    Gdk.keyval_from_name('KP_3'): 3,
+    Gdk.keyval_from_name('4'): 4,
+    Gdk.keyval_from_name('KP_4'): 4,
+    Gdk.keyval_from_name('5'): 5,
+    Gdk.keyval_from_name('KP_5'): 5,
+    Gdk.keyval_from_name('6'): 6,
+    Gdk.keyval_from_name('KP_6'): 6,
+    Gdk.keyval_from_name('7'): 7,
+    Gdk.keyval_from_name('KP_7'): 7,
+    Gdk.keyval_from_name('8'): 8,
+    Gdk.keyval_from_name('KP_8'): 8,
+    Gdk.keyval_from_name('9'): 9,
+    Gdk.keyval_from_name('KP_9'): 9,
 }
 
 PLUS_KEYS = set([
-    gtk.gdk.keyval_from_name('plus'),
-    gtk.gdk.keyval_from_name('KP_Add'),
+    Gdk.keyval_from_name('plus'),
+    Gdk.keyval_from_name('KP_Add'),
 ])
 MINUS_KEYS = set([
-    gtk.gdk.keyval_from_name('minus'),
-    gtk.gdk.keyval_from_name('KP_Subtract'),
+    Gdk.keyval_from_name('minus'),
+    Gdk.keyval_from_name('KP_Subtract'),
 ])
 
 
 class CardSetView(CardListView):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
     # pylint: disable=too-many-ancestors
     # many ancestors, due to our object hierachy on top of the quite
-    # deep gtk one
+    # deep Gtk one
     """Subclass of CardListView specific to the Card Sets
 
        Adds editing support, and other specific to the card sets.
@@ -75,30 +76,30 @@ class CardSetView(CardListView):
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName
 
         # Setup columns for default view
-        self.oNumCell = gtk.CellRendererText()
+        self.oNumCell = Gtk.CellRendererText()
         self.oNameCell = CellRendererIcons(5)
 
-        oColumn1 = gtk.TreeViewColumn("#", self.oNumCell, text=1)
-        oColumn1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn1 = Gtk.TreeViewColumn("#", self.oNumCell, text=1)
+        oColumn1.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         oColumn1.set_fixed_width(60)
         oColumn1.set_sort_column_id(1)
         oColumn1.set_resizable(True)
         self.append_column(oColumn1)
 
-        oParentCell = gtk.CellRendererText()
-        self.oParentCol = gtk.TreeViewColumn("Par #", oParentCell, text=2,
+        oParentCell = Gtk.CellRendererText()
+        self.oParentCol = Gtk.TreeViewColumn("Par #", oParentCell, text=2,
                                              foreground_gdk=7)
-        self.oParentCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oParentCol.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
         self.append_column(self.oParentCol)
         self.oParentCol.set_visible(False)
         self.oParentCol.set_resizable(True)
 
-        oColumn2 = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
+        oColumn2 = Gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
                                       textlist=5, icons=6)
         oColumn2.set_min_width(100)
-        oColumn2.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn2.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         oColumn2.set_sort_column_id(0)
         oColumn2.set_expand(True)
         oColumn2.set_resizable(True)
@@ -107,20 +108,20 @@ class CardSetView(CardListView):
 
         # Inc/Dec cells
         oIncCell = CellRendererSutekhButton()
-        oIncCell.load_icon(gtk.STOCK_ADD, self)
+        oIncCell.load_icon(Gtk.STOCK_ADD, self)
         oDecCell = CellRendererSutekhButton()
-        oDecCell.load_icon(gtk.STOCK_REMOVE, self)
+        oDecCell.load_icon(Gtk.STOCK_REMOVE, self)
 
-        self.oIncCol = gtk.TreeViewColumn("", oIncCell, showicon=3)
+        self.oIncCol = Gtk.TreeViewColumn("", oIncCell, showicon=3)
         self.oIncCol.set_fixed_width(19)
-        self.oIncCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oIncCol.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.oIncCol.set_resizable(False)
         self.oIncCol.set_visible(False)
         self.append_column(self.oIncCol)
 
-        self.oDecCol = gtk.TreeViewColumn("", oDecCell, showicon=4)
+        self.oDecCol = Gtk.TreeViewColumn("", oDecCell, showicon=4)
         self.oDecCol.set_fixed_width(19)
-        self.oDecCol.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.oDecCol.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.oDecCol.set_resizable(False)
         self.oDecCol.set_visible(False)
         self.append_column(self.oDecCol)
@@ -336,7 +337,7 @@ class CardSetView(CardListView):
         self.__iMapID = None
         self.reload_keep_expanded()
         # Allow other map signals to run as well (needed for drag-n-drop in
-        # some gtk versions)
+        # some Gtk versions)
         return True
 
     # Anything that touches the database is based off to the controller
@@ -389,7 +390,7 @@ class CardSetView(CardListView):
     def _determine_edit_colour(self):
         """Determine which colour to use for the editable hint"""
         def _compare_colors(oColor1, oColor2):
-            """Compare the RGB values for 2 gtk.gdk.Colors. Return True if
+            """Compare the RGB values for 2 Gdk.Colors. Return True if
                they're the same, false otherwise."""
             return oColor1.to_string() == oColor2.to_string()
 
@@ -397,10 +398,10 @@ class CardSetView(CardListView):
         # Styles don't seem to be applied to TreeView text, so we default
         # to black text for non-editable, and work out editable from the
         # style
-        self.oCellColor = gtk.gdk.color_parse('black')
-        # oCurBackColor = oCurStyle.base[gtk.STATE_NORMAL]
+        self.oCellColor = Gdk.color_parse('black')
+        # oCurBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
         # self.set_name('editable_view')
-        # oDefaultSutekhStyle = gtk.rc_get_style_by_paths(self.get_settings(),
+        # oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(self.get_settings(),
         #                                                '', self.class_path(),
         #                                                self)
         # We want the class style for this widget, ignoring set_name effects
@@ -409,8 +410,8 @@ class CardSetView(CardListView):
         #        oDefaultSutekhStyle is None):
         #    # No specific style set
         #    sColour = 'red'
-        #    if _compare_colors(gtk.gdk.color_parse(sColour),
-        #                       oCurStyle.fg[gtk.STATE_NORMAL]):
+        #    if _compare_colors(Gdk.color_parse(sColour),
+        #                       oCurStyle.fg[Gtk.StateFlags.NORMAL]):
         #        sColour = 'green'
         #    # FIXME: rc_parse_string doesn't play nicely with
         #    # theme changes, which cause a rcfile reparse.
@@ -420,13 +421,13 @@ class CardSetView(CardListView):
         #        }
         #    widget "%(path)s" style "internal_sutekh_editstyle"
         #    """ % {'colour': sColour, 'path': self.path()}
-        #    gtk.rc_parse_string(sStyleInfo)
+        #    Gtk.rc_parse_string(sStyleInfo)
         #    # Need to force re-assesment of styles
         #    self.set_name('editable_view')
         #oCurStyle = self.rc_get_style()
         # Force a hint on the number column as well
-        # oEditColor = oCurStyle.fg[gtk.STATE_NORMAL]
-        # oEditBackColor = oCurStyle.base[gtk.STATE_NORMAL]
+        # oEditColor = oCurStyle.fg[Gtk.StateFlags.NORMAL]
+        # oEditBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
         #if not _compare_colors(oEditColor, self.oCellColor) or \
         #        not _compare_colors(oEditBackColor, oCurBackColor):
         #    # Visiually distinct, so honour user's choice
@@ -438,7 +439,7 @@ class CardSetView(CardListView):
         #    # themed, so the default color will not be red
         #    # (famous last words)
         #    # If the default background color is red, too bad
-        self._oModel.oEditColour = gtk.gdk.color_parse('red')
+        self._oModel.oEditColour = Gdk.color_parse('red')
 
     def set_color_normal(self):
         """Unset the editable visual cue"""

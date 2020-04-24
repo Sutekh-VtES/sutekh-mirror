@@ -10,7 +10,7 @@
 from collections import namedtuple
 from urllib.parse import urlsplit
 
-import gtk
+from gi.repository import Gtk
 from .SutekhDialog import SutekhDialog
 from .SutekhFileWidget import SutekhFileDialog, SutekhFileButton
 
@@ -25,13 +25,13 @@ COMBINED_ZIP = 'Combined Zip File'
 
 def make_alignment(oLabel, oFileButton, oUseButton=None):
     """Helper function for constructing the import dialog"""
-    oAlign = gtk.Alignment(yalign=0.5, xscale=1.0)
+    oAlign = Gtk.Alignment(yalign=0.5, xscale=1.0)
     oAlign.set_padding(0, 15, 0, 0)
-    oVBox = gtk.VBox(homogeneous=False, spacing=2)
-    oVBox.pack_start(oLabel)
-    oVBox.pack_start(oFileButton)
+    oVBox = Gtk.VBox(homogeneous=False, spacing=2)
+    oVBox.pack_start(oLabel, True, True, 0)
+    oVBox.pack_start(oFileButton, True, True, 0)
     if oUseButton:
-        oVBox.pack_start(oUseButton)
+        oVBox.pack_start(oUseButton, True, True, 0)
     oAlign.add(oVBox)
     return oAlign
 
@@ -44,7 +44,7 @@ def get_domain(sUrl):
 
 class DataFilesDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # we keep a lot of internal state, so many instance variables
     """Dialog that asks for the Data files or urls as required"""
 
@@ -57,15 +57,15 @@ class DataFilesDialog(SutekhDialog):
         # Lots of stuff we need to setup to handle all the download options
         super(DataFilesDialog, self).__init__(
             "Choose CardList Files", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-             gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL,
+             Gtk.ResponseType.CANCEL))
         self.show()
         self._oParent = oParent
         self._dFileWidgets = {}
         self._dChoices = {}
         for oReader in tReaders:
-            oFileLabel = gtk.Label()
+            oFileLabel = Gtk.Label()
             if oReader.bRequired:
                 oFileLabel.set_markup(
                     '<b>%s (required)</b>' % oReader.sDescription)
@@ -75,7 +75,7 @@ class DataFilesDialog(SutekhDialog):
             oFileButton = SutekhFileButton(oParent, oReader.sDescription)
             oFileButton.add_filter_with_pattern(*oReader.tPattern)
             if oReader.sUrl:
-                oUrlButton = gtk.CheckButton(
+                oUrlButton = Gtk.CheckButton(
                     "Use default url (from %s)" % get_domain(oReader.sUrl))
                 oFileAlign = make_alignment(oFileLabel, oFileButton,
                                             oUrlButton)
@@ -89,32 +89,32 @@ class DataFilesDialog(SutekhDialog):
                                                              oFileButton,
                                                              oUrlButton,
                                                              oReader.sUrl)
-            self.vbox.pack_start(oFileAlign)
+            self.vbox.pack_start(oFileAlign, True, True, 0)
             oFileAlign.show_all()
 
-        self.oBackupFileButton = gtk.CheckButton(
+        self.oBackupFileButton = Gtk.CheckButton(
             label="Backup database contents to File?")
         self.oBackupFileButton.set_active(False)
-        self.oBackupFileLabel = gtk.Label(label="(None)")
+        self.oBackupFileLabel = Gtk.Label(label="(None)")
         if bDisableBackup:
             self.oBackupFileButton.set_sensitive(False)
             self.oBackupFileLabel.set_sensitive(False)  # For consistency
         # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(
-            oParent, "Database Backup file", gtk.FILE_CHOOSER_ACTION_SAVE,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            oParent, "Database Backup file", Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
         self._oHideZip = None
         if bDisplayZip:
             # Hide the ordinary file widgets
-            oZipLabel = gtk.Label()
+            oZipLabel = Gtk.Label()
             oZipLabel.set_markup('<b>%s</b>' % COMBINED_ZIP)
             oZipButton = SutekhFileButton(oParent, COMBINED_ZIP)
             oZipButton.add_filter_with_pattern("ZIP files", ["*.zip"])
             if sZippedUrl:
-                oZipUrlCheckBox = gtk.CheckButton("Use default url (from %s)" %
+                oZipUrlCheckBox = Gtk.CheckButton("Use default url (from %s)" %
                                                   get_domain(sZippedUrl))
                 oZipAlign = make_alignment(oZipLabel, oZipButton,
                                            oZipUrlCheckBox)
@@ -131,9 +131,9 @@ class DataFilesDialog(SutekhDialog):
                                                             oZipButton,
                                                             oZipUrlCheckBox,
                                                             sZippedUrl)
-            self._oHideZip = gtk.CheckButton("Show individual file buttons")
-            self.vbox.pack_start(oZipAlign)
-            self.vbox.pack_start(self._oHideZip)
+            self._oHideZip = Gtk.CheckButton("Show individual file buttons")
+            self.vbox.pack_start(oZipAlign, True, True, 0)
+            self.vbox.pack_start(self._oHideZip, True, True, 0)
             # We need to show_all, even if we later hide this, to display
             # all the buttons and such correctly.
             oZipAlign.show_all()
@@ -150,8 +150,8 @@ class DataFilesDialog(SutekhDialog):
             self._oHideZip.connect("toggled", self.hide_zip_toggled)
             self._oHideZip.show()
 
-        self.vbox.pack_start(self.oBackupFileButton)
-        self.vbox.pack_start(self.oBackupFileLabel)
+        self.vbox.pack_start(self.oBackupFileButton, True, True, 0)
+        self.vbox.pack_start(self.oBackupFileLabel, True, True, 0)
         self.oBackupFileLabel.show()
         self.oBackupFileButton.show()
 
@@ -164,7 +164,7 @@ class DataFilesDialog(SutekhDialog):
 
     def handle_response(self, _oWidget, iResponse):
         """Extract the information from the dialog if the user presses OK"""
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             if self._oHideZip:
                 bUseZip = not self._oHideZip.get_active()
             else:

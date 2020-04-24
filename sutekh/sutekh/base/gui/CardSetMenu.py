@@ -7,7 +7,7 @@
 
 """Menu for the card set pane"""
 
-import gtk
+from gi.repository import Gtk
 from .FilteredViewMenu import CardListMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .LocalProfileEditor import LocalProfileEditor
@@ -18,9 +18,9 @@ from .GuiCardSetFunctions import export_cs
 
 class CardSetMenu(CardListMenu):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Card Set Menu.
 
        Provide the usual menu options, and implement several of the
@@ -74,10 +74,10 @@ class CardSetMenu(CardListMenu):
         # Submenu for plugins
         self.create_submenu(oMenu, "_Export Card Set")
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self.create_menu_item("Delete Card Set", oMenu, self._card_set_delete)
 
     def create_edit_menu(self):

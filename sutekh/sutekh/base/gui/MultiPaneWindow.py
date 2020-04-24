@@ -8,23 +8,22 @@
 
 from itertools import chain
 
-import gtk
-import glib
+from gi.repository import Gtk, Gdk, GLib
 
 from .MainToolbar import MainToolbar
 from .BasicFrame import BasicFrame
 # pylint: enable=wrong-import-position
 
 
-class MultiPaneWindow(gtk.Window):
+class MultiPaneWindow(Gtk.Window):
     """Window that has a configurable number of panes."""
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep a lot of state, so many instance attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
-        super(MultiPaneWindow, self).__init__(type=gtk.WINDOW_TOPLEVEL)
+        super(MultiPaneWindow, self).__init__(type=Gtk.WindowType.TOPLEVEL)
         self.set_border_width(2)
 
         # This always increments when panes are added, so the number is unique
@@ -44,7 +43,7 @@ class MultiPaneWindow(gtk.Window):
 
         self._oFocussed = None
 
-        self._oBusyCursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
+        self._oBusyCursor = Gdk.Cursor(Gdk.CursorType.WATCH)
 
         # Flag to block calling reloads during a refresh process
         self._bBlockReload = False
@@ -53,10 +52,10 @@ class MultiPaneWindow(gtk.Window):
         """Setup the intial vbox and connect the key_press event"""
         self._oToolbar = MainToolbar(self)
 
-        self._oVBox = gtk.VBox(homogeneous=False, spacing=1)
+        self._oVBox = Gtk.VBox(homogeneous=False, spacing=1)
         if self._oMenu:
-            self._oVBox.pack_start(self._oMenu, False, False)
-        self._oVBox.pack_start(self._oToolbar, False, False)
+            self._oVBox.pack_start(self._oMenu, False, False, 0)
+        self._oVBox.pack_start(self._oToolbar, False, False, 0)
         self._oVBox.show()
         self.add(self._oVBox)
 
@@ -100,7 +99,7 @@ class MultiPaneWindow(gtk.Window):
             # done with the current main_loop iteration.
             # In most situations, this is will be enough, and we have
             # additional protections for the complex cases.
-            glib.timeout_add(30, self.do_all_queued_reloads)
+            GLib.timeout_add(30, self.do_all_queued_reloads)
 
     def do_all_queued_reloads(self):
         """Do any deferred reloads from the database signal handlers."""
@@ -112,7 +111,7 @@ class MultiPaneWindow(gtk.Window):
             # This workaround avoids triggering "database locked" errors
             # when updating sqlite DBs on some systems, but it's a good
             # idea to avoid reloading during a update on any system.
-            glib.timeout_add(100, self.do_all_queued_reloads)
+            GLib.timeout_add(100, self.do_all_queued_reloads)
             return
         self._bQueue = False
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
@@ -130,7 +129,7 @@ class MultiPaneWindow(gtk.Window):
                 x not in (self._oMenu, self._oToolbar)]
 
     def find_pane_by_id(self, iId):
-        """Return the gtk widget corresponding to the given pane name"""
+        """Return the Gtk widget corresponding to the given pane name"""
         for oPane in chain(self.aOpenFrames, self.aClosedFrames):
             if oPane.pane_id == iId:
                 return oPane
@@ -164,11 +163,11 @@ class MultiPaneWindow(gtk.Window):
     def key_press(self, _oWidget, oEvent):
         """Move to the next frame on Tab"""
         oKeyVal = oEvent.get_keyval()[1]
-        if oKeyVal == gtk.gdk.keyval_from_name('Tab') or \
-                oKeyVal == gtk.gdk.keyval_from_name('KP_Tab'):
+        if oKeyVal == Gdk.keyval_from_name('Tab') or \
+                oKeyVal == Gdk.keyval_from_name('KP_Tab'):
             self.move_to_frame(+1)
             return True
-        elif oKeyVal == gtk.gdk.keyval_from_name('ISO_Left_Tab'):
+        elif oKeyVal == Gdk.keyval_from_name('ISO_Left_Tab'):
             # Shift & tab should always be this, AFAICT
             self.move_to_frame(-1)
             return True
@@ -187,7 +186,7 @@ class MultiPaneWindow(gtk.Window):
             # Descend the right child of the panes, until we get a
             # non-paned item
             oPane = self.top_level_panes()[0]
-            while isinstance(oPane, (gtk.HPaned, gtk.VPaned)):
+            while isinstance(oPane, (Gtk.HPaned, Gtk.VPaned)):
                 oPane = oPane.get_child2()
         oOldFocus = self._oFocussed
         self.win_focus(None, None, oPane)
@@ -217,7 +216,7 @@ class MultiPaneWindow(gtk.Window):
             oParent = self._oVBox
         else:
             oParent = oFrame.get_parent()
-            if isinstance(oParent, gtk.VPaned):
+            if isinstance(oParent, Gtk.VPaned):
                 if oParent.get_child2() == oFrame:
                     # Need to go to the top frame
                     return oParent.get_child1()
@@ -226,19 +225,19 @@ class MultiPaneWindow(gtk.Window):
                 oChild = oFrame
             # Need to move to the 'neighbouring' HPane
             oParent = oChild.get_parent()
-            while (isinstance(oParent, gtk.HPaned) and
+            while (isinstance(oParent, Gtk.HPaned) and
                    oChild == oParent.get_child1()):
                 # As long as we're the left-most branch, we ascend
                 oChild = oParent
                 oParent = oChild.get_parent()
         # prepare to descend to the correct frame
-        if isinstance(oParent, gtk.HPaned) and oChild == oParent.get_child2():
+        if isinstance(oParent, Gtk.HPaned) and oChild == oParent.get_child2():
             # We need to start going down the left-hand tree
             oChild = oParent.get_child1()
-        while isinstance(oChild, gtk.HPaned):
+        while isinstance(oChild, Gtk.HPaned):
             # we descend down the right branch until we reach a frame
             oChild = oChild.get_child2()
-        if isinstance(oChild, gtk.VPaned):
+        if isinstance(oChild, Gtk.VPaned):
             # go to the bottom frame in this case
             oChild = oChild.get_child2()
         return oChild
@@ -254,7 +253,7 @@ class MultiPaneWindow(gtk.Window):
             oParent = self._oVBox
         else:
             oParent = oFrame.get_parent()
-            if isinstance(oParent, gtk.VPaned):
+            if isinstance(oParent, Gtk.VPaned):
                 if oParent.get_child1() == oFrame:
                     # Need to go to the bottom frame
                     return oParent.get_child2()
@@ -263,19 +262,19 @@ class MultiPaneWindow(gtk.Window):
                 oChild = oFrame
             # Need to move to the 'neighbouring' HPane
             oParent = oChild.get_parent()
-            while (isinstance(oParent, gtk.HPaned) and
+            while (isinstance(oParent, Gtk.HPaned) and
                    oChild == oParent.get_child2()):
                 # As long as we're the right-most branch, we ascend
                 oChild = oParent
                 oParent = oChild.get_parent()
         # prepare to descend to the correct frame
-        if isinstance(oParent, gtk.HPaned) and oChild == oParent.get_child1():
+        if isinstance(oParent, Gtk.HPaned) and oChild == oParent.get_child1():
             # We need to start going down the right-hand tree
             oChild = oParent.get_child2()
-        while isinstance(oChild, gtk.HPaned):
+        while isinstance(oChild, Gtk.HPaned):
             # we descend down the left branch until we reach a frame
             oChild = oChild.get_child1()
-        if isinstance(oChild, gtk.VPaned):
+        if isinstance(oChild, Gtk.VPaned):
             # go to the top frame in this case
             oChild = oChild.get_child1()
         return oChild
@@ -290,12 +289,12 @@ class MultiPaneWindow(gtk.Window):
             # don't split panes in the same order, hence the fancy
             # score-keeping work to convert the obtained positions to those
             # needed for restoring
-            if isinstance(oPane, gtk.HPaned):
+            if isinstance(oPane, Gtk.HPaned):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iChildPos = walk_children(oChild1, False, iPos, aPanes)
                 iMyPos = oPane.get_position()
-                if isinstance(oChild1, gtk.HPaned):
+                if isinstance(oChild1, Gtk.HPaned):
                     iMyPos = iMyPos - iChildPos
                     iChildPos = oPane.get_position()
                 else:
@@ -304,9 +303,9 @@ class MultiPaneWindow(gtk.Window):
                     # Setting pos to < 1 doesn't do what we want
                     iMyPos = 1
                 iChild2Pos = walk_children(oChild2, False, iMyPos, aPanes)
-                if isinstance(oChild2, gtk.HPaned):
+                if isinstance(oChild2, Gtk.HPaned):
                     iChildPos += iChild2Pos
-            elif isinstance(oPane, gtk.VPaned):
+            elif isinstance(oPane, Gtk.VPaned):
                 oChild1 = oPane.get_child1()
                 oChild2 = oPane.get_child2()
                 iMyPos = oPane.get_position()
@@ -378,7 +377,7 @@ class MultiPaneWindow(gtk.Window):
            """
         if self._oFocussed:
             oParent = self._oFocussed.get_parent()
-            if isinstance(oParent, gtk.VPaned):
+            if isinstance(oParent, Gtk.VPaned):
                 # Get the HPane this belongs to
                 oParent = oParent.get_parent()
             return oParent
@@ -395,7 +394,7 @@ class MultiPaneWindow(gtk.Window):
         # Must be a hpane, by construction
         if self._oFocussed:
             oPart1 = self._oFocussed
-            if isinstance(oPart1.get_parent(), gtk.VPaned):
+            if isinstance(oPart1.get_parent(), Gtk.VPaned):
                 # Veritical pane, so we need to use the pane, not
                 # the Frame
                 oPart1 = oPart1.get_parent()
@@ -449,16 +448,16 @@ class MultiPaneWindow(gtk.Window):
         self.aOpenFrames.append(oWidget)
         if len(self.aOpenFrames) == 1:
             # We have a blank space to fill, so just plonk in the widget
-            self._oVBox.pack_start(oWidget)
+            self._oVBox.pack_start(oWidget, True, True, 0)
         else:
             # We already have a widget, so we add a pane
             if bVertical:
-                oNewPane = gtk.VPaned()
+                oNewPane = Gtk.VPaned()
                 oCurAlloc = self._oVBox.get_allocation()
                 oMenuAlloc = self._oMenu.get_allocation()
                 iPos = (oCurAlloc.height - oMenuAlloc.height) // 2
             else:
-                oNewPane = gtk.HPaned()
+                oNewPane = Gtk.HPaned()
             if self._aHPanes:
                 # We pop out the current frame, and plonk it in
                 # the new pane - we add the new widget to the other
@@ -479,7 +478,7 @@ class MultiPaneWindow(gtk.Window):
                 if not bVertical:
                     iPos = oCur.width // 2
                 oParent.remove(oPart1)
-                oParent.pack_start(oNewPane)
+                oParent.pack_start(oNewPane, True, True, 0)
             oNewPane.add1(oPart1)
             oNewPane.add2(oWidget)
             oPart1.show()
@@ -516,7 +515,7 @@ class MultiPaneWindow(gtk.Window):
                 # Removing last widget, so just clear the vbox
                 oWidget = self.top_level_panes()[0]
                 self._oVBox.remove(oWidget)
-            elif isinstance(oFrame.get_parent(), gtk.VPaned):
+            elif isinstance(oFrame.get_parent(), Gtk.VPaned):
                 # Removing a vertical frame, keep the correct child
                 oParent = oFrame.get_parent()
                 oKept = [x for x in oParent.get_children() if x != oFrame][0]
@@ -534,7 +533,7 @@ class MultiPaneWindow(gtk.Window):
                 oThisPane.remove(oFrame)
                 oThisPane.remove(oKept)
                 self._oVBox.remove(oThisPane)
-                self._oVBox.pack_start(oKept)
+                self._oVBox.pack_start(oKept, True, True, 0)
             else:
                 oFocussedPane = [x for x in self._aHPanes if oFrame in
                                  x.get_children()][0]
@@ -585,25 +584,25 @@ class MultiPaneWindow(gtk.Window):
             """Walk the tree in display order, setting positions accordingly"""
             oChild1 = oPane.get_child1()
             oChild2 = oPane.get_child2()
-            if isinstance(oChild1, gtk.HPaned):
+            if isinstance(oChild1, Gtk.HPaned):
                 iMyPos = iPos + set_pos_children(oChild1, iPos, iVertPos)
             else:
-                if isinstance(oChild1, gtk.VPaned):
+                if isinstance(oChild1, Gtk.VPaned):
                     oChild1.set_position(iVertPos)
                 iMyPos = iPos
             oPane.set_position(iMyPos)
-            if isinstance(oChild2, gtk.HPaned):
+            if isinstance(oChild2, Gtk.HPaned):
                 iMyPos += set_pos_children(oChild2, iPos, iVertPos)
-            elif isinstance(oChild2, gtk.VPaned):
+            elif isinstance(oChild2, Gtk.VPaned):
                 oChild2.set_position(iVertPos)
             return iMyPos
 
         aTopLevelPanes = self.top_level_panes()
         for oPane in aTopLevelPanes:
             # Should only be 1 here
-            if isinstance(oPane, gtk.HPaned):
+            if isinstance(oPane, Gtk.HPaned):
                 set_pos_children(oPane, iNewPos, iVertPos)
-            elif isinstance(oPane, gtk.VPaned):
+            elif isinstance(oPane, Gtk.VPaned):
                 # Do something sensible for single VPane case
                 oPane.set_position(iVertPos)
 
@@ -614,9 +613,9 @@ class MultiPaneWindow(gtk.Window):
         oWin = self.get_window()
         if oWin:
             oWin.set_cursor(self._oBusyCursor)
-            # Since we're about to do a bunch of CPU grinding, tell gtk
+            # Since we're about to do a bunch of CPU grinding, tell Gtk
             # to redraw now
-            gtk.gdk.flush()
+            Gdk.flush()
 
     def restore_cursor(self):
         """Restore the ordinary cursor"""

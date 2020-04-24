@@ -8,7 +8,11 @@
 from __future__ import print_function
 
 import os
-import gtk
+
+# This is intended to be imported first, so we need to import
+# Gtk before Gdk to avoid gi warnings.
+from gi.repository import Gtk, Gdk
+
 from .SutekhDialog import (do_complaint_error, do_exception_complaint,
                            do_complaint_warning)
 
@@ -16,16 +20,16 @@ from .SutekhDialog import (do_complaint_error, do_exception_complaint,
 def prepare_gui(sName):
     """Handle all the checks needed to ensure we can run the gui."""
     # Print nice complaint if not under a windowing system
-    if gtk.gdk.screen_get_default() is None:
+    if Gdk.Screen.get_default() is None:
         print("Unable to find windowing system. Aborting")
         return False
 
-    # check minimum pygtk version
-    sMessage = gtk.check_version(3, 2, 0)
+    # check minimum pyGtk version
+    sMessage = Gtk.check_version(3, 14, 0)
     if sMessage is not None:
-        do_complaint_error('Incorrect gtk version. %s requires at least'
-                           ' gtk 3.2.0.\nError reported %s' % (sName,
-                                                               sMessage))
+        do_complaint_error('Incorrect Gtk version. %s requires at least'
+                           ' Gtk 3.14.0.\nError reported %s' % (sName,
+                                                                sMessage))
         return False
 
     # Disable Unity's moving of menubars to the appmenu at
@@ -51,7 +55,7 @@ def load_config(cConfigFile, sRCFile):
         iRes = do_complaint_warning('Unable to write to the config file %s.\n'
                                     'Config changes will NOT be saved.\n'
                                     'Do you wish to continue?' % sRCFile)
-        if iRes == gtk.RESPONSE_CANCEL:
+        if iRes == Gtk.ResponseType.CANCEL:
             return None
     return oConfig
 
@@ -67,9 +71,9 @@ def save_config(oConfig):
 
 
 def make_markup_button(sMarkup):
-    """Create a gtk.Button using the given markup string for the label."""
-    oBut = gtk.Button()
-    oLabel = gtk.Label()
+    """Create a Gtk.Button using the given markup string for the label."""
+    oBut = Gtk.Button()
+    oLabel = Gtk.Label()
     oLabel.set_markup(sMarkup)
     oBut.add(oLabel)
     oBut.show_all()
@@ -77,8 +81,8 @@ def make_markup_button(sMarkup):
 
 
 def wrap(sText):
-    """Return a gtk.Label which wraps the given text"""
-    oLabel = gtk.Label()
+    """Return a Gtk.Label which wraps the given text"""
+    oLabel = Gtk.Label()
     oLabel.set_line_wrap(True)
     oLabel.set_width_chars(80)
     oLabel.set_alignment(0, 0)  # Align top-left

@@ -7,15 +7,15 @@
 
 import logging
 
-import gtk
+from gi.repository import Gtk
 
 
-class LogTextBuffer(gtk.TextBuffer):
+class LogTextBuffer(Gtk.TextBuffer):
     """Text buffer for displaying log messages.
        """
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self):
         super(LogTextBuffer, self).__init__()
 
@@ -37,13 +37,13 @@ class LogTextBuffer(gtk.TextBuffer):
         return self.get_text(oStart, oEnd, False)
 
 
-class LogTextView(gtk.TextView):
+class LogTextView(Gtk.TextView):
     """TextView widget which holds the LogTextBuffer."""
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(LogTextView, self).__init__()
         # Can be styled as frame_name.view
@@ -52,7 +52,7 @@ class LogTextView(gtk.TextView):
         self.set_buffer(self._oBuf)
         self.set_editable(False)
         self.set_cursor_visible(False)
-        self.set_wrap_mode(gtk.WRAP_WORD)
+        self.set_wrap_mode(Gtk.WrapMode.WORD)
         self._iFilterLevel = logging.NOTSET
 
     def set_log_messages(self, aMessages):

@@ -7,10 +7,9 @@
 
 """Render a icon in a TreeView"""
 
-import gtk
-import gobject
+from gi.repository import Gdk, GObject, Gtk
 
-# This is heavily cribbed from the example in the pygtk FAQ
+# This is heavily cribbed from the example in the pyGtk FAQ
 # (By Nikos Kouremenos)
 # limited to the use of icons only ATM
 # Allows creation of a cell containing a icon pixbuf,
@@ -19,34 +18,34 @@ import gobject
 # but that is currently not a priority
 
 
-class CellRendererSutekhButton(gtk.GenericCellRenderer):
+class CellRendererSutekhButton(Gtk.CellRenderer):
     """Render a icon in a cell in a TreeView.
 
        Used to render the arrows for incrementing and decrementing cards
        in the CardListView's
        """
     # pylint: disable=too-many-public-methods
-    # gtk widget, so we must have a lot of public methods
+    # Gtk widget, so we must have a lot of public methods
     # Register a showicon property - used to control wether the icon
     # is visible or not
     __gproperties__ = {
-        'showicon': (gobject.TYPE_BOOLEAN, 'showicon property',
-                     'whether to show the icon', 0, gobject.ParamFlags.READWRITE),
+        'showicon': (GObject.TYPE_BOOLEAN, 'showicon property',
+                     'whether to show the icon', 0, GObject.ParamFlags.READWRITE),
     }
 
     def __init__(self, bShowIcon=False):
         super(CellRendererSutekhButton, self).__init__()
-        #self.__gobject_init__()
+        #self.__GObject_init__()
         self.oPixbuf = None
-        self.set_property("mode", gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+        self.set_property("mode", Gtk.CellRendererMode.ACTIVATABLE)
         self.bShowIcon = bShowIcon
         self.bClicked = False
         self.oClickedBackgroundArea = None
 
     def load_icon(self, sName, _oWidget):
         """Load the icon specified in name"""
-        oIconTheme = gtk.IconTheme.get_default()
-        self.oPixbuf = oIconTheme.load_icon(sName, gtk.ICON_SIZE_MENU, 0)
+        oIconTheme = Gtk.IconTheme.get_default()
+        self.oPixbuf = oIconTheme.load_icon(sName, Gtk.IconSize.MENU, 0)
 
     def do_get_property(self, oProp):
         """Allow reading the showicon property"""
@@ -77,7 +76,7 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
                 oCellArea.width - fCalcWidth - self.get_property("xpad")))
             iYOffset = int(self.get_property("yalign") * (
                 oCellArea.height - fCalcHeight - self.get_property("ypad")))
-        # gtk want's ints here
+        # Gtk want's ints here
         return iXOffset, iYOffset, int(fCalcWidth), int(fCalcHeight)
 
     # pylint: disable=too-many-arguments
@@ -112,13 +111,13 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
         if not self.bShowIcon:
             # Draw nothing
             return None
-        oPixRect = gtk.gdk.Rectangle()
+        oPixRect = Gdk.Rectangle()
         oPixRect.x, oPixRect.y, oPixRect.width, oPixRect.height = \
             self.do_get_size(oWidget, oCellArea)
 
         oPixRect.x += oCellArea.x
         oPixRect.y += oCellArea.y
-        # xpad, ypad are floats, but gtk.gdk.Rectangle needs int's
+        # xpad, ypad are floats, but Gdk.Rectangle needs int's
         oPixRect.width -= int(2 * self.get_property("xpad"))
         oPixRect.height -= int(2 * self.get_property("ypad"))
 
@@ -126,12 +125,12 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
             oPixRect.x += 1
             oPixRect.y += 1
             # We add a timeout to force a redraw to unbump the button
-            gobject.timeout_add(200, self.restore_offset, oWindow,
+            GObject.timeout_add(200, self.restore_offset, oWindow,
                                 oBackgroundArea)
 
         oDrawRect = oCellArea.intersect(oPixRect)[1]
 
-        gtk.gdk.cairo_set_source_pixbuf(oCairoContext,
+        Gdk.cairo_set_source_pixbuf(oCairoContext,
                                         self.oPixbuf,
                                         oDrawRect.x,
                                         oDrawRect.y)
@@ -151,14 +150,14 @@ class CellRendererSutekhButton(gtk.GenericCellRenderer):
 # associated with class creation (is global to the class)
 # so doesn't belong in the per-instance constructor - NM
 # Register class, needed to make clicked signal go to right class
-# (otherwise it gets associated with GenericCellRenderer, which is
+# (otherwise it gets associated with CellRenderer, which is
 # not desireable)
-gobject.type_register(CellRendererSutekhButton)
+GObject.type_register(CellRendererSutekhButton)
 # Setup clicked signal -- can also be done using the __gsignals__
 # dict in the class, but I couldn't find good documentation for
 # that approach.
-gobject.signal_new("clicked", CellRendererSutekhButton,
-                   gobject.SignalFlags.RUN_FIRST | gobject.SignalFlags.ACTION,
-                   gobject.TYPE_NONE,
-                   (gobject.TYPE_STRING,))
+GObject.signal_new("clicked", CellRendererSutekhButton,
+                   GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.ACTION,
+                   GObject.TYPE_NONE,
+                   (GObject.TYPE_STRING,))
 # the callback is called as callback (self, oPath)

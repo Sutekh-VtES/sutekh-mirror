@@ -7,7 +7,7 @@
 
 """Menu for the Physical card collection."""
 
-import gtk
+from gi.repository import Gtk
 from .FilteredViewMenu import CardListMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .BaseConfigFile import FULL_CARDLIST
@@ -21,7 +21,7 @@ class PhysicalCardMenu(CardListMenu):
        file, etc), filtering and plugins.
        """
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
         super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)
         self.__create_physical_cl_menu()
@@ -41,7 +41,7 @@ class PhysicalCardMenu(CardListMenu):
         # setup sub menu
         oMenu = self.create_submenu(self, "Actions")
 
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self.add_common_actions(oMenu)
 
     def create_edit_menu(self):

@@ -11,7 +11,8 @@ import zipfile
 from collections import namedtuple
 from io import BytesIO
 
-import gtk
+from gi.repository import Gtk
+
 from sqlobject import sqlhub, connectionForURI
 
 from ..core.BaseDBManagement import (UnknownVersion,
@@ -128,7 +129,7 @@ class BaseGuiDBManager:
             aFullMessages.append('<i>%s</i>' % sDetails)
         iRes = do_complaint_buttons(
             '\n'.join(aFullMessages),
-            gtk.MESSAGE_ERROR,
+            Gtk.MessageType.ERROR,
             ("Abort import?", 1, "Accept import despite errors", 2),
             True)
         return iRes == 2
@@ -218,7 +219,7 @@ class BaseGuiDBManager:
                               ["Attempt to Continue Anyway (This is most"
                                " probably very dangerous)?"])
             iResponse = do_complaint_warning(sMesg)
-            return iResponse == gtk.RESPONSE_OK
+            return iResponse == Gtk.ResponseType.OK
         return True
 
     def initialize_db(self, oConfig):
@@ -228,8 +229,8 @@ class BaseGuiDBManager:
         # access to the config file via the main window.
         iRes = do_complaint_buttons(
             "The database doesn't seem to be properly initialised",
-            gtk.MESSAGE_ERROR,
-            (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
+            Gtk.MessageType.ERROR,
+            (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
              "Initialise database with cardlist and rulings?", 1))
         if iRes != 1:
             return False
@@ -353,7 +354,7 @@ class BaseGuiDBManager:
         else:
             sMesg = "Import Completed\n"
             sMesg += "Everything seems to have gone OK"
-            do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+            do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
         oProgressDialog.destroy()
         dNewMap = get_cs_id_name_table()
         self._oWin.config_file.fix_profile_mapping(dOldMap, dNewMap)
@@ -381,16 +382,16 @@ class BaseGuiDBManager:
                      " than expected:\n")
             sMesg += "\n".join(aHigherTables)
             sMesg += "\n\n<b>Unable to continue</b>"
-            do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
-                                 (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE), True)
+            do_complaint_buttons(sMesg, Gtk.MessageType.ERROR,
+                                 (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE), True)
             # No sensible default here - user can override using
             # --ignore-db-version if desired
             return False
         sMesg = "Database version error. Cannot continue\n" \
                 "The following tables need to be upgraded:\n"
         sMesg += "\n".join(aLowerTables)
-        iRes = do_complaint_buttons(sMesg, gtk.MESSAGE_ERROR,
-                                    (gtk.STOCK_QUIT, gtk.RESPONSE_CLOSE,
+        iRes = do_complaint_buttons(sMesg, Gtk.MessageType.ERROR,
+                                    (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
                                      "Attempt Automatic Database Upgrade", 1))
         if iRes != 1:
             return False
@@ -407,7 +408,7 @@ class BaseGuiDBManager:
                 oDialog = DBUpgradeDialog(aMessages)
                 iRes = oDialog.run()
                 oDialog.destroy()
-                if iRes == gtk.RESPONSE_OK:
+                if iRes == Gtk.ResponseType.OK:
                     return self._do_commit_db(oLogHandler, oTempConn,
                                               aMessages)
                 elif iRes == 1:
@@ -449,7 +450,7 @@ class BaseGuiDBManager:
                     sMesg += '<b>%s</b>\n' % sStr
             else:
                 sMesg += "Everything seems to have gone smoothly."
-            do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+            do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
             return True
         sMesg = ("Unable to commit updated database!\nUpgrade Failed.\n"
                  "Your database may be in an inconsistent state.")

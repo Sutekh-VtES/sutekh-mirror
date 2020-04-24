@@ -6,8 +6,8 @@
 
 """Allow the user to delete / edit the various profiles"""
 
-import gtk
-import gobject
+from gi.repository import Gtk, GObject
+
 from sqlobject import SQLObjectNotFound
 from ..core.BaseTables import PhysicalCardSet
 from .SutekhDialog import (NotebookDialog, do_complaint_error,
@@ -23,13 +23,13 @@ LABELS = {
 }
 
 
-class ProfileListStore(gtk.ListStore):
+class ProfileListStore(Gtk.ListStore):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Simple list store for profiles widget"""
     def __init__(self):
-        super(ProfileListStore, self).__init__(gobject.TYPE_STRING,
-                                               gobject.TYPE_STRING)
+        super(ProfileListStore, self).__init__(GObject.TYPE_STRING,
+                                               GObject.TYPE_STRING)
 
     def fill_list(self, aVals):
         """Fill the list"""
@@ -59,18 +59,18 @@ class ProfileListStore(gtk.ListStore):
             self.remove(oIter)
 
 
-class ProfileListView(gtk.TreeView):
+class ProfileListView(Gtk.TreeView):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Simple tree view for the profile list"""
     def __init__(self, sTitle):
         oModel = ProfileListStore()
         super(ProfileListView, self).__init__(oModel)
         # We only display the profile name, not the profile id
-        oCell1 = gtk.CellRendererText()
-        oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, text=1)
+        oCell1 = Gtk.CellRendererText()
+        oColumn1 = Gtk.TreeViewColumn(sTitle, oCell1, text=1)
         self.append_column(oColumn1)
-        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
 
     def get_selected(self):
         """Get the of selected value"""
@@ -83,11 +83,11 @@ class ProfileListView(gtk.TreeView):
         return None
 
 
-class ScrolledProfileList(gtk.Frame):
+class ScrolledProfileList(Gtk.Frame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
         super(ScrolledProfileList, self).__init__()
@@ -95,7 +95,7 @@ class ScrolledProfileList(gtk.Frame):
         self._oStore = self._oView.get_model()
         oMyScroll = AutoScrolledWindow(self._oView)
         self.add(oMyScroll)
-        self.set_shadow_type(gtk.SHADOW_NONE)
+        self.set_shadow_type(Gtk.ShadowType.NONE)
         self.show_all()
 
     # pylint: disable=protected-access
@@ -109,7 +109,7 @@ class ProfileMngDlg(NotebookDialog):
     """Dialog which allows the user to delete and edit profiles."""
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we keep a lot of internal state, so many instance variables
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     RESPONSE_EDIT = 1
     RESPONSE_DELETE = 2
@@ -117,7 +117,7 @@ class ProfileMngDlg(NotebookDialog):
     def __init__(self, oParent, oConfig):
         super(ProfileMngDlg, self).__init__(
             "Manage Profiles", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -130,9 +130,9 @@ class ProfileMngDlg(NotebookDialog):
             self.add_widget_page(oProfileList, LABELS[sType])
             self._dLists[oProfileList] = sType
 
-        self.action_area.pack_start(gtk.VSeparator(), expand=True)
+        self.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
 
-        self.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        self.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
 
         self.add_first_button("Delete", self.RESPONSE_DELETE)
         self.add_first_button("Edit Profile", self.RESPONSE_EDIT)
@@ -245,7 +245,7 @@ class ProfileMngDlg(NotebookDialog):
             if aPanes:
                 sMesg = self._get_in_use_mesg(sType, aPanes)
                 iRes = do_complaint_warning(sMesg)
-                if iRes == gtk.RESPONSE_CANCEL:
+                if iRes == Gtk.ResponseType.CANCEL:
                     return
             self.__oConfig.remove_profile(sType, sProfile)
             oList = self.get_cur_widget()

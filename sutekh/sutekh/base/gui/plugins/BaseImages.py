@@ -13,8 +13,7 @@ import unicodedata
 from urllib.error import HTTPError
 import zipfile
 
-import gobject
-import gtk
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 
 from ...core.BaseAdapters import IPrintingName
 
@@ -120,27 +119,27 @@ def get_printing_info(oAbsCard):
     return []
 
 
-class CardImagePopupMenu(gtk.Menu):
+class CardImagePopupMenu(Gtk.Menu):
     # pylint: disable=too-many-public-methods
-    # can't not trigger these warning with pygtk
+    # can't not trigger these warning with pyGtk
     """Popup menu for the Card Image Frame"""
 
     def __init__(self, oFrame, iZoomMode):
         super(CardImagePopupMenu, self).__init__()
         self.oFrame = oFrame
-        self.oZoom = gtk.RadioAction('Zoom', 'Show images at original size',
+        self.oZoom = Gtk.RadioAction('Zoom', 'Show images at original size',
                                      None, None, FULL)
         self.oZoom.set_group(None)
-        self.oViewFixed = gtk.RadioAction('ViewFixed',
+        self.oViewFixed = Gtk.RadioAction('ViewFixed',
                                           'Show images at fixed size',
                                           None, None, VIEW_FIXED)
         self.oViewFixed.set_group(self.oZoom)
-        self.oViewFit = gtk.RadioAction('ViewFit', 'Fit images to the pane',
+        self.oViewFit = Gtk.RadioAction('ViewFit', 'Fit images to the pane',
                                         None, None, FIT)
         self.oViewFit.set_group(self.oZoom)
-        self.oNext = gtk.Action('NextExp', 'Show next expansion image',
+        self.oNext = Gtk.Action('NextExp', 'Show next expansion image',
                                 None, None)
-        self.oPrev = gtk.Action('PrevExp', 'Show previous expansion image',
+        self.oPrev = Gtk.Action('PrevExp', 'Show previous expansion image',
                                 None, None)
 
         self.oPrev.connect('activate', self.cycle_expansion, BACKWARD)
@@ -181,12 +180,12 @@ class CardImagePopupMenu(gtk.Menu):
 class BaseImageFrame(BasicFrame):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep quite a lot of internal state
-    # can't not trigger these warning with pygtk
+    # can't not trigger these warning with pyGtk
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame which displays the image.
 
-       We wrap a gtk.Image in an EventBox (for focus & DnD events)
+       We wrap a Gtk.Image in an EventBox (for focus & DnD events)
        and a Viewport (for scrolling)
        """
 
@@ -201,17 +200,17 @@ class BaseImageFrame(BasicFrame):
     def __init__(self, oImagePlugin):
         super(BaseImageFrame, self).__init__(oImagePlugin.parent)
         self._oImagePlugin = oImagePlugin
-        oVBox = gtk.VBox(homogeneous=False, spacing=2)
-        oBox = gtk.EventBox()
-        self.oExpPrintLabel = gtk.Label()
-        oVBox.pack_start(self.oExpPrintLabel, False, False)
-        oVBox.pack_start(oBox)
+        oVBox = Gtk.VBox(homogeneous=False, spacing=2)
+        oBox = Gtk.EventBox()
+        self.oExpPrintLabel = Gtk.Label()
+        oVBox.pack_start(self.oExpPrintLabel, False, False, 0)
+        oVBox.pack_start(oBox, False, False, 0)
         self._oView = AutoScrolledWindow(oVBox)
         self._oView.get_hadjustment().connect('changed', self._pane_adjust)
         self._oView.get_vadjustment().connect('changed', self._pane_adjust)
-        self._oImage = gtk.Image()
-        self._oImage.set_from_icon_name(gtk.STOCK_MISSING_IMAGE,
-                                        gtk.ICON_SIZE_DIALOG)
+        self._oImage = Gtk.Image()
+        self._oImage.set_from_icon_name(Gtk.STOCK_MISSING_IMAGE,
+                                        Gtk.IconSize.DIALOG)
         oBox.add(self._oImage)
 
         # Enable DnD handling, same as for BasicFrame
@@ -241,8 +240,8 @@ class BaseImageFrame(BasicFrame):
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
         # Reset to stock image to force sane state
-        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                                    gtk.ICON_SIZE_DIALOG)
+        self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
+                                    Gtk.IconSize.DIALOG)
         MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
         super(BaseImageFrame, self).frame_setup()
@@ -299,7 +298,7 @@ class BaseImageFrame(BasicFrame):
     def _redraw(self, bPause):
         """Redraw the current card"""
         # If further events are pending, don't try and redraw
-        if bPause and gtk.gdk.events_pending():
+        if bPause and Gdk.events_pending():
             return
         if not self._sCardName:
             # Don't go down the rest of redraw path during startup
@@ -464,8 +463,8 @@ class BaseImageFrame(BasicFrame):
                     # Attempt to download the image from the url
                     if not self._download_image(sFullFilename):
                         # No download, so fall back to the 'no image' case
-                        self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                                                    gtk.ICON_SIZE_DIALOG)
+                        self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
+                                                    Gtk.IconSize.DIALOG)
                         self._oImage.queue_draw()
                         return
             else:
@@ -489,23 +488,23 @@ class BaseImageFrame(BasicFrame):
             iHeight = 0
             iWidth = 0
             for sFullFilename in aFullFilenames:
-                oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
+                oPixbuf = GdkPixbuf.Pixbuf.new_from_file(sFullFilename)
                 iWidth = max(iWidth, oPixbuf.get_width())
                 iHeight = max(iHeight, oPixbuf.get_height())
                 aPixbufs.append(oPixbuf)
             if len(aPixbufs) > 1:
                 # Create composite pixbuf
-                oPixbuf = gtk.gdk.Pixbuf(aPixbufs[0].get_colorspace(),
-                                         aPixbufs[0].get_has_alpha(),
-                                         aPixbufs[0].get_bits_per_sample(),
-                                         (iWidth + 4) * len(aPixbufs) - 4,
-                                         iHeight)
+                oPixbuf = Gdk.Pixbuf(aPixbufs[0].get_colorspace(),
+                                     aPixbufs[0].get_has_alpha(),
+                                     aPixbufs[0].get_bits_per_sample(),
+                                     (iWidth + 4) * len(aPixbufs) - 4,
+                                     iHeight)
                 oPixbuf.fill(0x00000000)  # fill with transparent black
                 iPos = 0
                 for oThisPixbuf in aPixbufs:
                     # Scale all images to the same size
                     oThisPixbuf.scale_simple(iWidth, iHeight,
-                                             gtk.gdk.INTERP_HYPER)
+                                             GdkPixbuf.InterpType.HYPER)
                     # Add to the composite pixbuf
                     oThisPixbuf.copy_area(0, 0, iWidth, iHeight,
                                           oPixbuf, iPos, 0)
@@ -526,7 +525,7 @@ class BaseImageFrame(BasicFrame):
                 if iDestWidth > 0 and iDestHeight > 0:
                     self._oImage.set_from_pixbuf(
                         oPixbuf.scale_simple(iDestWidth, iDestHeight,
-                                             gtk.gdk.INTERP_HYPER))
+                                             GdkPixbuf.InterpType.HYPER))
                     self._tPaneSize = (self._oView.get_hadjustment().get_page_size(),
                                        self._oView.get_vadjustment().get_page_size())
             elif self._iZoomMode == VIEW_FIXED:
@@ -534,13 +533,13 @@ class BaseImageFrame(BasicFrame):
                                                       RATIO[0], RATIO[1])
                 self._oImage.set_from_pixbuf(
                     oPixbuf.scale_simple(iDestWidth, iDestHeight,
-                                         gtk.gdk.INTERP_HYPER))
+                                         GdkPixbuf.InterpType.HYPER))
             else:
                 # Full size, so no scaling
                 self._oImage.set_from_pixbuf(oPixbuf)
-        except gobject.GError:
-            self._oImage.set_from_stock(gtk.STOCK_MISSING_IMAGE,
-                                        gtk.ICON_SIZE_DIALOG)
+        except GObject.GError:
+            self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
+                                        Gtk.IconSize.DIALOG)
         self._oImage.queue_draw()
 
     def check_images(self, sTestPath=''):
@@ -614,7 +613,7 @@ class BaseImageFrame(BasicFrame):
 
     def _cycle_expansion(self, _oWidget, oEvent):
         """On a button click, move to the next expansion."""
-        if oEvent.type != gtk.gdk.BUTTON_PRESS:
+        if oEvent.type != Gdk.EventType.BUTTON_PRESS:
             return True  # don't jump twice on double or triple clicks
         if oEvent.button == 1:
             self.do_cycle_expansion(FORWARD)
@@ -642,7 +641,7 @@ class BaseImageFrame(BasicFrame):
 
 class BaseImageConfigDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Base Dialog for configuring the Image plugin."""
 
     sDefURLId = ''
@@ -653,10 +652,10 @@ class BaseImageConfigDialog(SutekhDialog):
         super(BaseImageConfigDialog, self).__init__(
             'Configure Card Images Plugin',
             oImagePlugin.parent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.oDescLabel = gtk.Label()
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        self.oDescLabel = Gtk.Label()
         if not bFirstTime:
             self.oDescLabel.set_markup('<b>Choose how to configure the'
                                        ' cardimages plugin</b>')
@@ -677,16 +676,16 @@ class BaseImageConfigDialog(SutekhDialog):
             "Choose location for images file", "Choose image directory",
             sDefaultDir, dUrls)
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
-        self.vbox.pack_start(self.oDescLabel, False, False)
+        self.vbox.pack_start(self.oDescLabel, False, False, 0)
         if not bFirstTime:
             # Set to the null choice
             self.oChoice.select_by_name('Select directory ...')
-        self.vbox.pack_start(self.oChoice, False, False)
+        self.vbox.pack_start(self.oChoice, False, False, 0)
         if oImagePlugin.DOWNLOAD_SUPPORTED:
-            self.oDownload = gtk.CheckButton(
+            self.oDownload = Gtk.CheckButton(
                 'Download missing images from %s?' % self.sImgDownloadSite)
             bCurrentDownload = oImagePlugin.get_config_item(DOWNLOAD_IMAGES)
-            self.oDownloadExpansions = gtk.CheckButton(
+            self.oDownloadExpansions = Gtk.CheckButton(
                 'Download images for each expansion?')
             bDownloadExpansions = oImagePlugin.get_config_item(
                 DOWNLOAD_EXPANSIONS)
@@ -699,8 +698,8 @@ class BaseImageConfigDialog(SutekhDialog):
             self.oDownloadExpansions.set_active(bDownloadExpansions)
             if not bCurrentDownload:
                 self.oDownloadExpansions.set_sensitive(False)
-            self.vbox.pack_start(self.oDownload, False, False)
-            self.vbox.pack_start(self.oDownloadExpansions, False, False)
+            self.vbox.pack_start(self.oDownload, False, False, 0)
+            self.vbox.pack_start(self.oDownloadExpansions, False, False, 0)
         else:
             self.oDownload = None
         self.set_size_request(400, 200)
@@ -783,14 +782,14 @@ class BaseImagePlugin(BasePlugin):
            """
         self.init_image_frame()
         # Add listener
-        self._oReplaceItem = gtk.MenuItem(label="Replace with Card Image Frame")
+        self._oReplaceItem = Gtk.MenuItem(label="Replace with Card Image Frame")
         self._oReplaceItem.connect("activate", self.replace_pane)
 
-        self._oAddItem = gtk.MenuItem(label="Add Card Image Frame")
+        self._oAddItem = Gtk.MenuItem(label="Add Card Image Frame")
         self._oAddItem.connect("activate", self.add_pane)
         self.parent.add_to_menu_list('Card Image Frame',
                                      self.add_image_frame_active)
-        self._oConfigMenuItem = gtk.MenuItem(
+        self._oConfigMenuItem = Gtk.MenuItem(
             label="Download or Configure Card Images")
         self._oConfigMenuItem.connect("activate", self.config_activate)
         if not self.image_frame.check_images():
@@ -864,10 +863,10 @@ class BaseImagePlugin(BasePlugin):
                 iQuery = do_complaint_buttons(
                     "Folder does not exist. Really use it?\n"
                     "(Answering yes will create the folder)",
-                    gtk.MESSAGE_QUESTION,
-                    (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                     gtk.STOCK_NO, gtk.RESPONSE_NO))
-                if iQuery == gtk.RESPONSE_NO:
+                    Gtk.MessageType.QUESTION,
+                    (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                     Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                if iQuery == Gtk.ResponseType.NO:
                     # Treat as cancelling
                     return False
                 ensure_dir_exists(sTestPath)
@@ -890,10 +889,10 @@ class BaseImagePlugin(BasePlugin):
             if not self.image_frame.check_images(sTestPath):
                 iQuery = do_complaint_buttons(
                     "Folder does not seem to contain images\n"
-                    "Are you sure?", gtk.MESSAGE_QUESTION,
-                    (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                     gtk.STOCK_NO, gtk.RESPONSE_NO))
-                if iQuery == gtk.RESPONSE_NO:
+                    "Are you sure?", Gtk.MessageType.QUESTION,
+                    (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                     Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                if iQuery == Gtk.ResponseType.NO:
                     # Treat as cancelling
                     return False
             return True

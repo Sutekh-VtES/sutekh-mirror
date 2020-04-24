@@ -6,7 +6,7 @@
 
 """Convert a ELDB or ARDB text or html file into an Card Set."""
 
-import gtk
+from gi.repository import Gtk
 from ...io.UrlOps import urlopen_with_timeout
 from ...io.EncodedFile import EncodedFile
 from ...core.BaseTables import PhysicalCardSet
@@ -59,29 +59,29 @@ class BaseImport(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Import' Menu"""
-        oImport = gtk.MenuItem(label="Import Card Set in other formats")
+        oImport = Gtk.MenuItem(label="Import Card Set in other formats")
         oImport.connect("activate", self.make_dialog)
         return ('Import Card Set', oImport)
 
     def make_dialog(self, _oWidget):
         """Create the dialog asking the user for the source to import."""
         self.oDlg = SutekhDialog("Choose Card Set File or URL", None,
-                                 gtk.DIALOG_MODAL |
-                                 gtk.DIALOG_DESTROY_WITH_PARENT,
-                                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                                 Gtk.DialogFlags.MODAL |
+                                 Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        self.oDlg.vbox.pack_start(gtk.Label(label="URL:"), expand=False)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="URL:"), False, True, 0)
 
-        self.oUri = gtk.Entry()
+        self.oUri = Gtk.Entry()
         self.oUri.set_max_length(150)
-        self.oUri.connect("activate", self.handle_response, gtk.RESPONSE_OK)
-        self.oDlg.vbox.pack_start(self.oUri, expand=False)
+        self.oUri.connect("activate", self.handle_response, Gtk.ResponseType.OK)
+        self.oDlg.vbox.pack_start(self.oUri, False, True, 0)
 
-        self.oDlg.vbox.pack_start(gtk.Label(label="OR"), expand=False)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="OR"), False, True, 0)
 
         self.oFileChooser = SutekhFileWidget(self.parent,
-                                             gtk.FILE_CHOOSER_ACTION_OPEN)
+                                             Gtk.FileChooserAction.OPEN)
         aAddedFilters = set()  # Guard against adding filter multiple times
         for tInfo in self.PARSERS.values():
             if tInfo[1] and tInfo[1] not in aAddedFilters:
@@ -89,25 +89,25 @@ class BaseImport(BasePlugin):
                 self.oFileChooser.add_filter_with_pattern(tInfo[1], tInfo[2])
                 aAddedFilters.add(tInfo[1])
         self.oFileChooser.default_filter()
-        self.oDlg.vbox.pack_start(self.oFileChooser, expand=True)
+        self.oDlg.vbox.pack_start(self.oFileChooser, True, True, 0)
 
         # If there's a 'Guess File Format' option, set it to the first button
         if GUESS_FILE_FORMAT in self.PARSERS:
-            self._oFirstBut = gtk.RadioButton(group=None, label=GUESS_FILE_FORMAT)
+            self._oFirstBut = Gtk.RadioButton(group=None, label=GUESS_FILE_FORMAT)
             self._oFirstBut.set_active(True)
-            self.oDlg.vbox.pack_start(self._oFirstBut, expand=False)
+            self.oDlg.vbox.pack_start(self._oFirstBut, False, True, 0)
 
-        oTable = gtk.Table(len(self.PARSERS) // 2, 2)
-        self.oDlg.vbox.pack_start(oTable, expand=False)
+        oTable = Gtk.Table(len(self.PARSERS) // 2, 2)
+        self.oDlg.vbox.pack_start(oTable, False, True, 0)
         iXPos, iYPos = 0, 0
         for sName in sorted(self.PARSERS):
             if sName == GUESS_FILE_FORMAT:
                 continue
             if self._oFirstBut:
-                oBut = gtk.RadioButton(group=self._oFirstBut, label=sName)
+                oBut = Gtk.RadioButton(group=self._oFirstBut, label=sName)
             else:
                 # No first button (no 'Guess File Format' case) so add it
-                self._oFirstBut = gtk.RadioButton(group=None, label=sName)
+                self._oFirstBut = Gtk.RadioButton(group=None, label=sName)
                 self._oFirstBut.set_active(True)
                 oBut = self._oFirstBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -124,7 +124,7 @@ class BaseImport(BasePlugin):
 
     def handle_response(self, _oWidget, oResponse):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
-        if oResponse == gtk.RESPONSE_OK:
+        if oResponse == Gtk.ResponseType.OK:
             sUri = self.oUri.get_text().strip()
             sFile = self.oFileChooser.get_filename()
 

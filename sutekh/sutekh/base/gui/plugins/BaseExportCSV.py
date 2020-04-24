@@ -5,7 +5,7 @@
 
 """Plugin for exporting to CSV format"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet
 from ...io.WriteCSV import WriteCSV
 from ...Utility import safe_filename
@@ -22,7 +22,7 @@ class BaseExportCSV(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' Menu"""
-        oExport = gtk.MenuItem(label="Export to CSV")
+        oExport = Gtk.MenuItem(label="Export to CSV")
         oExport.connect("activate", self.make_dialog)
         return ('Export Card Set', oExport)
 
@@ -32,12 +32,12 @@ class BaseExportCSV(BasePlugin):
                             self.parent,
                             '%s.csv' % safe_filename(self.view.sSetName))
         oDlg.add_filter_with_pattern('CSV Files', ['*.xml'])
-        oIncHeader = gtk.CheckButton("Include Column Headers")
+        oIncHeader = Gtk.CheckButton("Include Column Headers")
         oIncHeader.set_active(True)
-        oDlg.vbox.pack_start(oIncHeader, expand=False)
-        oIncExpansion = gtk.CheckButton("Include Expansions")
+        oDlg.vbox.pack_start(oIncHeader, False, True, 0)
+        oIncExpansion = Gtk.CheckButton("Include Expansions")
         oIncExpansion.set_active(True)
-        oDlg.vbox.pack_start(oIncExpansion, expand=False)
+        oDlg.vbox.pack_start(oIncExpansion, False, True, 0)
         oDlg.show_all()
         oDlg.run()
 

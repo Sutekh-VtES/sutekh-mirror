@@ -9,9 +9,8 @@ The type of profile to edit (cardset, cardset list, etc.) is a parameter
 passed in when the dialog is created.
 """
 
+from gi.repository import GObject, Gtk
 
-import gtk
-import gobject
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
 from .PreferenceTable import PreferenceTable
@@ -21,7 +20,7 @@ class FrameProfileEditor(SutekhDialog):
     """Dialog which allows the user to edit profiles of the specified type.
        """
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
 
     RESPONSE_SAVE_AND_CLOSE = 1
     RESPONSE_CANCEL = 2
@@ -29,7 +28,7 @@ class FrameProfileEditor(SutekhDialog):
     def __init__(self, oParent, oConfig, sType):
         super(FrameProfileEditor, self).__init__(
             "Edit Per-Deck Profiles", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -38,9 +37,9 @@ class FrameProfileEditor(SutekhDialog):
         self.__sActiveProfile = None
 
         # Model for selector drop-down (profile key, profile name)
-        oModel = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
-        oCell = gtk.CellRendererText()
-        self.__oSelectorCombo = gtk.ComboBox()
+        oModel = Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING)
+        oCell = Gtk.CellRendererText()
+        self.__oSelectorCombo = Gtk.ComboBox()
         self.__oSelectorCombo.set_model(oModel)
         self.__oSelectorCombo.pack_start(oCell, True)
         self.__oSelectorCombo.add_attribute(oCell, 'text', 1)
@@ -48,7 +47,7 @@ class FrameProfileEditor(SutekhDialog):
         self.__oSelectorCombo.connect("changed", self._selector_changed)
         self.__oSelectorCombo.connect("notify::popup-shown",
                                       self._selector_opened)
-        self.vbox.pack_start(self.__oSelectorCombo, expand=False)
+        self.vbox.pack_start(self.__oSelectorCombo, False, True, 0)
 
         aOptions = []
         for sKey in self.__oConfig.profile_options(self._sType):
@@ -59,7 +58,7 @@ class FrameProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable))
+        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable), True, True, 0)
 
         self.set_default_size(600, 550)
         self.connect("response", self._button_response)

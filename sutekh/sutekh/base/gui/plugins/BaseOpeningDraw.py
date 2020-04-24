@@ -8,8 +8,7 @@
 from copy import copy
 from random import choice
 
-import gobject
-import gtk
+from gi.repository import GObject, Gtk
 
 from ...core.BaseTables import PhysicalCardSet
 from ...core.BaseAdapters import IAbstractCard
@@ -125,8 +124,8 @@ def draw_cards(aCards, iDraw, bCopy=False):
 
 def make_flat_view(dProbs, iDraw, sHeading, iWidth):
     """Setup a tree store with a flat probablity list."""
-    oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
-                           gobject.TYPE_FLOAT)
+    oStore = Gtk.TreeStore(GObject.TYPE_STRING, GObject.TYPE_STRING,
+                           GObject.TYPE_FLOAT)
 
     for sCardName, fMean in dProbs.items():
         sVal = '%2.2f' % fMean
@@ -137,8 +136,8 @@ def make_flat_view(dProbs, iDraw, sHeading, iWidth):
 
 def make_grouped_view(dProbs, dGroupedProbs, sHeading, iWidth):
     """Setup the TreeStore for a dictionary of grouped probablities."""
-    oStore = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
-                           gobject.TYPE_FLOAT)
+    oStore = Gtk.TreeStore(GObject.TYPE_STRING, GObject.TYPE_STRING,
+                           GObject.TYPE_FLOAT)
     fill_store(oStore, dProbs, dGroupedProbs)
 
     return AutoScrolledWindow(create_view(oStore, sHeading, iWidth))
@@ -146,14 +145,14 @@ def make_grouped_view(dProbs, dGroupedProbs, sHeading, iWidth):
 
 def create_view(oStore, sHeading, iWidth):
     """Setup the TreeView for the results"""
-    oView = gtk.TreeView(oStore)
-    oTextCol = gtk.TreeViewColumn(sHeading)
-    oTextCell = gtk.CellRendererText()
-    oTextCol.pack_start(oTextCell, True)
+    oView = Gtk.TreeView(oStore)
+    oTextCol = Gtk.TreeViewColumn(sHeading)
+    oTextCell = Gtk.CellRendererText()
+    oTextCol.pack_start(oTextCell, True, True, 0)
     oTextCol.add_attribute(oTextCell, 'text', 0)
-    oValCol = gtk.TreeViewColumn("Expected Number")
-    oValProgCell = gtk.CellRendererProgress()
-    oValCol.pack_start(oValProgCell, True)
+    oValCol = Gtk.TreeViewColumn("Expected Number")
+    oValProgCell = Gtk.CellRendererProgress()
+    oValCol.pack_start(oValProgCell, True, True, 0)
     oValCol.add_attribute(oValProgCell, 'value', 2)
     oValCol.add_attribute(oValProgCell, 'text', 1)
     # Take up space not reserved for progress bar column
@@ -167,16 +166,16 @@ def create_view(oStore, sHeading, iWidth):
     oView.append_column(oTextCol)
     oView.append_column(oValCol)
     # set suitable default sort
-    oStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+    oStore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
     return oView
 
 
 def fill_frame(sDetails, sHeading):
-    """Draw a gtk.Frame for the given detail type"""
-    oFrame = gtk.Frame()
+    """Draw a Gtk.Frame for the given detail type"""
+    oFrame = Gtk.Frame()
     oFrame.set_label(sHeading)
-    oLabel = gtk.Label()
+    oLabel = Gtk.Label()
     oLabel.set_markup(sDetails)
     oFrame.add(oLabel)
     return oFrame
@@ -207,7 +206,7 @@ class BaseOpeningDraw(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oCardDraw = gtk.MenuItem(label=self.sMenuName)
+        oCardDraw = Gtk.MenuItem(label=self.sMenuName)
         oCardDraw.connect("activate", self.activate)
         return ('Analyze', oCardDraw)
 
@@ -221,17 +220,17 @@ class BaseOpeningDraw(BasePlugin):
             return
 
         oDialog = SutekhDialog(sDiagName, self.parent,
-                               gtk.DIALOG_MODAL |
-                               gtk.DIALOG_DESTROY_WITH_PARENT,
-                               (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                               (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         oDialog.set_size_request(900, 600)
 
         self._fill_stats(oDialog)
 
-        oShowButton = gtk.Button('draw sample hands')
+        oShowButton = Gtk.Button('draw sample hands')
         oShowButton.connect('clicked', self._fill_dialog)
 
-        oDialog.vbox.pack_start(oShowButton, False, False)
+        oDialog.vbox.pack_start(oShowButton, False, False, 0)
 
         oDialog.show_all()
 
@@ -273,15 +272,15 @@ class BaseOpeningDraw(BasePlugin):
     def _fill_dialog(self, _oButton):
         """Fill the dialog with the draw results"""
         oDialog = SutekhDialog('Sample Hands', self.parent,
-                               gtk.DIALOG_MODAL |
-                               gtk.DIALOG_DESTROY_WITH_PARENT)
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT)
         # We need to have access to the back button
         oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
-        oDialog.action_area.pack_start(gtk.VSeparator(), expand=True)
-        oBackButton = oDialog.add_button(gtk.STOCK_GO_BACK, self.BACK)
+        oDialog.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
+        oBackButton = oDialog.add_button(Gtk.STOCK_GO_BACK, self.BACK)
         oBackButton.set_sensitive(False)
-        oDialog.add_button(gtk.STOCK_GO_FORWARD, self.FORWARD)
-        oDialog.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        oDialog.add_button(Gtk.STOCK_GO_FORWARD, self.FORWARD)
+        oDialog.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         self.bShowDetails = False
         if self.aDrawnHands:
             self.iCurHand = len(self.aDrawnHands)
@@ -290,7 +289,7 @@ class BaseOpeningDraw(BasePlugin):
                 oBackButton.set_sensitive(True)
         else:
             oHandBox = self._draw_new_hand()  # construct the hand
-        oDialog.vbox.pack_start(oHandBox)
+        oDialog.vbox.pack_start(oHandBox, True, True, 0)
         oDialog.connect('response', self._next_hand, oBackButton, oShowButton)
 
         oDialog.show_all()
@@ -303,11 +302,11 @@ class BaseOpeningDraw(BasePlugin):
         def change_hand(oVBox, oNewHand, oDetailBox):
             """Replace the existing widget in oVBox with oNewHand."""
             for oChild in oVBox.get_children():
-                if isinstance(oChild, gtk.VBox):
+                if isinstance(oChild, Gtk.VBox):
                     oVBox.remove(oChild)
-            oVBox.pack_start(oNewHand, False, False)
+            oVBox.pack_start(oNewHand, False, False, 0)
             if oDetailBox:
-                oVBox.pack_start(oDetailBox)
+                oVBox.pack_start(oDetailBox, True, True, 0)
 
         oDetailBox = None
         if iResponse == self.BACK:
@@ -349,16 +348,16 @@ class BaseOpeningDraw(BasePlugin):
         return self._redraw_hand()
 
     def _redraw_hand(self):
-        """Create a gtk.HBox holding a hand"""
-        oHandBox = gtk.VBox(homogeneous=False, spacing=2)
-        oDrawLabel = gtk.Label()
+        """Create a Gtk.HBox holding a hand"""
+        oHandBox = Gtk.VBox(homogeneous=False, spacing=2)
+        oDrawLabel = Gtk.Label()
         oDrawLabel.set_markup('<b>Hand Number %d :</b>' % self.iCurHand)
-        oHandBox.pack_start(oDrawLabel, False, False)
-        oAlign = gtk.Alignment(xalign=0.5, xscale=0.7)
-        oAlign.add(gtk.HSeparator())
-        oHandBox.pack_start(oAlign, False, False)
-        oHBox = gtk.HBox()
-        oHandBox.pack_start(oHBox)
+        oHandBox.pack_start(oDrawLabel, False, False, 0)
+        oAlign = Gtk.Alignment(xalign=0.5, xscale=0.7)
+        oAlign.add(Gtk.HSeparator())
+        oHandBox.pack_start(oAlign, False, False, 0)
+        oHBox = Gtk.HBox()
+        oHandBox.pack_start(oHBox, True, True, 0)
         self._fill_hand(oHBox)
         return oHandBox
 

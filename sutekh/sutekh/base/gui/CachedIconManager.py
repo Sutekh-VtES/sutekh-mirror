@@ -3,12 +3,11 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Icon manager which returns gtk pixmaps for the icons and caches lookups."""
+"""Icon manager which returns Gtk pixmaps for the icons and caches lookups."""
 
 import os
 
-import gtk
-import glib
+from gi.repository import GdkPixbuf, GLib, Gtk
 
 from ..io.BaseIconManager import BaseIconManager
 from .ProgressDialog import ProgressDialog, SutekhCountLogHandler
@@ -56,7 +55,7 @@ def _crop_alpha(oPixbuf):
 class CachedIconManager(BaseIconManager):
     """Managed icons for the gui application.
 
-       Subclass BaseIconManager to return gtk pixbufs, not filenames.
+       Subclass BaseIconManager to return Gtk pixbufs, not filenames.
        Also provides gui interface for downloading icons.
        """
 
@@ -72,7 +71,7 @@ class CachedIconManager(BaseIconManager):
             return self._dIconCache[sFileName]
         try:
             sFullFilename = os.path.join(self._sPrefsDir, sFileName)
-            oPixbuf = gtk.gdk.pixbuf_new_from_file(sFullFilename)
+            oPixbuf = GdkPixbuf.Pixbuf.new_from_file(sFullFilename)
             # Crop the transparent border
             oPixbuf = _crop_alpha(oPixbuf)
             # Scale, but preserve aspect ratio
@@ -86,8 +85,8 @@ class CachedIconManager(BaseIconManager):
             elif iPixHeight > iPixWidth:
                 iWidth = int(iSize / fAspect)
             oPixbuf = oPixbuf.scale_simple(iWidth, iHeight,
-                                           gtk.gdk.INTERP_TILES)
-        except glib.GError:
+                                           GdkPixbuf.InterpType.TILES)
+        except GLib.GError:
             oPixbuf = None
         self._dIconCache[sFileName] = oPixbuf
         return oPixbuf

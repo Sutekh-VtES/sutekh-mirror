@@ -3,14 +3,14 @@
 # Copyright 2010 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView class implementing a custom drag icon."""
+"""Gtk.TreeView class implementing a custom drag icon."""
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 
-class CustomDragIconView(gtk.TreeView):
+class CustomDragIconView(Gtk.TreeView):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Base class for tree views that fiddle with the drag icon"""
 
     def __init__(self, oModel):
@@ -23,14 +23,14 @@ class CustomDragIconView(gtk.TreeView):
         self.bReentrant = False
 
         # We want to be at the end of the chain, so we can fiddle with the
-        # icon after gtk_tree_view sets it
+        # icon after Gtk_tree_view sets it
         self.connect_after('drag-begin', self.make_drag_icon)
         #self.connect_after('drag-motion', self.drag_motion)
 
     def make_drag_icon(self, _oWidget, _oDragContext):
         """Drag begin signal handler to set custom icon"""
-        # NB: The pygtk docs are wrong (at least for gtk 2.20), as the
-        # base gtk_tree_create_row_drag_icon method isn't overridden by
+        # NB: The pyGtk docs are wrong (at least for Gtk 2.20), as the
+        # base Gtk_tree_create_row_drag_icon method isn't overridden by
         # subclasses
         # This has to be connected via connect_after as it needs to be
         # called after the stock TreeView drag begin signal so that doesn't
@@ -42,16 +42,16 @@ class CustomDragIconView(gtk.TreeView):
         # correct text as multiple selection fiddling can cause it to be
         # wrong
         if iNumSelected > 1:
-            self.drag_source_set_icon_stock(gtk.STOCK_DND_MULTIPLE)
+            self.drag_source_set_icon_stock(Gtk.STOCK_DND_MULTIPLE)
         elif iNumSelected == 1:
             _oModel, aSelectedRows = self._oSelection.get_selected_rows()
             # Create icon from correct path
-            # NB: Comments in the gtk source suggest this may leak, although
+            # NB: Comments in the Gtk source suggest this may leak, although
             # docs don't mention this.
-            # With gtk version 2.24, there doesn't appear to be any noticable
+            # With Gtk version 2.24, there doesn't appear to be any noticable
             # leaks but it is something to watch for
             oDrawable = self.create_row_drag_icon(aSelectedRows[0])
-            oPixbuf = gtk.gdk.pixbuf_get_from_surface(oDrawable, 0, 0, 100, 20)
+            oPixbuf = Gdk.pixbuf_get_from_surface(oDrawable, 0, 0, 100, 20)
             self.drag_source_set_icon_pixbuf(oPixbuf)
         # We don't change anything in the nothing selected case
 
@@ -61,7 +61,7 @@ class CustomDragIconView(gtk.TreeView):
                     _oTimestamp):
         """Set appropriate context during drag + drop."""
         if 'STRING' in oDrag_context.targets:
-            oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
+            oDrag_context.drag_status(Gtk.DragAction.COPY)
             return True
         return False
 

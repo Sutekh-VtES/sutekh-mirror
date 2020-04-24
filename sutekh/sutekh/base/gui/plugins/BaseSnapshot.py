@@ -6,7 +6,7 @@
 
 import datetime
 
-import gtk
+from gi.repository import Gtk
 
 from ...core.BaseTables import PhysicalCardSet
 from ...core.CardSetHolder import CardSetHolder
@@ -26,8 +26,8 @@ class BaseSnapshot(BasePlugin):
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
-        """Return a gtk.MenuItem to activate this plugin."""
-        oMenuItem = gtk.MenuItem(label="Take a snapshot of this card set")
+        """Return a Gtk.MenuItem to activate this plugin."""
+        oMenuItem = Gtk.MenuItem(label="Take a snapshot of this card set")
         oMenuItem.connect("activate", self.activate)
         return ('Actions', oMenuItem)
 
@@ -54,4 +54,4 @@ class BaseSnapshot(BasePlugin):
         self._commit_cards(oNewPCS, oMyCS.cards)
         self._reload_pcs_list()
         sMesg = 'Snapshot <b>%s</b> created' % self._escape(oTempHolder.name)
-        do_complaint(sMesg, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+        do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)

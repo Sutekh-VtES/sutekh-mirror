@@ -6,7 +6,7 @@
 
 """Test whether card sets can be constructed independently"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet
 from ...core.BaseAdapters import (IPhysicalCardSet, IAbstractCard,
                                   IPhysicalCard, IPrintingName)
@@ -47,8 +47,8 @@ def _get_cards(oCardSet, dCards, bIgnoreExpansions):
 
 def _make_align_list(aList):
     """Wrap the list of strings in an aligned widget for display."""
-    oLabel = gtk.Label()
-    oAlign = gtk.Alignment()
+    oLabel = Gtk.Label()
+    oAlign = Gtk.Alignment()
     oAlign.add(oLabel)
     oAlign.set_padding(0, 0, 5, 0)  # offset a little from the left edge
     sContents = "\n".join(aList)
@@ -105,7 +105,7 @@ class BaseIndependence(BasePlugin):
 
     def get_menu_item(self):
         """Register with the 'Analyze' Menu"""
-        oTest = gtk.MenuItem(label=self.sMenuName)
+        oTest = Gtk.MenuItem(label=self.sMenuName)
         oTest.connect("activate", self.activate)
         return ('Analyze', oTest)
 
@@ -127,11 +127,11 @@ class BaseIndependence(BasePlugin):
         bInUseSets = PhysicalCardSet.selectBy(
             parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
         oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
-                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         self.oCSView = CardSetsListView(None, oDlg)
-        oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), expand=True)
+        oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), True, True, 0)
         self.oCSView.set_select_multiple()
         self.oCSView.exclude_set(self.view.sSetName)
         # exclude all parents
@@ -144,13 +144,13 @@ class BaseIndependence(BasePlugin):
         self.oCSView.set_filter(oFilter, None)
         self.oCSView.load()
         self.oCSView.expand_to_entry(self.view.sSetName)
-        self.oIgnoreExpansions = gtk.CheckButton(
+        self.oIgnoreExpansions = Gtk.CheckButton(
             label="Ignore card expansions")
-        oDlg.vbox.pack_start(self.oIgnoreExpansions, False, False)
-        self.oInUseButton = gtk.CheckButton(label="Test against all cards sets"
+        oDlg.vbox.pack_start(self.oIgnoreExpansions, False, False, 0)
+        self.oInUseButton = Gtk.CheckButton(label="Test against all cards sets"
                                             " marked as in use")
         if bInUseSets:
-            oDlg.vbox.pack_start(self.oInUseButton, False, False)
+            oDlg.vbox.pack_start(self.oInUseButton, False, False, 0)
             self.oInUseButton.connect("toggled", self.show_hide_list)
         oDlg.connect("response", self.handle_response)
         oDlg.set_size_request(600, 600)
@@ -166,7 +166,7 @@ class BaseIndependence(BasePlugin):
 
     def handle_response(self, oDlg, oResponse):
         """Handle the response from the dialog."""
-        if oResponse == gtk.RESPONSE_OK:
+        if oResponse == Gtk.ResponseType.OK:
             bIgnoreExpansions = self.oIgnoreExpansions.get_active()
             if self.oInUseButton.get_active():
                 oInUseSets = PhysicalCardSet.selectBy(
@@ -188,9 +188,9 @@ class BaseIndependence(BasePlugin):
     def _display_results(self, dMissing, oParentCS):
         """Display the list of missing cards"""
         oResultDlg = NotebookDialog("Missing Cards", None,
-                                    gtk.DIALOG_MODAL |
-                                    gtk.DIALOG_DESTROY_WITH_PARENT,
-                                    (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                    Gtk.DialogFlags.MODAL |
+                                    Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                    (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         dFormatted = {}
         aParentList = []
         for oCard, oInfo in sorted(dMissing.items(),
@@ -220,13 +220,13 @@ class BaseIndependence(BasePlugin):
                                                             oInfo.iCount,
                                                             iCount))
 
-        oPage = gtk.VBox(homogeneous=False)
+        oPage = Gtk.VBox(homogeneous=False)
         oPage.pack_start(AutoScrolledWindow(_make_align_list(aParentList)),
-                         True)
-        oButton = gtk.Button(label='Create Card Set from this list')
+                         True, True, 0)
+        oButton = Gtk.Button(label='Create Card Set from this list')
         oButton.connect('clicked', self.create_card_set,
                         dMissing)
-        oPage.pack_start(oButton, False)
+        oPage.pack_start(oButton, False, True, 0)
         oResultDlg.add_widget_page(
             oPage, 'Missing from %s' % self._escape(oParentCS.name),
             bMarkup=True)
@@ -261,7 +261,7 @@ class BaseIndependence(BasePlugin):
             self._display_results(dMissing, oParentCS)
         else:
             sMessage = "No cards missing from %s" % oParentCS.name
-            do_complaint(sMessage, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, True)
+            do_complaint(sMessage, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
 
     def create_card_set(self, _oButton, dMissing):
         """Create a card set from the card list"""

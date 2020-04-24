@@ -7,7 +7,8 @@
 """Display extra columns in the tree view"""
 
 from sqlobject import SQLObjectNotFound
-import pango
+
+from gi.repository import Pango
 
 from ...core.BaseTables import (PhysicalCardSet,
                                 MapPhysicalCardToPhysicalCardSet)
@@ -109,7 +110,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
         """For the given iterator, get the associated physical card set"""
         try:
             # Strip markup from model
-            sCardSetName = pango.parse_markup(
+            sCardSetName = Pango.parse_markup(
                 self.model.get_value(oIter, 0), -1, "\0").text
             # Cache lookups, so we don't hit the database so hard when
             # sorting

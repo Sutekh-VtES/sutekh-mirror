@@ -5,27 +5,27 @@
 
 """Toolbar for the Main Application Window"""
 
-import gtk
+from gi.repository import Gtk
 
 
-class MainToolbar(gtk.Toolbar):
+class MainToolbar(Gtk.Toolbar):
     """The Main application toolbar.
 
        This provides a place to minimize panes.
        """
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self, oWindow):
         super(MainToolbar, self).__init__()
         self.set_no_show_all(True)
-        self.set_style(gtk.TOOLBAR_BOTH)
+        self.set_style(Gtk.ToolbarStyle.BOTH)
         self._oMainWindow = oWindow
 
     # pylint: disable=no-self-use
     # Method for consistency
     def create_tool_button(self, sLabel, oIcon=None, fAction=None):
         """Create a Toolbar button with the given action."""
-        oToolButton = gtk.ToolButton()
+        oToolButton = Gtk.ToolButton()
         oToolButton.set_label(sLabel)
         if oIcon:
             oToolButton.set_icon_widget(oIcon)

@@ -6,13 +6,13 @@
 
 """Database to prompt for database upgrades"""
 
-import gtk
+from gi.repository import Gtk
 from .SutekhDialog import SutekhDialog
 
 
 class DBUpgradeDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Dialog which prompts the user at the end of a database upgrade.
 
        Display any messages from the upgrade process, and ask the user
@@ -22,25 +22,25 @@ class DBUpgradeDialog(SutekhDialog):
         # Create Dialog
         super(DBUpgradeDialog, self).__init__(
             "Memory Copy Created", None,
-            gtk.DIALOG_MODAL, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                               gtk.STOCK_OK, gtk.RESPONSE_OK))
-        oHBox = gtk.HBox(False, 0)
-        oIcon = gtk.Image()
-        oIcon.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_DIALOG)
-        oHBox.pack_start(oIcon)
+            Gtk.DialogFlags.MODAL, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                               Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        oHBox = Gtk.HBox(False, 0)
+        oIcon = Gtk.Image()
+        oIcon.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
+        oHBox.pack_start(oIcon, True, True, 0)
         sLabel = "Memory Copy successfully created. Commit Changes?"
-        oLabel = gtk.Label(sLabel)
-        oHBox.pack_start(oLabel)
+        oLabel = Gtk.Label(sLabel)
+        oHBox.pack_start(oLabel, True, True, 0)
         if aMessages:
             sLabelInfo = ("The following messages were reported in creating"
                           " the copy:\n")
             for sStr in aMessages:
                 sLabelInfo += '<b>' + sStr + "</b>\n"
-            oInfolabel = gtk.Label()
+            oInfolabel = Gtk.Label()
             oInfolabel.set_markup(sLabelInfo)
-            self.vbox.pack_start(oInfolabel)
+            self.vbox.pack_start(oInfolabel, True, True, 0)
         self.add_button("Test upgraded database?\n"
                         "(No changes are committed)", 1)
-        self.set_default_response(gtk.RESPONSE_OK)
-        self.vbox.pack_start(oHBox)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.vbox.pack_start(oHBox, True, True, 0)
         self.show_all()

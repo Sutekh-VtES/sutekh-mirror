@@ -11,7 +11,7 @@
 #   (version 2 or later) - see
 #       http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
-"""A gtk.TextView-based renderer for XHTML-IM, as described in:
+"""A Gtk.TextView-based renderer for XHTML-IM, as described in:
    http://www.jabber.org/jeps/jep-0071.html .
    """
 
@@ -20,9 +20,7 @@ import warnings
 from html.parser import HTMLParser
 from io import StringIO
 
-import gtk
-import gobject
-import pango
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk, Pango
 
 from .SutekhDialog import SutekhDialog
 from .AutoScrolledWindow import AutoScrolledWindow
@@ -49,31 +47,31 @@ SCALES = {
 
 
 class LocalTextAttributes:
-    """Fake attributes to work around gtk3 TextAttributes issues"""
+    """Fake attributes to work around Gtk3 TextAttributes issues"""
 
     __slots__ = ('font', 'font_size')
 
 
 # don't throw an exception if no screen during import - we'll catch that later
-if gtk.gdk.screen_get_default() is None:
+if Gdk.Screen.get_default() is None:
     SCREEN_RESOLUTION = 0
-elif gtk.gdk.screen_get_default().get_height_mm():
+elif Gdk.Screen.get_default().get_height_mm():
     #  pixels = points * SCREEN_RESOLUTION
-    SCREEN_RESOLUTION = 0.3514598 * (gtk.gdk.screen_get_default().get_height() /
-                                     float(gtk.gdk.screen_get_default().get_height_mm()))
+    SCREEN_RESOLUTION = 0.3514598 * (Gdk.Screen.get_default().get_height() /
+                                     float(Gdk.Screen.get_default().get_height_mm()))
 else:
-    # We have a screen, but gtk.gdk.screen_height_mm is 0,
+    # We have a screen, but Gdk.screen_height_mm is 0,
     # which seems to happen under gnome-shell
     # sometimes, so we just use a reasonable default
     SCREEN_RESOLUTION = 1.333
 
 
 def _parse_css_color(sColor):
-    '''_parse_css_color(css_color) -> gtk.gdk.Color'''
+    '''_parse_css_color(css_color) -> Gdk.Color'''
     if sColor.startswith("rgb(") and sColor.endswith(')'):
         iRed, iGreen, iBlue = [int(c) * 257 for c in sColor[4:-1].split(',')]
-        return gtk.gdk.Color(iRed, iGreen, iBlue)
-    return gtk.gdk.color_parse(sColor)
+        return Gdk.Color(iRed, iGreen, iBlue)
+    return Gdk.color_parse(sColor)
 
 
 class HtmlHandler(HTMLParser):
@@ -81,14 +79,14 @@ class HtmlHandler(HTMLParser):
     # can't break these into functions
     # We need to keep a lot of state to handle HTML properly
     # Lots of public methods from HTMLParser
-    """Parse the HTML input and update the gtk.TextView"""
+    """Parse the HTML input and update the Gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
         super(HtmlHandler, self).__init__()
         self._oTextBuf = oTextView.get_buffer()
         self._oTextView = oTextView
         self._oIter = oStartIter
         self._sText = ''
-        self._aStyles = []  # a gtk.TextTag or None, for each span level
+        self._aStyles = []  # a Gtk.TextTag or None, for each span level
 
         # stack (top at head) of list counters, or None for unordered list
         self._aListCounters = []
@@ -109,8 +107,8 @@ class HtmlHandler(HTMLParser):
 
     def _get_current_attributes(self):
         """Get current attributes."""
-        # gi's handling of gtk.TextAttribute is a bit wonky, due
-        # to the way gtk3 does TextAttribute updates, so we fake
+        # gi's handling of Gtk.TextAttribute is a bit wonky, due
+        # to the way Gtk3 does TextAttribute updates, so we fake
         # it by using less efficient logic
         oTag = self._get_style_tags()[-1]
         aAttrs = LocalTextAttributes()
@@ -183,9 +181,9 @@ class HtmlHandler(HTMLParser):
         """Parse the font style attribute"""
         try:
             iStyle = {
-                "normal": pango.STYLE_NORMAL,
-                "italic": pango.STYLE_ITALIC,
-                "oblique": pango.STYLE_OBLIQUE,
+                "normal": Pango.Style.NORMAL,
+                "italic": Pango.Style.ITALIC,
+                "oblique": Pango.Style.OBLIQUE,
                 }[sValue]
         except KeyError:
             warnings.warn("unknown font-style %s" % sValue)
@@ -213,17 +211,17 @@ class HtmlHandler(HTMLParser):
         # missing 'bolder' and 'lighter', but that's not important for us
         try:
             iWeight = {
-                '100': pango.WEIGHT_ULTRALIGHT,
-                '200': pango.WEIGHT_ULTRALIGHT,
-                '300': pango.WEIGHT_LIGHT,
-                '400': pango.WEIGHT_NORMAL,
-                '500': pango.WEIGHT_NORMAL,
-                '600': pango.WEIGHT_BOLD,
-                '700': pango.WEIGHT_BOLD,
-                '800': pango.WEIGHT_ULTRABOLD,
-                '900': pango.WEIGHT_HEAVY,
-                'normal': pango.WEIGHT_NORMAL,
-                'bold': pango.WEIGHT_BOLD,
+                '100': Pango.Weight.ULTRALIGHT,
+                '200': Pango.Weight.ULTRALIGHT,
+                '300': Pango.Weight.LIGHT,
+                '400': Pango.Weight.NORMAL,
+                '500': Pango.Weight.NORMAL,
+                '600': Pango.Weight.BOLD,
+                '700': Pango.Weight.BOLD,
+                '800': Pango.Weight.ULTRABOLD,
+                '900': Pango.Weight.HEAVY,
+                'normal': Pango.Weight.NORMAL,
+                'bold': Pango.Weight.BOLD,
                 }[sValue]
         except KeyError:
             warnings.warn("unknown font-style %s" % sValue)
@@ -238,10 +236,10 @@ class HtmlHandler(HTMLParser):
         """Set the text alignment style."""
         try:
             iAlign = {
-                'left': gtk.JUSTIFY_LEFT,
-                'right': gtk.JUSTIFY_RIGHT,
-                'center': gtk.JUSTIFY_CENTER,
-                'justify': gtk.JUSTIFY_FILL,
+                'left': Gtk.Justification.LEFT,
+                'right': Gtk.Justification.RIGHT,
+                'center': Gtk.Justification.CENTER,
+                'justify': Gtk.Justification.FILL,
                 }[sValue]
         except KeyError:
             warnings.warn("Invalid text-align:%s requested" % sValue)
@@ -252,17 +250,17 @@ class HtmlHandler(HTMLParser):
         """Set the pango properties for the tag to match the desired html text
            decoration."""
         if sValue == "none":
-            oTag.set_property("underline", pango.UNDERLINE_NONE)
+            oTag.set_property("underline", Pango.Underline.NONE)
             oTag.set_property("strikethrough", False)
         elif sValue == "underline":
-            oTag.set_property("underline", pango.UNDERLINE_SINGLE)
+            oTag.set_property("underline", Pango.Underline.SINGLE)
             oTag.set_property("strikethrough", False)
         elif sValue == "overline":
             warnings.warn("text-decoration:overline not implemented")
-            oTag.set_property("underline", pango.UNDERLINE_NONE)
+            oTag.set_property("underline", Pango.Underline.NONE)
             oTag.set_property("strikethrough", False)
         elif sValue == "line-through":
-            oTag.set_property("underline", pango.UNDERLINE_NONE)
+            oTag.set_property("underline", Pango.Underline.NONE)
             oTag.set_property("strikethrough", True)
         elif sValue == "blink":
             warnings.warn("text-decoration:blink not implemented")
@@ -289,7 +287,7 @@ class HtmlHandler(HTMLParser):
         """Start a <span> section"""
         if oTag is None:
             oTag = self._oTextBuf.create_tag()
-        oTag.set_property("wrap-mode", gtk.WRAP_WORD)
+        oTag.set_property("wrap-mode", Gtk.WrapMode.WORD)
         if sStyle is None:
             self._aStyles.append(oTag)
             return
@@ -330,7 +328,7 @@ class HtmlHandler(HTMLParser):
     # Arguments needed by function signature
     def _anchor_event(self, _oTag, _oView, oEvent, _oIter, oHref, oType):
         """Something happened to a link, so see if we need to react."""
-        if oEvent.type == gtk.gdk.BUTTON_PRESS and oEvent.button.button == 1:
+        if oEvent.type == Gdk.EventType.BUTTON_PRESS and oEvent.button.button == 1:
             self._oTextView.emit("url-clicked", oHref, oType)
             return True
         return False
@@ -392,7 +390,7 @@ class HtmlHandler(HTMLParser):
         if sName == 'a':
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('foreground', '#0000ff')
-            oTag.set_property('underline', pango.UNDERLINE_SINGLE)
+            oTag.set_property('underline', Pango.Underline.SINGLE)
             try:
                 oType_ = oAttrs['type']
             except KeyError:
@@ -407,24 +405,24 @@ class HtmlHandler(HTMLParser):
                 self._dTargets[oAttrs['name']] = oMark
         elif sName in HTML_HEADING_TAGS:
             oTag = self._oTextBuf.create_tag()
-            oTag.set_property('underline', pango.UNDERLINE_SINGLE)
+            oTag.set_property('underline', Pango.Underline.SINGLE)
             if sName == 'h1':
-                oTag.set_property('weight', pango.WEIGHT_HEAVY)
+                oTag.set_property('weight', Pango.Weight.HEAVY)
                 oTag.set_property('scale', SCALES['x-large'])
             elif sName == 'h2':
-                oTag.set_property('weight', pango.WEIGHT_ULTRABOLD)
+                oTag.set_property('weight', Pango.Weight.ULTRABOLD)
                 oTag.set_property('scale', SCALES['large'])
             elif sName == 'h3':
-                oTag.set_property('weight', pango.WEIGHT_BOLD)
+                oTag.set_property('weight', Pango.Weight.BOLD)
         elif sName == 'title':
             self._bInTitle = True
             return
         elif sName == 'em' or sName == 'i':
             oTag = self._oTextBuf.create_tag()
-            oTag.set_property('style', pango.STYLE_ITALIC)
+            oTag.set_property('style', Pango.Style.ITALIC)
         elif sName == 'strong' or sName == 'b':
             oTag = self._oTextBuf.create_tag()
-            oTag.set_property('weight', pango.WEIGHT_BOLD)
+            oTag.set_property('weight', Pango.Weight.BOLD)
         elif sName == 'font':
             oTag = self._oTextBuf.create_tag()
             dFontSize = {
@@ -481,7 +479,7 @@ class HtmlHandler(HTMLParser):
             # we want to catch all errors here
             try:
                 oFile = self._fLinkLoader(oAttrs['src'])
-                oLoader = gtk.gdk.PixbufLoader()
+                oLoader = GdkPixbuf.PixbufLoader()
                 oLoader.write(oFile.read())
                 oLoader.close()
                 oPixbuf = oLoader.get_pixbuf()
@@ -577,13 +575,13 @@ class HtmlHandler(HTMLParser):
         self._end_span()
 
 
-class HTMLTextView(gtk.TextView):
+class HTMLTextView(Gtk.TextView):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """TextView subclass to display HTML"""
     __gtype_name__ = 'HTMLTextView'
     __gsignals__ = {
-        'url-clicked': (gobject.SignalFlags.RUN_LAST, None, (str, str)),
+        'url-clicked': (GObject.SignalFlags.RUN_LAST, None, (str, str)),
         # href, type
     }
 
@@ -593,8 +591,8 @@ class HTMLTextView(gtk.TextView):
            fLinkLoader: function to load links with
                         (takes local URL, returns file-like object)
            """
-        gtk.TextView.__init__(self)
-        self.set_wrap_mode(gtk.WRAP_CHAR)
+        Gtk.TextView.__init__(self)
+        self.set_wrap_mode(Gtk.WrapMode.CHAR)
         self.set_editable(False)
         self._bChangedCursor = False
         self.connect("motion-notify-event", self.__motion_notify_event)
@@ -608,13 +606,13 @@ class HTMLTextView(gtk.TextView):
     def __leave_event(self, oWidget, _oEvent):
         """Cursor has left the widget."""
         if self._bChangedCursor:
-            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
-            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+            oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
+            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
             self._bChangedCursor = False
 
     def __motion_notify_event(self, oWidget, oEvent):
         """Change the cursor if the pointer is over a link"""
-        oWin = oWidget.get_window(gtk.TextWindowType.TEXT)
+        oWin = oWidget.get_window(Gtk.TextWindowType.TEXT)
         _oWin, iXPos, iYPos, _oIgnore = oWin.get_device_position(oEvent.get_device())
         aTags = oWidget.get_iter_at_location(iXPos, iYPos)[1].get_tags()
         for oTag in aTags:
@@ -624,12 +622,12 @@ class HTMLTextView(gtk.TextView):
         else:
             bOverAnchor = False
         if not self._bChangedCursor and bOverAnchor:
-            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
-            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND2))
+            oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
+            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.HAND2))
             self._bChangedCursor = True
         elif self._bChangedCursor and not bOverAnchor:
-            oWindow = oWidget.get_window(gtk.TEXT_WINDOW_TEXT)
-            oWindow.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+            oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
+            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
             self._bChangedCursor = False
         return False
 
@@ -659,7 +657,7 @@ class HTMLTextView(gtk.TextView):
 
 class HTMLViewDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to keep a lot of state to handle navigation
     """Dialog Window that wraps the HTMLTextView
 
@@ -681,15 +679,15 @@ class HTMLViewDialog(SutekhDialog):
            fLinkLoader: function to load links with (passed to HTMLTextView)
            """
         super(HTMLViewDialog, self).__init__('Help', oParent,
-                                             oButtons=(gtk.STOCK_CLOSE,
-                                                       gtk.RESPONSE_CLOSE))
-        oDirButtons = gtk.HButtonBox()
-        self._oBackButton = gtk.Button(stock=gtk.STOCK_GO_BACK)
+                                             oButtons=(Gtk.STOCK_CLOSE,
+                                                       Gtk.ResponseType.CLOSE))
+        oDirButtons = Gtk.HButtonBox()
+        self._oBackButton = Gtk.Button(stock=Gtk.STOCK_GO_BACK)
         self._oBackButton.connect('pressed', self._go_back)
-        self._oForwardButton = gtk.Button(stock=gtk.STOCK_GO_FORWARD)
+        self._oForwardButton = Gtk.Button(stock=Gtk.STOCK_GO_FORWARD)
         self._oForwardButton.connect('pressed', self._go_forward)
-        oDirButtons.pack_start(self._oBackButton)
-        oDirButtons.pack_start(self._oForwardButton)
+        oDirButtons.pack_start(self._oBackButton, True, True, 0)
+        oDirButtons.pack_start(self._oForwardButton, True, True, 0)
         self._oBackButton.set_sensitive(False)
         self._oForwardButton.set_sensitive(False)
         self._fCurrent = fInput
@@ -697,7 +695,7 @@ class HTMLViewDialog(SutekhDialog):
         self._sTextAnchor = None
         self._aPastUrls = []
         self._aFutureUrls = []
-        self.vbox.pack_start(oDirButtons, False, False)
+        self.vbox.pack_start(oDirButtons, False, False, 0)
         self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)

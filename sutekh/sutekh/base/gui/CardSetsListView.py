@@ -3,9 +3,10 @@
 # Copyright 2008 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""gtk.TreeView class for the card set list."""
+"""Gtk.TreeView class for the card set list."""
 
-import gtk
+from gi.repository import Gtk
+
 from .CardSetManagementModel import CardSetManagementModel
 from .FilteredView import FilteredView
 
@@ -13,11 +14,11 @@ from .FilteredView import FilteredView
 class CardSetsListView(FilteredView):
     """Tree View for the card set list."""
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
     # pylint: disable=too-many-ancestors
     # many ancestors due to our object hierachy on top of the quite
-    # deep gtk one
+    # deep Gtk one
     def __init__(self, oController, oMainWindow, bSpecialSelect=False):
         oModel = CardSetManagementModel(oMainWindow)
         oModel.enable_sorting()
@@ -30,8 +31,8 @@ class CardSetsListView(FilteredView):
 
         self.set_name('card set list view')
 
-        self.oNameCell = gtk.CellRendererText()
-        oColumn = gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
+        self.oNameCell = Gtk.CellRendererText()
+        oColumn = Gtk.TreeViewColumn("Card Sets", self.oNameCell, markup=0)
         oColumn.set_expand(True)
         oColumn.set_resizable(True)
         oColumn.set_sort_column_id(0)

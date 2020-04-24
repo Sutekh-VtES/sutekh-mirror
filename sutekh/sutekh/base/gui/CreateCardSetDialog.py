@@ -6,7 +6,7 @@
 
 """Get details for a new card set"""
 
-import gtk
+from gi.repository import Gtk
 from sqlobject import SQLObjectNotFound
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from .CardSetsListView import CardSetsListView
@@ -19,7 +19,7 @@ def make_scrolled_text(oCardSet, sAttr):
     """Create a text buffer wrapped in a scrolled window, filled with
        the contents of sAtter if available"""
 
-    oTextView = gtk.TextView()
+    oTextView = Gtk.TextView()
     oBuffer = oTextView.get_buffer()
     oScrolledWin = AutoScrolledWindow(oTextView)
     if oCardSet:
@@ -32,7 +32,7 @@ def make_scrolled_text(oCardSet, sAttr):
 
 class CreateCardSetDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We manage a bunch of state, so need several attributes
     """Prompt the user for the name of a new card set.
 
@@ -42,39 +42,39 @@ class CreateCardSetDialog(SutekhDialog):
                  oCardSetParent=None):
         super(CreateCardSetDialog, self).__init__(
             "Card Set Details", oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        oNameLabel = gtk.Label(label="Card Set Name : ")
-        self.oName = gtk.Entry()
+        oNameLabel = Gtk.Label(label="Card Set Name : ")
+        self.oName = Gtk.Entry()
         self.oName.set_max_length(MAX_ID_LENGTH)
-        oAuthorLabel = gtk.Label(label="Author : ")
-        self.oAuthor = gtk.Entry()
-        oCommentriptionLabel = gtk.Label(label="Description : ")
+        oAuthorLabel = Gtk.Label(label="Author : ")
+        self.oAuthor = Gtk.Entry()
+        oCommentriptionLabel = Gtk.Label(label="Description : ")
         self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
                                                               'comment')
-        oParentLabel = gtk.Label(label="This card set is a subset of : ")
+        oParentLabel = Gtk.Label(label="This card set is a subset of : ")
         self.oParentList = CardSetsListView(None, self)
         self.oParentList.set_size_request(100, 200)
-        oAnnotateLabel = gtk.Label(label="Annotations : ")
+        oAnnotateLabel = Gtk.Label(label="Annotations : ")
         self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
                                                                 'annotations')
 
-        self.oInUse = gtk.CheckButton('Mark card Set as In Use')
+        self.oInUse = Gtk.CheckButton('Mark card Set as In Use')
 
         self.set_default_size(500, 500)
-        self.vbox.pack_start(oNameLabel, expand=False)
-        self.vbox.pack_start(self.oName, expand=False)
-        self.vbox.pack_start(oAuthorLabel, expand=False)
-        self.vbox.pack_start(self.oAuthor, expand=False)
-        self.vbox.pack_start(oCommentriptionLabel, expand=False)
-        self.vbox.pack_start(oCommentWin, expand=True)
-        self.vbox.pack_start(oParentLabel, expand=False)
-        self.vbox.pack_start(AutoScrolledWindow(self.oParentList), expand=True)
-        self.vbox.pack_start(oAnnotateLabel, expand=False)
-        self.vbox.pack_start(oAnnotateWin, expand=True)
-        self.vbox.pack_start(self.oInUse, expand=False)
+        self.vbox.pack_start(oNameLabel, False, True, 0)
+        self.vbox.pack_start(self.oName, False, True, 0)
+        self.vbox.pack_start(oAuthorLabel, False, True, 0)
+        self.vbox.pack_start(self.oAuthor, False, True, 0)
+        self.vbox.pack_start(oCommentriptionLabel, False, True, 0)
+        self.vbox.pack_start(oCommentWin, True, True, 0)
+        self.vbox.pack_start(oParentLabel, False, True, 0)
+        self.vbox.pack_start(AutoScrolledWindow(self.oParentList), True, True, 0)
+        self.vbox.pack_start(oAnnotateLabel, False, True, 0)
+        self.vbox.pack_start(oAnnotateWin, True, True, 0)
+        self.vbox.pack_start(self.oInUse, False, True, 0)
 
         self.connect("response", self.button_response)
 
@@ -135,7 +135,7 @@ class CreateCardSetDialog(SutekhDialog):
 
     def button_response(self, _oWidget, iResponse):
         """Handle button press from the dialog."""
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             self.sName = self.oName.get_text()
             self.sAuthor = self.oAuthor.get_text()
             if self.sName:

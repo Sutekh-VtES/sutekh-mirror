@@ -6,7 +6,8 @@
 
 """Provide a TreeView for the physical card collection"""
 
-import gtk
+from gi.repository import Gtk
+
 from .CardListView import CardListView
 from .CardListModel import CardListModel
 from .CellRendererIcons import CellRendererIcons
@@ -14,11 +15,11 @@ from .CellRendererIcons import CellRendererIcons
 
 class PhysicalCardView(CardListView):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We need to track a fair amount of state, so many attributes
     # pylint: disable=too-many-ancestors
     # many ancestors, due to our object hierachy on top of the quite
-    # deep gtk one
+    # deep Gtk one
     """The card list view for the physical card collection.
 
        Special cases Editable card list with those properties
@@ -36,7 +37,7 @@ class PhysicalCardView(CardListView):
         # Setup columns for default view
         self.oNameCell = CellRendererIcons(5)
 
-        oColumn = gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
+        oColumn = Gtk.TreeViewColumn("Cards", self.oNameCell, text=0,
                                      textlist=5, icons=6)
         oColumn.set_expand(True)
         oColumn.set_resizable(True)

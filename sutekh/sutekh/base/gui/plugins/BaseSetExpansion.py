@@ -4,7 +4,7 @@
 # GPL - see COPYING for details
 """Force all cards which can only belong to 1 expansion to that expansion"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import (PhysicalCardSet,
                                 MapPhysicalCardToPhysicalCardSet)
 from ...core.BaseAdapters import (IExpansion, IPhysicalCard,
@@ -26,8 +26,8 @@ class BaseSetExpansion(BasePlugin):
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
-        """Return a gtk.MenuItem to activate this plugin."""
-        oMenuItem = gtk.MenuItem(label="Set selected cards to a single expansion")
+        """Return a Gtk.MenuItem to activate this plugin."""
+        oMenuItem = Gtk.MenuItem(label="Set selected cards to a single expansion")
         oMenuItem.connect("activate", self.activate)
         return ('Actions', oMenuItem)
 
@@ -47,16 +47,16 @@ class BaseSetExpansion(BasePlugin):
             return
         aExpansions = self.find_common_expansions(aAbsCards)
         oDialog = SutekhDialog('Select expansion', self.parent,
-                               gtk.DIALOG_MODAL |
-                               gtk.DIALOG_DESTROY_WITH_PARENT,
-                               (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         oExpList = ScrolledList('Possible Expansions')
-        oDialog.vbox.pack_start(oExpList)
+        oDialog.vbox.pack_start(oExpList, True, True, 0)
         oExpList.set_size_request(150, 300)
         oExpList.fill_list(sorted(aExpansions))
         oExpList.set_select_single()
-        if oDialog.run() == gtk.RESPONSE_OK:
+        if oDialog.run() == Gtk.ResponseType.OK:
             aExpNames = oExpList.get_selection()
             if not aExpNames:
                 sExpName = None

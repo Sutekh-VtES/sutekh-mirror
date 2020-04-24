@@ -7,9 +7,9 @@
    GUI to pick unknown cards from.  """
 
 import re
-import gtk
-import pango
-import gobject
+
+from gi.repository import GObject, Gtk, Pango
+
 from sqlobject import SQLObjectNotFound
 from ..core.BaseTables import AbstractCard, PhysicalCard, Printing
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
@@ -55,13 +55,13 @@ class DummyController:
 class ACLLookupView(PhysicalCardView):
     """Specialised version for the Card Lookup."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods.
+    # Gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
         super(ACLLookupView, self).__init__(oController, oDialogWindow,
                                             oConfig)
-        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
         self._oModel.bExpansions = False
 
     def get_selected_card(self):
@@ -90,13 +90,13 @@ class ACLLookupView(PhysicalCardView):
 class PCLLookupView(PhysicalCardView):
     """Also show current allocation of cards in the physical card view."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods.
+    # Gtk.Widget, so many public methods.
 
     def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
         super(PCLLookupView, self).__init__(oController, oDialogWindow,
                                             oConfig)
-        self.get_selection().set_mode(gtk.SELECTION_SINGLE)
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
 
     def get_selected_card(self):
         """Return the selected card and expansion."""
@@ -116,13 +116,13 @@ class PCLLookupView(PhysicalCardView):
         self._oModel.cleanup()
 
 
-class ReplacementTreeView(gtk.TreeView):
+class ReplacementTreeView(Gtk.TreeView):
     """A TreeView which tracks the current set of replacement cards."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods.
+    # Gtk.Widget, so many public methods.
 
     def __init__(self, oCardListView, oFilterToggleButton):
-        """Construct a gtk.TreeView object showing the current
+        """Construct a Gtk.TreeView object showing the current
            card replacements.
 
            For abstract cards, the card names are stored as is.
@@ -133,9 +133,9 @@ class ReplacementTreeView(gtk.TreeView):
 
         self._dToolTips = {}
 
-        oModel = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING,
-                               gobject.TYPE_STRING, gobject.TYPE_INT,
-                               gobject.TYPE_PYOBJECT)
+        oModel = Gtk.ListStore(GObject.TYPE_INT, GObject.TYPE_STRING,
+                               GObject.TYPE_STRING, GObject.TYPE_INT,
+                               GObject.TYPE_PYOBJECT)
 
         super(ReplacementTreeView, self).__init__(oModel)
         self.oCardListView = oCardListView
@@ -146,13 +146,13 @@ class ReplacementTreeView(gtk.TreeView):
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
 
-        self._create_button_column(gtk.STOCK_OK, 'Set',
+        self._create_button_column(Gtk.STOCK_OK, 'Set',
                                    'Use the selected card',
                                    self._set_to_selection)  # use selected card
-        self._create_button_column(gtk.STOCK_REMOVE, 'Ignore',
+        self._create_button_column(Gtk.STOCK_REMOVE, 'Ignore',
                                    'Ignore the current card',
                                    self._set_ignore)  # ignore current card
-        self._create_button_column(gtk.STOCK_FIND, 'Filter',
+        self._create_button_column(Gtk.STOCK_FIND, 'Filter',
                                    'Filter on best guess',
                                    self._set_filter)  # filter out best guesses
 
@@ -168,11 +168,11 @@ class ReplacementTreeView(gtk.TreeView):
            fClicked."""
         oCell = CellRendererSutekhButton(bShowIcon=True)
         oCell.load_icon(oIcon, self)
-        oLabel = gtk.Label(label=sLabel)
-        oColumn = gtk.TreeViewColumn("", oCell)
+        oLabel = Gtk.Label(label=sLabel)
+        oColumn = Gtk.TreeViewColumn("", oCell)
         oColumn.set_widget(oLabel)
         oColumn.set_fixed_width(22)
-        oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.append_column(oColumn)
         oCell.connect('clicked', fClicked)
         self._dToolTips[oColumn] = sToolTip
@@ -199,9 +199,9 @@ class ReplacementTreeView(gtk.TreeView):
 
     def _create_text_column(self, sLabel, iColumn):
         """Create a text column, using iColumn from the model"""
-        oCell = gtk.CellRendererText()
-        oCell.set_property('style', pango.STYLE_ITALIC)
-        oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iColumn, weight=3)
+        oCell = Gtk.CellRendererText()
+        oCell.set_property('style', Pango.Style.ITALIC)
+        oColumn = Gtk.TreeViewColumn(sLabel, oCell, text=iColumn, weight=3)
         oColumn.set_expand(True)
         oColumn.set_sort_column_id(iColumn)
         self.append_column(oColumn)
@@ -239,17 +239,17 @@ class ReplacementTreeView(gtk.TreeView):
             sReplaceWith = sNewName
 
         self.oModel.set_value(oIter, 2, sReplaceWith)
-        self.oModel.set_value(oIter, 3, pango.WEIGHT_NORMAL)
+        self.oModel.set_value(oIter, 3, Pango.Weight.NORMAL)
         self.oModel.set_value(oIter, 4, oAbsCard)
-        gobject.timeout_add(1, self._fix_selection, sName)
+        GObject.timeout_add(1, self._fix_selection, sName)
 
     def _set_ignore(self, _oCell, oPath):
         """Mark the card as not having a replacement."""
         oIter = self.oModel.get_iter(oPath)
         sName = self.oModel.get_value(oIter, 1)
         self.oModel.set_value(oIter, 2, NO_CARD)
-        self.oModel.set_value(oIter, 3, pango.WEIGHT_BOLD)
-        gobject.timeout_add(1, self._fix_selection, sName)
+        self.oModel.set_value(oIter, 3, Pango.Weight.BOLD)
+        GObject.timeout_add(1, self._fix_selection, sName)
 
     def _set_filter(self, _oCell, oPath):
         """Set the card list filter to the best guess filter for this card."""
@@ -456,7 +456,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
-                       3, pango.WEIGHT_BOLD, 4, None)
+                       3, Pango.Weight.BOLD, 4, None)
 
         oUnknownDialog.vbox.show_all()
         oPhysCardView.load()
@@ -466,7 +466,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         oPhysCardView.cleanup()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             # For cards marked as replaced, add them to the list of
             # Physical Cards
             oIter = oModel.get_iter_first()
@@ -504,20 +504,20 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            This is common to the abstract + physical card cases"""
         oUnknownDialog = SutekhDialog(
             "Unknown cards found importing %s" % sInfo, None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
 
-        oMesgLabel1 = gtk.Label(label=sLabelText)
-        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
+        oMesgLabel1 = Gtk.Label(label=sLabelText)
+        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False, 0)
 
-        oHBox = gtk.HBox()
-        oUnknownDialog.vbox.pack_start(oHBox, True, True)
+        oHBox = Gtk.HBox()
+        oUnknownDialog.vbox.pack_start(oHBox, True, True, 0)
 
-        oMesgLabel2 = gtk.Label(label="OK creates the card set, Cancel "
+        oMesgLabel2 = Gtk.Label(label="OK creates the card set, Cancel "
                                 "aborts the creation of the card set")
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
 
@@ -528,20 +528,20 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            dialog."""
         oViewWin = AutoScrolledWindow(oView)
         oViewWin.set_size_request(200, 600)
-        oHBox.pack_start(oViewWin, True, True)
+        oHBox.pack_start(oViewWin, True, True, 0)
 
-        oVBox = gtk.VBox()
-        oHBox.pack_start(oVBox)
+        oVBox = Gtk.VBox()
+        oHBox.pack_start(oVBox, True, True, 0)
 
         # Add same shortcuts as the pane menus
-        oAccelGroup = gtk.AccelGroup()
+        oAccelGroup = Gtk.AccelGroup()
         # oHBox is a child of a vbox which is a child of the dialog
         oHBox.get_parent().get_parent().add_accel_group(oAccelGroup)
 
-        oFilterDialogButton = gtk.Button('Specify Filter')
-        oFilterApplyButton = gtk.CheckButton("Apply Filter")
-        oLegalButton = gtk.CheckButton("Show illegal cards")
-        oSearchButton = gtk.Button("Search List")
+        oFilterDialogButton = Gtk.Button('Specify Filter')
+        oFilterApplyButton = Gtk.CheckButton("Apply Filter")
+        oLegalButton = Gtk.CheckButton("Show illegal cards")
+        oSearchButton = Gtk.Button("Search List")
         add_accel_to_button(oFilterDialogButton, "<Ctrl>s", oAccelGroup,
                             'Open the Filter Editing Dialog.\n'
                             'Shortcut :<b>Ctrl-S</b>')
@@ -561,16 +561,16 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         oReplacementWin = AutoScrolledWindow(oReplacementView)
         oReplacementWin.set_size_request(600, 600)
-        oVBox.pack_start(oReplacementWin, True, True)
+        oVBox.pack_start(oReplacementWin, True, True, 0)
 
-        oFilterButtons = gtk.HBox(spacing=2)
-        oVBox.pack_start(gtk.HSeparator())
-        oVBox.pack_start(oFilterButtons)
+        oFilterButtons = Gtk.HBox(spacing=2)
+        oVBox.pack_start(Gtk.HSeparator())
+        oVBox.pack_start(oFilterButtons, True, True, 0)
 
-        oFilterButtons.pack_start(oFilterDialogButton)
-        oFilterButtons.pack_start(oFilterApplyButton)
-        oFilterButtons.pack_start(oLegalButton)
-        oFilterButtons.pack_start(oSearchButton)
+        oFilterButtons.pack_start(oFilterDialogButton, True, True, 0)
+        oFilterButtons.pack_start(oFilterApplyButton, True, True, 0)
+        oFilterButtons.pack_start(oLegalButton, True, True, 0)
+        oFilterButtons.pack_start(oSearchButton, True, True, 0)
 
         oFilterDialogButton.connect("clicked",
                                     oReplacementView.run_filter_dialog)
@@ -621,11 +621,11 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             aCards = list(oBestGuessFilter.select(AbstractCard))
             if len(aCards) == 1:
                 sBestGuess = aCards[0].name
-                iWeight = pango.WEIGHT_NORMAL
+                iWeight = Pango.Weight.NORMAL
                 oCard = aCards[0]
             else:
                 sBestGuess = NO_CARD
-                iWeight = pango.WEIGHT_BOLD
+                iWeight = Pango.Weight.BOLD
                 oCard = None
 
             oIter = oModel.append(None)
@@ -641,7 +641,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         oAbsCardView.cleanup()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             # For cards marked as replaced, add them to the Holder
             oIter = oModel.get_iter_first()
             while oIter is not None:
@@ -665,9 +665,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
            """
         oUnknownDialog = SutekhDialog(
             "Unknown printings found importing %s" % sInfo, None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         # Find all known expansion / printing combos and sort them
         # by name
@@ -680,17 +680,17 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 dPrintingCards.setdefault(sKey, [])
                 dPrintingCards[sKey].append(oCard.abstractCard.name)
 
-        oMesgLabel1 = gtk.Label(
+        oMesgLabel1 = Gtk.Label(
             label="While importing %s\n"
             "The following expansions and printings could not be found:\n"
             "Choose how to handle these printings?\n" % (sInfo))
-        oMesgLabel2 = gtk.Label(
+        oMesgLabel2 = Gtk.Label(
             label="OK continues the card set creation process, "
             "Cancel aborts the creation of the card set")
 
-        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False)
+        oUnknownDialog.vbox.pack_start(oMesgLabel1, False, False, 0)
 
-        oButtonBox = gtk.VBox()
+        oButtonBox = Gtk.VBox()
 
         # Fill in the Printings and options
         dReplacement = {}
@@ -704,33 +704,33 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             for sCard in dCardExpansions:
                 if tExpPrint in dCardExpansions[sCard]:
                     aCards.append('%s [%s]' % (sCard, sPrintInfo))
-            oBox = gtk.HBox()
-            oLabel = gtk.Label(label="%s is Unknown: " % sPrintInfo)
-            oBox.pack_start(oLabel)
+            oBox = Gtk.HBox()
+            oLabel = Gtk.Label(label="%s is Unknown: " % sPrintInfo)
+            oBox.pack_start(oLabel, True, True, 0)
 
-            oPopup = gtk.Button('Show cards')
+            oPopup = Gtk.Button('Show cards')
             oPopup.connect('clicked', self._popup_list,
                            '\n'.join(sorted(aCards)), sPrintInfo)
-            oBox.pack_start(oPopup)
+            oBox.pack_start(oPopup, True, True, 0)
 
-            oLabel2 = gtk.Label(label="Replace with ")
+            oLabel2 = Gtk.Label(label="Replace with ")
             oBox.pack_start(oLabel2)
 
-            oSelector = gtk.ComboBoxText()
+            oSelector = Gtk.ComboBoxText()
             for sPrintName in aKnownPrintings:
                 oSelector.append_text(sPrintName)
 
             dReplacement[tExpPrint] = oSelector
 
-            oPopupExpList = gtk.Button('Show cards')
+            oPopupExpList = Gtk.Button('Show cards')
             oPopupExpList.connect('clicked', self._popup_exp, oSelector,
                                   dPrintingCards)
 
             oBox.pack_start(dReplacement[tExpPrint])
-            oBox.pack_start(oPopupExpList)
-            oButtonBox.pack_start(oBox)
+            oBox.pack_start(oPopupExpList, True, True, 0)
+            oButtonBox.pack_start(oBox, True, True, 0)
 
-        oUnknownDialog.vbox.pack_start(oButtonBox, True, True)
+        oUnknownDialog.vbox.pack_start(oButtonBox, True, True, 0)
 
         oUnknownDialog.vbox.pack_start(oMesgLabel2)
         oUnknownDialog.vbox.show_all()
@@ -739,7 +739,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         oUnknownDialog.destroy()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             # For cards marked as replaced, add them to the Holder
             for tUnknownExpPrint in dUnknownPrintings:
                 iPos = dReplacement[tUnknownExpPrint].get_active()
@@ -758,10 +758,10 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         """Popup the list of cards from the unknown expansion"""
         oCardDialog = SutekhDialog(
             "Cards with unknown expansion and print: %s" % sPrint, None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oLabel = gtk.Label(label=sCardText)
-        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+        oLabel = Gtk.Label(label=sCardText)
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel), True, True, 0)
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()
         oCardDialog.run()
@@ -774,17 +774,17 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         if sNewName == NO_EXP_AND_PRINT or sNewName is None:
             # No cards to show, so do nothing
             sTitle = "No Expansion Selected"
-            oLabel = gtk.Label(label='No Expansion selected')
+            oLabel = Gtk.Label(label='No Expansion selected')
         else:
             sTitle = "Cards with expansion %s" % sNewName
             # Show all cards with the given printing
             aCards = dPrintingCards[sNewName]
-            oLabel = gtk.Label(label='\n'.join(sorted(aCards)))
+            oLabel = Gtk.Label(label='\n'.join(sorted(aCards)))
         oCardDialog = SutekhDialog(
             sTitle, None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
-        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+        oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel), True, True, 0)
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()
         oCardDialog.run()

@@ -5,7 +5,7 @@
 
 """Converts a filter into a card set"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet, PhysicalCard
 from ...core.BaseAdapters import IPhysicalCard, IPhysicalCardSet
 from ..BasePluginManager import BasePlugin
@@ -28,7 +28,7 @@ class BaseFromFilter(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Filter' Menu"""
-        oGenPCS = gtk.MenuItem(label="Card Set From Filter")
+        oGenPCS = Gtk.MenuItem(label="Card Set From Filter")
         oGenPCS.connect("activate", self.activate)
         return ('Filter', oGenPCS)
 

@@ -4,12 +4,11 @@
 # Copyright 2006 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""The gtk.TreeModel for the card lists."""
+"""The Gtk.TreeModel for the card lists."""
 
 import logging
 
-import gtk
-import gobject
+from gi.repository import Gdk, GObject, Gtk
 
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter, CachedFilter,
@@ -34,13 +33,13 @@ USE_ICONS = "show icons for grouping"
 HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
-class CardListModel(gtk.TreeStore):
+class CardListModel(Gtk.TreeStore):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # need local attributes for state
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
-    """Provides a card list specific API for accessing a gtk.TreeStore."""
+    # Gtk classes aren't old-style, but pylint thinks they are
+    """Provides a card list specific API for accessing a Gtk.TreeStore."""
     # Use spaces to ensure it sorts first
     # Could possibly be more visually distinct, but users can filter
     # on unknown expansions if needed.
@@ -50,11 +49,11 @@ class CardListModel(gtk.TreeStore):
     def __init__(self, oConfig):
         # STRING is the card name, INT is the card count
         super(CardListModel, self).__init__(str, int, int, bool, bool,
-                                            gobject.TYPE_PYOBJECT,
-                                            gobject.TYPE_PYOBJECT,
-                                            gtk.gdk.Color,
-                                            gobject.TYPE_PYOBJECT,
-                                            gobject.TYPE_PYOBJECT)
+                                            GObject.TYPE_PYOBJECT,
+                                            GObject.TYPE_PYOBJECT,
+                                            Gdk.Color,
+                                            GObject.TYPE_PYOBJECT,
+                                            GObject.TYPE_PYOBJECT)
         # name, count, parent count, showInc, showDec, text_list, icons,
         #       parent_color, AbstractCard, PhysicalCard
 
@@ -171,7 +170,7 @@ class CardListModel(gtk.TreeStore):
         self.set_sort_func(1, self._sort_col, 1)
         self.set_sort_func(2, self._sort_col, 2)
         # Sort the model on the card name by default
-        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        self.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
     def set_controller(self, oController):
         """Set the controller"""
@@ -515,7 +514,7 @@ class CardListModel(gtk.TreeStore):
     def get_name_from_iter(self, oIter):
         """Extract the value at oIter from the model, correcting for encoding
            issues."""
-        # With gtk3, we're supposed to always get unicode back here.
+        # With Gtk3, we're supposed to always get unicode back here.
         sName = self.get_value(oIter, 0)
         return sName
 

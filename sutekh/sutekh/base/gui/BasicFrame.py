@@ -6,23 +6,20 @@
 
 """Base class for Sutekh Frames"""
 
-import gtk
-import glib
-import cairo
+from gi.repository import Gdk, Gtk, GLib
 
 from .MessageBus import MessageBus, DATABASE_MSG
 
 
-class BasicFrame(gtk.Frame):
+class BasicFrame(Gtk.Frame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """The basic, blank frame for sutekh.
 
        Provides a default frame, and drag-n-drop handlind for
-       sawpping the frames. Also provides gtkrc handling for
-       setting the active hint.
+       sawpping the frames.
        """
 
     _cModelType = None
@@ -36,27 +33,32 @@ class BasicFrame(gtk.Frame):
 
         # Ensure new panes aren't completely hidden
 
-        self._oTitle = gtk.EventBox()
-        self._oTitleLabel = gtk.Label(label='Blank Frame')
+        self._oTitle = Gtk.EventBox()
+        self._oTitleLabel = Gtk.Label(label='Blank Frame')
         self._oTitleLabel.set_name('frame_title')
         self._oTitle.add(self._oTitleLabel)
         # Allows setting background colours for title easily
         self._oTitle.set_name('frame_title')
-        self._oView = gtk.TextView()
+        self._oView = Gtk.TextView()
         self._oView.set_editable(False)
         self._oView.set_cursor_visible(False)
 
         self._bNeedReload = False
 
-        self._oTitle.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
-        self._oTitle.drag_source_set(gtk.gdk.ModifierType.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        self._oTitle.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+        self._oTitle.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
 
         self._oTitle.drag_source_add_text_targets()
         self._oTitle.drag_dest_add_text_targets()
 
         self._oTitle.connect('drag-data-received', self.drag_drop_handler)
         self._oTitle.connect('drag-data-get', self.create_drag_data)
-        self._oTitle.connect('button-press-event', self.minimize_to_toolbar)
+        # Create a multi-press gesture for the double click
+        # This is to future proof us, since the old _2BUTTON_PRESS event,
+        # while it still exists, is deprecated
+        # gtk's binding's are odd here, and we need to use new explicitly
+        self._oGesture = Gtk.GestureMultiPress.new(self._oTitle)
+        self._oGesture.connect('pressed', self.minimize_to_toolbar)
         self._oTitle.connect_after('drag_begin', self.make_drag_icon)
         self.set_drag_handler(self._oView)
         self.set_drop_handler(self._oView)
@@ -97,7 +99,7 @@ class BasicFrame(gtk.Frame):
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
-        self._oTitleLabel.set_markup(glib.markup_escape_text(sTitle))
+        self._oTitleLabel.set_markup(GLib.markup_escape_text(sTitle))
 
     def set_id(self, iNewId):
         """Set the id of the pane to the correct value"""
@@ -105,13 +107,13 @@ class BasicFrame(gtk.Frame):
 
     def set_drop_handler(self, oWidget):
         """Setup the frame drop handler on the widget"""
-        oWidget.drag_dest_set(gtk.DestDefaults.ALL, [], gtk.gdk.DragAction.COPY)
+        oWidget.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         oWidget.drag_dest_add_text_targets()
         oWidget.connect('drag-data-received', self.drag_drop_handler)
 
     def set_drag_handler(self, oWidget):
         """Enable dragging of the frame via given widget"""
-        oWidget.drag_source_set(gtk.gdk.ModifierType.BUTTON1_MASK, [], gtk.gdk.DragAction.COPY)
+        oWidget.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
         oWidget.drag_source_add_text_targets()
         oWidget.connect('drag-data-get', self.create_drag_data)
         oWidget.connect_after('drag-begin', self.make_drag_icon)
@@ -206,11 +208,11 @@ class BasicFrame(gtk.Frame):
 
     def add_parts(self):
         """Add the basic widgets (title, & placeholder) to the frame."""
-        oMbox = gtk.VBox(homogeneous=False, spacing=2)
+        oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False)
+        oMbox.pack_start(self._oTitle, False, False, 0)
         # Blanks view placeholder fills everything it can
-        oMbox.pack_start(self._oView, True, True)
+        oMbox.pack_start(self._oView, True, True, 0)
 
         self.add(oMbox)
         self.show_all()
@@ -223,7 +225,7 @@ class BasicFrame(gtk.Frame):
         # otherwise any style set on 'title' automatically applies
         # here, which is not what we want.
 
-        #oDefaultSutekhStyle = gtk.rc_get_style_by_paths(
+        #oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(
         #    self._oTitleLabel.get_settings(), self.path() + '.',
         #    self.class_path(), self._oTitleLabel)
         # Bit of a hack, but get's matches to before the title specific bits
@@ -237,7 +239,7 @@ class BasicFrame(gtk.Frame):
         #    oMap = self._oTitleLabel.get_colormap()
         #    sColour = 'purple'
         #    if oMap.alloc_color(sColour).pixel == \
-        #            oCurStyle.fg[gtk.STATE_NORMAL].pixel:
+        #            oCurStyle.fg[Gtk.StateFlags.NORMAL].pixel:
         #        sColour = 'green'
         #        # Prevent collisions. If the person is using
         #        # purple on a green background, they deserve
@@ -248,11 +250,11 @@ class BasicFrame(gtk.Frame):
         #        }
         #    widget "%(path)s" style "internal_sutekh_hlstyle"
         #    """ % {'colour': sColour, 'path': self._oTitleLabel.path()}
-        #    gtk.rc_parse_string(sStyleInfo)
-        #    # We use gtk's style machinery to do the update.
+        #    Gtk.rc_parse_string(sStyleInfo)
+        #    # We use Gtk's style machinery to do the update.
         #    # This seems the only way of ensuring we will actually do
         #    # the right thing with themes, while still allowing flexiblity
-        # Here, as this forces gtk to re-asses styles of widget and children
+        # Here, as this forces Gtk to re-asses styles of widget and children
         self._oTitle.set_name('selected_title')
 
     def set_unfocussed_title(self):
@@ -305,20 +307,19 @@ class BasicFrame(gtk.Frame):
                     _oTimestamp):
         """Show proper icon during drag-n-drop actions."""
         if 'STRING' in oDrag_context.targets:
-            oDrag_context.drag_status(gtk.gdk.ACTION_COPY)
+            oDrag_context.drag_status(Gtk.DragAction.COPY)
             return True
         return False
 
-    def minimize_to_toolbar(self, _oWidget, oEvent):
+    def minimize_to_toolbar(self, _oGesture, iNumPresses, _fX, _fY):
         """Minimize the frame to the toolbar on double-click."""
-        # pylint: disable=protected-access
-        # We need to access _2BUTTON_PRESS
-        if oEvent.type == gtk.gdk._2BUTTON_PRESS:
+        # We're only interested in double clicks
+        if iNumPresses == 2:
             self._oMainWindow.minimize_to_toolbar(self)
 
     def make_drag_icon(self, oWidget, _oDragContext):
         """Create an icon for dragging the pane from the titlebar"""
         iXOffset, iYOffset = self._oTitleLabel.get_layout_offsets()
-        oPixbuf = gtk.gdk.pixbuf_get_from_window(self._oTitleLabel.window, iXOffset, iYOffset,
+        oPixbuf = Gdk.pixbuf_get_from_window(self._oTitleLabel.window, iXOffset, iYOffset,
                                                  100, 20)
         oWidget.drag_source_set_icon_pixbuf(oPixbuf)

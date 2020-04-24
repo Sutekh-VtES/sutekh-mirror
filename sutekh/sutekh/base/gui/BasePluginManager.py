@@ -14,12 +14,10 @@ import zipfile
 import zipimport
 
 # Needed so we can import this into the documentation generator
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk("3.0")
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GLib
 
-import gtk
-from glib import markup_escape_text
 from sqlobject import sqlhub
 
 from ..core.DatabaseVersion import DatabaseVersion
@@ -329,7 +327,7 @@ class BasePlugin:
     # pylint: disable=no-self-use
     # We expect children to override these when needed
     def get_menu_item(self):
-        """Return a list of ('Menu', gtk.MenuItems) pairs for the plugin or
+        """Return a list of ('Menu', Gtk.MenuItems) pairs for the plugin or
            None if no menu item is needed."""
         return None
 
@@ -355,7 +353,7 @@ class BasePlugin:
         return None
 
     def get_toolbar_widget(self):
-        """Return an arbitary gtk.Widget which is added to a VBox between the
+        """Return an arbitary Gtk.Widget which is added to a VBox between the
            menu and the scrolled display area.
 
            Return None is no toolbar Widget is needed
@@ -449,7 +447,7 @@ class BasePlugin:
                                         "plugin doesn't seem sensible.\n"
                                         "Are you sure you want to continue?" %
                                         (iCards, sName))
-            if iRes == gtk.RESPONSE_CANCEL:
+            if iRes == Gtk.ResponseType.CANCEL:
                 return False  # fail
         return True  # A-OK
 
@@ -459,7 +457,7 @@ class BasePlugin:
         """Escape strings so that markup and special characters don't break
            things."""
         if sInput:
-            return markup_escape_text(sInput)
+            return GLib.markup_escape_text(sInput)
         return sInput  # pass None straight through
 
     def _commit_cards(self, oCS, aCards):

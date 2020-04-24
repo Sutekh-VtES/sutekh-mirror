@@ -6,7 +6,7 @@
 
 """Display a running total of the cards in a card set"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet
 from ...core.BaseAdapters import IAbstractCard
 from ..BasePluginManager import BasePlugin
@@ -50,7 +50,7 @@ class BaseCountCSCards(BasePlugin):
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        self._oTextLabel = gtk.Label(label=self.TOT_FORMAT % self.dInfo)
+        self._oTextLabel = Gtk.Label(label=self.TOT_FORMAT % self.dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % self.dInfo)
         self._oTextLabel.show()
         return self._oTextLabel

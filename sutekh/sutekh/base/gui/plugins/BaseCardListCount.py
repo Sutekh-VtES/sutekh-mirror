@@ -6,7 +6,7 @@
 
 """Provide count card options for the full card list"""
 
-import gtk
+from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCard
 from ...core.BaseAdapters import IAbstractCard
 from ..BasePluginManager import BasePlugin
@@ -82,7 +82,7 @@ class BaseCardListCount(BasePlugin):
             dInfo = self._dCardTotals
         else:
             dInfo = self._dExpTotals
-        self._oTextLabel = gtk.Label(label=self.TOT_FORMAT % dInfo)
+        self._oTextLabel = Gtk.Label(label=self.TOT_FORMAT % dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % dInfo)
 
         if self._iMode != self.NO_COUNT:
@@ -169,10 +169,10 @@ class BaseCardListCount(BasePlugin):
         aCols = self._get_cols()
         if aCols:
             return  # column already there
-        oCell = gtk.CellRendererText()
-        oColumn = gtk.TreeViewColumn(self.COLUMN_NAME, oCell)
+        oCell = Gtk.CellRendererText()
+        oColumn = Gtk.TreeViewColumn(self.COLUMN_NAME, oCell)
         oColumn.set_cell_data_func(oCell, self._render_count)
-        oColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         oColumn.set_fixed_width(40)
         oColumn.set_resizable(True)
         self.view.insert_column(oColumn, 0)

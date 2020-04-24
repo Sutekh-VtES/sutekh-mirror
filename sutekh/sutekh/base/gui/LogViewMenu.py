@@ -8,7 +8,7 @@
 
 import logging
 
-import gtk
+from gi.repository import Gtk
 
 from .SutekhMenu import SutekhMenu
 from .SutekhFileWidget import ExportDialog
@@ -16,9 +16,9 @@ from .SutekhFileWidget import ExportDialog
 
 class LogViewMenu(SutekhMenu):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Log View Menu.
 
        Provides options for filtering the log messages on severity,
@@ -36,16 +36,16 @@ class LogViewMenu(SutekhMenu):
         oMenu = self.create_submenu(self, 'Actions')
         oFilterList = self.create_submenu(oMenu, 'Filter log level')
         self._create_filter_list(oFilterList)
-        oMenu.add(gtk.SeparatorMenuItem())
+        oMenu.add(Gtk.SeparatorMenuItem())
         self.create_menu_item("_Save current view to File", oMenu,
                               self._save_to_file)
 
     def _create_filter_list(self, oSubMenu):
         """Create list of 'Filter' radio options."""
-        oAll = gtk.RadioMenuItem(group=None, label="Show all log messages")
-        oInfo = gtk.RadioMenuItem(group=oAll, label="Ignore debugging log messages")
-        oWarn = gtk.RadioMenuItem(group=oAll, label="Also Ignore Info messages")
-        oError = gtk.RadioMenuItem(group=oAll, label="Only show Error log messages")
+        oAll = Gtk.RadioMenuItem(group=None, label="Show all log messages")
+        oInfo = Gtk.RadioMenuItem(group=oAll, label="Ignore debugging log messages")
+        oWarn = Gtk.RadioMenuItem(group=oAll, label="Also Ignore Info messages")
+        oError = Gtk.RadioMenuItem(group=oAll, label="Only show Error log messages")
 
         oAll.connect('activate', self._change_log_level, logging.NOTSET)
         oInfo.connect('activate', self._change_log_level, logging.INFO)

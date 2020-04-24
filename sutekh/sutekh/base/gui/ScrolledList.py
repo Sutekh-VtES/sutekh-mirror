@@ -6,18 +6,18 @@
 
 """Generic Scrolled List, used in the Filter Dialog and elsewhere"""
 
-import gtk
-import gobject
+from gi.repository import Gtk, GObject
+
 from .AutoScrolledWindow import AutoScrolledWindow
 from .CustomDragIconView import CustomDragIconView
 
 
-class ScrolledListStore(gtk.ListStore):
+class ScrolledListStore(Gtk.ListStore):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Simple list store for ScrolledList widget"""
     def __init__(self):
-        super(ScrolledListStore, self).__init__(gobject.TYPE_STRING)
+        super(ScrolledListStore, self).__init__(GObject.TYPE_STRING)
 
     def fill_list(self, aVals):
         """Fill the list"""
@@ -29,18 +29,18 @@ class ScrolledListStore(gtk.ListStore):
 
 class ScrolledListView(CustomDragIconView):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Simple tree view for the ScrolledList widget"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
         if not oModel:
             oModel = ScrolledListStore()
         super(ScrolledListView, self).__init__(oModel)
-        oCell1 = gtk.CellRendererText()
-        oColumn1 = gtk.TreeViewColumn(sTitle, oCell1, markup=0)
+        oCell1 = Gtk.CellRendererText()
+        oColumn1 = Gtk.TreeViewColumn(sTitle, oCell1, markup=0)
         self.append_column(oColumn1)
-        self._oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+        self._oSelection.set_mode(Gtk.SelectionMode.MULTIPLE)
 
         if bSpecialSelect:
             self._oSelection.connect('changed', self.row_selected)
@@ -83,18 +83,18 @@ class ScrolledListView(CustomDragIconView):
             oIter = self._oModel.iter_next(oIter)
 
 
-class ScrolledList(gtk.Frame):
+class ScrolledList(Gtk.Frame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
         super(ScrolledList, self).__init__()
         self._oTreeView = ScrolledListView(sTitle, oModel, bSpecialSelect)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)
-        self.set_shadow_type(gtk.SHADOW_NONE)
+        self.set_shadow_type(Gtk.ShadowType.NONE)
         self.show_all()
 
     # pylint: disable=protected-access
@@ -105,15 +105,15 @@ class ScrolledList(gtk.Frame):
 
     def set_select_single(self):
         """set selection to single mode"""
-        self._oTreeView.get_selection().set_mode(gtk.SELECTION_SINGLE)
+        self._oTreeView.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
 
     def set_select_multiple(self):
         """set selection to multiple mode"""
-        self._oTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self._oTreeView.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
 
     def set_select_none(self):
         """set selection mode to none"""
-        self._oTreeView.get_selection().set_mode(gtk.SELECTION_NONE)
+        self._oTreeView.get_selection().set_mode(Gtk.SelectionMode.NONE)
 
     def get_selection(self):
         """Return a list of the selected elements of the list"""
