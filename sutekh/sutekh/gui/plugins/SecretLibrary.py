@@ -10,7 +10,7 @@ from io import StringIO
 import re
 import logging
 
-import gtk
+from gi.repository import Gtk
 import keyring
 from sqlobject import SQLObjectNotFound
 
@@ -41,7 +41,7 @@ def canonical_to_sl(sName):
 
 class ImportExportBase(SutekhDialog):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     # we use a lot of attributes to pass the data around
     """Base class for import and export dialogs."""
 
@@ -55,58 +55,58 @@ class ImportExportBase(SutekhDialog):
 
         self.vbox.set_spacing(10)
 
-        oDescLabel = gtk.Label()
+        oDescLabel = Gtk.Label()
         oDescLabel.set_markup('<b>%s Secret Library</b>' % (sTitlePhrase,))
 
-        self.vbox.pack_start(oDescLabel, False, False)
+        self.vbox.pack_start(oDescLabel, False, False, 0)
 
         # Deck / Inventory Selector
 
         self._sNewName = ""
-        self._oAsDeckButton = gtk.RadioButton(group=None, label="Deck")
-        self._oAsInvButton = gtk.RadioButton(group=self._oAsDeckButton, label="Inventory")
+        self._oAsDeckButton = Gtk.RadioButton(group=None, label="Deck")
+        self._oAsInvButton = Gtk.RadioButton(group=self._oAsDeckButton, label="Inventory")
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
 
         self.vbox.pack_start(
-            gtk.Label(label="%s ..." % (sSourcePhrase,)), False, False)
-        self.vbox.pack_start(self._oAsDeckButton, False, False)
-        self.vbox.pack_start(self._oAsInvButton, False, False)
+            Gtk.Label(label="%s ..." % (sSourcePhrase,)), False, False)
+        self.vbox.pack_start(self._oAsDeckButton, False, False, 0)
+        self.vbox.pack_start(self._oAsInvButton, False, False, 0)
 
         # Deck / Inventory specific widgets
 
-        self._oDeckInvVbox = gtk.VBox()
+        self._oDeckInvVbox = Gtk.VBox()
         self._aDeckWidgets = aDeckWidgets
         self._aInvWidgets = aInvWidgets
-        self.vbox.pack_start(self._oDeckInvVbox, False, False)
+        self.vbox.pack_start(self._oDeckInvVbox, False, False, 0)
         self._deck_inv_changed(self._oAsDeckButton)
 
         # API URL
 
-        self._oUrlEntry = gtk.combo_box_entry_new_text()
+        self._oUrlEntry = Gtk.combo_box_entry_new_text()
         self._oUrlEntry.append_text(SecretLibrary.SL_API_URL)
         self._oUrlEntry.set_active(0)
 
-        self.vbox.pack_start(gtk.Label(label="Secret Library API URL"), False, False)
-        self.vbox.pack_start(self._oUrlEntry, False, False)
+        self.vbox.pack_start(Gtk.Label(label="Secret Library API URL"), False, False, 0)
+        self.vbox.pack_start(self._oUrlEntry, False, False, 0)
 
         # Username
 
-        self._oUsernameEntry = gtk.Entry()
+        self._oUsernameEntry = Gtk.Entry()
         if sUsername:
             self._oUsernameEntry.set_text(sUsername)
 
-        self.vbox.pack_start(gtk.Label(label="Username"), False, False)
-        self.vbox.pack_start(self._oUsernameEntry)
+        self.vbox.pack_start(Gtk.Label(label="Username"), False, False, 0)
+        self.vbox.pack_start(self._oUsernameEntry, True, True, 0)
 
         # Password
 
-        self._oPasswordEntry = gtk.Entry()
+        self._oPasswordEntry = Gtk.Entry()
         self._oPasswordEntry.set_visibility(False)
         if sPassword:
             self._oPasswordEntry.set_text(sPassword)
 
-        self.vbox.pack_start(gtk.Label(label="Password"), False, False)
-        self.vbox.pack_start(self._oPasswordEntry)
+        self.vbox.pack_start(Gtk.Label(label="Password"), False, False, 0)
+        self.vbox.pack_start(self._oPasswordEntry, True, True, 0)
 
     # pylint: enable=attribute-defined-outside-init
 
@@ -146,19 +146,19 @@ class ImportExportBase(SutekhDialog):
 
 class ImportDialog(ImportExportBase):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for importing card sets from the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
         super(ImportDialog, self).__init__(
             'Import from Secret Library',
-            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        self._oDeckId = gtk.Entry()
+        self._oDeckId = Gtk.Entry()
         aDeckWidgets = [
-            gtk.Label(label="Deck Id Number"),
+            Gtk.Label(label="Deck Id Number"),
             self._oDeckId,
         ]
 
@@ -176,20 +176,20 @@ class ImportDialog(ImportExportBase):
 
 class ExportDialog(ImportExportBase):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for exporting cards sets to the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
         super(ExportDialog, self).__init__(
             'Export to Secret Library',
-            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        self._oPublic = gtk.CheckButton("Make deck public")
+        self._oPublic = Gtk.CheckButton("Make deck public")
         aDeckWidgets = [self._oPublic]
 
-        self._oPurge = gtk.CheckButton("Purge inventory on upload")
+        self._oPurge = Gtk.CheckButton("Purge inventory on upload")
         aInvWidgets = [self._oPurge]
 
         self._setup_vbox("Export to", "Export as", aDeckWidgets, aInvWidgets,
@@ -236,11 +236,11 @@ class SecretLibrary(SutekhPlugin):
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""
         if self.model is None:
-            oMenuItem = gtk.MenuItem(label="Import from Secret Library")
+            oMenuItem = Gtk.MenuItem(label="Import from Secret Library")
             oMenuItem.connect("activate", self.make_import_dialog)
             sSection = 'Import Card Set'
         else:
-            oMenuItem = gtk.MenuItem(label="Export to Secret Library")
+            oMenuItem = Gtk.MenuItem(label="Export to Secret Library")
             oMenuItem.connect("activate", self.make_export_dialog)
             sSection = 'Export Card Set'
 
@@ -278,7 +278,7 @@ class SecretLibrary(SutekhPlugin):
         """Handle the import dialog response."""
         iResponse = oImportDialog.run()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             sUsername, sPassword = oImportDialog.get_auth()
             self.set_auth(sUsername, sPassword)
 
@@ -311,7 +311,7 @@ class SecretLibrary(SutekhPlugin):
         """Handle the export dialog response."""
         iResponse = oExportDialog.run()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             sUsername, sPassword = oExportDialog.get_auth()
             self.set_auth(sUsername, sPassword)
 

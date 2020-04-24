@@ -6,7 +6,7 @@
 
 """Menu for the Main Application Window"""
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.io.IdentifyXMLFile import IdentifyXMLFile
 from sutekh.base.gui.AppMenu import AppMenu
@@ -20,7 +20,7 @@ class MainMenu(AppMenu):
        Extends AppMenu with the various sutekh specific options.
        """
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
         super(MainMenu, self).__init__(oWindow, oConfig)
@@ -41,7 +41,7 @@ class MainMenu(AppMenu):
     def _add_prefs_menu(self, oPrefsMenu):
         """Extend the Preferences menu"""
         super(MainMenu, self)._add_prefs_menu(oPrefsMenu)
-        oShowErrata = gtk.CheckMenuItem(
+        oShowErrata = Gtk.CheckMenuItem(
             label='Show Errata Markers')
         oShowErrata.set_inconsistent(False)
         if self._oConfig.get_show_errata_markers():

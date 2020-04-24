@@ -5,7 +5,8 @@
 # GPL - see COPYING for details
 """Calculate probabilities for drawing the current selection."""
 
-import gtk
+from gi.repository import Gtk
+
 from sutekh.SutekhUtility import is_crypt_card
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.core.BaseAdapters import IAbstractCard
@@ -128,9 +129,9 @@ class CardDrawSimPlugin(SutekhPlugin, BaseDrawProbPlugin):
     def _get_table_draw_title(self):
         """Set the label for the results tabel"""
         if self.bCrypt:
-            oLabel = gtk.Label(label='Opening Draw')
+            oLabel = Gtk.Label(label='Opening Draw')
         else:
-            oLabel = gtk.Label(label='Opening Hand')
+            oLabel = Gtk.Label(label='Opening Hand')
         return oLabel
 
 

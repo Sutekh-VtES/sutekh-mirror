@@ -12,7 +12,7 @@ import webbrowser
 import zipfile
 from logging import Logger
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.base.Utility import prefs_dir, ensure_dir_exists
 from sutekh.base.io.UrlOps import urlopen_with_timeout
@@ -29,7 +29,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 class RulebookConfigDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for configuring the Rulebook plugin."""
 
     sDocUrl = DOC_URL
@@ -37,10 +37,10 @@ class RulebookConfigDialog(SutekhDialog):
     def __init__(self, oParent, bFirstTime=False):
         super(RulebookConfigDialog, self).__init__(
             'Configure Rulebook Info Plugin', oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oDescLabel = gtk.Label()
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        oDescLabel = Gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the rulebook'
                                   ' plugin</b>')
@@ -55,8 +55,8 @@ class RulebookConfigDialog(SutekhDialog):
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
-        self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(self.oFileWidget, False, False)
+        self.vbox.pack_start(oDescLabel, False, False, 0)
+        self.vbox.pack_start(self.oFileWidget, False, False, 0)
         if bFirstTime:
             # description is longer, so request should be taller
             self.set_size_request(340, 240)
@@ -135,7 +135,7 @@ class RulebookPlugin(SutekhPlugin):
             self._sPrefsPath = os.path.join(prefs_dir('Sutekh'), 'rulebook')
             self.set_config_item('rulebook path', self._sPrefsPath)
 
-        oConfigMenuItem = gtk.MenuItem(label="Download Rulebook Files")
+        oConfigMenuItem = Gtk.MenuItem(label="Download Rulebook Files")
         oConfigMenuItem.connect("activate", self.config_activate)
 
         aMenuList = [('Data Downloads', oConfigMenuItem)]
@@ -192,11 +192,11 @@ class RulebookPlugin(SutekhPlugin):
            """
         aItems = []
         for sFilename, sTitle in self._read_index():
-            oItem = gtk.MenuItem(label=sTitle)
+            oItem = Gtk.MenuItem(label=sTitle)
             oItem.connect("activate", self.rulebook_activate, sFilename)
             aItems.append(oItem)
         if not aItems:
-            oItem = gtk.MenuItem(label='No rulebooks')
+            oItem = Gtk.MenuItem(label='No rulebooks')
             oItem.set_sensitive(False)
             aItems.append(oItem)
         self._oFirstMenuItem = aItems[0]
@@ -259,7 +259,7 @@ class RulebookPlugin(SutekhPlugin):
         """Handle the response from the config dialog"""
         iResponse = oConfigDialog.run()
 
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             # pylint: disable=broad-except
             # we want to catch all errors here
             try:

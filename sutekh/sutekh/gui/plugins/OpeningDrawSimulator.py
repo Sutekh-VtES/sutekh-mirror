@@ -5,7 +5,8 @@
 # GPL - see COPYING for details
 """Simulate the opening hand draw."""
 
-import gtk
+from gi.repository import Gtk
+
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.plugins.BaseOpeningDraw import (BaseOpeningDraw,
@@ -95,11 +96,11 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
 
     def _fill_stats(self, oDialog):
         """Fill in the stats from the draws"""
-        oHBox = gtk.HBox(True, 3)
+        oHBox = Gtk.HBox(True, 3)
         # setup display widgets
         # pylint: disable=no-member
         # vbox methods not detected by pylint
-        oDialog.vbox.pack_start(oHBox)
+        oDialog.vbox.pack_start(oHBox, False, True, 0)
         dLibProbs = self._get_lib_props()
         oHBox.pack_start(self._setup_grouped_view(dLibProbs, self.dCardTypes,
                                                   'Card Types'))
@@ -145,30 +146,30 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         """Fill in details of the hand"""
         self.iMoreLib = 0
         self.iMoreCrypt = 0
-        oHandLabel = gtk.Label()
+        oHandLabel = Gtk.Label()
         oHandLabel.set_markup(self.aDrawnHands[self.iCurHand - 1].sHand)
-        oCryptLabel = gtk.Label()
+        oCryptLabel = Gtk.Label()
         oCryptLabel.set_markup(self.aDrawnHands[self.iCurHand - 1].sCrypt)
 
-        oCryptInfoBox = gtk.VBox(homogeneous=False, spacing=0)
-        oHandInfoBox = gtk.VBox(homogeneous=False, spacing=0)
-        oHandInfoBox.pack_start(oHandLabel, True, True)
-        oMoreCards = gtk.Button('Next 5')
+        oCryptInfoBox = Gtk.VBox(homogeneous=False, spacing=0)
+        oHandInfoBox = Gtk.VBox(homogeneous=False, spacing=0)
+        oHandInfoBox.pack_start(oHandLabel, True, True, 0)
+        oMoreCards = Gtk.Button('Next 5')
         oMoreCards.connect('clicked', self._more_lib, oHandInfoBox)
-        oHandInfoBox.pack_start(oMoreCards, False, False)
+        oHandInfoBox.pack_start(oMoreCards, False, False, 0)
 
-        oCryptInfoBox.pack_start(oCryptLabel, True, True)
-        oMoreCrypt = gtk.Button('Next 1')
+        oCryptInfoBox.pack_start(oCryptLabel, True, True, 0)
+        oMoreCrypt = Gtk.Button('Next 1')
         oMoreCrypt.connect('clicked', self._more_crypt, oCryptInfoBox)
-        oCryptInfoBox.pack_start(oMoreCrypt, False, False)
-        oFrame = gtk.Frame()
+        oCryptInfoBox.pack_start(oMoreCrypt, False, False, 0)
+        oFrame = Gtk.Frame()
         oFrame.set_label('Opening Hand')
         oFrame.add(oHandInfoBox)
-        oHBox.pack_start(oFrame)
-        oFrame = gtk.Frame()
+        oHBox.pack_start(oFrame, False, True, 0)
+        oFrame = Gtk.Frame()
         oFrame.set_label('Opening Crypt Draw')
         oFrame.add(oCryptInfoBox)
-        oHBox.pack_start(oFrame)
+        oHBox.pack_start(oFrame, False, True, 0)
 
     def _more_lib(self, oButton, oBox):
         """Add the next 5 library cards"""
@@ -176,13 +177,13 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
             dNextHand = self.aDrawnHands[self.iCurHand - 1].dNextHand[
                 self.iMoreLib]
             # pop out button show we can add our text
-            oCardLabel = gtk.Label()
+            oCardLabel = Gtk.Label()
             oCardLabel.set_markup(format_dict(dNextHand))
             oBox.remove(oButton)
-            oBox.pack_start(oCardLabel, True, True)
+            oBox.pack_start(oCardLabel, True, True, 0)
             self.iMoreLib += 1
             if self.iMoreLib < 3:
-                oBox.pack_start(oButton, False, False)
+                oBox.pack_start(oButton, False, False, 0)
             oBox.show_all()
 
     def _more_crypt(self, oButton, oBox):
@@ -191,24 +192,24 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
             dNextCrypt = self.aDrawnHands[self.iCurHand - 1].dNextCrypt[
                 self.iMoreCrypt]
             # pop out button show we can add our text
-            oCardLabel = gtk.Label()
+            oCardLabel = Gtk.Label()
             oCardLabel.set_markup(format_dict(dNextCrypt))
             oBox.remove(oButton)
-            oBox.pack_start(oCardLabel, True, True)
+            oBox.pack_start(oCardLabel, True, True, 0)
             self.iMoreCrypt += 1
             if self.iMoreCrypt < 3:
-                oBox.pack_start(oButton, False, False)
+                oBox.pack_start(oButton, False, False, 0)
             oBox.show_all()
 
     def _redraw_detail_box(self):
         """Fill in the details for the given hand"""
-        oDetailBox = gtk.VBox(homogeneous=False, spacing=2)
-        oHBox = gtk.HBox(False, 2)
+        oDetailBox = Gtk.VBox(homogeneous=False, spacing=2)
+        oHBox = Gtk.HBox(False, 2)
         oHBox.pack_start(fill_frame(
             self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'))
         oHBox.pack_start(fill_frame(
             self.aDrawnHands[self.iCurHand - 1].sProp, 'Card Properties'))
-        oDetailBox.pack_start(oHBox)
+        oDetailBox.pack_start(oHBox, False, True, 0)
         return oDetailBox
 
 

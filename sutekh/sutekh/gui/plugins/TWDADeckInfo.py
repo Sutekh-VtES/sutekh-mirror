@@ -10,7 +10,8 @@ import datetime
 from logging import Logger
 from io import BytesIO
 
-import gtk
+from gi.repository import Gtk
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet, PhysicalCard,
@@ -67,7 +68,7 @@ class BinnedCountLogHandler(SutekhCountLogHandler):
 
 class TWDAConfigDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for configuring the TWDA plugin."""
 
     sDocUrl = DOC_URL
@@ -76,10 +77,10 @@ class TWDAConfigDialog(SutekhDialog):
         super(TWDAConfigDialog, self).__init__(
             'Configure TWDA Info Plugin',
             oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        oDescLabel = gtk.Label()
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        oDescLabel = Gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the'
                                   ' Tournament Winning Deck Archive (TWDA)'
@@ -96,9 +97,9 @@ class TWDAConfigDialog(SutekhDialog):
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
-        self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(gtk.HSeparator(), False, False)
-        self.vbox.pack_start(self.oFileWidget, False, False)
+        self.vbox.pack_start(oDescLabel, False, False, 0)
+        self.vbox.pack_start(Gtk.HSeparator(), False, False, 0)
+        self.vbox.pack_start(self.oFileWidget, False, False, 0)
 
         self.set_size_request(350, 300)
 
@@ -172,17 +173,17 @@ class TWDAInfoPlugin(SutekhPlugin):
            """
         if self.model is None:
             # Add entry to the data download menu
-            oDownload = gtk.MenuItem(label="Download TWDA decks")
+            oDownload = Gtk.MenuItem(label="Download TWDA decks")
             oDownload.connect('activate', self.do_download)
             return ('Data Downloads', oDownload)
         # Add entries to the analyze list
-        oTWDMenu = gtk.MenuItem(label=self.sMenuName + ' ... ')
-        oSubMenu = gtk.Menu()
+        oTWDMenu = Gtk.MenuItem(label=self.sMenuName + ' ... ')
+        oSubMenu = Gtk.Menu()
         oTWDMenu.set_submenu(oSubMenu)
-        self.oAllTWDA = gtk.MenuItem(label="ALL selected cards")
+        self.oAllTWDA = Gtk.MenuItem(label="ALL selected cards")
         oSubMenu.add(self.oAllTWDA)
         self.oAllTWDA.connect("activate", self.find_twda, "all")
-        self.oAnyTWDA = gtk.MenuItem(label="ANY selected cards")
+        self.oAnyTWDA = Gtk.MenuItem(label="ANY selected cards")
         oSubMenu.add(self.oAnyTWDA)
         self.oAnyTWDA.connect("activate", self.find_twda, "any")
         if self.check_enabled():
@@ -253,54 +254,54 @@ class TWDAInfoPlugin(SutekhPlugin):
     def _fill_dlg(self, dCardSets, sMatchText):
         """Add info about the card sets to the dialog"""
         oDlg = NotebookDialog("TWDA matches", self.parent,
-                              gtk.DIALOG_DESTROY_WITH_PARENT,
-                              (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                              Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                              (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         aParents = set([oCS.parent.name for oCS in dCardSets])
         dPages = {}
         oDlg.connect('response', lambda dlg, but: dlg.destroy())
         # We create tabs for each year, and then list card
         # sets below them
         for sName in sorted(aParents):
-            oInfo = gtk.VBox(homogeneous=False, spacing=2)
+            oInfo = Gtk.VBox(homogeneous=False, spacing=2)
             oDlg.add_widget_page(AutoScrolledWindow(oInfo),
                                  sName.replace("TWDA ", ""))
-            oInfo.pack_start(gtk.Label(label=sMatchText), expand=False, padding=6)
+            oInfo.pack_start(Gtk.Label(label=sMatchText), False, True, 6)
             iCardSets = len([x for x in dCardSets if x.parent.name == sName])
-            oInfo.pack_start(gtk.Label(label="%d Card Sets" % iCardSets),
-                             expand=False, padding=4)
+            oInfo.pack_start(Gtk.Label(label="%d Card Sets" % iCardSets),
+                             False, True, 4)
             dPages[sName] = oInfo
 
         for oCS in sorted(dCardSets, key=lambda x: x.name):
             oInfo = dPages[oCS.parent.name]
-            oName = gtk.Label(label=oCS.name)
+            oName = Gtk.Label(label=oCS.name)
             aCardInfo = []
             for sName in sorted(dCardSets[oCS]):
                 aCardInfo.append(
                     u"  - %s \u00D7 %d" % (sName, dCardSets[oCS][sName]))
-            oCards = gtk.Label(label='\n'.join(aCardInfo))
-            oButton = gtk.Button(label="Open cardset")
+            oCards = Gtk.Label(label='\n'.join(aCardInfo))
+            oButton = Gtk.Button(label="Open cardset")
             oButton.connect('clicked', self._open_card_set, oCS)
-            oInfo.pack_start(oName, expand=False)
-            oInfo.pack_start(oCards, expand=False)
-            oInfo.pack_start(oButton, expand=False)
-            oInfo.pack_start(gtk.HSeparator(), expand=False)
+            oInfo.pack_start(oName, False, True, 0)
+            oInfo.pack_start(oCards, False, True, 0)
+            oInfo.pack_start(oButton, False, True, 0)
+            oInfo.pack_start(Gtk.HSeparator(), False, True, 0)
         return oDlg
 
     def _empty_dlg(self, sMatchText):
         """Add an nothing found notice to dialog"""
         # pylint: disable=no-member
-        # gtk confuses pylint
+        # Gtk confuses pylint
         oDlg = SutekhDialog("No TWDA matches", self.parent,
-                            gtk.DIALOG_DESTROY_WITH_PARENT,
-                            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         oDlg.connect('response', lambda dlg, but: dlg.destroy())
-        oLabel = gtk.Label(label="No decks found statisfying %s" % sMatchText)
-        oDlg.vbox.pack_start(oLabel)
+        oLabel = Gtk.Label(label="No decks found statisfying %s" % sMatchText)
+        oDlg.vbox.pack_start(oLabel, True, True, 0)
         return oDlg
 
     def _open_card_set(self, _oButton, oCS):
         """Wrapper around open_cs to handle being called directly from a
-           gtk widget"""
+           Gtk widget"""
         self._open_cs(oCS.name)
 
     def check_enabled(self):
@@ -350,7 +351,7 @@ class TWDAInfoPlugin(SutekhPlugin):
     def handle_response(self, oDialog):
         """Handle running and responding to the download dialog"""
         iResponse = oDialog.run()
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             if oDialog.is_url():
                 aUrls, aDates, aHashes = oDialog.get_url_data()
                 if not aUrls:

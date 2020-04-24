@@ -8,9 +8,8 @@
    spreads of the vampires in each.
    """
 
-import gtk
-import pango
-import gobject
+from gi.repository import GObject, Gtk, Pango
+
 from sqlobject import SQLObjectNotFound
 from sutekh.base.core.BaseTables import PhysicalCard
 from sutekh.base.core.BaseAdapters import ICardType, IKeyword
@@ -62,7 +61,7 @@ class ClanDisciplineStats(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oClanStats = gtk.MenuItem(label=self.sMenuName)
+        oClanStats = Gtk.MenuItem(label=self.sMenuName)
         oClanStats.connect("activate", self.activate)
         return ('Analyze', oClanStats)
 
@@ -75,16 +74,16 @@ class ClanDisciplineStats(SutekhPlugin):
     def make_dialog(self):
         """Create the dialog to display the statistics"""
         oDlg = SutekhDialog("Clan Vampire Statistics", self.parent,
-                            gtk.DIALOG_DESTROY_WITH_PARENT)
+                            Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
-        oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+        oDlg.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
 
-        self._oStatsVbox = gtk.VBox(homogeneous=False, spacing=0)
+        self._oStatsVbox = Gtk.VBox(homogeneous=False, spacing=0)
 
         # pylint: disable=no-member
         # vbox methods not seen
-        oDlg.vbox.pack_start(self._oStatsVbox)
+        oDlg.vbox.pack_start(self._oStatsVbox, False, True, 0)
         oDlg.set_size_request(600, 400)
         oDlg.show_all()
 
@@ -101,7 +100,7 @@ class ClanDisciplineStats(SutekhPlugin):
         oView = StatsView(self.model.hideillegal)
 
         # top align, using viewport to scroll
-        self._oStatsVbox.pack_start(AutoScrolledWindow(oView))
+        self._oStatsVbox.pack_start(AutoScrolledWindow(oView), True, True, 0)
         self._oStatsVbox.show_all()
 
 
@@ -161,9 +160,9 @@ class ClanStats:
                 oStats.add_vamp(oVamp)
 
 
-class StatsView(gtk.TreeView):
+class StatsView(Gtk.TreeView):
     # pylint: disable=too-many-public-methods
-    # gtk classes, so we have lots of public methods
+    # Gtk classes, so we have lots of public methods
     """TreeView used to display clan discipline stats"""
 
     def __init__(self, bHideIllegal):
@@ -175,28 +174,28 @@ class StatsView(gtk.TreeView):
 
         super(StatsView, self).__init__(self._oModel)
 
-        oCell = gtk.CellRendererText()
-        oCell.set_property('style', pango.STYLE_ITALIC)
+        oCell = Gtk.CellRendererText()
+        oCell.set_property('style', Pango.Style.ITALIC)
 
         for iCol, sLabel in enumerate(self._aLabels):
-            oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iCol)
+            oColumn = Gtk.TreeViewColumn(sLabel, oCell, text=iCol)
             oColumn.set_sort_column_id(iCol)
             self.append_column(oColumn)
 
-        self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+        self.set_grid_lines(Gtk.TreeViewGridLine._BOTH)
 
 
-class StatsModel(gtk.TreeStore):
+class StatsModel(Gtk.TreeStore):
     # pylint: disable=too-many-public-methods
-    # gtk classes, so we have lots of public methods
+    # Gtk classes, so we have lots of public methods
     """TreeStore to hold the data about the clan statistics"""
 
     def __init__(self, bHideIllegal):
-        super(StatsModel, self).__init__(gobject.TYPE_STRING,
-                                         gobject.TYPE_STRING,
-                                         gobject.TYPE_INT,
-                                         gobject.TYPE_INT,
-                                         *[gobject.TYPE_STRING] * 5)
+        super(StatsModel, self).__init__(GObject.TYPE_STRING,
+                                         GObject.TYPE_STRING,
+                                         GObject.TYPE_INT,
+                                         GObject.TYPE_INT,
+                                         *[GObject.TYPE_STRING] * 5)
         self.oExcludedKeyword = None
         if bHideIllegal:
             try:

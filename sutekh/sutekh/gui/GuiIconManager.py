@@ -7,7 +7,7 @@
 
 import os
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.base.Utility import prefs_dir, ensure_dir_exists
 from sutekh.base.gui.SutekhDialog import do_complaint
@@ -46,7 +46,7 @@ class GuiIconManager(CachedIconManager, IconManager):
                         "Sutekh has switched to using the icons from the "
                         "V:EKN site.\nIcons won't work until you "
                         "re-download them.\n\nDownload icons?",
-                        gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, False)
+                        Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO, False)
                 else:
                     # Old icons not present, so skip
                     return
@@ -60,9 +60,9 @@ class GuiIconManager(CachedIconManager, IconManager):
                                      "from the V:EKN site\nThese icons will "
                                      "be stored in %s\n\nDownload icons?"
                                      % self._sPrefsDir,
-                                     gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
+                                     Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO,
                                      False)
-        if iResponse == gtk.RESPONSE_YES:
+        if iResponse == Gtk.ResponseType.YES:
             self.download_with_progress()
         else:
             # Let the user know about the other options
@@ -70,4 +70,4 @@ class GuiIconManager(CachedIconManager, IconManager):
                          "the icons from the File menu.\nYou will not be"
                          " prompted again unless you delete %s"
                          % self._sPrefsDir,
-                         gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, False)
+                         Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, False)

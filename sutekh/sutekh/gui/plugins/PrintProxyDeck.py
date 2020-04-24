@@ -5,7 +5,7 @@
 
 """Print the deck using the image plugin to get images for the cards."""
 
-import gtk
+from gi.repository import Gdk, GdkPixbuf, Gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
@@ -83,13 +83,13 @@ class PrintProxyPlugin(SutekhPlugin):
         """Register on the 'Actions' Menu"""
         if not self._oImageFrame:
             return None
-        oPrint = gtk.MenuItem(label="Print Card Set as Proxies")
+        oPrint = Gtk.MenuItem(label="Print Card Set as Proxies")
         oPrint.connect("activate", self.activate)
         return ('Actions', oPrint)
 
     def activate(self, _oWidget):
         """Generate the PDF file"""
-        oPrintOp = gtk.PrintOperation()
+        oPrintOp = Gtk.PrintOperation()
         if self._oSettings:
             oPrintOp.set_print_settings(self._oSettings)
 
@@ -104,7 +104,7 @@ class PrintProxyPlugin(SutekhPlugin):
         oPrintOp.connect('custom-widget-apply', self._get_print_widgets,
                          dCustomData)
 
-        oRes = oPrintOp.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG,
+        oRes = oPrintOp.run(Gtk.PrintOperationAction.PRINT_DIALOG,
                             self.parent)
         if self._aMissing:
             # We aborted due to missing cards
@@ -113,10 +113,10 @@ class PrintProxyPlugin(SutekhPlugin):
             aErrors.extend(sorted(self._aMissing))
             sErr = '\n'.join(aErrors)
             do_complaint_error(sErr)
-        elif oRes == gtk.PRINT_OPERATION_RESULT_ERROR:
+        elif oRes == Gtk.PrintOperationResult.ERROR:
             do_complaint_error("Error printing card set:\n" +
                                oPrintOp.get_error())
-        elif oRes == gtk.PRINT_OPERATION_RESULT_APPLY:
+        elif oRes == Gtk.PrintOperationResult.APPLY:
             self._oSettings = oPrintOp.get_print_settings()
 
     def begin_print(self, oPrintOp, _oContext):
@@ -125,7 +125,7 @@ class PrintProxyPlugin(SutekhPlugin):
            This includes determining pagination and the number of pages.
            """
         self._aMissing = set()
-        oPrintOp.set_unit(gtk.UNIT_POINTS)
+        oPrintOp.set_unit(Gtk.Units.POINTS)
         oPrintOp.set_n_pages(1)
         oIter = self.model.get_card_iterator(self.model.get_current_filter())
         aCards = sorted([IPhysicalCard(x) for x in oIter],
@@ -198,11 +198,11 @@ class PrintProxyPlugin(SutekhPlugin):
                             fContextHeight / (3 * IMG_HEIGHT + 10))
         # Draw the print marker lines
         for sFilename in aTheseFiles:
-            oPixbuf = gtk.gdk.pixbuf_new_from_file(sFilename)
+            oPixbuf = GdkPixbuf.Pixbuf.new_from_file(sFilename)
             # We probably should be cleverer with scaling here
             oPixbuf = oPixbuf.scale_simple(IMG_WIDTH, IMG_HEIGHT,
-                                           gtk.gdk.INTERP_HYPER)
-            gtk.gdk.cairo_set_source_pixbuf(oCairoContext, oPixbuf, iOffsetX, iOffsetY)
+                                           GdkPixbuf.InterpType.HYPER)
+            Gdk.cairo_set_source_pixbuf(oCairoContext, oPixbuf, iOffsetX, iOffsetY)
             oCairoContext.rectangle(iOffsetX, iOffsetY,
                                     IMG_WIDTH, IMG_HEIGHT)
             oCairoContext.paint()
@@ -213,24 +213,24 @@ class PrintProxyPlugin(SutekhPlugin):
 
     def _add_print_widgets(self, _oOp, dCustomData):
         """Add widgets to the custom options tab"""
-        oVBox = gtk.VBox(homogeneous=False, spacing=2)
+        oVBox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup("<b>Proxy printing Options:</b>")
         oLabel.set_alignment(0.0, 0.5)
-        oVBox.pack_start(oLabel, expand=False, padding=10)
+        oVBox.pack_start(oLabel, False, True, 10)
         aExpButtons = []
 
-        oFirstBut = gtk.RadioButton(group=None, label=TEXT_LATEST)
+        oFirstBut = Gtk.RadioButton(group=None, label=TEXT_LATEST)
         oFirstBut.set_active(True)
-        oVBox.pack_start(oFirstBut, expand=False)
+        oVBox.pack_start(oFirstBut, False, True, 0)
         aExpButtons.append(oFirstBut)
         for sText in self.dOptions:
             if sText == oFirstBut.get_label():
                 continue
-            oBut = gtk.RadioButton(group=oFirstBut, label=sText)
+            oBut = Gtk.RadioButton(group=oFirstBut, label=sText)
             oBut.set_active(False)
-            oVBox.pack_start(oBut, expand=False)
+            oVBox.pack_start(oBut, False, True, 0)
             aExpButtons.append(oBut)
 
         dCustomData["aExpButtons"] = aExpButtons

@@ -8,19 +8,11 @@
 
 import os
 
-import pygtkcompat
-try:
-    pygtkcompat.enable_poppler()
-except ValueError as oExp:
-    # Missing poppler libraries will trigger a ValueError here
-    # We turn it into an ImportError, since that's the more
-    # correct error
-    raise ImportError("Failed to load poppler bindings: %s" % oExp)
-
-import gtk
-import glib
+import gi
+gi.require_version('Poppler', '0.18')
+from gi.repository import GLib, Gtk, Poppler, GdkPixbuf
 import cairo
-import poppler
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import PhysicalCardSet, Expansion
@@ -57,13 +49,13 @@ class ImportView(ACLLookupView):
         super(ImportView, self).__init__(oParent, oConfig)
 
         oUsedCell = CellRendererSutekhButton()
-        oUsedCell.load_icon(gtk.STOCK_APPLY, self)
+        oUsedCell.load_icon(Gtk.STOCK_APPLY, self)
         # We override the IncCard column for the 'used' flag, which is a bit
         # icky, but we aren't using it for it's intended purpose
         # anyway.
-        oUsedColumn = gtk.TreeViewColumn("Used", oUsedCell, showicon=3)
+        oUsedColumn = Gtk.TreeViewColumn("Used", oUsedCell, showicon=3)
         oUsedColumn.set_fixed_width(50)
-        oUsedColumn.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        oUsedColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         # We insert the column before the name, so it's more visible.
         self.insert_column(oUsedColumn, 0)
 
@@ -124,7 +116,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def get_menu_item(self):
         """Add the menu item to the Data Downloads menu.
            """
-        oImport = gtk.MenuItem(label=self.sMenuName)
+        oImport = Gtk.MenuItem(label=self.sMenuName)
         oImport.connect('activate', self.run_import_dialog)
         return [('Data Downloads', oImport)]
 
@@ -144,37 +136,37 @@ class ImportPDFImagesPlugin(SutekhPlugin):
             return
 
         self.oDlg = SutekhDialog("Choose PDF File and Expansion", None,
-                                 gtk.DIALOG_MODAL |
-                                 gtk.DIALOG_DESTROY_WITH_PARENT,
-                                 (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                                 Gtk.DialogFlags.MODAL |
+                                 Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         # pylint: disable=no-member
         # vbox confuses pylint
-        self.oDlg.vbox.pack_start(gtk.Label(label="PDF File"), expand=False)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="PDF File"), False, True, 0)
         self.oFileChooser = SutekhFileWidget(self.parent,
-                                             gtk.FILE_CHOOSER_ACTION_OPEN)
+                                             Gtk.FileChooserAction.OPEN)
         self.oFileChooser.add_filter_with_pattern('PDF Files', ['*.pdf'])
         # self.oFileChooser.default_filter()
-        self.oDlg.vbox.pack_start(self.oFileChooser, expand=True)
+        self.oDlg.vbox.pack_start(self.oFileChooser, True, True, 0)
 
         # Choose the expansion for the card set
 
-        self.oDlg.vbox.pack_start(gtk.Label(label="Expansion"), expand=False)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="Expansion"), False, True, 0)
 
         aExpansions = [x.name for x in Expansion.select()
                        if x.name[:5] != 'Promo'] + ['Promo']
         self._oFirstBut = None
         self._oFirstScaleBut = None
         aExpansions.sort()
-        oTable = gtk.Table(len(aExpansions) // 4, 4)
-        self.oDlg.vbox.pack_start(oTable, expand=False)
+        oTable = Gtk.Table(len(aExpansions) // 4, 4)
+        self.oDlg.vbox.pack_start(oTable, False, True, 0)
         iXPos, iYPos = 0, 0
         for sName in aExpansions:
             if self._oFirstBut:
-                oBut = gtk.RadioButton(group=self._oFirstBut, label=sName)
+                oBut = Gtk.RadioButton(group=self._oFirstBut, label=sName)
             else:
                 # No first button
-                self._oFirstBut = gtk.RadioButton(group=None, label=sName)
+                self._oFirstBut = Gtk.RadioButton(group=None, label=sName)
                 self._oFirstBut.set_sensitive(True)
                 oBut = self._oFirstBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -183,15 +175,15 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                 iXPos = 0
                 iYPos += 1
 
-        self.oDlg.vbox.pack_start(gtk.Label(label="Image Size to Use"), expand=False)
-        oTable = gtk.Table(len(SCALES) // 2, 2)
-        self.oDlg.vbox.pack_start(oTable, expand=False)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="Image Size to Use"), False, True, 0)
+        oTable = Gtk.Table(len(SCALES) // 2, 2)
+        self.oDlg.vbox.pack_start(oTable, False, True, 0)
         iXPos, iYPos = 0, 0
         for sScale in sorted(SCALES):
             if self._oFirstScaleBut:
-                oBut = gtk.RadioButton(group=self._oFirstScaleBut, label=sScale)
+                oBut = Gtk.RadioButton(group=self._oFirstScaleBut, label=sScale)
             else:
-                self._oFirstScaleBut = gtk.RadioButton(group=None, label=sScale)
+                self._oFirstScaleBut = Gtk.RadioButton(group=None, label=sScale)
                 self._oFirstScaleBut.set_sensitive(True)
                 oBut = self._oFirstScaleBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -209,7 +201,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def handle_response(self, _oWidget, oResponse):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
         aExp = []
-        if oResponse == gtk.RESPONSE_OK:
+        if oResponse == Gtk.ResponseType.OK:
             for oBut in self._oFirstBut.get_group():
                 if oBut.get_active():
                     sName = oBut.get_label()
@@ -234,17 +226,17 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     def do_import(self, sFile, aExp):
         """Do the actual import of the PDF file"""
         # pylint: disable=no-member
-        # poppler & glib confuse pylint
+        # Poppler & GLib confuse pylint
         try:
-            self._oDocument = poppler.document_new_from_file(
+            self._oDocument = Poppler.document_new_from_file(
                 "file://" + sFile, None)
-        except glib.GError:
+        except GLib.GError:
             do_complaint_error("Unable to parse the PDF file: %s" % sFile)
             return
         oImportDialog = SutekhDialog("Match cards and images", None,
-                                     gtk.DIALOG_MODAL |
-                                     gtk.DIALOG_DESTROY_WITH_PARENT,
-                                     (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                     Gtk.DialogFlags.MODAL |
+                                     Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                     (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         self._iNumPages = self._oDocument.get_n_pages()
         self._iCurPageNo = 0
         self._iXPos, self._iYPos = 0, 0
@@ -255,80 +247,80 @@ class ImportPDFImagesPlugin(SutekhPlugin):
 
         self._load_page()
 
-        oHBox = gtk.HBox()
-        oImportDialog.vbox.pack_start(oHBox, True, True)
+        oHBox = Gtk.HBox()
+        oImportDialog.vbox.pack_start(oHBox, True, True, 0)
 
         oAbsCardView = ImportView(oImportDialog, self.config, aExp)
         oAbsCardView.load()
         oViewWin = AutoScrolledWindow(oAbsCardView)
         oViewWin.set_size_request(350, 650)
-        oHBox.pack_start(oViewWin, False, False)
+        oHBox.pack_start(oViewWin, False, False, 0)
 
-        oVBox = gtk.VBox()
-        oHBox.pack_start(oVBox, True, True)
-        oDrawArea = gtk.DrawingArea()
+        oVBox = Gtk.VBox()
+        oHBox.pack_start(oVBox, True, True, 0)
+        oDrawArea = Gtk.DrawingArea()
         oDrawArea.set_size_request(self._iScale * CARD_DIM[0],
                                    self._iScale * CARD_DIM[1])
 
         oDrawArea.connect('expose-event', self._draw_pdf_section)
 
         # Import manipulation button area
-        oOffsetBox = gtk.HBox()
+        oOffsetBox = Gtk.HBox()
 
-        oXOffAdj = gtk.Adjustment(lower=-CARD_DIM[0] // 2,
+        oXOffAdj = Gtk.Adjustment(lower=-CARD_DIM[0] // 2,
                                   upper=CARD_DIM[0] // 2,
                                   step_incr=1, value=0)
-        oYOffAdj = gtk.Adjustment(lower=-CARD_DIM[1] // 2,
+        oYOffAdj = Gtk.Adjustment(lower=-CARD_DIM[1] // 2,
                                   upper=CARD_DIM[1] // 2,
                                   step_incr=1, value=0)
 
-        self._oXOffset = gtk.SpinButton(oXOffAdj)
+        self._oXOffset = Gtk.SpinButton(oXOffAdj)
         self._oXOffset.set_value(0)
-        self._oYOffset = gtk.SpinButton(oYOffAdj)
+        self._oYOffset = Gtk.SpinButton(oYOffAdj)
         self._oYOffset.set_value(0)
 
-        oOffsetBox.pack_start(gtk.Label(label="Horizontal Offset : "), False, False)
-        oOffsetBox.pack_start(self._oXOffset, False, False)
-        oOffsetBox.pack_start(gtk.Label(label="Vertical Offset : "), False, False)
-        oOffsetBox.pack_start(self._oYOffset, False, False)
+        oOffsetBox.pack_start(Gtk.Label(label="Horizontal Offset : "), False, False, 0)
+        oOffsetBox.pack_start(self._oXOffset, False, False, 0)
+        oOffsetBox.pack_start(Gtk.Label(label="Vertical Offset : "), False, False, 0)
+        oOffsetBox.pack_start(self._oYOffset, False, False, 0)
 
-        oScaleBox = gtk.HBox()
+        oScaleBox = Gtk.HBox()
 
-        oXScaleAdj = gtk.Adjustment(lower=10,
+        oXScaleAdj = Gtk.Adjustment(lower=10,
                                     upper=CARD_DIM[0] + 100,
                                     step_incr=1, value=CARD_DIM[0])
-        oYScaleAdj = gtk.Adjustment(lower=10, upper=CARD_DIM[1] + 100,
+        oYScaleAdj = Gtk.Adjustment(lower=10, upper=CARD_DIM[1] + 100,
                                     step_incr=1, value=CARD_DIM[1])
-        self._oXScale = gtk.SpinButton(oXScaleAdj)
+        self._oXScale = Gtk.SpinButton(oXScaleAdj)
         self._oXScale.set_value(CARD_DIM[0])
-        self._oYScale = gtk.SpinButton(oYScaleAdj)
+        self._oYScale = Gtk.SpinButton(oYScaleAdj)
         self._oYScale.set_value(CARD_DIM[1])
 
-        oScaleBox.pack_start(gtk.Label(label="Horizontal Size : "), False, False)
-        oScaleBox.pack_start(self._oXScale, False, False)
-        oScaleBox.pack_start(gtk.Label(label="Vertical Size : "), False, False)
-        oScaleBox.pack_start(self._oYScale, False, False)
+        oScaleBox.pack_start(Gtk.Label(label="Horizontal Size : "), False, False, 0)
+        oScaleBox.pack_start(self._oXScale, False, False, 0)
+        oScaleBox.pack_start(Gtk.Label(label="Vertical Size : "), False, False, 0)
+        oScaleBox.pack_start(self._oYScale, False, False, 0)
 
-        oApplyButton = gtk.Button('Apply offsets')
+        oApplyButton = Gtk.Button('Apply offsets')
         oApplyButton.connect('pressed', self._update_offsets, oDrawArea)
-        oVBox.pack_start(oOffsetBox, False, False)
-        oVBox.pack_start(oScaleBox, False, False)
-        oVBox.pack_start(oApplyButton, False, False)
-        oVBox.pack_start(AutoScrolledWindow(oDrawArea), True, True)
+        oVBox.pack_start(oOffsetBox, False, False, 0)
+        oVBox.pack_start(oScaleBox, False, False, 0)
+        oVBox.pack_start(oApplyButton, False, False, 0)
+        oVBox.pack_start(AutoScrolledWindow(oDrawArea), True, True, 0)
 
-        self._oNextButton = gtk.Button('Next Image')
+        self._oNextButton = Gtk.Button('Next Image')
         self._oNextButton.connect('pressed', self.chg_img, oDrawArea, +1)
-        self._oPrevButton = gtk.Button('Prev Image')
+        self._oPrevButton = Gtk.Button('Prev Image')
         self._oPrevButton.connect('pressed', self.chg_img, oDrawArea, -1)
-        oButtonBox = gtk.HBox()
-        oButtonBox.pack_start(self._oPrevButton, False, False)
-        oButtonBox.pack_end(self._oNextButton, False, False)
+        oButtonBox = Gtk.HBox()
+        oButtonBox.pack_start(self._oPrevButton, False, False, 0)
+        oButtonBox.pack_end(self._oNextButton, False, False, 0)
         self._oPrevButton.set_sensitive(False)
-        oSaveButton = gtk.Button('Set image for selected card')
+        oSaveButton = Gtk.Button('Set image for selected card')
         oSaveButton.connect('pressed', self.save_img, oDrawArea, oAbsCardView,
                             aExp)
-        oButtonBox.pack_start(oSaveButton, False, False)
-        oVBox.pack_start(oButtonBox, False, False)
+        oButtonBox.pack_start(oSaveButton, False, False, 0)
+        oVBox.pack_start(oButtonBox, False, False, 0)
 
         oImportDialog.set_size_request(350 + self._iScale * CARD_DIM[0], 650)
 
@@ -407,18 +399,18 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         if check_file(sFileName):
             iRes = do_complaint_buttons(
                 "File %s exists. Do You want to replace it?" % sFileName,
-                gtk.MESSAGE_QUESTION,
-                (gtk.STOCK_YES, gtk.RESPONSE_YES,
-                 gtk.STOCK_NO, gtk.RESPONSE_NO))
-            if iRes == gtk.RESPONSE_NO:
+                Gtk.MessageType.QUESTION,
+                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+            if iRes == Gtk.ResponseType.NO:
                 return
         # Actually save the image
         ensure_dir_exists(os.path.dirname(sFileName))
-        oPixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8,
+        oPixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8,
                                  self._iScale * CARD_DIM[0],
                                  self._iScale * CARD_DIM[1])
         oCMap = oDrawArea.get_window().get_colormap()
-        oImgPixmap = gtk.gdk.Pixmap(oDrawArea.get_window(),
+        oImgPixmap = GdkPixbuf(oDrawArea.get_window(),
                                     self._iScale * CARD_DIM[0],
                                     self._iScale * CARD_DIM[1])
         # We re-render to a Pixmap, since oDrawArea may not be

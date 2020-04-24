@@ -5,7 +5,8 @@
 
 """Export a card set to HTML."""
 
-import gtk
+from gi.repository import Gtk
+
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import SutekhPlugin
@@ -32,8 +33,8 @@ class CardSetExportHTML(SutekhPlugin):
     def get_menu_item(self):
         """Register on the Plugins Menu"""
         if self._cModelType == "MainWindow":
-            oPrefs = gtk.MenuItem(label="Export to HTML preferences")
-            oSubMenu = gtk.Menu()
+            oPrefs = Gtk.MenuItem(label="Export to HTML preferences")
+            oSubMenu = Gtk.Menu()
             oPrefs.set_submenu(oSubMenu)
             oGroup = None
             sDefault = self.get_config_item('HTML export mode')
@@ -46,7 +47,7 @@ class CardSetExportHTML(SutekhPlugin):
                                   ("Add links to VTES Monger", 'Monger'),
                                   ("Don't add links in the HTML file",
                                    'None')):
-                oItem = gtk.RadioMenuItem(group=oGroup, label=sString)
+                oItem = Gtk.RadioMenuItem(group=oGroup, label=sString)
                 if not oGroup:
                     oGroup = oItem
                 oSubMenu.add(oItem)
@@ -56,7 +57,7 @@ class CardSetExportHTML(SutekhPlugin):
                 oItem.connect("toggled", self.change_prefs, sVal)
             return ('File Preferences', oPrefs)
 
-        oExport = gtk.MenuItem(label="Export to HTML")
+        oExport = Gtk.MenuItem(label="Export to HTML")
         oExport.connect("activate", self.activate)
         return ('Export Card Set', oExport)
 
@@ -83,9 +84,9 @@ class CardSetExportHTML(SutekhPlugin):
         oDlg.add_filter_with_pattern('HTML Files', ['*.html'])
         # pylint: disable=no-member
         # vbox confuses pylint
-        self.oTextButton = gtk.CheckButton(label="Include Card _Texts?")
+        self.oTextButton = Gtk.CheckButton(label="Include Card _Texts?")
         self.oTextButton.set_active(False)
-        oDlg.vbox.pack_start(self.oTextButton, False, False)
+        oDlg.vbox.pack_start(self.oTextButton, False, False, 0)
         oDlg.show_all()
         return oDlg
 

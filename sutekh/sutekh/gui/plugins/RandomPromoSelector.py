@@ -11,7 +11,7 @@ hand out at a tournament.
 
 from random import shuffle
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import IAbstractCard
@@ -23,50 +23,48 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 class RandomPromoDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for displaying random sets of cards."""
 
     def __init__(self, oParent, aCards):
         super(RandomPromoDialog, self).__init__(
             'Generate random groups of cards',
-            oParent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        oCardsPerGroupAdj = gtk.Adjustment(value=2, lower=1, upper=100,
+        oCardsPerGroupAdj = Gtk.Adjustment(value=2, lower=1, upper=100,
                                            step_incr=1)
-        oNumberOfGroupsAdj = gtk.Adjustment(value=10, lower=1, upper=100,
+        oNumberOfGroupsAdj = Gtk.Adjustment(value=10, lower=1, upper=100,
                                             step_incr=1)
 
         self._aCards = aCards
-        self._oCardsPerGroup = gtk.SpinButton()
+        self._oCardsPerGroup = Gtk.SpinButton()
         self._oCardsPerGroup.set_adjustment(oCardsPerGroupAdj)
-        self._oNumberOfGroups = gtk.SpinButton()
+        self._oNumberOfGroups = Gtk.SpinButton()
         self._oNumberOfGroups.set_adjustment(oNumberOfGroupsAdj)
-        self._oResultsBuffer = gtk.TextBuffer()
+        self._oResultsBuffer = Gtk.TextBuffer()
 
-        oHbox = gtk.HBox()
-        oHbox.pack_start(gtk.Label(label="Cards per group:"), expand=False,
-                         padding=5)
-        oHbox.pack_start(self._oCardsPerGroup, expand=False)
+        oHbox = Gtk.HBox()
+        oHbox.pack_start(Gtk.Label(label="Cards per group:"), False, True, 5)
+        oHbox.pack_start(self._oCardsPerGroup, False, True, 0)
         # pylint: disable=no-member
         # vbox confuses pylint
-        self.vbox.pack_start(oHbox, expand=False)
+        self.vbox.pack_start(oHbox, False, True, 0)
 
-        oHbox = gtk.HBox()
-        oHbox.pack_start(gtk.Label(label="Number of groups:"), expand=False,
-                         padding=5)
-        oHbox.pack_start(self._oNumberOfGroups, expand=False)
-        self.vbox.pack_start(oHbox, expand=False)
+        oHbox = Gtk.HBox()
+        oHbox.pack_start(Gtk.Label(label="Number of groups:"), False, True, 5)
+        oHbox.pack_start(self._oNumberOfGroups, False, True, 0)
+        self.vbox.pack_start(oHbox, False, True, 0)
 
-        oResampleButton = gtk.Button(label="Resample")
-        self.vbox.pack_start(oResampleButton, expand=False)
+        oResampleButton = Gtk.Button(label="Resample")
+        self.vbox.pack_start(oResampleButton, False, True, 0)
 
-        self.vbox.pack_start(gtk.Label(label="Groups:"), expand=False)
-        oResults = gtk.TextView()
+        self.vbox.pack_start(Gtk.Label(label="Groups:"), False, True, 0)
+        oResults = Gtk.TextView()
         oResults.set_buffer(self._oResultsBuffer)
         oResults.set_editable(False)
-        self.vbox.pack_start(AutoScrolledWindow(oResults))
+        self.vbox.pack_start(AutoScrolledWindow(oResults), True, True, 0)
 
         self._oCardsPerGroup.connect('value-changed', self._update_results)
         self._oNumberOfGroups.connect('value-changed', self._update_results)
@@ -107,7 +105,7 @@ class RandomPromoSelector(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Actions' menu"""
-        oCardDraw = gtk.MenuItem(label="Generate random groups of cards")
+        oCardDraw = Gtk.MenuItem(label="Generate random groups of cards")
         oCardDraw.connect("activate", self.activate)
         return ('Actions', oCardDraw)
 

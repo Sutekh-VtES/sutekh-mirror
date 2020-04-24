@@ -9,7 +9,7 @@
 import logging
 import datetime
 
-import gtk
+from gi.repository import Gtk
 
 from sqlobject import SQLObjectNotFound
 
@@ -40,7 +40,7 @@ from sutekh.gui.CardTextFrame import CardTextFrame
 class SutekhMainWindow(AppMainWindow):
     """Window that has a configurable number of panes."""
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # we need to keep a lot of state, so many instance attributes
     def __init__(self):
         super(SutekhMainWindow, self).__init__()
@@ -54,7 +54,7 @@ class SutekhMainWindow(AppMainWindow):
         self._cDBManager = GuiDBManager
 
         # Set Default Window Icon for all Windows
-        gtk.window_set_default_icon(SutekhIcon.SUTEKH_ICON)
+        Gtk.Window.set_default_icon(SutekhIcon.SUTEKH_ICON)
 
         # Sutekh lookup cache
         self.__oSutekhObjectCache = None
@@ -69,8 +69,8 @@ class SutekhMainWindow(AppMainWindow):
             # Inform the user
             iResponse = do_complaint(
                 'Database is missing cards. Try import the cardlist now?',
-                gtk.MESSAGE_ERROR, gtk.BUTTONS_YES_NO, False)
-            if iResponse == gtk.RESPONSE_YES:
+                Gtk.MessageType.ERROR, Gtk.ButtonsType.YES_NO, False)
+            if iResponse == Gtk.ResponseType.YES:
                 self.do_refresh_card_list()
 
         # Create object cache
@@ -142,6 +142,6 @@ class SutekhMainWindow(AppMainWindow):
             oDlg = UpdateDialog(["CardList and Rulings"])
             iResponse = oDlg.run()
             oDlg.destroy()
-            if iResponse != gtk.RESPONSE_OK:
+            if iResponse != Gtk.ResponseType.OK:
                 return
             self.do_refresh_from_zip_url(oCLDate, aUrls[0], aHashes[0])

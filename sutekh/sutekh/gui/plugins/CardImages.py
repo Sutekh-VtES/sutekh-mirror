@@ -9,7 +9,8 @@ import datetime
 import os
 import logging
 
-import gtk
+from gi.repository import Gtk
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
@@ -37,7 +38,7 @@ SUTEKH_USER_AGENT= {
 
 class CardImageFrame(BaseImageFrame):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
-    # can't not trigger these warning with pygtk
+    # can't not trigger these warning with pyGtk
     # we need to keep quite a lot of internal state
     """Frame which displays the image.
 
@@ -196,7 +197,7 @@ class CardImageFrame(BaseImageFrame):
 
 class ImageConfigDialog(BaseImageConfigDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
     # These two are descriptive, so set them to the final value
@@ -226,9 +227,9 @@ class ImageConfigDialog(BaseImageConfigDialog):
                                        'sutekh.vtes.za.net.\nDo you wish to '
                                        'enable this (you will not be prompted '
                                        'again)?')
-            self.vbox.pack_start(self.oDescLabel, False, False)
-            self.vbox.pack_start(self.oDownload, False, False)
-            self.vbox.pack_start(self.oDownloadExpansions, False, False)
+            self.vbox.pack_start(self.oDescLabel, False, False, 0)
+            self.vbox.pack_start(self.oDownload, False, False, 0)
+            self.vbox.pack_start(self.oDownloadExpansions, False, False, 0)
             self.set_size_request(400, 200)
             self.show_all()
 
@@ -275,7 +276,7 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
     def handle_response(self, oDialog):
         """Handle the response from the config dialog"""
         iResponse = oDialog.run()
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             oFile, bDir, bDownload, bDownloadExpansions = oDialog.get_data()
             if bDir:
                 # New directory

@@ -8,7 +8,7 @@
 import random
 import math
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.base.core.BaseTables import PhysicalCard, PhysicalCardSet
 from sutekh.base.core.BaseAdapters import IPhysicalCard
@@ -51,7 +51,7 @@ class ClusterCardList(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu."""
-        oCluster = gtk.MenuItem(label="Cluster Cards")
+        oCluster = Gtk.MenuItem(label="Cluster Cards")
         oCluster.connect("activate", self.activate)
         return ('Analyze', oCluster)
 
@@ -67,9 +67,9 @@ class ClusterCardList(SutekhPlugin):
         self._make_prop_groups()
 
         oDlg = NotebookDialog(sDlgName, self.parent,
-                              gtk.DIALOG_DESTROY_WITH_PARENT)
-        oDlg.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
-        oDlg.add_button(gtk.STOCK_EXECUTE, gtk.RESPONSE_APPLY)
+                              Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        oDlg.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        oDlg.add_button(Gtk.STOCK_EXECUTE, Gtk.ResponseType.APPLY)
 
         oDlg.connect("response", self.handle_response)
 
@@ -103,7 +103,7 @@ class ClusterCardList(SutekhPlugin):
     def _make_table_section(self):
         """Create a notebook, and populate the first tabe with a list of
            properties to cluster on."""
-        oNotebook = gtk.Notebook()
+        oNotebook = Gtk.Notebook()
         aGroups = self._dGroups.keys()
         aGroups.sort()
 
@@ -113,7 +113,7 @@ class ClusterCardList(SutekhPlugin):
             self._dPropButtons[sGroup] = {}
             dPropFuncs = self._dGroups[sGroup]
 
-            oHbx = gtk.HBox(False, 0)
+            oHbx = Gtk.HBox(False, 0)
 
             iCols = 3
             iPropsPerCol = len(dPropFuncs) // iCols
@@ -125,15 +125,15 @@ class ClusterCardList(SutekhPlugin):
 
             for iProp, sName in enumerate(aPropNames):
                 if iProp % iPropsPerCol == 0:
-                    oVbx = gtk.VBox(homogeneous=False, spacing=0)
-                    oHbx.pack_start(oVbx)
+                    oVbx = Gtk.VBox(homogeneous=False, spacing=0)
+                    oHbx.pack_start(oVbx, False, True, 0)
 
-                oBut = gtk.CheckButton(sName)
-                oVbx.pack_start(oBut, False)  # pack at top, don't fill space
+                oBut = Gtk.CheckButton(sName)
+                oVbx.pack_start(oBut, False, True, 0)  # pack at top, don't expand
 
                 self._dPropButtons[sGroup][sName] = oBut
 
-            oNotebook.append_page(oHbx, gtk.Label(sGroup))
+            oNotebook.append_page(oHbx, Gtk.Label(sGroup))
 
         return oNotebook
 
@@ -141,40 +141,40 @@ class ClusterCardList(SutekhPlugin):
         """Populate a tab on the notebook with the parameters and options for
            the clustering algorithm.
            """
-        oVbx = gtk.VBox(homogeneous=False, spacing=0)
+        oVbx = Gtk.VBox(homogeneous=False, spacing=0)
 
         # K-Means is the only clustering solution for the moment
-        oHeading = gtk.Label()
+        oHeading = Gtk.Label()
         oHeading.set_markup("<b>Parameters for K-Means Clustering</b>")
         oVbx.pack_start(oHeading, False, False, 5)  # top align
 
         # Number of iterations
-        oNumIterLabel = gtk.Label(label="Number of Iterations:")
-        self._oNumIterSpin = gtk.SpinButton()
+        oNumIterLabel = Gtk.Label(label="Number of Iterations:")
+        self._oNumIterSpin = Gtk.SpinButton()
         self._oNumIterSpin.set_range(1, 50)
         self._oNumIterSpin.set_increments(1, 10)
         self._oNumIterSpin.set_value(10)
-        oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(oNumIterLabel, False)  # left align
-        oHbox.pack_end(self._oNumIterSpin, False)  # right align
-        oVbx.pack_start(oHbox, False)
+        oHbox = Gtk.HBox(False, 0)
+        oHbox.pack_start(oNumIterLabel, False, True, 0)  # left align
+        oHbox.pack_end(self._oNumIterSpin, False, True, 0)  # right align
+        oVbx.pack_start(oHbox, False, True, 0)
 
         # Autoset Num clusters
-        self._oAutoNumClusters = gtk.CheckButton("One cluster per 80 cards")
-        oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(self._oAutoNumClusters, False)  # right align
-        oVbx.pack_start(oHbox, False)
+        self._oAutoNumClusters = Gtk.CheckButton("One cluster per 80 cards")
+        oHbox = Gtk.HBox(False, 0)
+        oHbox.pack_start(self._oAutoNumClusters, False, True, 0)  # right align
+        oVbx.pack_start(oHbox, False, True, 0)
 
         # Number of clusters
-        oNumClustersLabel = gtk.Label(label="Number of Clusters:")
-        self._oNumClustersSpin = gtk.SpinButton()
+        oNumClustersLabel = Gtk.Label(label="Number of Clusters:")
+        self._oNumClustersSpin = Gtk.SpinButton()
         self._oNumClustersSpin.set_range(2, 50)
         self._oNumClustersSpin.set_increments(1, 10)
         self._oNumClustersSpin.set_value(10)
-        oHbox = gtk.HBox(False, 0)
-        oHbox.pack_start(oNumClustersLabel, False)  # left align
-        oHbox.pack_end(self._oNumClustersSpin, False)  # right align
-        oVbx.pack_start(oHbox, False)
+        oHbox = Gtk.HBox(False, 0)
+        oHbox.pack_start(oNumClustersLabel, False, True, 0)  # left align
+        oHbox.pack_end(self._oNumClustersSpin, False, True, 0)  # right align
+        oVbx.pack_start(oHbox, False, True, 0)
 
         # Connect Autoset and Number of clusters
         self._oAutoNumClusters.set_active(True)
@@ -190,22 +190,22 @@ class ClusterCardList(SutekhPlugin):
         self._oAutoNumClusters.connect("toggled", auto_toggled)
 
         # Separator
-        oVbx.pack_start(gtk.HSeparator(), False, False, 10)
+        oVbx.pack_start(Gtk.HSeparator(), False, False, 10)
 
         # Distance Measure
-        oDistLabel = gtk.Label()
+        oDistLabel = Gtk.Label()
         oDistLabel.set_markup("<b>Distance Measure for Clustering</b>")
         oVbx.pack_start(oDistLabel, False, False, 5)
 
         oIter = Vector.METRICS.keys()
         for sName in oIter:
-            oFirstBut = gtk.RadioButton(group=None, label=sName)
-            oVbx.pack_start(oFirstBut, False)
+            oFirstBut = Gtk.RadioButton(group=None, label=sName)
+            oVbx.pack_start(oFirstBut, False, True, 0)
             break
 
         for sName in oIter:
-            oBut = gtk.RadioButton(group=oFirstBut, label=sName)
-            oVbx.pack_start(oBut, False)
+            oBut = Gtk.RadioButton(group=oFirstBut, label=sName)
+            oVbx.pack_start(oBut, False, True, 0)
 
         self._aDistanceMeasureGroup = oFirstBut.get_group()
 
@@ -214,18 +214,18 @@ class ClusterCardList(SutekhPlugin):
     def _make_results_section(self):
         """Create a widget in the notebook which can be used to display
            the clustering results."""
-        oVbx = gtk.VBox(homogeneous=False, spacing=0)
-        self._oResultsVbox = gtk.VBox(homogeneous=False, spacing=0)
+        oVbx = Gtk.VBox(homogeneous=False, spacing=0)
+        self._oResultsVbox = Gtk.VBox(homogeneous=False, spacing=0)
 
         # Results Heading
-        oHeading = gtk.Label()
+        oHeading = Gtk.Label()
         oHeading.set_markup("<b>Results</b>")
-        oVbx.pack_start(oHeading, False)  # top align
+        oVbx.pack_start(oHeading, False, True, 0)  # top align
 
         # No Results Yet
-        oLabel = gtk.Label(label="No results yet.")
-        self._oResultsVbox.pack_start(oLabel)
-        oVbx.pack_start(self._oResultsVbox)
+        oLabel = Gtk.Label(label="No results yet.")
+        self._oResultsVbox.pack_start(oLabel, False, True, 0)
+        oVbx.pack_start(self._oResultsVbox, False, True, 0)
 
         return oVbx
 
@@ -247,24 +247,24 @@ class ClusterCardList(SutekhPlugin):
         iHeaderRows = 1
         iExtraCols = 4
 
-        oTable = gtk.Table(rows=len(aMeans) + iHeaderRows,
+        oTable = Gtk.Table(rows=len(aMeans) + iHeaderRows,
                            columns=iExtraCols)
         oTable.set_row_spacings(0)
 
         # Headings
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup('<b>Save Deck</b>')
         oTable.attach(oLabel, 0, 1, 0, 1, xpadding=3)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup('<b>Cluster Id</b>')
         oTable.attach(oLabel, 1, 2, 0, 1, xpadding=3)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup('<b>No. Cards</b>')
         oTable.attach(oLabel, 2, 3, 0, 1, xpadding=3)
 
-        oLabel = gtk.Label()
+        oLabel = Gtk.Label()
         oLabel.set_markup('<b>Cluster Center</b>')
         oTable.attach(oLabel, 3, 4, 0, 1, xpadding=3)
 
@@ -272,29 +272,29 @@ class ClusterCardList(SutekhPlugin):
         self._dCardSetMakingButtons = {}
         for iId, oMean in enumerate(self._aMeans):
             iRow = iId + iHeaderRows
-            oBut = gtk.CheckButton()
+            oBut = Gtk.CheckButton()
             self._dCardSetMakingButtons[iId] = oBut
             sCenterText = "\n".join([
                 "%s: %.2f" % (sColName, fColVal) for sColName, fColVal
                 in zip(aColNames, oMean)
                 if abs(fColVal) > 0.01
             ])
-            oCenterLabel = gtk.Label(sCenterText)
+            oCenterLabel = Gtk.Label(sCenterText)
             oCenterLabel.set_alignment(0.0, 0.5)
 
             oTable.attach(oBut, 0, 1, iRow, iRow + 1)
-            oTable.attach(gtk.Label(str(iId)), 1, 2, iRow, iRow + 1)
-            oTable.attach(gtk.Label(str(len(aClusters[iId]))),
+            oTable.attach(Gtk.Label(str(iId)), 1, 2, iRow, iRow + 1)
+            oTable.attach(Gtk.Label(str(len(aClusters[iId]))),
                           2, 3, iRow, iRow + 1)
             oTable.attach(oCenterLabel, 3, 4, iRow, iRow + 1)
 
         # top align, using viewport to scroll
-        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable))
+        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable), True, True, 0)
 
-        oMakeCardSetsButton = gtk.Button("Make Card Sets from Selected"
+        oMakeCardSetsButton = Gtk.Button("Make Card Sets from Selected"
                                          " Clusters")
         oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
-        self._oResultsVbox.pack_end(oMakeCardSetsButton, False)  # bottom align
+        self._oResultsVbox.pack_end(oMakeCardSetsButton, False, True, 0)  # bottom align
 
         self._oResultsVbox.show_all()
 
@@ -304,9 +304,9 @@ class ClusterCardList(SutekhPlugin):
 
     def handle_response(self, oDlg, oResponse):
         """Handle the user's response to the options dialog."""
-        if oResponse == gtk.RESPONSE_CLOSE:
+        if oResponse == Gtk.ResponseType.CLOSE:
             oDlg.destroy()
-        elif oResponse == gtk.RESPONSE_APPLY:
+        elif oResponse == Gtk.ResponseType.APPLY:
             self.do_clustering()
             # change to results section
             oDlg.notebook.set_current_page(2)

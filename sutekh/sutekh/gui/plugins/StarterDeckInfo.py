@@ -9,7 +9,8 @@ import re
 import datetime
 from io import StringIO
 
-import gtk
+from gi.repository import Gtk
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseTables import (PhysicalCardSet,
@@ -75,7 +76,7 @@ def find_holder(aHolders):
 
 class StarterConfigDialog(SutekhDialog):
     # pylint: disable=too-many-public-methods
-    # gtk Widget, so has many public methods
+    # Gtk Widget, so has many public methods
     """Dialog for configuring the Starter plugin."""
 
     sDocUrl = DOC_URL
@@ -83,10 +84,10 @@ class StarterConfigDialog(SutekhDialog):
     def __init__(self, oParent, bFirstTime=False):
         super(StarterConfigDialog, self).__init__(
             'Configure Starter Info Plugin', oParent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL,
-             gtk.RESPONSE_CANCEL))
-        oDescLabel = gtk.Label()
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL,
+             Gtk.ResponseType.CANCEL))
+        oDescLabel = Gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the starter info'
                                   ' plugin</b>')
@@ -101,13 +102,13 @@ class StarterConfigDialog(SutekhDialog):
         add_filter(self.oFileWidget, 'Zip Files', ['*.zip', '*.ZIP'])
         # pylint: disable=no-member
         # pylint doesn't pick up vbox methods correctly
-        self.vbox.pack_start(oDescLabel, False, False)
-        self.vbox.pack_start(gtk.HSeparator(), False, False)
-        self.vbox.pack_start(self.oFileWidget, False, False)
+        self.vbox.pack_start(oDescLabel, False, False, 0)
+        self.vbox.pack_start(Gtk.HSeparator(), False, False, 0)
+        self.vbox.pack_start(self.oFileWidget, False, False, 0)
         # Add check boxes for the decmo and storyline deck questions
-        self.oExcludeStoryDecks = gtk.CheckButton(
+        self.oExcludeStoryDecks = Gtk.CheckButton(
             'Exclude the Storyline Decks')
-        self.oExcludeDemoDecks = gtk.CheckButton('Exclude the WW Demo Decks')
+        self.oExcludeDemoDecks = Gtk.CheckButton('Exclude the WW Demo Decks')
 
         # Check to see if cards are available
         try:
@@ -122,8 +123,8 @@ class StarterConfigDialog(SutekhDialog):
             self.oExcludeStoryDecks.set_active(True)
             self.oExcludeStoryDecks.set_sensitive(False)
 
-        self.vbox.pack_start(self.oExcludeStoryDecks, False, False)
-        self.vbox.pack_start(self.oExcludeDemoDecks, False, False)
+        self.vbox.pack_start(self.oExcludeStoryDecks, False, False, 0)
+        self.vbox.pack_start(self.oExcludeDemoDecks, False, False, 0)
 
         self.set_size_request(350, 300)
 
@@ -235,7 +236,7 @@ class StarterInfoPlugin(SutekhPlugin):
         oCardTextView = self.parent.card_text_pane.view
         oCardTextView.text_buffer.add_list_tag('starters')
 
-        self.oToggle = gtk.CheckMenuItem(label="Show Starter Information")
+        self.oToggle = Gtk.CheckMenuItem(label="Show Starter Information")
         self.oToggle.connect('toggled', self._toggle_starter)
         self.oToggle.set_active(False)
         if self.check_enabled():
@@ -244,7 +245,7 @@ class StarterInfoPlugin(SutekhPlugin):
                 self.oToggle.set_active(True)
         else:
             self.oToggle.set_sensitive(False)
-        oDownload = gtk.MenuItem(label="Download starter decks")
+        oDownload = Gtk.MenuItem(label="Download starter decks")
         oDownload.connect('activate', self.do_download)
         return [('Preferences', self.oToggle), ('Data Downloads', oDownload)]
 
@@ -369,7 +370,7 @@ class StarterInfoPlugin(SutekhPlugin):
     def handle_response(self, oDialog):
         """Handle the response from the config dialog"""
         iResponse = oDialog.run()
-        if iResponse == gtk.RESPONSE_OK:
+        if iResponse == Gtk.ResponseType.OK:
             sData = oDialog.get_data()
             (bExcludeStoryDecks, bExcludeDemoDecks) = \
                 oDialog.get_excluded_decks()

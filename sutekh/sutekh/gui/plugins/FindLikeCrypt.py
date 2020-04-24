@@ -5,9 +5,8 @@
 
 """Finds crypt cards 'like' the selected card"""
 
-import gtk
-import gobject
-import pango
+from gi.repository import GObject, Gtk, Pango
+
 from sutekh.base.core.BaseTables import (PhysicalCardSet, PhysicalCard,
                                          AbstractCard)
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
@@ -101,7 +100,7 @@ class FindLikeVampires(SutekhPlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' Menu"""
-        oGenFilter = gtk.MenuItem(label=self.sMenuName)
+        oGenFilter = Gtk.MenuItem(label=self.sMenuName)
         oGenFilter.connect("activate", self.activate)
         return ('Analyze', oGenFilter)
 
@@ -185,34 +184,34 @@ class FindLikeVampires(SutekhPlugin):
     def find_vampires_like(self):
         """Construct a vampire search from the card"""
         # pylint: disable=no-member
-        # SQLObject & gtk confuse pylint
+        # SQLObject & Gtk confuse pylint
         aFilters = [CardTypeFilter('Vampire'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Vampires like', self.parent,
-                               gtk.DIALOG_MODAL |
-                               gtk.DIALOG_DESTROY_WITH_PARENT,
-                               (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         oDialog.vbox.pack_start(
-            gtk.Label(label='Find Vampires like %s' % self.oSelCard.name),
-            False, False)
+            Gtk.Label(label='Find Vampires like %s' % self.oSelCard.name),
+            False, False, 0)
         aDisciplines = [oP.discipline for oP in self.oSelCard.discipline]
         aSuperior = [oP.discipline for oP in self.oSelCard.discipline if
                      oP.level == 'superior']
-        oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
-        oDialog.vbox.pack_start(oUseCardSet)
+        oUseCardSet = Gtk.CheckButton("Only match cards visible in this pane")
+        oDialog.vbox.pack_start(oUseCardSet, False, True, 0)
         if aSuperior:
-            oDisciplines = gtk.RadioButton(
+            oDisciplines = Gtk.RadioButton(
                     group=None, label="Match Disciplines")
-            oSuperior = gtk.RadioButton(
+            oSuperior = Gtk.RadioButton(
                     group=oDisciplines, label="Match Superior Disciplines")
             oDisciplines.set_active(True)
         else:
-            oDisciplines = gtk.Label(label="Match Disciplines")
+            oDisciplines = Gtk.Label(label="Match Disciplines")
             oSuperior = None
-        oDialog.vbox.pack_start(oDisciplines)
-        oComboBox = gtk.ComboBoxText()
+        oDialog.vbox.pack_start(oDisciplines, False, True, 0)
+        oComboBox = Gtk.ComboBoxText()
         if oSuperior:
-            oDialog.vbox.pack_start(oSuperior)
+            oDialog.vbox.pack_start(oSuperior, False, True, 0)
             oDisciplines.connect('toggled', self._update_combo_box,
                                  oComboBox, aDisciplines, aSuperior)
         for iNum in range(1, len(aDisciplines) + 1):
@@ -221,14 +220,14 @@ class FindLikeVampires(SutekhPlugin):
             oComboBox.set_active(1)
         else:
             oComboBox.set_active(0)
-        oHBox = gtk.HBox(False, 2)
-        oHBox.pack_start(gtk.Label(label='Use '))
-        oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(label=' Disciplines'))
-        oDialog.vbox.pack_start(oHBox)
+        oHBox = Gtk.HBox(False, 2)
+        oHBox.pack_start(Gtk.Label(label='Use '))
+        oHBox.pack_start(oComboBox, False, True, 0)
+        oHBox.pack_start(Gtk.Label(label=' Disciplines'))
+        oDialog.vbox.pack_start(oHBox, False, True, 0)
         oDialog.show_all()
         iRes = oDialog.run()
-        if iRes == gtk.RESPONSE_CANCEL:
+        if iRes == Gtk.ResponseType.CANCEL:
             oDialog.destroy()
             return None
         bUseCardSet = oUseCardSet.get_active()
@@ -253,34 +252,34 @@ class FindLikeVampires(SutekhPlugin):
     def find_imbued_like(self):
         """Construct a imbued search from the card"""
         # pylint: disable=no-member
-        # SQLObject & gtk confuse pylint
+        # SQLObject & Gtk confuse pylint
         aFilters = [CardTypeFilter('Imbued'), _get_groups(self.oSelCard)]
         oDialog = SutekhDialog('Find Imbued like', self.parent,
-                               gtk.DIALOG_MODAL |
-                               gtk.DIALOG_DESTROY_WITH_PARENT,
-                               (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         oDialog.vbox.pack_start(
-            gtk.Label(label='Find Imbued like %s' % self.oSelCard.name),
+            Gtk.Label(label='Find Imbued like %s' % self.oSelCard.name),
             False, False)
-        oUseCardSet = gtk.CheckButton("Only match cards visible in this pane")
-        oDialog.vbox.pack_start(oUseCardSet)
-        oDialog.vbox.pack_start(gtk.Label(label="Match Virtues"))
-        oComboBox = gtk.ComboBoxText()
+        oUseCardSet = Gtk.CheckButton("Only match cards visible in this pane")
+        oDialog.vbox.pack_start(oUseCardSet, False, True, 0)
+        oDialog.vbox.pack_start(Gtk.Label(label="Match Virtues"))
+        oComboBox = Gtk.ComboBoxText()
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
             oComboBox.append_text('%d' % iNum)
         if len(self.oSelCard.virtue) > 1:
             oComboBox.set_active(1)
         else:
             oComboBox.set_active(0)
-        oHBox = gtk.HBox(False, 2)
-        oHBox.pack_start(gtk.Label(label='Use '))
-        oHBox.pack_start(oComboBox)
-        oHBox.pack_start(gtk.Label(label=' Virtues'))
-        oDialog.vbox.pack_start(oHBox)
+        oHBox = Gtk.HBox(False, 2)
+        oHBox.pack_start(Gtk.Label(label='Use '))
+        oHBox.pack_start(oComboBox, False, True, 0)
+        oHBox.pack_start(Gtk.Label(label=' Virtues'))
+        oDialog.vbox.pack_start(oHBox, False, True, 0)
         oDialog.show_all()
         iRes = oDialog.run()
-        if iRes == gtk.RESPONSE_CANCEL:
+        if iRes == Gtk.ResponseType.CANCEL:
             oDialog.destroy()
             return None
         bUseCardSet = False
@@ -326,16 +325,16 @@ class FindLikeVampires(SutekhPlugin):
     def display_results(self, dGroups):
         """Display the results nicely"""
         # pylint: disable=no-member
-        # SQLObject and gtk confuse pylint
+        # SQLObject and Gtk confuse pylint
         bVampire = is_vampire(self.oSelCard)
         if bVampire:
             sTitle = 'Vampires like %s' % self.oSelCard.name
         else:
             sTitle = 'Imbued like %s' % self.oSelCard.name
         oResults = NotebookDialog(sTitle, self.parent,
-                                  gtk.DIALOG_MODAL |
-                                  gtk.DIALOG_DESTROY_WITH_PARENT,
-                                  (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                  Gtk.DialogFlags.MODAL |
+                                  Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                  (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         oResults.set_size_request(700, 600)
 
@@ -348,14 +347,14 @@ class FindLikeVampires(SutekhPlugin):
                 continue
             oView = LikeCardsView(dGroups[sSet], bVampire)
             oResults.add_widget_page(AutoScrolledWindow(oView), sSet)
-        oActions = gtk.HBox()
-        oToggle = gtk.CheckButton('Include original card')
+        oActions = Gtk.HBox()
+        oToggle = Gtk.CheckButton('Include original card')
         oToggle.connect('toggled', self._update_notebook, oResults)
-        oActions.pack_start(oToggle)
-        oCreateCardSet = gtk.Button(label='Create card set from selection')
+        oActions.pack_start(oToggle, False, True, 0)
+        oCreateCardSet = Gtk.Button(label='Create card set from selection')
         oCreateCardSet.connect('clicked', self._make_cs, oResults)
-        oActions.pack_start(oCreateCardSet)
-        oResults.vbox.pack_start(oActions, expand=False)
+        oActions.pack_start(oCreateCardSet, False, True, 0)
+        oResults.vbox.pack_start(oActions, False, True, 0)
         oResults.show_all()
         oResults.run()
         oResults.destroy()
@@ -390,9 +389,9 @@ class FindLikeVampires(SutekhPlugin):
             self._open_cs(sCSName, True)
 
 
-class LikeCardsView(gtk.TreeView):
+class LikeCardsView(Gtk.TreeView):
     # pylint: disable=too-many-public-methods
-    # gtk classes, so we have lots of public methods
+    # Gtk classes, so we have lots of public methods
     """TreeView for showing details of matching cards"""
 
     VAMP_LABELS = ['Name', 'Group', 'Capacity', 'Clan', 'Disciplines']
@@ -403,8 +402,8 @@ class LikeCardsView(gtk.TreeView):
 
         super(LikeCardsView, self).__init__(self._oModel)
 
-        oCell = gtk.CellRendererText()
-        oCell.set_property('style', pango.STYLE_ITALIC)
+        oCell = Gtk.CellRendererText()
+        oCell.set_property('style', Pango.Style.ITALIC)
 
         if bVampire:
             aLabels = self.VAMP_LABELS
@@ -412,17 +411,17 @@ class LikeCardsView(gtk.TreeView):
             aLabels = self.IMBUED_LABELS
 
         for iCol, sLabel in enumerate(aLabels):
-            oColumn = gtk.TreeViewColumn(sLabel, oCell, text=iCol)
+            oColumn = Gtk.TreeViewColumn(sLabel, oCell, text=iCol)
             oColumn.set_sort_column_id(iCol)
             self.append_column(oColumn)
 
         # Sort by the name by default
-        self._oModel.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        self._oModel.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
         oSelection = self.get_selection()
-        oSelection.set_mode(gtk.SELECTION_MULTIPLE)
+        oSelection.set_mode(Gtk.SelectionMode.MULTIPLE)
 
-        self.set_grid_lines(gtk.TREE_VIEW_GRID_LINES_BOTH)
+        self.set_grid_lines(Gtk.TreeViewGridLine._BOTH)
 
     def get_selected_cards(self):
         """Get the currently selected cards"""
@@ -433,17 +432,17 @@ class LikeCardsView(gtk.TreeView):
         return aCards
 
 
-class LikeCardsModel(gtk.ListStore):
+class LikeCardsModel(Gtk.ListStore):
     # pylint: disable=too-many-public-methods
-    # gtk classes, so we have lots of public methods
+    # Gtk classes, so we have lots of public methods
     """ListStore for holding details of the matching cards"""
 
     def __init__(self, aCards, bVampire):
-        super(LikeCardsModel, self).__init__(gobject.TYPE_STRING,
-                                             gobject.TYPE_INT,
-                                             gobject.TYPE_INT,
-                                             gobject.TYPE_STRING,
-                                             gobject.TYPE_STRING)
+        super(LikeCardsModel, self).__init__(GObject.TYPE_STRING,
+                                             GObject.TYPE_INT,
+                                             GObject.TYPE_INT,
+                                             GObject.TYPE_STRING,
+                                             GObject.TYPE_STRING)
 
         self.bVampire = bVampire
         for oCard in aCards:
