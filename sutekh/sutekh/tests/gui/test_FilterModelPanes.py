@@ -7,7 +7,7 @@
 
 import unittest
 
-import gtk
+from gi.repository import Gdk, Gtk
 
 from sutekh.base.core.FilterParser import FilterParser
 from sutekh.base.core.BaseTables import AbstractCard
@@ -19,16 +19,16 @@ from sutekh.base.gui.CardSetsListView import CardSetsListView
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 
 
-class DummyDialog(gtk.Dialog):
+class DummyDialog(Gtk.Dialog):
     """Dummy dialog for the filter pane tests"""
     # pylint: disable=too-many-public-methods
-    # gtk widget, so has many public methods
+    # Gtk widget, so has many public methods
 
     def __init__(self):
         super(DummyDialog, self).__init__('Dummy', None, 0)
         # pylint: disable=invalid-name
         # Needs to match the property name in the FilterDialog
-        self.accel_group = gtk.AccelGroup()
+        self.accel_group = Gtk.AccelGroup()
 
 
 class TestFilterModelPane(GuiSutekhTest):
@@ -115,11 +115,11 @@ class TestFilterModelPane(GuiSutekhTest):
         oList = oWidget.get_child()
         oList.set_selected_entry('Equipment')
         oFilter = oFilterPanes._oSelectBar._oLastFilter
-        oEvent = gtk.gdk.Event()
-        oEvent.type = gtk.gdk.EventType.KEY_PRESS
+        oEvent = Gdk.Event()
+        oEvent.type = Gdk.EventType.KEY_PRESS
         # ENTER_KEYS contains longs, but keyval needs int
         oEvent.key.keyval = int(list(ENTER_KEYS)[0])
-        oEvent.key.state = gtk.gdk.CONTROL_MASK
+        oEvent.key.state = Gdk.ModifierType.CONTROL_MASK
         oFilterPanes._oSelectBar.key_press(oFilterPanes._oSelectBar._oWidget,
                                            oEvent.key, oFilter, 'Value')
         oFilterAST = oFilterPanes.get_ast_with_values()
@@ -141,6 +141,7 @@ class TestFilterModelPane(GuiSutekhTest):
                              '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0')
+        print(oFilterPanes._oSelectBar._oWidget.get_children())
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
         # check we can round trip setting a discipline on the list
         oToolbar = oWidget.get_child()
@@ -229,7 +230,7 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:0')
         # check we have entry widget
         oEntry = oFilterPanes._oSelectBar._oWidget.get_children()[1]
-        self.assertTrue(isinstance(oEntry, gtk.Entry))
+        self.assertTrue(isinstance(oEntry, Gtk.Entry))
         # change over to physical card filters
         oFilterPanes = FilterModelPanes('PhysicalCard', oDialog)
         oAST = oParser.apply('CardCount in $x')

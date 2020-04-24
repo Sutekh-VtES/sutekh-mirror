@@ -13,11 +13,14 @@ import sys
 from io import StringIO
 from logging import FileHandler
 
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk("3.0")
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('PangoCairo', '1.0')
 
-import gtk
+# importing Gtk will specify the version requirements for Gdk, GLib, GObject and Pango,
+# but we need to import Gtk first for this to work
+from gi.repository import Gtk, Gdk
+
 from nose import SkipTest
 
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
@@ -168,17 +171,17 @@ class GuiBaseTest(unittest.TestCase):
         # Skip if we're not under a windowing system
         # We need to do this before trying to run MainWindows's __init__,
         # which will fail if not under a windowing system
-        if gtk.gdk.screen_get_default() is None:
+        if Gdk.Screen.get_default() is None:
             raise SkipTest
         # avoid menu proxy stuff on Ubuntu
         os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiBaseTest, self).setUp()
 
     def tearDown(self):
-        """Cleanup gtk state after test."""
-        # Process pending gtk events so cleanup completes
-        while gtk.events_pending():
-            gtk.main_iteration()
+        """Cleanup Gtk state after test."""
+        # Process pending Gtk events so cleanup completes
+        while Gtk.events_pending():
+            Gtk.main_iteration()
         super(GuiBaseTest, self).tearDown()
 
 

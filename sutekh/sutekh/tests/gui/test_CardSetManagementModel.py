@@ -5,7 +5,7 @@
 
 """Tests the Card Set Management Model"""
 
-import gtk
+from gi.repository import Gtk
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.base.core.BaseTables import PhysicalCardSet
@@ -54,14 +54,14 @@ class CardSetManagementModelTests(SutekhTest):
         # expected failure
         self.assertEqual(oModel.get_path_from_name('aaffr'), None)
         # Test model structure
-        self.assertEqual(oModel.get_path_from_name('Root'), gtk.TreePath("0"))
-        self.assertEqual(oModel.get_path_from_name('Sib'), gtk.TreePath("1"))
-        self.assertEqual(oModel.get_path_from_name('Child'), gtk.TreePath("0:0"))
-        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), gtk.TreePath("0:1"))
-        self.assertEqual(oModel.get_path_from_name('Card Set 1'), gtk.TreePath("0:0:1"))
-        self.assertEqual(oModel.get_path_from_name('Card Set 3'), gtk.TreePath("0:0:3"))
+        self.assertEqual(oModel.get_path_from_name('Root'), Gtk.TreePath("0"))
+        self.assertEqual(oModel.get_path_from_name('Sib'), Gtk.TreePath("1"))
+        self.assertEqual(oModel.get_path_from_name('Child'), Gtk.TreePath("0:0"))
+        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), Gtk.TreePath("0:1"))
+        self.assertEqual(oModel.get_path_from_name('Card Set 1'), Gtk.TreePath("0:0:1"))
+        self.assertEqual(oModel.get_path_from_name('Card Set 3'), Gtk.TreePath("0:0:3"))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'),
-                         gtk.TreePath("0:1:0"))
+                         Gtk.TreePath("0:1:0"))
         # Test filtering
         oFilter = BaseFilters.CardSetNameFilter('Child 2')
         self.assertEqual(oModel.get_card_set_iterator(oFilter).count(), 3)
@@ -69,19 +69,19 @@ class CardSetManagementModelTests(SutekhTest):
         oModel.applyfilter = True
         oModel.load()
         # Test that tree is there, with parents retained
-        self.assertEqual(oModel.get_path_from_name('Root'), gtk.TreePath("0"))
+        self.assertEqual(oModel.get_path_from_name('Root'), Gtk.TreePath("0"))
         self.assertEqual(oModel.get_path_from_name('Sib'), None)
-        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), gtk.TreePath("0:0"))
+        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), Gtk.TreePath("0:0"))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'),
-                         gtk.TreePath("0:0:0"))
+                         Gtk.TreePath("0:0:0"))
         oModel.applyfilter = False
         oModel.load()
         # Test that tree is restored
-        self.assertEqual(oModel.get_path_from_name('Root'), gtk.TreePath("0"))
-        self.assertEqual(oModel.get_path_from_name('Sib'), gtk.TreePath("1"))
-        self.assertEqual(oModel.get_path_from_name('Child'), gtk.TreePath("0:0"))
-        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), gtk.TreePath("0:1"))
-        self.assertEqual(oModel.get_path_from_name('Card Set 1'), gtk.TreePath("0:0:1"))
+        self.assertEqual(oModel.get_path_from_name('Root'), Gtk.TreePath("0"))
+        self.assertEqual(oModel.get_path_from_name('Sib'), Gtk.TreePath("1"))
+        self.assertEqual(oModel.get_path_from_name('Child'), Gtk.TreePath("0:0"))
+        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), Gtk.TreePath("0:1"))
+        self.assertEqual(oModel.get_path_from_name('Card Set 1'), Gtk.TreePath("0:0:1"))
 
         oFilter = BaseFilters.CardSetNameFilter('Child 2 Branch')
         self.assertEqual(oModel.get_card_set_iterator(oFilter).count(), 1)
@@ -89,7 +89,7 @@ class CardSetManagementModelTests(SutekhTest):
         oModel.applyfilter = True
         oModel.load()
         # test filter results
-        self.assertEqual(oModel.get_path_from_name('Root'), gtk.TreePath("0"))
+        self.assertEqual(oModel.get_path_from_name('Root'), Gtk.TreePath("0"))
         self.assertEqual(oModel.get_path_from_name('Sib'), None)
-        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), gtk.TreePath("0:0"))
+        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), Gtk.TreePath("0:0"))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'), None)
