@@ -33,7 +33,7 @@ which creates the correct name for the scripts.
 Most operations can be accomplished via the gui. You will be prompted
 to load the WW cardlist the first time you run Sutekh. These instructions
 cover the command line tool sutekh-cli, while help for the gui can be found
-either by using the help menu, or in sutekh/docs/html/
+either by using the help menu, or in sutekh/docs/html_docs/
 
 To get started with sutekh-cli, run:
 
@@ -78,7 +78,7 @@ rulings.  This dumps and then reloads the card list and all the card sets.
 
 Typically used as:::
 
-  sutekh-cli -c --reload -r vtes_card_file.txt --ruling-file vtes_ruling_file.html
+  sutekh-cli -c --reload --fetch-files
 
 The command line tool can be used to run filters:::
 
