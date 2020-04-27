@@ -572,7 +572,7 @@ class AppMainWindow(MultiPaneWindow):
     def _link_resource(self, sLocalUrl):
         """Return a file-like object which sLocalUrl can be read from."""
         # Subclasses need to provide self._sResourceName
-        sResource = '/docs/html/%s' % sLocalUrl
+        sResource = '/docs/html_docs/%s' % sLocalUrl
         if resource_exists(self._sResourceName, sResource):
             return resource_stream(self._sResourceName, sResource)
         else:
