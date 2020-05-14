@@ -217,6 +217,8 @@ class TTSExport(SutekhPlugin):
     def load_tts_json_file(self):
         """Load the info from the TTS module"""
         sTTSModulePath = self.get_config_item(self.sConfigKey)
+        if not sTTSModulePath:
+            return
         if not os.path.exists(sTTSModulePath):
             return
         try:
@@ -241,7 +243,7 @@ class TTSExport(SutekhPlugin):
             logging.warning("Exception: %s", oErr)
 
     def check_enabled(self):
-        """Only enable the export menu if we successfully loaded the TTS 
+        """Only enable the export menu if we successfully loaded the TTS
            module data"""
         if not self._dTTSData:
             return False
