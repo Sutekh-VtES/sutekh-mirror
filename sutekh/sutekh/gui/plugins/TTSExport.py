@@ -13,7 +13,8 @@ import sys
 
 from gi.repository import Gtk
 
-from sutekh.base.core.BaseTables import PhysicalCardSet
+from sutekh.base.core.BaseTables import PhysicalCardSet, AbstractCard
+from sutekh.base.core.BaseAdapters import IKeyword
 from sutekh.base.gui.SutekhFileWidget import ExportDialog, ImportDialog
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import safe_filename
@@ -164,9 +165,25 @@ SPECIAL_CASES = {
     'pentexlovesyou': 'pentextmlovesyou',
     'regomotum': 'regomotus',
     'sacrecurcathedralfrance': 'sacrecoeurcathedralfrance',
+    # Other tools special case the article in "The Kikiyaon", but
+    # TTS doesn't, so we fix this here
+    'thekikiyaon': 'kikiyaonthe',
+    'siresindexfinger': 'siresfinger',
 }
 
+
 NONNAME = re.compile(r'\W')
+
+
+def fix_nickname(sName):
+    """Fix unexpected issues with the nickname"""
+    # The TTS module is prone to random Capitilisation, so we
+    # explictly lower stuff
+    sName = sName.lower()
+    # Handle the storyline cards
+    if ',cardback' in sName:
+        sName = sName.split(',', 1)[0]
+    return sName
 
 
 def make_json_name(oCard):
@@ -231,10 +248,12 @@ class TTSExport(SutekhPlugin):
                     # Extract crypt
                     dCards = {}
                     for oObj in dJsonData['ObjectStates'][0]['ContainedObjects']:
-                        dCards[oObj['Nickname']] = oObj
+                        sKey = fix_nickname(oObj['Nickname'])
+                        dCards[sKey] = oObj
                     # Extract library
                     for oObj in dJsonData['ObjectStates'][1]['ContainedObjects']:
-                        dCards[oObj['Nickname']] = oObj
+                        sKey = fix_nickname(oObj['Nickname'])
+                        dCards[sKey] = oObj
                     self._dTTSData = dCards
                 except (KeyError, IndexError) as oErr:
                     logging.warning("Failed to extract data from TTS Module file: %s", sTTSModuleFile)
@@ -338,6 +357,37 @@ class TTSExport(SutekhPlugin):
             dLibrary['ContainedObjects'].append(dTTSCard)
         with open(sFilename, 'w') as oF:
             json.dump(dDeck, oF, indent=2)
+
+    def list_unmatched_cards(self):
+        """List any unmatched cards in the full cardlist"""
+        # This is mainly a debugging / testing helper and not intended to
+        # be called by the actual gui
+        oIIegal = IKeyword('not for legal play')
+        dAllCards = {}
+        for oCard in AbstractCard.select():
+            # We want this so we can identify missed storyline cards as such
+            dAllCards[make_json_name(oCard)] = oCard
+        aLegalMissed = []
+        aNotLegalMissed = []
+        for sName, oCard in dAllCards.items():
+            if sName not in self._dTTSData:
+                if oIIegal in oCard.keywords:
+                    aNotLegalMissed.append((sName, oCard))
+                else:
+                    aLegalMissed.append((sName, oCard))
+        # We print these, because this is testing related
+        print('Legal Cards Missed')
+        print('------------------')
+        print()
+        for sNickName, oCard in aLegalMissed:
+            print("%s (%s)" % (oCard.name, sNickName))
+        print()
+        print('Not Legal Cards Missed')
+        print('----------------------')
+        print()
+        for sNickName, oCard in aNotLegalMissed:
+            print("%s (%s)" % (oCard.name, sNickName))
+        print()
 
 
 plugin = TTSExport
