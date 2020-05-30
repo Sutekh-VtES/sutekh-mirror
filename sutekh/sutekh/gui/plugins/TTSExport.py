@@ -162,6 +162,8 @@ LIB_TRANSFORM = {
 SPECIAL_CASES = {
     'pentexsubversion': 'pentextmsubversion',
     'pentexlovesyou': 'pentextmlovesyou',
+    'regomotum': 'regomotus',
+    'sacrecurcathedralfrance': 'sacrecoeurcathedralfrance',
 }
 
 NONNAME = re.compile(r'\W')
@@ -311,6 +313,8 @@ class TTSExport(SutekhPlugin):
             if sJSONName not in self._dTTSData:
                 do_complaint_error("Unable to find an entry for %s (%s)" % (oCard.abstractCard.name,
                                                                             sJSONName))
+                logging.warning("Unable to find an entry for %s (%s)",
+                                oCard.abstractCard.name, sJSONName)
                 return
             if is_crypt_card(oCard.abstractCard):
                 aCrypt.append(sJSONName)
