@@ -62,7 +62,8 @@ class SutekhInfo:
     PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = 'GPL'
-    LICENSE_TEXT = resource_string(__name__, 'COPYING')
+    # resource_string returns bytes, because reasons
+    LICENSE_TEXT = resource_string(__name__, 'COPYING').decode('utf8')
 
     CLASSIFIERS = [
         'Development Status :: 4 - Beta',
