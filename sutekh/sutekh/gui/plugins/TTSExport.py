@@ -164,6 +164,7 @@ SPECIAL_CASES = {
     'pentexsubversion': 'pentextmsubversion',
     'pentexlovesyou': 'pentextmlovesyou',
     'regomotum': 'regomotus',
+    'masquer': 'masquerwraith',
     'sacrecurcathedralfrance': 'sacrecoeurcathedralfrance',
     # Other tools special case the article in "The Kikiyaon", but
     # TTS doesn't, so we fix this here
