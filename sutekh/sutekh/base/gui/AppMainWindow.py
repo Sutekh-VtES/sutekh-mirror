@@ -17,6 +17,7 @@ from gi.repository import Gtk
 from pkg_resources import resource_stream, resource_exists
 # pylint: enable=no-name-in-module
 
+from ..Utility import is_memory_db
 from ..core.BaseTables import PhysicalCardSet, PhysicalCard, VersionTable
 from ..core.DatabaseVersion import DatabaseVersion
 from .MultiPaneWindow import MultiPaneWindow
@@ -317,6 +318,10 @@ class AppMainWindow(MultiPaneWindow):
         """Check for updated cardlists and so forth."""
         # Check for cardlist updates before other updates, to avoid
         # ordering issues
+        if is_memory_db():
+            # Don't check for updates with an in_memory database, because
+            # We need to copy the database for this to work
+            return
         if self._oConfig.get_check_for_updates():
             # Check for updated card list
             self.check_updated_cardlist()
@@ -325,6 +330,10 @@ class AppMainWindow(MultiPaneWindow):
         """Check for any plugins that have updated data"""
         # FIXME: We should probably add a config option so people can
         # skip this if desirable.
+        if is_memory_db():
+            # Don't check for updates with an in_memory database,
+            # because we can't have handled any cardlist updates
+            return
         aMessages = []
         aUpdatePlugins = []
         for oPlugin in self._aPlugins:
