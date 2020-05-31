@@ -287,6 +287,9 @@ class TTSExport(SutekhPlugin):
         sResult = oDlg.get_name()
         if sResult:
             self.set_config_item(self.sConfigKey, sResult)
+        else:
+            # Set this to the empty string, so we don't ask every time
+            self.set_config_item(self.sConfigKey, "")
 
     def get_menu_item(self):
         """Register with the 'Export Card Set' Menu"""
