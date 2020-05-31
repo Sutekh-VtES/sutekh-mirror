@@ -35,6 +35,7 @@ class ConfigSutekhTest(SutekhTest):
         self.oConfig.add_plugin_specs('StarterInfoPlugin', {})
         self.oConfig.add_plugin_specs('TWDAInfoPlugin', {})
         self.oConfig.add_plugin_specs('RulebookPlugin', {})
+        self.oConfig.add_plugin_specs('TTSExport', {})
         self.oConfig.validate()
         # Don't try and create a path in the user's home dir
         self.sPluginDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
@@ -50,6 +51,8 @@ class ConfigSutekhTest(SutekhTest):
         open(os.path.join(self.sPluginDir, 'index.txt'), 'w').close()
         self.oConfig.set_plugin_key('StarterInfoPlugin', 'show starters', 'No')
         self.oConfig.set_plugin_key('TWDAInfoPlugin', 'twda configured', 'No')
+        self.oConfig.set_plugin_key('TWDAInfoPlugin', 'twda configured', 'No')
+        self.oConfig.set_plugin_key('TTSExport', 'tts module file', '')
         self.oConfig.set_icon_path(self.sPluginDir)
         # Disable checking for updates
         self.oConfig.set_check_for_updates(False)
