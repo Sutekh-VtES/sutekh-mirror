@@ -322,15 +322,15 @@ class AppMainWindow(MultiPaneWindow):
         """Check for updated cardlists and so forth."""
         # Check for cardlist updates before other updates, to avoid
         # ordering issues
-        if is_memory_db():
-            # Don't check for updates with an in_memory database, because
-            # We need to copy the database for this to work
-            do_complaint(
-                "You are running on an temporary test database.\n"
-                "Updates have been disabled as a result.",
-                gtk.MESSAGE_WARNING, gtk.BUTTONS_OK)
-            return
         if self._oConfig.get_check_for_updates():
+            if is_memory_db():
+                # Don't check for updates with an in_memory database, because
+                # We need to copy the database for this to work
+                do_complaint(
+                    "You are running on an temporary test database.\n"
+                    "Updates have been disabled as a result.",
+                    gtk.MESSAGE_WARNING, gtk.BUTTONS_OK)
+                return
             # Check for updated card list
             self.check_updated_cardlist()
 
