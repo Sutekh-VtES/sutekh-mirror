@@ -374,7 +374,7 @@ class HtmlHandler(HTMLParser):
     # handle charrefs produced by textile as great if statement
     def handle_charref(self, sCharref):
         """Convert charref to something we can use"""
-        self.handle_data(unichr(int(sCharref)))
+        self.handle_data(chr(int(sCharref)))
 
     # start tag handler, so it is is a massive if..elif.. statement
     def handle_starttag(self, sName, oAttrs):
@@ -469,7 +469,7 @@ class HtmlHandler(HTMLParser):
             self._aListCounters.append(0)
         elif sName == 'li':
             if self._aListCounters[-1] is None:
-                sListHead = unichr(0x2022)
+                sListHead = chr(0x2022)
             else:
                 self._aListCounters[-1] += 1
                 sListHead = "%i." % self._aListCounters[-1]
@@ -635,18 +635,24 @@ class HTMLTextView(Gtk.TextView):
         """Set the position to the anchor sTextAnchor"""
         if sTextAnchor in self._dTargets:
             oMark = self._dTargets[sTextAnchor]
-            self.scroll_to_mark(oMark, 0, True)
+            self.scroll_to_mark(oMark, 0, True, 0.5, 0.5)
         # We just silently ignore invalid anchors
 
     def display_html(self, fHTMLInput):
-        """Display the HTML from the file-like object fHTMLInput"""
+        """Display the HTML from the file-like object fHTMLInput.
+        
+           We assume the file is opened in binary mode and returns
+           utf-8 encoded data."""
         oBuffer = self.get_buffer()
         oStartOfBuf, oEndOfBuf = oBuffer.get_bounds()
         oBuffer.delete(oStartOfBuf, oEndOfBuf)
         oEndOfBuf = oBuffer.get_end_iter()
 
         oHandler = HtmlHandler(self, oEndOfBuf, self._fLinkLoader)
-        oHandler.feed(fHTMLInput.read())
+
+        # This isn't ideal, but we want to use
+        # pkg_resources, which gives us a byte stream.
+        oHandler.feed(fHTMLInput.read().decode('utf8'))
 
         if not oEndOfBuf.starts_line():
             oBuffer.insert(oEndOfBuf, "\n")
@@ -699,8 +705,7 @@ class HTMLViewDialog(SutekhDialog):
         self._oHTMLTextView = HTMLTextView(self._fLinkLoader)
         self._oView = AutoScrolledWindow(self._oHTMLTextView)
         self.set_default_size(400, 600)
-        self.vbox.pack_start(self._oView, True,
-                             True)
+        self.vbox.pack_start(self._oView, True, True, 0)
         self._oHTMLTextView.connect('url-clicked', self._url_clicked)
         self.connect('response', lambda x, but: self.hide())
         # ignore the delete event (response handler will hide)
