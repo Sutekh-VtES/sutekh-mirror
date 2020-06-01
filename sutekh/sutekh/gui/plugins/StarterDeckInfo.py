@@ -7,7 +7,7 @@
 
 import re
 import datetime
-from io import StringIO
+from io import BytesIO
 
 from gi.repository import Gtk
 
@@ -48,7 +48,7 @@ STARTER_HOLDERS = ["White Wolf Starter Decks", "Starter Decks"]
 def _get_cs_to_remove(oZipFile):
     """Handle card sets that are marked as removed in the starter
        info file."""
-    sRemovedInfo = oZipFile.get_info_file('removed_decks.txt')
+    sRemovedInfo = oZipFile.get_info_file('removed_decks.txt').decode('ascii')
     if not sRemovedInfo:
         # No removed info, so skip
         return []
@@ -388,7 +388,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
     def _unzip_file(self, sData, bExcludeStoryDecks, bExcludeDemoDecks):
         """Unzip a file containing the decks."""
-        oZipFile = ZipFileWrapper(StringIO(sData))
+        oZipFile = ZipFileWrapper(BytesIO(sData))
         dList = oZipFile.get_all_entries()
         # Check that we match starter regex
         bOK = False
