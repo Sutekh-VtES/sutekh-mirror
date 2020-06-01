@@ -29,7 +29,8 @@ from .GuiCardSetFunctions import break_existing_loops
 from .CardSetManagementFrame import CardSetManagementFrame
 from .MessageBus import MessageBus, DATABASE_MSG
 from .HTMLTextView import HTMLViewDialog
-from .SutekhDialog import do_complaint_error_details, do_exception_complaint
+from .SutekhDialog import (do_complaint_error_details, do_exception_complaint,
+                           do_complaint)
 from .UpdateDialog import UpdateDialog
 from .DataFilesDialog import Result
 from .QueueLogHandler import QueueLogHandler
@@ -318,11 +319,15 @@ class AppMainWindow(MultiPaneWindow):
         """Check for updated cardlists and so forth."""
         # Check for cardlist updates before other updates, to avoid
         # ordering issues
-        if is_memory_db():
-            # Don't check for updates with an in_memory database, because
-            # We need to copy the database for this to work
-            return
         if self._oConfig.get_check_for_updates():
+            if is_memory_db():
+                # Don't check for updates with an in_memory database, because
+                # We need to copy the database for this to work
+                do_complaint(
+                    "You are running on an temporary test database.\n"
+                    "Updates have been disabled as a result.",
+                    Gtk.MessageType.WARNING, Gtk.ButtonsType.OK)
+                return
             # Check for updated card list
             self.check_updated_cardlist()
 
