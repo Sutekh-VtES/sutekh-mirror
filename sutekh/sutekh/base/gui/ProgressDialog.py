@@ -15,6 +15,16 @@ from logging import Handler
 from gi.repository import Gdk, Gtk
 
 
+PROGRESS_CSS = b'''
+    trough {
+        min-height: 20px;
+    }
+    progress {
+        min-height: 18px;
+    }
+'''
+
+
 class SutekhLogHandler(Handler):
     """Base class for loggers to talk to the dialog"""
     # We explicitly inherit from object, since Handler is a classic class
@@ -107,6 +117,12 @@ class ProgressDialog(Gtk.Window):
         self.oProgressBar.set_text('% done')
         self.oProgressBar.set_fraction(0.0)
         self.oProgressBar.set_size_request(350, 50)
+        self.oProgressBar.set_show_text(True)
+        oProvider = Gtk.CssProvider()
+        oProvider.load_from_data(PROGRESS_CSS)
+        oContext = self.oProgressBar.get_style_context()
+        oContext.add_provider(oProvider,
+                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.set_default_size(400, 100)
         self.oVBox = Gtk.VBox()
         self.oDescription = Gtk.Label('Unknown')
