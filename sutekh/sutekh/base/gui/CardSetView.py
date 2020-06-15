@@ -81,6 +81,7 @@ class CardSetView(CardListView):
 
         oColumn1 = Gtk.TreeViewColumn("#", self.oNumCell, text=1)
         oColumn1.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
+        oColumn1.set_min_width(20)
         oColumn1.set_fixed_width(60)
         oColumn1.set_sort_column_id(1)
         oColumn1.set_resizable(True)
@@ -90,6 +91,7 @@ class CardSetView(CardListView):
         self.oParentCol = Gtk.TreeViewColumn("Par #", oParentCell, text=2,
                                              foreground_gdk=7)
         self.oParentCol.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
+        self.oParentCol.set_min_width(20)
         self.oParentCol.set_fixed_width(60)
         self.oParentCol.set_sort_column_id(2)
         self.append_column(self.oParentCol)
