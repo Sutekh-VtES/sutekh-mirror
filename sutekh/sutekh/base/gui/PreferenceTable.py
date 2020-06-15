@@ -72,6 +72,8 @@ class PreferenceOption:
         self.oEntry = self.oSpec.oEntry
         self.oLabel = Gtk.Label(sKey.capitalize())
         self.oLabel.set_alignment(0, 0)
+        self.oLabel.set_size_request(250, -1)
+        self.oLabel.set_line_wrap(True)
         self.bInheritable = True
         self.oInherit = Gtk.CheckButton("use default")
         self.oInherit.connect("toggled", self._inherit_toggled)

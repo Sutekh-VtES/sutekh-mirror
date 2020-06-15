@@ -60,7 +60,7 @@ class FrameProfileEditor(SutekhDialog):
                                                oConfig.get_validator())
         self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable), True, True, 0)
 
-        self.set_default_size(600, 550)
+        self.set_default_size(700, 550)
         self.connect("response", self._button_response)
         self.add_button("Cancel", self.RESPONSE_CANCEL)
         self.add_button("Save and Close", self.RESPONSE_SAVE_AND_CLOSE)
