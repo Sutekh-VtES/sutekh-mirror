@@ -100,14 +100,17 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         # setup display widgets
         # pylint: disable=no-member
         # vbox methods not detected by pylint
-        oDialog.vbox.pack_start(oHBox, False, True, 0)
+        oDialog.vbox.pack_start(oHBox, True, True, 0)
         dLibProbs = self._get_lib_props()
         oHBox.pack_start(self._setup_grouped_view(dLibProbs, self.dCardTypes,
-                                                  'Card Types'))
+                                                  'Card Types'),
+                         True, True, 0)
         oHBox.pack_start(self._setup_grouped_view(dLibProbs,
                                                   self.dCardProperties,
-                                                  'Card Properties'))
-        oHBox.pack_start(self._setup_flat_view(self.aCrypt, 4, 'Crypt Cards'))
+                                                  'Card Properties'),
+                         True, True, 0)
+        oHBox.pack_start(self._setup_flat_view(self.aCrypt, 4, 'Crypt Cards'),
+                         True, True, 0)
         oHBox.show_all()
 
     def _get_lib_props(self):
@@ -165,11 +168,11 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         oFrame = Gtk.Frame()
         oFrame.set_label('Opening Hand')
         oFrame.add(oHandInfoBox)
-        oHBox.pack_start(oFrame, False, True, 0)
+        oHBox.pack_start(oFrame, True, True, 0)
         oFrame = Gtk.Frame()
         oFrame.set_label('Opening Crypt Draw')
         oFrame.add(oCryptInfoBox)
-        oHBox.pack_start(oFrame, False, True, 0)
+        oHBox.pack_start(oFrame, True, True, 0)
 
     def _more_lib(self, oButton, oBox):
         """Add the next 5 library cards"""
@@ -206,9 +209,11 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         oDetailBox = Gtk.VBox(homogeneous=False, spacing=2)
         oHBox = Gtk.HBox(False, 2)
         oHBox.pack_start(fill_frame(
-            self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'))
+            self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'),
+            True, True, 0)
         oHBox.pack_start(fill_frame(
-            self.aDrawnHands[self.iCurHand - 1].sProp, 'Card Properties'))
+            self.aDrawnHands[self.iCurHand - 1].sProp, 'Card Properties'),
+            True, True, 0)
         oDetailBox.pack_start(oHBox, False, True, 0)
         return oDetailBox
 

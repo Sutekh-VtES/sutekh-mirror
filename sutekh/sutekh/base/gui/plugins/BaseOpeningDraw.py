@@ -148,11 +148,11 @@ def create_view(oStore, sHeading, iWidth):
     oView = Gtk.TreeView(oStore)
     oTextCol = Gtk.TreeViewColumn(sHeading)
     oTextCell = Gtk.CellRendererText()
-    oTextCol.pack_start(oTextCell, True, True, 0)
+    oTextCol.pack_start(oTextCell, True)
     oTextCol.add_attribute(oTextCell, 'text', 0)
     oValCol = Gtk.TreeViewColumn("Expected Number")
     oValProgCell = Gtk.CellRendererProgress()
-    oValCol.pack_start(oValProgCell, True, True, 0)
+    oValCol.pack_start(oValProgCell, True)
     oValCol.add_attribute(oValProgCell, 'value', 2)
     oValCol.add_attribute(oValProgCell, 'text', 1)
     # Take up space not reserved for progress bar column
