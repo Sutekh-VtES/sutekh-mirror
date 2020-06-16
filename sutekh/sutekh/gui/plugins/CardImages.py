@@ -201,7 +201,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
     """Dialog for configuring the Image plugin."""
 
     # These two are descriptive, so set them to the final value
-    sDefUrlId = 'sutekh.vtes.za.net'
+    sDefURLId = 'Download zipfile from sutekh.vtes.za.net'
     sImgDownloadSite = 'sutekh.vtes.za.net'
     # Will be changed later
     sDefaultUrl = '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages.zip')
