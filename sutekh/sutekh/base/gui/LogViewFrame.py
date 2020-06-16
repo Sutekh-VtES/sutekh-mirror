@@ -60,7 +60,7 @@ class LogViewFrame(BasicFrame):
 
         oMbox.pack_start(self._oTitle, False, False, 0)
         oMbox.pack_start(self._oMenu, False, False, 0)
-        oMbox.pack_end(AutoScrolledWindow(self._oView), True, False, 0)
+        oMbox.pack_end(AutoScrolledWindow(self._oView), True, True, 0)
 
         self.add(oMbox)
         self.show_all()
