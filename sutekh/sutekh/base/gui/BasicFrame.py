@@ -11,6 +11,16 @@ from gi.repository import Gdk, Gtk, GLib
 from .MessageBus import MessageBus, DATABASE_MSG
 
 
+def pack_resizable(oBox, oWidget):
+    """Pack a widget into oBox so it is horizontally resizable without
+       a visible scrollbar."""
+    Scrollable = Gtk.ScrolledWindow()
+    Scrollable.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.NEVER)
+    Scrollable.add(oWidget)
+    oBox.pack_start(Scrollable, False, False, 0)
+    oBox.show_all()
+
+
 class BasicFrame(Gtk.Frame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
@@ -210,7 +220,7 @@ class BasicFrame(Gtk.Frame):
         """Add the basic widgets (title, & placeholder) to the frame."""
         oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False, 0)
+        pack_resizable(oMbox, self._oTitle)
         # Blanks view placeholder fills everything it can
         oMbox.pack_start(self._oView, True, True, 0)
 
