@@ -8,7 +8,7 @@
 
 from gi.repository import Gtk
 from ..core.BaseTables import PhysicalCardSet
-from .BasicFrame import BasicFrame
+from .BasicFrame import BasicFrame, pack_resizable
 from .CardSetManagementController import CardSetManagementController
 from .CardSetManagementMenu import CardSetManagementMenu
 from .AutoScrolledWindow import AutoScrolledWindow
@@ -55,9 +55,8 @@ class CardSetManagementFrame(BasicFrame):
         oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
         self.set_title(self._sName)
-        oMbox.pack_start(self._oTitle, False, False, 0)
-
-        oMbox.pack_start(self._oMenu, False, False, 0)
+        pack_resizable(oMbox, self._oTitle)
+        pack_resizable(oMbox, self._oMenu)
 
         self._oScrolledWindow = AutoScrolledWindow(self._oController.view)
         oMbox.pack_start(self._oScrolledWindow, True, True, 0)

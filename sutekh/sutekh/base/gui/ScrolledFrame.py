@@ -9,7 +9,7 @@
 
 from gi.repository import Gtk
 from .AutoScrolledWindow import AutoScrolledWindow
-from .BasicFrame import BasicFrame
+from .BasicFrame import BasicFrame, pack_resizable
 
 
 class ScrolledFrame(BasicFrame):
@@ -43,7 +43,7 @@ class ScrolledFrame(BasicFrame):
         oBox = Gtk.VBox(homogeneous=False, spacing=2)
         self.set_title(self._sName)
 
-        oBox.pack_start(self._oTitle, False, False, 0)
+        pack_resizable(oBox, self._oTitle)
 
         oBox.pack_start(AutoScrolledWindow(self._oView), True, True, 0)
 

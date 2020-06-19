@@ -9,7 +9,7 @@
 from gi.repository import Gtk
 
 from .AutoScrolledWindow import AutoScrolledWindow
-from .BasicFrame import BasicFrame
+from .BasicFrame import BasicFrame, pack_resizable
 
 
 class CardListFrame(BasicFrame):
@@ -73,8 +73,8 @@ class CardListFrame(BasicFrame):
         """Add the elements to the Frame."""
         oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False, 0)
-        oMbox.pack_start(self._oMenu, False, False, 0)
+        pack_resizable(oMbox, self._oTitle)
+        pack_resizable(oMbox, self._oMenu)
 
         oMbox.pack_end(AutoScrolledWindow(self._oController.view),
                        True, True, 0)
@@ -86,7 +86,7 @@ class CardListFrame(BasicFrame):
         # or not, so we need to call this after show_all
         oToolbar = self.get_toolbar_plugins()
         if oToolbar is not None:
-            oMbox.pack_start(oToolbar, False, False, 0)
+            pack_resizable(oMbox, oToolbar)
 
         self._oController.view.load()
 

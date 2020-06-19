@@ -9,7 +9,7 @@
 from gi.repository import Gtk
 
 from .AutoScrolledWindow import AutoScrolledWindow
-from .BasicFrame import BasicFrame
+from .BasicFrame import BasicFrame, pack_resizable
 from .LogViewMenu import LogViewMenu
 from .LogTextView import LogTextView
 
@@ -58,8 +58,8 @@ class LogViewFrame(BasicFrame):
         """Add the menu and text view to the frame"""
         oMbox = Gtk.VBox(homogeneous=False, spacing=2)
 
-        oMbox.pack_start(self._oTitle, False, False, 0)
-        oMbox.pack_start(self._oMenu, False, False, 0)
+        pack_resizable(oMbox, self._oTitle)
+        pack_resizable(oMbox, self._oMenu)
         oMbox.pack_end(AutoScrolledWindow(self._oView), True, True, 0)
 
         self.add(oMbox)
