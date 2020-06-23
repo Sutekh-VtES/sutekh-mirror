@@ -101,8 +101,8 @@ class SutekhInfo:
     # Currently this allows us license the Windows build (which
     # includes dependencies) under the GPL version 2 (which
     # conveniently is the same license in Sutekh's COPYING
-    # file although Sutekh itself also later versions of the
-    # GPL).
+    # file although Sutekh itself also allows later versions
+    # of the GPL).
     #
     # dependency -> (
     #   license classifier,
@@ -115,17 +115,19 @@ class SutekhInfo:
             'http://www.gnu.org/copyleft/lesser.html',
             'Version 3'),
         'ply': (
-            # Note: ply changes to BSD license in version 3.2
-            LGPL,
-            'http://www.gnu.org/licenses/lgpl-2.1.html',
-            'Version 2.1'),
+            # Note: ply changed to a BSD license in version 3.2
+            # The license doesn't appear to be anywhere other than the readme, so we point
+            # to the readme for the 3.11 release.
+            'License :: OSI Approved :: BSD License',
+            'https://raw.githubusercontent.com/dabeaz/ply/0f398b72618c1564d71f7dc0558e6722b241875a/README.md',
+            'New-BSD license'),
         'configobj': (
             'License :: OSI Approved :: BSD License',
-            'http://www.voidspace.org.uk/python/configobj.html#license',
+            'https://raw.githubusercontent.com/DiffSK/configobj/master/LICENSE',
             'New-BSD license'),
         'keyring': (
             MIT,
-            'https://bitbucket.org/kang/python-keyring-lib/raw/tip/README.rst',
+            'https://raw.githubusercontent.com/jaraco/keyring/master/LICENSE',
             'MIT license'),
         'setuptools': (
             PYTHON,
