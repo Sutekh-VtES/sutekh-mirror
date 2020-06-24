@@ -127,20 +127,14 @@ class CardImagePopupMenu(Gtk.Menu):
     def __init__(self, oFrame, iZoomMode):
         super(CardImagePopupMenu, self).__init__()
         self.oFrame = oFrame
-        self.oZoom = Gtk.RadioAction('Zoom', 'Show images at original size',
-                                     None, None, FULL)
-        self.oZoom.set_group(None)
-        self.oViewFixed = Gtk.RadioAction('ViewFixed',
-                                          'Show images at fixed size',
-                                          None, None, VIEW_FIXED)
-        self.oViewFixed.set_group(self.oZoom)
-        self.oViewFit = Gtk.RadioAction('ViewFit', 'Fit images to the pane',
-                                        None, None, FIT)
-        self.oViewFit.set_group(self.oZoom)
-        self.oNext = Gtk.Action('NextExp', 'Show next expansion image',
-                                None, None)
-        self.oPrev = Gtk.Action('PrevExp', 'Show previous expansion image',
-                                None, None)
+        self.oZoom = Gtk.RadioMenuItem(group=None,
+                                       label='Show images at original size')
+        self.oViewFixed = Gtk.RadioMenuItem(group=self.oZoom,
+                                            label='Show images at fixed size')
+        self.oViewFit = Gtk.RadioMenuItem(group=self.oZoom,
+                                          label='Fit images to the pane')
+        self.oNext = Gtk.MenuItem(label='Show next expansion image')
+        self.oPrev = Gtk.MenuItem(label='Show previous expansion image')
 
         self.oPrev.connect('activate', self.cycle_expansion, BACKWARD)
         self.oNext.connect('activate', self.cycle_expansion, FORWARD)
@@ -155,11 +149,12 @@ class CardImagePopupMenu(Gtk.Menu):
         elif iZoomMode == FIT:
             self.oViewFit.set_active(True)
 
-        self.add(self.oViewFit.create_menu_item())
-        self.add(self.oViewFixed.create_menu_item())
-        self.add(self.oZoom.create_menu_item())
-        self.add(self.oNext.create_menu_item())
-        self.add(self.oPrev.create_menu_item())
+        self.add(self.oViewFit)
+        self.add(self.oViewFixed)
+        self.add(self.oZoom)
+        self.add(self.oNext)
+        self.add(self.oPrev)
+        self.show_all()
 
     def set_show_expansion_state(self, bValue):
         """Grey out the expansion menus if needed"""
@@ -217,6 +212,7 @@ class BaseImageFrame(BasicFrame):
         self.set_drag_handler(oBox)
         self.set_drop_handler(oBox)
         oBox.connect('button-press-event', self._cycle_expansion)
+        oBox.connect('popup-menu', self._handle_popup_menu)
 
         self._sPrefsPath = self._oImagePlugin.get_config_item(
             CARD_IMAGE_PATH)
@@ -622,8 +618,20 @@ class BaseImageFrame(BasicFrame):
             oPopupMenu = CardImagePopupMenu(self, self._iZoomMode)
             oPopupMenu.set_show_expansion_state(self._bShowExpansions and
                                                 len(self._aExpPrints) > 1)
-            oPopupMenu.popup(None, None, None, oEvent.button, oEvent.time)
+            oPopupMenu.popup_at_pointer(None)
         return True
+
+    def _handle_popup_menu(self, _oWidget):
+        """Popup the menu on keypress"""
+        oPopupMenu = CardImagePopupMenu(self, self._iZoomMode)
+        oPopupMenu.set_show_expansion_state(self._bShowExpansions and
+                                            len(self._aExpPrints) > 1)
+        # Popup should be at the bottom center of the label, as we
+        # don't know where the mouse is
+        oPopupMenu.popup_at_widget(self.oExpPrintLabel,
+                                   Gdk.Gravity.SOUTH,
+                                   Gdk.Gravity.NORTH_WEST,
+                                   None)
 
     def _pane_adjust(self, _oAdjust):
         """Redraw the image if needed when the pane size changes."""
