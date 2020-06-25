@@ -1,3 +1,18 @@
+16 Jun 2020
+  * Backport missing url description fix in the Card Images plugin from trunk. 
+
+31 May 2020
+  * Disable cardlist updates (automatic and manual) when running on the memory database
+    to test upgrades.
+  * Display warning dialog when running using memory database and updates are disabled.
+
+17 Apr 2020
+  * Backport add_header fix from trunk to work around cloudflare's restrictions.
+  * Fix doubled '//' in the gitlab urls which causes redirects which break urllib.
+
+14 Apr 2020
+  * Update to use gitlab urls for cardlists and such data.
+
 05 Feb 2020
  * Backport tweak to Adapters to prefer explicit matches over prefix matches.
  * Backport "search_text" attribute fix from trunk.
