@@ -74,7 +74,7 @@ class BasePluginManager:
 
     def _do_load_plugins(self, aPlugins):
         """Load list of Plugin Classes from plugin dir."""
-        for sPluginName in submodules(aPlugins):
+        for sPluginName in sorted(submodules(aPlugins)):
             # load module
             # pylint: disable=invalid-name
             # mPlugin is legal name here
