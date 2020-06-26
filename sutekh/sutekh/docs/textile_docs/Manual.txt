@@ -10,6 +10,7 @@ h2. Contents
 ## "File":#main_file
 ### "Import CSV file":#import_csv
 :numbered:3:card_list:file
+### "Data Downloads":#data_download
 ## "Pane Actions":#main_pane_actions
 ## "Rulebook":#rulebook
 ## "Keyboard Shortcuts":#keyboard
@@ -121,25 +122,14 @@ format.
 produced by a spreadsheet. You can select the columns for card set, number \
 and expansion.
 :list:2:card_list:file
-* _Data Downloads_: This submenu allows you to update data from the various \
-external sources Sutekh uses.
-** _Import new Card List and rulings_: Update the \
-database with a new cardlist and/or rulings file. You can either specify \
-local files, or opt to download them from the appropriate website directly.
-** _Download VTES icons_: Attempt to download the icons from the V:EKN \
-website.
-** _Download starter decks_: Download and import a list of the various \
-preconstructed decks from the sutekh download sit. The zip file also includes the \
-details of the storyline and demo decks released by WW, but these can be \
-excluded using the checkboxes. If you have not imported the details of \
-these extra cards (see "Refreshing the Full Card List":#refresh), \
-these will be greyed out and automatically excluded.
-** _Download or Configure Card Images_: Download images of the cards for the \
-"Card Images":#card_image pane, or use an existing zip file or directory of \
-images.
+* _Data Downloads_: This submenu allows you to "update data":#data_download from \
+the various external sources Sutekh uses.
+** "Import new Card List and rulings":#import_new_cl
+** "Download VTES icons":#download_icons
+** "Download starter decks":#download_starters
+** "Download or Configure Card Images":#download_images
 :list:2:card_list:downloads
-** _Download Rulebook Files_: Download the various files for the \
-"Rulebook":#rulebook menu.
+** "Download Rulebook Files":#download_rulebooks
 * _Preferences_: Manage various preferences.
 ** _Use "path of ..., the" name display_: If selected, card names prefixed \
 with "The", "An" or "A" are displayed and sorted with the prefix at the end.
@@ -174,7 +164,41 @@ resolve the situation using the "Card Lookup Dialog":#lookup.
 
 :text:4:card_list:file
 
-:text:4:card_list:downloads
+h4(#data_download). Data Downloads
+
+This handles downloading and updating the data Sutekh uses.
+
+h5(#import_new_cl). Import new Card List and rulings
+
+Update the database with a new cardlist and/or rulings file. You can either
+specify local files, or opt to download them from the appropriate website directly.
+
+Sutekh will automatically check to see if an updated cardlist is available on
+startup.
+
+h5(#download_icons). Download VTES icons.
+
+This will download the various game icons (such as discipline symbols or clan icons)
+from the V:EKN website.
+
+h5(#download_starters). Download Starter decks.
+
+Download and import a list of the various preconstructed decks from the sutekh download site.
+The zip file also includes the details of the storyline and demo decks released by White Wolf and
+Black Chantry, but these can be excluded using the checkboxes. If you have not imported the details
+of these extra cards (see "Refreshing the Full Card List":#refresh), these will be greyed out
+and automatically excluded.
+
+h5(#download_images). Download or Configure Card Images.
+
+Download images of the cards for the "Card Images":#card_image pane, or use an existing
+zip file or directory of images.
+
+:text:5:card_list:downloads
+
+h5(#download_rulebook). Download Rulebook Files.
+
+Download the various files for the "Rulebook":#rulebook menu.
 
 h3(#main_pane_actions). Pane Actions
 
@@ -197,7 +221,6 @@ the main window.
 * _Replace Pane_: Replace the currently active pane with another. The \
 available options will be presented in a submenu.
 * _Close Pane_: Close the currently active pane.
-
 
 h3(#rulebook). Rulebook
 
