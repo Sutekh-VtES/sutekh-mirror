@@ -86,7 +86,7 @@ class SutekhInfo:
     ]
 
     INSTALL_REQUIRES = [
-        'SQLObject >= 0.9.0',
+        'SQLObject >= 3.0.0',
         'ply',
         'configobj',
         'keyring',  # Needed to store the SecretLibrary password
