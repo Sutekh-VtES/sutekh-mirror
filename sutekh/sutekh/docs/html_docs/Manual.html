@@ -23,6 +23,7 @@
 				<li><a href="#importardbjoloreldbcardset">Import <span class="caps">ARDB</span>, <span class="caps">JOL</span> or <span class="caps">ELDB</span> Card Set</a></li>
 				<li><a href="#backup">Backup</a></li>
 				<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
+				<li><a href="#data_download">Data Downloads</a></li>
 			</ol></li>
 			<li><a href="#main_pane_actions">Pane Actions</a></li>
 			<li><a href="#rulebook">Rulebook</a></li>
@@ -77,10 +78,10 @@
 			<li><a href="#expansionstats">Expansion Stats</a></li>
 			<li><a href="#analyzedeck">Analyze Deck</a></li>
 			<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
-			<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
-			<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 			<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+			<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 			<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+			<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 			<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 		</ol></li>
 		<li><a href="#profiles">Profiles</a>
@@ -168,14 +169,14 @@ using the pane title.</p>
 			<li><a href="#backup">Backup</a> Save or restore backups of the database, discussed                   further in the <b>Backup</b> section</li>
 			<li><a href="#importcardsetsfromzipfile">Import Card Set(s) from zip file</a></li>
 		</ul></li>
-		<li><em>Data Downloads</em>: This submenu allows you to update data from the various external sources Sutekh uses.
+		<li><em>Data Downloads</em>: This submenu allows you to <a href="#data_download">update data</a> from the various external sources Sutekh uses.
 		<ul>
-			<li><em>Import new Card List and rulings</em>: Update the database with a new cardlist and/or rulings file. You can either specify local files, or opt to download them from the appropriate website directly.</li>
-			<li><em>Download <span class="caps">VTES</span> icons</em>: Attempt to download the icons from the V:EKN website.</li>
-			<li><em>Download starter decks</em>: Download and import a list of the various preconstructed decks from the sutekh download sit. The zip file also includes the details of the storyline and demo decks released by WW, but these can be excluded using the checkboxes. If you have not imported the details of these extra cards (see <a href="#refresh">Refreshing the Full Card List</a>), these will be greyed out and automatically excluded.</li>
-			<li><em>Download or Configure Card Images</em>: Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing zip file or directory of images.</li>
+			<li><a href="#import_new_cl">Import new Card List and rulings</a></li>
+			<li><a href="#download_icons">Download <span class="caps">VTES</span> icons</a></li>
+			<li><a href="#download_starters">Download starter decks</a></li>
+			<li><a href="#download_images">Download or Configure Card Images</a></li>
 			<li><a href="#importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</a></li>
-			<li><em>Download Rulebook Files</em>: Download the various files for the <a href="#rulebook">Rulebook</a> menu.</li>
+			<li><a href="#download_rulebooks">Download Rulebook Files</a></li>
 		</ul></li>
 		<li><em>Preferences</em>: Manage various preferences.
 		<ul>
@@ -269,7 +270,37 @@ with no parent set.</p>
 
 
 
-	<h4 id="importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</h4>
+	<h4 id="data_download">Data Downloads</h4>
+
+	<p>This handles downloading and updating the data Sutekh uses.</p>
+
+	<h5 id="import_new_cl">Import new Card List and rulings</h5>
+
+	<p>Update the database with a new cardlist and/or rulings file. You can either 
+specify local files, or opt to download them from the appropriate website directly.</p>
+
+	<p>Sutekh will automatically check to see if an updated cardlist is available on 
+startup.</p>
+
+	<h5 id="download_icons">Download <span class="caps">VTES</span> icons.</h5>
+
+	<p>This will download the various game icons (such as discipline symbols or clan icons) 
+from the V:EKN website.</p>
+
+	<h5 id="download_starters">Download Starter decks.</h5>
+
+	<p>Download and import a list of the various preconstructed decks from the sutekh download site. 
+The zip file also includes the details of the storyline and demo decks released by White Wolf and 
+Black Chantry, but these can be excluded using the checkboxes. If you have not imported the details 
+of these extra cards (see <a href="#refresh">Refreshing the Full Card List</a>), these will be greyed out 
+and automatically excluded.</p>
+
+	<h5 id="download_images">Download or Configure Card Images.</h5>
+
+	<p>Download images of the cards for the <a href="#card_image">Card Images</a> pane, or use an existing 
+zip file or directory of images.</p>
+
+	<h5 id="importveknpdffileascardimages">Import <span class="caps">VEKN</span> pdf file as card images</h5>
 
 	<p>This plugin allows you to import a <span class="caps">PDF</span> release from the 
 V:EKN as images. This is especially useful for ensuring 
@@ -297,6 +328,10 @@ next to their names.</p>
 
 
 
+	<h5 id="download_rulebook">Download Rulebook Files.</h5>
+
+	<p>Download the various files for the <a href="#rulebook">Rulebook</a> menu.</p>
+
 	<h3 id="main_pane_actions">Pane Actions</h3>
 
 	<p>This menu allows you to manage the panes in Sutekh. The <em>Pane Actions</em> menu 
@@ -310,7 +345,6 @@ has the following options:</p>
 		<li><em>Replace Pane</em>: Replace the currently active pane with another. The available options will be presented in a submenu.</li>
 		<li><em>Close Pane</em>: Close the currently active pane.</li>
 	</ul>
-
 
 	<h3 id="rulebook">Rulebook</h3>
 
@@ -559,6 +593,7 @@ card set is empty, but it can be shown.</p>
 		<li><em>Display Card Set in alternative format</em>: Show the card set in some of the formats available via <em>Export Card Set</em>. This is useful for copying and pasting the deck into a web browser and so forth.</li>
 		<li><em>Generate random groups of cards</em>: Show groups of random cards from the card set (after applying the current filter). This is useful for generating random groups of cards to use as prize support.</li>
 		<li><a href="#printcardsetasproxies">Print Card Set as Proxies</a> Print the card set using the images of the cards, for use                   as proxies.</li>
+		<li><a href="#exporttoattsjsonfile">Export to a <span class="caps">TTS</span> json file</a></li>
 	</ul>
 
 	<h4 id="printcardsetasproxies">Print Card Set as Proxies</h4>
@@ -583,6 +618,18 @@ can be found.</p>
 	<p>This will only print the current filtered view of the 
 card set, which can be used to restict the card printed 
 to only those required.</p>
+
+
+	<h4 id="exporttoattsjsonfile">Export to a <span class="caps">TTS</span> json file</h4>
+
+	<p>Export to a Table Top Simulator <span class="caps">JSON</span> file.</p>
+
+	<p>This exports the current card set to a <span class="caps">JSON</span> file that 
+can be loaded into Table Top Simulator using the 
+&#8216;Saved Objects&#8217; menu.</p>
+
+	<p>This plugin needs to read data from the <span class="caps">TTS</span> VtES module, 
+so it will not work unless that module has been installed.</p>
 
 
 
@@ -640,10 +687,10 @@ be opened automatically and will be set editable.</p>
 		<li><a href="#cluster">Cluster Cards</a></li>
 		<li><a href="#analyzedeck">Analyze Deck</a></li>
 		<li><a href="#carddrawprobabilities">Card Draw probabilities</a></li>
-		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
-		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 		<li><a href="#comparewithanothercardset">Compare with another Card Set</a></li>
+		<li><a href="#testcardsetindependence">Test Card Set Independence</a></li>
 		<li><a href="#findsimilarcryptcards">Find similar crypt cards</a></li>
+		<li><a href="#simulateopeninghand">Simulate opening hand</a></li>
 		<li><a href="#findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</a></li>
 	</ul>
 
@@ -1019,6 +1066,26 @@ cards (shown in brackets).</p>
 the <em>recalculate table</em> button.</p>
 
 
+	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
+
+	<p>This tool compares the current card set with a different 
+card set. It displays which cards are common to both card 
+sets, and lists the unique cards in each card set.</p>
+
+	<p>By default, the tool considers the expansions of cards, and 
+considers all cards with the same name with different 
+expansions as different.  You can change this behaviour 
+using the <em>Ignore Expansions</em> checkbox when selecting a 
+card set for comparison. If selected, all cards of with the 
+same name are considered the same, regardless of expansion.</p>
+
+	<p>The display of the results uses the same grouping as the 
+card set.</p>
+
+	<p>You can create card sets from each list of results using 
+the &#8216;Create Card Set from this list&#8217; button.</p>
+
+
 	<h3 id="testcardsetindependence">Test Card Set Independence</h3>
 
 	<p>This tool tests the current card set against other card 
@@ -1050,36 +1117,6 @@ which can be used to create a card set containing the
 specific cards listed.</p>
 
 
-	<h3 id="simulateopeninghand">Simulate opening hand</h3>
-
-	<p>This tool treats the card set as a completed deck, and 
-displays the expected distribution of cards in the opening 
-hand and crypt. It is intended to give you some idea of how 
-the deck will work in practice. In addition, you can 
-generate example opening hands and crypts by clicking the 
-<em>Draw sample hand</em> button.</p>
-
-
-	<h3 id="comparewithanothercardset">Compare with another Card Set</h3>
-
-	<p>This tool compares the current card set with a different 
-card set. It displays which cards are common to both card 
-sets, and lists the unique cards in each card set.</p>
-
-	<p>By default, the tool considers the expansions of cards, and 
-considers all cards with the same name with different 
-expansions as different.  You can change this behaviour 
-using the <em>Ignore Expansions</em> checkbox when selecting a 
-card set for comparison. If selected, all cards of with the 
-same name are considered the same, regardless of expansion.</p>
-
-	<p>The display of the results uses the same grouping as the 
-card set.</p>
-
-	<p>You can create card sets from each list of results using 
-the &#8216;Create Card Set from this list&#8217; button.</p>
-
-
 	<h3 id="findsimilarcryptcards">Find similar crypt cards</h3>
 
 	<p>This allows you to find crypt cards that are similar to the 
@@ -1091,6 +1128,16 @@ disciplines or virtues with the selected crypt card.</p>
 card set and then using the &#8216;Only match cards visible in 
 this pane&#8217; option to restrict the results of the crypt card 
 search to match the filter.</p>
+
+
+	<h3 id="simulateopeninghand">Simulate opening hand</h3>
+
+	<p>This tool treats the card set as a completed deck, and 
+displays the expected distribution of cards in the opening 
+hand and crypt. It is intended to give you some idea of how 
+the deck will work in practice. In addition, you can 
+generate example opening hands and crypts by clicking the 
+<em>Draw sample hand</em> button.</p>
 
 
 	<h3 id="findtwdadeckscontaining">Find <span class="caps">TWDA</span> decks containing</h3>
