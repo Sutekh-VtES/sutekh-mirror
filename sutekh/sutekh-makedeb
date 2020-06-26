@@ -20,7 +20,7 @@ if [ "x$BUILD_COUNTER" = "x" ] ; then
 fi
 
 SUITES="bionic xenial disco eoan"
-SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+SUTEKH_VERSION=`PYTHONPATH=. python3 -c "from sutekh import SutekhInfo; print(SutekhInfo.SutekhInfo.VERSION_STR)"`
 DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.orig.tar.gz"
 DEBPATCH_FOLDER="deb-patches"
@@ -58,7 +58,7 @@ make_deb () {
     fi
 
     # build source tarball and .dsc
-    py2dsc -z "$SUITE" -x "$EXTRA_CFG" -m "$SIGNER" $PATCHFILE "$SDIST_FILE" 
+    py2dsc --with-python3 True --with-python2 False -z "$SUITE" -x "$EXTRA_CFG" -m "$SIGNER" $PATCHFILE "$SDIST_FILE" 
 
     # build .changes file (see https://github.com/astraw/stdeb/issues/37)
     cd deb_dist/sutekh-${DEB_VERSION}
