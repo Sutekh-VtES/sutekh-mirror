@@ -5,10 +5,11 @@
 
 """Plugin for interacting with the Secret Library website."""
 
-import urllib
-from io import StringIO
-import re
 import logging
+import re
+
+from io import StringIO
+from urllib.parse import urlencode
 
 from gi.repository import Gtk
 import keyring
@@ -68,7 +69,7 @@ class ImportExportBase(SutekhDialog):
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
 
         self.vbox.pack_start(
-            Gtk.Label(label="%s ..." % (sSourcePhrase,)), False, False)
+            Gtk.Label(label="%s ..." % (sSourcePhrase,)), False, False, 0)
         self.vbox.pack_start(self._oAsDeckButton, False, False, 0)
         self.vbox.pack_start(self._oAsInvButton, False, False, 0)
 
@@ -82,7 +83,7 @@ class ImportExportBase(SutekhDialog):
 
         # API URL
 
-        self._oUrlEntry = Gtk.combo_box_entry_new_text()
+        self._oUrlEntry = Gtk.ComboBoxText()
         self._oUrlEntry.append_text(SecretLibrary.SL_API_URL)
         self._oUrlEntry.set_active(0)
 
@@ -367,7 +368,7 @@ class SecretLibrary(SutekhPlugin):
 
     def _import_deck(self, sApiUrl, dData):
         """Import a Secret Library deck as a card set."""
-        sData = urllib.urlencode(dData)
+        sData = urlencode(dData)
         oParser = SLDeckParser()
 
         fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
@@ -389,7 +390,7 @@ class SecretLibrary(SutekhPlugin):
 
     def _import_inventory(self, sApiUrl, dData):
         """Import a Secret Library inventory as a card set."""
-        sData = urllib.urlencode(dData)
+        sData = urlencode(dData)
         oParser = SLInventoryParser()
 
         fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
@@ -417,7 +418,7 @@ class SecretLibrary(SutekhPlugin):
         dData['description'] = oCardSet.comment
         dData['crypt'], dData['library'] = self._cs_as_deck()
 
-        sData = urllib.urlencode(dData)
+        sData = urlencode(dData)
 
         fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
                                     sData=sData)
@@ -436,7 +437,7 @@ class SecretLibrary(SutekhPlugin):
         dData['inventory_crypt'], dData['inventory_library'] = \
                 self._cs_as_inventory()
 
-        sData = urllib.urlencode(dData)
+        sData = urlencode(dData)
 
         fReq = urlopen_with_timeout(sApiUrl, fErrorHandler=gui_error_handler,
                                     sData=sData)
