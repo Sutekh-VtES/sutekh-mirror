@@ -45,7 +45,7 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None,
         for sHeader, sValue in dHeaders.items():
             oReq.add_header(sHeader, sValue)
     if sData:
-        oReq.add_data(sData)
+        oReq.data = sData.encode('utf-8')
     try:
         if bBinary:
             return urlopen(oReq)
