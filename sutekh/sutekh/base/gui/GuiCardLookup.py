@@ -519,7 +519,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
 
         oMesgLabel2 = Gtk.Label(label="OK creates the card set, Cancel "
                                 "aborts the creation of the card set")
-        oUnknownDialog.vbox.pack_start(oMesgLabel2)
+        oUnknownDialog.vbox.pack_start(oMesgLabel2, True, True, 0)
 
         return oUnknownDialog, oHBox
 
@@ -564,7 +564,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oVBox.pack_start(oReplacementWin, True, True, 0)
 
         oFilterButtons = Gtk.HBox(spacing=2)
-        oVBox.pack_start(Gtk.HSeparator())
+        oVBox.pack_start(Gtk.HSeparator(), True, True, 0)
         oVBox.pack_start(oFilterButtons, True, True, 0)
 
         oFilterButtons.pack_start(oFilterDialogButton, True, True, 0)
@@ -714,7 +714,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oBox.pack_start(oPopup, True, True, 0)
 
             oLabel2 = Gtk.Label(label="Replace with ")
-            oBox.pack_start(oLabel2)
+            oBox.pack_start(oLabel2, True, True, 0)
 
             oSelector = Gtk.ComboBoxText()
             for sPrintName in aKnownPrintings:
@@ -726,13 +726,13 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oPopupExpList.connect('clicked', self._popup_exp, oSelector,
                                   dPrintingCards)
 
-            oBox.pack_start(dReplacement[tExpPrint])
+            oBox.pack_start(dReplacement[tExpPrint], True, True, 0)
             oBox.pack_start(oPopupExpList, True, True, 0)
             oButtonBox.pack_start(oBox, True, True, 0)
 
         oUnknownDialog.vbox.pack_start(oButtonBox, True, True, 0)
 
-        oUnknownDialog.vbox.pack_start(oMesgLabel2)
+        oUnknownDialog.vbox.pack_start(oMesgLabel2, True, True, 0)
         oUnknownDialog.vbox.show_all()
 
         iResponse = oUnknownDialog.run()
