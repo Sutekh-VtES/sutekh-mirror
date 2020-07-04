@@ -15,6 +15,7 @@ import zipfile
 
 from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 
+from ...core.BaseTables import PhysicalCard
 from ...core.BaseAdapters import IPrintingName
 
 from ...io.UrlOps import urlopen_with_timeout
@@ -232,6 +233,28 @@ class BaseImageFrame(BasicFrame):
         self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+
+    def _check_for_all_cards(self):
+        """Check if files exist for all the cards in the cardlist.
+        
+           This is a helper method used to ensure that files are placed
+           and named as expected. It generally shouldn't be called
+           in general usage.
+           """
+        for oCard in PhysicalCard.select():
+            if oCard.printing:
+                # We're only interested in cards with expansion info,
+                # as the "No expansion" case is a subset of those
+                aNames = self.lookup_filename(oCard)
+                aMissing = []
+                for sName in aNames:
+                    if not check_file(sName):
+                        aMissing.append(sName)
+                if aMissing:
+                    print("Missing images for %s (%s)" % (oCard.abstractCard.name,
+                                                          IPrintingName(oCard)))
+                    for sName in aMissing:
+                        print("    %s   not found" % sName)
 
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
