@@ -48,9 +48,8 @@ class CardImageFrame(BaseImageFrame):
     APP_NAME = SutekhInfo.NAME
 
     # Special cases where we don't want to use the Promo short name
-    SPECIAL_PROMOS = [
+    SPECIAL_EXPANSIONS = [
         "Anarchs and Alastors Storyline",
-        "Promo-20190408",
     ]
 
     # Cloudflare doesn't like the urllib2 default
@@ -114,7 +113,9 @@ class CardImageFrame(BaseImageFrame):
                             sExpansionName)
             return ''
         # check special cases
-        if oExpansion.name in self.SPECIAL_PROMOS:
+        # Promos always get the full name, so we can find the right image
+        # for cards printed in multiple different promo sets
+        if oExpansion.name in self.SPECIAL_EXPANSIONS or oExpansion.name.startswith('Promo'):
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()
