@@ -229,32 +229,56 @@ class BaseImageFrame(BasicFrame):
         self._sCardName = ''
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
-        self._aFailedUrls = {}
+        self._dFailedUrls = {}
         self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
-    def _check_for_all_cards(self):
-        """Check if files exist for all the cards in the cardlist.
-        
-           This is a helper method used to ensure that files are placed
-           and named as expected. It generally shouldn't be called
-           in general usage.
-           """
+
+    def _find_missing_cards(self):
+        """Find all the cards that are missing from the filesystem.
+
+           Used for download helpers or missing image checks and
+           so on."""
+        dMissing = {}
         for oCard in PhysicalCard.select():
             if oCard.printing:
                 # We're only interested in cards with expansion info,
                 # as the "No expansion" case is a subset of those
                 aNames = self.lookup_filename(oCard)
-                aMissing = []
                 for sName in aNames:
                     if not check_file(sName):
-                        aMissing.append(sName)
-                if aMissing:
-                    print("Missing images for %s (%s)" % (oCard.abstractCard.name,
-                                                          IPrintingName(oCard)))
-                    for sName in aMissing:
-                        print("    %s   not found" % sName)
+                        dMissing.setdefault(oCard, [])
+                        dMissing[oCard].append(sName)
+        return dMissing
+
+    def _check_for_all_cards(self):
+        """Print details of missing card images.
+        
+           This is a helper method used to ensure that files are placed
+           and named as expected. It generally shouldn't be called
+           in general usage.
+           """
+        dMissing = self._find_missing_cards()
+        for oCard in sorted(dMissing, key=lambda x: x.abstractCard.name):
+            print("Missing images for %s (%s)" % (oCard.abstractCard.name,
+                                                  IPrintingName(oCard)))
+            for sName in dMissing[oCard]:
+                print("    %s   not found" % sName)
+
+    def _download_all_missing_cards(self):
+        """Download all images that are missing from the filesystem."""
+        dMissing = self._find_missing_cards()
+        # We want to force retries here, so we clear the failed cache
+        self._dFailedUrls = {}
+        sCurName, sCurPrint = self._sCardName, self._sCurExpPrint
+        for oCard, aMissing in dMissing.items():
+            for sName in aMissing:
+                # make_urls may require card info, so we set it
+                self._sCardName = oCard.abstractCard.canonicalName
+                self._sCurExpPrint = IPrintingName(oCard)
+                self._download_image(sName)
+        self._sCardName, self._sCurExpPrint = sCurName, sCurPrint
 
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
@@ -426,7 +450,7 @@ class BaseImageFrame(BasicFrame):
         if not aUrls:
             return False
         for sUrl in aUrls:
-            if sUrl not in self._aFailedUrls:
+            if sUrl not in self._dFailedUrls:
                 logging.info('Trying %s as source for %s',
                              sUrl, sFullFilename)
                 oFile = urlopen_with_timeout(
@@ -434,11 +458,11 @@ class BaseImageFrame(BasicFrame):
                     dHeaders=self._dReqHeaders, bBinary=True)
             else:
                 # Skip this url, since it's already failed
-                oLastChecked = self._aFailedUrls[sUrl]
+                oLastChecked = self._dFailedUrls[sUrl]
                 if datetime.datetime.now() - oLastChecked > datetime.timedelta(hours=2):
                     # Will retry next time
                     logging.info('Removing %s from the failed cache', sUrl)
-                    del self._aFailedUrls[sUrl]
+                    del self._dFailedUrls[sUrl]
                 break
             if oFile:
                 # Ensure the directory exists, for expansions we
@@ -458,12 +482,12 @@ class BaseImageFrame(BasicFrame):
                 else:
                     logging.info('Invalid image data from %s', sUrl)
                     # Got bogus data, so don't retry for a while
-                    self._aFailedUrls[sUrl] = datetime.datetime.now()
+                    self._dFailedUrls[sUrl] = datetime.datetime.now()
                 # Don't attempt to follow other urls
                 break
             else:
                 # Cache failure
-                self._aFailedUrls[sUrl] = datetime.datetime.now()
+                self._dFailedUrls[sUrl] = datetime.datetime.now()
         return True
 
     def _load_image(self, aFullFilenames):
