@@ -23,7 +23,7 @@ from ...io.UrlOps import urlopen_with_timeout
 from ...Utility import prefs_dir, ensure_dir_exists, get_printing_date
 
 from ..BasePluginManager import BasePlugin
-from ..ProgressDialog import ProgressDialog
+from ..ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from ..MessageBus import MessageBus, CARD_TEXT_MSG
 from ..GuiDataPack import progress_fetch_data, gui_error_handler
 from ..BasicFrame import BasicFrame
@@ -266,20 +266,37 @@ class BaseImageFrame(BasicFrame):
             for sName in dMissing[oCard]:
                 print("    %s   not found" % sName)
 
+    def count_missing_images(self):
+        dMissing = self._find_missing_cards()
+        return len(dMissing)
+
     def download_all_missing_images(self):
         """Download all images that are missing from the filesystem."""
         dMissing = self._find_missing_cards()
-        # We want to force retries here, so we clear the failed cache
-        self._dFailedUrls = {}
-        # TODO: Wrap everything in a single progress bar
+        if not dMissing:
+            return
+        oProgress = ProgressDialog()
         sCurName, sCurPrint = self._sCardName, self._sCurExpPrint
-        for oCard, aMissing in dMissing.items():
-            for sName in aMissing:
-                # make_urls may require card info, so we set it
-                self._sCardName = oCard.abstractCard.canonicalName
-                self._sCurExpPrint = IPrintingName(oCard)
-                self._download_image(sName)
-        self._sCardName, self._sCurExpPrint = sCurName, sCurPrint
+        try:
+            oLogHandler = SutekhCountLogHandler()
+            oLogHandler.set_dialog(oProgress)
+            oLogHandler.set_total(len(dMissing))
+            oLogger = logging.Logger('Sutekh card image fetcher')
+            oLogger.addHandler(oLogHandler)
+            oProgress.set_description("Downloading missing images")
+            for oCard, aMissing in dMissing.items():
+                for sName in aMissing:
+                    # make_urls may require card info, so we set it
+                    self._sCardName = oCard.abstractCard.canonicalName
+                    self._sCurExpPrint = IPrintingName(oCard)
+                    # This pops up another progress dialog, but that
+                    # is OK
+                    self._download_image(sName)
+                    # Update the image list progress bar
+                    oLogger.info('image download attempted')
+        finally:
+            self._sCardName, self._sCurExpPrint = sCurName, sCurPrint
+            oProgress.destroy()
 
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
@@ -877,8 +894,20 @@ class BaseImagePlugin(BasePlugin):
 
     def download_all_activate(self, _oMenuWidget):
         """Download all the missing images"""
-        # TODO: Add a confirmation dialog here
-        # TODO: Popup a message if all images are downloaded
+        iMissing = self.image_frame.count_missing_images()
+        if not iMissing:
+            _iMesg = do_complaint_buttons(
+                    "All images already downloaded.",
+                    Gtk.MessageType.INFO,
+                    (Gtk.STOCK_OK, Gtk.ResponseType.OK))
+            return
+        iQuery = do_complaint_buttons(
+                f"Download {iMissing} missing images now?",
+                Gtk.MessageType.QUESTION,
+                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
+                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+        if iQuery != Gtk.ResponseType.YES:
+            return
         self.image_frame.download_all_missing_images()
 
     def _unzip_file(self, oFile):
