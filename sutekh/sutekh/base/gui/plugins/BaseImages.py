@@ -266,11 +266,12 @@ class BaseImageFrame(BasicFrame):
             for sName in dMissing[oCard]:
                 print("    %s   not found" % sName)
 
-    def _download_all_missing_cards(self):
+    def download_all_missing_images(self):
         """Download all images that are missing from the filesystem."""
         dMissing = self._find_missing_cards()
         # We want to force retries here, so we clear the failed cache
         self._dFailedUrls = {}
+        # TODO: Wrap everything in a single progress bar
         sCurName, sCurPrint = self._sCardName, self._sCurExpPrint
         for oCard, aMissing in dMissing.items():
             for sName in aMissing:
@@ -845,12 +846,17 @@ class BaseImagePlugin(BasePlugin):
         self.parent.add_to_menu_list('Card Image Frame',
                                      self.add_image_frame_active)
         self._oConfigMenuItem = Gtk.MenuItem(
-            label="Download or Configure Card Images")
+            label="Configure Card Images")
         self._oConfigMenuItem.connect("activate", self.config_activate)
+        self._oDownloadMenuItem = Gtk.MenuItem(
+            label="Download all missing card images")
+        self._oDownloadMenuItem.connect("activate", self.download_all_activate)
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
+            self._oDownloadMenuItem.set_active(False)
         return [('Data Downloads', self._oConfigMenuItem),
+                ('Data Downloads', self._oDownloadMenuItem),
                 ('Add Pane', self._oAddItem),
                 ('Replace Pane', self._oReplaceItem)]
 
@@ -867,6 +873,13 @@ class BaseImagePlugin(BasePlugin):
         if not self.parent.is_open_by_menu_name(self._sMenuFlag):
             # Pane is not open, so try to enable menu
             self.add_image_frame_active(True)
+        self._oDownloadMenuItem.set_active(True)
+
+    def download_all_activate(self, _oMenuWidget):
+        """Download all the missing images"""
+        # TODO: Add a confirmation dialog here
+        # TODO: Popup a message if all images are downloaded
+        self.image_frame.download_all_missing_images()
 
     def _unzip_file(self, oFile):
         """Unzip a file containing the images."""
