@@ -893,7 +893,7 @@ class BaseImagePlugin(BasePlugin):
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
-            self._oDownloadMenuItem.set_active(False)
+            self._oDownloadMenuItem.set_sensitive(False)
         return [('Data Downloads', self._oConfigMenuItem),
                 ('Data Downloads', self._oDownloadMenuItem),
                 ('Add Pane', self._oAddItem),
@@ -912,7 +912,7 @@ class BaseImagePlugin(BasePlugin):
         if not self.parent.is_open_by_menu_name(self._sMenuFlag):
             # Pane is not open, so try to enable menu
             self.add_image_frame_active(True)
-        self._oDownloadMenuItem.set_active(True)
+        self._oDownloadMenuItem.set_sensitive(True)
 
     def download_all_activate(self, _oMenuWidget):
         """Download all the missing images"""
