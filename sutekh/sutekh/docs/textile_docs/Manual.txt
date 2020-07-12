@@ -127,7 +127,8 @@ the various external sources Sutekh uses.
 ** "Import new Card List and rulings":#import_new_cl
 ** "Download VTES icons":#download_icons
 ** "Download starter decks":#download_starters
-** "Download or Configure Card Images":#download_images
+** "Configure Card Images":#configure_images
+** "Download all missing card images":#download_images
 :list:2:card_list:downloads
 ** "Download Rulebook Files":#download_rulebooks
 * _Preferences_: Manage various preferences.
@@ -189,10 +190,17 @@ Black Chantry, but these can be excluded using the checkboxes. If you have not i
 of these extra cards (see "Refreshing the Full Card List":#refresh), these will be greyed out
 and automatically excluded.
 
-h5(#download_images). Download or Configure Card Images.
+h5(#configure_images). Configure card images.
 
-Download images of the cards for the "Card Images":#card_image pane, or use an existing
-zip file or directory of images.
+Download a zip file containing the images of the cards for the "Card Images":#card_image pane, or
+use an existing zip file or directory of images. This also allows you to configure whether
+the plugin will attempt to download missing images automatically.
+
+h5(#download_images). Download all missing card images.
+
+Allows you to update the images, downloading any missing images (for a new expansion)
+or any images that have been updated to better scans. This option is only available
+if the plugin has already been configured.
 
 :text:5:card_list:downloads
 
