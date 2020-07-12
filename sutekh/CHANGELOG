@@ -1,3 +1,151 @@
+12 Jul 2020
+ * Extend downloading missing images support to also download outdated images.
+ * Update manual with new menu option.
+
+11 Jul 2020
+ * Add menu option to download all missing image.s
+
+06 Jul 2020
+ * Add helper method to download missing images.
+
+05 Jul 2020
+ * Update handling of promo images to always use full name, to simplify
+   handling images released in multiple promo versions.
+
+03 Jul 2020
+ * Update Secret Library plugin so it will attempt requests again.
+ * Fix GuiCardLookup window breakage from dropping pygtkcompat.
+
+26 Jun 2020
+ * Fix versions of our dependencies to those that support python 3
+ * Update copyright years
+ * Update debian package config to build a python3 package
+ * Update manual
+
+24 Jun 2020
+ * Fix card image popup menu
+
+23 Jun 2020
+ * Update LICENSE
+
+19 Jun 2020
+ * Add a pack_resizable helper to fix the behaviour of panes.
+
+16 Jun 2020
+ * Fix logview pane bugs introducted when removing pygtkcompat support.
+
+15 Jun 2020
+ * Fix bugs in the opening draw simulator
+
+14 Jun 2020
+ * Update progress bar styling to be more visible
+
+01 Jun 2020
+ * Fix str/bytes issues in the starter plugin
+ * Merge "Running on Memory DB" warning dialog from 1.0
+
+31 May 2020
+ * Disable cardlist updates when running on the memory database
+   (Fix merged from 1.0 branch)
+ * Mask TTS plugin so it doesn't break the test suite
+
+30 May 2020
+ * Fix handling of LICENSE file in setup.py
+ * Various improvements to the TTS plugin
+
+13 May 2020
+ * Add a plugin to export to the TTS saved object format
+
+24 Apr 2020
+ * Replace usage of pygtkcompat in sutekh.gui and sutekh.base.gui
+ * Make tests run without importing pygtkcompat
+ * Drop main pygtkcompat import
+
+17 Apr 2020
+ * Add a check for new updates to the Rulebook plugin
+
+16 Apr 2020
+ * Point at gitlab urls instead of bitbucket
+ * Add a custom UA for downloading files, since gitlab also uses
+   Cloudflare and the default python UA doesn't work as a result.
+
+13 Apr 2020
+ * Fix 'unknown printing' combo box in GuiCardLookup
+
+12 Feb 2020
+ * Fix various ResourceWarnings
+ * Replace usage of deprecated logging.warn
+ * Remove deprecated 'U' flag from file open calls
+
+04 Feb 2020
+ * Prefer explicit lookups over prefix matches in the Adaptors
+
+03 Feb 2020
+ * Update handling of dialog size requests
+
+28 Jan 2020
+ * Update documentatio build to work with python 3
+
+23 Jan 2020
+ * Fix mnemonics for check box menu iterms
+ * Remove obselete menu items from the full card list
+ * Use 'insert_with_values' to fill models, as that is faster in gtk3
+ * Fix sorting in Clan Disciplines plugin
+ * Drop explicit gc.collect from the test runs, as it's no longer needed with gtk3
+
+22 Jan 2020
+ * pylint fixes
+   - Fix various 'object inheritence' warnings
+   - Remove obselete failUnless
+   - Cleanup pylint flags
+   - Various whitespace fixes
+   - Cleanup imports
+
+21 Jan 2020
+ * Add support for downloading binary files
+
+20 Jan 2020
+ * Fix cardlist progress bar
+
+14 Jan 2020
+ * Extend card display tests
+
+12 Jan 2020
+ * Python 3 porting work
+   - Numerous test fixes
+   - Fix cardlist searching
+
+11 Jan 2020
+ * Python 3 porting work
+   - Replace HTMLParser imports
+   - Update urllib imports
+   - Fix various syntax errors
+   - Replace basestring usage
+   - Drop various encoding dances that are no longer required
+   - Fix sorting of dict.keys
+   - Fix various imports
+   - Replace 'cmp' calls
+   - Fix handling of ElementTree.tostring
+   - Improve EncodedFile and use it in more places for consistent behaviour
+
+10 Jan 2020
+ * Python 3 porting work
+   - Replace metaclass syntax
+   - Fix StringIO / BytesIO usage
+   - Replace dict.iter... methods
+
+08 Jan 2020
+ * Mostly fix pygtkcompat port
+ * Cleanup gtk/glib DeprecationWarnings
+ * Start cleaning up Python 3 DeprecationWarnings
+
+31 Dec 2019
+ * Ported UI mostly over to pygtkcompat
+
+12 Dec 2019
+ * Branch off 1.0.0 stable release in preparation for the port to python 3
+   and gtk 3
+
 11 Dec 2019
  * Fix bug where the Card Draw Probablity incorrectly interpreted selections
    as being empty.
