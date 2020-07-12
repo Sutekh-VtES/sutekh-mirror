@@ -16,6 +16,7 @@ import zipfile
 import gobject
 import gtk
 
+from ...core.BaseTables import PhysicalCard
 from ...core.BaseAdapters import IPrintingName
 
 from ...io.UrlOps import urlopen_with_timeout
@@ -23,7 +24,7 @@ from ...io.UrlOps import urlopen_with_timeout
 from ...Utility import prefs_dir, ensure_dir_exists, get_printing_date
 
 from ..BasePluginManager import BasePlugin
-from ..ProgressDialog import ProgressDialog
+from ..ProgressDialog import ProgressDialog, SutekhCountLogHandler
 from ..MessageBus import MessageBus, CARD_TEXT_MSG
 from ..GuiDataPack import progress_fetch_data, gui_error_handler
 from ..BasicFrame import BasicFrame
@@ -235,10 +236,92 @@ class BaseImageFrame(BasicFrame):
         self._sCardName = ''
         self._iZoomMode = FIT
         self._tPaneSize = (0, 0)
-        self._aFailedUrls = {}
+        self._dFailedUrls = {}
         self._dDateCache = {}
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
+
+    def _find_missing_outdated_images(self):
+        """Find all the cards that are missing from the filesystem.
+
+           Used for download helpers or missing image checks and
+           so on."""
+        dMissing = {}
+        dOutdated = {}
+        # Download date check if needed
+        self._get_date_data()
+        for oCard in PhysicalCard.select():
+            if oCard.printing:
+                # We're only interested in cards with expansion info,
+                # as the "No expansion" case is a subset of those
+                aNames = self.lookup_filename(oCard)
+                for sName in aNames:
+                    if not check_file(sName):
+                        dMissing.setdefault(oCard, [])
+                        dMissing[oCard].append(sName)
+                    elif self._check_outdated(sName):
+                        dOutdated.setdefault(oCard, [])
+                        dOutdated[oCard].append(sName)
+        return dMissing, dOutdated
+
+    def _check_for_all_cards(self):
+        """Print details of missing card images.
+        
+           This is a helper method used to ensure that files are placed
+           and named as expected. It generally shouldn't be called
+           in general usage.
+           """
+        dMissing, dOutdated = self._find_missing_cards()
+        for oCard in sorted(dMissing, key=lambda x: x.abstractCard.name):
+            print("Missing images for %s (%s)" % (oCard.abstractCard.name,
+                                                  IPrintingName(oCard)))
+            for sName in dMissing[oCard]:
+                print("    %s   not found" % sName)
+        print()
+        for oCard in sorted(dOutdated, key=lambda x: x.abstractCard.name):
+            print("Outdated images for %s (%s)" % (oCard.abstractCard.name,
+                                                  IPrintingName(oCard)))
+            for sName in dOutdated[oCard]:
+                print("    %s   is out of date" % sName)
+
+    def count_missing_outdated_images(self):
+        dMissing, dOutdated = self._find_missing_outdated_images()
+        return len(dMissing), len(dOutdated)
+
+    def _download_dict(self, dImages, oLogger):
+        """Download the images in the given dict"""
+        sCurName, sCurPrint = self._sCardName, self._sCurExpPrint
+        for oCard, aToGrab in dImages.items():
+            for sName in aToGrab:
+                # make_urls may require card info, so we set it
+                self._sCardName = oCard.abstractCard.canonicalName
+                self._sCurExpPrint = IPrintingName(oCard)
+                # This pops up another progress dialog, but that
+                # is OK
+                self._download_image(sName)
+                # Update the image list progress bar
+                oLogger.info('image download attempted')
+        self._sCardName, self._sCurExpPrint = sCurName, sCurPrint
+
+    def download_all_missing_outdated_images(self):
+        """Download all images that are missing from the filesystem."""
+        dMissing, dOutdated = self._find_missing_outdated_images()
+        if not dMissing and not dOutdated:
+            return
+        oProgress = ProgressDialog()
+        sCurName, sCurPrint = self._sCardName, self._sCurExpPrint
+        try:
+            oLogHandler = SutekhCountLogHandler()
+            oLogHandler.set_dialog(oProgress)
+            oLogHandler.set_total(len(dMissing) + len(dOutdated))
+            oLogger = logging.Logger('Sutekh card image fetcher')
+            oLogger.addHandler(oLogHandler)
+            oProgress.set_description("Downloading missing or outdated images")
+            self._download_dict(dMissing, oLogger)
+            self._download_dict(dOutdated, oLogger)
+        finally:
+            self._sCardName, self._sCurExpPrint = sCurName, sCurPrint
+            oProgress.destroy()
 
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
@@ -360,9 +443,12 @@ class BaseImageFrame(BasicFrame):
         # We assume the cache dates are utc, so we convert to that
         oCurDate = datetime.datetime.utcfromtimestamp(
             os.path.getmtime(sFullFilename))
-        if oCacheDate - oCurDate > datetime.timedelta(seconds=60):
-            # We allow some fuzz to add a bit of protection against weird
-            # filesystems and timezone issues - this is probably too generous
+        # We allow some fuzz to add a bit of protection against weird
+        # filesystems and timezone issues - this is probably too generous
+        return oCacheDate - oCurDate > datetime.timedelta(seconds=60)
+
+    def _download_if_outdated(self, sFullFilename):
+        if self._check_outdated(sFullFilename):
             logging.info("Downloading newer image for %s", sFullFilename)
             self._download_image(sFullFilename)
 
@@ -410,7 +496,7 @@ class BaseImageFrame(BasicFrame):
         if not aUrls:
             return False
         for sUrl in aUrls:
-            if sUrl not in self._aFailedUrls:
+            if sUrl not in self._dFailedUrls:
                 logging.info('Trying %s as source for %s',
                              sUrl, sFullFilename)
                 oFile = urlopen_with_timeout(
@@ -418,11 +504,11 @@ class BaseImageFrame(BasicFrame):
                     dHeaders=self._dReqHeaders)
             else:
                 # Skip this url, since it's already failed
-                oLastChecked = self._aFailedUrls[sUrl]
+                oLastChecked = self._dFailedUrls[sUrl]
                 if datetime.datetime.now() - oLastChecked > datetime.timedelta(hours=2):
                     # Will retry next time
                     logging.info('Removing %s from the failed cache', sUrl)
-                    del self._aFailedUrls[sUrl]
+                    del self._dFailedUrls[sUrl]
                 break
             if oFile:
                 # Ensure the directory exists, for expansions we
@@ -442,12 +528,12 @@ class BaseImageFrame(BasicFrame):
                 else:
                     logging.info('Invalid image data from %s', sUrl)
                     # Got bogus data, so don't retry for a while
-                    self._aFailedUrls[sUrl] = datetime.datetime.now()
+                    self._dFailedUrls[sUrl] = datetime.datetime.now()
                 # Don't attempt to follow other urls
                 break
             else:
                 # Cache failure
-                self._aFailedUrls[sUrl] = datetime.datetime.now()
+                self._dFailedUrls[sUrl] = datetime.datetime.now()
         return True
 
     def _load_image(self, aFullFilenames):
@@ -473,7 +559,7 @@ class BaseImageFrame(BasicFrame):
             else:
                 if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
                         self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES) and
-                        self._check_outdated(sFullFilename)):
+                        self._download_if_outdated(sFullFilename)):
                     # Try download the image
                     # We don't handle failure specially here - if it fails,
                     # we will show the existing image
@@ -794,11 +880,18 @@ class BaseImagePlugin(BasePlugin):
                                      self.add_image_frame_active)
         self._oConfigMenuItem = gtk.MenuItem(
             "Download or Configure Card Images")
+        self._oConfigMenuItem = gtk.MenuItem(
+            label="Configure Card Images")
         self._oConfigMenuItem.connect("activate", self.config_activate)
+        self._oDownloadMenuItem = gtk.MenuItem(
+            label="Download all missing card images")
+        self._oDownloadMenuItem.connect("activate", self.download_all_activate)
         if not self.image_frame.check_images():
             # Don't allow the menu option if we can't find the images
             self.add_image_frame_active(False)
+            self._oDownloadMenuItem.set_active(False)
         return [('Data Downloads', self._oConfigMenuItem),
+                ('Data Downloads', self._oDownloadMenuItem),
                 ('Add Pane', self._oAddItem),
                 ('Replace Pane', self._oReplaceItem)]
 
@@ -815,6 +908,26 @@ class BaseImagePlugin(BasePlugin):
         if not self.parent.is_open_by_menu_name(self._sMenuFlag):
             # Pane is not open, so try to enable menu
             self.add_image_frame_active(True)
+        self._oDownloadMenuItem.set_active(True)
+
+    def download_all_activate(self, _oMenuWidget):
+        """Download all the missing images"""
+        iMissing, iOutdated = self.image_frame.count_missing_outdated_images()
+        if not iMissing and not iOutdated:
+            _iMesg = do_complaint_buttons(
+                    "All images already downloaded.",
+                    gtk.MESSAGE_INFO,
+                    (gtk.STOCK_OK, gtk.RESPONSE_OK))
+            return
+        iQuery = do_complaint_buttons(
+                "Download %d missing and %d outdated"
+                 " images now?" % (iMissing, iOutdated),
+                gtk.MESSAGE_QUESTION,
+                (gtk.STOCK_YES, gtk.RESPONSE_YES,
+                 gtk.STOCK_NO, gtk.RESPONSE_NO))
+        if iQuery != gtk.RESPONSE_YES:
+            return
+        self.image_frame.download_all_missing_outdated_images()
 
     def _unzip_file(self, oFile):
         """Unzip a file containing the images."""

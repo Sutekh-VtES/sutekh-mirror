@@ -1,3 +1,8 @@
+12 Jul 2020
+  * Backport promo handling change from trunk (always treat promos by full name
+    in image plugin)
+  * Backport "download missing images" support from trunk.
+
 16 Jun 2020
   * Backport missing url description fix in the Card Images plugin from trunk. 
 
