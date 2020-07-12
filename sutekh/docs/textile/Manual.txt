@@ -134,9 +134,12 @@ details of the storyline and demo decks released by WW, but these can be \
 excluded using the checkboxes. If you have not imported the details of \
 these extra cards (see "Refreshing the Full Card List":#refresh), \
 these will be greyed out and automatically excluded.
-** _Download or Configure Card Images_: Download images of the cards for the \
-"Card Images":#card_image pane, or use an existing zip file or directory of \
-images.
+** _Configure Card Images_: Setup the options for the \
+"Card Images":#card_image pane, and optionally download a zip file\
+of images of use an existing zip file or directory of images.
+** _Download missing card images_: Download any missing images (for new \
+expansions and so forth). This is only available if the card images pane \
+has been configured.
 :list:2:card_list:downloads
 ** _Download Rulebook Files_: Download the various files for the \
 "Rulebook":#rulebook menu.
