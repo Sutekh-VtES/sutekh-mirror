@@ -208,16 +208,20 @@ class StarterInfoPlugin(SutekhPlugin):
         self.oLastCard = None
         self.bShowInfo = False
         self._aStarters = []
+        # Flag to avoid crashing if we call cleanup early
+        # (which may happen in the test suite)
+        self._bDoSignalCleanup = False
 
     def cleanup(self):
         """Remove the listener"""
-        disconnect_row_update(self.card_set_changed, PhysicalCardSet)
-        disconnect_row_destroy(self.card_set_added_deleted,
-                               PhysicalCardSet)
-        disconnect_row_created(self.card_set_added_deleted,
-                               PhysicalCardSet)
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
-                               self.post_set_card_text)
+        if self._bDoSignalCleanup:
+            disconnect_row_update(self.card_set_changed, PhysicalCardSet)
+            disconnect_row_destroy(self.card_set_added_deleted,
+                                   PhysicalCardSet)
+            disconnect_row_created(self.card_set_added_deleted,
+                                   PhysicalCardSet)
+            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+                                   self.post_set_card_text)
         super(StarterInfoPlugin, self).cleanup()
 
     def get_menu_item(self):
@@ -231,6 +235,7 @@ class StarterInfoPlugin(SutekhPlugin):
         listen_row_update(self.card_set_changed, PhysicalCardSet)
         listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
         listen_row_created(self.card_set_added_deleted, PhysicalCardSet)
+        self._bDoSignalCleanup = True
 
         # Make sure we add the tag we need
         oCardTextView = self.parent.card_text_pane.view
