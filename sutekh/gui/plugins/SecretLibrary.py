@@ -543,4 +543,5 @@ class SecretLibrary(SutekhPlugin):
         return "\n".join(aCrypt), "\n".join(aLibrary)
 
 
-plugin = SecretLibrary
+# We disable the SL plugin until there's some prospect of it returning.
+#plugin = SecretLibrary
