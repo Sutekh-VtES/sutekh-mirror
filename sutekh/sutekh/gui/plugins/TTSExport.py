@@ -194,6 +194,26 @@ def make_json_name(oCard):
         sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
 
+def fix_deck_ids(dCards):
+    """Fix incorrect "CustomDeck" ids in the list.
+
+       Sometimes cards in the json file have the wrong value specified
+       for the deck id in the "CustomDeck" section. This appears to
+       be because of copy-n-paste errors in the TTS json file. Since
+       TTS appears to use this as a cache key, it results in it using
+       the wrong images, even though the actual urls in the section
+       are correct.
+       """
+    for sName, dCardData in dCards.items():
+        sTrueID = "%d" % (dCardData["CardID"] // 100)
+        if sTrueID not in dCardData["CustomDeck"]:
+            # they lied to us
+            # CustomDeck is a dict with a single entry
+            _sKey, dContent = dCardData["CustomDeck"].popitem()
+            # The values are correct enough, but the key is wrong
+            # logging.info(f"Fixing {sTrueID} in {sName} - saw {_sKey}")
+            dCardData["CustomDeck"][sTrueID] = dContent
+
 
 class TTSExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then generates
@@ -255,6 +275,7 @@ class TTSExport(SutekhPlugin):
                     for oObj in dJsonData['ObjectStates'][1]['ContainedObjects']:
                         sKey = fix_nickname(oObj['Nickname'])
                         dCards[sKey] = oObj
+                    fix_deck_ids(dCards)
                     self._dTTSData = dCards
                 except (KeyError, IndexError) as oErr:
                     logging.warning("Failed to extract data from TTS Module file: %s", sTTSModuleFile)
