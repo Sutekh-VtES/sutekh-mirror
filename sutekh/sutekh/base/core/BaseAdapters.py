@@ -8,7 +8,7 @@
 
 import logging
 
-from singledispatch import singledispatch
+from functools import singledispatch
 
 from sqlobject import SQLObjectNotFound
 

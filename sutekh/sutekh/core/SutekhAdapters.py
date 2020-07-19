@@ -6,7 +6,7 @@
 
 """The singledispatch adapters for Sutekh"""
 
-from singledispatch import singledispatch
+from functools import singledispatch
 
 from sutekh.base.core.BaseAdapters import (Adapter, StrAdaptMeta,
                                            fail_adapt, passthrough)
