@@ -104,8 +104,7 @@ class ClusterCardList(SutekhPlugin):
         """Create a notebook, and populate the first tabe with a list of
            properties to cluster on."""
         oNotebook = Gtk.Notebook()
-        aGroups = self._dGroups.keys()
-        aGroups.sort()
+        aGroups = sorted(self._dGroups.keys())
 
         self._dPropButtons = {}
 
@@ -120,8 +119,7 @@ class ClusterCardList(SutekhPlugin):
             if len(dPropFuncs) % iCols != 0:
                 iPropsPerCol += 1
 
-            aPropNames = dPropFuncs.keys()
-            aPropNames.sort()
+            aPropNames = sorted(dPropFuncs.keys())
 
             for iProp, sName in enumerate(aPropNames):
                 if iProp % iPropsPerCol == 0:
@@ -224,8 +222,8 @@ class ClusterCardList(SutekhPlugin):
 
         # No Results Yet
         oLabel = Gtk.Label(label="No results yet.")
-        self._oResultsVbox.pack_start(oLabel, False, True, 0)
-        oVbx.pack_start(self._oResultsVbox, False, True, 0)
+        self._oResultsVbox.pack_start(oLabel, False, False, 0)
+        oVbx.pack_start(self._oResultsVbox, True, True, 0)
 
         return oVbx
 
@@ -294,7 +292,7 @@ class ClusterCardList(SutekhPlugin):
         oMakeCardSetsButton = Gtk.Button("Make Card Sets from Selected"
                                          " Clusters")
         oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
-        self._oResultsVbox.pack_end(oMakeCardSetsButton, False, True, 0)  # bottom align
+        self._oResultsVbox.pack_end(oMakeCardSetsButton, False, False, 0)  # bottom align
 
         self._oResultsVbox.show_all()
 
@@ -367,22 +365,22 @@ class ClusterCardList(SutekhPlugin):
         for _iIter in range(iIterations):
             # empty clusters
             aClusters = []
-            for iClust in xrange(iNumClust):
+            for iClust in range(iNumClust):
                 aClusters.append([])
 
             # calculate membership in clusters
-            for iCard in xrange(iCards):
+            for iCard in range(iCards):
                 oVec = aCards[iCard]
                 # pylint: disable=cell-var-from-loop
                 # Since we use key immediately, this warning isn't
                 # an issue
-                iVmin = min(xrange(iNumClust),
+                iVmin = min(range(iNumClust),
                             key=lambda iV: fDist(oVec, aMeans[iV]))
                 # pylint: enable=cell-var-from-loop
                 aClusters[iVmin].append(iCard)
 
             # recompute the centroids
-            for iClust in xrange(iNumClust):
+            for iClust in range(iNumClust):
                 if aClusters[iClust]:
                     aMeans[iClust] = (1.0 / len(aClusters[iClust])) * sum(
                         (aCards[x] for x in aClusters[iClust])
@@ -404,8 +402,7 @@ class ClusterCardList(SutekhPlugin):
                         self._dGroups[sGroup][sName]
 
         # sort column names
-        aColNames = dPropFuncs.keys()
-        aColNames.sort()
+        aColNames = sorted(dPropFuncs.keys())
 
         # make tabulator and get table
         oTab = CardListTabulator(aColNames, dPropFuncs)
