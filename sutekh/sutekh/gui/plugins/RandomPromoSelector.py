@@ -30,8 +30,8 @@ class RandomPromoDialog(SutekhDialog):
         super(RandomPromoDialog, self).__init__(
             'Generate random groups of cards',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         oCardsPerGroupAdj = Gtk.Adjustment(value=2, lower=1, upper=100,
                                            step_incr=1)

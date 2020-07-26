@@ -154,8 +154,8 @@ class ImportDialog(ImportExportBase):
         super(ImportDialog, self).__init__(
             'Import from Secret Library',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         self._oDeckId = Gtk.Entry()
         aDeckWidgets = [
@@ -184,8 +184,8 @@ class ExportDialog(ImportExportBase):
         super(ExportDialog, self).__init__(
             'Export to Secret Library',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         self._oPublic = Gtk.CheckButton("Make deck public")
         aDeckWidgets = [self._oPublic]

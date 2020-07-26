@@ -85,8 +85,7 @@ class StarterConfigDialog(SutekhDialog):
         super(StarterConfigDialog, self).__init__(
             'Configure Starter Info Plugin', oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL,
-             Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         oDescLabel = Gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the starter info'

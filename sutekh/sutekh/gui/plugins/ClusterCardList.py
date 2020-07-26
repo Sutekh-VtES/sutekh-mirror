@@ -68,8 +68,11 @@ class ClusterCardList(SutekhPlugin):
 
         oDlg = NotebookDialog(sDlgName, self.parent,
                               Gtk.DialogFlags.DESTROY_WITH_PARENT)
-        oDlg.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
-        oDlg.add_button(Gtk.STOCK_EXECUTE, Gtk.ResponseType.APPLY)
+        oDlg.add_button("_Close", Gtk.ResponseType.CLOSE)
+        oBut = oDlg.add_button("Execute", Gtk.ResponseType.APPLY)
+        oImage = Gtk.Image.new_from_icon_name('system-run', 32)
+        oBut.set_image(oImage)
+        oBut.set_always_show_image(True)
 
         oDlg.connect("response", self.handle_response)
 

@@ -257,8 +257,8 @@ class FindLikeVampires(SutekhPlugin):
         oDialog = SutekhDialog('Find Imbued like', self.parent,
                                Gtk.DialogFlags.MODAL |
                                Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                               ("_OK", Gtk.ResponseType.OK,
+                                "_Cancel", Gtk.ResponseType.CANCEL))
         oDialog.vbox.pack_start(
             Gtk.Label(label='Find Imbued like %s' % self.oSelCard.name),
             False, False, 0)
@@ -334,7 +334,7 @@ class FindLikeVampires(SutekhPlugin):
         oResults = NotebookDialog(sTitle, self.parent,
                                   Gtk.DialogFlags.MODAL |
                                   Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                  (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                                  ("_Close", Gtk.ResponseType.CLOSE))
 
         oResults.set_size_request(700, 600)
 

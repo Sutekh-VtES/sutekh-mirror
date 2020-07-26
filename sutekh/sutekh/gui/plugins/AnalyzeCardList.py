@@ -465,7 +465,7 @@ class AnalyzeCardList(SutekhPlugin):
             return
         oDlg = NotebookDialog("Analysis of Card List", self.parent,
                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                              ("_Close", Gtk.ResponseType.CLOSE))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
 
         self.dTypeNumbers = {}
