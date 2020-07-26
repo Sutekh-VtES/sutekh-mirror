@@ -78,8 +78,8 @@ class TWDAConfigDialog(SutekhDialog):
             'Configure TWDA Info Plugin',
             oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
         oDescLabel = Gtk.Label()
         if not bFirstTime:
             oDescLabel.set_markup('<b>Choose how to configure the'
@@ -255,7 +255,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         """Add info about the card sets to the dialog"""
         oDlg = NotebookDialog("TWDA matches", self.parent,
                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                              ("_Close", Gtk.ResponseType.CLOSE))
         aParents = set([oCS.parent.name for oCS in dCardSets])
         dPages = {}
         oDlg.connect('response', lambda dlg, but: dlg.destroy())
@@ -293,7 +293,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         # Gtk confuses pylint
         oDlg = SutekhDialog("No TWDA matches", self.parent,
                             Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                            ("_Close", Gtk.ResponseType.CLOSE))
         oDlg.connect('response', lambda dlg, but: dlg.destroy())
         oLabel = Gtk.Label(label="No decks found statisfying %s" % sMatchText)
         oDlg.vbox.pack_start(oLabel, True, True, 0)
