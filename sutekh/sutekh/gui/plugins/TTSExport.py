@@ -194,6 +194,7 @@ def make_json_name(oCard):
         sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
 
+
 def fix_deck_ids(dCards):
     """Fix incorrect "CustomDeck" ids in the list.
 
@@ -413,6 +414,10 @@ class TTSExport(SutekhPlugin):
         for sNickName, oCard in aNotLegalMissed:
             print("%s (%s)" % (oCard.name, sNickName))
         print()
+
+    def run_checks(self):
+        """Print missed cards."""
+        self.list_unmatched_cards()
 
 
 plugin = TTSExport
