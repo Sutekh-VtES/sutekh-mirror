@@ -201,7 +201,7 @@ class BaseDrawProbPlugin(BasePlugin):
         """Create the dialog box."""
         oDialog = SutekhDialog("Card Draw probablities", self.parent,
                                Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                               (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                               ("_Close", Gtk.ResponseType.CLOSE))
         oDialog.connect("response", lambda oDialog, resp: oDialog.destroy())
 
         oWidgetBox = Gtk.HBox(False, 2)

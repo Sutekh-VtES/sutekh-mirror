@@ -49,8 +49,8 @@ class BaseSetExpansion(BasePlugin):
         oDialog = SutekhDialog('Select expansion', self.parent,
                                Gtk.DialogFlags.MODAL |
                                Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                               ("_OK", Gtk.ResponseType.OK,
+                                "_Cancel", Gtk.ResponseType.CANCEL))
         oExpList = ScrolledList('Possible Expansions')
         oDialog.vbox.pack_start(oExpList, True, True, 0)
         oExpList.set_size_request(150, 300)

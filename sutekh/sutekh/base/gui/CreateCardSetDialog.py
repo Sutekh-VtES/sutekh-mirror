@@ -43,8 +43,8 @@ class CreateCardSetDialog(SutekhDialog):
         super(CreateCardSetDialog, self).__init__(
             "Card Set Details", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         oNameLabel = Gtk.Label(label="Card Set Name : ")
         self.oName = Gtk.Entry()

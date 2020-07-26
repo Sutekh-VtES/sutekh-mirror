@@ -222,7 +222,7 @@ class BaseOpeningDraw(BasePlugin):
         oDialog = SutekhDialog(sDiagName, self.parent,
                                Gtk.DialogFlags.MODAL |
                                Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                               (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                               ("_Close", Gtk.ResponseType.CLOSE))
         oDialog.set_size_request(900, 600)
 
         self._fill_stats(oDialog)
@@ -280,7 +280,7 @@ class BaseOpeningDraw(BasePlugin):
         oBackButton = oDialog.add_button(Gtk.STOCK_GO_BACK, self.BACK)
         oBackButton.set_sensitive(False)
         oDialog.add_button(Gtk.STOCK_GO_FORWARD, self.FORWARD)
-        oDialog.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        oDialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.bShowDetails = False
         if self.aDrawnHands:
             self.iCurHand = len(self.aDrawnHands)

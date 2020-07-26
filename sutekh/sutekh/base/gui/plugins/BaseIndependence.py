@@ -128,8 +128,8 @@ class BaseIndependence(BasePlugin):
             parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
         oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
                             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                            ("_OK", Gtk.ResponseType.OK,
+                             "_Cancel", Gtk.ResponseType.CANCEL))
         self.oCSView = CardSetsListView(None, oDlg)
         oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), True, True, 0)
         self.oCSView.set_select_multiple()
@@ -190,7 +190,7 @@ class BaseIndependence(BasePlugin):
         oResultDlg = NotebookDialog("Missing Cards", None,
                                     Gtk.DialogFlags.MODAL |
                                     Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                    (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                                    ("_Close", Gtk.ResponseType.CLOSE))
         dFormatted = {}
         aParentList = []
         for oCard, oInfo in sorted(dMissing.items(),

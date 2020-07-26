@@ -146,7 +146,7 @@ class ReplacementTreeView(Gtk.TreeView):
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
 
-        self._create_button_column(Gtk.STOCK_OK, 'Set',
+        self._create_button_column("_OK", 'Set',
                                    'Use the selected card',
                                    self._set_to_selection)  # use selected card
         self._create_button_column(Gtk.STOCK_REMOVE, 'Ignore',
@@ -505,8 +505,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oUnknownDialog = SutekhDialog(
             "Unknown cards found importing %s" % sInfo, None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         sLabelText = ("While importing %s\n%s\n"
                       "Choose how to handle these cards?\n" % (sInfo, sMsg))
@@ -666,8 +666,8 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oUnknownDialog = SutekhDialog(
             "Unknown printings found importing %s" % sInfo, None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
 
         # Find all known expansion / printing combos and sort them
         # by name
@@ -759,7 +759,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oCardDialog = SutekhDialog(
             "Cards with unknown expansion and print: %s" % sPrint, None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+            ("_Close", Gtk.ResponseType.CLOSE))
         oLabel = Gtk.Label(label=sCardText)
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel), True, True, 0)
         oCardDialog.set_size_request(300, 400)
@@ -783,7 +783,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oCardDialog = SutekhDialog(
             sTitle, None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+            ("_Close", Gtk.ResponseType.CLOSE))
         oCardDialog.vbox.pack_start(AutoScrolledWindow(oLabel), True, True, 0)
         oCardDialog.set_size_request(300, 400)
         oCardDialog.show_all()

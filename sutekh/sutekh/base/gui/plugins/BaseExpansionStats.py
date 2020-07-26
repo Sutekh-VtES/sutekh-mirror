@@ -71,7 +71,7 @@ class BaseExpansionStats(BasePlugin):
         oDlg = SutekhDialog("Expansion Statistics", self.parent,
                             Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
-        oDlg.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        oDlg.add_button("_Close", Gtk.ResponseType.CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
 
         self._oStatsVbox = Gtk.VBox(homogeneous=False, spacing=0)

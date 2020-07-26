@@ -58,7 +58,7 @@ class DataFilesDialog(SutekhDialog):
         super(DataFilesDialog, self).__init__(
             "Choose CardList Files", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL,
+            ("_OK", Gtk.ResponseType.OK, "_Cancel",
              Gtk.ResponseType.CANCEL))
         self.show()
         self._oParent = oParent
@@ -102,8 +102,8 @@ class DataFilesDialog(SutekhDialog):
         # We can't use SimpleFileDialog, as we need to hide + reshow
         self.oBackupFileDialog = SutekhFileDialog(
             oParent, "Database Backup file", Gtk.FileChooserAction.SAVE,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
         self.oBackupFileDialog.set_do_overwrite_confirmation(True)
 
         self._oHideZip = None

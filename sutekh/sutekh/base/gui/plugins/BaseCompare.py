@@ -99,8 +99,8 @@ class BaseCompare(BasePlugin):
         """Create the dialog for choosing the second card set."""
         oDlg = SutekhDialog("Choose Card Set to Compare with", self.parent,
                             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                            ("_OK", Gtk.ResponseType.OK,
+                             "_Cancel", Gtk.ResponseType.CANCEL))
         oCSView = CardSetsListView(None, oDlg)
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)
@@ -176,7 +176,7 @@ class BaseCompare(BasePlugin):
         oResultDlg = NotebookDialog("Card Comparison", self.parent,
                                     Gtk.DialogFlags.MODAL |
                                     Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                    (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                                    ("_Close", Gtk.ResponseType.CLOSE))
         sTabTitle = 'Common Cards'
         sMarkup = '<span foreground = "blue">%s</span>' % sTabTitle
         oComm = format_list(dCommon, 'green')

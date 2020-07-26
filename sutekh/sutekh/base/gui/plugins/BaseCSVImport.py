@@ -50,8 +50,8 @@ class BaseCSVImport(BasePlugin):
         self.oDlg = SutekhDialog("Choose CSV File", None,
                                  Gtk.DialogFlags.MODAL |
                                  Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                                 ("_OK", Gtk.ResponseType.OK,
+                                  "_Cancel", Gtk.ResponseType.CANCEL))
         oLabel = Gtk.Label()
         oLabel.set_markup("<b>Select CSV File ...</b>")
         oLabel.set_alignment(0.0, 0.5)

@@ -74,8 +74,8 @@ class FilterDialog(SutekhDialog):
 
         self.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
 
-        self.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.add_button("_OK", Gtk.ResponseType.OK)
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
 
         self.vbox.pack_start(self.__oFilterEditor, True, True, 0)
 
@@ -169,8 +169,8 @@ class FilterDialog(SutekhDialog):
 
         oLoadDialog.set_keep_above(True)
 
-        oLoadDialog.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        oLoadDialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        oLoadDialog.add_button("_OK", Gtk.ResponseType.OK)
+        oLoadDialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
 
         # default (True or False), filter name (str), query string (str)
         oFilterStore = Gtk.ListStore(GObject.TYPE_BOOLEAN, GObject.TYPE_STRING,

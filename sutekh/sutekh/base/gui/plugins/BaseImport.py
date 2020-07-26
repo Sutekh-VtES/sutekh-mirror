@@ -68,8 +68,8 @@ class BaseImport(BasePlugin):
         self.oDlg = SutekhDialog("Choose Card Set File or URL", None,
                                  Gtk.DialogFlags.MODAL |
                                  Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                                 ("_OK", Gtk.ResponseType.OK,
+                                  "_Cancel", Gtk.ResponseType.CANCEL))
 
         self.oDlg.vbox.pack_start(Gtk.Label(label="URL:"), False, True, 0)
 

@@ -748,8 +748,8 @@ class BaseImageConfigDialog(SutekhDialog):
             'Configure Card Images Plugin',
             oImagePlugin.parent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
         self.oDescLabel = Gtk.Label()
         if not bFirstTime:
             self.oDescLabel.set_markup('<b>Choose how to configure the'
@@ -921,7 +921,7 @@ class BaseImagePlugin(BasePlugin):
             _iMesg = do_complaint_buttons(
                     "All images already downloaded.",
                     Gtk.MessageType.INFO,
-                    (Gtk.STOCK_OK, Gtk.ResponseType.OK))
+                    ("_OK", Gtk.ResponseType.OK))
             return
         iQuery = do_complaint_buttons(
                 f"Download {iMissing} missing and {iOutdated} outdated"
