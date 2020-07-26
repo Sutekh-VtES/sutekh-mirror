@@ -117,7 +117,11 @@ class ProfileMngDlg(NotebookDialog):
     def __init__(self, oParent, oConfig):
         super(ProfileMngDlg, self).__init__(
             "Manage Profiles", oParent,
-            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            ("Edit Profile", self.RESPONSE_EDIT,
+             "Delete", self.RESPONSE_DELETE,
+              "_Close", Gtk.ResponseType.CLOSE
+            ))
 
         self.__oParent = oParent
         self.__oConfig = oConfig
@@ -129,13 +133,6 @@ class ProfileMngDlg(NotebookDialog):
             oProfileList = self._make_profile_list(sType)
             self.add_widget_page(oProfileList, LABELS[sType])
             self._dLists[oProfileList] = sType
-
-        self.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
-
-        self.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
-
-        self.add_first_button("Delete", self.RESPONSE_DELETE)
-        self.add_first_button("Edit Profile", self.RESPONSE_EDIT)
 
         self.connect("response", self._button_response)
 

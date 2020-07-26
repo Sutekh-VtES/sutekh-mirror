@@ -27,12 +27,6 @@ class SutekhDialog(Gtk.Dialog):
         super(SutekhDialog, self).__init__(sTitle, oParent, iFlags, oButtons)
         self.set_name("Sutekh.dialog")
 
-    def add_first_button(self, sText, iResponse):
-        """Abuse add_button and action_area to insert a button at the
-           head of the list."""
-        oButton = self.add_button(sText, iResponse)
-        self.action_area.reorder_child(oButton, 0)
-
 
 def do_complaint(sMessage, oDialogType, oButtonType, bMarkup=False):
     """Wrapper function for Gtk.MessageDialog.
