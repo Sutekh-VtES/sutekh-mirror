@@ -31,13 +31,13 @@ class RenameDialog(SutekhDialog):
                     " card set.\n"
                     "Choose cancel to abort this import." % sOldName)
             tButtons = ('Rename card set', RENAME, 'Replace Existing Card Set',
-                        REPLACE, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+                        REPLACE, "_Cancel", Gtk.ResponseType.CANCEL)
             self.oEntry.set_text(sOldName)
         else:
             sMsg = ("No name given for the card set\n"
                     "Please specify a name.\n"
                     "Choose cancel to abort this import.")
-            tButtons = ('Name card set', RENAME, Gtk.STOCK_CANCEL,
+            tButtons = ('Name card set', RENAME, "_Cancel",
                         Gtk.ResponseType.CANCEL)
         super(RenameDialog, self).__init__("Choose New Card Set Name",
                                            None,

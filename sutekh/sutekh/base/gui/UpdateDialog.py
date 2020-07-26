@@ -20,8 +20,8 @@ class UpdateDialog(SutekhDialog):
         # Create Dialog
         super(UpdateDialog, self).__init__(
             "Updates available", None,
-            Gtk.DialogFlags.MODAL, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                               Gtk.STOCK_OK, Gtk.ResponseType.OK))
+            Gtk.DialogFlags.MODAL, ("_Cancel", Gtk.ResponseType.CANCEL,
+                                    "_OK", Gtk.ResponseType.OK))
         oHBox = Gtk.HBox(False, 0)
         oIcon = Gtk.Image()
         oIcon.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)

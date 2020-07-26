@@ -88,11 +88,10 @@ class DetailDialog(SutekhDialog):
     def __init__(self, sMessage, sDetails):
         super(DetailDialog, self).__init__(
             '%s has encounterd an error' % AppInfo.NAME,
-            oButtons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+            oButtons=("_Close", Gtk.ResponseType.CLOSE))
         oHBox = Gtk.HBox(False, 2)
         oMessageBox = Gtk.VBox(homogeneous=False, spacing=2)
-        oImage = Gtk.Image()
-        oImage.set_from_stock(Gtk.STOCK_DIALOG_ERROR, Gtk.IconSize.DIALOG)
+        oImage = Gtk.Image.new_from_icon_name('dialog-error', Gtk.IconSize.DIALOG)
         oImage.set_alignment(0, 0)
         oHBox.pack_start(oImage, False, True, 0)
         oInfo = Gtk.Label()

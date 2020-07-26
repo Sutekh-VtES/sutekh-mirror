@@ -230,7 +230,7 @@ class BaseGuiDBManager:
         iRes = do_complaint_buttons(
             "The database doesn't seem to be properly initialised",
             Gtk.MessageType.ERROR,
-            (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
+            ("_Quit", Gtk.ResponseType.CLOSE,
              "Initialise database with cardlist and rulings?", 1))
         if iRes != 1:
             return False
@@ -383,7 +383,7 @@ class BaseGuiDBManager:
             sMesg += "\n".join(aHigherTables)
             sMesg += "\n\n<b>Unable to continue</b>"
             do_complaint_buttons(sMesg, Gtk.MessageType.ERROR,
-                                 (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE), True)
+                                 ("_Quit", Gtk.ResponseType.CLOSE), True)
             # No sensible default here - user can override using
             # --ignore-db-version if desired
             return False
@@ -391,7 +391,7 @@ class BaseGuiDBManager:
                 "The following tables need to be upgraded:\n"
         sMesg += "\n".join(aLowerTables)
         iRes = do_complaint_buttons(sMesg, Gtk.MessageType.ERROR,
-                                    (Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
+                                    ("_Quit", Gtk.ResponseType.CLOSE,
                                      "Attempt Automatic Database Upgrade", 1))
         if iRes != 1:
             return False

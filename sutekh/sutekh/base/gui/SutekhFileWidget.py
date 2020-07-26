@@ -106,8 +106,8 @@ class SutekhFileButton(Gtk.FileChooserButton):
 
     def __init__(self, oParent, sTitle):
         self.oDialog = SutekhFileDialog(
-            oParent, sTitle, oButtons=(Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                       Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            oParent, sTitle, oButtons=("_OK", Gtk.ResponseType.OK,
+                                       "_Cancel", Gtk.ResponseType.CANCEL))
         super(SutekhFileButton, self).__init__(self.oDialog)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
@@ -130,8 +130,8 @@ class SimpleFileDialog(SutekhFileDialog):
     def __init__(self, oParent, sTitle, oAction):
         super(SimpleFileDialog, self).__init__(
             oParent, sTitle, oAction,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            ("_OK", Gtk.ResponseType.OK,
+             "_Cancel", Gtk.ResponseType.CANCEL))
         self.connect("response", self.button_response)
         self.set_local_only(True)
         self.set_select_multiple(False)
