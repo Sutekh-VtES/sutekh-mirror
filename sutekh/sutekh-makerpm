@@ -4,7 +4,7 @@
 # to handle rc version numbers and the like
 
 SPEC_FILE='dist/Sutekh.spec'
-SUTEKH_VERSION=`PYTHONPATH=. python -c "from sutekh import SutekhInfo; print SutekhInfo.SutekhInfo.VERSION_STR"`
+SUTEKH_VERSION=`PYTHONPATH=. python3 -c "from sutekh import SutekhInfo; print(SutekhInfo.SutekhInfo.VERSION_STR)"`
 BASE_VERSION=`echo "$SUTEKH_VERSION" | grep -o "^[0-9\.]*"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.tar.gz"
 
@@ -15,7 +15,7 @@ RELEASE=${RELEASE:+"0.1.$RELEASE"}
 # default to 1 if no rc/alpha tag
 RPM_RELEASE=${RELEASE:-1}
 
-# Check we have sdist (created by python ./setup.py sdist) in place
+# Check we have sdist (created by python3 ./setup.py sdist) in place
 if [ ! -e $SDIST_FILE ]; then
    echo "Please copy the source tarball for this release to $SDIST_FILE."
    echo "NB: Do not simply re-build the source tarball -- it should be"
@@ -25,7 +25,7 @@ if [ ! -e $SDIST_FILE ]; then
 fi
 
 # Create spec file
-python ./setup.py bdist_rpm --spec-only
+python3 ./setup.py bdist_rpm --spec-only
 # Fix spec file
 # We add a dist tag which rpm will fill in for us with the correct version
 sed -i -e "s/ version $SUTEKH_VERSION/ version $BASE_VERSION/;s/ release .*$/ release $RPM_RELEASE%{?dist}/" $SPEC_FILE
