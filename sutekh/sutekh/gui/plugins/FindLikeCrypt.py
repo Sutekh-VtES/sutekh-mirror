@@ -189,8 +189,8 @@ class FindLikeVampires(SutekhPlugin):
         oDialog = SutekhDialog('Find Vampires like', self.parent,
                                Gtk.DialogFlags.MODAL |
                                Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                               (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                               ("_OK", Gtk.ResponseType.OK,
+                                "_Cancel", Gtk.ResponseType.CANCEL))
         oDialog.vbox.pack_start(
             Gtk.Label(label='Find Vampires like %s' % self.oSelCard.name),
             False, False, 0)
@@ -221,9 +221,9 @@ class FindLikeVampires(SutekhPlugin):
         else:
             oComboBox.set_active(0)
         oHBox = Gtk.HBox(False, 2)
-        oHBox.pack_start(Gtk.Label(label='Use '))
+        oHBox.pack_start(Gtk.Label(label='Use '), False, True, 0)
         oHBox.pack_start(oComboBox, False, True, 0)
-        oHBox.pack_start(Gtk.Label(label=' Disciplines'))
+        oHBox.pack_start(Gtk.Label(label=' Disciplines'), False, True, 0)
         oDialog.vbox.pack_start(oHBox, False, True, 0)
         oDialog.show_all()
         iRes = oDialog.run()
@@ -261,10 +261,10 @@ class FindLikeVampires(SutekhPlugin):
                                 Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         oDialog.vbox.pack_start(
             Gtk.Label(label='Find Imbued like %s' % self.oSelCard.name),
-            False, False)
+            False, False, 0)
         oUseCardSet = Gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet, False, True, 0)
-        oDialog.vbox.pack_start(Gtk.Label(label="Match Virtues"))
+        oDialog.vbox.pack_start(Gtk.Label(label="Match Virtues"), False, True, 0)
         oComboBox = Gtk.ComboBoxText()
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
             oComboBox.append_text('%d' % iNum)
@@ -273,9 +273,9 @@ class FindLikeVampires(SutekhPlugin):
         else:
             oComboBox.set_active(0)
         oHBox = Gtk.HBox(False, 2)
-        oHBox.pack_start(Gtk.Label(label='Use '))
+        oHBox.pack_start(Gtk.Label(label='Use '), False, True, 0)
         oHBox.pack_start(oComboBox, False, True, 0)
-        oHBox.pack_start(Gtk.Label(label=' Virtues'))
+        oHBox.pack_start(Gtk.Label(label=' Virtues'), False, True, 0)
         oDialog.vbox.pack_start(oHBox, False, True, 0)
         oDialog.show_all()
         iRes = oDialog.run()
@@ -421,7 +421,7 @@ class LikeCardsView(Gtk.TreeView):
         oSelection = self.get_selection()
         oSelection.set_mode(Gtk.SelectionMode.MULTIPLE)
 
-        self.set_grid_lines(Gtk.TreeViewGridLine._BOTH)
+        self.set_grid_lines(Gtk.TreeViewGridLines.BOTH)
 
     def get_selected_cards(self):
         """Get the currently selected cards"""
@@ -472,8 +472,7 @@ class LikeCardsModel(Gtk.ListStore):
         """Remove the card from the model"""
         oIter = self.get_iter_first()
         while oIter is not None:
-            # See comments in CardListModel for why we decode here
-            sName = self.get_value(oIter, 0).decode('utf-8')
+            sName = self.get_value(oIter, 0)
             if sName == oCard.name:
                 break
             else:
@@ -485,7 +484,7 @@ class LikeCardsModel(Gtk.ListStore):
     def get_card(self, oPath):
         """Return the AbstractCard for the given path"""
         oIter = self.get_iter(oPath)
-        sName = self.get_value(oIter, 0).decode('utf-8')
+        sName = self.get_value(oIter, 0)
         return IAbstractCard(sName)
 
 
