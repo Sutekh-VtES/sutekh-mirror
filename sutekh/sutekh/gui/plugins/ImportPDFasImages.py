@@ -8,8 +8,14 @@
 
 import os
 
-import gi
-gi.require_version('Poppler', '0.18')
+# gi will return a ValueError if we can't require the correct
+# poppler version, so we convert this into a ImportError for
+# the plugin manager
+try:
+    import gi
+    gi.require_version('Poppler', '0.18')
+except ValueError as oErr:
+    raise ImportError("Failed to require Poppler: %s" % oErr)
 from gi.repository import GLib, Gtk, Poppler, GdkPixbuf
 import cairo
 
