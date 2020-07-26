@@ -395,6 +395,13 @@ class BasePlugin:
            during a database upgrade"""
         pass
 
+    def run_checks(self):
+        """Hook for missing data / debugging / etc. checks for the plugin.
+
+           This is assumed to be run after setup and plugin initialisation,
+           but should not depend on specific application state."""
+        pass
+
     # Utility Functions / Internal Plugin API
     # This functions are for use by the plugins, and should not be
     # called externally

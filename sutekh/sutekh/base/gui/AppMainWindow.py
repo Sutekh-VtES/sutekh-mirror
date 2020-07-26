@@ -202,6 +202,11 @@ class AppMainWindow(MultiPaneWindow):
         # Now we can check for any plugins that have updated data
         self.check_for_plugin_updates()
 
+    def run_plugin_checks(self):
+        """Call the run_checks hook for all imported plugins."""
+        for oPlugin in self._aPlugins:
+            sMsg = oPlugin.run_checks()
+
     def _create_app_menu(self):
         """Hook for creating the main application menu."""
         # We need to do this after plugin setup, but before
