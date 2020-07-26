@@ -60,6 +60,11 @@ def parse_options(aArgs):
     oOptParser.add_option("--error-log", type="string", dest="sErrFile",
                           default=None, help="File to log messages to. "
                                              "Defaults to no logging")
+    oOptParser.add_option("--run-plugin-checks", action="store_true",
+                          dest="run_plugin_checks", default=False,
+                          help="Run checks for various plugins."
+                               " Used to find missing data and so forth"
+                               " for plugins that support this")
     return oOptParser, oOptParser.parse_args(aArgs)
 
 
@@ -118,6 +123,8 @@ def main():
     _oRootLogger = setup_logging(oOpts.verbose, oOpts.sErrFile)
 
     oMainWindow.setup(oConfig)
+    if oOpts.run_plugin_checks:
+        oMainWindow.run_plugin_checks()
     oMainWindow.run()
 
     # Save Config Changes
