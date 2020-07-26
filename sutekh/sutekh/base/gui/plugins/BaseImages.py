@@ -258,14 +258,14 @@ class BaseImageFrame(BasicFrame):
                         dOutdated[oCard].append(sName)
         return dMissing, dOutdated
 
-    def _check_for_all_cards(self):
+    def check_for_all_cards(self):
         """Print details of missing card images.
         
            This is a helper method used to ensure that files are placed
            and named as expected. It generally shouldn't be called
            in general usage.
            """
-        dMissing, dOutdated = self._find_missing_cards()
+        dMissing, dOutdated = self._find_missing_outdated_images()
         for oCard in sorted(dMissing, key=lambda x: x.abstractCard.name):
             print("Missing images for %s (%s)" % (oCard.abstractCard.name,
                                                   IPrintingName(oCard)))
@@ -1048,3 +1048,7 @@ class BaseImagePlugin(BasePlugin):
             oNewPane = self.parent.add_pane_end()
             self.image_frame.set_unique_id()
             self.parent.replace_frame(oNewPane, self.image_frame)
+
+    def run_checks(self):
+        """Find and list any missing images."""
+        self.image_frame.check_for_all_cards()
