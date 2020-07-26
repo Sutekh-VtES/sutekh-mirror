@@ -685,12 +685,16 @@ class HTMLViewDialog(SutekhDialog):
            fLinkLoader: function to load links with (passed to HTMLTextView)
            """
         super(HTMLViewDialog, self).__init__('Help', oParent,
-                                             oButtons=(Gtk.STOCK_CLOSE,
+                                             oButtons=("_Close",
                                                        Gtk.ResponseType.CLOSE))
         oDirButtons = Gtk.HButtonBox()
-        self._oBackButton = Gtk.Button(stock=Gtk.STOCK_GO_BACK)
+        self._oBackButton = Gtk.Button.new_from_icon_name('go-previous', 32)
+        self._oBackButton.set_label('Back')
+        self._oBackButton.set_always_show_image(True)
         self._oBackButton.connect('pressed', self._go_back)
-        self._oForwardButton = Gtk.Button(stock=Gtk.STOCK_GO_FORWARD)
+        self._oForwardButton = Gtk.Button.new_from_icon_name('go-next', 32)
+        self._oForwardButton.set_label('Forward')
+        self._oForwardButton.set_always_show_image(True)
         self._oForwardButton.connect('pressed', self._go_forward)
         oDirButtons.pack_start(self._oBackButton, True, True, 0)
         oDirButtons.pack_start(self._oForwardButton, True, True, 0)
