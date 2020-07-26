@@ -144,8 +144,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self.oDlg = SutekhDialog("Choose PDF File and Expansion", None,
                                  Gtk.DialogFlags.MODAL |
                                  Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                 (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                  Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                                 ("_OK", Gtk.ResponseType.OK,
+                                  "_Cancel", Gtk.ResponseType.CANCEL))
         # pylint: disable=no-member
         # vbox confuses pylint
         self.oDlg.vbox.pack_start(Gtk.Label(label="PDF File"), False, True, 0)
@@ -242,7 +242,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oImportDialog = SutekhDialog("Match cards and images", None,
                                      Gtk.DialogFlags.MODAL |
                                      Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                     (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                                     ("_Close", Gtk.ResponseType.CLOSE))
         self._iNumPages = self._oDocument.get_n_pages()
         self._iCurPageNo = 0
         self._iXPos, self._iYPos = 0, 0
