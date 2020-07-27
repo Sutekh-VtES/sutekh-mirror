@@ -5,3 +5,4 @@
 /build
 /.coverage
 /Sutekh.egg-info
+/deb_dist
