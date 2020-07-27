@@ -1,3 +1,5 @@
 include stdeb.cfg
 include MANIFEST.in
 include COPYRIGHT
+recursive-include sutekh/tests/ *py
+recursive-include sutekh/base/tests/ *py

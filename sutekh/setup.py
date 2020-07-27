@@ -94,10 +94,11 @@ setup   (   # Metadata
 
             # Dependencies
             install_requires = SutekhInfo.INSTALL_REQUIRES,
+            python_requires = '>=3',
 
             # Files
             packages = find_packages(exclude=['sutekh.tests.*',
-                'sutekh.tests']),
+                'sutekh.tests', 'sutekh.base.tests']),
             package_data = {
                 # NOTE: PkgResourceBuilder cannot handle the
                 #   catch-all empty package ''.
