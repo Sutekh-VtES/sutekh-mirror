@@ -205,7 +205,7 @@ class BaseImageFrame(BasicFrame):
         self._oView.get_hadjustment().connect('changed', self._pane_adjust)
         self._oView.get_vadjustment().connect('changed', self._pane_adjust)
         self._oImage = Gtk.Image()
-        self._oImage.set_from_icon_name(Gtk.STOCK_MISSING_IMAGE,
+        self._oImage.set_from_icon_name("image-missing",
                                         Gtk.IconSize.DIALOG)
         oBox.add(self._oImage)
 
@@ -320,8 +320,8 @@ class BaseImageFrame(BasicFrame):
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
         # Reset to stock image to force sane state
-        self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
-                                    Gtk.IconSize.DIALOG)
+        self._oImage.set_from_icon_name("image-missing",
+                                        Gtk.IconSize.DIALOG)
         MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
         super(BaseImageFrame, self).frame_setup()
@@ -546,8 +546,8 @@ class BaseImageFrame(BasicFrame):
                     # Attempt to download the image from the url
                     if not self._download_image(sFullFilename):
                         # No download, so fall back to the 'no image' case
-                        self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
-                                                    Gtk.IconSize.DIALOG)
+                        self._oImage.set_from_icon_name("image-missing",
+                                                        Gtk.IconSize.DIALOG)
                         self._oImage.queue_draw()
                         return
             else:
@@ -621,8 +621,8 @@ class BaseImageFrame(BasicFrame):
                 # Full size, so no scaling
                 self._oImage.set_from_pixbuf(oPixbuf)
         except GObject.GError:
-            self._oImage.set_from_stock(Gtk.STOCK_MISSING_IMAGE,
-                                        Gtk.IconSize.DIALOG)
+            self._oImage.set_from_icon_name("image-missing",
+                                            Gtk.IconSize.DIALOG)
         self._oImage.queue_draw()
 
     def check_images(self, sTestPath=''):
