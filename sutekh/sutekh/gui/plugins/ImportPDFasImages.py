@@ -406,8 +406,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
             iRes = do_complaint_buttons(
                 "File %s exists. Do You want to replace it?" % sFileName,
                 Gtk.MessageType.QUESTION,
-                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                ("Yes", Gtk.ResponseType.YES,
+                 "No", Gtk.ResponseType.NO))
             if iRes == Gtk.ResponseType.NO:
                 return
         # Actually save the image
