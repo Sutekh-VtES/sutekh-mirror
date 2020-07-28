@@ -110,9 +110,9 @@ class CardSetView(CardListView):
 
         # Inc/Dec cells
         oIncCell = CellRendererSutekhButton()
-        oIncCell.load_icon(Gtk.STOCK_ADD, self)
+        oIncCell.load_icon("list-add", self)
         oDecCell = CellRendererSutekhButton()
-        oDecCell.load_icon(Gtk.STOCK_REMOVE, self)
+        oDecCell.load_icon("list-remove", self)
 
         self.oIncCol = Gtk.TreeViewColumn("", oIncCell, showicon=3)
         self.oIncCol.set_fixed_width(19)
