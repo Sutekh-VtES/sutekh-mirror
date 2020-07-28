@@ -16,7 +16,7 @@ try:
     gi.require_version('Poppler', '0.18')
 except ValueError as oErr:
     raise ImportError("Failed to require Poppler: %s" % oErr)
-from gi.repository import GLib, Gtk, Poppler, GdkPixbuf
+from gi.repository import GLib, Gtk, Poppler, Gdk
 import cairo
 
 from sqlobject import SQLObjectNotFound
@@ -55,7 +55,7 @@ class ImportView(ACLLookupView):
         super(ImportView, self).__init__(oParent, oConfig)
 
         oUsedCell = CellRendererSutekhButton()
-        oUsedCell.load_icon(Gtk.STOCK_APPLY, self)
+        oUsedCell.load_icon("image-x-generic", self)
         # We override the IncCard column for the 'used' flag, which is a bit
         # icky, but we aren't using it for it's intended purpose
         # anyway.
@@ -234,7 +234,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         # pylint: disable=no-member
         # Poppler & GLib confuse pylint
         try:
-            self._oDocument = Poppler.document_new_from_file(
+            self._oDocument = Poppler.Document.new_from_file(
                 "file://" + sFile, None)
         except GLib.GError:
             do_complaint_error("Unable to parse the PDF file: %s" % sFile)
@@ -268,7 +268,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oDrawArea.set_size_request(self._iScale * CARD_DIM[0],
                                    self._iScale * CARD_DIM[1])
 
-        oDrawArea.connect('expose-event', self._draw_pdf_section)
+        oDrawArea.connect('draw', self._draw_pdf_section)
 
         # Import manipulation button area
         oOffsetBox = Gtk.HBox()
@@ -280,9 +280,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                                   upper=CARD_DIM[1] // 2,
                                   step_incr=1, value=0)
 
-        self._oXOffset = Gtk.SpinButton(oXOffAdj)
+        self._oXOffset = Gtk.SpinButton()
+        self._oXOffset.set_adjustment(oXOffAdj)
         self._oXOffset.set_value(0)
-        self._oYOffset = Gtk.SpinButton(oYOffAdj)
+        self._oYOffset = Gtk.SpinButton()
+        self._oXOffset.set_adjustment(oYOffAdj)
         self._oYOffset.set_value(0)
 
         oOffsetBox.pack_start(Gtk.Label(label="Horizontal Offset : "), False, False, 0)
@@ -297,9 +299,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                                     step_incr=1, value=CARD_DIM[0])
         oYScaleAdj = Gtk.Adjustment(lower=10, upper=CARD_DIM[1] + 100,
                                     step_incr=1, value=CARD_DIM[1])
-        self._oXScale = Gtk.SpinButton(oXScaleAdj)
+        self._oXScale = Gtk.SpinButton()
+        self._oXScale.set_adjustment(oXScaleAdj)
         self._oXScale.set_value(CARD_DIM[0])
-        self._oYScale = Gtk.SpinButton(oYScaleAdj)
+        self._oYScale = Gtk.SpinButton()
+        self._oYScale.set_adjustment(oYScaleAdj)
         self._oYScale.set_value(CARD_DIM[1])
 
         oScaleBox.pack_start(Gtk.Label(label="Horizontal Size : "), False, False, 0)
@@ -336,7 +340,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
 
     def _draw_pdf_section(self, oDrawArea, _oEvent):
         oContext = oDrawArea.get_window().cairo_create()
-        iWidth, iHeight = oDrawArea.get_window().get_size()
+        _iX, _iY, iWidth, iHeight = oDrawArea.get_window().get_geometry()
         self._render_pdf(oContext, iWidth, iHeight)
 
     def _render_pdf(self, oContext, iWidth, iHeight):
@@ -412,23 +416,10 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                 return
         # Actually save the image
         ensure_dir_exists(os.path.dirname(sFileName))
-        oPixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8,
-                                 self._iScale * CARD_DIM[0],
-                                 self._iScale * CARD_DIM[1])
-        oCMap = oDrawArea.get_window().get_colormap()
-        oImgPixmap = GdkPixbuf(oDrawArea.get_window(),
-                                    self._iScale * CARD_DIM[0],
-                                    self._iScale * CARD_DIM[1])
-        # We re-render to a Pixmap, since oDrawArea may not be
-        # showing the full image
-        oContext = oImgPixmap.cairo_create()
-        self._render_pdf(oContext,
-                         self._iScale * CARD_DIM[0],
-                         self._iScale * CARD_DIM[1])
-        oPixbuf.get_from_drawable(oImgPixmap, oCMap, 0, 0, 0, 0,
-                                  self._iScale * CARD_DIM[0],
-                                  self._iScale * CARD_DIM[1])
-        oPixbuf.save(sFileName, "jpeg", {"quality": "98"})
+        oPixbuf = Gdk.pixbuf_get_from_window(oDrawArea.get_window(), 0, 0,
+                                             self._iScale * CARD_DIM[0],
+                                             self._iScale * CARD_DIM[1])
+        oPixbuf.savev(sFileName, "jpeg", ("quality",), ("98",))
         # Mark the card as used
         oAbsView.set_selected_used()
         # Advance to the next image
