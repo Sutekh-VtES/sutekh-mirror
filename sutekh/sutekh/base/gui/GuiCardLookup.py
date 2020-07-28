@@ -146,13 +146,13 @@ class ReplacementTreeView(Gtk.TreeView):
         self._create_text_column('Missing Card', 1)
         self._create_text_column('Replace Card', 2)
 
-        self._create_button_column("_OK", 'Set',
+        self._create_button_column("list-add", 'Set',
                                    'Use the selected card',
                                    self._set_to_selection)  # use selected card
-        self._create_button_column(Gtk.STOCK_REMOVE, 'Ignore',
+        self._create_button_column("list-remove", 'Ignore',
                                    'Ignore the current card',
                                    self._set_ignore)  # ignore current card
-        self._create_button_column(Gtk.STOCK_FIND, 'Filter',
+        self._create_button_column("edit-find", 'Filter',
                                    'Filter on best guess',
                                    self._set_filter)  # filter out best guesses
 
@@ -163,11 +163,11 @@ class ReplacementTreeView(Gtk.TreeView):
         oModel.set_sort_column_id(2, 0)
 
     # utility methods to simplify column creation
-    def _create_button_column(self, oIcon, sLabel, sToolTip, fClicked):
+    def _create_button_column(self, sIconName, sLabel, sToolTip, fClicked):
         """Create a column with a button, usin oIcon and the function
            fClicked."""
         oCell = CellRendererSutekhButton(bShowIcon=True)
-        oCell.load_icon(oIcon, self)
+        oCell.load_icon(sIconName, self)
         oLabel = Gtk.Label(label=sLabel)
         oColumn = Gtk.TreeViewColumn("", oCell)
         oColumn.set_widget(oLabel)
