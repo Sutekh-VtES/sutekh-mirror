@@ -277,9 +277,15 @@ class BaseOpeningDraw(BasePlugin):
         # We need to have access to the back button
         oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
         oDialog.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
-        oBackButton = oDialog.add_button(Gtk.STOCK_GO_BACK, self.BACK)
+        oBackButton = oDialog.add_button("Back", self.BACK)
+        oBackImage = Gtk.Image.new_from_icon_name('go-previous', Gtk.IconSize.BUTTON)
+        oBackButton.set_image(oBackImage)
+        oBackButton.set_always_show_image(True)
         oBackButton.set_sensitive(False)
-        oDialog.add_button(Gtk.STOCK_GO_FORWARD, self.FORWARD)
+        oForwardButton = oDialog.add_button("Forward", self.FORWARD)
+        oForwardImage = Gtk.Image.new_from_icon_name('go-next', Gtk.IconSize.BUTTON)
+        oForwardButton.set_image(oForwardImage)
+        oForwardButton.set_always_show_image(True)
         oDialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.bShowDetails = False
         if self.aDrawnHands:
