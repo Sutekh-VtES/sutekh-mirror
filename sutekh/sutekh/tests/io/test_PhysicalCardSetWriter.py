@@ -119,14 +119,12 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet1))
         sWriterXML = oFile.getvalue()
         oFile.close()
-        self.assertEqual(len(sWriterXML), len(EXPECTED_1))
-        self.assertEqual(sWriterXML, EXPECTED_1)
+        self._compare_xml_strings(sWriterXML, EXPECTED_1)
 
         oPCS = IPhysicalCardSet(CARD_SET_NAMES[0])
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPCS))
-        self.assertEqual(len(sData), len(EXPECTED_1))
-        self.assertEqual(sData, sWriterXML)
-        self.assertEqual(sData, EXPECTED_1)
+        self._compare_xml_strings(sData, sWriterXML)
+        self._compare_xml_strings(sData, EXPECTED_1)
 
         oPhysCardSet2 = make_set_2()
 
@@ -134,16 +132,14 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
         sWriterXML = oFile.getvalue()
         oFile.close()
-        self.assertEqual(len(sWriterXML), len(EXPECTED_2))
-        self.assertEqual(sWriterXML, EXPECTED_2)
+        self._compare_xml_strings(sWriterXML, EXPECTED_2)
 
         sTempFileName = self._create_tmp_file()
         oFileXML = PhysicalCardSetXmlFile(sTempFileName)
         oFileXML.write(CARD_SET_NAMES[1])
         fIn = open(sTempFileName, 'r')
         sData = fIn.read()
-        self.assertEqual(len(sData), len(EXPECTED_2))
-        self.assertEqual(sData, EXPECTED_2)
+        self._compare_xml_strings(sData, EXPECTED_2)
 
         # Unset the author
         oPhysCardSet2.author = None
@@ -151,8 +147,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet2))
         sWriterXML = oFile.getvalue()
         oFile.close()
-        self.assertEqual(len(sWriterXML), len(EXPECTED_3))
-        self.assertEqual(sWriterXML, EXPECTED_3)
+        self._compare_xml_strings(sWriterXML, EXPECTED_3)
 
         # Test with more unicode stuff
         oWriter = PhysicalCardSetWriter()
@@ -162,8 +157,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
         oWriter.write(oFile, CardSetWrapper(oPhysCardSet3))
         sWriterXML = oFile.getvalue()
         oFile.close()
-        self.assertEqual(sWriterXML, EXPECTED_4)
-        self.assertEqual(len(sWriterXML), len(EXPECTED_4))
+        self._compare_xml_strings(sWriterXML, EXPECTED_4)
 
 
 if __name__ == "__main__":

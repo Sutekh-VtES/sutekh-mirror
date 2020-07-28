@@ -104,7 +104,7 @@ class ArdbInvXMLWriterTests(SutekhTest):
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '>DATE<')
 
-        self.assertEqual(sData, EXPECTED_1)
+        self._compare_xml_strings(sData, EXPECTED_1)
 
 
 if __name__ == "__main__":

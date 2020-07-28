@@ -1353,32 +1353,32 @@ class ARDBHTMLWriterTests(SutekhTest):
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '[ DATE ]')
 
-        self.assertEqual(sData, EXPECTED_1)
+        self._compare_xml_strings(sData, EXPECTED_1)
 
         # Test other modes
         oWriter = WriteArdbHTML('Monger', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '[ DATE ]')
 
-        self.assertEqual(sData, EXPECTED_1)
+        self._compare_xml_strings(sData, EXPECTED_1)
 
         oWriter = WriteArdbHTML('None', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '[ DATE ]')
 
-        self.assertEqual(sData, EXPECTED_2)
+        self._compare_xml_strings(sData, EXPECTED_2)
 
         oWriter = WriteArdbHTML('Secret Library', False)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '[ DATE ]')
 
-        self.assertEqual(sData, EXPECTED_3)
+        self._compare_xml_strings(sData, EXPECTED_3)
 
         oWriter = WriteArdbHTML('Secret Library', True)
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
         sData = sData.replace(sCurDate, '[ DATE ]')
 
-        self.assertEqual(sData, EXPECTED_4)
+        self._compare_xml_strings(sData, EXPECTED_4)
 
 
 if __name__ == "__main__":
