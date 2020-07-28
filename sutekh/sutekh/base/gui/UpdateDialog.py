@@ -23,8 +23,7 @@ class UpdateDialog(SutekhDialog):
             Gtk.DialogFlags.MODAL, ("_Cancel", Gtk.ResponseType.CANCEL,
                                     "_OK", Gtk.ResponseType.OK))
         oHBox = Gtk.HBox(False, 0)
-        oIcon = Gtk.Image()
-        oIcon.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
+        oIcon = Gtk.Image.new_from_icon_name('dialog-information', Gtk.IconSize.DIALOG)
         oHBox.pack_start(oIcon, True, True, 0)
         self.vbox.pack_start(oHBox, True, True, 0)
         sLabel = "Updates are available. Download now?"
