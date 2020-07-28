@@ -927,8 +927,8 @@ class BaseImagePlugin(BasePlugin):
                 f"Download {iMissing} missing and {iOutdated} outdated"
                  " images now?",
                 Gtk.MessageType.QUESTION,
-                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                ("Yes", Gtk.ResponseType.YES,
+                 "No", Gtk.ResponseType.NO))
         if iQuery != Gtk.ResponseType.YES:
             return
         self.image_frame.download_all_missing_outdated_images()
@@ -984,8 +984,8 @@ class BaseImagePlugin(BasePlugin):
                     "Folder does not exist. Really use it?\n"
                     "(Answering yes will create the folder)",
                     Gtk.MessageType.QUESTION,
-                    (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                     Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                    ("Yes", Gtk.ResponseType.YES,
+                     "No", Gtk.ResponseType.NO))
                 if iQuery == Gtk.ResponseType.NO:
                     # Treat as cancelling
                     return False
@@ -1010,8 +1010,8 @@ class BaseImagePlugin(BasePlugin):
                 iQuery = do_complaint_buttons(
                     "Folder does not seem to contain images\n"
                     "Are you sure?", Gtk.MessageType.QUESTION,
-                    (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                     Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                    ("Yes", Gtk.ResponseType.YES,
+                     "No", Gtk.ResponseType.NO))
                 if iQuery == Gtk.ResponseType.NO:
                     # Treat as cancelling
                     return False

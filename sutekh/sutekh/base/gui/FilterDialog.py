@@ -301,8 +301,8 @@ class FilterDialog(SutekhDialog):
             iResponse = do_complaint_buttons(
                 "Replace existing filter '%s'?" % (sName,),
                 Gtk.MessageType.QUESTION,
-                (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                 Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                ("Yes", Gtk.ResponseType.YES,
+                 "No", Gtk.ResponseType.NO))
             if iResponse == Gtk.ResponseType.YES:
                 self.__oConfig.replace_filter(sName, sConfigFilter, sFilter)
                 bSaved = True
@@ -339,8 +339,8 @@ class FilterDialog(SutekhDialog):
                 iResponse = do_complaint_buttons(
                     "Filter '%s' used in the followin profiles:\n%s\n"
                     "Really delete?" % (sName, sProfiles),
-                    Gtk.MessageType.QUESTION, (Gtk.STOCK_YES, Gtk.ResponseType.YES,
-                                           Gtk.STOCK_NO, Gtk.ResponseType.NO))
+                    Gtk.MessageType.QUESTION, ("Yes", Gtk.ResponseType.YES,
+                                               "No", Gtk.ResponseType.NO))
                 if iResponse == Gtk.ResponseType.YES:
                     self.__oConfig.remove_filter(sName, sConfigFilter)
                 else:
