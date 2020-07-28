@@ -11,6 +11,7 @@ import tempfile
 import os
 import sys
 from io import StringIO
+from xml.etree.ElementTree import fromstring
 from logging import FileHandler
 
 import gi
@@ -57,6 +58,19 @@ def create_tmp_file(sDir, sData):
 def create_pkg_tmp_file(sData):
     """Create a temporary file for use in package setup."""
     return create_tmp_file(None, sData)
+
+def _build_tree(oXMLTree, iDepth, aResult):
+    """Recursively build a flat representation of an XML Tree, with
+       the depth marked at each level."""
+    # Sort attributes
+    aAttribs = tuple(sorted(oXMLTree.items()))
+    if oXMLTree.text:
+        sText = oXMLTree.text.strip()
+    else:
+        sText = None
+    aResult.append((iDepth, oXMLTree.tag, sText) + aAttribs)
+    for oChild in oXMLTree:
+        _build_tree(oChild, iDepth+1, aResult)
 
 
 class BaseTestCase(unittest.TestCase):
@@ -126,6 +140,25 @@ class BaseTestCase(unittest.TestCase):
         oHolder = DummyHolder()
         oParser.parse(StringIO(sString), oHolder)
         return oHolder
+
+    def _compare_xml_strings(self, sXMLData1, sXMLData2):
+        """Parse and compare two XML files, returning True if they are equivilant.
+
+           We define equivilant as a) have all the same elements and b) elements have
+           the same attributes and values.
+
+           We assume the head and tail attributes are not significant, and only the
+           text attribute may contain significant information.
+
+           We use this to work around different XML outputs between different ElementTree
+           versions."""
+        oRoot1 = fromstring(sXMLData1)
+        oRoot2 = fromstring(sXMLData2)
+        aTree1 = []
+        aTree2 = []
+        _build_tree(oRoot1, 0, aTree1)
+        _build_tree(oRoot2, 0, aTree2)
+        self.assertEqual(aTree1, aTree2)
 
 
 class DummyHolder:
