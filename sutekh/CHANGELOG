@@ -1,9 +1,41 @@
+30 Jul 2020
+ * Add Conflicts/Replaces to the debian package to make upgrades from Sutekh 1.0
+   work correctly.
+ * Rename debian package to Sutekh for consistency with other installers.
+
+28 Jul 2020
+ * Update the PDF image import plugin
+ * Replace the use of deprecated Gtk.STOCK_ constants in most places, so we
+   work on machines without a full fallback theme.
+ * Add a helper to test XML output rather than relying on strict string equality,
+   so our tests pass on python 3.8.
+
+27 Jul 2020
+ * Rework debian packaging and sdist creation so the tests are run when we build
+   packages.
+
+26 Jul 2020
+ * Add a '--run-plugin-checks' option to make running searches for missing images
+   and TTS export issues easier (and can be extended to other plugins that
+   deal with external data).
+ * Start removing the use of deprecated Gtk.STOCK_ icons / constants.
+ * Better handle gobject-introspection require errors in plugins
+ * Fix conversion errors in the FindLikeCrypt plugin.
+ * Update RPM packaging to correctly build the python3 version.
+
+19 Jul 2020
+ * Finish porting cluster plugin to python3.
+ * Replace use of singledispatch package with the stdlib version.
+
+13 Jul 2020
+ * Fix some issues with the TTS export plugin using the incorrect image url.
+
 12 Jul 2020
  * Extend downloading missing images support to also download outdated images.
  * Update manual with new menu option.
 
 11 Jul 2020
- * Add menu option to download all missing image.s
+ * Add menu option to download all missing images.
 
 06 Jul 2020
  * Add helper method to download missing images.
