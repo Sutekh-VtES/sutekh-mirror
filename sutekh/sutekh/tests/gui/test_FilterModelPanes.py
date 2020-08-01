@@ -25,7 +25,7 @@ class DummyDialog(Gtk.Dialog):
     # Gtk widget, so has many public methods
 
     def __init__(self):
-        super(DummyDialog, self).__init__('Dummy', None, 0)
+        super(DummyDialog, self).__init__(title='Dummy', transient_for=None, flags=0)
         # pylint: disable=invalid-name
         # Needs to match the property name in the FilterDialog
         self.accel_group = Gtk.AccelGroup()
