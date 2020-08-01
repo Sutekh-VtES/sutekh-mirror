@@ -14,7 +14,7 @@ from ..gui.CardSetListModel import (IGNORE_PARENT, NO_SECOND_LEVEL,
 # Useful mock classes
 
 
-class TestListener:
+class LocalTestListener:
     """Listener used in the test cases.
 
        Pass bKeepCards to keep a copy of the all the cards passed to the
