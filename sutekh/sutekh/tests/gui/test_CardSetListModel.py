@@ -11,7 +11,7 @@
 import unittest
 
 from sutekh.base.tests.TestUtils import make_card
-from sutekh.base.tests.GuiTestUtils import (TestListener,
+from sutekh.base.tests.GuiTestUtils import (LocalTestListener,
                                             DummyCardSetController,
                                             get_all_counts,
                                             count_second_level,
@@ -158,7 +158,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         # for sanity
         dModelInfo = {}
         for oModel in aModels:
-            oListener = TestListener(oModel, False)
+            oListener = LocalTestListener(oModel, False)
             oModel.load()
             tStartTotals = (
                 oModel.iter_n_children(None),
@@ -386,7 +386,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         _oCache = SutekhObjectCache()
         oPCS = PhysicalCardSet(name=self.aNames[0])
         oModel = CardSetCardListModel(self.aNames[0], self.oConfig)
-        oListener = TestListener(oModel, False)
+        oListener = LocalTestListener(oModel, False)
         self.assertFalse(oListener.bLoadCalled)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)

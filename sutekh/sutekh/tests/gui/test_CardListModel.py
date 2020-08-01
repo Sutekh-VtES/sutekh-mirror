@@ -11,7 +11,7 @@ from sutekh.base.tests.GuiTestUtils import (count_second_level,
                                             count_all_cards,
                                             count_top_level,
                                             get_card_names,
-                                            TestListener)
+                                            LocalTestListener)
 from sutekh.base.core.BaseTables import PhysicalCard, AbstractCard
 from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IExpansion)
@@ -37,7 +37,7 @@ class CardListModelTests(ConfigSutekhTest):
         oModel = CardListModel(self.oConfig)
         # We test with illegal cards shown
         oModel.hideillegal = False
-        oListener = TestListener(oModel, True)
+        oListener = LocalTestListener(oModel, True)
         self.assertFalse(oListener.bLoadCalled)
         oModel.load()
         self.assertTrue(oListener.bLoadCalled)
