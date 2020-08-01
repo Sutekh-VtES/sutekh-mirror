@@ -44,8 +44,10 @@ THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
 # Different Parent card count modes (iParentCountMode)
 IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
 # Colour constants to save constant lookups
-BLACK = Gdk.color_parse('black')
-RED = Gdk.color_parse('red')
+BLACK = Gdk.RGBA()
+RED = Gdk.RGBA()
+BLACK.parse('black')
+RED.parse('red')
 
 #
 # config text lookup -- keep in sync with configspec.ini

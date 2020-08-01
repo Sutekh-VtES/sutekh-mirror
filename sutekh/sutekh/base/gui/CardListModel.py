@@ -51,7 +51,7 @@ class CardListModel(Gtk.TreeStore):
         super(CardListModel, self).__init__(str, int, int, bool, bool,
                                             GObject.TYPE_PYOBJECT,
                                             GObject.TYPE_PYOBJECT,
-                                            Gdk.Color,
+                                            Gdk.RGBA,
                                             GObject.TYPE_PYOBJECT,
                                             GObject.TYPE_PYOBJECT)
         # name, count, parent count, showInc, showDec, text_list, icons,

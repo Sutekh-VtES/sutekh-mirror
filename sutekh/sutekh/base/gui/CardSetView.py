@@ -89,7 +89,7 @@ class CardSetView(CardListView):
 
         oParentCell = Gtk.CellRendererText()
         self.oParentCol = Gtk.TreeViewColumn("Par #", oParentCell, text=2,
-                                             foreground_gdk=7)
+                                             foreground_rgba=7)
         self.oParentCol.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.oParentCol.set_min_width(20)
         self.oParentCol.set_fixed_width(60)
@@ -377,7 +377,7 @@ class CardSetView(CardListView):
         self.set_model(None)
         self._oModel.load()
         self.set_model(self._oModel)
-        self.oNumCell.set_property('foreground-gdk',
+        self.oNumCell.set_property('foreground-rgba',
                                    self._oModel.get_count_colour())
         self.thaw_child_notify()
         if hasattr(self._oMainWin, 'restore_cursor'):
@@ -400,7 +400,7 @@ class CardSetView(CardListView):
         # Styles don't seem to be applied to TreeView text, so we default
         # to black text for non-editable, and work out editable from the
         # style
-        self.oCellColor = Gdk.color_parse('black')
+        self.oCellColor = Gdk.RGBA(0,0,0,1)
         # oCurBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
         # self.set_name('editable_view')
         # oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(self.get_settings(),
@@ -441,7 +441,8 @@ class CardSetView(CardListView):
         #    # themed, so the default color will not be red
         #    # (famous last words)
         #    # If the default background color is red, too bad
-        self._oModel.oEditColour = Gdk.color_parse('red')
+        self._oModel.oEditColour = Gdk.RGBA()
+        self._oModel.oEditColour.parse('red')
 
     def set_color_normal(self):
         """Unset the editable visual cue"""

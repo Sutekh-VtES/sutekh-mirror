@@ -595,14 +595,16 @@ class FilterBoxModelStore(Gtk.TreeStore):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
 
-    BLACK = Gdk.color_parse('black')
-    GREY = Gdk.color_parse('grey')
+    BLACK = Gdk.RGBA()
+    GREY = Gdk.RGBA()
+    BLACK.parse('black')
+    GREY.parse('grey')
     NO_VALUE = '<i>No Values Set</i>'
     NONE_VALUE = '<b>No Values for this filter</b>'
 
     def __init__(self):
         super(FilterBoxModelStore, self).__init__(
-            GObject.TYPE_STRING, GObject.TYPE_PYOBJECT, Gdk.Color)
+            GObject.TYPE_STRING, GObject.TYPE_PYOBJECT, Gdk.RGBA)
 
     def _fill_values(self, oFilterIter, oModel, oColour):
         """Fill in the values for this filter"""
@@ -832,7 +834,7 @@ class FilterBoxModelEditView(CustomDragIconView):
         self._oBoxModel = oBoxModel
         oTextCell = Gtk.CellRendererText()
         oColumn = Gtk.TreeViewColumn("Filter", oTextCell, markup=0,
-                                     foreground_gdk=2)
+                                     foreground_rgba=2)
         self.append_column(oColumn)
 
         self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)

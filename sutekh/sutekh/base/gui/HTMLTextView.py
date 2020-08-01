@@ -67,11 +67,14 @@ else:
 
 
 def _parse_css_color(sColor):
-    '''_parse_css_color(css_color) -> Gdk.Color'''
+    '''_parse_css_color(css_color) -> Gdk.RGBA'''
+    oRGBA = Gdk.RGBA()
     if sColor.startswith("rgb(") and sColor.endswith(')'):
-        iRed, iGreen, iBlue = [int(c) * 257 for c in sColor[4:-1].split(',')]
-        return Gdk.Color(iRed, iGreen, iBlue)
-    return Gdk.color_parse(sColor)
+        oRGBA.alpha = 1
+        oRGBA.red, oRGBA.green, oRGBA.blue = [float(c) for c in sColor[4:-1].split(',')]
+    else:
+        oRGBA.parse(sColor)
+    return oRGBA
 
 
 class HtmlHandler(HTMLParser):
@@ -97,13 +100,13 @@ class HtmlHandler(HTMLParser):
     def _parse_style_color(self, oTag, sValue):
         """Convert style value to TextView foreground color"""
         oColor = _parse_css_color(sValue)
-        oTag.set_property("foreground-gdk", oColor)
+        oTag.set_property("foreground-rgba", oColor)
 
     def _parse_style_background_color(self, oTag, sValue):
         """Convert background value to TextView background color."""
         oColor = _parse_css_color(sValue)
-        oTag.set_property("background-gdk", oColor)
-        oTag.set_property("paragraph-background-gdk", oColor)
+        oTag.set_property("background-rgba", oColor)
+        oTag.set_property("paragraph-background-rgba", oColor)
 
     def _get_current_attributes(self):
         """Get current attributes."""
