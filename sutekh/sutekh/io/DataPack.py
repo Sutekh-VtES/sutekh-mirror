@@ -60,6 +60,10 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
             return None, None, None
         else:
             raise
+    finally:
+        # This is a basically a no-op for remote urls, but needed
+        # for when we're dealing with a local file
+        oFile.close()
     aZipUrls = []
     aHashes = []
     aDates = []
