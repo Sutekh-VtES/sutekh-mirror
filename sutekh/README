@@ -341,7 +341,7 @@ Testing Sutekh
 
 Sutekh has a test suite - see the tests directory.
 
-The test suite requires nose [1] to run.
+The test suite requires pytest [1] to run.
 
 By default, the tests will use an sqlite memory database, as being the
 simplest, but, as it's often desirable to test against other databases,
@@ -349,7 +349,7 @@ the SUTEKH_TEST_DB environment variable can be used to provide an URI
 to use instead. For example, to test against a postgres db:::
 
   export SUTEKH_TEST_DB="postres://username@host/test_database"
-  nosetests <test to run>
+  pytest <test to run>
 
 Note that the test suite creates and drops the tables several times, so it can
 be quite slow. Also, DO NOT run the tests against your personal card database,
@@ -359,7 +359,7 @@ Setting SUTEKH_SAVE_DB to yes will preserve the database state at the end of
 the last test run. This can be combined with the with-ids option for selecting
 which test to run to save the state after a specific test.
 
-[1] http://somethingaboutorange.com/mrl/projects/nose/
+[1] https://docs.pytest.org/en/stable/
 
 Importing/Exporting to/from other VTES card management programs
 ===============================================================

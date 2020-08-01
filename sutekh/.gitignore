@@ -6,3 +6,4 @@
 /.coverage
 /Sutekh.egg-info
 /deb_dist
+/.pytest_cache

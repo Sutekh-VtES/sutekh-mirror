@@ -7,6 +7,9 @@
 
 import logging
 import unittest
+
+import pytest
+
 from sutekh.tests.TestCore import SutekhTest
 
 from sutekh.base.gui.QueueLogHandler import QueueLogHandler, QUEUE_LENGTH
@@ -31,6 +34,13 @@ class TestQueueLogHandler(SutekhTest):
     """Class for the QueueLogHandler test cases"""
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
+
+    @pytest.fixture(autouse=True)
+    def fix_log_level(self, caplog):
+        """Set the correct log state for the tests."""
+        self._caplog = caplog
+        self._caplog.clear()
+        self._caplog.set_level(logging.DEBUG)
 
     def test_basic(self):
         """Set of simple tests of the QueueLogHandler"""

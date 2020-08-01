@@ -8,6 +8,8 @@
 import logging
 import unittest
 
+import pytest
+
 from io import BytesIO
 
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
@@ -24,6 +26,13 @@ class TestLogViewFrame(GuiSutekhTest):
     DEBUG_MSG = b'Debug message 2'
     ERROR_MSG = b'Error message 3'
     WARN_MSG = b'Warn message 4'
+
+    @pytest.fixture(autouse=True)
+    def fix_log_level(self, caplog):
+        """Set the correct log state for the tests."""
+        self._caplog = caplog
+        self._caplog.clear()
+        self._caplog.set_level(logging.DEBUG)
 
     def test_basic(self):
         """Set of simple tests of the LogViewFrame"""

@@ -5,13 +5,13 @@
 
 """Base for Sutekh test cases"""
 
+import pytest
 from sqlobject import sqlhub
 
-from sutekh.base.core.DBUtility import refresh_tables
-from sutekh.base.core.BaseTables import PHYSICAL_SET_LIST
 from sutekh.base.tests.TestUtils import BaseTestCase
 
 
+@pytest.mark.usefixtures("db_setup", "clean_db")
 class SutekhTest(BaseTestCase):
     """Base class for Sutekh tests.
 
@@ -24,18 +24,6 @@ class SutekhTest(BaseTestCase):
 
     # pylint: disable=invalid-name
     # setUp + tearDown names are needed by unittest - use their convention
-    # pylint: disable=attribute-defined-outside-init
-    # setUp is always called by the tests, so it doesn't matter that
-    # declarations aren't in __init__
-    # pylint: disable=no-self-use
-    # This is a method for convience
-    def _setUpDb(self):
-        """Initialises a database with the cardlist and
-           rulings.
-           """
-        assert refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
-
-    # pylint: enable=no-self-use
 
     def setUp(self):
         """Common setup routine for tests.
@@ -43,8 +31,7 @@ class SutekhTest(BaseTestCase):
            Initialises a database with the cardlist and rulings.
            """
         self._setUpTemps()
-        self._setUpDb()
-        super(SutekhTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         """Common teardown routine for tests.
@@ -54,4 +41,4 @@ class SutekhTest(BaseTestCase):
         self._tearDownTemps()
         # Undo any connection fiddling
         sqlhub.processConnection = self.TEST_CONN
-        super(SutekhTest, self).tearDown()
+        super().tearDown()
