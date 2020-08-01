@@ -12,7 +12,6 @@ from io import StringIO
 import sys
 
 from sqlobject import sqlhub, connectionForURI
-from nose import SkipTest
 
 from sutekh.base.core.BaseDBManagement import copy_to_new_abstract_card_db
 from sutekh.base.core.CardLookup import SimpleLookup
@@ -1642,7 +1641,7 @@ class DatabaseUpgradeTests(SutekhTest):
         # of the standard DBAPI
         sDBuri = sqlhub.processConnection.uri()
         if not sDBuri.startswith('sqlite:'):
-            raise SkipTest
+            self.skipTest("Not running on sqlite database")
 
         oConn = sqlhub.processConnection
 
