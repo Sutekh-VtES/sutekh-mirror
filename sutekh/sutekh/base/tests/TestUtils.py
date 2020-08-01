@@ -22,8 +22,6 @@ gi.require_version('PangoCairo', '1.0')
 # but we need to import Gtk first for this to work
 from gi.repository import Gtk, Gdk
 
-from nose import SkipTest
-
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
                                  IPrinting)
 
@@ -205,7 +203,7 @@ class GuiBaseTest(unittest.TestCase):
         # We need to do this before trying to run MainWindows's __init__,
         # which will fail if not under a windowing system
         if Gdk.Screen.get_default() is None:
-            raise SkipTest
+            self.skipTest("No graphics capable screen available for testing")
         # avoid menu proxy stuff on Ubuntu
         os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiBaseTest, self).setUp()
