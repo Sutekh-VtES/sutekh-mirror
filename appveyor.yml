@@ -8,7 +8,6 @@ clone_depth: 50
 
 # Setup msys dependencies
 install:
-  - dir /w
   - c:/msys64/usr/bin/sh -l %CD%/ci/appveyor/install_pkgs.sh
   - c:/msys64/usr/bin/sh -l %CD%/ci/appveyor/install_pytest.sh
 
