@@ -1,0 +1,19 @@
+# Test sutekh against sqlite on windows using msys 64 bit python
+version: '{branch}-{build}'
+
+image:
+  - Visual Studio 2019
+
+clone_depth: 50
+
+# Setup msys dependencies
+install:
+  - dir /w
+  - c:/msys64/usr/bin/sh -l %CD%/ci/appveyor/install_pkgs.sh
+  - c:/msys64/usr/bin/sh -l %CD%/ci/appveyor/install_pytest.sh
+
+# Not a C project, so no build step
+build: false
+
+test_script:
+  - c:/msys64/usr/bin/sh -l %CD%/ci/appveyor/run_tests.sh
