@@ -694,11 +694,13 @@ class HTMLViewDialog(SutekhDialog):
                                              oButtons=("_Close",
                                                        Gtk.ResponseType.CLOSE))
         oDirButtons = Gtk.HButtonBox()
-        self._oBackButton = Gtk.Button.new_from_icon_name('go-previous', 32)
+        self._oBackButton = Gtk.Button.new_from_icon_name('go-previous',
+                                                          Gtk.IconSize.BUTTON)
         self._oBackButton.set_label('Back')
         self._oBackButton.set_always_show_image(True)
         self._oBackButton.connect('pressed', self._go_back)
-        self._oForwardButton = Gtk.Button.new_from_icon_name('go-next', 32)
+        self._oForwardButton = Gtk.Button.new_from_icon_name('go-next',
+                                                             Gtk.IconSize.BUTTON)
         self._oForwardButton.set_label('Forward')
         self._oForwardButton.set_always_show_image(True)
         self._oForwardButton.connect('pressed', self._go_forward)
