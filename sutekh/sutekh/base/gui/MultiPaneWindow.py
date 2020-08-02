@@ -43,7 +43,8 @@ class MultiPaneWindow(Gtk.Window):
 
         self._oFocussed = None
 
-        self._oBusyCursor = Gdk.Cursor(Gdk.CursorType.WATCH)
+        self._oBusyCursor = Gdk.Cursor.new_for_display(Gdk.Display.get_default(),
+                                                       Gdk.CursorType.WATCH)
 
         # Flag to block calling reloads during a refresh process
         self._bBlockReload = False

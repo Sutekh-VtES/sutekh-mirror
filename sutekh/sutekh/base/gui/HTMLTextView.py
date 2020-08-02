@@ -605,12 +605,15 @@ class HTMLTextView(Gtk.TextView):
         self.set_pixels_below_lines(3)
         self._dTargets = {}
         self._fLinkLoader = fLinkLoader
+        oDisplay = Gdk.Display.get_default()
+        self._oTermCursor = Gdk.Cursor.new_for_display(oDisplay, Gdk.CursorType.XTERM)
+        self._oHandCursor = Gdk.Cursor.new_for_display(oDisplay, Gdk.CursorType.HAND2)
 
     def __leave_event(self, oWidget, _oEvent):
         """Cursor has left the widget."""
         if self._bChangedCursor:
             oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
-            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
+            oWindow.set_cursor(self._oTermCursor)
             self._bChangedCursor = False
 
     def __motion_notify_event(self, oWidget, oEvent):
@@ -626,11 +629,11 @@ class HTMLTextView(Gtk.TextView):
             bOverAnchor = False
         if not self._bChangedCursor and bOverAnchor:
             oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
-            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.HAND2))
+            oWindow.set_cursor(self._oHandCursor)
             self._bChangedCursor = True
         elif self._bChangedCursor and not bOverAnchor:
             oWindow = oWidget.get_window(Gtk.TextWindowType.TEXT)
-            oWindow.set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
+            oWindow.set_cursor(self._oTermCursor)
             self._bChangedCursor = False
         return False
 
