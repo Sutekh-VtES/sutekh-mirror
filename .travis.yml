@@ -28,11 +28,14 @@ cache:
   directories:
     - $HOME/.cache/pip
 
+# We need to set the collation order on the postgres database to match the other dbs,
+# This requires using template0, since this differs from the locale settings for the
+# standard template.
 before_install:
    - if [ "$TESTDB" = "postgres" ]; then pip install psycopg2 ; fi
    - if [ "$TESTDB" = "mysql" ]; then pip install mysql-connector ; fi
    - mysql -uroot -e 'drop database sutekh_test;' ; mysql -uroot -e 'create database sutekh_test;'
-   - dropdb -U postgres -w sutekh_test ; createdb -U postgres -w sutekh_test
+   - dropdb -U postgres -w sutekh_test ; createdb -U postgres --lc-collate=C.UTF-8 --template template0 -w sutekh_test
 
 install:
    - pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo
