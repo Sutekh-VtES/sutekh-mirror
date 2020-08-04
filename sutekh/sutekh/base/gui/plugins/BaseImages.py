@@ -72,15 +72,6 @@ def check_file(sFileName):
     return bRes
 
 
-def unaccent(sCardName):
-    """Remove Unicode accents."""
-    # Inspired by a post by renaud turned up by google
-    # Unicode Normed decomposed form
-    sNormed = unicodedata.normalize('NFD', sCardName)
-    # Drop non-ascii characters
-    return "".join(b for b in sNormed if ord(b) < 128)
-
-
 def image_gui_error_handler(oExp):
     """We filter out 404 not found so we don't loop endlessly on
        card images that aren't available"""

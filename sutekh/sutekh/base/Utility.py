@@ -14,6 +14,8 @@ import os
 import re
 import sys
 import tempfile
+import unicodedata
+
 from urllib.parse import urlsplit, urlunsplit
 
 from sqlobject import sqlhub
@@ -223,6 +225,11 @@ def setup_logging(bVerbose, sErrFile=None):
         oRootLogger.addHandler(oLogHandler)
         oLogHandler.setLevel(level=logging.CRITICAL)
     return oRootLogger
+
+
+def to_ascii(sValue):
+    """Convert a string to a canonical ASCII form."""
+    return unicodedata.normalize('NFKD', sValue).encode('ascii', 'ignore').decode('ascii')
 
 
 def get_printing_date(oPrinting):

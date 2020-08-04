@@ -6,10 +6,9 @@
 
 """base classes for views."""
 
-import unicodedata
-
 from gi.repository import Gtk
 
+from ..Utility import to_ascii
 from .CustomDragIconView import CustomDragIconView
 
 
@@ -169,11 +168,6 @@ class FilteredView(CustomDragIconView):
         """Expand the rows listed in aExpandedSet"""
         self._oModel.foreach(self._set_row_expanded_status, aExpandedSet)
 
-    @staticmethod
-    def to_ascii(sName):
-        """Convert a Name or key to a canonical ASCII form."""
-        return unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore').decode('ascii')
-
     # pylint: disable=too-many-arguments
     # Various arguments required by function signatures
 
@@ -222,7 +216,7 @@ class FilteredView(CustomDragIconView):
             while oChildIter:
                 sChildName = oModel.get_name_from_iter(oChildIter)
                 sChildName = sChildName[:iLenKey].lower()
-                if (self.to_ascii(sChildName).startswith(sKey) or
+                if (to_ascii(sChildName).startswith(sKey) or
                         sChildName.startswith(sKey)):
                     oPath = oModel.get_path(oChildIter)
                     # Expand the row
@@ -237,7 +231,7 @@ class FilteredView(CustomDragIconView):
 
         # Test this row straight up
         sCardSetName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if self.to_ascii(sCardSetName).startswith(sKey) or \
+        if to_ascii(sCardSetName).startswith(sKey) or \
                 sCardSetName.startswith(sKey):
             return False  # Match
 
