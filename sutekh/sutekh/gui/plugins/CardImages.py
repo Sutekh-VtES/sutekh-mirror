@@ -15,11 +15,11 @@ from sqlobject import SQLObjectNotFound
 
 from sutekh.base.core.BaseAdapters import IExpansion, IPrinting
 from sutekh.base.gui.SutekhDialog import do_complaint_error
-from sutekh.base.Utility import ensure_dir_exists
+from sutekh.base.Utility import ensure_dir_exists, to_ascii
 from sutekh.base.gui.plugins.BaseImages import (BaseImageFrame,
                                                 BaseImageConfigDialog,
                                                 BaseImagePlugin,
-                                                check_file, unaccent,
+                                                check_file,
                                                 CARD_IMAGE_PATH,
                                                 DOWNLOAD_IMAGES,
                                                 DOWNLOAD_EXPANSIONS)
@@ -181,9 +181,8 @@ class CardImageFrame(BaseImageFrame):
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
-        # Handle the new Pentex (TM) cases
-        sCardName = sCardName.replace(u'\u2122', 'tm')
-        sFilename = unaccent(sCardName)
+        # Some symbols are converted to uppercase, so fix that
+        sFilename = to_ascii(sCardName).lower()
         if sFilename.startswith('the '):
             sFilename = sFilename[4:] + 'the'
         elif sFilename.startswith('an '):

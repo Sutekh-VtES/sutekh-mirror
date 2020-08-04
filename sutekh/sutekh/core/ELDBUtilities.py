@@ -7,7 +7,7 @@
 
 import unicodedata
 from sutekh.base.core.BaseTables import AbstractCard
-from sutekh.base.Utility import move_articles_to_back
+from sutekh.base.Utility import move_articles_to_back, to_ascii
 from sutekh.SutekhUtility import is_crypt_card
 
 SINGLE_QUOTE_NAMES = [
@@ -45,10 +45,7 @@ def norm_name(oCard):
         # usual ELDB quoting
         sName = sName.replace('"', "`")
         sName = sName.replace("'", "`")
-    sNormed = unicodedata.normalize('NFKD', sName)
-    # Bounce through ascii to get rid of quote characters
-    sName = sNormed.encode('ascii', 'ignore').decode('ascii')
-    return sName
+    return to_ascii(sName)
 
 
 def gen_name_lookups():

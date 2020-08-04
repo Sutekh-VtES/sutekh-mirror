@@ -19,10 +19,9 @@
 
    """
 
-import unicodedata
 from sutekh.core.ELDBUtilities import type_of_card
 from sutekh.base.core.BaseAdapters import IAbstractCard
-from sutekh.base.Utility import move_articles_to_back
+from sutekh.base.Utility import move_articles_to_back, to_ascii
 
 
 def lackey_name(oCard):
@@ -38,8 +37,7 @@ def lackey_name(oCard):
     else:
         sName = sName.replace('"', "'")
     # Bounce through ascii to strip accents, etc.
-    sName = unicodedata.normalize('NFKD', sName).encode('ascii', 'ignore').decode('ascii')
-    return sName
+    return to_ascii(sName)
 
 
 class WriteLackeyCCG:
