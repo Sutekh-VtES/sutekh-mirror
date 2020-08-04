@@ -12,6 +12,7 @@ from .FilteredView import FilteredView
 from .FilterDialog import FilterDialog
 from ..core.BaseTables import PhysicalCard, AbstractCard
 from ..core.BaseAdapters import IPhysicalCard
+from ..Utility import to_ascii
 
 
 class CardListView(FilteredView):
@@ -226,7 +227,7 @@ class CardListView(FilteredView):
             while oChildIter:
                 sChildName = self._oModel.get_name_from_iter(oChildIter)
                 sChildName = sChildName[:iLenKey].lower()
-                if (self.to_ascii(sChildName).startswith(sKey) or
+                if (to_ascii(sChildName).startswith(sKey) or
                         sChildName.startswith(sKey)):
                     # Expand the row
                     self.expand_to_path(oPath)
@@ -236,7 +237,7 @@ class CardListView(FilteredView):
             return True  # No matches, so bail
 
         sCardName = self._oModel.get_name_from_iter(oIter)[:iLenKey].lower()
-        if (self.to_ascii(sCardName).startswith(sKey) or
+        if (to_ascii(sCardName).startswith(sKey) or
                 sCardName.startswith(sKey)):
             return False
 
