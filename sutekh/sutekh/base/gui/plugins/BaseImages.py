@@ -257,6 +257,10 @@ class BaseImageFrame(BasicFrame):
            in general usage.
            """
         dMissing, dOutdated = self._find_missing_outdated_images()
+        print('Card Images checks')
+        print('%d missing images, %d outdated images' %
+              (len(dMissing), len(dOutdated)))
+        print()
         for oCard in sorted(dMissing, key=lambda x: x.abstractCard.name):
             print("Missing images for %s (%s)" % (oCard.abstractCard.name,
                                                   IPrintingName(oCard)))
