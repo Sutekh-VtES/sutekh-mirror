@@ -48,6 +48,32 @@ SCALES = {
     }
 
 
+def _get_cards_iter(oModel, oIter):
+    """Get a list of cards with a printing and the associated path"""
+    aList = []
+    oChildIter = oModel.iter_children(oIter)
+    while oChildIter:
+        oCard = oModel.get_physical_card_from_iter(oChildIter)
+        if oCard:
+            aList.append((oCard, oChildIter))
+        if oModel.iter_n_children(oChildIter) > 0:
+            aList.extend(_get_cards_iter(oModel, oChildIter))
+        oChildIter = oModel.iter_next(oChildIter)
+    return aList
+
+
+def lookup_card(oAbsCard, aExp, oImageFrame):
+    sFileName = None
+    oPhysCard = None
+    for oExp in aExp:
+        try:
+            oPhysCard = IPhysicalCard((oAbsCard, oExp))
+        except SQLObjectNotFound:
+            continue
+        sFileName = oImageFrame.lookup_filename(oPhysCard)[0]
+    return sFileName
+
+
 class ImportView(ACLLookupView):
     """View to display the page from the PDF"""
 
@@ -55,17 +81,26 @@ class ImportView(ACLLookupView):
         super(ImportView, self).__init__(oParent, oConfig)
 
         oUsedCell = CellRendererSutekhButton()
-        oUsedCell.load_icon("image-x-generic", self)
-        # We override the IncCard column for the 'used' flag, which is a bit
-        # icky, but we aren't using it for it's intended purpose
-        # anyway.
+        oUsedCell.load_icon("starred", self)
+        oExistingCell = CellRendererSutekhButton()
+        oExistingCell.load_icon("non-starred", self)
+        # We override the IncCard & DecCell columns for the 'used' and
+        # We override the IncCard & DecCell columns for the 'used' and
+        # 'existsing' flags, which is a bit icky, but we aren't using them
+        # for their intended purpose anyway.
         oUsedColumn = Gtk.TreeViewColumn("Used", oUsedCell, showicon=3)
         oUsedColumn.set_fixed_width(50)
         oUsedColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
+
+        oExistingColumn = Gtk.TreeViewColumn("Image Exists", oExistingCell, showicon=4)
+        oExistingColumn.set_fixed_width(50)
+        oExistingColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         # We insert the column before the name, so it's more visible.
         self.insert_column(oUsedColumn, 0)
+        self.insert_column(oExistingColumn, 1)
 
         self._oModel.selectfilter = MultiExpansionFilter(aExp)
+        self._aExp = aExp
         self._oModel.applyfilter = True
 
     def set_selected_used(self):
@@ -74,6 +109,18 @@ class ImportView(ACLLookupView):
         for oPath in aSelection:
             oIter = self._oModel.get_iter(oPath)
             self._oModel.set(oIter, 3, True)
+
+    def set_existing(self, oImageFrame):
+        """Set the given card to existing"""
+        aAllCards = _get_cards_iter(self._oModel, None)
+        for oCard, oIter in aAllCards:
+            sName = lookup_card(oCard.abstractCard, self._aExp, oImageFrame)
+            if not sName:
+                continue
+            if not check_file(sName):
+                continue
+            # Flag as existing
+            self._oModel.set(oIter, 4, True)
 
 
 class ImportPDFImagesPlugin(SutekhPlugin):
@@ -335,6 +382,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         oImportDialog.set_size_request(350 + self._iScale * CARD_DIM[0], 650)
 
         oImportDialog.show_all()
+        oAbsCardView.set_existing(self._oImageFrame)
         oImportDialog.run()
         oImportDialog.destroy()
 
@@ -397,13 +445,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         if oAbsCard is None:
             do_complaint_error("No Card selected")
             return
-        sFileName = None
-        for oExp in aExp:
-            try:
-                oPhysCard = IPhysicalCard((oAbsCard, oExp))
-            except SQLObjectNotFound:
-                continue
-            sFileName = self._oImageFrame.lookup_filename(oPhysCard)[0]
+        sFileName = lookup_card(oAbsCard, aExp, self._oImageFrame)
         if not sFileName:
             return
         if check_file(sFileName):
