@@ -284,7 +284,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._oXOffset.set_adjustment(oXOffAdj)
         self._oXOffset.set_value(0)
         self._oYOffset = Gtk.SpinButton()
-        self._oXOffset.set_adjustment(oYOffAdj)
+        self._oYOffset.set_adjustment(oYOffAdj)
         self._oYOffset.set_value(0)
 
         oOffsetBox.pack_start(Gtk.Label(label="Horizontal Offset : "), False, False, 0)
