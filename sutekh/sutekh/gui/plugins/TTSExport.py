@@ -271,11 +271,23 @@ class TTSExport(SutekhPlugin):
                     dCards = {}
                     for oObj in dJsonData['ObjectStates'][0]['ContainedObjects']:
                         sKey = fix_nickname(oObj['Nickname'])
-                        dCards[sKey] = oObj
+                        if sKey in dCards:
+                            idnum1 = int(dCards[sKey]["CardID"])
+                            idnum2 = int(oObj["CardID"])
+                            if idnum2 > idnum1:
+                                dCards[sKey] = oObj
+                        else:
+                            dCards[sKey] = oObj
                     # Extract library
                     for oObj in dJsonData['ObjectStates'][1]['ContainedObjects']:
                         sKey = fix_nickname(oObj['Nickname'])
-                        dCards[sKey] = oObj
+                        if sKey in dCards:
+                            idnum1 = int(dCards[sKey]["CardID"])
+                            idnum2 = int(oObj["CardID"])
+                            if idnum2 > idnum1:
+                                dCards[sKey] = oObj
+                        else:
+                            dCards[sKey] = oObj
                     fix_deck_ids(dCards)
                     self._dTTSData = dCards
                 except (KeyError, IndexError) as oErr:
