@@ -104,32 +104,49 @@ Windows Quickstart
 ==================
 
 The easiest method is to use the provided installer. This bundles the
-required files from pygk, python and the required modules for running sutekh.
-The installer currently uses python 2.6.
+required files from gtk, python and the required modules for running sutekh.
+The installer currently uses python 3.8.
 
-To use a different python version:
+For development, we recommend using msys2 from https://www.msys2.org/ as that is
+the recommended way of installing gtk3 on windows.
 
-Download:
- * Python
-   - https://www.python.org/ftp/python/2.7.8/python-2.7.8.msi
- * Setuptools
-   - https://pypi.python.org/pypi/setuptools/5.3
- * PyGTK all in one installer
-   - http://ftp.gnome.org/pub/GNOME/binaries/win32/pygtk/2.24/pygtk-all-in-one-2.24.2.win32-py2.7.msi
- * Sutekh
+Install the following packages to have gtk3 available in the mingw64 enviroment
+  - pacman -Ss mingw-w64-x86_64-gtk3 mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-gobject
 
-And install Python, then Setuptools, then PyGTK.
-
-Then use easy_install or pip to install the other dependencies:
+Using the mingw64 bit enviroment, use pip to install the other dependencies
  * SQLObject
- * singledispath
  * confiobj
  * ply
  * keyring
 
+To runnt the tests, you will also need to install
+ * pytest
+ * mock
+
 Run easy_install <Sutekh Egg File>.
 
 Run <python install dir>/Scripts/sutekh
+
+MacOS Quickstart
+================
+
+MacOS support in sutekh is not currently well tested, but it should work.
+
+You will need to install the following homebrew packages
+  - python@3.8
+  - gtk+3
+  - gobject-introspection
+  - librsvg
+
+The remaining required packages should be installed using pip3
+  - keyring
+  - ply
+  - sqlobject
+  - configobj
+  - PyGObject
+  - pycairo
+
+sutekh can then be installed from source in a virtual environment.
 
 Using Sutekh from the Python Interpreter
 ========================================
