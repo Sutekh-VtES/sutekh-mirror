@@ -335,7 +335,7 @@ class TTSExport(SutekhPlugin):
             return ('File Preferences', oConfig)
         if not self.check_enabled():
             # Don't enable export if we don't have the TTS module installed
-            print('Skipping because no data')
+            logging.debug('TTS export menu disabled')
             return None
         oExport = Gtk.MenuItem(label=self.sMenuName)
         oExport.connect("activate", self.do_export)
