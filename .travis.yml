@@ -1,18 +1,81 @@
 language: python
-os: linux
-dist: bionic
-python:
-   - "3.6"
-   - "3.7"
-   - "3.8"
-env:
-   - TESTDB=sqlite
-   - TESTDB=postgres
-   - TESTDB=mysql
 
-services:
-   - postgresql
-   - mysql
+obs:
+  include:
+    - os: osx
+      osx_image: xcode12  # For recent python version
+      language: generic
+      env:
+        - TESTDB=sqlite
+    - os: linux
+      dist: bionic
+      python: 3.6
+      services:
+        - postgresql
+        - xvfb
+      env:
+        - TESTDB=postgres
+    - os: linux
+      dist: bionic
+      python: 3.6
+      services:
+        - mysql
+        - xvfb
+      env:
+        - TESTDB=mysql
+    - os: linux
+      dist: bionic
+      python: 3.6
+      services:
+        - xvfb
+      env:
+        - TESTDB=sqlite
+    - os: linux
+      dist: bionic
+      python: 3.7
+      services:
+        - postgresql
+        - xvfb
+      env:
+        - TESTDB=postgres
+    - os: linux
+      dist: bionic
+      python: 3.7
+      services:
+        - mysql
+        - xvfb
+      env:
+        - TESTDB=mysql
+    - os: linux
+      dist: bionic
+      python: 3.7
+      services:
+        - xvfb
+      env:
+        - TESTDB=sqlite
+    - os: linux
+      dist: bionic
+      python: 3.8
+      services:
+        - postgresql
+        - xvfb
+      env:
+        - TESTDB=postgres
+    - os: linux
+      dist: bionic
+      python: 3.8
+      services:
+        - mysql
+        - xvfb
+      env:
+        - TESTDB=mysql
+    - os: linux
+      dist: bionic
+      python: 3.8
+      services:
+        - xvfb
+      env:
+        - TESTDB=sqlite
 
 addons:
   apt:
@@ -28,16 +91,19 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-# We need to set the collation order on the postgres database to match the other dbs,
-# This requires using template0, since this differs from the locale settings for the
-# standard template.
 before_install:
-   - if [ "$TESTDB" = "postgres" ]; then pip install psycopg2 ; fi
-   - if [ "$TESTDB" = "mysql" ]; then pip install mysql-connector ; fi
-   - mysql -uroot -e 'drop database sutekh_test;' ; mysql -uroot -e 'create database sutekh_test;'
-   - dropdb -U postgres -w sutekh_test ; createdb -U postgres --lc-collate=C.UTF-8 --template template0 -w sutekh_test
+  # For MacOS, we need to install the gtk stuff
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install gtk+3 gobject-introspection librsvg; fi
+  - if [ "$TESTDB" = "postgres" ]; then pip install psycopg2 ; fi
+  - if [ "$TESTDB" = "mysql" ]; then pip install mysql-connector ; fi
+  - if [ "$TESTDB" = "mysql" ]; then mysql -uroot -e 'drop database sutekh_test;' ; mysql -uroot -e 'create database sutekh_test;'; fi
+  # We need to set the collation order on the postgres database to match the other dbs,
+  # This requires using template0, since this differs from the locale settings for the
+  # standard template.
+  - if [ "$TESTDB" = "postgres" ]; then dropdb -U postgres -w sutekh_test ; createdb -U postgres --lc-collate=C.UTF-8 --template template0 -w sutekh_test; fi
 
 install:
-   - pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo
+  - ci/travis/install_pip_deps.sh
 # command to run tests
-script: ci/travis/run_travis_tests.sh
+script:
+  - ci/travis/run_travis_tests.sh
