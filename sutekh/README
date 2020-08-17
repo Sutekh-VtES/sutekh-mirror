@@ -137,6 +137,7 @@ You will need to install the following homebrew packages
   - gtk+3
   - gobject-introspection
   - librsvg
+  - adwaita-icon-theme (or some other suitable icon theme)
 
 The remaining required packages should be installed using pip3
   - keyring
