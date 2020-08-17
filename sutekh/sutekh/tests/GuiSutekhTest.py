@@ -80,9 +80,6 @@ class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
 
     def setUp(self):
         """Setup gtk window for the tests"""
-        import sys
-        if 'darwin' in sys.platform:
-            self.skipTest("GUI tests hang on MACOSX - skipping pending further investigation")
         super(GuiSutekhTest, self).setUp()
         # Carry on with the test
         self.oWin = SutekhMainWindow()
