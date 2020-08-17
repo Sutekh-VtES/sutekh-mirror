@@ -7,7 +7,10 @@
 
 """Render a icon in a TreeView"""
 
-from gi.repository import Gdk, GObject, Gtk
+
+import logging
+
+from gi.repository import Gdk, GLib, GObject, Gtk
 
 # This is heavily cribbed from the example in the pyGtk FAQ
 # (By Nikos Kouremenos)
@@ -16,6 +19,15 @@ from gi.repository import Gdk, GObject, Gtk
 # and returns a "clicked" signal when activated
 # To be generically useful, should be extended to abitary pixmaps,
 # but that is currently not a priority
+
+
+def _safe_load(oIconTheme, sName):
+    """Wrap loading the icon in a try..except block to catch failures"""
+    try:
+        return oIconTheme.load_icon(sName, Gtk.IconSize.MENU, 0)
+    except GLib.Error as oErr:
+        logging.warning(f"Unable to load icon {sName} - {oErr}")
+    return None
 
 
 class CellRendererSutekhButton(Gtk.CellRenderer):
@@ -45,7 +57,17 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
     def load_icon(self, sName, _oWidget):
         """Load the icon specified in name"""
         oIconTheme = Gtk.IconTheme.get_default()
-        self.oPixbuf = oIconTheme.load_icon(sName, Gtk.IconSize.MENU, 0)
+        self.oPixbuf = _safe_load(oIconTheme, sName)
+        if not self.oPixbuf:
+            # try fallback to symbolic version
+            # This isn't always going to work, but it is available for some icons,
+            # so it's worth trying
+            self.oPixbuf = _safe_load(oIconTheme, sName + '-symbolic')
+        if not self.oPixbuf:
+            # This is supposed to always be there, so we don't wrap it in safe load
+            # If this fails, we're arguably in enough trouble anyway that we should just
+            # bail out regardless
+            self.oPixbuf = oIconTheme.load_icon('image-missing', Gtk.IconSize.MENU, 0)
 
     def do_get_property(self, oProp):
         """Allow reading the showicon property"""
