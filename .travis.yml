@@ -1,6 +1,6 @@
 language: python
 
-obs:
+jobs:
   include:
     - os: osx
       osx_image: xcode12  # For recent python version
