@@ -10,6 +10,19 @@ from gi.repository import Gdk, Gtk, GLib
 
 from .MessageBus import MessageBus, DATABASE_MSG
 
+# Style the selected label to be bold
+# We do this, rather than a colour, to avoid issues with
+# light / dark themes, which are hard to identify programmitically
+LABEL_CSS = b"""
+   #selectedtitle {
+      font-weight: bolder;
+   }
+
+   #frametitle {
+      font-weight: normal;
+   }
+"""
+
 
 def pack_resizable(oBox, oWidget):
     """Pack a widget into oBox so it is horizontally resizable without
@@ -40,15 +53,12 @@ class BasicFrame(Gtk.Frame):
         self._aPlugins = []
         self.set_name("blank frame")
         self._iId = 0
-
         # Ensure new panes aren't completely hidden
 
         self._oTitle = Gtk.EventBox()
         self._oTitleLabel = Gtk.Label(label='Blank Frame')
-        self._oTitleLabel.set_name('frame_title')
+        self._oTitleLabel.set_name('frametitle')
         self._oTitle.add(self._oTitleLabel)
-        # Allows setting background colours for title easily
-        self._oTitle.set_name('frame_title')
         self._oView = Gtk.TextView()
         self._oView.set_editable(False)
         self._oView.set_cursor_visible(False)
@@ -72,6 +82,12 @@ class BasicFrame(Gtk.Frame):
         self._oTitle.connect_after('drag_begin', self.make_drag_icon)
         self.set_drag_handler(self._oView)
         self.set_drop_handler(self._oView)
+
+        oProvider = Gtk.CssProvider()
+        oProvider.load_from_data(LABEL_CSS)
+        oContext = self._oTitleLabel.get_style_context()
+        oContext.add_provider(oProvider,
+                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.set_unique_id()
 
@@ -229,48 +245,11 @@ class BasicFrame(Gtk.Frame):
 
     def set_focussed_title(self):
         """Set the title to the correct style when focussed."""
-        #oCurStyle = self._oTitleLabel.rc_get_style()
-        self._oTitleLabel.set_name('selected_title')
-        # We can't have this name be a superset of the title name,
-        # otherwise any style set on 'title' automatically applies
-        # here, which is not what we want.
-
-        #oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(
-        #    self._oTitleLabel.get_settings(), self.path() + '.',
-        #    self.class_path(), self._oTitleLabel)
-        # Bit of a hack, but get's matches to before the title specific bits
-        # of the path
-
-        #oSpecificStyle = self._oTitleLabel.rc_get_style()
-        #if oSpecificStyle == oDefaultSutekhStyle or \
-        #        oDefaultSutekhStyle is None:
-        #    # No specific style which affects highlighted titles set, so create
-        #    # one
-        #    oMap = self._oTitleLabel.get_colormap()
-        #    sColour = 'purple'
-        #    if oMap.alloc_color(sColour).pixel == \
-        #            oCurStyle.fg[Gtk.StateFlags.NORMAL].pixel:
-        #        sColour = 'green'
-        #        # Prevent collisions. If the person is using
-        #        # purple on a green background, they deserve
-        #        # invisible text
-        #    sStyleInfo = """
-        #    style "internal_sutekh_hlstyle" {
-        #        fg[NORMAL] = "%(colour)s"
-        #        }
-        #    widget "%(path)s" style "internal_sutekh_hlstyle"
-        #    """ % {'colour': sColour, 'path': self._oTitleLabel.path()}
-        #    Gtk.rc_parse_string(sStyleInfo)
-        #    # We use Gtk's style machinery to do the update.
-        #    # This seems the only way of ensuring we will actually do
-        #    # the right thing with themes, while still allowing flexiblity
-        # Here, as this forces Gtk to re-asses styles of widget and children
-        self._oTitle.set_name('selected_title')
+        self._oTitleLabel.set_name('selectedtitle')
 
     def set_unfocussed_title(self):
         """Set the title back to the default, unfocussed style."""
-        self._oTitleLabel.set_name('frame_title')
-        self._oTitle.set_name('frame_title')
+        self._oTitleLabel.set_name('frametitle')
 
     def close_menu_item(self, _oMenuWidget):
         """Handle close requests from the menu."""
