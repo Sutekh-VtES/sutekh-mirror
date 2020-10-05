@@ -15,7 +15,7 @@ from .PhysicalCardMenu import PhysicalCardMenu
 
 class PhysicalCardFrame(CardListFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     """Frame which holds the Physical Card Collection View.
 
        Set the title, and menus as needed for the card collection.

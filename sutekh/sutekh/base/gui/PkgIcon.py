@@ -13,7 +13,7 @@ from gi.repository import GdkPixbuf
 
 
 class PkgIcon:
-    """Load a gtk Pixbuf object from a package resource file."""
+    """Load a Gtk Pixbuf object from a package resource file."""
 
     def __init__(self, sPkg, sResource):
         oLoader = GdkPixbuf.PixbufLoader.new_with_type('svg')

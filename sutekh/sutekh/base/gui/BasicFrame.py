@@ -76,7 +76,7 @@ class BasicFrame(Gtk.Frame):
         # Create a multi-press gesture for the double click
         # This is to future proof us, since the old _2BUTTON_PRESS event,
         # while it still exists, is deprecated
-        # gtk's binding's are odd here, and we need to use new explicitly
+        # Gtk's binding's are odd here, and we need to use new explicitly
         self._oGesture = Gtk.GestureMultiPress.new(self._oTitle)
         self._oGesture.connect('pressed', self.minimize_to_toolbar)
         self._oTitle.connect_after('drag_begin', self.make_drag_icon)

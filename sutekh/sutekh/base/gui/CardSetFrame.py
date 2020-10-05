@@ -17,9 +17,9 @@ from .CardSetController import CardSetController
 
 class CardSetFrame(CardListFrame):
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     # pylint: disable=property-on-old-class
-    # gtk classes aren't old-style, but pylint thinks they are
+    # Gtk classes aren't old-style, but pylint thinks they are
     """class for Card Set frames.
 
        Handles most of the functionality - subclasses set the style name

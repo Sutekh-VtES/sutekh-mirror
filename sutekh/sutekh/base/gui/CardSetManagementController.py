@@ -17,7 +17,7 @@ from .GuiCardSetFunctions import (create_card_set, update_card_set,
 class CardSetManagementController:
     """Controller object for the card set list."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so lots of public methods
+    # Gtk.Widget, so lots of public methods
     _sFilterType = 'PhysicalCardSet'
 
     def __init__(self, oMainWindow, oFrame):
