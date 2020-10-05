@@ -19,11 +19,11 @@ class CardTextBuffer(BaseCardTextBuffer):
        """
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self):
         super(CardTextBuffer, self).__init__()
 
-        # See http://www.pygtk.org/pygtk2reference/class-gtktexttag.html
+        # See http://www.pyGtk.org/pyGtk2reference/class-Gtktexttag.html
         # for some possible properties
 
         # We use add_tag, so each tag has an associated mark, which will be
@@ -56,7 +56,7 @@ class CardTextView(BaseCardTextView):
        """
 
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so many public methods
+    # Gtk.Widget, so many public methods
     def __init__(self, oIconManager, oMainWindow):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager, oMainWindow)

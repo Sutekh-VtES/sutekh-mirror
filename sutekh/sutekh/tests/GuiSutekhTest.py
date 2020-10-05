@@ -3,7 +3,7 @@
 # Copyright 2009 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Base for Sutekh test cases that use gtk windows"""
+"""Base for Sutekh test cases that use Gtk windows"""
 
 import tempfile
 import os
@@ -79,12 +79,12 @@ class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
     # unittest.TestCase, so many public methods
 
     def setUp(self):
-        """Setup gtk window for the tests"""
+        """Setup Gtk window for the tests"""
         super(GuiSutekhTest, self).setUp()
         # Carry on with the test
         self.oWin = SutekhMainWindow()
 
     def tearDown(self):
-        """Tear down gtk framework after test run"""
+        """Tear down Gtk framework after test run"""
         self.oWin.destroy()
         super(GuiSutekhTest, self).tearDown()

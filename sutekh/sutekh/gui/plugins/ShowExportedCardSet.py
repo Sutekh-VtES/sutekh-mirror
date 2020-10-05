@@ -3,7 +3,7 @@
 # Copyright 2011 Neil Muller <drnlmuller+sutekh@gmail.com>
 # GPL - see COPYING for details
 
-"""Plugin for displaying the exported version of a card set in a gtk.TextView.
+"""Plugin for displaying the exported version of a card set in a Gtk.TextView.
    Intended to make cutting and pasting easier."""
 
 from sutekh.gui.PluginManager import SutekhPlugin

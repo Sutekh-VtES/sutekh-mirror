@@ -14,7 +14,7 @@ from sutekh.base.gui.BaseCardTextFrame import BaseCardTextFrame
 class CardTextFrame(BaseCardTextFrame):
     """Frame which holds the CardTextView."""
     # pylint: disable=too-many-public-methods
-    # gtk.Widget, so lots of public methods
+    # Gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oIconManager):
         oView = CardTextView(oIconManager, oMainWindow)
         super(CardTextFrame, self).__init__(oView, oMainWindow)

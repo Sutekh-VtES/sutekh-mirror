@@ -306,7 +306,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                         oChildPCS.parent = oPCS
                         oChildPCS.syncUpdate()
                         # Handle any queued reloads
-                        # This is to mimic the way we use gtk event queuing
+                        # This is to mimic the way we use Gtk event queuing
                         # to ensure reloads happen after database changes
                         # have been committed
                         for oModel in aModels:
