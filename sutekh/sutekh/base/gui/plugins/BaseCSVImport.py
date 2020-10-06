@@ -70,13 +70,13 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oLabel, True, True, 0)
 
         oNameBox = Gtk.HBox()
-        oNameBox.pack_start(Gtk.Label(label="Card name:"))
+        oNameBox.pack_start(Gtk.Label(label="Card name:"), True, True, 0)
         self.oCardNameCombo = self._create_column_selector()
         oNameBox.pack_start(self.oCardNameCombo, True, True, 0)
         self.oDlg.vbox.pack_start(oNameBox, True, True, 0)
 
         oCountBox = Gtk.HBox()
-        oCountBox.pack_start(Gtk.Label(label="Card count:"))
+        oCountBox.pack_start(Gtk.Label(label="Card count:"), True, True, 0)
         self.oCountCombo = self._create_column_selector()
         oCountBox.pack_start(self.oCountCombo, True, True, 0)
         self.oDlg.vbox.pack_start(oCountBox, True, True, 0)
@@ -97,7 +97,7 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oLabel, True, True, 0)
 
         oCardSetNameBox = Gtk.HBox()
-        oCardSetNameBox.pack_start(Gtk.Label(label="Card Set Name:"))
+        oCardSetNameBox.pack_start(Gtk.Label(label="Card Set Name:"), True, True, 0)
         self.oSetNameEntry = Gtk.Entry()
         oCardSetNameBox.pack_start(self.oSetNameEntry, True, True, 0)
         self.oDlg.vbox.pack_start(oCardSetNameBox, True, True, 0)
