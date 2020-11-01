@@ -393,3 +393,9 @@ not work for all versions of ARDB or FELDB.
 
 Sutekh has support for importing and exporting inventories and decks to and
 from the Secret Library (http://www.secretlibrary.info/).
+
+Getting the current development code
+====================================
+
+Sutekh is hosted on sourceforge using git. See https://sourceforge.net/p/sutekh/sutekh/ for
+details on how to clone the repository.
