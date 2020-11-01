@@ -1,3 +1,39 @@
+01 Nov 2020
+ * Change to use git instead of subversion
+ * Add note to README of where to find the code
+ * Update CHANGELOG
+
+06 Oct 2020
+ * Further updates to Gtk3's box requirements
+
+01 Oct 2020
+ * Make the name of the current pane bold, so we have a visual hint of the active pane
+   again.
+
+17 Aug 2020
+ * Make sutekh a bit more robust against theme issues
+ * Fix setup to run MacOS tests on travis-ci.
+
+16 Aug 2020
+ * Work on running MacOS tests on travis-ci.
+
+11 Aug 2020
+ * Tweak TTS export to allow overriding images with custom ones.
+
+10 Aug 2020
+ * Mark imported images in the "Import PDF as imageS" plugin.
+
+04 Aug 2020
+ * Unify ascii normalisation functions into a single utility function and use that
+   everywhere.
+
+02 Aug 2020
+ * Fix various Gdk deprecations
+ * Setup code to run tests on appveyor and travs-ci
+
+01 Aug 2020
+ * Rework the test suite to use pytest to run the tests, rather than nose.
+
 30 Jul 2020
  * Add Conflicts/Replaces to the debian package to make upgrades from Sutekh 1.0
    work correctly.
