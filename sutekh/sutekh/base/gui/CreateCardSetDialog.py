@@ -11,23 +11,9 @@ from sqlobject import SQLObjectNotFound
 from .SutekhDialog import SutekhDialog, do_complaint_error
 from .CardSetsListView import CardSetsListView
 from .AutoScrolledWindow import AutoScrolledWindow
+from .UndoTextEditor import UndoEditView
 from ..core.BaseTables import MAX_ID_LENGTH
 from ..core.BaseAdapters import IPhysicalCardSet
-
-
-def make_scrolled_text(oCardSet, sAttr):
-    """Create a text buffer wrapped in a scrolled window, filled with
-       the contents of sAtter if available"""
-
-    oTextView = Gtk.TextView()
-    oBuffer = oTextView.get_buffer()
-    oScrolledWin = AutoScrolledWindow(oTextView)
-    if oCardSet:
-        # Check for None values
-        sValue = getattr(oCardSet, sAttr)
-        if sValue:
-            oBuffer.set_text(sValue)
-    return oBuffer, oScrolledWin
 
 
 class CreateCardSetDialog(SutekhDialog):
@@ -51,15 +37,13 @@ class CreateCardSetDialog(SutekhDialog):
         self.oName.set_max_length(MAX_ID_LENGTH)
         oAuthorLabel = Gtk.Label(label="Author : ")
         self.oAuthor = Gtk.Entry()
-        oCommentriptionLabel = Gtk.Label(label="Description : ")
-        self.oCommentBuffer, oCommentWin = make_scrolled_text(oCardSet,
-                                                              'comment')
+        self.oCommentWin = UndoEditView('Description : ')
+        self.oCommentWin.set_text(oCardSet.comment)
         oParentLabel = Gtk.Label(label="This card set is a subset of : ")
         self.oParentList = CardSetsListView(None, self)
         self.oParentList.set_size_request(100, 200)
-        oAnnotateLabel = Gtk.Label(label="Annotations : ")
-        self.oAnnotateBuffer, oAnnotateWin = make_scrolled_text(oCardSet,
-                                                                'annotations')
+        self.oAnnotateWin = UndoEditView('Annotations : ')
+        self.oAnnotateWin.set_text(oCardSet.annotations)
 
         self.oInUse = Gtk.CheckButton('Mark card Set as In Use')
 
@@ -68,12 +52,10 @@ class CreateCardSetDialog(SutekhDialog):
         self.vbox.pack_start(self.oName, False, True, 0)
         self.vbox.pack_start(oAuthorLabel, False, True, 0)
         self.vbox.pack_start(self.oAuthor, False, True, 0)
-        self.vbox.pack_start(oCommentriptionLabel, False, True, 0)
-        self.vbox.pack_start(oCommentWin, True, True, 0)
+        self.vbox.pack_start(self.oCommentWin, True, True, 0)
         self.vbox.pack_start(oParentLabel, False, True, 0)
         self.vbox.pack_start(AutoScrolledWindow(self.oParentList), True, True, 0)
-        self.vbox.pack_start(oAnnotateLabel, False, True, 0)
-        self.vbox.pack_start(oAnnotateWin, True, True, 0)
+        self.vbox.pack_start(self.oAnnotateWin, True, True, 0)
         self.vbox.pack_start(self.oInUse, False, True, 0)
 
         self.connect("response", self.button_response)
@@ -111,18 +93,12 @@ class CreateCardSetDialog(SutekhDialog):
 
     def get_comment(self):
         """Get the comment value"""
-        sComment = self.oCommentBuffer.get_text(
-            self.oCommentBuffer.get_start_iter(),
-            self.oCommentBuffer.get_end_iter(),
-            False)
+        sComment = self.oCommentWin.get_all_text()
         return sComment
 
     def get_annotations(self):
         """Get the comment value"""
-        sAnnotations = self.oAnnotateBuffer.get_text(
-            self.oAnnotateBuffer.get_start_iter(),
-            self.oAnnotateBuffer.get_end_iter(),
-            False)
+        sAnnotations = self.oAnnotateWin.get_all_text()
         return sAnnotations
 
     def get_parent(self):
