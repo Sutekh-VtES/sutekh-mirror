@@ -159,6 +159,8 @@ class UndoEditView(Gtk.VBox):
         oAlign.set_expand(True)
         self._oToolbar.insert(oAlign, 0)
 
+        self._oToolbar.set_icon_size(Gtk.IconSize.SMALL_TOOLBAR)
+
     def set_text(self, oText):
         """Set the text in the buffer"""
         # Flag this as not undoable.
