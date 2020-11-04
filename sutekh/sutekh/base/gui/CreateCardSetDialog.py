@@ -47,7 +47,7 @@ class CreateCardSetDialog(SutekhDialog):
 
         self.oInUse = Gtk.CheckButton('Mark card Set as In Use')
 
-        self.set_default_size(500, 500)
+        self.set_default_size(800, 800)
         self.vbox.pack_start(oNameLabel, False, True, 0)
         self.vbox.pack_start(self.oName, False, True, 0)
         self.vbox.pack_start(oAuthorLabel, False, True, 0)
