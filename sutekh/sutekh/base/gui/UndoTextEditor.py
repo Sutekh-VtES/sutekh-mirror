@@ -9,7 +9,26 @@
 
 from gi.repository import Gtk
 
+from .SutekhDialog import do_complaint_warning
 from .AutoScrolledWindow import AutoScrolledWindow
+
+
+
+class SearchDialog(Gtk.Dialog):
+    """Search dialog for the text view"""
+
+    def __init__(self, oParent):
+        super().__init__(title="Search", transient_for=oParent, modal=True)
+        self.add_buttons("_Find", Gtk.ResponseType.OK,
+                         "_Cancel", Gtk.ResponseType.CANCEL)
+        self.vbox.pack_start(Gtk.Label("Enter text to search for"), False, False, 0)
+        self._oEntry = Gtk.Entry()
+        self.vbox.pack_start(self._oEntry, True, True, 0)
+        self.show_all()
+
+    def get_text(self):
+        """Get the entry text"""
+        return self._oEntry.get_text()
 
 
 class Insert:
@@ -120,6 +139,28 @@ class UndoEditBuffer(Gtk.TextBuffer):
         self.bUndoRedo = False
         return oCursorMark
 
+    def find_next(self, sText):
+        """Find the next occurance of the text, looping to the start
+           of the buffer if needed"""
+        # Current cursor position
+        oCurIter = self.get_iter_at_mark(self.get_insert())
+        oEndIter = self.get_end_iter()
+        oMatch = oCurIter.forward_search(sText, 0, oEndIter)
+        if oMatch is None:
+            # redo the search from the start to oCurIter
+            oStart = self.get_start_iter()
+            # We search to end to avoid issues where the cursor
+            # is in the middle of the desired string
+            oMatch = oStart.forward_search(sText, 0, oEndIter)
+
+        if oMatch is None:
+            do_complaint_warning("Search string not found")
+            return
+
+        # Match found - tuple of (start, end) iters
+        self.place_cursor(oMatch[0])
+        return self.create_mark(None, oMatch[0], False)
+
 
 class UndoEditView(Gtk.VBox):
     """This is the edit view.
@@ -127,12 +168,13 @@ class UndoEditView(Gtk.VBox):
        We provide a simple toolbar and a scrollable text view for the actual
        editing operations"""
 
-    def __init__(self, sTitle):
+    def __init__(self, sTitle, oParent):
         super().__init__()
         self._oBuffer = UndoEditBuffer()
         self._oView = Gtk.TextView()
         self._oView.set_buffer(self._oBuffer)
         self._oToolbar = Gtk.Toolbar()
+        self._oParent = oParent
         self._oToolbar.set_style(Gtk.ToolbarStyle.BOTH)
         self.pack_start(Gtk.Label(label=sTitle), False, False, 0)
         self.pack_start(self._oToolbar, False, False, 0)
@@ -148,6 +190,7 @@ class UndoEditView(Gtk.VBox):
         oRedo.connect('clicked', self.do_redo)
         oSearch = Gtk.ToolButton(label="Find")
         oSearch.set_icon_name("edit-find")
+        oSearch.connect('clicked', self.search)
 
         self._oToolbar.insert(oSearch, 0)
         self._oToolbar.insert(Gtk.SeparatorToolItem(), 0)
@@ -191,3 +234,14 @@ class UndoEditView(Gtk.VBox):
             return
         self._oView.scroll_to_mark(oMark, 0.25, False, 0, 0)
         self._oBuffer.delete_mark(oMark)
+
+    def search(self, _oWidget):
+        """Search for text in the buffer"""
+        oDlg = SearchDialog(self._oParent)
+        iRes = oDlg.run()
+        if iRes == Gtk.ResponseType.OK:
+            sText = oDlg.get_text()
+            oMark = self._oBuffer.find_next(sText)
+            if oMark:
+                self._oView.scroll_to_mark(oMark, 0.25, False, 0, 0)
+        oDlg.destroy()
