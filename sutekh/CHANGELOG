@@ -1,3 +1,7 @@
+04 Nov 2020
+ * Add simple undo/redo support to the desciption and annotations editing widgets
+ * Also add a search function to the description and annotations widgets
+
 01 Nov 2020
  * Change to use git instead of subversion
  * Add note to README of where to find the code
