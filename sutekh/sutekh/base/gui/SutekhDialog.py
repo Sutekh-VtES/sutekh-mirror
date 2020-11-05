@@ -80,6 +80,15 @@ def do_complaint_warning(sMessage):
                         False)
 
 
+def do_info_message(sMessage, bMarkup=True):
+    """Info dialog with a close button.
+
+       We default to markup enabled as that's generally useful in this case
+       and we're usually not including tracebacks or other text that will
+       break the markup parser."""
+    return do_complaint(sMessage, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, bMarkup)
+
+
 class DetailDialog(SutekhDialog):
     """Message dialog with a details expander"""
     # pylint: disable=too-many-public-methods
