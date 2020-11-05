@@ -11,7 +11,7 @@ from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCardSet
 from ...core.CardSetHolder import CardSetHolder
 from ..BasePluginManager import BasePlugin
-from ..SutekhDialog import do_complaint
+from ..SutekhDialog import do_info_message
 from ..GuiCardSetFunctions import get_import_name
 
 
@@ -54,4 +54,4 @@ class BaseSnapshot(BasePlugin):
         self._commit_cards(oNewPCS, oMyCS.cards)
         self._reload_pcs_list()
         sMesg = 'Snapshot <b>%s</b> created' % self._escape(oTempHolder.name)
-        do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
+        do_info_message(sMesg)

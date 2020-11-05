@@ -9,7 +9,7 @@
 
 from gi.repository import Gtk
 
-from .SutekhDialog import do_complaint_warning
+from .SutekhDialog import do_info_message
 from .AutoScrolledWindow import AutoScrolledWindow
 
 
@@ -154,7 +154,7 @@ class UndoEditBuffer(Gtk.TextBuffer):
             oMatch = oStart.forward_search(sText, 0, oEndIter)
 
         if oMatch is None:
-            do_complaint_warning("Search string not found")
+            do_info_message("Search string not found")
             return
 
         # Match found - tuple of (start, end) iters

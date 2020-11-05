@@ -30,7 +30,7 @@ from .DBUpgradeDialog import DBUpgradeDialog
 from .ProgressDialog import (ProgressDialog,
                              SutekhCountLogHandler,
                              SutekhHTMLLogHandler)
-from .SutekhDialog import (do_complaint_buttons, do_complaint,
+from .SutekhDialog import (do_complaint_buttons, do_info_message,
                            do_complaint_warning, do_exception_complaint,
                            do_complaint_error, do_complaint_error_details)
 from .GuiUtils import save_config
@@ -354,7 +354,7 @@ class BaseGuiDBManager:
         else:
             sMesg = "Import Completed\n"
             sMesg += "Everything seems to have gone OK"
-            do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
+            do_info_message(sMesg)
         oProgressDialog.destroy()
         dNewMap = get_cs_id_name_table()
         self._oWin.config_file.fix_profile_mapping(dOldMap, dNewMap)
@@ -450,7 +450,7 @@ class BaseGuiDBManager:
                     sMesg += '<b>%s</b>\n' % sStr
             else:
                 sMesg += "Everything seems to have gone smoothly."
-            do_complaint(sMesg, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
+            do_info_message(sMesg)
             return True
         sMesg = ("Unable to commit updated database!\nUpgrade Failed.\n"
                  "Your database may be in an inconsistent state.")

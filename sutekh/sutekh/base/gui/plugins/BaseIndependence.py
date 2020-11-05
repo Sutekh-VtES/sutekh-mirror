@@ -14,7 +14,7 @@ from ...core.BaseFilters import ParentCardSetFilter
 from ..BasePluginManager import BasePlugin
 from ..CardSetsListView import CardSetsListView
 from ..SutekhDialog import (SutekhDialog, NotebookDialog,
-                            do_complaint, do_complaint_error)
+                            do_info_message, do_complaint_error)
 from ..AutoScrolledWindow import AutoScrolledWindow
 from ..GuiCardSetFunctions import create_card_set
 
@@ -261,7 +261,7 @@ class BaseIndependence(BasePlugin):
             self._display_results(dMissing, oParentCS)
         else:
             sMessage = "No cards missing from %s" % oParentCS.name
-            do_complaint(sMessage, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, True)
+            do_info_message(sMessage)
 
     def create_card_set(self, _oButton, dMissing):
         """Create a card set from the card list"""
