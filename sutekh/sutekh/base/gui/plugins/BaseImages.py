@@ -6,6 +6,7 @@
 """Adds a frame which will display card images from ARDB in the GUI"""
 
 import datetime
+import enum
 import logging
 import os
 import tempfile
@@ -34,8 +35,17 @@ from ..FileOrUrlWidget import FileOrDirOrUrlWidget
 from ..SutekhFileWidget import add_filter
 
 
-FORWARD, BACKWARD = range(2)
-FULL, VIEW_FIXED, FIT = range(3)
+class Direction(enum.Enum):
+    FORWARD = 1
+    BACKWARD = 2
+
+
+class Size(enum.Enum):
+    FULL = 1
+    VIEW_FIXED = 2
+    FIT = 3
+
+
 RATIO = (225, 300)
 
 # Config Key Constants
@@ -128,17 +138,17 @@ class CardImagePopupMenu(Gtk.Menu):
         self.oNext = Gtk.MenuItem(label='Show next expansion image')
         self.oPrev = Gtk.MenuItem(label='Show previous expansion image')
 
-        self.oPrev.connect('activate', self.cycle_expansion, BACKWARD)
-        self.oNext.connect('activate', self.cycle_expansion, FORWARD)
-        self.oViewFit.connect('activate', self.set_zoom, FIT)
-        self.oZoom.connect('activate', self.set_zoom, FULL)
-        self.oViewFixed.connect('activate', self.set_zoom, VIEW_FIXED)
+        self.oPrev.connect('activate', self.cycle_expansion, Direction.BACKWARD)
+        self.oNext.connect('activate', self.cycle_expansion, Direction.FORWARD)
+        self.oViewFit.connect('activate', self.set_zoom, Size.FIT)
+        self.oZoom.connect('activate', self.set_zoom, Size.FULL)
+        self.oViewFixed.connect('activate', self.set_zoom, Size.VIEW_FIXED)
 
-        if iZoomMode == FULL:
+        if iZoomMode == Size.FULL:
             self.oZoom.set_active(True)
-        elif iZoomMode == VIEW_FIXED:
+        elif iZoomMode == Size.VIEW_FIXED:
             self.oViewFixed.set_active(True)
-        elif iZoomMode == FIT:
+        elif iZoomMode == Size.FIT:
             self.oViewFit.set_active(True)
 
         self.add(self.oViewFit)
@@ -155,12 +165,12 @@ class CardImagePopupMenu(Gtk.Menu):
 
     def cycle_expansion(self, _oWidget, iDir):
         """Change the expansion as requested."""
-        assert(iDir in (BACKWARD, FORWARD))
+        assert(iDir in Direction)
         self.oFrame.do_cycle_expansion(iDir)
 
     def set_zoom(self, _oWidget, iScale):
         """Change the drawing mode."""
-        assert(iScale in (FULL, VIEW_FIXED, FIT))
+        assert(iScale in Size)
         self.oFrame.set_zoom_mode(iScale)
 
 
@@ -218,7 +228,7 @@ class BaseImageFrame(BasicFrame):
         self._aExpPrints = []
         self._iExpansionPos = 0
         self._sCardName = ''
-        self._iZoomMode = FIT
+        self._iZoomMode = Size.FIT
         self._tPaneSize = (0, 0)
         self._dFailedUrls = {}
         self._dDateCache = {}
@@ -591,7 +601,7 @@ class BaseImageFrame(BasicFrame):
                 iWidth = (iWidth + 4) * len(aPixbufs) - 4
             else:
                 oPixbuf = aPixbufs[0]
-            if self._iZoomMode == FIT:
+            if self._iZoomMode == Size.FIT:
                 # Need to fix aspect ratios
                 iPaneHeight = (self._oView.get_vadjustment().get_page_size() -
                                iHeightOffset)
@@ -606,7 +616,7 @@ class BaseImageFrame(BasicFrame):
                                              GdkPixbuf.InterpType.HYPER))
                     self._tPaneSize = (self._oView.get_hadjustment().get_page_size(),
                                        self._oView.get_vadjustment().get_page_size())
-            elif self._iZoomMode == VIEW_FIXED:
+            elif self._iZoomMode == Size.VIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                                                       RATIO[0], RATIO[1])
                 self._oImage.set_from_pixbuf(
@@ -673,11 +683,11 @@ class BaseImageFrame(BasicFrame):
         """Change the expansion image to a different one in the list."""
         if len(self._aExpPrints) < 2 or not self._bShowExpansions:
             return  # nothing to scroll through
-        if iDir == FORWARD:
+        if iDir == Direction.FORWARD:
             self._iExpansionPos += 1
             if self._iExpansionPos >= len(self._aExpPrints):
                 self._iExpansionPos = 0
-        elif iDir == BACKWARD:
+        elif iDir == Direction.BACKWARD:
             self._iExpansionPos -= 1
             if self._iExpansionPos < 0:
                 self._iExpansionPos = len(self._aExpPrints) - 1
@@ -694,7 +704,7 @@ class BaseImageFrame(BasicFrame):
         if oEvent.type != Gdk.EventType.BUTTON_PRESS:
             return True  # don't jump twice on double or triple clicks
         if oEvent.button == 1:
-            self.do_cycle_expansion(FORWARD)
+            self.do_cycle_expansion(Direction.FORWARD)
         elif oEvent.button == 3:
             # Do context menu
             oPopupMenu = CardImagePopupMenu(self, self._iZoomMode)
@@ -717,7 +727,7 @@ class BaseImageFrame(BasicFrame):
 
     def _pane_adjust(self, _oAdjust):
         """Redraw the image if needed when the pane size changes."""
-        if self._iZoomMode == FIT:
+        if self._iZoomMode == Size.FIT:
             tCurSize = (self._oView.get_hadjustment().get_page_size(),
                         self._oView.get_vadjustment().get_page_size())
             if tCurSize[0] != self._tPaneSize[0] or \
