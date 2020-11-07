@@ -11,7 +11,7 @@
 import pkg_resources
 
 from sutekh.base.gui.BaseConfigFile import BaseConfigFile
-from sutekh.base.gui.MessageBus import MessageBus, CONFIG_MSG
+from sutekh.base.gui.MessageBus import MessageBus
 
 
 class ConfigFile(BaseConfigFile):
@@ -51,7 +51,7 @@ class ConfigFile(BaseConfigFile):
     def set_show_errata_markers(self, bShowErrata):
         """Set the 'show errata markers' option."""
         self._oConfig['main']['show errata markers'] = bShowErrata
-        MessageBus.publish(CONFIG_MSG, 'show_errata_markers')
+        MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'show_errata_markers')
 
     def sanitize(self):
         """Called after validation to clean up a valid config.

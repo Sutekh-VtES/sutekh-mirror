@@ -9,7 +9,7 @@
 from sutekh.SutekhUtility import format_text, keyword_sort_key
 from sutekh.base.gui.BaseCardTextView import (BaseCardTextBuffer,
                                               BaseCardTextView)
-from sutekh.base.gui.MessageBus import MessageBus, CONFIG_MSG
+from sutekh.base.gui.MessageBus import MessageBus
 
 
 class CardTextBuffer(BaseCardTextBuffer):
@@ -60,7 +60,7 @@ class CardTextView(BaseCardTextView):
     def __init__(self, oIconManager, oMainWindow):
         oBuffer = CardTextBuffer()
         super(CardTextView, self).__init__(oBuffer, oIconManager, oMainWindow)
-        MessageBus.subscribe(CONFIG_MSG, 'show_errata_markers',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'show_errata_markers',
                              self._reload_card)
 
     # pylint: disable=too-many-branches, too-many-statements

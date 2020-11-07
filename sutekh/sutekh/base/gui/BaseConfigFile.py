@@ -14,7 +14,7 @@ import pkg_resources
 from configobj import ConfigObj, flatten_errors
 from validate import Validator, is_option, is_list, VdtTypeError
 
-from .MessageBus import MessageBus, CONFIG_MSG
+from .MessageBus import MessageBus
 
 # Type definitions
 CARDSET = 'Card Set'
@@ -421,7 +421,7 @@ class BaseConfigFile:
                 'vars': dVars,
             }
             self._oConfig['filters'][sKey] = dFilter
-            MessageBus.publish(CONFIG_MSG, 'add_filter', sKey, sQuery)
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'add_filter', sKey, sQuery)
 
     # pylint: enable=dangerous-default-value
 
@@ -432,7 +432,7 @@ class BaseConfigFile:
         if sKey in self._oConfig['filters'] and \
                 sFilter == self._oConfig['filters'][sKey]['query']:
             del self._oConfig['filters'][sKey]
-            MessageBus.publish(CONFIG_MSG, 'remove_filter', sKey, sFilter)
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'remove_filter', sKey, sFilter)
             # Cleanup filter from config profiles
             dProfileFilters = self.get_profiles_for_filter(sKey)
             for sType in dProfileFilters:
@@ -455,7 +455,7 @@ class BaseConfigFile:
         if sKey in self._oConfig['filters'] and \
                 sOldFilter == self._oConfig['filters'][sKey]['query']:
             self._oConfig['filters'][sKey]['query'] = sNewFilter
-            MessageBus.publish(CONFIG_MSG, 'replace_filter', sKey,
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'replace_filter', sKey,
                                sOldFilter, sNewFilter)
 
     #
@@ -539,7 +539,7 @@ class BaseConfigFile:
                 dProfile[sKey] = sValue
 
         if bChanged:
-            MessageBus.publish(CONFIG_MSG, 'profile_option_changed',
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                                sType, sProfile, sKey)
 
     def set_local_frame_option(self, sFrame, sKey, sValue):
@@ -564,7 +564,7 @@ class BaseConfigFile:
                 dOptions[sKey] = sValue
 
         if bChanged:
-            MessageBus.publish(CONFIG_MSG, 'profile_changed', FRAME, sFrame)
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'profile_changed', FRAME, sFrame)
 
     def clear_frame_profile(self, sId):
         """Clear any pane profiles set for this frame"""
@@ -631,7 +631,7 @@ class BaseConfigFile:
         else:
             # Unrecognised type / cardset combo
             return
-        MessageBus.publish(CONFIG_MSG, 'profile_changed', sType, sId)
+        MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'profile_changed', sType, sId)
 
     def get_profile(self, sType, sId):
         """Return the current profile of the cardset/cardlist/cardset list."""
@@ -678,7 +678,7 @@ class BaseConfigFile:
             else:
                 self.clear_profiles(sType, sProfile)
             del dData[sProfile]
-            MessageBus.publish(CONFIG_MSG, 'remove_profile', sType, sProfile)
+            MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'remove_profile', sType, sProfile)
 
     def frame_profiles(self):
         """Return a dictionary of frame id -> profile mappings."""
@@ -813,7 +813,7 @@ class BaseConfigFile:
     def set_postfix_the_display(self, bPostfix):
         """Set the 'postfix name display' option."""
         self._oConfig['main']['postfix name display'] = bPostfix
-        MessageBus.publish(CONFIG_MSG, 'set_postfix_the_display', bPostfix)
+        MessageBus.publish(MessageBus.Type.CONFIG_MSG, 'set_postfix_the_display', bPostfix)
 
     def get_socket_timeout(self):
         """Get the timeout config value"""

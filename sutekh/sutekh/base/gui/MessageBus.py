@@ -8,16 +8,19 @@
 
 """Message Bus for Sutekh"""
 
-
-# Useful constants to avoid typoes
-
-CONFIG_MSG, CARD_TEXT_MSG, DATABASE_MSG = range(3)
+import enum
 
 
 class MessageBus:
     """The actual message bus"""
 
     _dSubscriptions = {}
+
+    # Useful constants to avoid typoes
+    class Type(enum.Enum):
+        CONFIG_MSG = 1
+        CARD_TEXT_MSG = 2
+        DATABASE_MSG = 3
 
     @classmethod
     def subscribe(cls, oObject, sSignalName, fCallback):

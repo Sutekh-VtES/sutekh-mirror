@@ -25,7 +25,7 @@ from sutekh.base.core.DBSignals import (listen_row_destroy, listen_row_update,
                                         disconnect_row_update,
                                         disconnect_row_created)
 from sutekh.base.io.UrlOps import urlopen_with_timeout
-from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
+from sutekh.base.gui.MessageBus import MessageBus
 from sutekh.base.gui.SutekhDialog import (SutekhDialog,
                                           do_complaint_error)
 from sutekh.base.gui.GuiCardSetFunctions import unzip_files_into_db
@@ -219,7 +219,7 @@ class StarterInfoPlugin(SutekhPlugin):
                                    PhysicalCardSet)
             disconnect_row_created(self.card_set_added_deleted,
                                    PhysicalCardSet)
-            MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+            MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                                    self.post_set_card_text)
         super(StarterInfoPlugin, self).cleanup()
 
@@ -228,7 +228,7 @@ class StarterInfoPlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
+        MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
         # Listen for card set changes to manage the cache
         listen_row_update(self.card_set_changed, PhysicalCardSet)
@@ -419,7 +419,7 @@ class StarterInfoPlugin(SutekhPlugin):
         """Toggle the show info flag"""
         self.bShowInfo = oToggle.get_active()
         # Update the card text pane to reflect changes
-        MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', self.oLastCard)
+        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text', self.oLastCard)
         if self.bShowInfo:
             self.set_config_item('show starters', 'Yes')
         else:

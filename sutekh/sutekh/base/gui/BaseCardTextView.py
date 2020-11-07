@@ -10,7 +10,7 @@ import logging
 
 from gi.repository import Gtk, Pango
 
-from .MessageBus import MessageBus, CARD_TEXT_MSG
+from .MessageBus import MessageBus
 
 
 class BaseCardTextBuffer(Gtk.TextBuffer):
@@ -193,7 +193,7 @@ class BaseCardTextView(Gtk.TextView):
             self.print_card_to_buffer(self._oLastCard.abstractCard)
             # Signal plugins that want to do something after text has been
             # updated
-            MessageBus.publish(CARD_TEXT_MSG, 'post_set_text', self._oLastCard)
+            MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text', self._oLastCard)
 
     def add_button_to_text(self, oButton, sPrefix='\n'):
         """Adds a button to the text view."""

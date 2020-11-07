@@ -21,7 +21,7 @@ from ..core.FilterParser import FilterParser
 from ..Utility import move_articles_to_back
 from .BaseConfigFile import FULL_CARDLIST
 from .SutekhDialog import do_exception_complaint
-from .MessageBus import MessageBus, CONFIG_MSG
+from .MessageBus import MessageBus
 
 EXTRA_LEVEL_OPTION = "extra levels"
 EXTRA_LEVEL_LOOKUP = {
@@ -78,12 +78,12 @@ class CardListModel(Gtk.TreeStore):
         self._bHideIllegal = True
         self._oController = None
         self._oFilterParser = FilterParser()
-        MessageBus.subscribe(CONFIG_MSG, 'replace_filter', self.replace_filter)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter', self.replace_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
-        MessageBus.subscribe(CONFIG_MSG, 'set_postfix_the_display',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'set_postfix_the_display',
                              self.set_postfix_the_display)
 
     # pylint: disable=protected-access, invalid-name
@@ -124,11 +124,11 @@ class CardListModel(Gtk.TreeStore):
     def cleanup(self):
         """Remove the config file listener if needed"""
         self._oController = None
-        MessageBus.unsubscribe(CONFIG_MSG, 'replace_filter',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
                                self.replace_filter)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                                self.profile_option_changed)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
         # Ensure we clean up all subscribers
         MessageBus.clear(self)

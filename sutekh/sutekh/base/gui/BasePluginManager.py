@@ -24,7 +24,7 @@ from ..core.DatabaseVersion import DatabaseVersion
 from ..core.BaseTables import PhysicalCardSet, PhysicalCard
 from ..core.BaseAdapters import IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
-from .MessageBus import MessageBus, CONFIG_MSG, DATABASE_MSG
+from .MessageBus import MessageBus
 from .SutekhDialog import do_complaint_warning
 
 
@@ -129,16 +129,16 @@ class PluginConfigFileListener:
     # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
-        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
 
     def cleanup(self):
         """Unhook from the message bus"""
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                                self.profile_option_changed)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
 
     def profile_option_changed(self, sType, sProfile, sKey):
@@ -196,9 +196,9 @@ class BasePlugin:
         self._oListener = None
         if self._oModel is not None and hasattr(self._oModel, "frame_id"):
             self._oListener = PluginConfigFileListener(self)
-        MessageBus.subscribe(DATABASE_MSG, 'update_to_new_db',
+        MessageBus.subscribe(MessageBus.Type.DATABASE_MSG, 'update_to_new_db',
                              self.update_to_new_db)
-        MessageBus.subscribe(DATABASE_MSG, 'prepare_for_db_update',
+        MessageBus.subscribe(MessageBus.Type.DATABASE_MSG, 'prepare_for_db_update',
                              self.prepare_for_db_update)
 
     # pylint: disable=protected-access
@@ -346,9 +346,9 @@ class BasePlugin:
            Used for things like database signal cleanup, etc."""
         if self._oListener:
             self._oListener.cleanup()
-        MessageBus.unsubscribe(DATABASE_MSG, 'update_to_new_db',
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, 'update_to_new_db',
                                self.update_to_new_db)
-        MessageBus.unsubscribe(DATABASE_MSG, 'prepare_for_db_update',
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, 'prepare_for_db_update',
                                self.prepare_for_db_update)
         return None
 

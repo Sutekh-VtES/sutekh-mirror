@@ -24,7 +24,7 @@ from ...Utility import prefs_dir, ensure_dir_exists, get_printing_date
 
 from ..BasePluginManager import BasePlugin
 from ..ProgressDialog import ProgressDialog, SutekhCountLogHandler
-from ..MessageBus import MessageBus, CARD_TEXT_MSG
+from ..MessageBus import MessageBus
 from ..GuiDataPack import progress_fetch_data, gui_error_handler
 from ..BasicFrame import BasicFrame
 from ..SutekhDialog import (SutekhDialog, do_complaint_buttons,
@@ -317,13 +317,13 @@ class BaseImageFrame(BasicFrame):
         # Reset to stock image to force sane state
         self._oImage.set_from_icon_name("image-missing",
                                         Gtk.IconSize.DIALOG)
-        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
+        MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
         super(BaseImageFrame, self).frame_setup()
 
     def cleanup(self, bQuit=False):
         """Remove the listener"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
+        MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
         super(BaseImageFrame, self).cleanup(bQuit)
 

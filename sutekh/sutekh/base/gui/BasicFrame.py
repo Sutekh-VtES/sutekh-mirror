@@ -8,7 +8,7 @@
 
 from gi.repository import Gdk, Gtk, GLib
 
-from .MessageBus import MessageBus, DATABASE_MSG
+from .MessageBus import MessageBus
 
 # Style the selected label to be bold
 # We do this, rather than a colour, to avoid issues with
@@ -186,7 +186,7 @@ class BasicFrame(Gtk.Frame):
         """Hook called when the frame is added to the window.
 
            Used for subscribing to signals and so forth."""
-        MessageBus.subscribe(DATABASE_MSG, "update_to_new_db",
+        MessageBus.subscribe(MessageBus.Type.DATABASE_MSG, "update_to_new_db",
                              self.update_to_new_db)
 
     # pylint: enable=no-self-use
@@ -194,7 +194,7 @@ class BasicFrame(Gtk.Frame):
     def cleanup(self, _bQuit=False):
         """Hook for cleanup actions when the frame is removed."""
         # do per-plugin cleanup
-        MessageBus.unsubscribe(DATABASE_MSG, "update_to_new_db",
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, "update_to_new_db",
                                self.update_to_new_db)
         for oPlugin in self._aPlugins:
             oPlugin.cleanup()

@@ -12,7 +12,7 @@ from .FilteredViewMenu import CardListMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .LocalProfileEditor import LocalProfileEditor
 from .BaseConfigFile import CARDSET, FRAME
-from .MessageBus import MessageBus, CONFIG_MSG
+from .MessageBus import MessageBus
 from .GuiCardSetFunctions import export_cs
 
 
@@ -40,10 +40,10 @@ class CardSetMenu(CardListMenu):
         self.add_plugins_to_menus(self._oFrame)
         self.sort_menu(self._dMenus['Export Card Set'])
         self.sort_menu(self._dMenus['Analyze'])
-        MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile', self.remove_profile)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
 
     # pylint: disable=protected-access, invalid-name
@@ -127,11 +127,11 @@ class CardSetMenu(CardListMenu):
 
     def cleanup(self):
         """Remove the menu listener"""
-        MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile',
                                self.remove_profile)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                                self.profile_option_changed)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
 
     def _edit_properties(self, _oWidget):

@@ -11,7 +11,7 @@ from gi.repository import Gtk
 from .FilteredViewMenu import FilteredViewMenu
 from .FrameProfileEditor import FrameProfileEditor
 from .BaseConfigFile import CARDSET_LIST
-from .MessageBus import MessageBus, CONFIG_MSG
+from .MessageBus import MessageBus
 
 
 class CardSetManagementMenu(FilteredViewMenu):
@@ -30,8 +30,8 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.create_edit_menu()
         self.create_filter_menu()
         self.add_plugins_to_menus(self._oFrame)
-        MessageBus.subscribe(CONFIG_MSG, 'remove_profile', self.remove_profile)
-        MessageBus.subscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile', self.remove_profile)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                              self.profile_option_changed)
 
     # pylint: disable=attribute-defined-outside-init
@@ -68,9 +68,9 @@ class CardSetManagementMenu(FilteredViewMenu):
 
     def cleanup(self):
         """Remove the menu listener"""
-        MessageBus.unsubscribe(CONFIG_MSG, 'remove_profile',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile',
                                self.remove_profile)
-        MessageBus.unsubscribe(CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
                                self.profile_option_changed)
 
     def _edit_profiles(self, _oWidget):

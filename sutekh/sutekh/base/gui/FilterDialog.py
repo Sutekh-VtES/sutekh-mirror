@@ -13,7 +13,7 @@ from ..core import FilterParser
 from .SutekhDialog import (SutekhDialog, do_complaint_error,
                            do_complaint_buttons)
 from .BaseConfigFile import FULL_CARDLIST, CARDSET, DEF_PROFILE_FILTER
-from .MessageBus import MessageBus, CONFIG_MSG
+from .MessageBus import MessageBus
 from .FilterEditor import FilterEditor
 
 
@@ -110,9 +110,9 @@ class FilterDialog(SutekhDialog):
 
         self.add_accel_group(self._oAccelGroup)
 
-        MessageBus.subscribe(CONFIG_MSG, 'replace_filter', self.replace_filter)
-        MessageBus.subscribe(CONFIG_MSG, 'add_filter', self.add_filter)
-        MessageBus.subscribe(CONFIG_MSG, 'remove_filter', self.remove_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter', self.replace_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'add_filter', self.add_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_filter', self.remove_filter)
 
         self.show_all()
 

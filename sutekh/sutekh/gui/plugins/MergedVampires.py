@@ -12,7 +12,7 @@ from sqlobject import SQLObjectNotFound
 from sutekh.base.Utility import normalise_whitespace
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import IAbstractCard, IKeyword
-from sutekh.base.gui.MessageBus import MessageBus, CARD_TEXT_MSG
+from sutekh.base.gui.MessageBus import MessageBus
 from sutekh.base.gui.GuiUtils import make_markup_button
 from sutekh.base.gui.SutekhDialog import do_complaint_error
 
@@ -411,7 +411,7 @@ class MergedVampirePlugin(SutekhPlugin):
 
     def cleanup(self):
         """Remove the listener"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'post_set_text',
+        MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                                self.post_set_card_text)
         super(MergedVampirePlugin, self).cleanup()
 
@@ -420,7 +420,7 @@ class MergedVampirePlugin(SutekhPlugin):
 
            Adds the menu item on the MainWindow if the starters can be found.
            """
-        MessageBus.subscribe(CARD_TEXT_MSG, 'post_set_text',
+        MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
 
     def post_set_card_text(self, oPhysCard):

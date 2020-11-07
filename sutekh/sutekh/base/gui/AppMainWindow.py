@@ -27,7 +27,7 @@ from .LogViewFrame import LogViewFrame
 from .GuiCardLookup import GuiLookup
 from .GuiCardSetFunctions import break_existing_loops
 from .CardSetManagementFrame import CardSetManagementFrame
-from .MessageBus import MessageBus, DATABASE_MSG
+from .MessageBus import MessageBus
 from .HTMLTextView import HTMLViewDialog
 from .SutekhDialog import (do_complaint_error_details, do_exception_complaint,
                            do_complaint)
@@ -482,11 +482,11 @@ class AppMainWindow(MultiPaneWindow):
     def update_to_new_db(self):
         """Resync panes against the database."""
         # Subclasses will need to implement the details
-        MessageBus.publish(DATABASE_MSG, "update_to_new_db")
+        MessageBus.publish(MessageBus.Type.DATABASE_MSG, "update_to_new_db")
 
     def prepare_for_db_update(self):
         """Handle any preparation for the database upgrade"""
-        MessageBus.publish(DATABASE_MSG, "prepare_for_db_update")
+        MessageBus.publish(MessageBus.Type.DATABASE_MSG, "prepare_for_db_update")
 
     def clear_cache(self):
         """Clear any cached objects."""

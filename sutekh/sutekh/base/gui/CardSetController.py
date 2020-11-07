@@ -10,7 +10,7 @@ import collections
 from sqlobject import SQLObjectNotFound
 from .GuiCardSetFunctions import check_ok_to_delete, update_card_set
 from .CardSetView import CardSetView
-from .MessageBus import MessageBus, CARD_TEXT_MSG
+from .MessageBus import MessageBus
 from ..core.DBSignals import send_changed_signal
 from ..core.BaseTables import (PhysicalCardSet, PhysicalCard,
                                MapPhysicalCardToPhysicalCardSet)
@@ -48,7 +48,7 @@ class CardSetController:
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set card text to reflect selected card."""
-        MessageBus.publish(CARD_TEXT_MSG, 'set_card_text', oCard)
+        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text', oCard)
 
     # pylint: enable=no-self-use
 

@@ -8,7 +8,7 @@
 """Frame to hold the CardTextView."""
 
 from .ScrolledFrame import ScrolledFrame
-from .MessageBus import MessageBus, CARD_TEXT_MSG
+from .MessageBus import MessageBus
 
 
 class BaseCardTextFrame(ScrolledFrame):
@@ -25,13 +25,13 @@ class BaseCardTextFrame(ScrolledFrame):
     def frame_setup(self):
         """Subscribe to the set_card_text signal"""
         self._oView.clear_text()
-        MessageBus.subscribe(CARD_TEXT_MSG, 'set_card_text',
+        MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
         super(BaseCardTextFrame, self).frame_setup()
 
     def cleanup(self, bQuit=False):
         """Cleanup the listeners"""
-        MessageBus.unsubscribe(CARD_TEXT_MSG, 'set_card_text',
+        MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
         super(BaseCardTextFrame, self).cleanup(bQuit)
 
