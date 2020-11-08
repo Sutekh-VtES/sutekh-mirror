@@ -6,10 +6,16 @@
 
 """Render a list of icons and text in a TreeView"""
 
+import enum
+
 from gi.repository import Gdk, GLib, GObject, Gtk, Pango, PangoCairo
 
+
 # consts for the different display modes we need
-SHOW_TEXT_ONLY, SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT = range(3)
+class DisplayOption(enum.Enum):
+    SHOW_TEXT_ONLY = 1
+    SHOW_ICONS_ONLY = 2
+    SHOW_ICONS_AND_TEXT = 3
 
 
 def _layout_text(oLayout, sText):
@@ -42,7 +48,7 @@ class CellRendererIcons(Gtk.CellRenderer):
         super(CellRendererIcons, self).__init__()
         self.aData = []
         self.sText = None
-        self.iMode = SHOW_ICONS_AND_TEXT
+        self.eMode = DisplayOption.SHOW_ICONS_AND_TEXT
         self.iIconPad = iIconPad
 
     def do_get_property(self, oProp):
@@ -88,14 +94,14 @@ class CellRendererIcons(Gtk.CellRenderer):
         else:
             raise AttributeError('unknown property %s' % oProp.name)
 
-    def set_data(self, aText, aIcons, iMode=SHOW_ICONS_AND_TEXT):
+    def set_data(self, aText, aIcons, eMode=DisplayOption.SHOW_ICONS_AND_TEXT):
         """Load the info needed to render the icon"""
         self.aData = []
         if len(aIcons) != len(aText):
             # Can't handle this case
             return
         self.aData = list(zip(aText, aIcons))
-        self.iMode = iMode
+        self.eMode = eMode
 
     def do_get_size(self, oWidget, oCellArea):
         """Handle get_size requests"""
@@ -107,12 +113,12 @@ class CellRendererIcons(Gtk.CellRenderer):
         if self.aData:
             for sText, oIcon in self.aData:
                 # Get icon dimensions
-                if oIcon and self.iMode != SHOW_TEXT_ONLY:
+                if oIcon and self.eMode != DisplayOption.SHOW_TEXT_ONLY:
                     iCellWidth += oIcon.get_width() + self.iIconPad
                     if oIcon.get_height() > iCellHeight:
                         iCellHeight = oIcon.get_height()
                 # Get text dimensions
-                if sText and (self.iMode != SHOW_ICONS_ONLY or oIcon is None):
+                if sText and (self.eMode != DisplayOption.SHOW_ICONS_ONLY or oIcon is None):
                     # always fallback to text if oIcon is None
                     _layout_text(oLayout, sText)
                     # get layout dimensions
@@ -165,7 +171,7 @@ class CellRendererIcons(Gtk.CellRenderer):
         oDrawRect.height = 0
         if self.aData:
             for sText, oIcon in self.aData:
-                if oIcon and self.iMode != SHOW_TEXT_ONLY:
+                if oIcon and self.eMode != DisplayOption.SHOW_TEXT_ONLY:
                     # Render icon
                     Gdk.cairo_set_source_pixbuf(oCairoContext,
                                                     oIcon,
@@ -173,7 +179,7 @@ class CellRendererIcons(Gtk.CellRenderer):
                                                     oDrawRect.y)
                     oCairoContext.paint()
                     oDrawRect.x += oIcon.get_width() + self.iIconPad
-                if sText and (self.iMode != SHOW_ICONS_ONLY or oIcon is None):
+                if sText and (self.eMode != DisplayOption.SHOW_ICONS_ONLY or oIcon is None):
                     # Render text
                     _layout_text(oLayout, sText)
                     oDrawRect.width, oDrawRect.height = \
