@@ -8,8 +8,7 @@
 
 from ..core.BaseAdapters import IAbstractCard
 from ..gui.MessageBus import MessageBus
-from ..gui.CardSetListModel import (IGNORE_PARENT, NO_SECOND_LEVEL,
-                                    THIS_SET_ONLY)
+from ..gui.CardSetListModel import ParentCountMode, ExtraLevels, ShowMode
 
 # Useful mock classes
 
@@ -167,10 +166,10 @@ def reset_modes(oModel):
     # associated with a card set will update when send_changed_signal is
     # called, so we reset the model state so these calls will be cheap if
     # this models is affected when we're not explicitly testing it.
-    oModel._change_parent_count_mode(IGNORE_PARENT)
-    oModel._change_level_mode(NO_SECOND_LEVEL)
+    oModel._change_parent_count_mode(ParentCountMode.IGNORE_PARENT)
+    oModel._change_level_mode(ExtraLevels.NO_SECOND_LEVEL)
     oModel.bEditable = False
-    oModel._change_count_mode(THIS_SET_ONLY)
+    oModel._change_count_mode(ShowMode.THIS_SET_ONLY)
 
 
 def cleanup_models(aModels):

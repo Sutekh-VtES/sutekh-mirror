@@ -9,6 +9,8 @@
 
 """The Gtk.TreeModel for the card set lists."""
 
+import enum
+
 from gi.repository import Gdk, Gtk
 
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
@@ -36,54 +38,73 @@ from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from .BaseConfigFile import CARDSET, FRAME
 from .MessageBus import MessageBus
 
-# consts for the different modes we need (iExtraLevelsMode)
-NO_SECOND_LEVEL, SHOW_EXPANSIONS, SHOW_CARD_SETS, EXP_AND_CARD_SETS, \
-    CARD_SETS_AND_EXP = range(5)
-# Different card display modes (iShowCardMode)
-THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS, CHILD_CARDS = range(4)
-# Different Parent card count modes (iParentCountMode)
-IGNORE_PARENT, PARENT_COUNT, MINUS_THIS_SET, MINUS_SETS_IN_USE = range(4)
+class ExtraLevels(enum.Enum):
+    """The different modes we need (eExtraLevelsMode)"""
+    NO_SECOND_LEVEL = 1
+    SHOW_EXPANSIONS = 2
+    SHOW_CARD_SETS = 3
+    EXP_AND_CARD_SETS = 4
+    CARD_SETS_AND_EXP = 5
+
+class ShowMode(enum.Enum):
+    """Different card display modes (eShowCardMode)"""
+    THIS_SET_ONLY = 1
+    ALL_CARDS = 2
+    PARENT_CARDS = 3
+    CHILD_CARDS = 4
+
+
+class ParentCountMode(enum.Enum):
+   """Different Parent card count modes (eParentCountMode)"""
+   IGNORE_PARENT = 1
+   PARENT_COUNT = 2
+   MINUS_THIS_SET = 3
+   MINUS_SETS_IN_USE = 4
+
+
 # Colour constants to save constant lookups
 BLACK = Gdk.RGBA()
 RED = Gdk.RGBA()
 BLACK.parse('black')
 RED.parse('red')
 
-#
+
 # config text lookup -- keep in sync with configspec.ini
 #
 
 EXTRA_LEVEL_OPTION = "extra levels"
 EXTRA_LEVEL_LOOKUP = {
-    "none": NO_SECOND_LEVEL,
-    "expansions": SHOW_EXPANSIONS,
-    "card sets": SHOW_CARD_SETS,
-    "expansions then card sets": EXP_AND_CARD_SETS,
-    "card sets then expansions": CARD_SETS_AND_EXP,
+    "none": ExtraLevels.NO_SECOND_LEVEL,
+    "expansions": ExtraLevels.SHOW_EXPANSIONS,
+    "card sets": ExtraLevels.SHOW_CARD_SETS,
+    "expansions then card sets": ExtraLevels.EXP_AND_CARD_SETS,
+    "card sets then expansions": ExtraLevels.CARD_SETS_AND_EXP,
 }
 
 SHOW_CARD_OPTION = "cards to show"
 SHOW_CARD_LOOKUP = {
-    "this set only": THIS_SET_ONLY,
-    "all cards": ALL_CARDS,
-    "parent cards": PARENT_CARDS,
-    "child cards": CHILD_CARDS,
+    "this set only": ShowMode.THIS_SET_ONLY,
+    "all cards": ShowMode.ALL_CARDS,
+    "parent cards": ShowMode.PARENT_CARDS,
+    "child cards": ShowMode.CHILD_CARDS,
 }
 
 PARENT_COUNT_MODE = "parent count mode"
 PARENT_COUNT_LOOKUP = {
-    "ignore parent": IGNORE_PARENT,
-    "parent count": PARENT_COUNT,
-    "parent minus this set": MINUS_THIS_SET,
-    "parent minus sets in use": MINUS_SETS_IN_USE,
+    "ignore parent": ParentCountMode.IGNORE_PARENT,
+    "parent count": ParentCountMode.PARENT_COUNT,
+    "parent minus this set": ParentCountMode.MINUS_THIS_SET,
+    "parent minus sets in use": ParentCountMode.MINUS_SETS_IN_USE,
 }
 
 # Common combinations we check
-CARD_SETS_2ND_LEVEL = set([SHOW_CARD_SETS, CARD_SETS_AND_EXP])
-EXPANSIONS_2ND_LEVEL = set([SHOW_EXPANSIONS, EXP_AND_CARD_SETS])
-CARD_SETS_LEVEL = set([SHOW_CARD_SETS, CARD_SETS_AND_EXP, EXP_AND_CARD_SETS])
-BOTH_EXP_CARD_SETS = set([CARD_SETS_AND_EXP, EXP_AND_CARD_SETS])
-PARENT_OR_MINUS = set([PARENT_COUNT, MINUS_THIS_SET])
+CARD_SETS_2ND_LEVEL = set([ExtraLevels.SHOW_CARD_SETS, ExtraLevels.CARD_SETS_AND_EXP])
+EXPANSIONS_2ND_LEVEL = set([ExtraLevels.SHOW_EXPANSIONS, ExtraLevels.EXP_AND_CARD_SETS])
+CARD_SETS_LEVEL = set([ExtraLevels.SHOW_CARD_SETS,
+                       ExtraLevels.CARD_SETS_AND_EXP,
+                       ExtraLevels.EXP_AND_CARD_SETS])
+BOTH_EXP_CARD_SETS = set([ExtraLevels.CARD_SETS_AND_EXP, ExtraLevels.EXP_AND_CARD_SETS])
+PARENT_OR_MINUS = set([ParentCountMode.PARENT_COUNT, ParentCountMode.MINUS_THIS_SET])
 
 
 class CardSetModelRow:
@@ -91,13 +112,13 @@ class CardSetModelRow:
     # pylint: disable=too-many-instance-attributes
     # We do want all these attributes
 
-    def __init__(self, bEditable, iExtraLevelsMode, oAbsCard):
+    def __init__(self, bEditable, eExtraLevelsMode, oAbsCard):
         self.dExpansions = {}
         self.dChildCardSets = {}
         self.dParentExpansions = {}
         self.iCount = 0
         self.iParentCount = 0
-        self.iExtraLevelsMode = iExtraLevelsMode
+        self.eExtraLevelsMode = eExtraLevelsMode
         self.bEditable = bEditable
         self.oAbsCard = oAbsCard
         self.oPhysCard = IPhysicalCard((self.oAbsCard, None))
@@ -111,7 +132,7 @@ class CardSetModelRow:
     def get_expansion_info(self):
         """Get information about expansions"""
         dCardExpansions = {}
-        if self.iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        if self.eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
             for tKey, iCnt in self.dExpansions.items():
                 sExpName, oPhysCard = tKey
                 bIncCard, bDecCard = self.get_inc_dec_flags(iCnt)
@@ -137,7 +158,7 @@ class CardSetModelRow:
     def get_child_info(self):
         """Get information about child card sets"""
         dChildren = {}
-        if self.iExtraLevelsMode in CARD_SETS_2ND_LEVEL:
+        if self.eExtraLevelsMode in CARD_SETS_2ND_LEVEL:
             iParCnt = self.iParentCount
             for sCardSet, iCnt in self.dChildCardSets.items():
                 bIncCard, bDecCard = self.get_inc_dec_flags(iCnt)
@@ -187,9 +208,9 @@ class CardSetCardListModel(CardListModel):
         self.oEditColour = None
         self._oCountColour = BLACK
 
-        self._iExtraLevelsMode = SHOW_EXPANSIONS
-        self._iShowCardMode = THIS_SET_ONLY
-        self._iParentCountMode = PARENT_COUNT
+        self._eExtraLevelsMode = ExtraLevels.SHOW_EXPANSIONS
+        self._eShowCardMode = ShowMode.THIS_SET_ONLY
+        self._eParentCountMode = ParentCountMode.PARENT_COUNT
 
         # Add database listeners
         listen_changed(self.card_changed, PhysicalCardSet)
@@ -249,8 +270,8 @@ class CardSetCardListModel(CardListModel):
 
     def set_par_count_colour(self, oIter, iParCnt, iCnt):
         """Format the parent card count"""
-        if self._iParentCountMode != IGNORE_PARENT:
-            if (self._iParentCountMode == PARENT_COUNT and iParCnt < iCnt) or \
+        if self._eParentCountMode != ParentCountMode.IGNORE_PARENT:
+            if (self._eParentCountMode == ParentCountMode.PARENT_COUNT and iParCnt < iCnt) or \
                     iParCnt < 0:
                 self.set_value(oIter, 7, RED)
             else:
@@ -371,17 +392,17 @@ class CardSetCardListModel(CardListModel):
         dExpansionInfo = oRow.get_expansion_info()
         dChildInfo = oRow.get_child_info()
         oAbsId = oRow.oAbsCard.id
-        if self._iExtraLevelsMode == SHOW_EXPANSIONS:
+        if self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS:
             for sExpansion in dExpansionInfo:
                 self._add_extra_level(oChildIter, sExpansion,
                                       dExpansionInfo[sExpansion],
                                       (2, oAbsId))
-        elif self._iExtraLevelsMode == SHOW_CARD_SETS:
+        elif self._eExtraLevelsMode == ExtraLevels.SHOW_CARD_SETS:
             for sChildSet in dChildInfo:
                 self._add_extra_level(oChildIter, sChildSet,
                                       dChildInfo[sChildSet],
                                       (2, oAbsId))
-        elif self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+        elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
             for sExpansion in dExpansionInfo:
                 oSubIter = self._add_extra_level(oChildIter,
                                                  sExpansion,
@@ -391,7 +412,7 @@ class CardSetCardListModel(CardListModel):
                     self._add_extra_level(oSubIter, sChildSet,
                                           dChildInfo[sExpansion][sChildSet],
                                           (3, (oAbsId, sExpansion)))
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
             for sChildSet in dChildInfo:
                 oSubIter = self._add_extra_level(oChildIter,
                                                  sChildSet,
@@ -443,13 +464,13 @@ class CardSetCardListModel(CardListModel):
         if self.iter_depth(oIter) not in (2, 3):
             return None
         sExpName = None
-        if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
+        if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
                 self.iter_depth(oIter) == 2:
             sExpName = self.get_name_from_iter(oIter)
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP and \
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and \
                 self.iter_depth(oIter) == 3:
             sExpName = self.get_name_from_iter(oIter)
-        elif self._iExtraLevelsMode == EXP_AND_CARD_SETS and \
+        elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and \
                 self.iter_depth(oIter) == 3:
             # Need to get information from the parent level
             sExpName = self.get_name_from_iter(self.iter_parent(oIter))
@@ -467,20 +488,20 @@ class CardSetCardListModel(CardListModel):
         sExpName = None
         sCardSetName = None
         # Get the expansion name
-        if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
             if iDepth == 2:
                 sExpName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
                 sExpName = self.get_name_from_iter(self.iter_parent(oIter))
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP and iDepth == 3:
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and iDepth == 3:
             sExpName = self.get_name_from_iter(oIter)
         # Get the card set name
-        if self._iExtraLevelsMode in CARD_SETS_2ND_LEVEL:
+        if self._eExtraLevelsMode in CARD_SETS_2ND_LEVEL:
             if iDepth == 2:
                 sCardSetName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
                 sCardSetName = self.get_name_from_iter(self.iter_parent(oIter))
-        elif self._iExtraLevelsMode == EXP_AND_CARD_SETS and iDepth == 3:
+        elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and iDepth == 3:
             sCardSetName = self.get_name_from_iter(oIter)
         return sCardName, sExpName, sCardSetName
 
@@ -512,16 +533,16 @@ class CardSetCardListModel(CardListModel):
             oAbsID = self.get_abstract_card_from_iter(oIter).id
         if iDepth < 2:
             oPhysID = None
-        elif iDepth == 2 and (self._iExtraLevelsMode == SHOW_EXPANSIONS
-                              or self._iExtraLevelsMode == EXP_AND_CARD_SETS):
+        elif iDepth == 2 and (self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS
+                              or self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS):
             oPhysID = self.get_physical_card_from_iter(oIter).id
-        elif iDepth == 2 and (self._iExtraLevelsMode == SHOW_CARD_SETS or
-                              self._iExtraLevelsMode == CARD_SETS_AND_EXP):
+        elif iDepth == 2 and (self._eExtraLevelsMode == ExtraLevels.SHOW_CARD_SETS or
+                              self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP):
             oPhysID = None
-        elif iDepth == 3 and self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+        elif iDepth == 3 and self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
             oPhysID = self.get_physical_card_from_iter(
                 self.iter_parent(oIter)).id
-        elif iDepth == 3 and self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+        elif iDepth == 3 and self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
             oPhysID = self.get_physical_card_from_iter(oIter).id
         iCount = self.get_value(oIter, 1)
         return oAbsID, oPhysID, iCount, iDepth
@@ -529,17 +550,17 @@ class CardSetCardListModel(CardListModel):
     def get_drag_child_info(self, oPath):
         """Get the expansion information for the card at oPath.
 
-           Always returns the expansions, regaredless of iExtraLevelsMode.
+           Always returns the expansions, regaredless of eExtraLevelsMode.
            """
         oIter = self.get_iter(oPath)
         iDepth = self.iter_depth(oIter)
         if iDepth == 0 or iDepth == 3 or (iDepth == 2 and
-                                          self._iExtraLevelsMode in
+                                          self._eExtraLevelsMode in
                                           EXPANSIONS_2ND_LEVEL):
             return {}  # Not at the right level
         dResult = {}
-        if (self._iExtraLevelsMode == SHOW_EXPANSIONS or
-                self._iExtraLevelsMode == EXP_AND_CARD_SETS):
+        if (self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS or
+                self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS):
             # Can read off the data from the model, so do so
             oChildIter = self.iter_children(oIter)
             while oChildIter:
@@ -557,7 +578,7 @@ class CardSetCardListModel(CardListModel):
                 oPhysCard = IPhysicalCard(oCard)
                 dResult.setdefault(oPhysCard.id, 0)
                 dResult[oPhysCard.id] += 1
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
             # can read info from the model
             oChildIter = self.iter_children(oIter)
             while oChildIter:
@@ -591,10 +612,10 @@ class CardSetCardListModel(CardListModel):
         if oPhysCard.abstractCardID not in dAbsCards:
             oAbsCard = IAbstractCard(oPhysCard)
             oRow = CardSetModelRow(self.bEditable,
-                                   self._iExtraLevelsMode, oAbsCard)
+                                   self._eExtraLevelsMode, oAbsCard)
             dAbsCards[oPhysCard.abstractCardID] = oRow
-            if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
-                    self._iShowCardMode != ALL_CARDS:
+            if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
+                    self._eShowCardMode != ShowMode.ALL_CARDS:
                 # If we're showing all cards, we'll fill all this in anyway,
                 # so don't pre-empt that work with this more expensive check.
                 # As _init_expansions gets called when looking at card sets
@@ -624,15 +645,15 @@ class CardSetCardListModel(CardListModel):
             oRow.iCount += 1
         dExpanInfo = oRow.dExpansions
         dChildInfo = oRow.dChildCardSets
-        if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
             sExpName = IPrintingName(oPhysCard)
             dExpanInfo.setdefault((sExpName, oPhysCard), 0)
             if bInc:
                 dExpanInfo[(sExpName, oPhysCard)] += 1
-        if not dChildInfo and self._iExtraLevelsMode in CARD_SETS_LEVEL:
+        if not dChildInfo and self._eExtraLevelsMode in CARD_SETS_LEVEL:
             self.get_child_set_info(oRow.oAbsCard, dChildInfo, dExpanInfo,
                                     dChildCache)
-        if self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+        if self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
             dChildInfo.setdefault(sExpName, {})
 
     def _get_child_filters(self, oCurFilter):
@@ -650,8 +671,8 @@ class CardSetCardListModel(CardListModel):
             self._dCache['child abstract cards'][oAbsId] += 1
             return oAbsId
 
-        if self._iExtraLevelsMode in CARD_SETS_LEVEL or \
-                self._iShowCardMode == CHILD_CARDS:
+        if self._eExtraLevelsMode in CARD_SETS_LEVEL or \
+                self._eShowCardMode == ShowMode.CHILD_CARDS:
             if self._dCache['child filters'] is None:
                 # This also flags this code path for later calls to
                 # add_new_card
@@ -673,7 +694,7 @@ class CardSetCardListModel(CardListModel):
         dChildCardCache = {}
         if not self.is_filtered() and self._dCache['full child card list']:
             aChildCards = self._dCache['full child card list']
-        elif self._iShowCardMode != CHILD_CARDS and \
+        elif self._eShowCardMode != ShowMode.CHILD_CARDS and \
                 self._dCache['full child card list']:
             aChildCards = self._dCache['full child card list']
         elif self._dCache['all children filter']:
@@ -682,7 +703,7 @@ class CardSetCardListModel(CardListModel):
             aChildCards = list(oFullFilter.select(self.cardclass).distinct())
             if not self.is_filtered():
                 self._dCache['full child card list'] = aChildCards
-        if self._iExtraLevelsMode in CARD_SETS_LEVEL and \
+        if self._eExtraLevelsMode in CARD_SETS_LEVEL and \
                 self._dCache['child filters']:
             dChildren = self._dCache['set map']
             for sName in dChildren.values():
@@ -697,7 +718,7 @@ class CardSetCardListModel(CardListModel):
                 dChildCardCache[sName].setdefault(oAbsId, []).append(oCard)
                 self._dCache['child card sets'][sName].setdefault(oCard, 0)
                 self._dCache['child card sets'][sName][oCard] += 1
-        elif self._iShowCardMode == CHILD_CARDS and \
+        elif self._eShowCardMode == ShowMode.CHILD_CARDS and \
                 self._dCache['child filters']:
             # Need to setup the cache
             for oMapCard in aChildCards:
@@ -708,12 +729,12 @@ class CardSetCardListModel(CardListModel):
     def _get_parent_list(self, oCurFilter, oCardIter, iIterCnt):
         """Get a list object for the cards in the parent card set."""
         if self._oCardSet.parentID and not (
-                self._iParentCountMode == IGNORE_PARENT and
-                self._iShowCardMode != PARENT_CARDS):
+                self._eParentCountMode == ParentCountMode.IGNORE_PARENT and
+                self._eShowCardMode != ShowMode.PARENT_CARDS):
             if not self.is_filtered() and \
                     self._dCache['full parent card list']:
                 aParentCards = self._dCache['full parent card list']
-            elif self._iShowCardMode != PARENT_CARDS and \
+            elif self._eShowCardMode != ShowMode.PARENT_CARDS and \
                     self._dCache['full parent card list']:
                 # OK to loop over a superset of the cards here, as we're
                 aParentCards = self._dCache['full parent card list']
@@ -722,7 +743,7 @@ class CardSetCardListModel(CardListModel):
                     self._dCache['parent filter'] = CachedFilter(
                         PhysicalCardSetFilter(self._oCardSet.parent.name))
                 aFilters = [self._dCache['parent filter'], oCurFilter]
-                if self._iShowCardMode == THIS_SET_ONLY and iIterCnt < 200:
+                if self._eShowCardMode == ShowMode.THIS_SET_ONLY and iIterCnt < 200:
                     # Restrict filter to the cards in this set, to save time
                     # oCardIter.count() > 0, due to check in grouped_card_iter
                     aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
@@ -746,7 +767,7 @@ class CardSetCardListModel(CardListModel):
     def _get_extra_cards(self, oCurFilter):
         """Return any extra cards not in this card set that need to be
            considered for the current mode."""
-        if self._iShowCardMode == ALL_CARDS:
+        if self._eShowCardMode == ShowMode.ALL_CARDS:
             if not self.is_filtered() and self._dCache['full card list']:
                 aExtraCards = self._dCache['full card list']
             elif self._dCache['all cards']:
@@ -758,10 +779,10 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['all cards'] = aExtraCards
                 if not self.is_filtered():
                     self._dCache['full card list'] = aExtraCards
-        elif self._iShowCardMode == PARENT_CARDS and self._oCardSet.parentID:
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID:
             # Since we handle numbers later, this works
             aExtraCards = self._dCache['parent cards']
-        elif self._iShowCardMode == CHILD_CARDS and \
+        elif self._eShowCardMode == ShowMode.CHILD_CARDS and \
                 self._dCache['child filters']:
             aExtraCards = self._dCache['child cards']
         else:
@@ -824,7 +845,7 @@ class CardSetCardListModel(CardListModel):
         # Cache count result, as we might need it again in _get_parent_list
         iIterCnt = oCardIter.count()
 
-        if iIterCnt == 0 and self._iShowCardMode == THIS_SET_ONLY:
+        if iIterCnt == 0 and self._eShowCardMode == ShowMode.THIS_SET_ONLY:
             # Short circuit the more expensive checks if we've got no cards
             # and can't influence this card set
             return (self.groupby([], lambda x: x[0]), [])
@@ -841,7 +862,7 @@ class CardSetCardListModel(CardListModel):
             # fairly effecient.
             self._dCache['filtered cards'] = set(
                 oFullFilter.select(PhysicalCard))
-            if self._iShowCardMode == ALL_CARDS:
+            if self._eShowCardMode == ShowMode.ALL_CARDS:
                 # Stomp on the cache, as we have a physical filter
                 self._dCache['all cards'] = self._dCache['filtered cards']
 
@@ -900,14 +921,14 @@ class CardSetCardListModel(CardListModel):
             aChildCards = []
             if oAbsId in dChildCardCache[sCardSetName]:
                 aChildCards = dChildCardCache[sCardSetName][oAbsId]
-            if self._iExtraLevelsMode == SHOW_CARD_SETS or \
-                    self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+            if self._eExtraLevelsMode == ExtraLevels.SHOW_CARD_SETS or \
+                    self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
                 iChildCnt = len(aChildCards)
                 if iChildCnt > 0 or self.bEditable:
                     # We treat card sets like expansion, showing all of them
                     # when editable.
                     dChildInfo.setdefault(sCardSetName, iChildCnt)
-                    if self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+                    if self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
                         dExpanInfo.setdefault(sCardSetName, {})
                         self._init_expansions(dExpanInfo[sCardSetName],
                                               oAbsCard)
@@ -917,7 +938,7 @@ class CardSetCardListModel(CardListModel):
                                 (sExpName, oThisPhysCard), 0)
                             dExpanInfo[sCardSetName][(sExpName,
                                                       oThisPhysCard)] += 1
-            elif self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+            elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
                 if self.bEditable:
                     if not dChildInfo:
                         for oThisPhysCard in oAbsCard.physicalCards:
@@ -978,12 +999,12 @@ class CardSetCardListModel(CardListModel):
     def _update_parent_info(self, oSetInfo, dPhysCards):
         """Update the parent counts with info from this set"""
         dParentExp = oSetInfo.dParentExpansions
-        if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
             # Already looked this up
             for tKey, iCnt in oSetInfo.dExpansions.items():
                 sExpansion, _oPhysCard = tKey
                 dParentExp[sExpansion] = -iCnt
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP and \
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and \
                 oSetInfo.iCount > 0:
             # We have some cards, but we don't know which, so we
             # need to get this from the database
@@ -996,11 +1017,11 @@ class CardSetCardListModel(CardListModel):
 
     def _add_parent_info(self, dAbsCards, dPhysCards, oCurFilter):
         """Add the parent count info into the mix"""
-        if (self._iParentCountMode == IGNORE_PARENT and
-                self._iShowCardMode != PARENT_CARDS) or \
+        if (self._eParentCountMode == ParentCountMode.IGNORE_PARENT and
+                self._eShowCardMode != ShowMode.PARENT_CARDS) or \
                     not self._oCardSet.parentID:
             return  # No point in doing anything at all
-        if self._iParentCountMode == MINUS_SETS_IN_USE:
+        if self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE:
             dSiblingCards = self._get_sibling_cards(oCurFilter)
             for oAbsId, oRow in dAbsCards.items():
                 if oAbsId in dSiblingCards:
@@ -1010,7 +1031,7 @@ class CardSetCardListModel(CardListModel):
                         oRow.dParentExpansions.setdefault(sExpansion, 0)
                         oRow.dParentExpansions[sExpansion] -= 1
 
-        elif self._iParentCountMode == MINUS_THIS_SET:
+        elif self._eParentCountMode == ParentCountMode.MINUS_THIS_SET:
             for oRow in dAbsCards.values():
                 oRow.iParentCount = -oRow.iCount
                 self._update_parent_info(oRow, dPhysCards)
@@ -1021,7 +1042,7 @@ class CardSetCardListModel(CardListModel):
                 sExpansion = IPrintingName(oPhysCard)
                 dParentExp = dAbsCards[oAbsId].dParentExpansions
                 dParentExp.setdefault(sExpansion, 0)
-                if self._iParentCountMode != IGNORE_PARENT:
+                if self._eParentCountMode != ParentCountMode.IGNORE_PARENT:
                     iNum = self._dCache['parent cards'][oPhysCard]
                     dAbsCards[oAbsId].iParentCount += iNum
                     dParentExp[sExpansion] += iNum
@@ -1056,7 +1077,7 @@ class CardSetCardListModel(CardListModel):
     def _get_parent_count(self, oPhysCard, iThisSetCnt=None):
         """Get the correct parent count for the given card"""
         iParCnt = 0
-        if self._iParentCountMode != IGNORE_PARENT and self._oCardSet.parentID:
+        if self._eParentCountMode != ParentCountMode.IGNORE_PARENT and self._oCardSet.parentID:
             if oPhysCard in self._dCache['parent cards']:
                 iParCnt = self._dCache['parent cards'][oPhysCard]
             else:
@@ -1072,12 +1093,12 @@ class CardSetCardListModel(CardListModel):
                     oPhysCard.abstractCardID, 0)
                 self._dCache['parent abstract cards'][
                     oPhysCard.abstractCardID] += iParCnt
-            if self._iParentCountMode == MINUS_THIS_SET:
+            if self._eParentCountMode == ParentCountMode.MINUS_THIS_SET:
                 if iThisSetCnt is None:
                     iThisSetCnt = self.get_card_iterator(
                         SpecificPhysCardIdFilter(oPhysCard.id)).count()
                 iParCnt -= iThisSetCnt
-            elif self._iParentCountMode == MINUS_SETS_IN_USE:
+            elif self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE:
                 if self._dCache['sibling filter']:
                     if oPhysCard in self._dCache['sibling cards']:
                         iParCnt -= self._dCache['sibling cards'][oPhysCard]
@@ -1214,20 +1235,20 @@ class CardSetCardListModel(CardListModel):
     def changes_with_parent(self):
         """Utility function. Returns true if the parent card set influences
            the currently visible set of cards."""
-        return (self._iParentCountMode != IGNORE_PARENT or
-                self._iShowCardMode == PARENT_CARDS) and \
+        return (self._eParentCountMode != ParentCountMode.IGNORE_PARENT or
+                self._eShowCardMode == ShowMode.PARENT_CARDS) and \
             self._oCardSet.parentID is not None
 
     def changes_with_children(self):
         """Utility function. Returns true if changes to the child card sets
            influence the display."""
-        return self._iShowCardMode == CHILD_CARDS or self._iExtraLevelsMode \
+        return self._eShowCardMode == ShowMode.CHILD_CARDS or self._eExtraLevelsMode \
             in CARD_SETS_LEVEL
 
     def changes_with_siblings(self):
         """Utility function. Returns true if changes to the sibling card sets
            influence the display."""
-        return self._iParentCountMode == MINUS_SETS_IN_USE and \
+        return self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE and \
             self._oCardSet.parentID is not None
 
     def _update_cache(self, oPhysCard, iChg, sType):
@@ -1239,7 +1260,7 @@ class CardSetCardListModel(CardListModel):
             self._dCache[sAbsCache][oPhysCard.abstractCardID] += iChg
         if sType in ('parent', 'sibling'):
             sFullCache = 'full %s card list' % sType
-            if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
+            if self._eShowCardMode == ShowMode.THIS_SET_ONLY and iChg > 0:
                 # can't be sure if we need to add card to cache or not,
                 # due to card sets filter limies, so just invalidate cache
                 self._dCache[sFullCache] = None
@@ -1316,8 +1337,8 @@ class CardSetCardListModel(CardListModel):
                 # changing to None, so this affects the shown cards.
                 self._try_queue_reload()
             elif oCardSet.parentID is None and (
-                    self._iParentCountMode != IGNORE_PARENT or
-                    self._iShowCardMode == PARENT_CARDS):
+                    self._eParentCountMode != ParentCountMode.IGNORE_PARENT or
+                    self._eShowCardMode == ShowMode.PARENT_CARDS):
                 # We've newly gained a parent, and the mode needs parent
                 # info, so we need to reload
                 self._try_queue_reload()
@@ -1451,14 +1472,14 @@ class CardSetCardListModel(CardListModel):
             elif (self._dCache['this card list']
                   and self.configfilter is None):
                 self._dCache['this card list'].remove(oPhysCard)
-            if self._iShowCardMode == THIS_SET_ONLY and iChg > 0:
+            if self._eShowCardMode == ShowMode.THIS_SET_ONLY and iChg > 0:
                 # This cache may no longer be valid in this case
                 self._dCache['full parent card list'] = None
             if oAbsId in self._dAbs2Iter:
                 self.alter_card_count(oPhysCard, iChg)
             elif iChg > 0:
                 self.add_new_card(oPhysCard)  # new card
-                if self._iShowCardMode == THIS_SET_ONLY:
+                if self._eShowCardMode == ShowMode.THIS_SET_ONLY:
                     # Will have added invalid info to these caches
                     self._dCache['full parent card list'] = None
                     self._dCache['full sibling card list'] = None
@@ -1530,14 +1551,14 @@ class CardSetCardListModel(CardListModel):
 
     def _card_count_changes_parent(self):
         """Check if a change in the card count changes the parent"""
-        return (self._iParentCountMode == MINUS_THIS_SET or
-                (self._iParentCountMode == MINUS_SETS_IN_USE
+        return (self._eParentCountMode == ParentCountMode.MINUS_THIS_SET or
+                (self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE
                  and self._oCardSet.inuse)) and self._oCardSet.parentID
 
     def _update_parent_count(self, oIter, iChg, iParChg):
         """Update the card and parent counts"""
         iParCnt = self.get_value(oIter, 2)
-        if self._iParentCountMode != IGNORE_PARENT:
+        if self._eParentCountMode != ParentCountMode.IGNORE_PARENT:
             iParCnt += iParChg
         if self._card_count_changes_parent():
             iParCnt -= iChg
@@ -1578,37 +1599,37 @@ class CardSetCardListModel(CardListModel):
             # When editing, we don't delete 0 entries unless the card vanishes
             return True
         iDepth = self.iter_depth(oIter)
-        if iDepth == 2 and self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL \
-                and self._iShowCardMode == ALL_CARDS:
+        if iDepth == 2 and self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL \
+                and self._eShowCardMode == ShowMode.ALL_CARDS:
             # We don't delete expansion entries in this case
             return True
-        elif iDepth == 3 and self._iExtraLevelsMode in BOTH_EXP_CARD_SETS:
+        elif iDepth == 3 and self._eExtraLevelsMode in BOTH_EXP_CARD_SETS:
             # Since we're not editable here, we always remove these
             return False
         iParCnt = self.get_value(oIter, 2)
         bResult = False
-        if self._iExtraLevelsMode == EXP_AND_CARD_SETS and \
-                self._iShowCardMode == CHILD_CARDS and \
+        if self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and \
+                self._eShowCardMode == ShowMode.CHILD_CARDS and \
                 self.iter_n_children(oIter) > 0:
             # iCnt is 0, and we're not editable, so we only show this
             # row if there are non-zero entries below us
             oChildIter = self.iter_children(oIter)
             if self._check_child_counts(oChildIter):
                 bResult = True
-        elif self._iShowCardMode == PARENT_CARDS and \
-                self._iParentCountMode in PARENT_OR_MINUS and \
-                self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and \
+                self._eParentCountMode in PARENT_OR_MINUS and \
+                self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
                 iDepth == 2 and iParCnt > 0:
             # cards in the parent set, obviously
             bResult = True
-        elif self._iShowCardMode == PARENT_CARDS and self._oCardSet.parentID \
-                and self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID \
+                and self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
                 iDepth == 2:
             # Check if the card actually is in the parent card set
             if oPhysCard in self._dCache['parent cards']:
                 bResult = self._dCache['parent cards'][oPhysCard] > 0
-        elif self._iShowCardMode == CHILD_CARDS and \
-                self._iExtraLevelsMode == SHOW_EXPANSIONS:
+        elif self._eShowCardMode == ShowMode.CHILD_CARDS and \
+                self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS:
             # check the cache
             if oPhysCard in self._dCache['child cards'] and \
                     self._dCache['child cards'][oPhysCard] > 0:
@@ -1620,25 +1641,25 @@ class CardSetCardListModel(CardListModel):
         """Check if we need to remove a given card or not"""
         # Conditions for removal vary with the cards shown
         iCnt = self.get_value(oIter, 1)
-        if self._iShowCardMode == ALL_CARDS or iCnt > 0:
+        if self._eShowCardMode == ShowMode.ALL_CARDS or iCnt > 0:
             # We clearly don't remove entries here
             return True
         iParCnt = self.get_value(oIter, 2)
         bResult = False
-        if self._iShowCardMode == PARENT_CARDS and iParCnt > 0 and \
-                self._iParentCountMode in PARENT_OR_MINUS:
+        if self._eShowCardMode == ShowMode.PARENT_CARDS and iParCnt > 0 and \
+                self._eParentCountMode in PARENT_OR_MINUS:
             bResult = True
-        elif self._iShowCardMode == PARENT_CARDS and self._oCardSet.parentID:
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID:
             # Check the parent card cache
             oAbsId = self.get_abstract_card_from_iter(oIter).id
             if oAbsId in self._dCache['parent abstract cards']:
                 bResult = self._dCache['parent abstract cards'][oAbsId] > 0
-        elif self._iShowCardMode == CHILD_CARDS:
-            if self._iExtraLevelsMode in CARD_SETS_2ND_LEVEL:
+        elif self._eShowCardMode == ShowMode.CHILD_CARDS:
+            if self._eExtraLevelsMode in CARD_SETS_2ND_LEVEL:
                 # Check if any top level child iters have non-zero counts
                 oChildIter = self.iter_children(oIter)
                 bResult = self._check_child_counts(oChildIter)
-            elif self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+            elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
                 # Check third level children
                 oChildIter = self.iter_children(oIter)
                 while oChildIter:
@@ -1657,7 +1678,7 @@ class CardSetCardListModel(CardListModel):
         """Check if we need to remove the top-level item"""
         # Conditions for removal vary with the cards shown
         bResult = False
-        if self._iShowCardMode == ALL_CARDS:
+        if self._eShowCardMode == ShowMode.ALL_CARDS:
             # We don't remove group entries unless we have no children
             # (due to physical card filters)
             bResult = True
@@ -1669,13 +1690,13 @@ class CardSetCardListModel(CardListModel):
             # Count is non-zero, so we stay
             return True
         iParCnt = self.get_value(oIter, 2)
-        if self._iShowCardMode == PARENT_CARDS and iParCnt > 0:
+        if self._eShowCardMode == ShowMode.PARENT_CARDS and iParCnt > 0:
             # Obviously parent cards present
             bResult = True
-        elif self._iShowCardMode == PARENT_CARDS and \
-                self._iParentCountMode not in PARENT_OR_MINUS:
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and \
+                self._eParentCountMode not in PARENT_OR_MINUS:
             bResult = self._check_child_card_entries(oIter)
-        elif self._iShowCardMode == CHILD_CARDS:
+        elif self._eShowCardMode == ShowMode.CHILD_CARDS:
             bResult = self._check_child_card_entries(oIter)
         return bResult
 
@@ -1757,7 +1778,7 @@ class CardSetCardListModel(CardListModel):
             if not bRemove:
                 self._update_3rd_level_card_sets(oPhysCard, iChg, iParChg,
                                                  bCheckAddRemove)
-        elif iChg > 0 or (iParChg > 0 and self._iShowCardMode == PARENT_CARDS
+        elif iChg > 0 or (iParChg > 0 and self._eShowCardMode == ShowMode.PARENT_CARDS
                           and bCheckAddRemove):
             bIncCard, bDecCard = self.check_inc_dec(iChg)
             iParCnt = self._get_parent_count(oPhysCard, iChg)
@@ -1766,9 +1787,9 @@ class CardSetCardListModel(CardListModel):
                                       (iChg, iParCnt, oPhysCard,
                                        bIncCard, bDecCard),
                                       (2, oAbsId))
-                if self._iExtraLevelsMode == EXP_AND_CARD_SETS \
-                        and self._iShowCardMode not in (ALL_CARDS,
-                                                        CHILD_CARDS):
+                if self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS \
+                        and self._eShowCardMode not in (ShowMode.ALL_CARDS,
+                                                        ShowMode.CHILD_CARDS):
                     self._add_3rd_level_card_sets(oPhysCard, iParCnt)
         if bRemove:
             self._remove_second_level(oAbsId, sExpName)
@@ -1789,7 +1810,7 @@ class CardSetCardListModel(CardListModel):
                 tExpKey = (oAbsId, sValue)
                 if tExpKey in self._dAbs2nd3rdLevel2Iter:
                     for sName in self._dAbs2nd3rdLevel2Iter[tExpKey]:
-                        if self._iExtraLevelsMode == CARD_SETS_AND_EXP \
+                        if self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP \
                                 and sName != sExpName:
                             continue
                         for oSubIter in self._dAbs2nd3rdLevel2Iter[tExpKey][
@@ -1913,14 +1934,14 @@ class CardSetCardListModel(CardListModel):
 
         if bRemove:
             del self._dAbs2Iter[oAbsId]
-        elif self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        elif self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
             self._update_2nd_level_expansions(oPhysCard, iChg, 0)
-        elif self._iExtraLevelsMode in CARD_SETS_2ND_LEVEL and \
+        elif self._eExtraLevelsMode in CARD_SETS_2ND_LEVEL and \
                 oAbsId in self._dAbsSecondLevel2Iter:
             if self._card_count_changes_parent():
                 # Need to update the parent counts for the child entry
                 self._update_2nd3rd_level_par_cnt(oPhysCard, -iChg)
-            if self._iExtraLevelsMode == CARD_SETS_AND_EXP and iChg > 0:
+            if self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and iChg > 0:
                 # We may need to add a expansion entry to below this card set,
                 # so we check
                 self._update_3rd_level_expansions(oPhysCard)
@@ -1946,7 +1967,7 @@ class CardSetCardListModel(CardListModel):
             oGrpIter = self.iter_parent(oIter)
             iParGrpCnt = self.get_value(oGrpIter, 2) + iChg
             iParCnt = self.get_value(oIter, 2) + iChg
-            if self._iParentCountMode == IGNORE_PARENT:
+            if self._eParentCountMode == ParentCountMode.IGNORE_PARENT:
                 # We touch nothing in this case
                 iParGrpCnt = 0
                 iParCnt = 0
@@ -1975,11 +1996,11 @@ class CardSetCardListModel(CardListModel):
 
         if bRemove:
             del self._dAbs2Iter[oAbsId]
-        elif self._iExtraLevelsMode != NO_SECOND_LEVEL:
-            if self._iExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
+        elif self._eExtraLevelsMode != ExtraLevels.NO_SECOND_LEVEL:
+            if self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL:
                 self._update_2nd_level_expansions(oPhysCard, 0, iChg,
                                                   bCheckAddRemove)
-            elif self._iParentCountMode != IGNORE_PARENT:
+            elif self._eParentCountMode != ParentCountMode.IGNORE_PARENT:
                 self._update_2nd3rd_level_par_cnt(oPhysCard, iChg)
 
         self._check_if_empty()
@@ -2036,13 +2057,13 @@ class CardSetCardListModel(CardListModel):
         # So we don't need to loop over the card level, merely the sub-levels,
         # but we do need to check if the card is removed at the end
         oAbsId = oPhysCard.abstractCardID
-        if (self._iExtraLevelsMode == SHOW_EXPANSIONS and
-                self._iShowCardMode == CHILD_CARDS) \
-                    or self._iExtraLevelsMode == EXP_AND_CARD_SETS:
+        if (self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS and
+                self._eShowCardMode == ShowMode.CHILD_CARDS) \
+                    or self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS:
             self.alter_child_count_expansions(oPhysCard, sCardSetName, iChg)
-        elif self._iExtraLevelsMode == SHOW_CARD_SETS:
+        elif self._eExtraLevelsMode == ExtraLevels.SHOW_CARD_SETS:
             self.alter_child_count_card_sets(oPhysCard, sCardSetName, iChg)
-        elif self._iExtraLevelsMode == CARD_SETS_AND_EXP:
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP:
             self.alter_child_cnt_cs_exps(oPhysCard, sCardSetName,
                                          iChg)
         # Check if we need to cleanup any card entries
@@ -2103,7 +2124,7 @@ class CardSetCardListModel(CardListModel):
         if iChg > 0:
             if (oAbsId not in self._dAbsSecondLevel2Iter or
                     sExpName not in self._dAbsSecondLevel2Iter[oAbsId]) \
-                        and self._iShowCardMode == CHILD_CARDS:
+                        and self._eShowCardMode == ShowMode.CHILD_CARDS:
                 iCnt = 0  # 2nd level is expansions, so count is 0
                 iParCnt = self._get_parent_count(oPhysCard, iCnt)
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
@@ -2112,7 +2133,7 @@ class CardSetCardListModel(CardListModel):
                                           (iCnt, iParCnt, oPhysCard,
                                            bIncCard, bDecCard),
                                           (2, oAbsId))
-            if self._iExtraLevelsMode == EXP_AND_CARD_SETS and \
+            if self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and \
                     sExpName in self._dAbsSecondLevel2Iter[oAbsId]:
                 self._inc_exp_child_set_count(tExpKey, sCardSetName)
         elif (oAbsId in self._dAbsSecondLevel2Iter and
@@ -2194,12 +2215,12 @@ class CardSetCardListModel(CardListModel):
 
     def _change_level_mode(self, iLevel):
         """Set which extra information is shown."""
-        if self._iExtraLevelsMode != iLevel:
+        if self._eExtraLevelsMode != iLevel:
             # If we've been maintaing the cache, it's valid (we hope)
             bParentCacheValid = self.changes_with_parent()
             bChildCacheValid = self.changes_with_children()
             bSibCacheValid = self.changes_with_siblings()
-            self._iExtraLevelsMode = iLevel
+            self._eExtraLevelsMode = iLevel
             # Invalidate the cache if it's not been kept valid and we need
             # it now
             if self.changes_with_parent() and not bParentCacheValid:
@@ -2213,8 +2234,8 @@ class CardSetCardListModel(CardListModel):
 
     def _change_count_mode(self, iLevel):
         """Set which extra information is shown."""
-        if self._iShowCardMode != iLevel:
-            self._iShowCardMode = iLevel
+        if self._eShowCardMode != iLevel:
+            self._eShowCardMode = iLevel
             # We don't maintain these caches in a consistent state in
             # all count modes, so we need to flush them when the mode
             # changes
@@ -2227,13 +2248,13 @@ class CardSetCardListModel(CardListModel):
     def _change_parent_count_mode(self, iLevel):
         """Toggle the visibility of the parent col"""
         if self._oController:
-            if iLevel == IGNORE_PARENT:
+            if iLevel == ParentCountMode.IGNORE_PARENT:
                 self._oController.view.set_parent_count_col_vis(False)
             else:
                 self._oController.view.set_parent_count_col_vis(True)
-        if self._iParentCountMode == iLevel:
+        if self._eParentCountMode == iLevel:
             return False
-        self._iParentCountMode = iLevel
+        self._eParentCountMode = iLevel
         return True
 
     def update_options(self, bSkipLoad=False):
@@ -2246,17 +2267,17 @@ class CardSetCardListModel(CardListModel):
 
         sExtraLevelOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, EXTRA_LEVEL_OPTION).lower()
-        iExtraLevelMode = EXTRA_LEVEL_LOOKUP.get(sExtraLevelOpt,
-                                                 SHOW_EXPANSIONS)
+        eExtraLevelMode = EXTRA_LEVEL_LOOKUP.get(sExtraLevelOpt,
+                                                 ExtraLevels.SHOW_EXPANSIONS)
 
         sShowCardOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, SHOW_CARD_OPTION).lower()
-        iShowCardMode = SHOW_CARD_LOOKUP.get(sShowCardOpt, THIS_SET_ONLY)
+        eShowCardMode = SHOW_CARD_LOOKUP.get(sShowCardOpt, ShowMode.THIS_SET_ONLY)
 
         sParentCountOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, PARENT_COUNT_MODE).lower()
-        iParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt,
-                                                  IGNORE_PARENT)
+        eParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt,
+                                                  ParentCountMode.IGNORE_PARENT)
         bUseIcons = self._oConfig.get_deck_option(self.frame_id,
                                                   self.cardset_id, USE_ICONS)
 
@@ -2268,9 +2289,9 @@ class CardSetCardListModel(CardListModel):
                                                       'filter')
 
         bReloadFilter = self._change_config_filter(sConfigFilter)
-        bReloadELM = self._change_level_mode(iExtraLevelMode)
-        bReloadSCM = self._change_count_mode(iShowCardMode)
-        bReloadPCM = self._change_parent_count_mode(iParentCountOpt)
+        bReloadELM = self._change_level_mode(eExtraLevelMode)
+        bReloadSCM = self._change_count_mode(eShowCardMode)
+        bReloadPCM = self._change_parent_count_mode(eParentCountOpt)
         bReloadIcons = self._change_icon_mode(bUseIcons)
         bReloadIllegal = self._change_illegal_mode(bHideIllegal)
         if bReloadIllegal or bReloadFilter:

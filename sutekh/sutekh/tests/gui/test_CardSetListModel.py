@@ -27,21 +27,14 @@ from sutekh.base.core.BaseTables import (PhysicalCardSet,
                                          MapPhysicalCardToPhysicalCardSet)
 from sutekh.base.gui.BaseConfigFile import CARDSET, FRAME
 from sutekh.base.gui.CardSetListModel import (CardSetCardListModel,
+                                              ExtraLevels, ShowMode,
+                                              ParentCountMode,
                                               EXTRA_LEVEL_OPTION,
                                               EXTRA_LEVEL_LOOKUP,
                                               SHOW_CARD_OPTION,
                                               SHOW_CARD_LOOKUP,
                                               PARENT_COUNT_MODE,
-                                              PARENT_COUNT_LOOKUP,
-                                              NO_SECOND_LEVEL,
-                                              SHOW_EXPANSIONS,
-                                              SHOW_CARD_SETS,
-                                              EXP_AND_CARD_SETS,
-                                              CARD_SETS_AND_EXP, ALL_CARDS,
-                                              PARENT_CARDS,
-                                              MINUS_SETS_IN_USE, CHILD_CARDS,
-                                              IGNORE_PARENT, PARENT_COUNT,
-                                              MINUS_THIS_SET, THIS_SET_ONLY)
+                                              PARENT_COUNT_LOOKUP)
 # Needed to reduce speed impact of Grouping tests
 from sutekh.core.SutekhObjectCache import SutekhObjectCache
 from sutekh.core.Groupings import (CryptLibraryGrouping,
@@ -53,13 +46,6 @@ class CardSetListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
     # pylint: disable=too-many-public-methods
     # We test a number of sepetate bits, so many methods
-
-    aParentCountToStr = ['IGNORE_PARENT', 'PARENT_COUNT', 'MINUS_THIS_SET',
-                         'MINUS_SETS_IN_USE']
-    aExtraLevelToStr = ['NO_SECOND_LEVEL', 'SHOW_EXPANSIONS', 'SHOW_CARD_SETS',
-                        'EXP_AND_CARD_SETS', 'CARD_SETS_AND_EXP']
-    aCardCountToStr = ['THIS_SET_ONLY', 'ALL_CARDS', 'PARENT_CARDS',
-                       'CHILD_CARDS']
 
     aNames = ['Test 1', 'Test Child 1', 'Test Grand Child', 'Test Sibling',
               'Test Grand Child 2']
@@ -113,10 +99,8 @@ class CardSetListModelTests(ConfigSutekhTest):
             sModel += "Config Filter: %s\n" % oModel.configfilter
         sModel += (" State : (ExtraLevelsMode %s, ParentCountMode : %s, "
                    "ShowCardMode : %s, Editable: %s)" % (
-                       self.aExtraLevelToStr[oModel._iExtraLevelsMode],
-                       self.aParentCountToStr[oModel._iParentCountMode],
-                       self.aCardCountToStr[oModel._iShowCardMode],
-                       oModel.bEditable))
+                       oModel._eExtraLevelsMode, oModel._eParentCountMode,
+                       oModel._eShowCardMode, oModel.bEditable))
         return "%s : %s vs %s\n%s" % (sErrType, oTest1, oTest2, sModel)
 
     # pylint: enable=no-self-use
@@ -253,19 +237,15 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iShowMode in (ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
-                              THIS_SET_ONLY):
+            for iShowMode in ShowMode:
                 for oModel in aModels:
                     oModel._change_count_mode(iShowMode)
-                for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                                   SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                                   CARD_SETS_AND_EXP):
+                for iLevelMode in ExtraLevels:
                     for oModel in aModels:
                         oModel._change_level_mode(iLevelMode)
-                    for iParentMode in (PARENT_COUNT, MINUS_THIS_SET,
-                                        MINUS_SETS_IN_USE, IGNORE_PARENT):
+                    for eParentMode in ParentCountMode:
                         for oModel in aModels:
-                            oModel._change_parent_count_mode(iParentMode)
+                            oModel._change_parent_count_mode(eParentMode)
                         self._add_remove_cards(oPCS, aModels, dCountInfo)
         for oModel in aModels:
             reset_modes(oModel)
@@ -286,19 +266,15 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iShowMode in (ALL_CARDS, PARENT_CARDS, CHILD_CARDS,
-                              THIS_SET_ONLY):
+            for iShowMode in ShowMode:
                 for oModel in aModels:
                     oModel._change_count_mode(iShowMode)
-                for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                                   SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                                   CARD_SETS_AND_EXP):
+                for iLevelMode in ExtraLevels:
                     for oModel in aModels:
                         oModel._change_level_mode(iLevelMode)
-                    for iParentMode in (PARENT_COUNT, MINUS_THIS_SET,
-                                        MINUS_SETS_IN_USE, IGNORE_PARENT):
+                    for eParentMode in ParentCountMode:
                         for oModel in aModels:
-                            oModel._change_parent_count_mode(iParentMode)
+                            oModel._change_parent_count_mode(eParentMode)
                         for oModel in aModels:
                             oModel.load()
                         # reparent
@@ -356,15 +332,11 @@ class CardSetListModelTests(ConfigSutekhTest):
         # we need to access protected methods
         for bEditFlag in (False, True):
             oModel.bEditable = bEditFlag
-            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS,
-                               SHOW_CARD_SETS, EXP_AND_CARD_SETS,
-                               CARD_SETS_AND_EXP):
+            for iLevelMode in ExtraLevels:
                 oModel._change_level_mode(iLevelMode)
-                for iParentMode in (IGNORE_PARENT, PARENT_COUNT,
-                                    MINUS_THIS_SET, MINUS_SETS_IN_USE):
-                    oModel._change_parent_count_mode(iParentMode)
-                    for iShowMode in (THIS_SET_ONLY, ALL_CARDS, PARENT_CARDS,
-                                      CHILD_CARDS):
+                for eParentMode in ParentCountMode:
+                    oModel._change_parent_count_mode(eParentMode)
+                    for iShowMode in ShowMode:
                         oModel._change_count_mode(iShowMode)
                         oModel.selectfilter = BaseFilters.CardNameFilter(
                             'ZZZZZZZ')
@@ -442,7 +414,7 @@ class CardSetListModelTests(ConfigSutekhTest):
                          (None, None, None, 0))
         # pylint: disable=protected-access
         # we need to access this protected methods
-        oModel._change_level_mode(NO_SECOND_LEVEL)
+        oModel._change_level_mode(ExtraLevels.NO_SECOND_LEVEL)
         oModel.load()
         # This should also work for no expansions shown
         self.assertEqual(count_all_cards(oModel), 4)
@@ -470,7 +442,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(oDummy.bReload, False)
         oPCS2.inuse = True
         self.assertEqual(oDummy.bReload, False)
-        oModel._change_count_mode(CHILD_CARDS)
+        oModel._change_count_mode(ShowMode.CHILD_CARDS)
         oPCS2.inuse = False
         self.assertEqual(oDummy.bReload, True)
         oDummy.bReload = False
@@ -487,8 +459,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oPCS.parent = oPCS2
         oPCS3 = PhysicalCardSet(name=self.aNames[2], parent=oPCS2)
         oPCS3.inuse = True
-        oModel._change_count_mode(PARENT_CARDS)
-        oModel._change_parent_count_mode(MINUS_SETS_IN_USE)
+        oModel._change_count_mode(ShowMode.PARENT_CARDS)
+        oModel._change_parent_count_mode(ParentCountMode.MINUS_SETS_IN_USE)
         oDummy.bReload = False
         oPCS3.inuse = False
         self.assertEqual(oDummy.bReload, True)
@@ -517,14 +489,14 @@ class CardSetListModelTests(ConfigSutekhTest):
                                         sTestValue)
         # Check changing deck profile
         for sValue, iMode in SHOW_CARD_LOOKUP.items():
-            iCurMode = oModel._iShowCardMode
+            iCurMode = oModel._eShowCardMode
             self.oConfig.set_profile_option(CARDSET, 'test', SHOW_CARD_OPTION,
                                             sValue)
-            self.assertEqual(oModel._iShowCardMode, iCurMode)
+            self.assertEqual(oModel._eShowCardMode, iCurMode)
             self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'test')
-            self.assertEqual(oModel._iShowCardMode, iMode)
+            self.assertEqual(oModel._eShowCardMode, iMode)
             self.oConfig.set_profile(FRAME, oModel.frame_id, 'test2')
-            self.assertEqual(oModel._iShowCardMode, iTestMode)
+            self.assertEqual(oModel._eShowCardMode, iTestMode)
             self.oConfig.set_profile(FRAME, oModel.frame_id, 'defaults')
             self.oConfig.set_profile(CARDSET, oModel.cardset_id, 'defaults')
         # Check listener on card set profile changes
@@ -533,17 +505,17 @@ class CardSetListModelTests(ConfigSutekhTest):
         for sValue, iMode in EXTRA_LEVEL_LOOKUP.items():
             self.oConfig.set_profile_option(CARDSET, 'test',
                                             EXTRA_LEVEL_OPTION, sValue)
-            self.assertEqual(oModel._iExtraLevelsMode, iMode)
+            self.assertEqual(oModel._eExtraLevelsMode, iMode)
         # Check listener on frame profile changes
         for sValue, iMode in PARENT_COUNT_LOOKUP.items():
             self.oConfig.set_profile_option(CARDSET, 'test2',
                                             PARENT_COUNT_MODE, sValue)
-            self.assertEqual(oModel._iParentCountMode, iMode)
+            self.assertEqual(oModel._eParentCountMode, iMode)
         # Check listener on local frame profile changes
         for sValue, iMode in PARENT_COUNT_LOOKUP.items():
             self.oConfig.set_local_frame_option(oModel.frame_id,
                                                 PARENT_COUNT_MODE, sValue)
-            self.assertEqual(oModel._iParentCountMode, iMode)
+            self.assertEqual(oModel._eParentCountMode, iMode)
         cleanup_models([oModel])
 
     def _get_model(self, sName):
@@ -641,10 +613,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS):
+            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL, ExtraLevels.SHOW_EXPANSIONS):
                 for oModel in aModels:
                     oModel._change_level_mode(iLevelMode)
-                for iShowMode in (THIS_SET_ONLY, ALL_CARDS):
+                for iShowMode in (ShowMode.THIS_SET_ONLY, ShowMode.ALL_CARDS):
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
@@ -689,10 +661,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         oEmptyPCS.syncUpdate()
         for sName in self.aNames[:4]:
             oModelCache = self._get_model(sName)
-            oModelCache._change_parent_count_mode(MINUS_SETS_IN_USE)
+            oModelCache._change_parent_count_mode(ParentCountMode.MINUS_SETS_IN_USE)
             aCache.append(oModelCache)
             oModelNoCache = self._get_model(sName)
-            oModelNoCache._change_parent_count_mode(MINUS_SETS_IN_USE)
+            oModelNoCache._change_parent_count_mode(ParentCountMode.MINUS_SETS_IN_USE)
             aNoCache.append(oModelNoCache)
         aModels = aCache + aNoCache
         # See test_cache_simple
@@ -701,11 +673,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in (NO_SECOND_LEVEL, SHOW_EXPANSIONS):
+            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL, ExtraLevels.SHOW_EXPANSIONS):
                 for oModel in aModels:
                     oModel._change_level_mode(iLevelMode)
-                for iShowMode in (THIS_SET_ONLY, ALL_CARDS,
-                                  PARENT_CARDS, CHILD_CARDS):
+                for iShowMode in ShowMode:
                     for oModel in aModels:
                         oModel._change_count_mode(iShowMode)
                         oModel.load()
@@ -1027,9 +998,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Test filter which selects nothing works
         self._loop_zero_filter_modes(oModel)
         # Check basic filtering
-        oModel._change_count_mode(THIS_SET_ONLY)
-        oModel._change_parent_count_mode(IGNORE_PARENT)
-        oModel._change_level_mode(NO_SECOND_LEVEL)
+        oModel._change_count_mode(ShowMode.THIS_SET_ONLY)
+        oModel._change_parent_count_mode(ParentCountMode.IGNORE_PARENT)
+        oModel._change_level_mode(ExtraLevels.NO_SECOND_LEVEL)
         oModel.bEditable = False
         oModel.hideillegal = True
         # Test card type
@@ -1053,7 +1024,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
-        oModel._change_level_mode(SHOW_EXPANSIONS)
+        oModel._change_level_mode(ExtraLevels.SHOW_EXPANSIONS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
@@ -1098,7 +1069,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
-        oModel._change_level_mode(SHOW_CARD_SETS)
+        oModel._change_level_mode(ExtraLevels.SHOW_CARD_SETS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
@@ -1107,7 +1078,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
-        oModel._change_count_mode(CHILD_CARDS)
+        oModel._change_count_mode(ShowMode.CHILD_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
@@ -1116,7 +1087,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
-        oModel._change_count_mode(ALL_CARDS)
+        oModel._change_count_mode(ShowMode.ALL_CARDS)
         oModel.load()
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
@@ -1277,8 +1248,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.set_controller(oController)
         oModel._dCache = {}
 
-        oModel._change_count_mode(ALL_CARDS)
-        oModel._change_level_mode(SHOW_CARD_SETS)
+        oModel._change_count_mode(ShowMode.ALL_CARDS)
+        oModel._change_level_mode(ExtraLevels.SHOW_CARD_SETS)
         oModel.load()
 
         aLoadList = get_all_counts(oModel)
@@ -1336,8 +1307,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         oModel.set_controller(oController)
         oModel._dCache = {}
 
-        oModel._change_count_mode(THIS_SET_ONLY)
-        oModel._change_level_mode(NO_SECOND_LEVEL)
+        oModel._change_count_mode(ShowMode.THIS_SET_ONLY)
+        oModel._change_level_mode(ExtraLevels.NO_SECOND_LEVEL)
         # These tests require sorted results
         oModel.enable_sorting()
         oModel.load()
