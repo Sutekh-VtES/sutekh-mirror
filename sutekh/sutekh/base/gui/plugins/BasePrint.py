@@ -5,6 +5,8 @@
 
 """Plugin for simple, direct printing of the card set."""
 
+import enum
+
 from gi.repository import Gtk, Pango, PangoCairo
 
 from ...core.BaseTables import PhysicalCardSet
@@ -13,15 +15,18 @@ from ...core.BaseAdapters import (IAbstractCard, IPhysicalCard, IPrintingName,
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_error
 
+class PrintExpOption(enum.Enum):
+    """Printing Options"""
+    NO_EXPANSION = 1
+    LONG_INDENT = 2
+    SHORT_LINE = 3
 
-NO_EXPANSION, LONG_INDENT, SHORT_LINE = range(3)
 
-
-def _card_expansion_details(oCard, iMode):
+def _card_expansion_details(oCard, eMode):
     """Get the expansion for the name"""
     oPhysCard = IPhysicalCard(oCard)
     if oPhysCard.printing:
-        if iMode == SHORT_LINE:
+        if eMode == PrintExpOption.SHORT_LINE:
             return IExpansion(oPhysCard.printing).shortname
         return IPrintingName(oPhysCard.printing)
     return ' (Unknown)'
@@ -38,14 +43,14 @@ class BasePrint(BasePlugin):
     aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {
-        'No Expansion info': NO_EXPANSION,
-        'Card Name\n    Expansion Name': LONG_INDENT,
-        'Card Name [Short Expansion Name]': SHORT_LINE,
+        'No Expansion info': PrintExpOption.NO_EXPANSION,
+        'Card Name\n    Expansion Name': PrintExpOption.LONG_INDENT,
+        'Card Name [Short Expansion Name]': PrintExpOption.SHORT_LINE,
     }
 
     def __init__(self, *args, **kwargs):
         super(BasePrint, self).__init__(*args, **kwargs)
-        self._iPrintExpansions = NO_EXPANSION
+        self._ePrintExpansions = PrintExpOption.NO_EXPANSION
         self._sFontName = "sans 12"
         self._oSettings = None
         # internal state for printing
@@ -221,10 +226,10 @@ class BasePrint(BasePlugin):
                 dCardInfo.setdefault(oAbsCard.name, 0)
                 dCardInfo[oAbsCard.name] += 1
                 iCnt += 1
-                if self._iPrintExpansions != NO_EXPANSION:
+                if self._ePrintExpansions != PrintExpOption.NO_EXPANSION:
                     dExpInfo.setdefault(oAbsCard.name, {})
                     sExp = _card_expansion_details(oCard,
-                                                   self._iPrintExpansions)
+                                                   self._ePrintExpansions)
                     dExpInfo[oAbsCard.name].setdefault(sExp, 0)
                     dExpInfo[oAbsCard.name][sExp] += 1
 
@@ -232,7 +237,8 @@ class BasePrint(BasePlugin):
 
             # Fill in Cards
             for sCardName, iCardCnt in sorted(dCardInfo.items()):
-                if self._iPrintExpansions in (NO_EXPANSION, LONG_INDENT):
+                if self._ePrintExpansions in (PrintExpOption.NO_EXPANSION, 
+                                              PrintExpOption.LONG_INDENT):
                     aMarkup.append(
                         u"  %i \u00D7 %s" % (iCardCnt,
                                              self._escape(sCardName)))
@@ -295,6 +301,6 @@ class BasePrint(BasePlugin):
         for oButton in dCustomData["aExpButtons"]:
             if oButton.get_active():
                 sLabel = oButton.get_label()
-                self._iPrintExpansions = self.dOptions[sLabel]
+                self._ePrintExpansions = self.dOptions[sLabel]
 
         self._sFontName = dCustomData["oFontSel"].get_font_name()
