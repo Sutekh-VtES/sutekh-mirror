@@ -5,6 +5,8 @@
 
 """Print the deck using the image plugin to get images for the cards."""
 
+import enum
+
 from gi.repository import Gdk, GdkPixbuf, Gtk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
@@ -14,8 +16,9 @@ from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.plugins.BaseImages import get_printing_info, check_file
 from sutekh.gui.PluginManager import SutekhPlugin
 
-
-PRINT_LATEST, PRINT_EXACT = range(2)
+class PrintExpOption(enum.Enum):
+    PRINT_LATEST = 1
+    PRINT_EXACT = 2
 
 TEXT_LATEST = 'Use Latest Card Image'
 TEXT_EXACT = 'Use Exact Image'
@@ -31,8 +34,8 @@ class PrintProxyPlugin(SutekhPlugin):
     aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {
-        TEXT_LATEST: PRINT_LATEST,
-        TEXT_EXACT: PRINT_EXACT,
+        TEXT_LATEST: PrintExpOption.PRINT_LATEST,
+        TEXT_EXACT: PrintExpOption.PRINT_EXACT,
     }
 
     sMenuName = "Print Card Set as Proxies"
@@ -76,7 +79,7 @@ class PrintProxyPlugin(SutekhPlugin):
                 self._oImageFrame = oPlugin.image_frame
                 break
         self._aFiles = []
-        self._iPrintExpansion = PRINT_LATEST
+        self._ePrintExpansion = PrintExpOption.PRINT_LATEST
         self._aMissing = set()
 
     def get_menu_item(self):
@@ -135,7 +138,7 @@ class PrintProxyPlugin(SutekhPlugin):
         # if we're missing images.
         for oTheCard in aCards:
             oCard = oTheCard
-            if self._iPrintExpansion == PRINT_LATEST:
+            if self._ePrintExpansion == PrintExpOption.PRINT_LATEST:
                 # We build a fake card with the correct expansion
                 sLatestPrinting = get_printing_info(oTheCard.abstractCard)[0]
                 oExp = IPrinting(sLatestPrinting)
@@ -175,7 +178,7 @@ class PrintProxyPlugin(SutekhPlugin):
     def end_print(self, _oPrintOp, _oContext):
         """Clean up resources allocated in begin_print."""
         self._aFiles = []
-        self._iPrintExpansion = PRINT_LATEST
+        self._ePrintExpansion = PrintExpOption.PRINT_LATEST
         # We don't clear the missing list, so it's available for
         # reporting errors
 
@@ -244,7 +247,7 @@ class PrintProxyPlugin(SutekhPlugin):
         for oButton in dCustomData["aExpButtons"]:
             if oButton.get_active():
                 sLabel = oButton.get_label()
-                self._iPrintExpansion = self.dOptions[sLabel]
+                self._ePrintExpansion = self.dOptions[sLabel]
 
 
 plugin = PrintProxyPlugin
