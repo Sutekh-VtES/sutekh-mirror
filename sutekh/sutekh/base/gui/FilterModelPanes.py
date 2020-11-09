@@ -18,7 +18,7 @@ from .CardSetsListView import CardSetsListView
 
 # Filters we pad values for to sort nicely
 PAD_FILTERS = set(('Capacity', 'CardCount: Count'))
-LIST_TYPES = set((FilterBoxItem.LIST, FilterBoxItem.LIST_FROM))
+LIST_TYPES = set((FilterBoxItem.Type.LIST, FilterBoxItem.Type.LIST_FROM))
 
 # Drag type constants
 NEW_VALUE = 'NewValue: '
@@ -304,7 +304,7 @@ class FilterValuesBox(Gtk.VBox):
             self._oNegate.set_inconsistent(False)
             self._oNegate.set_active(oFilter.bNegated)
             self._oNegate.set_sensitive(True)
-            if oFilter.iValueType == FilterBoxItem.LIST:
+            if oFilter.iValueType == FilterBoxItem.Type.LIST:
                 # Select appropriate list widget for this filter
                 if oFilter.sFilterName == "Card_Sets" or \
                         oFilter.sFilterName == "ParentCardSet":
@@ -313,11 +313,11 @@ class FilterValuesBox(Gtk.VBox):
                 else:
                     # Ordinary list
                     self._make_filter_values_list(oFilter)
-            elif oFilter.iValueType == FilterBoxItem.ENTRY:
+            elif oFilter.iValueType == FilterBoxItem.Type.ENTRY:
                 self._make_filter_entry(oFilter)
-            elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
+            elif oFilter.iValueType == FilterBoxItem.Type.LIST_FROM:
                 self._make_list_from(oFilter)
-            elif oFilter.iValueType == FilterBoxItem.NONE:
+            elif oFilter.iValueType == FilterBoxItem.Type.NONE:
                 # None filter, so no selection widget, but we have buttons
                 self._oWidget = self._oNoneWidget
                 self._oWidget.connect('key-press-event', self.key_press, None,
@@ -438,15 +438,15 @@ class FilterValuesBox(Gtk.VBox):
             self._oBoxModelEditor.grab_focus()
         elif sSource == 'Editor':
             if isinstance(self._oLastFilter, FilterBoxItem):
-                if self._oLastFilter.iValueType == FilterBoxItem.LIST:
+                if self._oLastFilter.iValueType == FilterBoxItem.Type.LIST:
                     # Only one entry in the filter pane
                     self._oWidget.view.grab_focus()
-                elif self._oLastFilter.iValueType == FilterBoxItem.ENTRY:
+                elif self._oLastFilter.iValueType == FilterBoxItem.Type.ENTRY:
                     # entry is the second child of the VBox
                     self._oWidget.get_children()[1].grab_focus()
             if isinstance(self._oLastFilter, FilterBoxModel) or \
                     (isinstance(self._oLastFilter, FilterBoxItem) and
-                     self._oLastFilter.iValueType == FilterBoxItem.LIST_FROM):
+                     self._oLastFilter.iValueType == FilterBoxItem.Type.LIST_FROM):
                 if oKeyVal in LEFT:
                     # bottom child needs the focus
                     oAutoScrolled = self._oWidget.get_children()[2]
@@ -608,7 +608,7 @@ class FilterBoxModelStore(Gtk.TreeStore):
 
     def _fill_values(self, oFilterIter, oModel, oColour):
         """Fill in the values for this filter"""
-        if oModel.iValueType == oModel.LIST_FROM:
+        if oModel.iValueType == oModel.Type.LIST_FROM:
             # Load LIST_FROM
             aValues, aFrom = oModel.aCurValues
             if aValues:
@@ -635,7 +635,7 @@ class FilterBoxModelStore(Gtk.TreeStore):
             self.append(oFilterIter,
                         (GLib.markup_escape_text(oModel.aCurValues[0]),
                          None, oColour))
-        elif oModel.iValueType == oModel.NONE:
+        elif oModel.iValueType == oModel.Type.NONE:
             self.append(oFilterIter, (self.NONE_VALUE, None, oColour))
         else:
             self.append(oFilterIter, (self.NO_VALUE, None, oColour))
@@ -916,11 +916,11 @@ class FilterBoxModelEditView(CustomDragIconView):
         """Remove the filter value at the given point in the tree"""
         oFilter = self._oStore.get_value(self._oStore.iter_parent(oIter), 1)
         sValue = unescape_markup(self._oStore.get_value(oIter, 0))
-        if oFilter.iValueType == FilterBoxItem.LIST \
+        if oFilter.iValueType == FilterBoxItem.Type.LIST \
                 and sValue in oFilter.aCurValues:
             oFilter.aCurValues.remove(sValue)
             self.update_list(self.oCurSelectIter, oFilter)
-        elif oFilter.iValueType == FilterBoxItem.LIST_FROM:
+        elif oFilter.iValueType == FilterBoxItem.Type.LIST_FROM:
             if oFilter.aCurValues[0] and \
                     sValue in oFilter.aCurValues[0]:
                 oFilter.aCurValues[0].remove(sValue)
@@ -1151,7 +1151,7 @@ class FilterBoxModelEditView(CustomDragIconView):
     def _update_values(self, oFilterObj, oIter, sData):
         """Update the values with the given info from the filter"""
         aSelection = self._oValuesWidget.get_selected_values()
-        if oFilterObj.iValueType == FilterBoxItem.LIST:
+        if oFilterObj.iValueType == FilterBoxItem.Type.LIST:
             # Get values from the list
             for sValue in aSelection:
                 if sValue not in oFilterObj.aCurValues:
@@ -1208,9 +1208,9 @@ class FilterBoxModelEditView(CustomDragIconView):
         if not target_ok(oFilterObj, oSourceFilter):
             return False
         aTarget = []
-        if oFilterObj.iValueType == FilterBoxItem.LIST:
+        if oFilterObj.iValueType == FilterBoxItem.Type.LIST:
             aTarget = oFilterObj.aCurValues
-        elif oFilterObj.iValueType == FilterBoxItem.LIST_FROM:
+        elif oFilterObj.iValueType == FilterBoxItem.Type.LIST_FROM:
             for iIndex in (0, 1):
                 # We do this loop because we may need to explicitly set
                 # the destination filter to an empty list
@@ -1329,15 +1329,15 @@ class FilterBoxModelEditView(CustomDragIconView):
         if oCurValue is oFilterObj:
             # At the filter level
             self.remove_filter_at_iter(self.oCurSelectIter)
-        elif oFilterObj.iValueType == FilterBoxItem.NONE:
+        elif oFilterObj.iValueType == FilterBoxItem.Type.NONE:
             # None filter, so delete always removes
             self.remove_filter_at_iter(self.oCurSelectIter)
-        elif ((oFilterObj.iValueType == FilterBoxItem.LIST or
-               oFilterObj.iValueType == FilterBoxItem.ENTRY)
+        elif ((oFilterObj.iValueType == FilterBoxItem.Type.LIST or
+               oFilterObj.iValueType == FilterBoxItem.Type.ENTRY)
               and not oFilterObj.aCurValues):
             # Empty filter
             self.remove_filter_at_iter(self.oCurSelectIter)
-        elif (oFilterObj.iValueType == FilterBoxItem.LIST_FROM and
+        elif (oFilterObj.iValueType == FilterBoxItem.Type.LIST_FROM and
               not oFilterObj.aCurValues[0] and not oFilterObj.aCurValues[1]):
             # empty list from filter, so remove
             self.remove_filter_at_iter(self.oCurSelectIter)

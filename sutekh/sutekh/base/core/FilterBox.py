@@ -7,6 +7,8 @@
 
 """FilterBox model of the filters. Mainly used in filter editor"""
 
+import enum
+
 from .FilterParser import (FilterNode, BinOpNode, NotOpNode, FilterPartNode,
                            escape)
 
@@ -201,7 +203,12 @@ class FilterBoxItem:
        """
     # pylint: disable=too-many-instance-attributes
     # We track a lot of state, so several instance attributes
-    NONE, ENTRY, LIST, LIST_FROM = range(4)
+    class Type(enum.Enum):
+        """Type of Box"""
+        NONE = 1
+        ENTRY = 2
+        LIST = 3
+        LIST_FROM = 4
 
     def __init__(self, oAST, oVarNameMaker=None):
         if isinstance(oAST, NotOpNode):
@@ -244,24 +251,24 @@ class FilterBoxItem:
             elif oValue.is_list():
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
-                self.iValueType = self.LIST
+                self.iValueType = self.Type.LIST
             elif oValue.is_tuple():
                 assert self.iValueType is None
                 self.aValues = oValue.oValue
-                self.iValueType = self.LIST_FROM
+                self.iValueType = self.Type.LIST_FROM
                 self.aCurValues = [None, None]
             elif oValue.is_entry():
                 assert self.iValueType is None
-                self.iValueType = self.ENTRY
+                self.iValueType = self.Type.ENTRY
             elif oValue.is_None():
                 assert self.iValueType is None
-                self.iValueType = self.NONE
+                self.iValueType = self.Type.NONE
 
     def _set_values(self, oAST):
         """Initialise the values of the filter item"""
         aFilterValues = oAST.aFilterValues
         if aFilterValues:
-            if self.iValueType == self.LIST_FROM:
+            if self.iValueType == self.Type.LIST_FROM:
                 assert len(aFilterValues.get_values()) == 2
                 oLeft, oRight = aFilterValues.get_values()
                 aFrom, aValues = [], []
@@ -276,7 +283,7 @@ class FilterBoxItem:
                 if "" in aFrom:
                     aFrom = None  # Sentinal case
                 self.aCurValues = [aValues, aFrom]
-            elif self.iValueType == self.ENTRY:
+            elif self.iValueType == self.Type.ENTRY:
                 assert len(aFilterValues.get_values()) == 1
                 self.aCurValues = [aFilterValues.get_values()[0].oValue]
             else:
@@ -298,10 +305,10 @@ class FilterBoxItem:
         # Flag as empty by default
         dVars[self.sVariableName] = None
         if self.aCurValues:
-            if self.iValueType == self.LIST:
+            if self.iValueType == self.Type.LIST:
                 dVars[self.sVariableName] = ['"%s"' % escape(sValue)
                                              for sValue in self.aCurValues]
-            elif self.iValueType == self.LIST_FROM:
+            elif self.iValueType == self.Type.LIST_FROM:
                 # pylint: disable=unbalanced-tuple-unpacking
                 # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
@@ -311,14 +318,14 @@ class FilterBoxItem:
                     if aValues:
                         aValues = ['"%s"' % escape(x) for x in aValues]
                         dVars[self.sVariableName] = [aValues, aFrom]
-            elif self.iValueType == self.ENTRY:
+            elif self.iValueType == self.Type.ENTRY:
                 dVars[self.sVariableName] = ['"%s"' %
                                              escape(self.aCurValues[0])]
         return dVars
 
     def get_ast(self):
         """Return an AST representation of the filter."""
-        if (not self.aCurValues and self.iValueType != self.NONE) \
+        if (not self.aCurValues and self.iValueType != self.Type.NONE) \
                 or self.bDisabled:
             return None
         oAST = FilterPartNode(self.sFilterName, None,
@@ -329,15 +336,15 @@ class FilterBoxItem:
 
     def get_text(self):
         """Return a text representation of the filter."""
-        if self.iValueType == self.NONE:
+        if self.iValueType == self.Type.NONE:
             sText = self.sFilterName
         elif self.aCurValues:
             sValues = None
             sText = "%s in %s" % (self.sFilterName, self.sVariableName)
-            if self.iValueType == self.LIST:
+            if self.iValueType == self.Type.LIST:
                 sValues = ",".join(['"%s"' % escape(sValue) for sValue in
                                     self.aCurValues])
-            elif self.iValueType == self.LIST_FROM:
+            elif self.iValueType == self.Type.LIST_FROM:
                 # pylint: disable=unbalanced-tuple-unpacking
                 # earlier checks ensure this is correct
                 aValues, aFrom = self.aCurValues
@@ -351,7 +358,7 @@ class FilterBoxItem:
                     sFrom = ",".join(['"%s"' % escape(x) for x in aFrom])
                 if aFrom or aValues:
                     sValues = "%s FROM %s" % (sFromValues, sFrom)
-            elif self.iValueType == self.ENTRY:
+            elif self.iValueType == self.Type.ENTRY:
                 sValues = '"%s"' % escape(self.aCurValues[0])
             if sValues:
                 sText = '%s in %s' % (self.sFilterName, sValues)
