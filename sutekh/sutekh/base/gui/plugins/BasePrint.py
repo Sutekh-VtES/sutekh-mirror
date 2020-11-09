@@ -15,6 +15,7 @@ from ...core.BaseAdapters import (IAbstractCard, IPhysicalCard, IPrintingName,
 from ..BasePluginManager import BasePlugin
 from ..SutekhDialog import do_complaint_error
 
+@enum.unique
 class PrintExpOption(enum.Enum):
     """Printing Options"""
     NO_EXPANSION = 1

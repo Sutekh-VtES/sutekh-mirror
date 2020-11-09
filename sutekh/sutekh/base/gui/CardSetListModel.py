@@ -38,6 +38,7 @@ from .CardListModel import CardListModel, USE_ICONS, HIDE_ILLEGAL
 from .BaseConfigFile import CARDSET, FRAME
 from .MessageBus import MessageBus
 
+@enum.unique
 class ExtraLevels(enum.Enum):
     """The different modes we need (eExtraLevelsMode)"""
     NO_SECOND_LEVEL = 1
@@ -46,6 +47,7 @@ class ExtraLevels(enum.Enum):
     EXP_AND_CARD_SETS = 4
     CARD_SETS_AND_EXP = 5
 
+@enum.unique
 class ShowMode(enum.Enum):
     """Different card display modes (eShowCardMode)"""
     THIS_SET_ONLY = 1
@@ -54,6 +56,7 @@ class ShowMode(enum.Enum):
     CHILD_CARDS = 4
 
 
+@enum.unique
 class ParentCountMode(enum.Enum):
    """Different Parent card count modes (eParentCountMode)"""
    IGNORE_PARENT = 1

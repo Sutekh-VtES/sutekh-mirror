@@ -17,6 +17,7 @@ class MessageBus:
     _dSubscriptions = {}
 
     # Useful constants to avoid typoes
+    @enum.unique
     class Type(enum.Enum):
         CONFIG_MSG = 1
         CARD_TEXT_MSG = 2

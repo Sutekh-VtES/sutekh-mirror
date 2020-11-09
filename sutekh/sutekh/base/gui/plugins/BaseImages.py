@@ -35,11 +35,13 @@ from ..FileOrUrlWidget import FileOrDirOrUrlWidget
 from ..SutekhFileWidget import add_filter
 
 
+@enum.unique
 class Direction(enum.Enum):
     FORWARD = 1
     BACKWARD = 2
 
 
+@enum.unique
 class Size(enum.Enum):
     FULL = 1
     VIEW_FIXED = 2

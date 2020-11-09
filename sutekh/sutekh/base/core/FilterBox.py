@@ -203,6 +203,7 @@ class FilterBoxItem:
        """
     # pylint: disable=too-many-instance-attributes
     # We track a lot of state, so several instance attributes
+    @enum.unique
     class Type(enum.Enum):
         """Type of Box"""
         NONE = 1

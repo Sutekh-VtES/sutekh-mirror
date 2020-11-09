@@ -12,6 +12,7 @@ from gi.repository import Gdk, GLib, GObject, Gtk, Pango, PangoCairo
 
 
 # consts for the different display modes we need
+@enum.unique
 class DisplayOption(enum.Enum):
     SHOW_TEXT_ONLY = 1
     SHOW_ICONS_ONLY = 2

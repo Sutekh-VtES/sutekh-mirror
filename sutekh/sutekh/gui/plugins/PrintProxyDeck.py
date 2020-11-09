@@ -16,6 +16,7 @@ from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.gui.plugins.BaseImages import get_printing_info, check_file
 from sutekh.gui.PluginManager import SutekhPlugin
 
+@enum.unique
 class PrintExpOption(enum.Enum):
     PRINT_LATEST = 1
     PRINT_EXACT = 2
