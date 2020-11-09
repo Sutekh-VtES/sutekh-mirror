@@ -5,6 +5,7 @@
 # GPL - see COPYING for details
 
 """Parser for ARDB XML deck formats"""
+import enum
 
 from sutekh.io.ARDBXMLInvParser import ARDBInvXMLState, ARDBXMLInvParser
 
@@ -12,8 +13,20 @@ from sutekh.io.ARDBXMLInvParser import ARDBInvXMLState, ARDBXMLInvParser
 class ARDBDeckXMLState(ARDBInvXMLState):
     """Simple State tracker used by the XMLParser"""
     # tag states of interest
-    ROOTTAG, NOTAG, DECKNAME, DECKAUTHOR, DECKCOMMENT, INCARD, CARDNAME, \
-        CARDSET, ADVANCED = range(9)
+    @enum.unique
+    class TagType(enum.Enum):
+        """Tag types"""
+        # We need to duplicate the list in ARDBInvXMLState due to
+        # enum's subclassing restrictions
+        ROOTTAG = 1
+        NOTAG = 2
+        DECKNAME = 3
+        DECKAUTHOR = 4
+        DECKCOMMENT = 5
+        INCARD = 6
+        CARDNAME = 7
+        CARDSET = 8
+        ADVANCED = 9
 
     COUNT_KEY = 'count'
 
@@ -22,14 +35,14 @@ class ARDBDeckXMLState(ARDBInvXMLState):
     def start(self, sTag, dAttributes):
         """Start tag encountered"""
         # Handle those different from base class
-        if self._iState == self.NOTAG and sTag in ['name', 'author',
-                                                   'description']:
+        if self._eState == self.TagType.NOTAG and sTag in ['name', 'author',
+                                                           'description']:
             if sTag == 'name':
-                self._iState = self.DECKNAME
+                self._eState = self.TagType.DECKNAME
             elif sTag == 'author':
-                self._iState = self.DECKAUTHOR
+                self._eState = self.TagType.DECKAUTHOR
             elif sTag == 'description':
-                self._iState = self.DECKCOMMENT
+                self._eState = self.TagType.DECKCOMMENT
         else:
             # Fall back to base class
             super(ARDBDeckXMLState, self).start(sTag, dAttributes)
@@ -37,13 +50,13 @@ class ARDBDeckXMLState(ARDBInvXMLState):
     def end(self, sTag):
         """End tag encountered"""
         # Handle cases different to base class
-        if self._iState == self.DECKAUTHOR and sTag == 'author':
+        if self._eState == self.TagType.DECKAUTHOR and sTag == 'author':
             self._oHolder.author = self._sData
             self._set_no_tag()
-        elif self._iState == self.DECKNAME and sTag == 'name':
+        elif self._eState == self.TagType.DECKNAME and sTag == 'name':
             self._oHolder.name = self._sData
             self._set_no_tag()
-        elif self._iState == self.DECKCOMMENT and sTag == 'description':
+        elif self._eState == self.TagType.DECKCOMMENT and sTag == 'description':
             self._oHolder.comment = self._sData
             self._set_no_tag()
         else:
@@ -52,7 +65,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
 
     def _set_no_tag(self):
         """Set state back to NOTAG state"""
-        self._iState = self.NOTAG
+        self._eState = self.TagType.NOTAG
         self._sData = ""
 
 
