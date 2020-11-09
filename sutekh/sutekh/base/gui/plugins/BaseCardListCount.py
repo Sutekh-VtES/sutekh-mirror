@@ -5,6 +5,7 @@
 # GPL - see COPYING for details
 
 """Provide count card options for the full card list"""
+import enum
 
 from gi.repository import Gtk
 from ...core.BaseTables import PhysicalCard
@@ -23,7 +24,12 @@ class BaseCardListCount(BasePlugin):
     dTableVersions = {PhysicalCard: (2, 3, )}
     aModelsSupported = (PhysicalCard,)
 
-    NO_COUNT, COUNT_CARDS, COUNT_EXP = range(3)
+    @enum.unique
+    class Modes(enum.Enum):
+        """Counting modes"""
+        NO_COUNT = 1
+        COUNT_CARDS = 2
+        COUNT_EXP = 3
 
     COLUMN_NAME = '#'
 
@@ -32,9 +38,9 @@ class BaseCardListCount(BasePlugin):
     COUNT_EXP_OPT = "Show counts for each expansion"
 
     MODES = {
-        NO_COUNT_OPT: NO_COUNT,
-        COUNT_CARD_OPT: COUNT_CARDS,
-        COUNT_EXP_OPT: COUNT_EXP,
+        NO_COUNT_OPT: Modes.NO_COUNT,
+        COUNT_CARD_OPT: Modes.COUNT_CARDS,
+        COUNT_EXP_OPT: Modes.COUNT_EXP,
     }
 
     OPTION_NAME = "Full Card List Count Mode"
@@ -52,7 +58,7 @@ class BaseCardListCount(BasePlugin):
         super(BaseCardListCount, self).__init__(*args, **kwargs)
 
         self._oTextLabel = None
-        self._iMode = self.NO_COUNT
+        self._eMode = self.Modes.NO_COUNT
         self._dExpCounts = {}
         self._dAbsCounts = {}
         self._dCardTotals = {TOTAL: 0}
@@ -71,21 +77,21 @@ class BaseCardListCount(BasePlugin):
 
     def _get_card_count(self, oAbsCard):
         """Get the count for the card for the current mode"""
-        if self._iMode == self.COUNT_EXP:
+        if self._eMode == self.Modes.COUNT_EXP:
             # We default if we're only showing the unspecified expansion
             return self._dExpCounts.get(oAbsCard, 0)
         return self._dAbsCounts[oAbsCard]
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""
-        if self._iMode == self.COUNT_CARDS:
+        if self._eMode == self.Modes.COUNT_CARDS:
             dInfo = self._dCardTotals
         else:
             dInfo = self._dExpTotals
         self._oTextLabel = Gtk.Label(label=self.TOT_FORMAT % dInfo)
         self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % dInfo)
 
-        if self._iMode != self.NO_COUNT:
+        if self._eMode != self.Modes.NO_COUNT:
             self._oTextLabel.show()
         else:
             self._oTextLabel.hide()
@@ -96,10 +102,10 @@ class BaseCardListCount(BasePlugin):
         # Timing issues mean that this can be called before text label has
         # been properly realised, so we need this guard case
         if self._oTextLabel:
-            if self._iMode == self.NO_COUNT:
+            if self._eMode == self.Modes.NO_COUNT:
                 self._oTextLabel.hide()
                 return
-            elif self._iMode == self.COUNT_CARDS:
+            elif self._eMode == self.Modes.COUNT_CARDS:
                 dInfo = self._dCardTotals
             else:
                 dInfo = self._dExpTotals
@@ -147,8 +153,8 @@ class BaseCardListCount(BasePlugin):
     def perpane_config_updated(self, _bDoReload=True):
         """Called by base class on config updates."""
         sCountMode = self.get_perpane_item(self.OPTION_NAME)
-        self._iMode = self.MODES.get(sCountMode, self.NO_COUNT)
-        if self._iMode == self.NO_COUNT:
+        self._eMode = self.MODES.get(sCountMode, self.Modes.NO_COUNT)
+        if self._eMode == self.Modes.NO_COUNT:
             self.clear_col()
         else:
             self.add_col()
@@ -193,7 +199,7 @@ class BaseCardListCount(BasePlugin):
             oAbsCard = self.model.get_abstract_card_from_iter(oIter)
             return self._get_card_count(oAbsCard)
         elif self.model.iter_depth(oIter) == 2 and \
-                self._iMode == self.COUNT_EXP:
+                self._eMode == self.Modes.COUNT_EXP:
             oPhysCard = self.model.get_physical_card_from_iter(oIter)
             if oPhysCard.printingID:
                 return 1
