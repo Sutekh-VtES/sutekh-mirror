@@ -1,3 +1,6 @@
+10 Nov 2020
+ * Replace various integer constants with Enums, as a better datatype for this.
+
 04 Nov 2020
  * Add simple undo/redo support to the desciption and annotations editing widgets
  * Also add a search function to the description and annotations widgets
