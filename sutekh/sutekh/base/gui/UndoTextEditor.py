@@ -208,7 +208,9 @@ class UndoEditView(Gtk.VBox):
         """Set the text in the buffer"""
         # Flag this as not undoable.
         self._oBuffer.bUndoRedo = True
-        self._oBuffer.set_text(oText)
+        self._oBuffer.set_text('')
+        if oText is not None:
+            self._oBuffer.set_text(oText)
         self._oBuffer.bUndoRedo = False
 
     def get_all_text(self):
