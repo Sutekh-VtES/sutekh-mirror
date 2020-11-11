@@ -6,6 +6,7 @@
 """Simulate the opening hand draw."""
 
 from copy import copy
+from enum import IntEnum
 from random import choice
 
 from gi.repository import GObject, Gtk
@@ -186,7 +187,11 @@ class BaseOpeningDraw(BasePlugin):
     dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
     aModelsSupported = (PhysicalCardSet,)
     # responses for the hand dialog
-    BACK, FORWARD, BREAKDOWN = range(1, 4)
+    class Choice(IntEnum):
+        BACK = 1
+        FORWARD = 2
+        BREAKDOWN = 3
+
     MAXSIZE = 500
     COLUMN_WIDTH = 450
 
@@ -275,14 +280,14 @@ class BaseOpeningDraw(BasePlugin):
                                Gtk.DialogFlags.MODAL |
                                Gtk.DialogFlags.DESTROY_WITH_PARENT)
         # We need to have access to the back button
-        oShowButton = oDialog.add_button('Show details', self.BREAKDOWN)
+        oShowButton = oDialog.add_button('Show details', self.Choice.BREAKDOWN)
         oDialog.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
-        oBackButton = oDialog.add_button("Back", self.BACK)
+        oBackButton = oDialog.add_button("Back", self.Choice.BACK)
         oBackImage = Gtk.Image.new_from_icon_name('go-previous', Gtk.IconSize.BUTTON)
         oBackButton.set_image(oBackImage)
         oBackButton.set_always_show_image(True)
         oBackButton.set_sensitive(False)
-        oForwardButton = oDialog.add_button("Forward", self.FORWARD)
+        oForwardButton = oDialog.add_button("Forward", self.Choice.FORWARD)
         oForwardImage = Gtk.Image.new_from_icon_name('go-next', Gtk.IconSize.BUTTON)
         oForwardButton.set_image(oForwardImage)
         oForwardButton.set_always_show_image(True)
@@ -315,12 +320,12 @@ class BaseOpeningDraw(BasePlugin):
                 oVBox.pack_start(oDetailBox, True, True, 0)
 
         oDetailBox = None
-        if iResponse == self.BACK:
+        if iResponse == self.Choice.BACK:
             self.iCurHand -= 1
             if self.iCurHand == 1:
                 oBackButton.set_sensitive(False)
             oNewHand = self._redraw_hand()
-        elif iResponse == self.FORWARD:
+        elif iResponse == self.Choice.FORWARD:
             oBackButton.set_sensitive(True)
             if self.iCurHand == len(self.aDrawnHands):
                 # Create a new hand
@@ -328,7 +333,7 @@ class BaseOpeningDraw(BasePlugin):
             else:
                 self.iCurHand += 1
                 oNewHand = self._redraw_hand()
-        elif iResponse == self.BREAKDOWN:
+        elif iResponse == self.Choice.BREAKDOWN:
             # show / hide the detailed breakdown
             oNewHand = self._redraw_hand()
             if self.bShowDetails:
