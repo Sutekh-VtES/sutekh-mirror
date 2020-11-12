@@ -8,5 +8,5 @@ if which pytest-3 > /dev/null; then
    echo "Running tests using pytest-3"
    (cd ../sutekh && pytest-3 )
 else
-   echo "Unable to find nosetests. Not running the test suite"
+   echo "Unable to find pytest. Not running the test suite"
 fi
