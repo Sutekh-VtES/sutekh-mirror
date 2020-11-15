@@ -157,7 +157,7 @@ class BaseGuiDBManager:
                 do_complaint_error("No filename or url given to update from.\n"
                                    "Aborting")
                 return None
-            fIn = file(oZipDetails.sName, 'rb')
+            fIn = open(oZipDetails.sName, 'rb')
             sData = fIn.read()
             fIn.close()
         oZipFile = zipfile.ZipFile(BytesIO(sData), 'r')
