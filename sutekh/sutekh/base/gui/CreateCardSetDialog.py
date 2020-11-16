@@ -38,12 +38,18 @@ class CreateCardSetDialog(SutekhDialog):
         oAuthorLabel = Gtk.Label(label="Author : ")
         self.oAuthor = Gtk.Entry()
         self.oCommentWin = UndoEditView('Description : ', oParent)
-        self.oCommentWin.set_text(oCardSet.comment)
+        if oCardSet:
+            self.oCommentWin.set_text(oCardSet.comment)
+        else:
+            self.oCommentWin.set_text("")
         oParentLabel = Gtk.Label(label="This card set is a subset of : ")
         self.oParentList = CardSetsListView(None, self)
         self.oParentList.set_size_request(100, 200)
         self.oAnnotateWin = UndoEditView('Annotations : ', oParent)
-        self.oAnnotateWin.set_text(oCardSet.annotations)
+        if oCardSet:
+            self.oAnnotateWin.set_text(oCardSet.annotations)
+        else:
+            self.oAnnotateWin.set_text("")
 
         self.oInUse = Gtk.CheckButton('Mark card Set as In Use')
 
