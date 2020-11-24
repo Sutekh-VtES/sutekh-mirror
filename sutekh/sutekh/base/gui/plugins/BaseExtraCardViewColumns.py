@@ -7,7 +7,7 @@
 from sqlobject import SQLObjectNotFound
 
 from ...core.BaseTables import PhysicalCard, PhysicalCardSet
-from ..CellRendererIcons import SHOW_TEXT_ONLY
+from ..CellRendererIcons import DisplayOption
 from .BaseExtraColumns import BaseExtraColumns
 
 
@@ -107,4 +107,4 @@ class BaseExtraCardViewColumns(BaseExtraColumns):
         """Display card text in the column"""
         oCard = self._get_iter_data(oIter)
         aTexts, aIcons = self._get_data_card_text(oCard)
-        oCell.set_data(aTexts, aIcons, SHOW_TEXT_ONLY)
+        oCell.set_data(aTexts, aIcons, DisplayOption.SHOW_TEXT_ONLY)

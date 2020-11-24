@@ -8,8 +8,7 @@
 
 from gi.repository import Gtk
 from ..BasePluginManager import BasePlugin
-from ..CellRendererIcons import (CellRendererIcons, SHOW_TEXT_ONLY,
-                                 SHOW_ICONS_ONLY, SHOW_ICONS_AND_TEXT)
+from ..CellRendererIcons import CellRendererIcons, DisplayOption
 
 
 def get_number(dInfo, sKey, fQuery):
@@ -56,9 +55,9 @@ class BaseExtraColumns(BasePlugin):
 
     # Icon modes - may do nothing for some views
     MODES = {
-        DEFAULT_MODE: SHOW_ICONS_AND_TEXT,
-        'Show Icons only': SHOW_ICONS_ONLY,
-        'Show Text only': SHOW_TEXT_ONLY,
+        DEFAULT_MODE: DisplayOption.SHOW_ICONS_AND_TEXT,
+        'Show Icons only': DisplayOption.SHOW_ICONS_ONLY,
+        'Show Text only': DisplayOption.SHOW_TEXT_ONLY,
     }
 
     def __init__(self, *args, **kwargs):

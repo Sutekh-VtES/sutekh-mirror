@@ -19,7 +19,7 @@ from ...core.DBSignals import (listen_row_destroy, listen_row_update,
                                disconnect_row_destroy,
                                disconnect_row_update,
                                disconnect_row_created)
-from ..CellRendererIcons import SHOW_TEXT_ONLY
+from ..CellRendererIcons import DisplayOption
 from .BaseExtraColumns import (BaseExtraColumns, get_number,
                                format_number)
 
@@ -38,7 +38,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     # Currently, Sutekh only supports text mode columns here
     MODES = {
-        DEFAULT_MODE: SHOW_TEXT_ONLY,
+        DEFAULT_MODE:  DisplayOption.SHOW_TEXT_ONLY,
     }
 
     # Dictionary of column info - width, render function name, data func name
