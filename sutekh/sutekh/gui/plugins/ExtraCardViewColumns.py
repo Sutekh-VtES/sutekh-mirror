@@ -5,7 +5,7 @@
 """Display extra columns in the tree view"""
 
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.CellRendererIcons import SHOW_TEXT_ONLY
+from sutekh.base.gui.CellRendererIcons import DisplayOption 
 from sutekh.base.gui.plugins.BaseExtraColumns import format_number
 from sutekh.base.gui.plugins.BaseExtraCardViewColumns import (
     BaseExtraCardViewColumns)
@@ -164,11 +164,11 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         iGrp, aIcons = self._get_data_group(oCard)
         if iGrp != -100:
             if iGrp == -1:
-                oCell.set_data(['Any'], aIcons, SHOW_TEXT_ONLY)
+                oCell.set_data(['Any'], aIcons, DisplayOption.SHOW_TEXT_ONLY)
             else:
-                oCell.set_data([str(iGrp)], aIcons, SHOW_TEXT_ONLY)
+                oCell.set_data([str(iGrp)], aIcons, DisplayOption.SHOW_TEXT_ONLY)
         else:
-            oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
+            oCell.set_data([""], aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
     def _get_data_capacity(self, oCard, _bGetIcons=True):
         """Get the card's capacity"""
@@ -183,7 +183,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         oCard = self._get_iter_data(oIter)
         iCap, aIcons = self._get_data_capacity(oCard)
         aText = format_number(iCap)
-        oCell.set_data(aText, aIcons, SHOW_TEXT_ONLY)
+        oCell.set_data(aText, aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
     def _get_data_cost(self, oCard, _bGetIcons=True):
         """Get the card's cost"""
@@ -214,12 +214,12 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         iCost, sCostType, aIcons = self._get_data_cost(oCard)
         if iCost > 0:
             oCell.set_data(["%d %s" % (iCost, sCostType)], aIcons,
-                           SHOW_TEXT_ONLY)
+                           DisplayOption.SHOW_TEXT_ONLY)
         elif iCost == -1:
             oCell.set_data(["X %s" % sCostType], aIcons,
-                           SHOW_TEXT_ONLY)
+                           DisplayOption.SHOW_TEXT_ONLY)
         else:
-            oCell.set_data([""], aIcons, SHOW_TEXT_ONLY)
+            oCell.set_data([""], aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
     def _get_data_title(self, oCard, bGetIcons=True):
         """Get the card's title."""
@@ -236,7 +236,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         """Display title in the column"""
         oCard = self._get_iter_data(oIter)
         aTitles, aIcons = self._get_data_title(oCard)
-        oCell.set_data(aTitles, aIcons, SHOW_TEXT_ONLY)
+        oCell.set_data(aTitles, aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
     def _get_data_sect(self, oCard, bGetIcons=True):
         """Get the card's sect."""
@@ -253,7 +253,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         """Display sect in the column"""
         oCard = self._get_iter_data(oIter)
         aSects, aIcons = self._get_data_sect(oCard)
-        oCell.set_data(aSects, aIcons, SHOW_TEXT_ONLY)
+        oCell.set_data(aSects, aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
 
 plugin = ExtraCardViewColumns
