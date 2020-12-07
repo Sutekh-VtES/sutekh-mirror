@@ -30,12 +30,72 @@
 
 import re
 
+from sutekh.base.core.BaseTables import AbstractCard
+from sutekh.base.core.BaseFilters import MultiCardTypeFilter
 from sutekh.base.io.SutekhBaseHTMLParser import HolderState
 
+from sutekh.core.ArdbInfo import ArdbInfo
 
-# HolderState Classes
-class NameAndAuthor(HolderState):
-    """HolderState for extracting Name and Author."""
+
+class SingleCard(ArdbInfo):
+    """Class to formate a single card appropriately"""
+
+    def format_crypt_card(self, oCard):
+        dFull = self._format_crypt_line(oCard, 1)
+        # We don't need count
+        dFull.pop('count')
+        dFull['disc'] = self._gen_disciplines(oCard).strip()
+        dFull['title'] = dFull['title'].strip()
+        dFull['name'] = dFull['name'].strip()
+        # We generate candidates for a couple of different possible formats
+        dTruncated = dFull.copy()
+        if dTruncated['clan'].endswith('antitribu'):
+            dTruncated['clan'] = '!' + dTruncated['clan'].replace(' antitribu', '')
+        elif 'Imbued' not in dTruncated['clan']:
+             dTruncated['clan'] = dTruncated['clan'][:10].strip()
+        dTruncated['name'] = dTruncated['name'].ljust(18)[:18].strip()
+
+        if dFull['title'] and dFull['adv'] == 'Adv':
+            sFull = "%(name)s %(adv)s %(capacity)d %(disc)s %(title)s %(clan)s:%(group)d" % dFull
+            sTruncated = "%(name)s %(adv)s %(capacity)d %(disc)s %(title)s %(clan)s:%(group)d" % dTruncated
+        elif dFull['adv'] == 'Adv':
+            sFull = "%(name)s %(adv)s %(capacity)d %(disc)s %(clan)s:%(group)d" % dFull
+            sTruncated = "%(name)s %(adv)s %(capacity)d %(disc)s %(clan)s:%(group)d" % dTruncated
+        elif dFull['title']:
+            sFull = "%(name)s %(capacity)d %(disc)s %(title)s %(clan)s:%(group)d" % dFull
+            sTruncated = "%(name)s %(capacity)d %(disc)s %(title)s %(clan)s:%(group)d" % dTruncated
+        else:
+            sFull = "%(name)s %(capacity)d %(disc)s %(clan)s:%(group)d" % dFull
+            sTruncated = "%(name)s %(capacity)d %(disc)s %(clan)s:%(group)d" % dTruncated
+        return sFull.lower(), sTruncated.lower()
+
+
+def gen_name_lookups():
+    """Generate lookups for names of the form:
+        2x Nakhorheb 10 OBF PRE SER Follower:4
+      i.e., for cases where tabs or multiple spaces have been
+      combined into single spaces, such as posts to the
+      vekn forum."""
+    dNameCache = {}
+    oFormatter = SingleCard()
+    oCryptFilter = MultiCardTypeFilter(['Vampire', 'Imbued'])
+    for oCard in oCryptFilter.select(AbstractCard):
+        sFull, sTrunc = oFormatter.format_crypt_card(oCard)
+        dNameCache[sFull] = oCard.name
+        dNameCache[sTrunc] = oCard.name
+    return dNameCache
+
+
+class HolderWithCacheState(HolderState):
+
+    def __init__(self, oHolder, dNameCache):
+        super().__init__(oHolder)
+        self._dNameCache = dNameCache
+
+
+# HolderWithCacheState Classes
+class NameAndAuthor(HolderWithCacheState):
+    """HolderWithCacheState for extracting Name and Author."""
     # pylint: disable=arguments-differ
     # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
@@ -43,11 +103,11 @@ class NameAndAuthor(HolderState):
            if needed."""
         # Check for crypt line, as description isn't always present
         if sLine.strip().startswith('Crypt ['):
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
         elif sLine.strip().startswith('Crypt: ('):
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
         elif sLine.strip().startswith('Crypt ('):
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
 
         aParts = sLine.split(':', 1)
 
@@ -61,7 +121,7 @@ class NameAndAuthor(HolderState):
         elif sKey == "Author" or sKey == "Created By" or sKey == "Created by":
             self._oHolder.author = sValue
         elif sKey == "Description":
-            oDesc = Description(self._oHolder)
+            oDesc = Description(self._oHolder, self._dNameCache)
             if sValue:
                 oDesc.data(sValue)
             return oDesc
@@ -69,8 +129,8 @@ class NameAndAuthor(HolderState):
         return self
 
 
-class Description(HolderState):
-    """HolderState for extracting description"""
+class Description(HolderWithCacheState):
+    """HolderWithCacheState for extracting description"""
     # pylint: disable=arguments-differ
     # pylint doesn't like that we mark dAttr as unused here
     def transition(self, sLine, _dAttr):
@@ -78,19 +138,19 @@ class Description(HolderState):
            state if needed."""
         if sLine.strip().startswith('Crypt ['):
             self._oHolder.comment = self._sData
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
         elif sLine.strip().startswith('Crypt: ('):
             self._oHolder.comment = self._sData
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
         elif sLine.strip().startswith('Crypt ('):
             self._oHolder.comment = self._sData
-            return Cards(self._oHolder)
+            return Cards(self._oHolder, self._dNameCache)
         self.data(sLine)
         return self
 
 
-class Cards(HolderState):
-    """HolderState for extracting the cards"""
+class Cards(HolderWithCacheState):
+    """HolderWithCacheState for extracting the cards"""
     _oCardRe = re.compile(
         r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
     _oAdvRe = re.compile(r'\sAdv\s')
@@ -109,6 +169,8 @@ class Cards(HolderState):
             sName = oMatch.group('name').split('  ')[0]
             # We see mixed spaces and tabs in the wild, so we need this
             sName = sName.strip()
+            if sName.lower() in self._dNameCache:
+                sName = self._dNameCache[sName.lower()]
             # Check for the advacned string and append advanced if needed
             if self._oAdvRe.search(sLine) and 'Adv' not in sName:
                 sName += ' (Advanced)'
@@ -129,7 +191,7 @@ class ARDBTextParser:
 
     def reset(self, oHolder):
         """Reset the parser state"""
-        self._oState = NameAndAuthor(oHolder)
+        self._oState = NameAndAuthor(oHolder, gen_name_lookups())
 
     def parse(self, fIn, oHolder):
         """Parse the file"""

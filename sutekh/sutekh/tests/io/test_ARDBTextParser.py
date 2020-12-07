@@ -86,6 +86,27 @@ Reaction [1]
 ...
 """
 
+ARDB_TEXT_EXAMPLE_4 = """
+Deck Name : Test Deck 4
+Created By: Anon Y Mous
+
+Crypt: (5 vampires, Min: 2, Max: 10 Ave: 7.33)
+------------------------------------------------------------
+2x Aaron Bathurst 4 for obf pot Nosferatu antitribu:4
+1x Aaron Duggan, Cameron's Toady 2 obt Lasombra:2
+1x Enkidu, the noah 11 ANI CEL OBF POT PRO for !Gangrel:4
+1x Hektor 9 CEL POT PRE QUI for priscus !Brujah:4
+...
+
+Library [6 cards]
+------------------------------------------------------------
+Action [6]
+2 x Test Card 1
+4 x Test Card 2
+...
+"""
+
+
 
 class ARDBTextParserTests(SutekhTest):
     """class for the ARDB/FELDB text input parser"""
@@ -144,6 +165,20 @@ class ARDBTextParserTests(SutekhTest):
         self.assertTrue(("Test Card 2", 4) in aCards)
         self.assertTrue(("Test Card 3", 12) in aCards)
         self.assertTrue(("Test Card 4", 1) in aCards)
+
+        oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_4)
+
+        self.assertEqual(oHolder.name, "Test Deck 4")
+        self.assertEqual(oHolder.author, "Anon Y Mous")
+
+        aCards = oHolder.get_cards()
+
+        self.assertTrue(("Hektor", 1) in aCards)
+        self.assertTrue(("Enkidu, The Noah", 1) in aCards)
+        self.assertTrue(("Aaron Bathurst", 2) in aCards)
+        self.assertTrue(("Aaron Duggan, Cameron's Toady", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
 
 
 if __name__ == "__main__":
