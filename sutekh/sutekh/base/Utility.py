@@ -256,3 +256,40 @@ def is_memory_db():
        returns True if this is a memory db"""
     return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
                                               "sqlite:/:memory:"]
+
+
+def fix_gui_env():
+    """Setup various environment variables needed to run the gui
+       in various situations."""
+
+    # This is in Utility, as we need to do this before importing any
+    # gtk libraries
+
+    # This is annoying, but needs to be set to before gtk is imported to
+    # work with Ubuntu's later unity-gtk2-module approach to moving
+    # menus around
+    # FIXME: Check if this is still required with gtk3 and recent ubuntu
+    # releases
+    os.environ["UBUNTU_MENUPROXY"] = "0"
+
+    # Setup environment variables for running in a frozen list
+    # List is taken from various bug reports and other gtk3 + python projects,
+    # so it may be excessive
+    if hasattr(sys, 'frozen'):
+        prefix = os.path.dirname(sys.executable)
+        os.environ['GTK_EXE_PREFIX'] = prefix
+        os.environ['GTK_DATA_PREFIX'] = prefix
+        os.environ['XDG_DATA_DIRS'] = os.path.join(prefix, 'share')
+        os.environ['GI_TYPELIB_PATH'] = os.path.join(prefix, 'lib',
+                                                     'girepository-1.0')
+        etc = os.path.join(prefix, 'etc')
+
+        # FIXME: This may be needed on MacOS as well.
+        if sys.platform.startswith('win'):
+            # Point at the frozen certificates
+            os.environ.setdefault('SSL_CERT_FILE', os.path.join(etc, 'ssl', 'cert.pem'))
+            os.environ.setdefault('SSL_CERT_DIR', os.path.join(etc, 'ssl', 'certs'))
+            # Fix paths for windows gtk loaders
+            os.environ.setdefault('GDK_PIXBUF_MODULEDIR',
+                                  os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
+                                               '2.10.0', 'loaders'))
