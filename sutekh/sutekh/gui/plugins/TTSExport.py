@@ -379,14 +379,14 @@ class TTSExport(SutekhPlugin):
                 aLibrary.append(sJSONName)
         dCrypt = dDeck['ObjectStates'][0]
         dLibrary = dDeck['ObjectStates'][1]
-        for sName in aCrypt:
+        for sName in sorted(aCrypt):
             oObj = self._dTTSData[sName]
             dTTSCard = oObj.copy()
             dTTSCard['Transform'] = CRYPT_TRANSFORM
             dCrypt['DeckIDs'].append(dTTSCard['CardID'])
             dCrypt['CustomDeck'].update(dTTSCard['CustomDeck'])
             dCrypt['ContainedObjects'].append(dTTSCard)
-        for sName in aLibrary:
+        for sName in sorted(aLibrary):
             oObj = self._dTTSData[sName]
             dTTSCard = oObj.copy()
             dTTSCard['Transform'] = LIB_TRANSFORM
