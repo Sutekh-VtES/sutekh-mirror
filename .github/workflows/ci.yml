@@ -42,12 +42,14 @@ jobs:
       run: |
         pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo psycopg2
     - name: Create Postgres DB
+      env:
+        PGPASSWORD: postgres
       run: |
         # We use template0 so we can set the collation order to C.UTF-8
-        createdb -U postgres --lc-collate=C.UTF-8 --template template0 -w sutekh_test
+        createdb -U postgres -h localhost -w --lc-collate=C.UTF-8 --template template0 -w sutekh_test
     - name: Run Tests
       env:
-        SUTEKH_TEST_DB: postgres://postgres:@localhost/sutekh_test?driver=psycopg&charset=utf-8
+        SUTEKH_TEST_DB: postgres://postgres:postgres@localhost/sutekh_test?driver=psycopg&charset=utf-8
       run: |
         cd sutekh
         xvfb-run --auto-servernum pytest
