@@ -1,0 +1,129 @@
+name: Sutekh CI
+
+on: [push, pull_request]
+
+jobs:
+  postgres-linux:
+
+    runs-on: ${{ matrix.ubuntu }}
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    name: Postgres - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install APT Dependencies
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
+    - name: Install PIP Dependencies
+      run: |
+        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo psycopg2
+    - name: Create Postgres DB
+      run: |
+        # We use template0 so we can set the collation order to C.UTF-8
+        createdb -U postgres --lc-collate=C.UTF-8 --template template0 -w sutekh_test
+    - name: Run Tests
+      env:
+        SUTEKH_TEST_DB: postgres://postgres:@localhost/sutekh_test?driver=psycopg&charset=utf-8
+      run: |
+        cd sutekh
+        xvfb-run --auto-servernum pytest
+
+  mysql-linux:
+
+    runs-on: ${{ matrix.ubuntu }}
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        # Set health checks to wait until mysql has started
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 3306:3306
+
+    name: MySQL - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install APT Dependencies
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
+    - name: Install PIP Dependencies
+      run: |
+        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo mysql-connector
+    - name: Create MySQL DB
+      run: |
+        mysql -uroot -e 'create database sutekh_test;'
+    - name: Run Tests
+      env:
+        SUTEKH_TEST_DB: mysql://root:@localhost/sutekh_test?driver=connector
+      run: |
+        cd sutekh
+        xvfb-run --auto-servernum pytest
+
+  sqlite-linux:
+
+    runs-on: ${{ matrix.ubuntu }}
+
+    name: SQLite - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install APT Dependencies
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
+    - name: Install PIP Dependencies
+      run: |
+        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo
+    - name: Run Tests
+      run: |
+        cd sutekh
+        xvfb-run --auto-servernum pytest
