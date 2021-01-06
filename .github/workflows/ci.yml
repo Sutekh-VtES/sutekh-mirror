@@ -175,7 +175,7 @@ jobs:
       run: |
         cd sutekh
         python3 setup-freeze.py build_exe
-        ls dist
+        ls build
         cd ..
 
   sqlite-macos:
