@@ -177,3 +177,28 @@ jobs:
         python3 setup-freeze.py build_exe
         ls dist
         cd ..
+
+  sqlite-macos:
+
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Python
+      uses: actions/setup-python@v2
+    - name: Install brew dependencies
+      run: |
+        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration
+    - name: Install PIP dependencies
+      run: |
+        pip install keyring ply sqlobject configobj pytest mock
+    - name: Run tests
+      run: |
+        cd sutekh
+        pytest
+        cd ..
+    - name: Build Mac packages
+      run: |
+        cd sutekh
+        python3 setup-freeze.py build_mac
+        ls dist
+        cd ..
