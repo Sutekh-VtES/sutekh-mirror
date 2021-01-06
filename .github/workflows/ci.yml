@@ -131,6 +131,7 @@ jobs:
         xvfb-run --auto-servernum pytest
         popd
     - name: Build sdist
+      if: matrix.python-version == '3.9' && matrix.ubuntu == 'ubuntu-20.04'
       run: |
         pushd sutekh
         python3 ./setup.py sdist
@@ -175,8 +176,12 @@ jobs:
       run: |
         cd sutekh
         python3 setup-freeze.py build_exe
-        ls build
         cd ..
+    - name: Upload cx_Freeze directory
+      uses: actions/upload-artifact@v2
+      with:
+        name: sutekh-cx_Freeze_windows
+        path: sutekh/build/exe.mingw*/*
 
   sqlite-macos:
 
@@ -196,9 +201,14 @@ jobs:
         cd sutekh
         pytest
         cd ..
-    - name: Build Mac packages
-      run: |
-        cd sutekh
-        python3 setup-freeze.py build_mac
-        ls build
-        cd ..
+    #- name: Build Mac packages
+      #run: |
+        #cd sutekh
+        #python3 setup-freeze.py build_mac
+        #ls build
+        #cd ..
+    #- name: Upload cx_Freeze directory
+      #uses: actions/upload-artifact@v2
+      #with:
+        #name: sutekh-cx_Freeze_macos
+        #path: sutekh/build/exe.mingw*/*
