@@ -173,6 +173,6 @@ jobs:
       shell: msys2 {0}
       run: |
         cd sutekh
-        python3 setup.py build_exe
+        python3 setup-freeze.py build_exe
         ls dist
         cd ..
