@@ -158,18 +158,19 @@ jobs:
           mingw-w64-x86_64-gtk3
           mingw-w64-x86_64-python-pip
           mingw-w64-x86_64-python-gobject
+          mingw-w64-x86_64-python-cx_Freeze
     - name: Install PIP dependencies
       shell: msys2 {0}
       run: |
-        pip install keyring ply sqlobject configobj pytest mock cx-Freeze
+        pip install keyring ply sqlobject configobj pytest mock
     - name: Run tests
-      shell: mysys2 {0}
+      shell: msys2 {0}
       run: |
         cd sutekh
         pytest
         cd ..
     - name: Build package
-      shell: mysys2 {0}
+      shell: msys2 {0}
       run: |
         cd sutekh
         python3 setup.py build_exe
