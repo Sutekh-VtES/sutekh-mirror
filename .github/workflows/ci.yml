@@ -127,5 +127,17 @@ jobs:
         pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo
     - name: Run Tests
       run: |
-        cd sutekh
+        pushd sutekh
         xvfb-run --auto-servernum pytest
+        popd
+    - name: Build sdist
+      run: |
+        pushd sutekh
+        python3 ./setup.py sdist
+        popd
+    - name: Upload sdist
+      uses: actions/upload-artifact@v2
+      if: matrix.python-version == '3.9' && matrix.ubuntu == 'ubuntu-20.04'
+      with:
+        name: sutekh-sdist
+        path: sutekh/dist/Sutekh*tar*
