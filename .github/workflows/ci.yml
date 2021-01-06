@@ -159,6 +159,7 @@ jobs:
           mingw-w64-x86_64-python-pip
           mingw-w64-x86_64-python-gobject
           mingw-w64-x86_64-python-cx_Freeze
+          mingw-w64-x86_64-poppler
     - name: Install PIP dependencies
       shell: msys2 {0}
       run: |
