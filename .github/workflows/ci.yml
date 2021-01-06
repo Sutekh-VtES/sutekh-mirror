@@ -190,7 +190,7 @@ jobs:
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration
     - name: Install PIP dependencies
       run: |
-        pip install keyring ply sqlobject configobj pytest mock
+        pip install keyring ply sqlobject configobj pytest mock PyGObject pycairo
     - name: Run tests
       run: |
         cd sutekh
@@ -200,5 +200,5 @@ jobs:
       run: |
         cd sutekh
         python3 setup-freeze.py build_mac
-        ls dist
+        ls build
         cd ..
