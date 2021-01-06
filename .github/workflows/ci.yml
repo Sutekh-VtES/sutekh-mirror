@@ -94,10 +94,10 @@ jobs:
         pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo mysql-connector
     - name: Create MySQL DB
       run: |
-        mysql -uroot -e 'create database sutekh_test;'
+        mysql -uroot -h 127.0.0.1 -e 'create database sutekh_test;'
     - name: Run Tests
       env:
-        SUTEKH_TEST_DB: mysql://root:@localhost/sutekh_test?driver=connector
+        SUTEKH_TEST_DB: mysql://root:@127.0.0.1/sutekh_test?driver=connector
       run: |
         cd sutekh
         xvfb-run --auto-servernum pytest
