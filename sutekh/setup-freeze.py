@@ -70,6 +70,7 @@ if sys.platform == 'win32':
         "GdkPixbuf-2.0",
         "GModule-2.0",
         "Atk-1.0",
+        "HarfBuzz-0.0",
         "Poppler-0.18",
     ]
 
