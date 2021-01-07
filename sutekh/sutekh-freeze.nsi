@@ -1,21 +1,15 @@
 ; Copyright 2010 Simon Cross <hodgestar@gmail.com>
 ; GPL - see COPYING for details
-; Compile with sutekh-makensis sutekh-py2exe.nsi .
-; You'll need to have previously run sutekh-wine-py2exe
+; Compile with sutekh-makensis sutekh-freeze.nsi .
+; You'll need to have previously run setup-freeze.py build_exe
 
   !include "MUI.nsh"
 
 ; Application Details
 
   !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
-  !define SUTEKH_UNPACK "sutekh-${SUTEKH_VERSION}-py2exe"
   !define ARTWORK_FOLDER "artwork"
   !define DIST_FOLDER "dist"
-
-; vcredist_x86.exe details
-  !define MISC_FOLDER "dist/misc"
-  !define VCREDIST "vcredist_x86.exe"
-  !define VCREDIST_KEY "{FF66E9F6-83E7-3A3E-AF14-8DE9A809A6A4}"
 
   Name "Sutekh"
   OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}.exe"
@@ -57,35 +51,6 @@
   Icon "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
   SetCompress off ; all the big stuff is already compressed
 
-; Installer for the vcredist_x86.exe stuff
-; TODO: This only 32bit support - Do we need to support the 64bit version?
-
-Section "vcredist"
-
-  SetOutPath "$INSTDIR"
-  File "${MISC_FOLDER}\${VCREDIST}"
-   ; Check if it's already installed by checking for the uninstall key
-   ; Idea and key value to check taken post and comments at:
-   ; http://blogs.msdn.com/b/astebner/archive/2009/01/29/9384143.aspx
-
-   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${VCREDIST_KEY}" UninstallString
-   ; NSIS docs say if the key doesn't exist, we get an error and an empty string
-   IfErrors install done
-
-install:
-   ; Runs install with progress bar and no cancel button
-   ; Details taken from
-   ; http://blogs.msdn.com/b/astebner/archive/2010/10/18/9513328.aspx
-
-   DetailPrint "Installing required MS runtime libraries"
-   ExecWait "$INSTDIR/${VCREDIST} /qb!"
-
-done:
-
-   DetailPrint "MS runtime libraries already installed, skipping"
-
-SectionEnd
-
 ; Installer Sections
 
 Section "Sutekh"
@@ -105,7 +70,7 @@ Section "Sutekh"
   #   parameters icon.file icon_index_number start_options
   #   keyboard_shortcut description
 
-  CreateShortCut "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk" "$INSTDIR\${SUTEKH_UNPACK}\SutekhGui.exe" \
+  CreateShortCut "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk" "$INSTDIR\SutekhGui.exe" \
      "" "$INSTDIR\${SUTEKH_ICON}" "" SW_SHOWNORMAL \
      "" "Sutekh VtES Collection Manager"
 
@@ -122,8 +87,8 @@ Section "Uninstall"
   ; Delete files not deleted during install
   Delete "$INSTDIR\${SUTEKH_ICON}"
 
-  ; Remove py2exe folder
-  RMDir /r /REBOOTOK "$INSTDIR\${SUTEKH_UNPACK}"
+  ; Remove folder
+  RMDir /r /REBOOTOK "$INSTDIR"
 
   ; Remove shortcut links
   Delete "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk"
