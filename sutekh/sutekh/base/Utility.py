@@ -257,6 +257,17 @@ def is_memory_db():
     return sqlhub.processConnection.uri() in ["sqlite:///:memory:",
                                               "sqlite:/:memory:"]
 
+def fix_ssl_env():
+    """Setup the correct enviroment variables for accessing the frozen
+       ssl info."""
+    # We split this off from fix_gui_env for use by command line scripts
+    if hasattr(sys, 'frozen'):
+        # Point at the frozen certificates
+        prefix = os.path.dirname(sys.executable)
+        etc = os.path.join(prefix, 'etc')
+        os.environ.setdefault('SSL_CERT_FILE', os.path.join(etc, 'ssl', 'cert.pem'))
+        os.environ.setdefault('SSL_CERT_DIR', os.path.join(etc, 'ssl', 'certs'))
+
 
 def fix_gui_env():
     """Setup various environment variables needed to run the gui
@@ -282,13 +293,9 @@ def fix_gui_env():
         os.environ['XDG_DATA_DIRS'] = os.path.join(prefix, 'share')
         os.environ['GI_TYPELIB_PATH'] = os.path.join(prefix, 'lib',
                                                      'girepository-1.0')
-        etc = os.path.join(prefix, 'etc')
-
         # FIXME: This may be needed on MacOS as well.
         if sys.platform.startswith('win'):
-            # Point at the frozen certificates
-            os.environ.setdefault('SSL_CERT_FILE', os.path.join(etc, 'ssl', 'cert.pem'))
-            os.environ.setdefault('SSL_CERT_DIR', os.path.join(etc, 'ssl', 'certs'))
+            fix_ssl_env()
             # Fix paths for windows gtk loaders
             os.environ.setdefault('GDK_PIXBUF_MODULEDIR',
                                   os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',

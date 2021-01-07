@@ -32,7 +32,7 @@ from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
                                   keyword_sort_key)
 from sutekh.base.core.DBUtility import refresh_tables, make_adapter_caches
 from sutekh.base.Utility import (ensure_dir_exists, prefs_dir, sqlite_uri,
-                                 setup_logging)
+                                 setup_logging, fix_ssl_env)
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.base.CliUtils import (run_filter, print_card_filter_list,
@@ -48,7 +48,6 @@ from sutekh.io.WwUrls import (WW_CARDLIST_URL, WW_RULINGS_URL,
                               EXTRA_CARD_URL, EXP_DATA_URL,
                               LOOKUP_DATA_URL)
 from sutekh.SutekhInfo import SutekhInfo
-
 
 def parse_options(aArgs):
     """Handle the command line options"""
@@ -420,6 +419,7 @@ def main():
     """
     Entry_point for setuptools scripts. Passes sys.argv to main_with_args
     """
+    fix_ssl_env()
     return main_with_args(sys.argv)
 
 
