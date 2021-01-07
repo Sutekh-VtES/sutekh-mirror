@@ -74,12 +74,9 @@ if sys.platform == 'win32':
     ]
 
     for ns in required_gi_namespaces:
-        subpath = "lib/girepository-1.0/{}.typelib".format(ns)
+        subpath = f"lib/girepository-1.0/{ns}.typelib"
         fullpath = os.path.join(sys.prefix, subpath)
-        assert os.path.isfile(fullpath), (
-            "Required file {} is missing" .format(
-                fullpath,
-            ))
+        assert os.path.isfile(fullpath), f"Required file {fullpath} is missing"
         binary_include_files.append((fullpath, subpath))
 
     build_exe_options = {
@@ -97,9 +94,66 @@ if sys.platform == 'win32':
                  os.path.join('lib', 'gtk-3.0')),
              (os.path.join(sys.prefix, 'lib', 'gdk-pixbuf-2.0'),
                  os.path.join('lib', 'gdk-pixbuf-2.0')),
+             #(os.path.join(sys.platform, 'gtk-3.0', 'gdk-pixbuf.loaders'),
+             #    os.path.join('etc', 'gtk-3.0', 'gdk-pixbuf.loaders')),
              # Include docs
              (os.path.join('sutekh', 'docs', 'html_docs'),
                  os.path.join('sutekh', 'docs', 'html_docs')),
+             ('artwork', 'artwork'),
+        ],
+        'include_msvcr': True,
+        # Includes doesn't include all the files, so we need to use packages for
+        # the plugins
+        'packages': ['gi', 'cairo', 'sutekh.base.gui.plugins', 'sutekh.gui.plugins'],
+    }
+
+    build_exe_options['include_files'].extend(binary_include_files)
+
+elif sys.platform == 'darwin':
+    binary_include_files = []
+
+    required_gi_namespaces = [
+        "Gtk-3.0",
+        "Gdk-3.0",
+        "cairo-1.0",
+        "Pango-1.0",
+        "PangoCairo-1.0",
+        "PangoFT2-1.0",
+        "GObject-2.0",
+        "GLib-2.0",
+        "Gio-2.0",
+        "GdkPixbuf-2.0",
+        "GModule-2.0",
+        "Atk-1.0",
+        "Poppler-0.18",
+    ]
+
+    for ns in required_gi_namespaces:
+        subpath = f"lib/girepository-1.0/{ns}.typelib"
+        fullpath = os.path.join('/', 'usr', 'local', subpath)
+        assert os.path.isfile(fullpath), f"Required file {fullpath} is missing"
+        binary_include_files.append((fullpath, subpath))
+
+    build_exe_options = {
+        'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
+                     'packaging.specifiers', 'packaging.requirements', 'packaging.version'],
+        # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
+        # in col.py
+        # We exclude some other unneeded packages to reduce bloat
+        'excludes': ['DateTime', 'tkinter', 'test'],
+        'include_files': [
+            # We should reduce the number of icons we copy
+             (os.path.join('/', 'usr', 'local', 'share', 'icons', 'Adwaita'),
+                 os.path.join('share', 'icons', 'Adwaita')),
+             (os.path.join('/', 'usr', 'local', 'lib', 'gtk-3.0'),
+                 os.path.join('lib', 'gtk-3.0')),
+             (os.path.join('/', 'usr', 'local', 'lib', 'gdk-pixbuf-2.0'),
+                 os.path.join('lib', 'gdk-pixbuf-2.0')),
+             # Include docs
+             (os.path.join('sutekh', 'docs', 'html_docs'),
+                 os.path.join('sutekh', 'docs', 'html_docs')),
+             #(os.path.join(sys.platform, 'gtk-3.0', 'gdk-pixbuf.loaders'),
+             #    os.path.join('etc', 'gtk-3.0', 'gdk-pixbuf.loaders')),
              ('artwork', 'artwork'),
         ],
         # Includes doesn't include all the files, so we need to use packages for
@@ -114,13 +168,17 @@ guibase = None
 # We'll probably need most of this for MacOS as well
 if sys.platform == "win32":
     guibase = "Win32GUI"
+
+if sys.platform in ['win32', 'darwin']:
     # Copy in ssl certs from msys2 installation
     import ssl
     ssl_paths = ssl.get_default_verify_paths()
     build_exe_options['include_files'].append(
             (ssl_paths.openssl_cafile, os.path.join('etc', 'ssl', 'cert.pem')))
-    build_exe_options['include_files'].append(
-            (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
+    if os.path.exists(ssl_paths.openssl_capath):
+        build_exe_options['include_files'].append(
+                (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
+
 
 
 setup   (   # Metadata
