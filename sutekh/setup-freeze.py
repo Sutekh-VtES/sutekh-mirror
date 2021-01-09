@@ -24,10 +24,38 @@ from cx_Freeze import setup, Executable
 sys.path.append('sutekh')
 SutekhInfo = importlib.import_module("SutekhInfo").SutekhInfo
 
+binary_include_files = []
+guibase = None
+base = None
+
+build_exe_options = {
+    'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
+                 'packaging.specifiers', 'packaging.requirements', 'packaging.version'],
+    # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
+    # in col.py
+    # We exclude some other unneeded packages to reduce bloat
+    'excludes': ['DateTime', 'tkinter', 'test'],
+    'include_files': [
+         # Include docs
+         (os.path.join('sutekh', 'docs', 'html_docs'),
+             os.path.join('sutekh', 'docs', 'html_docs')),
+         ('artwork', 'artwork'),
+    ],
+    # Includes doesn't include all the files, so we need to use packages for
+    # the plugins
+    'packages': ['gi', 'cairo', 'sutekh.base.gui.plugins', 'sutekh.gui.plugins'],
+}
+
 
 # Heavily based off https://github.com/achadwick/hello-cxfreeze-gtk
 if sys.platform == 'win32':
-    binary_include_files = []
+    guibase = "Win32GUI"
+    sysbase = sys.prefix
+
+    # Include MS redistributable stuff
+    build_exe_options['include_msvcr'] = True
+
+    # Find windows dlls and make sure they're in place
 
     required_dll_search_paths = os.getenv("PATH", os.defpath).split(os.pathsep)
     required_dlls = [
@@ -57,133 +85,61 @@ if sys.platform == 'win32':
 
         binary_include_files.append((dll_path, dll))
 
-    required_gi_namespaces = [
-        "Gtk-3.0",
-        "Gdk-3.0",
-        "cairo-1.0",
-        "Pango-1.0",
-        "PangoCairo-1.0",
-        "PangoFT2-1.0",
-        "GObject-2.0",
-        "GLib-2.0",
-        "Gio-2.0",
-        "GdkPixbuf-2.0",
-        "GModule-2.0",
-        "Atk-1.0",
-        "HarfBuzz-0.0",
-        "Poppler-0.18",
-    ]
-
-    for ns in required_gi_namespaces:
-        subpath = f"lib/girepository-1.0/{ns}.typelib"
-        fullpath = os.path.join(sys.prefix, subpath)
-        assert os.path.isfile(fullpath), f"Required file {fullpath} is missing"
-        binary_include_files.append((fullpath, subpath))
-
-    build_exe_options = {
-        'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
-                     'packaging.specifiers', 'packaging.requirements', 'packaging.version'],
-        # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
-        # in col.py
-        # We exclude some other unneeded packages to reduce bloat
-        'excludes': ['DateTime', 'tkinter', 'test'],
-        'include_files': [
-            # We should reduce the number of icons we copy
-             (os.path.join(sys.prefix, 'share', 'icons', 'Adwaita'),
-                 os.path.join('share', 'icons', 'Adwaita')),
-             (os.path.join(sys.prefix, 'share', 'icons', 'hicolor'),
-                 os.path.join('share', 'icons', 'hicolor')),
-             (os.path.join(sys.prefix, 'share', 'glib-2.0', 'schemas'),
-                 os.path.join('share', 'glib-2.0', 'schemas')),
-             (os.path.join(sys.prefix, 'lib', 'gtk-3.0'),
-                 os.path.join('lib', 'gtk-3.0')),
-             (os.path.join(sys.prefix, 'lib', 'gdk-pixbuf-2.0'),
-                 os.path.join('lib', 'gdk-pixbuf-2.0')),
-             #(os.path.join(sys.platform, 'gtk-3.0', 'gdk-pixbuf.loaders'),
-             #    os.path.join('etc', 'gtk-3.0', 'gdk-pixbuf.loaders')),
-             # Include docs
-             (os.path.join('sutekh', 'docs', 'html_docs'),
-                 os.path.join('sutekh', 'docs', 'html_docs')),
-             ('artwork', 'artwork'),
-        ],
-        'include_msvcr': True,
-        # Includes doesn't include all the files, so we need to use packages for
-        # the plugins
-        'packages': ['gi', 'cairo', 'sutekh.base.gui.plugins', 'sutekh.gui.plugins'],
-    }
-
-    build_exe_options['include_files'].extend(binary_include_files)
-
 elif sys.platform == 'darwin':
-    binary_include_files = []
-
-    required_gi_namespaces = [
-        "Gtk-3.0",
-        "Gdk-3.0",
-        "cairo-1.0",
-        "Pango-1.0",
-        "PangoCairo-1.0",
-        "PangoFT2-1.0",
-        "GObject-2.0",
-        "GLib-2.0",
-        "Gio-2.0",
-        "GdkPixbuf-2.0",
-        "GModule-2.0",
-        "Atk-1.0",
-        "Poppler-0.18",
-    ]
-
-    for ns in required_gi_namespaces:
-        subpath = f"lib/girepository-1.0/{ns}.typelib"
-        fullpath = os.path.join('/', 'usr', 'local', subpath)
-        assert os.path.isfile(fullpath), f"Required file {fullpath} is missing"
-        binary_include_files.append((fullpath, subpath))
-
-    build_exe_options = {
-        'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
-                     'packaging.specifiers', 'packaging.requirements', 'packaging.version'],
-        # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
-        # in col.py
-        # We exclude some other unneeded packages to reduce bloat
-        'excludes': ['DateTime', 'tkinter', 'test'],
-        'include_files': [
-            # We should reduce the number of icons we copy
-             (os.path.join('/', 'usr', 'local', 'share', 'icons', 'Adwaita'),
-                 os.path.join('share', 'icons', 'Adwaita')),
-             (os.path.join('/', 'usr', 'local', 'lib', 'gtk-3.0'),
-                 os.path.join('lib', 'gtk-3.0')),
-             (os.path.join('/', 'usr', 'local', 'lib', 'gdk-pixbuf-2.0'),
-                 os.path.join('lib', 'gdk-pixbuf-2.0')),
-             # Include docs
-             (os.path.join('sutekh', 'docs', 'html_docs'),
-                 os.path.join('sutekh', 'docs', 'html_docs')),
-             #(os.path.join(sys.platform, 'gtk-3.0', 'gdk-pixbuf.loaders'),
-             #    os.path.join('etc', 'gtk-3.0', 'gdk-pixbuf.loaders')),
-             ('artwork', 'artwork'),
-        ],
-        # Includes doesn't include all the files, so we need to use packages for
-        # the plugins
-        'packages': ['gi', 'cairo', 'sutekh.base.gui.plugins', 'sutekh.gui.plugins'],
-    }
-
-    build_exe_options['include_files'].extend(binary_include_files)
+    sysbase = os.path.join('/', 'usr', 'local')
+else:
+    raise RuntimeError("Our setup-freeze.py currently only supports windows or MacOS")
 
 
-guibase = None
-# We'll probably need most of this for MacOS as well
-if sys.platform == "win32":
-    guibase = "Win32GUI"
+# Find typelib files
+required_gi_namespaces = [
+     "Gtk-3.0",
+     "Gdk-3.0",
+     "cairo-1.0",
+     "Pango-1.0",
+     "PangoCairo-1.0",
+     "PangoFT2-1.0",
+     "GObject-2.0",
+     "GLib-2.0",
+     "Gio-2.0",
+     "GdkPixbuf-2.0",
+     "GModule-2.0",
+     "Atk-1.0",
+     "HarfBuzz-0.0",
+     "Poppler-0.18",
+]
 
-if sys.platform in ['win32', 'darwin']:
-    # Copy in ssl certs from msys2 installation
-    import ssl
-    ssl_paths = ssl.get_default_verify_paths()
+for ns in required_gi_namespaces:
+    subpath = f"lib/girepository-1.0/{ns}.typelib"
+    fullpath = os.path.join(sysbase, subpath)
+    assert os.path.isfile(fullpath), f"Required file {fullpath} is missing"
+    binary_include_files.append((fullpath, subpath))
+
+
+build_exe_options['include_files'].extend([
+    (os.path.join(sysbase, 'share', 'icons', 'Adwaita'),
+        os.path.join('share', 'icons', 'Adwaita')),
+    (os.path.join(sysbase, 'share', 'icons', 'hicolor'),
+        os.path.join('share', 'icons', 'hicolor')),
+    (os.path.join(sysbase, 'share', 'glib-2.0', 'schemas'),
+        os.path.join('share', 'glib-2.0', 'schemas')),
+    (os.path.join(sysbase, 'lib', 'gtk-3.0'),
+        os.path.join('lib', 'gtk-3.0')),
+    (os.path.join(sysbase, 'lib', 'gdk-pixbuf-2.0'),
+        os.path.join('lib', 'gdk-pixbuf-2.0')),
+])
+
+build_exe_options['include_files'].extend(binary_include_files)
+
+
+# Copy in ssl certs from msys2 installation
+import ssl
+ssl_paths = ssl.get_default_verify_paths()
+build_exe_options['include_files'].append(
+    (ssl_paths.openssl_cafile, os.path.join('etc', 'ssl', 'cert.pem')))
+if os.path.exists(ssl_paths.openssl_capath):
     build_exe_options['include_files'].append(
-            (ssl_paths.openssl_cafile, os.path.join('etc', 'ssl', 'cert.pem')))
-    if os.path.exists(ssl_paths.openssl_capath):
-        build_exe_options['include_files'].append(
-                (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
-
+        (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
 
 
 setup   (   # Metadata
