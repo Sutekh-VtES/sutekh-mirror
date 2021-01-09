@@ -180,6 +180,26 @@ jobs:
       with:
         name: sutekh-cx_Freeze_windows
         path: sutekh/build/exe.mingw*/*
+    - name: Install NSIS
+      # Install the msys2 nsis package
+      shell: msys2 {0}
+      run: |
+        pacman -S mingw-w64-x86_64-nsis zip
+    - name: Prepare to make installer
+      shell: msys2 {0}
+      run: |
+        cd sutekh
+        ./prepare_win_nsis
+    - name: Make installer
+      shell: msys2 {0}
+      run: |
+        cd sutekh
+        ./sutekh-makensis sutekh-freeze.nsi
+    - name: Upload NSIS installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: sutekh-cx_Freeze_windows
+        path: sutekh/dist/*exe
 
   sqlite-macos:
 
