@@ -91,6 +91,8 @@ if sys.platform == 'win32':
             # We should reduce the number of icons we copy
              (os.path.join(sys.prefix, 'share', 'icons', 'Adwaita'),
                  os.path.join('share', 'icons', 'Adwaita')),
+             (os.path.join(sys.prefix, 'share', 'icons', 'hicolor'),
+                 os.path.join('share', 'icons', 'hicolor')),
              (os.path.join(sys.prefix, 'share', 'glib-2.0', 'schemas'),
                  os.path.join('share', 'glib-2.0', 'schemas')),
              (os.path.join(sys.prefix, 'lib', 'gtk-3.0'),
