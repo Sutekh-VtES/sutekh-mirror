@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+
+
+SUTEKH_VERSION=`PYTHONPATH=. python3 -c "from sutekh import SutekhInfo; print(SutekhInfo.SutekhInfo.VERSION_STR)"`
+zipfile=$(pwd)/dist/sutekh-"$SUTEKH_VERSION".zip
+dest=$(find ./ -name 'exe.min*' -type d -print)
+pushd $dest
+
+dups=$(find ./ -name '*dll' -printf '%f\n' | sort | uniq -d)
+
+for x in $dups; do
+   # cx_Freeze should have copied everything into the root directory already,
+   # but we check anyway.
+	if [ -f $x ]; then
+		find ./ -mindepth 2 -name "$x" | xargs rm
+	fi
+done
+
+# cleanup icons a bit to reduce installer size
+rm -rf share/icons/Adwaita/512x512 
+rm -rf share/icons/Adwaita/256x256
+rm -rf share/icons/Adwaita/scalable/apps
+
+zip -r -o $zipfile .
+
