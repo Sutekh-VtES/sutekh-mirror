@@ -223,14 +223,10 @@ jobs:
     - name: Build Mac packages
       run: |
         cd sutekh
-        python3 setup-freeze.py build_exe
         python3 setup-freeze.py bdist_mac
+        # Permissions are helpful for playing with the files in the app
+        chmod 755 build/Sutekh*app*/Contents/MacOS/SutekhCli* build/Sutekh*app*/Contents/MacOS/SutekhGui*
         cd ..
-    - name: Upload cx_Freeze build_exe directory
-      uses: actions/upload-artifact@v2
-      with:
-        name: sutekh-cx_Freeze_macos-exe
-        path: sutekh/build/exe.macos*/*
     - name: Upload cx_Freeze app directory
       uses: actions/upload-artifact@v2
       with:
