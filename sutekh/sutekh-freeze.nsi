@@ -30,7 +30,7 @@
 
   !define COMBINED_LICENSE "sutekh\COPYING"
   !define SUTEKH_ICON "sutekh-icon-inkscape.ico"
-  !define SUTEKH_PY2EXE_ZIP "sutekh-${SUTEKH_VERSION}.zip"
+  !define SUTEKH_FREEZE_ZIP "sutekh-${SUTEKH_VERSION}.zip"
   !define UNINSTALLER "Uninstaller.exe"
 
 ; Pages
@@ -58,11 +58,11 @@ Section "Sutekh"
 
   WriteUninstaller "$INSTDIR\${UNINSTALLER}"
 
-  File "${DIST_FOLDER}\${SUTEKH_PY2EXE_ZIP}"
+  File "${DIST_FOLDER}\${SUTEKH_FREEZE_ZIP}"
   File "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
 
-  ZipDLL::extractall "$INSTDIR\${SUTEKH_PY2EXE_ZIP}" "$INSTDIR"
-  Delete "$INSTDIR\${SUTEKH_PY2EXE_ZIP}"
+  ZipDLL::extractall "$INSTDIR\${SUTEKH_FREEZE_ZIP}" "$INSTDIR"
+  Delete "$INSTDIR\${SUTEKH_FREEZE_ZIP}"
 
   CreateDirectory "$SMPROGRAMS\Sutekh"
 
