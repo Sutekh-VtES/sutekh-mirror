@@ -184,7 +184,7 @@ jobs:
       # Install the msys2 nsis package
       shell: msys2 {0}
       run: |
-        pacman -S --noconfirm mingw-w64-x86_64-nsis zip
+        pacman -S --noconfirm mingw-w64-x86_64-nsis mingw-w64-i686-nsis-nsisunz zip
     - name: Prepare to make installer
       shell: msys2 {0}
       run: |

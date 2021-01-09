@@ -5,6 +5,9 @@
 
   !include "MUI.nsh"
 
+; Needed for building on msys2
+  Unicode true
+
 ; Application Details
 
   !define SUTEKH_VERSION "0.0.0" ; set by sutekh-makensis
@@ -61,7 +64,7 @@ Section "Sutekh"
   File "${DIST_FOLDER}\${SUTEKH_FREEZE_ZIP}"
   File "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
 
-  ZipDLL::extractall "$INSTDIR\${SUTEKH_FREEZE_ZIP}" "$INSTDIR"
+  nsisunz::Unzip "$INSTDIR\${SUTEKH_FREEZE_ZIP}" "$INSTDIR"
   Delete "$INSTDIR\${SUTEKH_FREEZE_ZIP}"
 
   CreateDirectory "$SMPROGRAMS\Sutekh"
