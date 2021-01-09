@@ -293,10 +293,14 @@ def fix_gui_env():
         os.environ['XDG_DATA_DIRS'] = os.path.join(prefix, 'share')
         os.environ['GI_TYPELIB_PATH'] = os.path.join(prefix, 'lib',
                                                      'girepository-1.0')
-        # FIXME: This may be needed on MacOS as well.
+        fix_ssl_env()
+        # Fix paths for windows gtk loaders
         if sys.platform.startswith('win'):
-            fix_ssl_env()
-            # Fix paths for windows gtk loaders
             os.environ.setdefault('GDK_PIXBUF_MODULEDIR',
                                   os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders'))
+        elif sys.platform.startswith('darwin'):
+            # MacOS seems to prefer this setting
+            os.environ.setdefault('GDK_PIXBUF_MODULE_FILE',
+                                  os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
+                                               '2.10.0', 'loaders.cache'))
