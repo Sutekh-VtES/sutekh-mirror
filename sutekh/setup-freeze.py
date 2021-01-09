@@ -14,6 +14,7 @@
 import importlib
 import os
 import sys
+import tempfile
 
 from subprocess import check_call
 
@@ -125,11 +126,37 @@ build_exe_options['include_files'].extend([
         os.path.join('share', 'glib-2.0', 'schemas')),
     (os.path.join(sysbase, 'lib', 'gtk-3.0'),
         os.path.join('lib', 'gtk-3.0')),
-    (os.path.join(sysbase, 'lib', 'gdk-pixbuf-2.0'),
-        os.path.join('lib', 'gdk-pixbuf-2.0')),
+    (os.path.join(sysbase, 'lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders'),
+        os.path.join('lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders')),
 ])
 
+
 build_exe_options['include_files'].extend(binary_include_files)
+
+if sys.platform == 'win32':
+    # Add loaders cache
+    build_exe_options['include_files'].extend([
+        (os.path.join(sysbase, 'lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders.cache'),
+            os.path.join('lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders.cache')),
+    ])
+else:
+    # On MacOS, we need to rewrite the loader to use local paths
+    data = open(os.path.join(sysbase, 'lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders.cache')).read()
+    # This is a bit hacky, but we don't want to overwrite the actual loaders.cache file and we
+    # need this to stick around until the freeze step has finished
+    tempdir = tempfile.mkdtemp()
+    new_cache = open(os.path.join(tempdir, 'loaders.cache'), 'w')
+    for line in data.splitlines():
+        line=line.strip()
+        if '/usr/local' in line:
+            line = line.replace('/usr/local/', '@executable_path/')
+        new_cache.write(line)
+        new_cache.write('\n')
+    new_cache.close()
+    build_exe_options['include_files'].extend([
+        (os.path.join(tempdir, 'loaders.cache'),
+            os.path.join('lib', 'gdk-pixbuf-2.0', '2.10.0', 'loaders.cache')),
+    ])
 
 
 # Copy in ssl certs from msys2 installation
