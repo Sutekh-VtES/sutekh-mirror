@@ -239,11 +239,9 @@ jobs:
       run: |
         cd sutekh
         python3 setup-freeze.py bdist_dmg
-        ls build
-        ls dist
         cd ..
     - name: Upload cx_Freeze dmg file
       uses: actions/upload-artifact@v2
       with:
         name: sutekh-cx_Freeze_macos-dmg
-        path: sutekh/dist/Sutekh*dmg
+        path: sutekh/build/Sutekh*dmg
