@@ -189,6 +189,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd sutekh
+        mkdir -p dist
         ./prepare_win_nsis
     - name: Make installer
       shell: msys2 {0}
