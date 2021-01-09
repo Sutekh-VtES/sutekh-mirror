@@ -304,3 +304,4 @@ def fix_gui_env():
             os.environ.setdefault('GDK_PIXBUF_MODULE_FILE',
                                   os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders.cache'))
+            os.environ['YLD_FALLBACK_LIBRARY_PATH'] = prefix
