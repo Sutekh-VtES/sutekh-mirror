@@ -154,6 +154,7 @@ jobs:
         update: true
         install: >-
           mingw-w64-x86_64-gtk3
+          mingw-w64-x86_64-hicolor-icon-theme
           mingw-w64-x86_64-python-pip
           mingw-w64-x86_64-python-gobject
           mingw-w64-x86_64-python-cx_Freeze
@@ -189,7 +190,7 @@ jobs:
       uses: actions/setup-python@v2
     - name: Install brew dependencies
       run: |
-        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler
+        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
         pip install keyring ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
