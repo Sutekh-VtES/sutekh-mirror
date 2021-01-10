@@ -175,11 +175,6 @@ jobs:
         cd sutekh
         python3 setup-freeze.py build_exe
         cd ..
-    - name: Upload cx_Freeze directory
-      uses: actions/upload-artifact@v2
-      with:
-        name: sutekh-cx_Freeze_windows
-        path: sutekh/build/exe.mingw*/*
     - name: Install NSIS
       # Install the msys2 nsis package
       shell: msys2 {0}
