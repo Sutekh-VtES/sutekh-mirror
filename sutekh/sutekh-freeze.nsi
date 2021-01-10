@@ -17,6 +17,7 @@
   Name "Sutekh"
   OutFile "${DIST_FOLDER}\sutekh-${SUTEKH_VERSION}.exe"
   InstallDir "$PROGRAMFILES\Sutekh-${SUTEKH_VERSION}"
+  SetCompressor /SOLID lzma
 
 ; Interface Settings
 
@@ -33,7 +34,7 @@
 
   !define COMBINED_LICENSE "sutekh\COPYING"
   !define SUTEKH_ICON "sutekh-icon-inkscape.ico"
-  !define SUTEKH_FREEZE_ZIP "sutekh-${SUTEKH_VERSION}.zip"
+  !define SUTEKH_PATH "sutekh-win"
   !define UNINSTALLER "Uninstaller.exe"
 
 ; Pages
@@ -61,11 +62,8 @@ Section "Sutekh"
 
   WriteUninstaller "$INSTDIR\${UNINSTALLER}"
 
-  File "${DIST_FOLDER}\${SUTEKH_FREEZE_ZIP}"
+  File /r "${DIST_FOLDER}\${SUTEKH_PATH}"
   File "${ARTWORK_FOLDER}\${SUTEKH_ICON}"
-
-  nsisunz::Unzip "$INSTDIR\${SUTEKH_FREEZE_ZIP}" "$INSTDIR"
-  Delete "$INSTDIR\${SUTEKH_FREEZE_ZIP}"
 
   CreateDirectory "$SMPROGRAMS\Sutekh"
 
@@ -73,7 +71,7 @@ Section "Sutekh"
   #   parameters icon.file icon_index_number start_options
   #   keyboard_shortcut description
 
-  CreateShortCut "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk" "$INSTDIR\SutekhGui.exe" \
+  CreateShortCut "$SMPROGRAMS\Sutekh\Sutekh ${SUTEKH_VERSION}.lnk" "$INSTDIR\${SUTEKH_PATH}\SutekhGui.exe" \
      "" "$INSTDIR\${SUTEKH_ICON}" "" SW_SHOWNORMAL \
      "" "Sutekh VtES Collection Manager"
 
