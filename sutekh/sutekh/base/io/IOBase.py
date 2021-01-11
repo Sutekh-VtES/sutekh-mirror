@@ -10,13 +10,7 @@
 import logging
 
 from xml.etree.ElementTree import parse, tostring
-# pylint: disable=no-name-in-module, import-error
-# For compatability with ElementTree 1.3
-try:
-    from xml.etree.ElementTree import ParseError
-except ImportError:
-    from xml.parsers.expat import ExpatError as ParseError
-# pylint: enable=no-name-in-module, import-error
+from xml.etree.ElementTree import ParseError
 
 from sqlobject import sqlhub
 
