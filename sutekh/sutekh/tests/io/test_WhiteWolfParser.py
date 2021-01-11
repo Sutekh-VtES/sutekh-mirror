@@ -221,9 +221,10 @@ class WhiteWolfParserTests(SutekhTest):
                 try:
                     oPrint = IPrinting((oExp, None))
                     _oPair = IPhysicalCard((oAbs, oPrint))
-                except SQLObjectNotFound:
-                    self.fail("Missing physical card %s from expansion %s"
-                              % (oAbs.name, oExp.name))
+                except SQLObjectNotFound:  # pragma: no cover
+                    # We don't except to hit this during testing.
+                    self.fail(f"Missing physical card {oAbs.name}"
+                              f" from expansion {oExp.name}")
 
         # Check Yvette
         oYvette = IAbstractCard(u"Yvette, The Hopeless")
