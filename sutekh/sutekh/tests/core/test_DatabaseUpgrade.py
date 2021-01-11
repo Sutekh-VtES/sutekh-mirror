@@ -1641,7 +1641,7 @@ class DatabaseUpgradeTests(SutekhTest):
         # of the standard DBAPI
         sDBuri = sqlhub.processConnection.uri()
         if not sDBuri.startswith('sqlite:'):
-            self.skipTest("Not running on sqlite database")
+            self.skipTest("Not running on sqlite database")  # pragma: no cover
 
         oConn = sqlhub.processConnection
 
@@ -1651,9 +1651,9 @@ class DatabaseUpgradeTests(SutekhTest):
         # Create the database to upgrade
         sDbFile = self._create_tmp_file()
         # windows is different, since we don't have a starting / for the path
-        if sys.platform.startswith("win"):
+        if sys.platform.startswith("win"): # pragma: no cover
             oOldDB = connectionForURI("sqlite:///%s" % sDbFile)
-        else:
+        else:  # pragma: no cover
             oOldDB = connectionForURI("sqlite://%s" % sDbFile)
         sqlhub.processConnection = oOldDB
 

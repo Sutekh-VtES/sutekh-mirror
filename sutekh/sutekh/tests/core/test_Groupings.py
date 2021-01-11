@@ -24,7 +24,7 @@ def _get_cards_for_group(aGrouping, sName):
     for aGrp in aGrouping:
         if aGrp[0] == sName:
             return aGrp[1]
-    raise RuntimeError("Missed Grouping")
+    raise RuntimeError("Missed Grouping")  # pragma: no cover
 
 
 def _get_top_levels(aGrouping):
