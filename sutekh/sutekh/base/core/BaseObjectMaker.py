@@ -58,7 +58,7 @@ class BaseObjectMaker:
         # XXX: Should we define some of the common logic here
         # and just provide a hook for creating the object if it
         # doesn't exist?
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def make_physical_card(self, oCard, oPrinting):
         try:

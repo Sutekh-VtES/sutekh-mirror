@@ -109,7 +109,7 @@ class BaseExpansionRarityGrouping(IterGrouping):
     def _handle_extra_expansions(self, oRarity, aRarities, aExpRarities):
         # Hook for subclasses to add extra fake expansion / rarity
         # combinations
-        pass
+        pass  # pragma: no cover
 
 
 class ArtistGrouping(IterGrouping):

@@ -29,7 +29,7 @@ class AbstractCardLookup:
            if the entire list should be considered invalid (e.g. if the names
            are presented to a user who then cancels the operation).
            """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class PhysicalCardLookup:
@@ -56,7 +56,7 @@ class PhysicalCardLookup:
            LookupFailed will be raised if the entire list should be considered
            invalid, as for AbstractCardLookup
            """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class PrintingLookup:
@@ -71,7 +71,7 @@ class PrintingLookup:
            Names for which printings could not be found will be marked as
            None. This method may raise LookupFailed if the entire list
            should be considered invalid."""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 

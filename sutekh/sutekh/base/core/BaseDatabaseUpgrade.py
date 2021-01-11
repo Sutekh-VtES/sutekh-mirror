@@ -123,7 +123,7 @@ class BaseDBUpgradeManager:
 
     def old_database_count(self, oConn):
         """Check number of items in old DB for progress bars, etc."""
-        raise NotImplementedError('Implement old_database_count')
+        raise NotImplementedError('Implement old_database_count')  # pragma: no cover
 
     def _get_card_counts(self, oConn):
         """Get the count of AbstractCards, PhysicalCards and PhysicalCardSets
@@ -135,7 +135,7 @@ class BaseDBUpgradeManager:
 
     def cur_database_count(self, oConn):
         """Check number of items in upgraded DB for progress bars, etc."""
-        raise NotImplementedError('Implement cur_database_count')
+        raise NotImplementedError('Implement cur_database_count')  # pragma: no cover
 
     def _copy_rarity(self, oOrigConn, oTrans):
         """Copy rarity tables, assuming same version"""
@@ -194,7 +194,7 @@ class BaseDBUpgradeManager:
                                           value=oObj.name,
                                           connection=oTrans)
         else:
-            return (False, ["Unknown Version for LookupHints"])
+            return (False, ["Unknown Version for LookupHints"])  # pragma: no cover
         return (True, aMessages)
 
     def _copy_old_metadata(self, oOrigConn, oTrans, oVer):
@@ -220,7 +220,7 @@ class BaseDBUpgradeManager:
                          " table. You will need to reimport the cardlist"
                          " information."]
         else:
-            return (False, ["Unknown Version for Metadata"])
+            return (False, ["Unknown Version for Metadata"])  # pragma: no cover
         return (True, aMessages)
 
     def _copy_print_properties(self, oOrigConn, oTrans):
@@ -250,13 +250,13 @@ class BaseDBUpgradeManager:
                          " table. You will need to reimport the cardlist"
                          " information."]
         else:
-            return (False, ["Unknown Version for PrintingProperty"])
+            return (False, ["Unknown Version for PrintingProperty"])  # pragma: no cover
         return (True, aMessages)
 
     def _upgrade_printing(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should override this
            when needed."""
-        return (False, ["Unknown Version for Printing"])
+        return (False, ["Unknown Version for Printing"])  # pragma: no cover
 
     def _copy_printing(self, oOrigConn, oTrans):
         """Copy Printing, assuming versions match"""
@@ -290,7 +290,7 @@ class BaseDBUpgradeManager:
     def _upgrade_rarity(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should override this
            when needed."""
-        return (False, ["Unknown Version for Rarity"])
+        return (False, ["Unknown Version for Rarity"])  # pragma: no cover
 
     def _copy_expansion(self, oOrigConn, oTrans):
         """Copy expansion, assuming versions match"""
@@ -312,7 +312,7 @@ class BaseDBUpgradeManager:
 
     def _upgrade_expansion(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should override this when needed."""
-        return (False, ["Unknown Expansion Version"])
+        return (False, ["Unknown Expansion Version"])  # pragma: no cover
 
     def _copy_card_type(self, oOrigConn, oTrans):
         """Copy CardType, assuming versions match"""
@@ -331,7 +331,7 @@ class BaseDBUpgradeManager:
     def _upgrade_card_type(self, _oOrigiConn, _oTrans, _oVer):
         """Default fail - subclasses should upgrade this when
            required."""
-        return (False, ["Unknown CardType Version"])
+        return (False, ["Unknown CardType Version"])  # pragma: no cover
 
     def _copy_ruling(self, oOrigConn, oTrans):
         """Copy Ruling, assuming versions match"""
@@ -352,7 +352,7 @@ class BaseDBUpgradeManager:
     def _upgrade_ruling(self, _oOrigConn, _oTrans, _oVer):
         """Upgrade rulings"""
         # default is to fail. Subclasses should override this
-        return (False, ["Unknown Ruling Version"])
+        return (False, ["Unknown Ruling Version"])  # pragma: no cover
 
     def _copy_lookup_hints(self, oOrigConn, oTrans):
         """Copy LookupHints, assuming versions match"""
@@ -403,7 +403,7 @@ class BaseDBUpgradeManager:
     def _upgrade_rarity_pair(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown RarityPair version"])
+        return (False, ["Unknown RarityPair version"])  # pragma: no cover
 
     def _copy_keyword(self, oOrigConn, oTrans):
         """Copy Keyword, assuming versions match"""
@@ -423,7 +423,7 @@ class BaseDBUpgradeManager:
     def _upgrade_keyword(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown Keyword Version"])
+        return (False, ["Unknown Keyword Version"])  # pragma: no cover
 
     def _copy_artist(self, oOrigConn, oTrans):
         """Copy Artist, assuming versions match"""
@@ -443,7 +443,7 @@ class BaseDBUpgradeManager:
     def _upgrade_artist(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown Artist Version"])
+        return (False, ["Unknown Artist Version"])  # pragma: no cover
 
     def _copy_abstract_card(self, oOrigConn, oTrans, oLogger):
         """Copy AbstractCard, assuming versions match"""
@@ -479,7 +479,7 @@ class BaseDBUpgradeManager:
 
     def _make_abs_card(self, oOldCard, oTrans):
         """Copy the details of the old card to a new card."""
-        raise NotImplementedError("Implement _make_abs_card")
+        raise NotImplementedError("Implement _make_abs_card")  # pragma: no cover
 
     def _copy_old_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
@@ -497,7 +497,7 @@ class BaseDBUpgradeManager:
     def _upgrade_abstract_card(self, _oOrigConn, _oTrans, _oLogger, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown AbstractCard version"])
+        return (False, ["Unknown AbstractCard version"])  # pragma: no cover
 
     def _copy_physical_card(self, oOrigConn, oTrans, oLogger):
         """Copy PhysicalCard, assuming version match"""
@@ -526,7 +526,7 @@ class BaseDBUpgradeManager:
     def _upgrade_physical_card(self, _oOrigConn, _oTrans, _oLogger, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown PhysicalCard version"])
+        return (False, ["Unknown PhysicalCard version"])  # pragma: no cover
 
     def _copy_physical_card_set_loop(self, aSets, oTrans, oOrigConn, oLogger):
         """Central loop for copying card sets.
@@ -598,7 +598,7 @@ class BaseDBUpgradeManager:
     def _upgrade_physical_card_set(self, _oOrigConn, _oTrans, _oLogger, _oVer):
         """Default fail - subclasses should implement this as
            required"""
-        return (False, ["Unknown PhysicalCardSet version"])
+        return (False, ["Unknown PhysicalCardSet version"])  # pragma: no cover
 
     def read_old_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Read the old database into new database, filling in
@@ -648,7 +648,7 @@ class BaseDBUpgradeManager:
     def drop_old_tables(self, _oConn):
         """Drop tables which are no longer used from the database.
            Needed for postgres and other such things."""
-        raise NotImplementedError("implement drop_old_tables")
+        raise NotImplementedError("implement drop_old_tables")  # pragma: no cover
 
     def copy_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Copy the database, with no attempts to upgrade.

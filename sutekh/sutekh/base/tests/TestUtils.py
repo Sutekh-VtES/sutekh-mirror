@@ -203,7 +203,7 @@ class GuiBaseTest(unittest.TestCase):
         # We need to do this before trying to run MainWindows's __init__,
         # which will fail if not under a windowing system
         if Gdk.Screen.get_default() is None:
-            self.skipTest("No graphics capable screen available for testing")
+            self.skipTest("No graphics capable screen available for testing")  # pragma: no cover
         # avoid menu proxy stuff on Ubuntu
         os.environ["UBUNTU_MENUPROXY"] = "0"
         super(GuiBaseTest, self).setUp()
@@ -220,8 +220,8 @@ def make_null_handler():
     """Utility function to create a logger for /dev/null that works
        on both windows and Linux"""
     if sys.platform.startswith("win"):
-        return FileHandler('NUL')
-    return FileHandler('/dev/null')
+        return FileHandler('NUL')  # pragma: no cover
+    return FileHandler('/dev/null')  # pragma: no cover
 
 
 class FailFile:

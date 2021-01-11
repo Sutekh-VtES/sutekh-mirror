@@ -60,7 +60,7 @@ class Filter:
         """Used by GUI tools and FilterParser to get/check acceptable values"""
         # We can't do this as an attribute, since we need a database connection
         # to fill in the values most times
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     # pylint: disable=no-self-use
     # children need to be able to override this.
@@ -75,11 +75,11 @@ class Filter:
 
     def _get_expression(self):
         """Actual filter expression"""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _get_joins(self):
         """joins needed by the filter"""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def is_physical_card_only(self):
         """Return true if this filter only operates on physical cards.

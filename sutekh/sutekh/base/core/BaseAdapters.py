@@ -27,7 +27,7 @@ def fail_adapt(oUnknown, sCls):
     # pylint: disable=unreachable
     # We know this is unreachable, but this is to work around
     # pylint's return checker for the base adapters
-    return oUnknown
+    return oUnknown  # pragma: no cover
 
 
 def passthrough(oObj):
@@ -39,83 +39,83 @@ def passthrough(oObj):
 @singledispatch
 def IAbstractCard(oUnknown):
     """Default AbstractCard adapter"""
-    return fail_adapt(oUnknown, 'AbstractCard')
+    return fail_adapt(oUnknown, 'AbstractCard')  # pragma: no cover
 
 
 @singledispatch
 def IPhysicalCard(oUnknown):
     """Default PhysicalCard adapter"""
-    return fail_adapt(oUnknown, 'PhysicalCard')
+    return fail_adapt(oUnknown, 'PhysicalCard')  # pragma: no cover
 
 
 @singledispatch
 def IPhysicalCardSet(oUnknown):
     """Default PhysicalCardSet adapter"""
-    return fail_adapt(oUnknown, 'PhysicalCardSet')
+    return fail_adapt(oUnknown, 'PhysicalCardSet')  # pragma: no cover
 
 
 @singledispatch
 def IRarityPair(oUnknown):
     """Default RarityPair adapter"""
-    return fail_adapt(oUnknown, 'RarityPair')
+    return fail_adapt(oUnknown, 'RarityPair')  # pragma: no cover
 
 
 @singledispatch
 def IExpansion(oUnknown):
     """Default Expansion adapter"""
-    return fail_adapt(oUnknown, 'Expansion')
+    return fail_adapt(oUnknown, 'Expansion')  # pragma: no cover
 
 @singledispatch
 def IPrinting(oUnknown):
     """Default Printing adapter"""
-    return fail_adapt(oUnknown, 'Printing')
+    return fail_adapt(oUnknown, 'Printing')  # pragma: no cover
 
 
 @singledispatch
 def IPrintingProperty(oUnknown):
     """Default PrintingProperty adapter"""
-    return fail_adapt(oUnknown, 'PrintingProperty')
+    return fail_adapt(oUnknown, 'PrintingProperty')  # pragma: no cover
 
 
 @singledispatch
 def IPrintingName(oUnknown):
     """Default Printing Name adapter"""
-    return fail_adapt(oUnknown, 'PrintingName')
+    return fail_adapt(oUnknown, 'PrintingName')  # pragma: no cover
 
 @singledispatch
 def IRarity(oUnknown):
     """Default Rarirty adapter"""
-    return fail_adapt(oUnknown, 'Rarity')
+    return fail_adapt(oUnknown, 'Rarity')  # pragma: no cover
 
 
 @singledispatch
 def ICardType(oUnknown):
     """Default CardType adapter"""
-    return fail_adapt(oUnknown, 'CardType')
+    return fail_adapt(oUnknown, 'CardType')  # pragma: no cover
 
 
 @singledispatch
 def IRuling(oUnknown):
     """Default Ruling adapter"""
-    return fail_adapt(oUnknown, 'Ruling')
+    return fail_adapt(oUnknown, 'Ruling')  # pragma: no cover
 
 
 @singledispatch
 def IArtist(oUnknown):
     """The base for artist adaption"""
-    return fail_adapt(oUnknown, 'Artist')
+    return fail_adapt(oUnknown, 'Artist')  # pragma: no cover
 
 
 @singledispatch
 def IKeyword(oUnknown):
     """The base for keyword adaption"""
-    return fail_adapt(oUnknown, 'Keyword')
+    return fail_adapt(oUnknown, 'Keyword')  # pragma: no cover
 
 
 @singledispatch
 def ILookupHint(oUnknown):
     """The base for keyword adaption"""
-    return fail_adapt(oUnknown, 'LookupHints')
+    return fail_adapt(oUnknown, 'LookupHints')  # pragma: no cover
 
 
 # pylint: disable=missing-docstring
@@ -478,7 +478,7 @@ class PrintingStringAdapter(Adapter):
             for oPrinting in Printing.select():
                 sPrintName = get_exp_printing_name(oPrinting)
                 cls.__dCache[sPrintName] = oPrinting
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             # Old SQLObject doesn't like this construction if the database
             # is empty, so, as we can't sensibly fill the cache anyway, we
             # just skip
@@ -529,7 +529,7 @@ class PhysicalCardAdapter(Adapter):
                     PhysicalCard.q.printing == None):
                 oAbsCard = oPhysicalCard.abstractCard
                 cls.__dCache[(oAbsCard.id, None)] = oPhysicalCard
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             # Old SQLObject doesn't like this construction if the database
             # is empty, so, as we can't sensibly fill the cache anyway, we
             # just skip

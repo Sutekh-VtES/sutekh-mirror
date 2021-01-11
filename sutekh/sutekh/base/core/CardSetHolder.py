@@ -198,15 +198,15 @@ class CardSetWrapper(CardSetHolder):
 
     def add(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to append cards."""
-        raise NotImplementedError("CardSetWrapper is read-only")
+        raise NotImplementedError("CardSetWrapper is read-only")  # pragma: no cover
 
     def remove(self, iCnt, sName, sExpansionName, sPrintingName):
         """Not allowed to remove cards."""
-        raise NotImplementedError("CardSetWrapper is read-only")
+        raise NotImplementedError("CardSetWrapper is read-only")  # pragma: no cover
 
     def create_pcs(self, oCardLookup=DEFAULT_LOOKUP):
         """Can't create a Physical Card Set -- there is one already."""
-        raise NotImplementedError("CardSetWrapper is read-only")
+        raise NotImplementedError("CardSetWrapper is read-only")  # pragma: no cover
 
     # Different sqlobject versions can either return '' or None
     # for unset values here, so we use the properties to ensure

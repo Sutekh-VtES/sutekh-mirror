@@ -52,13 +52,13 @@ class AbbreviationLookup(metaclass=AbbrevMeta):
     def fullname(cls, sCanonical):
         """Translate a canonical name into a full name.
            """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @classmethod
     def shortname(cls, sCanonical):
         """Translate a canonical name into a short name.
            """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class DatabaseAbbreviation:

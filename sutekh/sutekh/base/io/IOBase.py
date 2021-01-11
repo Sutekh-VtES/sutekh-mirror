@@ -35,7 +35,7 @@ class CardSetParser:
         """Parse the card set in the file-like object fIn into the card
            set holder oHolder.
            """
-        raise NotImplementedError("CardSetParser should be sub-classed")
+        raise NotImplementedError("CardSetParser should be sub-classed")  # pragma: no cover
 
 
 class CardSetWriter:
@@ -63,7 +63,7 @@ class CardSetWriter:
         """Write the card set in the card set holder to the file-like
            object fOut.
            """
-        raise NotImplementedError("CardSetWriter should be sub-classed")
+        raise NotImplementedError("CardSetWriter should be sub-classed")  # pragma: no cover
 
 
 class BaseXMLParser:
@@ -77,7 +77,7 @@ class BaseXMLParser:
 
     def _convert_tree(self, oHolder):
         """Convert the XML Tree into a card set holder"""
-        raise NotImplementedError("BaseXMLParser should be subclassed")
+        raise NotImplementedError("BaseXMLParser should be subclassed")  # pragma: no cover
 
     def parse(self, fIn, oHolder):
         """Read the XML tree from the file-like object fIn"""
@@ -97,7 +97,7 @@ class BaseLineParser(CardSetParser):
     def _feed(self, sLine, oHolder):
         """Internal method to handle a single line. Overriden by the
            subclasses"""
-        raise NotImplementedError("BaseLineParser should be subclassed")
+        raise NotImplementedError("BaseLineParser should be subclassed")  # pragma: no cover
 
     def parse(self, fIn, oHolder):
         """Parse the file line by line"""
@@ -113,7 +113,7 @@ class BaseXMLWriter(CardSetWriter):
 
     def _gen_tree(self, oHolder):
         """Create the XML Tree"""
-        raise NotImplementedError("BaseXMLWriter should be subclassed")
+        raise NotImplementedError("BaseXMLWriter should be subclassed")  # pragma: no cover
 
     def write(self, fOut, oHolder):
         """Write the holder contents as pretty XML to the given file-like
