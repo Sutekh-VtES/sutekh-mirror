@@ -1,8 +1,8 @@
 [BASIC]
 # Namimg convention is xCamelCase, where x is a type indicator
-variable-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
-argument-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
-attr-rgx = [_]{0,2}[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+variable-rgx = [_]{0,2}[a,b,c,d,e,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+argument-rgx = [_]{0,2}[a,b,c,d,e,f,i,o,s,t][A-Z][A-z0-9]{1,20}$|self|cls
+attr-rgx = [_]{0,2}[a,b,c,d,e,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
 # Consts use the ALL_CAPS naming convention
 const-rgx = [_]{0,2}[A-Z0-9_]{1,20}$
 # test_ names are used for the test suite
@@ -30,4 +30,4 @@ max-line-length=79
 
 [VARIABLES]
 # We use the convention _oName to indicate dummy variables (i.e. unused vars) 
-dummy-variables-rgx=_[a,b,c,d,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
+dummy-variables-rgx=_[a,b,c,d,e,f,i,o,s,t][A-Z][A-z0-9]{1,20}$
