@@ -29,8 +29,8 @@ class CardSetImporter(SutekhPlugin, BaseImport):
 
     sHelpCategory = "card_list:file"
 
-    sHelpText = """This allows you to import files produced by ARDB,
-                   JOL, Lackey CCG or FELDB.  While Sutekh will attempt
+    sHelpText = """This allows you to import files produced by ARDB, JOL,
+                   Lackey CCG or FELDB.  While Sutekh will attempt
                    to identify the file format automatically, this
                    isn't always reliable, so you have the option of
                    specifying the format manually.
