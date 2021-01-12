@@ -84,7 +84,7 @@ class BaseXMLParser:
         try:
             self._oTree = parse(fIn)
         except ParseError as oExp:
-            raise IOError('Not an XML file: %s' % oExp)
+            raise IOError('Not an valid XML file') from oExp
         self._convert_tree(oHolder)
 
 
