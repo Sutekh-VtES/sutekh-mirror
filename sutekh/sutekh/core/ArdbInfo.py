@@ -153,7 +153,7 @@ class ArdbInfo:
                     aDisc.append(oDisc.discipline.name)
             aDisc.sort()  # May not be needed
             return " ".join(aDisc)
-        elif oCard.virtue:
+        if oCard.virtue:
             return " ".join(sorted([x.name for x in oCard.virtue]))
         return ""
 

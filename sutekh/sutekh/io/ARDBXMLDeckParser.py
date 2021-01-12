@@ -56,7 +56,8 @@ class ARDBDeckXMLState(ARDBInvXMLState):
         elif self._eState == self.TagType.DECKNAME and sTag == 'name':
             self._oHolder.name = self._sData
             self._set_no_tag()
-        elif self._eState == self.TagType.DECKCOMMENT and sTag == 'description':
+        elif self._eState == self.TagType.DECKCOMMENT and \
+                sTag == 'description':
             self._oHolder.comment = self._sData
             self._set_no_tag()
         else:

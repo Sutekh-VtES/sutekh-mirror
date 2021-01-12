@@ -742,7 +742,7 @@ class WaitingForCardName(LogStateWithInfo):
             # so ensure we normalise them consistently
             self._dInfo['name'] = move_articles_to_front(sData.strip())
             return InExpansion(self._dInfo, self._oLogger)
-        elif sLine.strip():
+        if sLine.strip():
             if 'name' in self._dInfo and 'text' not in self._dInfo:
                 # We've it a blank line in the middle of a card, so bounce
                 # back to InCard stuff
@@ -813,7 +813,7 @@ class InExpansion(LogStateWithInfo):
         if sLine.startswith('[') and sLine.strip().endswith(']'):
             self._dInfo['expansion'] = sLine.strip()
             return InCard(self._dInfo, self._oLogger)
-        elif sLine.startswith('AKA:'):
+        if sLine.startswith('AKA:'):
             # We force this in here, since otherwise we need to bounce back and
             # force between InExpansion and InCard in an unpleasant way
             self._dInfo['aka'] = sLine.replace('AKA:', '').strip()

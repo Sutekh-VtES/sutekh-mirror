@@ -58,8 +58,7 @@ def find_all_data_packs(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
         if fErrorHandler:
             fErrorHandler(oExp)
             return None, None, None
-        else:
-            raise
+        raise
     finally:
         # This is a basically a no-op for remote urls, but needed
         # for when we're dealing with a local file
@@ -91,7 +90,7 @@ def find_data_pack(sTag, sDocUrl=DOC_URL, fErrorHandler=None):
     if not aZipUrls:
         # No match
         return None, None
-    elif not aHashes:
+    if not aHashes:
         # No hash
         return aZipUrls[-1], None
     return aZipUrls[-1], aHashes[-1]

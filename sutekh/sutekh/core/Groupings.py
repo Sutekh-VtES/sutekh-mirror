@@ -133,7 +133,7 @@ class GroupPairGrouping(IterGrouping):
                 if oCard.group != -1:
                     if oCard.group == 1:
                         return [self.TEXT % (oCard.group, oCard.group + 1)]
-                    elif oCard.group < iMax:
+                    if oCard.group < iMax:
                         return [self.TEXT % (oCard.group - 1, oCard.group),
                                 self.TEXT % (oCard.group, oCard.group + 1)]
                     return [self.TEXT % (oCard.group - 1, oCard.group)]

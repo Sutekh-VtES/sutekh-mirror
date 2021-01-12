@@ -45,6 +45,8 @@ class LackeyDeckParser(BaseLineParser):
             try:
                 iNum = int(sNum)
             except ValueError:
+                # pylint: disable=raise-missing-from
+                # We don't need the ValueError details here.
                 raise IOError("Illegal number %s for Lackey CCG deck" % sNum)
             if sName in self._dNameCache:
                 sName = self._dNameCache[sName]
