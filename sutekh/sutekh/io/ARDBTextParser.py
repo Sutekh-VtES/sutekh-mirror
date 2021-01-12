@@ -41,6 +41,8 @@ class SingleCard(ArdbInfo):
     """Class to formate a single card appropriately"""
 
     def format_crypt_card(self, oCard):
+        """Format the crypt card to possible ARDB outputs so we can match
+           lines where we can't split on whitespace reliably."""
         dFull = self._format_crypt_line(oCard, 1)
         # We don't need count
         dFull.pop('count')
@@ -87,6 +89,7 @@ def gen_name_lookups():
 
 
 class HolderWithCacheState(HolderState):
+    """State holder with a lookup cache for matching variant names, etc."""
 
     def __init__(self, oHolder, dNameCache):
         super().__init__(oHolder)
@@ -104,9 +107,9 @@ class NameAndAuthor(HolderWithCacheState):
         # Check for crypt line, as description isn't always present
         if sLine.strip().startswith('Crypt ['):
             return Cards(self._oHolder, self._dNameCache)
-        elif sLine.strip().startswith('Crypt: ('):
+        if sLine.strip().startswith('Crypt: ('):
             return Cards(self._oHolder, self._dNameCache)
-        elif sLine.strip().startswith('Crypt ('):
+        if sLine.strip().startswith('Crypt ('):
             return Cards(self._oHolder, self._dNameCache)
 
         aParts = sLine.split(':', 1)
@@ -139,10 +142,10 @@ class Description(HolderWithCacheState):
         if sLine.strip().startswith('Crypt ['):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder, self._dNameCache)
-        elif sLine.strip().startswith('Crypt: ('):
+        if sLine.strip().startswith('Crypt: ('):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder, self._dNameCache)
-        elif sLine.strip().startswith('Crypt ('):
+        if sLine.strip().startswith('Crypt ('):
             self._oHolder.comment = self._sData
             return Cards(self._oHolder, self._dNameCache)
         self.data(sLine)
