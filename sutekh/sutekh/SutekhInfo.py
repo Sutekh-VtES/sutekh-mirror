@@ -116,8 +116,8 @@ class SutekhInfo:
             'Version 3'),
         'ply': (
             # Note: ply changed to a BSD license in version 3.2
-            # The license doesn't appear to be anywhere other than the readme, so we point
-            # to the readme for the 3.11 release.
+            # The license doesn't appear to be anywhere other than the readme,
+            # so we point to the readme for the 3.11 release.
             'License :: OSI Approved :: BSD License',
             'https://raw.githubusercontent.com/dabeaz/ply/0f398b72618c1564d71f7dc0558e6722b241875a/README.md',
             'New-BSD license'),
@@ -145,8 +145,4 @@ class SutekhInfo:
             PYTHON,
             'http://www.python.org/psf/license/',
             'Version 2'),
-        'ZipDLL': (  # NSIS Plugin
-            GPL,
-            'http://www.gnu.org/copyleft/gpl.html',
-            'Version 2 or later'),
     }
