@@ -101,13 +101,17 @@ PARENT_COUNT_LOOKUP = {
 }
 
 # Common combinations we check
-CARD_SETS_2ND_LEVEL = set([ExtraLevels.SHOW_CARD_SETS, ExtraLevels.CARD_SETS_AND_EXP])
-EXPANSIONS_2ND_LEVEL = set([ExtraLevels.SHOW_EXPANSIONS, ExtraLevels.EXP_AND_CARD_SETS])
+CARD_SETS_2ND_LEVEL = set([ExtraLevels.SHOW_CARD_SETS,
+                           ExtraLevels.CARD_SETS_AND_EXP])
+EXPANSIONS_2ND_LEVEL = set([ExtraLevels.SHOW_EXPANSIONS,
+                            ExtraLevels.EXP_AND_CARD_SETS])
 CARD_SETS_LEVEL = set([ExtraLevels.SHOW_CARD_SETS,
                        ExtraLevels.CARD_SETS_AND_EXP,
                        ExtraLevels.EXP_AND_CARD_SETS])
-BOTH_EXP_CARD_SETS = set([ExtraLevels.CARD_SETS_AND_EXP, ExtraLevels.EXP_AND_CARD_SETS])
-PARENT_OR_MINUS = set([ParentCountMode.PARENT_COUNT, ParentCountMode.MINUS_THIS_SET])
+BOTH_EXP_CARD_SETS = set([ExtraLevels.CARD_SETS_AND_EXP,
+                          ExtraLevels.EXP_AND_CARD_SETS])
+PARENT_OR_MINUS = set([ParentCountMode.PARENT_COUNT,
+                       ParentCountMode.MINUS_THIS_SET])
 
 
 class CardSetModelRow:
@@ -354,8 +358,10 @@ class CardSetCardListModel(CardListModel):
                 sName = oCard.name
                 if bPostfix:
                     sName = move_articles_to_back(sName)
-                oChildIter = self.insert_with_values(oSectionIter, 0, [0, 1, 2, 3, 4, 8, 9],
-                                                     [sName, iCnt, iParCnt, bIncCard, bDecCard,
+                oChildIter = self.insert_with_values(oSectionIter, 0,
+                                                     [0, 1, 2, 3, 4, 8, 9],
+                                                     [sName, iCnt, iParCnt,
+                                                      bIncCard, bDecCard,
                                                       oCard, oRow.oPhysCard])
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
@@ -445,7 +451,8 @@ class CardSetCardListModel(CardListModel):
         # Since we skip the handling here, this is about 15% faster on
         # large loads such as All Cards + Expansions + Card Sets
         oIter = self.insert_with_values(oParIter, 0, [0, 1, 2, 3, 4, 9],
-                                        [sName, iCnt, iParCnt, bIncCard, bDecCard, oPhysCard])
+                                        [sName, iCnt, iParCnt, bIncCard,
+                                         bDecCard, oPhysCard])
         self.set_par_count_colour(oIter, iParCnt, iCnt)
         if iDepth == 2:
             self._dAbsSecondLevel2Iter.setdefault(oKey, {})
@@ -494,7 +501,8 @@ class CardSetCardListModel(CardListModel):
                 sExpName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
                 sExpName = self.get_name_from_iter(self.iter_parent(oIter))
-        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and iDepth == 3:
+        elif self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and \
+                iDepth == 3:
             sExpName = self.get_name_from_iter(oIter)
         # Get the card set name
         if self._eExtraLevelsMode in CARD_SETS_2ND_LEVEL:
@@ -502,7 +510,8 @@ class CardSetCardListModel(CardListModel):
                 sCardSetName = self.get_name_from_iter(oIter)
             elif iDepth == 3:
                 sCardSetName = self.get_name_from_iter(self.iter_parent(oIter))
-        elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and iDepth == 3:
+        elif self._eExtraLevelsMode == ExtraLevels.EXP_AND_CARD_SETS and \
+                iDepth == 3:
             sCardSetName = self.get_name_from_iter(oIter)
         return sCardName, sExpName, sCardSetName
 
@@ -744,7 +753,8 @@ class CardSetCardListModel(CardListModel):
                     self._dCache['parent filter'] = CachedFilter(
                         PhysicalCardSetFilter(self._oCardSet.parent.name))
                 aFilters = [self._dCache['parent filter'], oCurFilter]
-                if self._eShowCardMode == ShowMode.THIS_SET_ONLY and iIterCnt < 200:
+                if self._eShowCardMode == ShowMode.THIS_SET_ONLY and \
+                        iIterCnt < 200:
                     # Restrict filter to the cards in this set, to save time
                     # oCardIter.count() > 0, due to check in grouped_card_iter
                     aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
@@ -780,7 +790,8 @@ class CardSetCardListModel(CardListModel):
                 self._dCache['all cards'] = aExtraCards
                 if not self.is_filtered():
                     self._dCache['full card list'] = aExtraCards
-        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID:
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and \
+                self._oCardSet.parentID:
             # Since we handle numbers later, this works
             aExtraCards = self._dCache['parent cards']
         elif self._eShowCardMode == ShowMode.CHILD_CARDS and \
@@ -833,7 +844,8 @@ class CardSetCardListModel(CardListModel):
            Returns a iterator over the groupings, and a list of all the
            abstract cards in the card set considered.
            """
-        # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        # pylint: disable=too-many-locals, too-many-branches
+        # pylint: disable=too-many-statements
         # We use lots of local variables for clarity
         # Lots of cases to consider, so several branches
         # Artificially subdividing this further would not be useful
@@ -1078,7 +1090,8 @@ class CardSetCardListModel(CardListModel):
     def _get_parent_count(self, oPhysCard, iThisSetCnt=None):
         """Get the correct parent count for the given card"""
         iParCnt = 0
-        if self._eParentCountMode != ParentCountMode.IGNORE_PARENT and self._oCardSet.parentID:
+        if self._eParentCountMode != ParentCountMode.IGNORE_PARENT and \
+                self._oCardSet.parentID:
             if oPhysCard in self._dCache['parent cards']:
                 iParCnt = self._dCache['parent cards'][oPhysCard]
             else:
@@ -1192,8 +1205,10 @@ class CardSetCardListModel(CardListModel):
                 sName = oCard.name
                 if bPostfix:
                     sName = move_articles_to_back(sName)
-                oChildIter = self.insert_with_values(oSectionIter, 0, [0, 1, 2, 3, 4, 8, 9],
-                                                     [sName, iCnt, iParCnt, bIncCard, bDecCard,
+                oChildIter = self.insert_with_values(oSectionIter, 0,
+                                                     [0, 1, 2, 3, 4, 8, 9],
+                                                     [sName, iCnt, iParCnt,
+                                                      bIncCard, bDecCard,
                                                       oCard, oRow.oPhysCard])
                 self.set_par_count_colour(oChildIter, iParCnt, iCnt)
                 self._dAbs2Iter.setdefault(oCard.id, []).append(oChildIter)
@@ -1243,14 +1258,14 @@ class CardSetCardListModel(CardListModel):
     def changes_with_children(self):
         """Utility function. Returns true if changes to the child card sets
            influence the display."""
-        return self._eShowCardMode == ShowMode.CHILD_CARDS or self._eExtraLevelsMode \
-            in CARD_SETS_LEVEL
+        return self._eShowCardMode == ShowMode.CHILD_CARDS or \
+                self._eExtraLevelsMode in CARD_SETS_LEVEL
 
     def changes_with_siblings(self):
         """Utility function. Returns true if changes to the sibling card sets
            influence the display."""
-        return self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE and \
-            self._oCardSet.parentID is not None
+        return self._eParentCountMode == ParentCountMode.MINUS_SETS_IN_USE \
+                and self._oCardSet.parentID is not None
 
     def _update_cache(self, oPhysCard, iChg, sType):
         """Update the number in the card cache"""
@@ -1623,8 +1638,9 @@ class CardSetCardListModel(CardListModel):
                 iDepth == 2 and iParCnt > 0:
             # cards in the parent set, obviously
             bResult = True
-        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID \
-                and self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS and \
+                self._oCardSet.parentID and \
+                self._eExtraLevelsMode in EXPANSIONS_2ND_LEVEL and \
                 iDepth == 2:
             # Check if the card actually is in the parent card set
             if oPhysCard in self._dCache['parent cards']:
@@ -1650,7 +1666,8 @@ class CardSetCardListModel(CardListModel):
         if self._eShowCardMode == ShowMode.PARENT_CARDS and iParCnt > 0 and \
                 self._eParentCountMode in PARENT_OR_MINUS:
             bResult = True
-        elif self._eShowCardMode == ShowMode.PARENT_CARDS and self._oCardSet.parentID:
+        elif self._eShowCardMode == ShowMode.PARENT_CARDS \
+                and self._oCardSet.parentID:
             # Check the parent card cache
             oAbsId = self.get_abstract_card_from_iter(oIter).id
             if oAbsId in self._dCache['parent abstract cards']:
@@ -1779,7 +1796,8 @@ class CardSetCardListModel(CardListModel):
             if not bRemove:
                 self._update_3rd_level_card_sets(oPhysCard, iChg, iParChg,
                                                  bCheckAddRemove)
-        elif iChg > 0 or (iParChg > 0 and self._eShowCardMode == ShowMode.PARENT_CARDS
+        elif iChg > 0 or (iParChg > 0
+                          and self._eShowCardMode == ShowMode.PARENT_CARDS
                           and bCheckAddRemove):
             bIncCard, bDecCard = self.check_inc_dec(iChg)
             iParCnt = self._get_parent_count(oPhysCard, iChg)
@@ -1942,7 +1960,8 @@ class CardSetCardListModel(CardListModel):
             if self._card_count_changes_parent():
                 # Need to update the parent counts for the child entry
                 self._update_2nd3rd_level_par_cnt(oPhysCard, -iChg)
-            if self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and iChg > 0:
+            if self._eExtraLevelsMode == ExtraLevels.CARD_SETS_AND_EXP and \
+                    iChg > 0:
                 # We may need to add a expansion entry to below this card set,
                 # so we check
                 self._update_3rd_level_expansions(oPhysCard)
@@ -2273,12 +2292,13 @@ class CardSetCardListModel(CardListModel):
 
         sShowCardOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, SHOW_CARD_OPTION).lower()
-        eShowCardMode = SHOW_CARD_LOOKUP.get(sShowCardOpt, ShowMode.THIS_SET_ONLY)
+        eShowCardMode = SHOW_CARD_LOOKUP.get(sShowCardOpt,
+                                             ShowMode.THIS_SET_ONLY)
 
         sParentCountOpt = self._oConfig.get_deck_option(
             self.frame_id, self.cardset_id, PARENT_COUNT_MODE).lower()
-        eParentCountOpt = PARENT_COUNT_LOOKUP.get(sParentCountOpt,
-                                                  ParentCountMode.IGNORE_PARENT)
+        eParentCountOpt = PARENT_COUNT_LOOKUP.get(
+            sParentCountOpt, ParentCountMode.IGNORE_PARENT)
         bUseIcons = self._oConfig.get_deck_option(self.frame_id,
                                                   self.cardset_id, USE_ICONS)
 
