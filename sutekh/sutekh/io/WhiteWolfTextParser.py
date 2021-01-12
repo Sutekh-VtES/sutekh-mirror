@@ -364,9 +364,9 @@ class CardDict(dict):
                 self['cardtype'] += '/Reflex'
             else:
                 self['cardtype'] = 'Reflex'
-        if sType == 'Imbued' or sType == 'Vampire':
+        if sType in ('Imbued', 'Vampire'):
             self._find_crypt_keywords(oCard)
-        elif sType == 'Ally' or sType == 'Retainer':
+        elif sType in ('Ally', 'Retainer'):
             self._find_lib_life_and_keywords(oCard)
         elif sType == 'Equipment':
             self._find_card_keywords(oCard, self.dEquipmentProperties)
@@ -452,7 +452,7 @@ class CardDict(dict):
            pairs as needed."""
         sDis = self.oDisGaps.sub(' ', sDis).strip()
 
-        if sDis == '-none-' or sDis == '':
+        if sDis in ('-none-', ''):
             return
 
         for sVal in sDis.split():
@@ -469,7 +469,7 @@ class CardDict(dict):
         """Add the list of virtues to the card."""
         sVir = self.oDisGaps.sub(' ', sVir).strip()
 
-        if sVir == '-none-' or sVir == '':
+        if sVir in ('-none-', ''):
             return
 
         for sVal in sVir.split():
@@ -483,7 +483,7 @@ class CardDict(dict):
         """Add creeds to the card."""
         sCreed = self.oWhiteSp.sub(' ', sCreed).strip()
 
-        if sCreed == '-none-' or sCreed == '':
+        if sCreed in ('-none-', ''):
             return
 
         for sVal in sCreed.split('/'):
@@ -497,7 +497,7 @@ class CardDict(dict):
         """Add clans to the card."""
         sClan = self.oWhiteSp.sub(' ', sClan).strip()
 
-        if sClan == '-none-' or sClan == '':
+        if sClan in ('-none-', ''):
             return
 
         for sVal in sClan.split('/'):
@@ -524,7 +524,7 @@ class CardDict(dict):
         """Add the group to the card. Replace '*' with -1."""
         sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
 
-        if sGroup == '*' or sGroup.lower() == 'any':
+        if sGroup.lower() in ('*', 'any'):
             iGroup = -1
         else:
             iGroup = int(sGroup, 10)

@@ -52,7 +52,7 @@ class SingleCard(ArdbInfo):
         if dTruncated['clan'].endswith('antitribu'):
             dTruncated['clan'] = '!' + dTruncated['clan'].replace(' antitribu', '')
         elif 'Imbued' not in dTruncated['clan']:
-             dTruncated['clan'] = dTruncated['clan'][:10].strip()
+            dTruncated['clan'] = dTruncated['clan'][:10].strip()
         dTruncated['name'] = dTruncated['name'].ljust(18)[:18].strip()
 
         if dFull['title'] and dFull['adv'] == 'Adv':
@@ -118,7 +118,7 @@ class NameAndAuthor(HolderWithCacheState):
 
         if sKey == "Deck Name":
             self._oHolder.name = sValue
-        elif sKey == "Author" or sKey == "Created By" or sKey == "Created by":
+        elif sKey in ("Author", "Created By", "Created by"):
             self._oHolder.author = sValue
         elif sKey == "Description":
             oDesc = Description(self._oHolder, self._dNameCache)

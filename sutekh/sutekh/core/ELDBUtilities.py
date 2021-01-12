@@ -5,7 +5,6 @@
 
 """Utility functions for importing from & exporting to FELDB"""
 
-import unicodedata
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.Utility import move_articles_to_back, to_ascii
 from sutekh.SutekhUtility import is_crypt_card

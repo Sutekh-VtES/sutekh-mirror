@@ -72,14 +72,14 @@ class ARDBInvXMLState:
             elif sTag == 'adv':
                 self._eState = self.TagType.ADVANCED
         elif self._eState == self.TagType.NOTAG:
-            if sTag == 'vampire' or sTag == 'card':
+            if sTag in ('vampire', 'card'):
                 self._eState = self.TagType.INCARD
                 self._iCount = int(dAttributes[self.COUNT_KEY])
 
     def end(self, sTag):
         """End tag encountered"""
         if self._eState == self.TagType.INCARD:
-            if sTag == 'vampire' or sTag == 'card':
+            if sTag in ('vampire', 'card'):
                 if not self._sCardSet:
                     # convert empty string to None
                     self._sCardSet = None
