@@ -172,13 +172,8 @@ class CardSetManagementModel(Gtk.TreeStore):
         return None
 
     def get_name_from_iter(self, oIter):
-        """Extract the value at oIter from the model, correcting for encoding
-           issues."""
-        sCardSetName = self.get_value(oIter, 1)
-        if sCardSetName:
-            # We can be None when card sets are being deleted.
-            sCardSetName = sCardSetName
-        return sCardSetName
+        """Extract the card set name at oIter from the model"""
+        return self.get_value(oIter, 1)
 
     def get_path_from_name(self, sName):
         """Get the tree path corresponding to the name"""
