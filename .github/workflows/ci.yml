@@ -260,7 +260,7 @@ jobs:
     - name: Run Pylint
       run: |
         pushd sutekh
-        pylint --rcfile=../tools/sutekh_pylint sutekh || echo "Pylint exited with code $?"
+        xvfb-run --auto-servernum pylint --rcfile=../tools/sutekh_pylint sutekh || echo "Pylint exited with code $?"
         popd
     - name: Run Tests with coverage
       run: |
