@@ -35,7 +35,7 @@ class Collecting(HolderState):
         """Transition to CardItem of DeckInfoItem as needed."""
         if sTag == 'td' and dAttr.get('colspan') == '2':
             return CardItem(self._oHolder)
-        elif sTag == 'td':
+        if sTag == 'td':
             return DeckInfoItem(self._oHolder)
         return self
 
@@ -61,8 +61,7 @@ class DeckInfoItem(HolderState):
                 self._oHolder.comment = sText
 
             return Collecting(self._oHolder)
-        else:
-            return self
+        return self
 
 
 class CardItem(HolderState):
@@ -84,7 +83,7 @@ class CardItem(HolderState):
                 self._iCnt = 1
             self._sData = ""
             return self
-        elif sTag == '/a':
+        if sTag == '/a':
             assert(self._iCnt is not None)
             sName = self._sData.strip()
             sName = sName.replace("`", "'")
@@ -93,10 +92,9 @@ class CardItem(HolderState):
             self._iCnt = None
             self._sData = ""
             return Collecting(self._oHolder)
-        elif sTag == '/tr':
+        if sTag == '/tr':
             return Collecting(self._oHolder)
-        else:
-            return self
+        return self
 
 
 # Parser
