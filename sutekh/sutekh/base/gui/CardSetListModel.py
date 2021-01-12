@@ -58,11 +58,11 @@ class ShowMode(enum.Enum):
 
 @enum.unique
 class ParentCountMode(enum.Enum):
-   """Different Parent card count modes (eParentCountMode)"""
-   IGNORE_PARENT = 1
-   PARENT_COUNT = 2
-   MINUS_THIS_SET = 3
-   MINUS_SETS_IN_USE = 4
+    """Different Parent card count modes (eParentCountMode)"""
+    IGNORE_PARENT = 1
+    PARENT_COUNT = 2
+    MINUS_THIS_SET = 3
+    MINUS_SETS_IN_USE = 4
 
 
 # Colour constants to save constant lookups
