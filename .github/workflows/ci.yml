@@ -253,10 +253,10 @@ jobs:
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
-        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo pylint pytest-cov
+        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo pylint pytest-cov textile
     - name: Run Pylint
       run: |
         pushd sutekh
@@ -266,4 +266,11 @@ jobs:
       run: |
         pushd sutekh
         xvfb-run --auto-servernum pytest --cov-report term-missing:skip-covered --cov=sutekh
+        popd
+    - name: Check that docs are up-to-date
+      run: |
+        pushd sutekh/sutekh/docs
+        python3 ./textile2html.py
+        # This will cause a failure if the docs have changed
+        git -P diff --exit-code .
         popd
