@@ -36,10 +36,10 @@ class ClanDisciplineStats(SutekhPlugin):
 
     sHelpText = """This shows an analysis of all the different clans in the
                    White Wolf card list. For each clan, it displays the total
-                   number of vampires in the clan, the sum of the vampires'
-                   capacities, and the most common disciplines. It also shows
-                   the score for the disciplines, and various stats about how
-                   the disciplines are distributed.
+                   number of vampires in the clan, the sum of the
+                   vampires&#8217; capacities, and the most common disciplines.
+                   It also shows the score for the disciplines, and various
+                   stats about how the disciplines are distributed.
 
                    You can expand the tree view to show the details for each
                    legal grouping combination.
