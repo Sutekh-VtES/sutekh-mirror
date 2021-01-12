@@ -7,7 +7,7 @@
 
 import unittest
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk
 
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.base.core.BaseAdapters import (IPhysicalCard, IAbstractCard,

@@ -8,9 +8,9 @@
 import logging
 import unittest
 
-import pytest
-
 from io import BytesIO
+
+import pytest
 
 from sutekh.tests.GuiSutekhTest import GuiSutekhTest
 

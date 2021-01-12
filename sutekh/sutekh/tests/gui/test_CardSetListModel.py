@@ -613,7 +613,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL, ExtraLevels.SHOW_EXPANSIONS):
+            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL,
+                               ExtraLevels.SHOW_EXPANSIONS):
                 for oModel in aModels:
                     oModel._change_level_mode(iLevelMode)
                 for iShowMode in (ShowMode.THIS_SET_ONLY, ShowMode.ALL_CARDS):
@@ -1267,7 +1268,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         # Manually rename the loaded list
         aManualList = []
         for tItem in aLoadList:
-            tNewItem = (tItem[0], tItem[1], tItem[2].replace(self.aNames[1], "New child name"))
+            tNewItem = (tItem[0], tItem[1],
+                        tItem[2].replace(self.aNames[1], "New child name"))
             aManualList.append(tNewItem)
 
         # Model is unsorted, so we need to sort here
@@ -1316,31 +1318,31 @@ class CardSetListModelTests(ConfigSutekhTest):
         aNormal = get_all_counts(oModel)
 
         self.assertEqual(aNormal,
-                [(8, 0, 'All'),
-                 (1, 0, 'All:Alexandra'),
-                 (1, 0, 'All:An Anarch Manifesto'),
-                 (1, 0, 'All:Anson'),
-                 (1, 0, 'All:Ossian'),
-                 (1, 0, 'All:Raven Spy'),
-                 (1, 0, 'All:The Ankara Citadel, Turkey'),
-                 (1, 0, 'All:The Path of Blood'),
-                 (1, 0, 'All:Walk of Flame'),
-                ])
+                         [(8, 0, 'All'),
+                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:An Anarch Manifesto'),
+                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Ossian'),
+                          (1, 0, 'All:Raven Spy'),
+                          (1, 0, 'All:The Ankara Citadel, Turkey'),
+                          (1, 0, 'All:The Path of Blood'),
+                          (1, 0, 'All:Walk of Flame'),
+                         ])
         # Change the postfix mode
         self.oConfig.set_postfix_the_display(True)
         # We shouldn't need to reload anything becau
         aPostfix = get_all_counts(oModel)
         self.assertEqual(aPostfix,
-                [(8, 0, 'All'),
-                 (1, 0, 'All:Alexandra'),
-                 (1, 0, 'All:Anarch Manifesto, An'),
-                 (1, 0, 'All:Ankara Citadel, Turkey, The'),
-                 (1, 0, 'All:Anson'),
-                 (1, 0, 'All:Ossian'),
-                 (1, 0, 'All:Path of Blood, The'),
-                 (1, 0, 'All:Raven Spy'),
-                 (1, 0, 'All:Walk of Flame'),
-                ])
+                         [(8, 0, 'All'),
+                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Anarch Manifesto, An'),
+                          (1, 0, 'All:Ankara Citadel, Turkey, The'),
+                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Ossian'),
+                          (1, 0, 'All:Path of Blood, The'),
+                          (1, 0, 'All:Raven Spy'),
+                          (1, 0, 'All:Walk of Flame'),
+                         ])
         # Check that it is preserved across reloads
         oModel.load()
         aReload = get_all_counts(oModel)
@@ -1353,33 +1355,32 @@ class CardSetListModelTests(ConfigSutekhTest):
             send_changed_signal(oPCS, oCard, 1)
         aUpdated = get_all_counts(oModel)
         self.assertEqual(aUpdated,
-                [(10, 0, 'All'),
-                 (1, 0, 'All:Alexandra'),
-                 (1, 0, 'All:Anarch Manifesto, An'),
-                 (1, 0, 'All:Ankara Citadel, Turkey, The'),
-                 (1, 0, 'All:Anson'),
-                 (1, 0, 'All:Ossian'),
-                 (1, 0, 'All:Path of Blood, The'),
-                 (1, 0, 'All:Raven Spy'),
-                 (2, 0, 'All:Slaughterhouse, The'),
-                 (1, 0, 'All:Walk of Flame'),
-                ])
+                         [(10, 0, 'All'),
+                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Anarch Manifesto, An'),
+                          (1, 0, 'All:Ankara Citadel, Turkey, The'),
+                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Ossian'),
+                          (1, 0, 'All:Path of Blood, The'),
+                          (1, 0, 'All:Raven Spy'),
+                          (2, 0, 'All:Slaughterhouse, The'),
+                          (1, 0, 'All:Walk of Flame'),
+                         ])
         # Check that unsetting the option behaves as expected
         self.oConfig.set_postfix_the_display(False)
         aNormal = get_all_counts(oModel)
         self.assertEqual(aNormal,
-                [(10, 0, 'All'),
-                 (1, 0, 'All:Alexandra'),
-                 (1, 0, 'All:An Anarch Manifesto'),
-                 (1, 0, 'All:Anson'),
-                 (1, 0, 'All:Ossian'),
-                 (1, 0, 'All:Raven Spy'),
-                 (1, 0, 'All:The Ankara Citadel, Turkey'),
-                 (1, 0, 'All:The Path of Blood'),
-                 (2, 0, 'All:The Slaughterhouse'),
-                 (1, 0, 'All:Walk of Flame'),
-                ])
-
+                         [(10, 0, 'All'),
+                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:An Anarch Manifesto'),
+                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Ossian'),
+                          (1, 0, 'All:Raven Spy'),
+                          (1, 0, 'All:The Ankara Citadel, Turkey'),
+                          (1, 0, 'All:The Path of Blood'),
+                          (2, 0, 'All:The Slaughterhouse'),
+                          (1, 0, 'All:Walk of Flame'),
+                         ])
 
 
 if __name__ == "__main__":

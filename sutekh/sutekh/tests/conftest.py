@@ -5,25 +5,14 @@
 
 """This is the sutekh test suite"""
 
-import os
-
 import pytest
 
-from sqlobject import sqlhub, connectionForURI
+from sqlobject import sqlhub
 
-from sutekh.base.core.BaseTables import VersionTable, PHYSICAL_SET_LIST
+from sutekh.base.core.BaseTables import PHYSICAL_SET_LIST
 from sutekh.base.core.DBUtility import refresh_tables
-from sutekh.base.io.EncodedFile import EncodedFile
-from sutekh.base.tests.TestUtils import make_null_handler, create_pkg_tmp_file
 
-from sutekh.SutekhUtility import (read_white_wolf_list, read_rulings,
-                                  read_exp_info_file, read_lookup_data)
-from sutekh.core.SutekhTables import TABLE_LIST
-from sutekh.tests.TestData import (TEST_CARD_LIST, TEST_RULINGS,
-                                   TEST_EXP_INFO, TEST_LOOKUP_LIST)
-from sutekh.tests.TestCore import SutekhTest
-
-from sutekh.tests import create_db, setup_package, teardown_package
+from sutekh.tests import setup_package, teardown_package
 
 
 @pytest.fixture(scope='session')
@@ -38,5 +27,5 @@ def db_setup():
 
 @pytest.fixture(scope='function')
 def clean_db():
+    """Cleanup the database after a test run"""
     assert refresh_tables(PHYSICAL_SET_LIST, sqlhub.processConnection)
-

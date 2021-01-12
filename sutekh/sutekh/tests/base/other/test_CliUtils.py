@@ -78,8 +78,8 @@ Predator's Communion
 
 
 class CliUtilsTests(SutekhTest):
-    """Run tests on various cli print options, patching stdout so we can see the
-       results"""
+    """Run tests on various cli print options, patching stdout so we can see
+       the results"""
 
     def test_print_card_sets(self):
         """Test printing a card set hierachy"""
@@ -122,7 +122,8 @@ class CliUtilsTests(SutekhTest):
         # Check error case
         with patch('sys.stdout', new_callable=StringIO) as oMock:
             do_print_card('Swallowed', print_card_details)
-            self.assertEqual(oMock.getvalue(), 'Unable to find card Swallowed\n')
+            self.assertEqual(oMock.getvalue(),
+                             'Unable to find card Swallowed\n')
 
     def test_run_filter_abstract_card(self):
         """Test running some filters on the Abstract Card list"""
