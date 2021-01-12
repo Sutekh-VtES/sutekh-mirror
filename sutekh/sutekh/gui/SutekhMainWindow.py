@@ -43,7 +43,7 @@ class SutekhMainWindow(AppMainWindow):
     # Gtk.Widget, so many public methods
     # we need to keep a lot of state, so many instance attributes
     def __init__(self):
-        super(SutekhMainWindow, self).__init__()
+        super().__init__()
         self._cPCSWriter = PhysicalCardSetWriter
         self._sResourceName = 'sutekh'
         # We can shrink the window quite small
@@ -104,7 +104,7 @@ class SutekhMainWindow(AppMainWindow):
         # Reset the lookup cache holder
         self.__oSutekhObjectCache = SutekhObjectCache()
         # We publish here, after we've cleared the caches
-        super(SutekhMainWindow, self).update_to_new_db()
+        super().update_to_new_db()
 
     def clear_cache(self):
         """Remove the cached set of objects, for card list reloads, etc."""

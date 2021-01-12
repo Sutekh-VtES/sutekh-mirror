@@ -41,7 +41,7 @@ class BinnedCountLogHandler(SutekhCountLogHandler):
        multiple files with a single progess dialog"""
 
     def __init__(self):
-        super(BinnedCountLogHandler, self).__init__()
+        super().__init__()
         self.fTotBins = 0.0
         self.fBinFrac = 0.0
 
@@ -74,7 +74,7 @@ class TWDAConfigDialog(SutekhDialog):
     sDocUrl = DOC_URL
 
     def __init__(self, oParent, bFirstTime=False):
-        super(TWDAConfigDialog, self).__init__(
+        super().__init__(
             'Configure TWDA Info Plugin',
             oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
@@ -162,7 +162,7 @@ class TWDAInfoPlugin(SutekhPlugin):
                    the search results."""
 
     def __init__(self, *args, **kwargs):
-        super(TWDAInfoPlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.oAllTWDA = None
         self.oAnyTWDA = None
 

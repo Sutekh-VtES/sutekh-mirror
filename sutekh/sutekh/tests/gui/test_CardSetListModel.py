@@ -110,7 +110,7 @@ class CardSetListModelTests(ConfigSutekhTest):
     # setUp + tearDown names are needed by unittest - use their convention
     def setUp(self):
         """Setup the card list used in _loop_modes"""
-        super(CardSetListModelTests, self).setUp()
+        super().setUp()
         aCards = [
             ('AK-47', None, None), ('Bronwen', 'SW', None),
             ('Cesewayo', None, None),

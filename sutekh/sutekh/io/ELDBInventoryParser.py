@@ -22,7 +22,7 @@ class ELDBInventoryParser(BaseLineParser):
     _oCardRe = re.compile(r'\s*"(?P<name>[^"]*)"\s*,\s*(?P<cnt>[0-9]+)')
 
     def __init__(self):
-        super(ELDBInventoryParser, self).__init__()
+        super().__init__()
         self._dNameCache = gen_name_lookups()
 
     def _feed(self, sLine, oHolder):

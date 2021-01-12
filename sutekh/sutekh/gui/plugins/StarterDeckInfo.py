@@ -82,7 +82,7 @@ class StarterConfigDialog(SutekhDialog):
     sDocUrl = DOC_URL
 
     def __init__(self, oParent, bFirstTime=False):
-        super(StarterConfigDialog, self).__init__(
+        super().__init__(
             'Configure Starter Info Plugin', oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
@@ -202,7 +202,7 @@ class StarterInfoPlugin(SutekhPlugin):
     aPostfixes = [3, 4]
 
     def __init__(self, *args, **kwargs):
-        super(StarterInfoPlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.oToggle = None
         self.oLastCard = None
         self.bShowInfo = False
@@ -221,7 +221,7 @@ class StarterInfoPlugin(SutekhPlugin):
                                    PhysicalCardSet)
             MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                                    self.post_set_card_text)
-        super(StarterInfoPlugin, self).cleanup()
+        super().cleanup()
 
     def get_menu_item(self):
         """Overrides method from base class.

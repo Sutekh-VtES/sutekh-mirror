@@ -80,7 +80,7 @@ class GuiDBManager(BaseGuiDBManager):
                 RULINGS_READER, EXP_DATA_READER)
 
     def __init__(self, oWin):
-        super(GuiDBManager, self).__init__(oWin, DBUpgradeManager)
+        super().__init__(oWin, DBUpgradeManager)
 
     def _get_zip_url(self):
         """Download the zip file details and set attributes accordingly"""
@@ -104,10 +104,10 @@ class GuiDBManager(BaseGuiDBManager):
     def initialize_db(self, oConfig):
         """Setup zip file url before calling the base class method"""
         self._get_zip_url()
-        return super(GuiDBManager, self).initialize_db(oConfig)
+        return super().initialize_db(oConfig)
 
     def refresh_card_list(self, oUpdateDate=None, dFiles=None):
         """Setup zip file before calling the base class method"""
         if not dFiles:
             self._get_zip_url()
-        return super(GuiDBManager, self).refresh_card_list(oUpdateDate, dFiles)
+        return super().refresh_card_list(oUpdateDate, dFiles)

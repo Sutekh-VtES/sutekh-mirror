@@ -185,7 +185,7 @@ class WriteArdbHTML(ArdbInfo):
        """
 
     def __init__(self, sLinkMode='Monger', bDoText=False):
-        super(WriteArdbHTML, self).__init__()
+        super().__init__()
         self._sLinkMode = sLinkMode
         self._bDoText = bDoText
 

@@ -151,7 +151,7 @@ class ImportDialog(ImportExportBase):
     """Dialog for importing card sets from the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
-        super(ImportDialog, self).__init__(
+        super().__init__(
             'Import from Secret Library',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
@@ -181,7 +181,7 @@ class ExportDialog(ImportExportBase):
     """Dialog for exporting cards sets to the Secret Library."""
 
     def __init__(self, oParent, sUsername, sPassword):
-        super(ExportDialog, self).__init__(
+        super().__init__(
             'Export to Secret Library',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
@@ -231,8 +231,7 @@ class SecretLibrary(SutekhPlugin):
             logging.warning("Illegal keyword missing (%s).", oExcDetails,
                             exc_info=1)
             self.oIllegal = None
-        super(SecretLibrary, self).__init__(oCardListView, oCardListModel,
-                                            cModelType)
+        super().__init__(oCardListView, oCardListModel, cModelType)
 
     def get_menu_item(self):
         """Register on the 'Export Card Set' or 'Import Card Set' Menu"""

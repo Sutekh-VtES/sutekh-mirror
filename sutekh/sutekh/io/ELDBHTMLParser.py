@@ -70,7 +70,7 @@ class CardItem(HolderState):
     _oCountRegex = re.compile(r'^[^0-9]*(?P<cnt>[0-9]+)[^0-9]*')
 
     def __init__(self, oHolder):
-        super(CardItem, self).__init__(oHolder)
+        super().__init__(oHolder)
         self._iCnt = None
 
     def transition(self, sTag, _dAttr):
@@ -112,12 +112,12 @@ class ELDBHTMLParser(SutekhBaseHTMLParser):
            """
         # super __init__ will call rest, so need this
         self._oHolder = None  # Placeholder for later
-        super(ELDBHTMLParser, self).__init__()
+        super().__init__()
         # Don't need to set oState, since reset will do that
 
     def reset(self):
         """Reset the parser"""
-        super(ELDBHTMLParser, self).reset()
+        super().reset()
         self._oState = Collecting(self._oHolder)
 
     # pylint: disable=arguments-differ

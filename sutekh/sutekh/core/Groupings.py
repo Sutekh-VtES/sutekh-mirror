@@ -16,7 +16,7 @@ class ClanGrouping(IterGrouping):
     """Group the cards by clan and/or creed. The Imbued creeds are treated
        as if they were clans."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(ClanGrouping, self).__init__(oIter, self._get_values)
+        super().__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
     def _get_values(self, oCard):
@@ -31,7 +31,7 @@ class DisciplineGrouping(IterGrouping):
     """Group by Discipline or Virtue. The Imbued Virtues are treated as if
        they were vampire disciplines."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(DisciplineGrouping, self).__init__(oIter, self._get_values)
+        super().__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
     def _get_values(self, oCard):
@@ -48,7 +48,7 @@ class DisciplineLevelGrouping(IterGrouping):
        discipline on vampires, but otherwise is the same as the
        _Discipline and Virtues_ grouping."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(DisciplineLevelGrouping, self).__init__(oIter, self._get_values)
+        super().__init__(oIter, self._get_values)
         self.fGetCard = fGetCard
 
     def _get_values(self, oCard):
@@ -65,7 +65,7 @@ class CryptLibraryGrouping(IterGrouping):
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         # Vampires and Imbued have exactly one card type (we hope that WW
         # don't change that)
-        super(CryptLibraryGrouping, self).__init__(
+        super().__init__(
             oIter, lambda x: [fGetCard(x).cardtype[0].name in CRYPT_TYPES
                               and "Crypt" or "Library"])
 
@@ -73,14 +73,14 @@ class CryptLibraryGrouping(IterGrouping):
 class SectGrouping(IterGrouping):
     """Group by Sect"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(SectGrouping, self).__init__(
+        super().__init__(
             oIter, lambda x: [y.name for y in fGetCard(x).sect])
 
 
 class TitleGrouping(IterGrouping):
     """Group by the political title of the vampire."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(TitleGrouping, self).__init__(
+        super().__init__(
             oIter, lambda x: [y.name for y in fGetCard(x).title])
 
 
@@ -97,7 +97,7 @@ class CostGrouping(IterGrouping):
                 return ['%d %s' % (oCard.cost, oCard.costtype)]
             return []
 
-        super(CostGrouping, self).__init__(oIter, get_values)
+        super().__init__(oIter, get_values)
 
 
 class GroupGrouping(IterGrouping):
@@ -113,7 +113,7 @@ class GroupGrouping(IterGrouping):
                 return ['Any Group']
             return []
 
-        super(GroupGrouping, self).__init__(oIter, get_values)
+        super().__init__(oIter, get_values)
 
 
 class GroupPairGrouping(IterGrouping):
@@ -141,7 +141,7 @@ class GroupPairGrouping(IterGrouping):
                 return [self.TEXT % (x, x + 1) for x in range(1, iMax)]
             return []
 
-        super(GroupPairGrouping, self).__init__(oIter, get_values)
+        super().__init__(oIter, get_values)
 
 
 class ExpansionRarityGrouping(BaseExpansionRarityGrouping):

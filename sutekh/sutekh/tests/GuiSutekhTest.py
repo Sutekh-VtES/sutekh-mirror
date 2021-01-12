@@ -26,7 +26,7 @@ class ConfigSutekhTest(SutekhTest):
 
     def setUp(self):
         """Setup config file for the tests"""
-        super(ConfigSutekhTest, self).setUp()
+        super().setUp()
         # Carry on with the test
         sConfigFile = self._create_tmp_file()
         self.oConfig = ConfigFile(sConfigFile)
@@ -65,7 +65,7 @@ class ConfigSutekhTest(SutekhTest):
         os.remove(os.path.join(self.sPluginDir, 'index.txt'))
         os.rmdir(os.path.join(self.sPluginDir, 'clans'))
         os.rmdir(self.sPluginDir)
-        super(ConfigSutekhTest, self).tearDown()
+        super().tearDown()
 
 
 class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
@@ -80,11 +80,11 @@ class GuiSutekhTest(ConfigSutekhTest, GuiBaseTest):
 
     def setUp(self):
         """Setup Gtk window for the tests"""
-        super(GuiSutekhTest, self).setUp()
+        super().setUp()
         # Carry on with the test
         self.oWin = SutekhMainWindow()
 
     def tearDown(self):
         """Tear down Gtk framework after test run"""
         self.oWin.destroy()
-        super(GuiSutekhTest, self).tearDown()
+        super().tearDown()

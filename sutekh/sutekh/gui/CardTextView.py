@@ -21,7 +21,7 @@ class CardTextBuffer(BaseCardTextBuffer):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(CardTextBuffer, self).__init__()
+        super().__init__()
 
         # See http://www.pyGtk.org/pyGtk2reference/class-Gtktexttag.html
         # for some possible properties
@@ -59,7 +59,7 @@ class CardTextView(BaseCardTextView):
     # Gtk.Widget, so many public methods
     def __init__(self, oIconManager, oMainWindow):
         oBuffer = CardTextBuffer()
-        super(CardTextView, self).__init__(oBuffer, oIconManager, oMainWindow)
+        super().__init__(oBuffer, oIconManager, oMainWindow)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'show_errata_markers',
                              self._reload_card)
 
@@ -68,7 +68,7 @@ class CardTextView(BaseCardTextView):
     # and statements
     def print_card_to_buffer(self, oCard):
         """Format the text for the card and add it to the buffer."""
-        super(CardTextView, self).print_card_to_buffer(oCard)
+        super().print_card_to_buffer(oCard)
 
         if oCard.cost is not None:
             if oCard.cost == -1:

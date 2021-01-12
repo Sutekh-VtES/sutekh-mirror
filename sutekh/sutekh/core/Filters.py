@@ -72,7 +72,7 @@ class SutekhCardFilter(Filter):
 
     def __init__(self):
         self._oMapTable = make_table_alias('sutekh_abstract_card')
-        super(SutekhCardFilter, self).__init__()
+        super().__init__()
 
     # pylint: disable=missing-docstring
     # don't need docstrings for _get_expression, get_values & _get_joins
@@ -345,7 +345,7 @@ class GroupFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iGroup):
-        super(GroupFilter, self).__init__()
+        super().__init__()
         self.__iGroup = iGroup
 
     # pylint: disable=missing-docstring
@@ -364,7 +364,7 @@ class MultiGroupFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aGroups):
-        super(MultiGroupFilter, self).__init__()
+        super().__init__()
         self.__aGroups = [int(sV) for sV in aGroups if sV != 'Any']
         if 'Any' in aGroups:
             self.__aGroups.append(-1)
@@ -387,7 +387,7 @@ class CapacityFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iCap):
-        super(CapacityFilter, self).__init__()
+        super().__init__()
         self.__iCap = iCap
 
     # pylint: disable=missing-docstring
@@ -406,7 +406,7 @@ class MultiCapacityFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCaps):
-        super(MultiCapacityFilter, self).__init__()
+        super().__init__()
         self.__aCaps = [int(sV) for sV in aCaps]
 
     # pylint: disable=missing-docstring
@@ -429,7 +429,7 @@ class CostFilter(SutekhCardFilter):
     # Should this exclude Vamps & Imbued, if we search for
     # cards without cost?
     def __init__(self, iCost):
-        super(CostFilter, self).__init__()
+        super().__init__()
         self.__iCost = iCost
         # Handle 0 correctly
         if not iCost:
@@ -450,7 +450,7 @@ class MultiCostFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCost):
-        super(MultiCostFilter, self).__init__()
+        super().__init__()
         self.__aCost = [int(sV) for sV in aCost if sV != 'X']
         self.__bZeroCost = False
         if 'X' in aCost:
@@ -484,7 +484,7 @@ class CostTypeFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, sCostType):
-        super(CostTypeFilter, self).__init__()
+        super().__init__()
         self.__sCostType = sCostType.lower()
         assert self.__sCostType in ("blood", "pool", "conviction", None)
 
@@ -504,7 +504,7 @@ class MultiCostTypeFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aCostTypes):
-        super(MultiCostTypeFilter, self).__init__()
+        super().__init__()
         self.__aCostTypes = [x.lower() for x in aCostTypes if x is not None]
         for sCostType in self.__aCostTypes:
             assert sCostType in ("blood", "pool", "conviction")
@@ -526,7 +526,7 @@ class LifeFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, iLife):
-        super(LifeFilter, self).__init__()
+        super().__init__()
         self.__iLife = iLife
 
     # pylint: disable=missing-docstring
@@ -547,7 +547,7 @@ class MultiLifeFilter(SutekhCardFilter):
     types = ('AbstractCard', 'PhysicalCard')
 
     def __init__(self, aLife):
-        super(MultiLifeFilter, self).__init__()
+        super().__init__()
         self.__aLife = [int(sV) for sV in aLife]
 
     # pylint: disable=missing-docstring
@@ -567,7 +567,7 @@ class CardTextFilter(BaseCardTextFilter):
     """Filter on Card Text"""
 
     def __init__(self, sPattern):
-        super(CardTextFilter, self).__init__(sPattern)
+        super().__init__(sPattern)
         self._bBraces = '{' in self._sPattern or '}' in self._sPattern
         self._oMapTable = make_table_alias('sutekh_abstract_card')
 
@@ -587,7 +587,7 @@ class CardTextFilter(BaseCardTextFilter):
         # pylint: disable=no-member
         # SQLObject methods not detected by pylint
         if self._bBraces:
-            return super(CardTextFilter, self)._get_expression()
+            return super()._get_expression()
         return LIKE(func.LOWER(self._oMapTable.q.search_text),
                     '%' + self._sPattern + '%')
 

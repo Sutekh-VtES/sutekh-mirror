@@ -19,4 +19,4 @@ class SutekhObjectCache(ObjectCache):
         aExtraTypesToCache = [Discipline, DisciplinePair, Clan,
                               Creed, Virtue, Sect, Title,
                               SutekhAbstractCard]
-        super(SutekhObjectCache, self).__init__(aExtraTypesToCache)
+        super().__init__(aExtraTypesToCache)

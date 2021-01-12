@@ -390,7 +390,7 @@ class MergedVampirePlugin(SutekhPlugin):
     aModelsSupported = ("MainWindow",)
 
     def __init__(self, *args, **kwargs):
-        super(MergedVampirePlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._oMerged = make_markup_button(
             '<span size="x-small">Show Merged</span>')
         self._oAdv = make_markup_button(
@@ -413,7 +413,7 @@ class MergedVampirePlugin(SutekhPlugin):
         """Remove the listener"""
         MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                                self.post_set_card_text)
-        super(MergedVampirePlugin, self).cleanup()
+        super().cleanup()
 
     def get_menu_item(self):
         """Overrides method from base class.

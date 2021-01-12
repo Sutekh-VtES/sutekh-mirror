@@ -91,7 +91,7 @@ class ELDBDeckFileParser:
     """Parser for the ELDB Deck format."""
 
     def __init__(self):
-        super(ELDBDeckFileParser, self).__init__()
+        super().__init__()
         self._dNameCache = gen_name_lookups()
         self._oState = None
 

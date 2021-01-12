@@ -23,12 +23,12 @@ class MainMenu(AppMenu):
     # Gtk.Widget, so many public methods
     # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
-        super(MainMenu, self).__init__(oWindow, oConfig)
+        super().__init__(oWindow, oConfig)
         self.cIdentifyFile = IdentifyXMLFile
 
     def _add_download_menu(self, oDownloadMenu):
         """Extend the File Download menu"""
-        super(MainMenu, self)._add_download_menu(oDownloadMenu)
+        super()._add_download_menu(oDownloadMenu)
         oCheckItem = self.create_menu_item('Check for updated cardlist',
                                            oDownloadMenu,
                                            self.check_updated_cardlist)
@@ -40,7 +40,7 @@ class MainMenu(AppMenu):
 
     def _add_prefs_menu(self, oPrefsMenu):
         """Extend the Preferences menu"""
-        super(MainMenu, self)._add_prefs_menu(oPrefsMenu)
+        super()._add_prefs_menu(oPrefsMenu)
         oShowErrata = Gtk.CheckMenuItem(
             label='Show Errata Markers')
         oShowErrata.set_inconsistent(False)

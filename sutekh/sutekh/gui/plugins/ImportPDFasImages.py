@@ -78,7 +78,7 @@ class ImportView(ACLLookupView):
     """View to display the page from the PDF"""
 
     def __init__(self, oParent, oConfig, aExp):
-        super(ImportView, self).__init__(oParent, oConfig)
+        super().__init__(oParent, oConfig)
 
         oUsedCell = CellRendererSutekhButton()
         oUsedCell.load_icon("starred", self)
@@ -163,7 +163,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                    next to their names."""
 
     def __init__(self, *args, **kwargs):
-        super(ImportPDFImagesPlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._oImageFrame = None
 
     def get_menu_item(self):

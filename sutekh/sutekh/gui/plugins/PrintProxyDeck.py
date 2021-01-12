@@ -70,7 +70,7 @@ class PrintProxyPlugin(SutekhPlugin):
                   as proxies."""
 
     def __init__(self, *args, **kwargs):
-        super(PrintProxyPlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # This is a horrible hack - we should add an API for querying other
         # plugins
         self._oSettings = None

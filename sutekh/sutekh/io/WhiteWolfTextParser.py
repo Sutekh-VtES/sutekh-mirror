@@ -268,7 +268,7 @@ class CardDict(dict):
     }
 
     def __init__(self, oLogger):
-        super(CardDict, self).__init__()
+        super().__init__()
         self._oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
 

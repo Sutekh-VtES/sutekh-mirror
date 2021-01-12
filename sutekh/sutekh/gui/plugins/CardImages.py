@@ -207,7 +207,7 @@ class ImageConfigDialog(BaseImageConfigDialog):
     sDefaultUrl = '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages.zip')
 
     def __init__(self, oImagePlugin, bFirstTime=False, bDownloadUpgrade=False):
-        super(ImageConfigDialog, self).__init__(oImagePlugin, bFirstTime)
+        super().__init__(oImagePlugin, bFirstTime)
         # This is a bit horrible, but we stick the download upgrade logic
         # here, rather than cluttering up the generic ConfigDialog with
         # this entirely Sutekh specific logic
@@ -243,7 +243,7 @@ class CardImagePlugin(SutekhPlugin, BaseImagePlugin):
 
     @classmethod
     def update_config(cls):
-        super(CardImagePlugin, cls).update_config()
+        super().update_config()
         # We default to download expansions is true, since that matches
         # the zip file we provide from sutekh.vtes.za.net
         cls.dGlobalConfig[DOWNLOAD_EXPANSIONS] = 'boolean(default=True)'

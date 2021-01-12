@@ -56,7 +56,7 @@ class ClanDisciplineStats(SutekhPlugin):
                    those cards."""
 
     def __init__(self, *args, **kwargs):
-        super(ClanDisciplineStats, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._oStatsVbox = None
 
     def get_menu_item(self):
@@ -172,7 +172,7 @@ class StatsView(Gtk.TreeView):
             "# Sup / # Inf", "Score", "Score / Vamp", "Score / Total Cap.",
         ]
 
-        super(StatsView, self).__init__(self._oModel)
+        super().__init__(self._oModel)
 
         oCell = Gtk.CellRendererText()
         oCell.set_property('style', Pango.Style.ITALIC)
@@ -191,11 +191,9 @@ class StatsModel(Gtk.TreeStore):
     """TreeStore to hold the data about the clan statistics"""
 
     def __init__(self, bHideIllegal):
-        super(StatsModel, self).__init__(GObject.TYPE_STRING,
-                                         GObject.TYPE_STRING,
-                                         GObject.TYPE_INT,
-                                         GObject.TYPE_INT,
-                                         *[GObject.TYPE_STRING] * 5)
+        super().__init__(GObject.TYPE_STRING, GObject.TYPE_STRING,
+                         GObject.TYPE_INT, GObject.TYPE_INT,
+                         *[GObject.TYPE_STRING] * 5)
         self.oExcludedKeyword = None
         if bHideIllegal:
             try:

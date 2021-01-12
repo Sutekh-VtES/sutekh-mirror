@@ -29,7 +29,7 @@ class GuiIconManager(CachedIconManager, IconManager):
     def __init__(self, sPath):
         if not sPath:
             sPath = os.path.join(prefs_dir(SutekhInfo.NAME), 'icons')
-        super(GuiIconManager, self).__init__(sPath)
+        super().__init__(sPath)
 
     def setup(self):
         """Prompt the user to download the icons if the icon directory

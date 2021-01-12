@@ -17,4 +17,4 @@ class CardTextFrame(BaseCardTextFrame):
     # Gtk.Widget, so lots of public methods
     def __init__(self, oMainWindow, oIconManager):
         oView = CardTextView(oIconManager, oMainWindow)
-        super(CardTextFrame, self).__init__(oView, oMainWindow)
+        super().__init__(oView, oMainWindow)

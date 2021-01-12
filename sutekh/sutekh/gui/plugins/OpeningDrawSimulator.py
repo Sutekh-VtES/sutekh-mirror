@@ -50,7 +50,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
                    _Draw sample hand_ button."""
 
     def __init__(self, *args, **kwargs):
-        super(OpeningHandSimulator, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
@@ -92,7 +92,7 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         self.dCardTypes = {}
         self.dCardProperties = {}
         self.aLibrary = []
-        super(OpeningHandSimulator, self)._cleanup()
+        super()._cleanup()
 
     def _fill_stats(self, oDialog):
         """Fill in the stats from the draws"""

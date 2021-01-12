@@ -20,7 +20,7 @@ class ZipFileWrapper(BaseZipFileWrapper):
        This provides useful functions for dumping + extracting the
        database to / form a zipfile"""
     def __init__(self, sZipFileName):
-        super(ZipFileWrapper, self).__init__(sZipFileName)
+        super().__init__(sZipFileName)
         self._cWriter = PhysicalCardSetWriter
         self._cIdentifyFile = IdentifyXMLFile
 

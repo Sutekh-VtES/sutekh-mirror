@@ -344,7 +344,7 @@ class DisciplineNumberSelect(Gtk.HBox):
     _sUseList = 'Use list of disciplines'
 
     def __init__(self, aSortedDisciplines, oDlg):
-        super(DisciplineNumberSelect, self).__init__(False, 2)
+        super().__init__(False, 2)
         self._aSortedDisciplines = aSortedDisciplines
         # Never show more than 5 disciplines here - people can use the
         # discpline list in the combo box if they want more
@@ -412,7 +412,7 @@ class AnalyzeCardList(SutekhPlugin):
                    the disciplines to consider manually."""
 
     def __init__(self, *args, **kwargs):
-        super(AnalyzeCardList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._dBacks = _load_printing_back_info()
         # dictionary of individual analysis pages
         self._dConstruct = {

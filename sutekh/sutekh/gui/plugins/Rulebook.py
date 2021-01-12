@@ -35,7 +35,7 @@ class RulebookConfigDialog(SutekhDialog):
     sDocUrl = DOC_URL
 
     def __init__(self, oParent, bFirstTime=False):
-        super(RulebookConfigDialog, self).__init__(
+        super().__init__(
             'Configure Rulebook Info Plugin', oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
@@ -99,7 +99,7 @@ class RulebookPlugin(SutekhPlugin):
     }
 
     def __init__(self, *args, **kwargs):
-        super(RulebookPlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._oRulebookDlg = None
         # TODO: First menu item is a hackish way to get at the parent Rulebook
         #       menu. Remove this once the plugin API provides a better way to

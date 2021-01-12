@@ -34,7 +34,7 @@ class LackeyDeckParser(BaseLineParser):
     """Parser for the Lackey Deck format."""
 
     def __init__(self):
-        super(LackeyDeckParser, self).__init__()
+        super().__init__()
         self._dNameCache = gen_name_lookups()
 
     def _feed(self, sLine, oHolder):

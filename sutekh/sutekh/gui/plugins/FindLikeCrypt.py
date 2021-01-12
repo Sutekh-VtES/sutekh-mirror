@@ -400,7 +400,7 @@ class LikeCardsView(Gtk.TreeView):
     def __init__(self, aCards, bVampire):
         self._oModel = LikeCardsModel(aCards, bVampire)
 
-        super(LikeCardsView, self).__init__(self._oModel)
+        super().__init__(self._oModel)
 
         oCell = Gtk.CellRendererText()
         oCell.set_property('style', Pango.Style.ITALIC)
@@ -438,11 +438,9 @@ class LikeCardsModel(Gtk.ListStore):
     """ListStore for holding details of the matching cards"""
 
     def __init__(self, aCards, bVampire):
-        super(LikeCardsModel, self).__init__(GObject.TYPE_STRING,
-                                             GObject.TYPE_INT,
-                                             GObject.TYPE_INT,
-                                             GObject.TYPE_STRING,
-                                             GObject.TYPE_STRING)
+        super().__init__(GObject.TYPE_STRING, GObject.TYPE_INT,
+                         GObject.TYPE_INT, GObject.TYPE_STRING,
+                         GObject.TYPE_STRING)
 
         self.bVampire = bVampire
         for oCard in aCards:

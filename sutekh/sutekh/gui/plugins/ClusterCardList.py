@@ -33,7 +33,7 @@ class ClusterCardList(SutekhPlugin):
     aModelsSupported = (PhysicalCard, PhysicalCardSet)
 
     def __init__(self, *args, **kwargs):
-        super(ClusterCardList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # pylint: disable=invalid-name
         # fMakeCardFromCluster triggers on length, but we like the name
         if not self.model:

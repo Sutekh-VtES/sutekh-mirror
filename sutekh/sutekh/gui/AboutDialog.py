@@ -19,7 +19,7 @@ class SutekhAboutDialog(Gtk.AboutDialog):
     # Gtk Widget, so has many public methods
 
     def __init__(self, *aArgs, **kwargs):
-        super(SutekhAboutDialog, self).__init__(*aArgs, **kwargs)
+        super().__init__(*aArgs, **kwargs)
 
         self.set_name(SutekhInfo.NAME)
         self.set_version(SutekhInfo.VERSION_STR)

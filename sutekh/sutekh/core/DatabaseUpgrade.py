@@ -480,8 +480,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                           value=oObj.name,
                                           connection=oTrans)
         else:
-            return super(DBUpgradeManager, self)._upgrade_lookup_hints(
-                oOrigConn, oTrans, oVer)
+            return super()._upgrade_lookup_hints(oOrigConn, oTrans, oVer)
         return (True, aMessages)
 
     def _copy_discipline(self, oOrigConn, oTrans):

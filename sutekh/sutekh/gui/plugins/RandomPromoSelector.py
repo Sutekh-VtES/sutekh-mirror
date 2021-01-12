@@ -27,7 +27,7 @@ class RandomPromoDialog(SutekhDialog):
     """Dialog for displaying random sets of cards."""
 
     def __init__(self, oParent, aCards):
-        super(RandomPromoDialog, self).__init__(
+        super().__init__(
             'Generate random groups of cards',
             oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
@@ -101,7 +101,7 @@ class RandomPromoSelector(SutekhPlugin):
     aModelsSupported = (PhysicalCardSet,)
 
     def __init__(self, *args, **kwargs):
-        super(RandomPromoSelector, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_menu_item(self):
         """Register on the 'Actions' menu"""

@@ -50,7 +50,7 @@ class RuleDict(dict):
 
     def __init__(self, oLogger):
         self._oLogger = oLogger
-        super(RuleDict, self).__init__()
+        super().__init__()
         self._oMaker = SutekhObjectMaker()
 
     def _find_card(self, sTitle):
@@ -230,10 +230,10 @@ class RulingParser(SutekhBaseHTMLParser):
         self._oLogger = Logger('WW Rulings parser')
         if oLogHandler is not None:
             self._oLogger.addHandler(oLogHandler)
-        super(RulingParser, self).__init__()
+        super().__init__()
         # No need to touch self._oState, reset will do that for us
 
     def reset(self):
         """Reset the parser"""
-        super(RulingParser, self).reset()
+        super().reset()
         self._oState = NoSection(self._oLogger)

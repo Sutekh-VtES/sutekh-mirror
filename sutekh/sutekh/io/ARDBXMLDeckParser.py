@@ -45,7 +45,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
                 self._eState = self.TagType.DECKCOMMENT
         else:
             # Fall back to base class
-            super(ARDBDeckXMLState, self).start(sTag, dAttributes)
+            super().start(sTag, dAttributes)
 
     def end(self, sTag):
         """End tag encountered"""
@@ -61,7 +61,7 @@ class ARDBDeckXMLState(ARDBInvXMLState):
             self._set_no_tag()
         else:
             # Fall back to base class
-            super(ARDBDeckXMLState, self).end(sTag)
+            super().end(sTag)
 
     def _set_no_tag(self):
         """Set state back to NOTAG state"""
