@@ -265,5 +265,5 @@ jobs:
     - name: Run Tests with coverage
       run: |
         pushd sutekh
-        xvfb-run --auto-servernum pytest --cov=sutekh
+        xvfb-run --auto-servernum pytest --cov-report term-missing:skip-covered --cov=sutekh
         popd
