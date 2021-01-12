@@ -128,7 +128,7 @@ class InSection(LogStateWithInfo):
         """Transition to SectionTitle or NoSection as needed."""
         if sTag == 'b':
             return SectionTitle(self._dInfo, self._oLogger)
-        elif sTag == 'p':
+        if sTag == 'p':
             # skip to next section
             return InSection(RuleDict(self._oLogger), self._oLogger)
         return NoSection(self._oLogger)
@@ -142,7 +142,7 @@ class SectionTitle(LogStateWithInfo):
         if sTag == 'b':
             raise HTMLStateError('Unexpected tag in SectionTitle',
                                  sTag, self._sData)
-        elif sTag == '/b':
+        if sTag == '/b':
             self._dInfo['title'] = self._sData.strip().strip(':')
             return SectionWithTitle(self._dInfo, self._oLogger)
         return self
@@ -155,10 +155,10 @@ class SectionWithTitle(LogStateWithInfo):
         """Transition to SectionRule, InSection or NoSection if needed."""
         if sTag == 'ul':
             return SectionRule(self._dInfo, self._oLogger)
-        elif sTag == 'p':
+        if sTag == 'p':
             # skip to next section
             return InSection(RuleDict(self._oLogger), self._oLogger)
-        elif sTag == '/ul':
+        if sTag == '/ul':
             return NoSection(self._oLogger)
         return self
 
@@ -170,7 +170,7 @@ class SectionRule(LogStateWithInfo):
         """Transition to the appropriate InRule State."""
         if sTag == 'li':
             return InRuleText(self._dInfo, self._oLogger)
-        elif sTag == '/ul':
+        if sTag == '/ul':
             return NoSection(self._oLogger)
         return self
 
@@ -187,7 +187,7 @@ class InRuleText(LogStateWithInfo):
                 self._dInfo['text'] = self._sData.strip()
             self._dInfo['url'] = dAttr['href']
             return InRuleUrl(self._dInfo, self._oLogger)
-        elif sTag == '/li':
+        if sTag == '/li':
             if 'code' not in self._dInfo:
                 # Rule without an url, so extract the last section in []'s
                 # from the text
@@ -211,7 +211,7 @@ class InRuleUrl(LogStateWithInfo):
         if sTag == 'a':
             raise HTMLStateError('Unexpected tag in InRuleUrl',
                                  sTag, self._sData)
-        elif sTag == '/a':
+        if sTag == '/a':
             # Some rulings have multiple codes, but we only take the last one
             # since that matches the url we keep
             self._dInfo['code'] = self._sData.strip()
