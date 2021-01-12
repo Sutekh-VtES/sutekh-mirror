@@ -17,8 +17,6 @@ from .LogTextView import LogTextView
 class LogViewFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """The frame holding the log message view.
 
        The LogHandler is created by the main window, so it's

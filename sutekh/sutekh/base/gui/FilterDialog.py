@@ -30,8 +30,6 @@ class FilterDialog(SutekhDialog):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we keep a lot of internal state, so many instance variables
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
 
     RESPONSE_CLEAR = 1
     RESPONSE_REVERT = 2

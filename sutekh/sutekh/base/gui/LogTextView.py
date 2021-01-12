@@ -42,8 +42,6 @@ class LogTextView(Gtk.TextView):
 
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(LogTextView, self).__init__()
         # Can be styled as frame_name.view

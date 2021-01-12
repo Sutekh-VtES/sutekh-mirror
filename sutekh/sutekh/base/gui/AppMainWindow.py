@@ -42,8 +42,6 @@ class AppMainWindow(MultiPaneWindow):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep a lot of state, so many instance attributes
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self):
         super(AppMainWindow, self).__init__()
         self.set_border_width(2)

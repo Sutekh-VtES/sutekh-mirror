@@ -173,8 +173,6 @@ class NotebookDialog(SutekhDialog):
     """Dialog with a notebook widget."""
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
 
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
         super(NotebookDialog, self).__init__(sTitle, oParent, iFlags,

@@ -17,8 +17,6 @@ class FilteredView(CustomDragIconView):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # We need to keep state, so many attrs
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     def __init__(self, oController, oMainWindow, oModel, oConfig):
         # Although MainWindow usually contains a config_file property,
         # when we come in from the GuiCardLookup, we just have oConfig

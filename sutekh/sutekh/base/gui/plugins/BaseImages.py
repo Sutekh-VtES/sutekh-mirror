@@ -180,8 +180,6 @@ class BaseImageFrame(BasicFrame):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # we need to keep quite a lot of internal state
     # can't not trigger these warning with pyGtk
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame which displays the image.
 
        We wrap a Gtk.Image in an EventBox (for focus & DnD events)

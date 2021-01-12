@@ -37,8 +37,6 @@ def pack_resizable(oBox, oWidget):
 class BasicFrame(Gtk.Frame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """The basic, blank frame for sutekh.
 
        Provides a default frame, and drag-n-drop handlind for

@@ -19,8 +19,6 @@ from .GuiCardSetFunctions import export_cs
 class CardSetMenu(CardListMenu):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Card Set Menu.
 
        Provide the usual menu options, and implement several of the

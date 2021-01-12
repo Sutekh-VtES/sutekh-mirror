@@ -186,8 +186,6 @@ class CardSetCardListModel(CardListModel):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # need local attributes for state
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """CardList Model specific to lists of physical cards.
 
        Handles the display of the cards, their expansions and child card set

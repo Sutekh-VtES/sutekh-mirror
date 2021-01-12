@@ -37,8 +37,6 @@ class CardListModel(Gtk.TreeStore):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # need local attributes for state
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Provides a card list specific API for accessing a Gtk.TreeStore."""
     # Use spaces to ensure it sorts first
     # Could possibly be more visually distinct, but users can filter

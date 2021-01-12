@@ -86,8 +86,6 @@ class ProfileListView(Gtk.TreeView):
 class ScrolledProfileList(Gtk.Frame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
         super(ScrolledProfileList, self).__init__()

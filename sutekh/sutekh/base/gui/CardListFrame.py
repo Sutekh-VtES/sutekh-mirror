@@ -15,8 +15,6 @@ from .BasicFrame import BasicFrame, pack_resizable
 class CardListFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Base class for all the Card Lists.
 
        Provide common methods and basic parameters common to all the

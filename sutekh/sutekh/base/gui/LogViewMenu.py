@@ -17,8 +17,6 @@ from .SutekhFileWidget import ExportDialog
 class LogViewMenu(SutekhMenu):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Log View Menu.
 
        Provides options for filtering the log messages on severity,

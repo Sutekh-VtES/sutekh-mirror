@@ -15,8 +15,6 @@ from .BasicFrame import BasicFrame, pack_resizable
 class ScrolledFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    # pylint: disable=property-on-old-class
-    # Gtk classes aren't old-style, but pylint thinks they are
     """Frame which holds a view in a scrolled window.
 
        Provides basic frame actions (drag-n-drop, focus behaviour), and
