@@ -59,7 +59,7 @@ class FilterModelPanes(Gtk.HBox):
     # Gtk.Widget, so many public methods
 
     def __init__(self, sFilterType, oDialog):
-        super(FilterModelPanes, self).__init__()
+        super().__init__()
         # Create the 3 panes
         self._oBoxModel = None
         self._sFilterType = sFilterType
@@ -96,7 +96,7 @@ class FilterEditorToolbar(CustomDragIconView):
     def __init__(self, sFilterType):
         self._oListStore = Gtk.ListStore(GObject.TYPE_STRING,
                                          GObject.TYPE_STRING)
-        super(FilterEditorToolbar, self).__init__(self._oListStore)
+        super().__init__(self._oListStore)
         oTextCell = Gtk.CellRendererText()
         oColumn = Gtk.TreeViewColumn("Filter Element", oTextCell, text=0)
         oColumn.set_spacing(2)
@@ -141,7 +141,7 @@ class FilterValuesBox(Gtk.VBox):
     # We need to keep a lot of state to handle all the cases
 
     def __init__(self, oDialog, sFilterType):
-        super(FilterValuesBox, self).__init__()
+        super().__init__()
         self._oEmptyWidget = Gtk.VBox()
         self._oNoneWidget = Gtk.VBox()
         self._oParent = oDialog
@@ -576,7 +576,7 @@ class BoxModelPopupMenu(Gtk.Menu):
     # Gtk.Widget, so many public methods
 
     def __init__(self, oBoxModelEditor):
-        super(BoxModelPopupMenu, self).__init__()
+        super().__init__()
         self._oDis = Gtk.MenuItem(label="Disable / Enable Filter")
         self._oNeg = Gtk.MenuItem(label="Negate Filter Element")
         self._oDel = Gtk.MenuItem("Delete filter or value")
@@ -603,7 +603,7 @@ class FilterBoxModelStore(Gtk.TreeStore):
     NONE_VALUE = '<b>No Values for this filter</b>'
 
     def __init__(self):
-        super(FilterBoxModelStore, self).__init__(
+        super().__init__(
             GObject.TYPE_STRING, GObject.TYPE_PYOBJECT, Gdk.RGBA)
 
     def _fill_values(self, oFilterIter, oModel, oColour):
@@ -829,7 +829,7 @@ class FilterBoxModelEditView(CustomDragIconView):
     # Gtk.Widget, so many public methods
 
     def __init__(self, oStore, oValuesWidget, oBoxModel):
-        super(FilterBoxModelEditView, self).__init__(oStore)
+        super().__init__(oStore)
         self._oStore = oStore
         self._oBoxModel = oBoxModel
         oTextCell = Gtk.CellRendererText()
@@ -1386,7 +1386,7 @@ class FilterBoxModelEditBox(Gtk.VBox):
     # Gtk.Widget, so many public methods
 
     def __init__(self, oValuesWidget):
-        super(FilterBoxModelEditBox, self).__init__()
+        super().__init__()
         self._oValuesWidget = oValuesWidget
         oTreeStore = FilterBoxModelStore()
         self._oTreeView = FilterBoxModelEditView(oTreeStore, oValuesWidget,

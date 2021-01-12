@@ -51,7 +51,7 @@ class BaseExpansionStats(BasePlugin):
     GROUPING = None
 
     def __init__(self, *args, **kwargs):
-        super(BaseExpansionStats, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._oStatsVbox = None
 
     def get_menu_item(self):
@@ -107,7 +107,7 @@ class StatsView(Gtk.TreeView):
         self._oModel = StatsModel(cGrping, cExpRarityGrping, bHideIllegal)
         self._aLabels = ["Expansion", "Date", "Count"]
 
-        super(StatsView, self).__init__(self._oModel)
+        super().__init__(self._oModel)
 
         oCell = Gtk.CellRendererText()
         oCell.set_property('style', Pango.Style.ITALIC)
@@ -126,9 +126,8 @@ class StatsModel(Gtk.TreeStore):
     """TreeStore to hold the data about the expansion statistics"""
 
     def __init__(self, cGrping, cExpRarityGrping, bHideIllegal):
-        super(StatsModel, self).__init__(GObject.TYPE_STRING,
-                                         GObject.TYPE_STRING,
-                                         GObject.TYPE_INT)
+        super().__init__(GObject.TYPE_STRING, GObject.TYPE_STRING,
+                         GObject.TYPE_INT)
         self.cExpRarityGrping = cExpRarityGrping
         self.oLegalFilter = NullFilter()
         if bHideIllegal:

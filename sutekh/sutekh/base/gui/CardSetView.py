@@ -69,8 +69,8 @@ class CardSetView(CardListView):
         if bStartEditable:
             oModel.bEditable = True
         # The only path here is via the main window, so config_file exists
-        super(CardSetView, self).__init__(oController, oMainWindow,
-                                          oModel, oMainWindow.config_file)
+        super().__init__(oController, oMainWindow,
+                         oModel, oMainWindow.config_file)
 
         self.sSetName = sName
         self.sDragPrefix = PhysicalCardSet.sqlmeta.table + ":" + self.sSetName

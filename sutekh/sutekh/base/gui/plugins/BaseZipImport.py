@@ -41,7 +41,7 @@ class ZipFileDirStore(Gtk.TreeStore):
     # Gtk.Widget, so many public methods
     """Simple tree store to show card set hierachy in a ScrolledList widget"""
     def __init__(self):
-        super(ZipFileDirStore, self).__init__(GObject.TYPE_STRING)
+        super().__init__(GObject.TYPE_STRING)
 
     def fill_list(self, dEscapedList):
         """Fill the list"""
@@ -75,7 +75,7 @@ class SelectZipFileContents(SutekhDialog):
     # Gtk.Dialog, so lots of public methods
 
     def __init__(self, dEscapedList, oParent):
-        super(SelectZipFileContents, self).__init__(
+        super().__init__(
             "Select Card Sets to Import", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,

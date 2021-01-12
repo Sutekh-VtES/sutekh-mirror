@@ -28,7 +28,7 @@ class CardSetManagementFrame(BasicFrame):
     _cModelType = "Card Set List"
 
     def __init__(self, oMainWindow):
-        super(CardSetManagementFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         self._oMenu = None
         self._oScrolledWindow = None
         self._oController = CardSetManagementController(oMainWindow, self)

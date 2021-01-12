@@ -46,7 +46,7 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
     }
 
     def __init__(self, bShowIcon=False):
-        super(CellRendererSutekhButton, self).__init__()
+        super().__init__()
         #self.__GObject_init__()
         self.oPixbuf = None
         self.set_property("mode", Gtk.CellRendererMode.ACTIVATABLE)

@@ -25,7 +25,7 @@ class HashError(Exception):
     """Thrown when a checksum check fails"""
 
     def __init__(self, sData):
-        super(HashError, self).__init__("Checksum comparison failed")
+        super().__init__("Checksum comparison failed")
         # This is a bit ugly.  We shove the data here so it's easy to
         # add ignore choices without retrying the download in the gui
         self.sData = sData

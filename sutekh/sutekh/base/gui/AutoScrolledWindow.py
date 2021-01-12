@@ -17,7 +17,7 @@ class AutoScrolledWindow(Gtk.ScrolledWindow):
        when needed. The widget can also be wrapped in a viewport if needed
        """
     def __init__(self, oWidgetToWrap):
-        super(AutoScrolledWindow, self).__init__()
+        super().__init__()
 
         self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.IN)

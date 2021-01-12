@@ -204,7 +204,7 @@ class BaseOpeningDraw(BasePlugin):
     sHelpText = """Simulates the opening hand"""
 
     def __init__(self, *args, **kwargs):
-        super(BaseOpeningDraw, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.iCurHand = 0
         self.aDrawnHands = []
         self.bShowDetails = False

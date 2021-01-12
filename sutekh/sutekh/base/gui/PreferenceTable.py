@@ -28,8 +28,7 @@ class PreferenceTable(Gtk.Table):
         self._aOptions.sort(
             key=lambda oOpt: oOpt.sKey != "name" and oOpt.sKey or "")
 
-        super(PreferenceTable, self).__init__(
-            rows=len(self._aOptions), columns=self.COLUMNS)
+        super().__init__(rows=len(self._aOptions), columns=self.COLUMNS)
         self.set_col_spacings(5)
         self.set_row_spacings(5)
 

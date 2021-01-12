@@ -105,7 +105,7 @@ class ExportBuffer(Gtk.TextBuffer):
     """Buffer object for showing the exported card set text"""
 
     def __init__(self):
-        super(ExportBuffer, self).__init__()
+        super().__init__()
         self.create_tag("text", left_margin=0)
 
     def set_text(self, sCardSetText):

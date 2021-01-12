@@ -26,7 +26,7 @@ class ScrolledFrame(BasicFrame):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so lots of public methods
     def __init__(self, oView, oMainWindow):
-        super(ScrolledFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         self._oView = oView
         self.add_parts()
         self.set_name(self._sName.lower())

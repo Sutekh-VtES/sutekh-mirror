@@ -24,7 +24,7 @@ class PhysicalCardFrame(CardListFrame):
     _sName = "Full Card List"
 
     def __init__(self, oMainWindow):
-        super(PhysicalCardFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         self.set_title(self._sName)
         self.set_name("physical card list")
 
@@ -41,5 +41,5 @@ class PhysicalCardFrame(CardListFrame):
 
     def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""
-        super(PhysicalCardFrame, self).cleanup(bQuit)
+        super().cleanup(bQuit)
         self._oController.cleanup()

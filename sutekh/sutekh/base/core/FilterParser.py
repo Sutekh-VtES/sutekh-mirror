@@ -376,7 +376,7 @@ class FilterNode(AstBaseNode):
 
     def __init__(self, oExpression):
         """Set filter oExpression"""
-        super(FilterNode, self).__init__([oExpression])
+        super().__init__([oExpression])
         self.oExpression = oExpression
 
     def get_filter_expression(self):
@@ -431,7 +431,7 @@ class StringNode(TermNode):
     def __init__(self, sValue):
         """Set value"""
 
-        super(StringNode, self).__init__([sValue])
+        super().__init__([sValue])
         # Strip quotes off strings
         if sValue[0] == '"' and sValue[-1] == '"':
             self.sValue = sValue[1:-1]
@@ -456,7 +456,7 @@ class IdNode(TermNode):
 
     def __init__(self, sValue):
         """Initialise IdNode. sValue == name of variable"""
-        super(IdNode, self).__init__([sValue])
+        super().__init__([sValue])
         self.oValue = sValue
 
     def get_values(self):
@@ -472,7 +472,7 @@ class FilterPartNode(OperatorNode):
     """A Filter = $X expression in the AST"""
 
     def __init__(self, sFilterName, aFilterValues, sVariableName):
-        super(FilterPartNode, self).__init__([sFilterName, aFilterValues])
+        super().__init__([sFilterName, aFilterValues])
         self.sFilterName = sFilterName
         self.aFilterValues = aFilterValues
         self.sVariableName = sVariableName
@@ -583,7 +583,7 @@ class FilterPartNode(OperatorNode):
 class NotOpNode(OperatorNode):
     """AST node for NOT(X)"""
     def __init__(self, oSubExpression):
-        super(NotOpNode, self).__init__([oSubExpression])
+        super().__init__([oSubExpression])
         self.oSubExpression = oSubExpression
 
     def get_invalid_values(self):
@@ -616,7 +616,7 @@ class NotOpNode(OperatorNode):
 class BinOpNode(OperatorNode):
     """AST node for binary operations (AND, OR)"""
     def __init__(self, oLeft, oOp, oRight):
-        super(BinOpNode, self).__init__([oLeft, oRight])
+        super().__init__([oLeft, oRight])
         self.oOp = oOp
         self.oLeft = oLeft
         self.oRight = oRight
@@ -679,7 +679,7 @@ class BinOpNode(OperatorNode):
 class CommaNode(OperatorNode):
     """AST node for comma separator (Val1, Val2)"""
     def __init__(self, oLeft, oOp, oRight):
-        super(CommaNode, self).__init__([oLeft, oRight])
+        super().__init__([oLeft, oRight])
         self.oOp = oOp
         self.oLeft = oLeft
         self.oRight = oRight
@@ -706,7 +706,7 @@ class CommaNode(OperatorNode):
 class WithNode(OperatorNode):
     """AST node for values of the form 'X with Y'"""
     def __init__(self, oLeft, oOp, oRight):
-        super(WithNode, self).__init__([oLeft, oRight])
+        super().__init__([oLeft, oRight])
         self.oOp = oOp
         self.oLeft = oLeft
         self.oRight = oRight
@@ -729,7 +729,7 @@ class WithNode(OperatorNode):
 class FromNode(OperatorNode):
     """AST node for values of the form 'X, Y from W, Z'"""
     def __init__(self, oLeft, oOp, oRight):
-        super(FromNode, self).__init__([oLeft, oRight])
+        super().__init__([oLeft, oRight])
         self.oOp = oOp
         self.oLeft = oLeft
         self.oRight = oRight

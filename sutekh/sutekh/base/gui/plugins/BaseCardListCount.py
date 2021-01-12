@@ -55,7 +55,7 @@ class BaseCardListCount(BasePlugin):
     TOT_TOOLTIP = ''
 
     def __init__(self, *args, **kwargs):
-        super(BaseCardListCount, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._oTextLabel = None
         self._eMode = self.Modes.NO_COUNT
@@ -73,7 +73,7 @@ class BaseCardListCount(BasePlugin):
     def cleanup(self):
         """Remove the listener"""
         MessageBus.unsubscribe(self.model, 'load', self.load)
-        super(BaseCardListCount, self).cleanup()
+        super().cleanup()
 
     def _get_card_count(self, oAbsCard):
         """Get the count for the card for the current mode"""

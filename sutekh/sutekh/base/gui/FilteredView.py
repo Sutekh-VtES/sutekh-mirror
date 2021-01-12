@@ -24,7 +24,7 @@ class FilteredView(CustomDragIconView):
         self._oMainWin = oMainWindow
         self._oConfig = oConfig
 
-        super(FilteredView, self).__init__(oModel)
+        super().__init__(oModel)
 
         # subclasses will override this
         self._sDragPrefix = 'None:'

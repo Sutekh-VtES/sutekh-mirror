@@ -54,8 +54,7 @@ class SutekhFileDialog(Gtk.FileChooserDialog):
 
     def __init__(self, oParent, sTitle, oAction=Gtk.FileChooserAction.OPEN,
                  oButtons=None):
-        super(SutekhFileDialog, self).__init__(sTitle, oParent, oAction,
-                                               oButtons)
+        super().__init__(sTitle, oParent, oAction, oButtons)
         self.set_name('Sutekh.dialog')
         # We don't set the working directory here, since that
         # doesn't always work as expected and instead we rely
@@ -80,7 +79,7 @@ class SutekhFileWidget(Gtk.FileChooserWidget):
     """Wrapper for the Gtk.FileChooseWidget which updates the
        working dir of Sutekh."""
     def __init__(self, oParent, oAction=Gtk.FileChooserAction.OPEN):
-        super(SutekhFileWidget, self).__init__(oAction)
+        super().__init__(oAction)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
@@ -108,7 +107,7 @@ class SutekhFileButton(Gtk.FileChooserButton):
         self.oDialog = SutekhFileDialog(
             oParent, sTitle, oButtons=("_OK", Gtk.ResponseType.OK,
                                        "_Cancel", Gtk.ResponseType.CANCEL))
-        super(SutekhFileButton, self).__init__(self.oDialog)
+        super().__init__(self.oDialog)
         sWorkingDir = oParent.get_working_dir()
         if sWorkingDir:
             self.set_current_folder(sWorkingDir)
@@ -128,7 +127,7 @@ class SimpleFileDialog(SutekhFileDialog):
     # Gtk.Widget, so many public methods
     """A simple file dialog, which just returns the file name"""
     def __init__(self, oParent, sTitle, oAction):
-        super(SimpleFileDialog, self).__init__(
+        super().__init__(
             oParent, sTitle, oAction,
             ("_OK", Gtk.ResponseType.OK,
              "_Cancel", Gtk.ResponseType.CANCEL))
@@ -153,8 +152,7 @@ class ImportDialog(SimpleFileDialog):
     # Gtk.Widget, so many public methods
     """Prompt the user for a file name to import"""
     def __init__(self, sTitle, oParent):
-        super(ImportDialog, self).__init__(oParent, sTitle,
-                                           Gtk.FileChooserAction.OPEN)
+        super().__init__(oParent, sTitle, Gtk.FileChooserAction.OPEN)
 
 
 class ExportDialog(SimpleFileDialog):
@@ -162,8 +160,7 @@ class ExportDialog(SimpleFileDialog):
     # Gtk.Widget, so many public methods
     """Prompt the user for a filename to export to"""
     def __init__(self, sTitle, oParent, sDefaultFileName=None):
-        super(ExportDialog, self).__init__(oParent, sTitle,
-                                           Gtk.FileChooserAction.SAVE)
+        super().__init__(oParent, sTitle, Gtk.FileChooserAction.SAVE)
         self.set_do_overwrite_confirmation(True)
         if sDefaultFileName:
             self.set_current_name(sDefaultFileName)
@@ -174,5 +171,5 @@ class ZipFileDialog(SimpleFileDialog):
     # Gtk.Widget, so many public methods
     """Prompt the user for a zip file name"""
     def __init__(self, oParent, sTitle, oAction):
-        super(ZipFileDialog, self).__init__(oParent, sTitle, oAction)
+        super().__init__(oParent, sTitle, oAction)
         self.add_filter_with_pattern('Zip Files', ['*.zip', '*.ZIP'])

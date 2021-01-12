@@ -50,7 +50,7 @@ class BasePrint(BasePlugin):
     }
 
     def __init__(self, *args, **kwargs):
-        super(BasePrint, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._ePrintExpansions = PrintExpOption.NO_EXPANSION
         self._sFontName = "sans 12"
         self._oSettings = None

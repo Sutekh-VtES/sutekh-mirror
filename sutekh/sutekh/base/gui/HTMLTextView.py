@@ -84,7 +84,7 @@ class HtmlHandler(HTMLParser):
     # Lots of public methods from HTMLParser
     """Parse the HTML input and update the Gtk.TextView"""
     def __init__(self, oTextView, oStartIter, fLinkLoader):
-        super(HtmlHandler, self).__init__()
+        super().__init__()
         self._oTextBuf = oTextView.get_buffer()
         self._oTextView = oTextView
         self._oIter = oStartIter
@@ -690,9 +690,8 @@ class HTMLViewDialog(SutekhDialog):
            fInput: file-like object to read the HTML from.
            fLinkLoader: function to load links with (passed to HTMLTextView)
            """
-        super(HTMLViewDialog, self).__init__('Help', oParent,
-                                             oButtons=("_Close",
-                                                       Gtk.ResponseType.CLOSE))
+        super().__init__('Help', oParent,
+                         oButtons=("_Close", Gtk.ResponseType.CLOSE))
         oDirButtons = Gtk.HButtonBox()
         self._oBackButton = Gtk.Button.new_from_icon_name('go-previous',
                                                           Gtk.IconSize.BUTTON)

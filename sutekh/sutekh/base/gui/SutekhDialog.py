@@ -24,7 +24,7 @@ class SutekhDialog(Gtk.Dialog):
     # Gtk widget, so has many public methods
     """wrapper class for Gtk.Dialog"""
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
-        super(SutekhDialog, self).__init__(sTitle, oParent, iFlags, oButtons)
+        super().__init__(sTitle, oParent, iFlags, oButtons)
         self.set_name("Sutekh.dialog")
 
 
@@ -95,7 +95,7 @@ class DetailDialog(SutekhDialog):
     # Gtk widget, so has many public methods
 
     def __init__(self, sMessage, sDetails):
-        super(DetailDialog, self).__init__(
+        super().__init__(
             '%s has encounterd an error' % AppInfo.NAME,
             oButtons=("_Close", Gtk.ResponseType.CLOSE))
         oHBox = Gtk.HBox(False, 2)
@@ -175,8 +175,7 @@ class NotebookDialog(SutekhDialog):
     # Gtk.Widget, so many public methods
 
     def __init__(self, sTitle, oParent=None, iFlags=0, oButtons=None):
-        super(NotebookDialog, self).__init__(sTitle, oParent, iFlags,
-                                             oButtons)
+        super().__init__(sTitle, oParent, iFlags, oButtons)
         self._oNotebook = Gtk.Notebook()
         self._oNotebook.set_scrollable(True)
         self._oNotebook.popup_enable()

@@ -43,7 +43,7 @@ class AppMainWindow(MultiPaneWindow):
     # we need to keep a lot of state, so many instance attributes
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(AppMainWindow, self).__init__()
+        super().__init__()
         self.set_border_width(2)
 
         # make sure we can quit
@@ -363,7 +363,7 @@ class AppMainWindow(MultiPaneWindow):
 
     def get_pane_ids(self):
         """Return a list of all relevant pane ids"""
-        aIds = super(AppMainWindow, self).get_pane_ids()
+        aIds = super().get_pane_ids()
         if self._oCardTextPane:
             aIds.append(self._oCardTextPane.pane_id)
         return aIds

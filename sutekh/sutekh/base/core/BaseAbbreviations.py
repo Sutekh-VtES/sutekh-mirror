@@ -132,7 +132,7 @@ class Expansions(DatabaseAbbreviation):
         # over completely in the face of new expansions while still creating
         # unique DB objects for each new expansion.
         try:
-            sResult = super(Expansions, cls).canonical(sName)
+            sResult = super().canonical(sName)
         except KeyError:
             sResult = cls._dLook[sName] = sName
         return sResult
@@ -148,7 +148,7 @@ class Rarities(DatabaseAbbreviation):
         # We return 'Unknown', so we don't fall over on unrecognised
         # rarities.
         try:
-            sResult = super(Rarities, cls).canonical(sName)
+            sResult = super().canonical(sName)
         except KeyError:
             sResult = cls._dLook[sName] = 'Unknown'
         return sResult

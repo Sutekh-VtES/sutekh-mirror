@@ -19,7 +19,7 @@ class StateError(Exception):
 class HTMLStateError(StateError):
     """Exception with more info for HTML State transition errors"""
     def __init__(self, sInfo, sData, sTag):
-        super(HTMLStateError, self).__init__()
+        super().__init__()
         self._sInfo = sInfo
         self._sData = sData
         self._sTag = sTag
@@ -33,7 +33,7 @@ class BaseState:
     """Base class for parser states"""
 
     def __init__(self):
-        super(BaseState, self).__init__()
+        super().__init__()
         self._sData = ""
 
     def transition(self, sTag, dAttr):
@@ -51,7 +51,7 @@ class LogState(BaseState):
     # pylint: disable=abstract-method
     # descendants will override transition, so still abstract here.
     def __init__(self, oLogger):
-        super(LogState, self).__init__()
+        super().__init__()
         self._oLogger = oLogger
 
 
@@ -61,7 +61,7 @@ class LogStateWithInfo(LogState):
     # pylint: disable=abstract-method
     # transition method is still abstract here
     def __init__(self, dInfo, oLogger):
-        super(LogStateWithInfo, self).__init__(oLogger)
+        super().__init__(oLogger)
         self._dInfo = dInfo
 
 
@@ -71,7 +71,7 @@ class HolderState(BaseState):
     # pylint: disable=abstract-method
     # transition method is still abstract here
     def __init__(self, oHolder):
-        super(HolderState, self).__init__()
+        super().__init__()
         self._oHolder = oHolder
 
 
@@ -86,11 +86,11 @@ class SutekhBaseHTMLParser(HTMLParser):
     def __init__(self):
         """Create an SutekhBaseHTMLParser."""
         self._oState = BaseState()
-        super(SutekhBaseHTMLParser, self).__init__()
+        super().__init__()
 
     def reset(self):
         """Reset the parser"""
-        super(SutekhBaseHTMLParser, self).reset()
+        super().reset()
         self._oState = BaseState()
 
     # pylint: disable=missing-docstring, arguments-differ
@@ -131,4 +131,4 @@ class LoggingHTMLParser(SutekhBaseHTMLParser):
         self._oLogger = Logger(self.sLogName)
         if oLogHandler is not None:
             self._oLogger.addHandler(oLogHandler)
-        super(LoggingHTMLParser, self).__init__()
+        super().__init__()

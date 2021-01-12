@@ -28,7 +28,7 @@ class BaseCountCSCards(BasePlugin):
     TOT_TOOLTIP = ''
 
     def __init__(self, *args, **kwargs):
-        super(BaseCountCSCards, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.dInfo = {TOTAL: 0}
         self._add_dict_keys()
@@ -46,7 +46,7 @@ class BaseCountCSCards(BasePlugin):
         MessageBus.unsubscribe(self.model, 'alter_card_count',
                                self.alter_card_count)
         MessageBus.unsubscribe(self.model, 'load', self.load)
-        super(BaseCountCSCards, self).cleanup()
+        super().cleanup()
 
     def get_toolbar_widget(self):
         """Overrides method from base class."""

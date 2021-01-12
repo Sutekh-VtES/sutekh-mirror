@@ -28,8 +28,7 @@ class ProfileListStore(Gtk.ListStore):
     # Gtk.Widget, so many public methods
     """Simple list store for profiles widget"""
     def __init__(self):
-        super(ProfileListStore, self).__init__(GObject.TYPE_STRING,
-                                               GObject.TYPE_STRING)
+        super().__init__(GObject.TYPE_STRING, GObject.TYPE_STRING)
 
     def fill_list(self, aVals):
         """Fill the list"""
@@ -65,7 +64,7 @@ class ProfileListView(Gtk.TreeView):
     """Simple tree view for the profile list"""
     def __init__(self, sTitle):
         oModel = ProfileListStore()
-        super(ProfileListView, self).__init__(oModel)
+        super().__init__(oModel)
         # We only display the profile name, not the profile id
         oCell1 = Gtk.CellRendererText()
         oColumn1 = Gtk.TreeViewColumn(sTitle, oCell1, text=1)
@@ -88,7 +87,7 @@ class ScrolledProfileList(Gtk.Frame):
     # Gtk.Widget, so many public methods
     """Frame containing the scrolled list of profiles"""
     def __init__(self, sTitle):
-        super(ScrolledProfileList, self).__init__()
+        super().__init__()
         self._oView = ProfileListView(sTitle)
         self._oStore = self._oView.get_model()
         oMyScroll = AutoScrolledWindow(self._oView)
@@ -113,7 +112,7 @@ class ProfileMngDlg(NotebookDialog):
     RESPONSE_DELETE = 2
 
     def __init__(self, oParent, oConfig):
-        super(ProfileMngDlg, self).__init__(
+        super().__init__(
             "Manage Profiles", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("Edit Profile", self.RESPONSE_EDIT,

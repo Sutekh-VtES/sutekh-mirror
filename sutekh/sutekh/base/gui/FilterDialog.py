@@ -40,9 +40,8 @@ class FilterDialog(SutekhDialog):
     INITIAL_FILTER = "Default Filter Template"
 
     def __init__(self, oParent, oConfig, sFilterType, sDefaultFilter=None):
-        super(FilterDialog, self).__init__("Specify Filter",
-                                           oParent,
-                                           Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        super().__init__("Specify Filter", oParent,
+                         Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         self._oAccelGroup = Gtk.AccelGroup()
         self.__oParent = oParent

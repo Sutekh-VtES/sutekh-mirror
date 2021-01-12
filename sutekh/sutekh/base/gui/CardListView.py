@@ -25,8 +25,7 @@ class CardListView(FilteredView):
     # deep Gtk one
 
     def __init__(self, oController, oMainWindow, oModel, oConfig):
-        super(CardListView, self).__init__(oController, oMainWindow,
-                                           oModel, oConfig)
+        super().__init__(oController, oMainWindow, oModel, oConfig)
 
         self.set_select_multiple()
 
@@ -164,8 +163,7 @@ class CardListView(FilteredView):
                 return IPhysicalCard((oAbsCard, None))
             return PhysicalCard.get(iPhysCardID)
 
-        sSource, aLines = \
-            super(CardListView, self).split_selection_data(sSelectionData)
+        sSource, aLines = super().split_selection_data(sSelectionData)
         if sSource in ("None", "Basic Pane:", "Card Set:"):
             # Not cards that were dragged, so just return
             return sSource, aLines

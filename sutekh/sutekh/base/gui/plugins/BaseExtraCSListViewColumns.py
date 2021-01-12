@@ -59,7 +59,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
     dCardSetListConfig = {}
 
     def __init__(self, *args, **kwargs):
-        super(BaseExtraCSListViewColumns, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         listen_row_update(self.card_set_changed, PhysicalCardSet)
         listen_row_destroy(self.card_set_added_deleted, PhysicalCardSet)
@@ -74,7 +74,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
                                PhysicalCardSet)
         disconnect_row_created(self.card_set_added_deleted,
                                PhysicalCardSet)
-        super(BaseExtraCSListViewColumns, self).cleanup()
+        super().cleanup()
 
     @classmethod
     def update_config(cls):

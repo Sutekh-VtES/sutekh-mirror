@@ -22,7 +22,7 @@ class FilterEditor(Gtk.Alignment):
        """
     def __init__(self, oAST, sFilterType, oParser, oFilterDialog):
         # Child widget absorbs all free space
-        super(FilterEditor, self).__init__(xscale=1.0, yscale=1.0)
+        super().__init__(xscale=1.0, yscale=1.0)
         self.__oParser = oParser
         self.__oFilterDialog = oFilterDialog  # Dialog we're a child of
 

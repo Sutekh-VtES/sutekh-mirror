@@ -17,7 +17,7 @@ class LogTextBuffer(Gtk.TextBuffer):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(LogTextBuffer, self).__init__()
+        super().__init__()
 
     def clear(self):
         """Clear all messages"""
@@ -43,7 +43,7 @@ class LogTextView(Gtk.TextView):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(LogTextView, self).__init__()
+        super().__init__()
         # Can be styled as frame_name.view
         self._oBuf = LogTextBuffer()
         # Reference to top level so we can get config info and so on

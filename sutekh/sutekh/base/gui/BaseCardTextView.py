@@ -20,7 +20,7 @@ class BaseCardTextBuffer(Gtk.TextBuffer):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(BaseCardTextBuffer, self).__init__()
+        super().__init__()
 
         # See http://www.pyGtk.org/pyGtk2reference/class-Gtktexttag.html
         # for some possible properties
@@ -147,7 +147,7 @@ class BaseCardTextView(Gtk.TextView):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self, oBuffer, oIconManager, oMainWindow):
-        super(BaseCardTextView, self).__init__()
+        super().__init__()
         # Can be styled as frame_name.view
         self._oBuf = oBuffer
         # Reference to top level so we can get config info and so on

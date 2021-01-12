@@ -17,7 +17,7 @@ class ScrolledListStore(Gtk.ListStore):
     # Gtk.Widget, so many public methods
     """Simple list store for ScrolledList widget"""
     def __init__(self):
-        super(ScrolledListStore, self).__init__(GObject.TYPE_STRING)
+        super().__init__(GObject.TYPE_STRING)
 
     def fill_list(self, aVals):
         """Fill the list"""
@@ -34,7 +34,7 @@ class ScrolledListView(CustomDragIconView):
     def __init__(self, sTitle, oModel=None, bSpecialSelect=False):
         if not oModel:
             oModel = ScrolledListStore()
-        super(ScrolledListView, self).__init__(oModel)
+        super().__init__(oModel)
         oCell1 = Gtk.CellRendererText()
         oColumn1 = Gtk.TreeViewColumn(sTitle, oCell1, markup=0)
         self.append_column(oColumn1)
@@ -86,7 +86,7 @@ class ScrolledList(Gtk.Frame):
     # Gtk.Widget, so many public methods
     """Frame containing an auto scrolled list"""
     def __init__(self, sTitle, oModel=None, bSpecialSelect=None):
-        super(ScrolledList, self).__init__()
+        super().__init__()
         self._oTreeView = ScrolledListView(sTitle, oModel, bSpecialSelect)
         oMyScroll = AutoScrolledWindow(self._oTreeView)
         self.add(oMyScroll)

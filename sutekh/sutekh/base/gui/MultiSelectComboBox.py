@@ -27,7 +27,7 @@ class MultiSelectComboBox(Gtk.HBox):
     """Implementation of a multiselect combo box widget."""
 
     def __init__(self, oParentWin):
-        super(MultiSelectComboBox, self).__init__()
+        super().__init__()
 
         self._oButton = Gtk.Button(" - ")
         self._oButton.connect('clicked', self.__show_list)

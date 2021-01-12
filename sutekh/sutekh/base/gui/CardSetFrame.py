@@ -26,7 +26,7 @@ class CardSetFrame(CardListFrame):
     _cModelType = PhysicalCardSet
 
     def __init__(self, oMainWindow, sName, bStartEditable, cPCSWriter):
-        super(CardSetFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         try:
             _oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
@@ -55,7 +55,7 @@ class CardSetFrame(CardListFrame):
 
     def cleanup(self, bQuit=False):
         """Cleanup function called before pane is removed by the Main Window"""
-        super(CardSetFrame, self).cleanup(bQuit)
+        super().cleanup(bQuit)
         # skip reloading the pcs list when we're exiting
         if not bQuit:
             self._oMainWindow.reload_pcs_list()

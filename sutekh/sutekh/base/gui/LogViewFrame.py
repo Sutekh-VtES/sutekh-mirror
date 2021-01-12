@@ -26,7 +26,7 @@ class LogViewFrame(BasicFrame):
     _sName = 'Log View Frame'
 
     def __init__(self, oMainWindow):
-        super(LogViewFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         self.set_name("log frame")
         self._oView = LogTextView()
         self._oMenu = LogViewMenu(self, oMainWindow)
@@ -69,7 +69,7 @@ class LogViewFrame(BasicFrame):
     def cleanup(self, bQuit=False):
         """Cleanup reference held in the log handler"""
         self._oMainWindow.gui_log_handler.unset_widget()
-        super(LogViewFrame, self).cleanup(bQuit)
+        super().cleanup(bQuit)
 
     def get_menu_name(self):
         """Get the menu key"""

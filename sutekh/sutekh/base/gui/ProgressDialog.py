@@ -29,7 +29,7 @@ class SutekhLogHandler(Handler):
     """Base class for loggers to talk to the dialog"""
     # We explicitly inherit from object, since Handler is a classic class
     def __init__(self):
-        super(SutekhLogHandler, self).__init__()
+        super().__init__()
         self.oDialog = None
 
     def set_dialog(self, oDialog):
@@ -83,7 +83,7 @@ class SutekhCountLogHandler(SutekhLogHandler):
        process.
        """
     def __init__(self):
-        super(SutekhCountLogHandler, self).__init__()
+        super().__init__()
         self.iCount = None
         self.fTot = None
 
@@ -108,7 +108,7 @@ class ProgressDialog(Gtk.Window):
     # This is not a proper dialog, since we don't want the blocking
     # behaviour of Dialog.run()
     def __init__(self):
-        super(ProgressDialog, self).__init__()
+        super().__init__()
         self.set_title('Progress')
         self.set_name('Sutekh.dialog')
         self.oProgressBar = Gtk.ProgressBar()

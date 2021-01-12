@@ -22,7 +22,7 @@ class CardListFrame(BasicFrame):
        """
 
     def __init__(self, oMainWindow):
-        super(CardListFrame, self).__init__(oMainWindow)
+        super().__init__(oMainWindow)
         self._oConfig = oMainWindow.config_file
 
         # Subclasses will override these

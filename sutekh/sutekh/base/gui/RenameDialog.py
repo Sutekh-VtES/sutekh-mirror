@@ -39,11 +39,10 @@ class RenameDialog(SutekhDialog):
                     "Choose cancel to abort this import.")
             tButtons = ('Name card set', RENAME, "_Cancel",
                         Gtk.ResponseType.CANCEL)
-        super(RenameDialog, self).__init__("Choose New Card Set Name",
-                                           None,
-                                           Gtk.DialogFlags.MODAL |
-                                           Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                           tButtons)
+        super().__init__("Choose New Card Set Name", None,
+                         Gtk.DialogFlags.MODAL |
+                         Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                         tButtons)
         oLabel = Gtk.Label(sMsg)
         self.sNewName = ""
 

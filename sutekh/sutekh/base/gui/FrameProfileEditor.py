@@ -26,7 +26,7 @@ class FrameProfileEditor(SutekhDialog):
     RESPONSE_CANCEL = 2
 
     def __init__(self, oParent, oConfig, sType):
-        super(FrameProfileEditor, self).__init__(
+        super().__init__(
             "Edit Per-Deck Profiles", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
 

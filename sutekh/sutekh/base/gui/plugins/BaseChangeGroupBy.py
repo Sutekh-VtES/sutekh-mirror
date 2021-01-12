@@ -70,7 +70,7 @@ class BaseGroupBy(BasePlugin):
                                             sOptions)
 
     def __init__(self, *aArgs, **kwargs):
-        super(BaseGroupBy, self).__init__(*aArgs, **kwargs)
+        super().__init__(*aArgs, **kwargs)
         self._oFirstBut = None  # placeholder for the radio group
         # We don't reload on init, to avoid double loads.
         self.perpane_config_updated(False)

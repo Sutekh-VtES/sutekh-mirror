@@ -21,7 +21,7 @@ class FilteredViewMenu(SutekhMenu):
        & collapsing rows, and manging the active filter.
        """
     def __init__(self, oFrame, oWindow, oController):
-        super(FilteredViewMenu, self).__init__(oWindow)
+        super().__init__(oWindow)
         self._oFrame = oFrame
         self.oApply = None
         self._oController = oController

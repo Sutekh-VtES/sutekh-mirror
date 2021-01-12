@@ -17,7 +17,7 @@ class SutekhMenu(Gtk.MenuBar):
        This provides useful methods for handling accelerators.
        """
     def __init__(self, oMainWindow):
-        super(SutekhMenu, self).__init__()
+        super().__init__()
         self._dMenuLabels = {}
         self._dMenus = {}
         self._oAccelGroup = Gtk.AccelGroup()

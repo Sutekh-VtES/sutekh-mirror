@@ -61,7 +61,7 @@ class CachedIconManager(BaseIconManager):
 
     def __init__(self, sPath):
         self._dIconCache = {}
-        super(CachedIconManager, self).__init__(sPath)
+        super().__init__(sPath)
 
     def _get_icon(self, sFileName, iSize=12):
         """get the cached icon, or load it if needed."""

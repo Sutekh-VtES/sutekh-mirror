@@ -18,10 +18,9 @@ class UpdateDialog(SutekhDialog):
        are available."""
     def __init__(self, aMessages):
         # Create Dialog
-        super(UpdateDialog, self).__init__(
-            "Updates available", None,
-            Gtk.DialogFlags.MODAL, ("_Cancel", Gtk.ResponseType.CANCEL,
-                                    "_OK", Gtk.ResponseType.OK))
+        super().__init__("Updates available", None, Gtk.DialogFlags.MODAL,
+                         ("_Cancel", Gtk.ResponseType.CANCEL,
+                          "_OK", Gtk.ResponseType.OK))
         oHBox = Gtk.HBox(False, 0)
         oIcon = Gtk.Image.new_from_icon_name('dialog-information', Gtk.IconSize.DIALOG)
         oHBox.pack_start(oIcon, True, True, 0)

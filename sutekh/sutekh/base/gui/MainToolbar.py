@@ -16,7 +16,7 @@ class MainToolbar(Gtk.Toolbar):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self, oWindow):
-        super(MainToolbar, self).__init__()
+        super().__init__()
         self.set_no_show_all(True)
         self.set_style(Gtk.ToolbarStyle.BOTH)
         self._oMainWindow = oWindow

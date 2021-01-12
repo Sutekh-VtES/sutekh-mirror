@@ -23,7 +23,7 @@ class QueueLogHandler(Handler):
 
 
     def __init__(self):
-        super(QueueLogHandler, self).__init__()
+        super().__init__()
         self.aQueue = deque([], QUEUE_LENGTH)
         self.setLevel(DEBUG)
         # Set a fairly informative formatter for this

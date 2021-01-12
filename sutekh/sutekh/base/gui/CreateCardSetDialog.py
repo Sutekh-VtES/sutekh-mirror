@@ -26,7 +26,7 @@ class CreateCardSetDialog(SutekhDialog):
        """
     def __init__(self, oParent, sName=None, oCardSet=None,
                  oCardSetParent=None):
-        super(CreateCardSetDialog, self).__init__(
+        super().__init__(
             "Card Set Details", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,

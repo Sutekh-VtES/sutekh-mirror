@@ -375,7 +375,7 @@ class VariableNameGenerator(set):
     KEYFORM = "$var%s"
 
     def __init__(self):
-        super(VariableNameGenerator, self).__init__()
+        super().__init__()
         self.__iNum = 0
 
     def generate_name(self):

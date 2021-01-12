@@ -46,7 +46,7 @@ class BasicFrame(Gtk.Frame):
     _cModelType = None
 
     def __init__(self, oMainWindow):
-        super(BasicFrame, self).__init__()
+        super().__init__()
         self._oMainWindow = oMainWindow
         self._aPlugins = []
         self.set_name("blank frame")

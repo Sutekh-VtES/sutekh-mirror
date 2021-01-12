@@ -35,8 +35,7 @@ class FileOrUrlWidget(Gtk.VBox):
            'Enter other URL ...' and 'Select file ...' may not be used as
            a key in dUrls.
            """
-        super(FileOrUrlWidget, self).__init__(homogeneous=homogeneous,
-                                              spacing=spacing)
+        super().__init__(homogeneous=homogeneous, spacing=spacing)
         if dUrls is None:
             dUrls = {}
         self._dUrls = dUrls
@@ -205,9 +204,8 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
                  sDefaultDir=None, dUrls=None, homogeneous=False, spacing=0):
         """Create a FileOrDirOrUrlWidget.
            """
-        super(FileOrDirOrUrlWidget, self).__init__(oParent, sTitle, dUrls,
-                                                   homogeneous=homogeneous,
-                                                   spacing=spacing)
+        super().__init__(oParent, sTitle, dUrls,
+                         homogeneous=homogeneous, spacing=spacing)
 
         if not sDirTitle:
             sDirTitle = 'Select directory ...'
@@ -227,7 +225,7 @@ class FileOrDirOrUrlWidget(FileOrUrlWidget):
         """Handle updating of the selected source combo box."""
         sName = oSrcCombo.get_active_text()
 
-        super(FileOrDirOrUrlWidget, self)._src_combo_updated(oSrcCombo)
+        super()._src_combo_updated(oSrcCombo)
 
         # Only need to consider this case
         if sName == self.OTHER_DIR:

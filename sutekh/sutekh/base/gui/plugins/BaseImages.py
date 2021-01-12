@@ -129,7 +129,7 @@ class CardImagePopupMenu(Gtk.Menu):
     """Popup menu for the Card Image Frame"""
 
     def __init__(self, oFrame, iZoomMode):
-        super(CardImagePopupMenu, self).__init__()
+        super().__init__()
         self.oFrame = oFrame
         self.oZoom = Gtk.RadioMenuItem(group=None,
                                        label='Show images at original size')
@@ -195,7 +195,7 @@ class BaseImageFrame(BasicFrame):
     _dReqHeaders = {}
 
     def __init__(self, oImagePlugin):
-        super(BaseImageFrame, self).__init__(oImagePlugin.parent)
+        super().__init__(oImagePlugin.parent)
         self._oImagePlugin = oImagePlugin
         oVBox = Gtk.VBox(homogeneous=False, spacing=2)
         oBox = Gtk.EventBox()
@@ -329,13 +329,13 @@ class BaseImageFrame(BasicFrame):
                                         Gtk.IconSize.DIALOG)
         MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
-        super(BaseImageFrame, self).frame_setup()
+        super().frame_setup()
 
     def cleanup(self, bQuit=False):
         """Remove the listener"""
         MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
-        super(BaseImageFrame, self).cleanup(bQuit)
+        super().cleanup(bQuit)
 
     def _config_download_images(self):
         """Check if we are configured to download images.
@@ -749,7 +749,7 @@ class BaseImageConfigDialog(SutekhDialog):
     sImgDownloadSite = ''
 
     def __init__(self, oImagePlugin, bFirstTime=False):
-        super(BaseImageConfigDialog, self).__init__(
+        super().__init__(
             'Configure Card Images Plugin',
             oImagePlugin.parent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
@@ -844,7 +844,7 @@ class BaseImagePlugin(BasePlugin):
     _cImageFrame = BaseImageFrame
 
     def __init__(self, *args, **kwargs):
-        super(BaseImagePlugin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.oImageFrame = None
         self._oReplaceItem = None
         self._oAddItem = None
@@ -873,7 +873,7 @@ class BaseImagePlugin(BasePlugin):
         """Cleanup listeners if required"""
         if self.oImageFrame:
             self.oImageFrame.cleanup()
-        super(BaseImagePlugin, self).cleanup()
+        super().cleanup()
 
     def get_menu_item(self):
         """Overrides method from base class.

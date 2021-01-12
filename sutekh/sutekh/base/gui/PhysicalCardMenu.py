@@ -23,7 +23,7 @@ class PhysicalCardMenu(CardListMenu):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self, oFrame, oController, oWindow):
-        super(PhysicalCardMenu, self).__init__(oFrame, oWindow, oController)
+        super().__init__(oFrame, oWindow, oController)
         self.__create_physical_cl_menu()
         self.create_edit_menu()
         self.create_filter_menu()

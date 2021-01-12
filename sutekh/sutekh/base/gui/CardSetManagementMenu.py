@@ -20,8 +20,7 @@ class CardSetManagementMenu(FilteredViewMenu):
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
     def __init__(self, oFrame, oWindow, oController):
-        super(CardSetManagementMenu, self).__init__(oFrame, oWindow,
-                                                    oController)
+        super().__init__(oFrame, oWindow, oController)
         self.__sName = 'Card Set List'
         self.__sSetTypeName = 'Card Set'
         self._oController = oController

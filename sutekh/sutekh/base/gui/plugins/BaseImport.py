@@ -50,7 +50,7 @@ class BaseImport(BasePlugin):
     }
 
     def __init__(self, *aArgs, **kwargs):
-        super(BaseImport, self).__init__(*aArgs, **kwargs)
+        super().__init__(*aArgs, **kwargs)
         self.oUri = None
         self.oDlg = None
         self._oFirstBut = None

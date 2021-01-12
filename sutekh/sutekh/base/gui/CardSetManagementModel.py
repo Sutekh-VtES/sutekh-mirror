@@ -22,7 +22,7 @@ class CardSetManagementModel(Gtk.TreeStore):
         # avoid excaping stuff all over the place.
         # This does impose consistency requirements on the Model, but
         # that's all handleded in load
-        super(CardSetManagementModel, self).__init__(str, str)
+        super().__init__(str, str)
         self._dName2Iter = {}
 
         self._oMainWin = oMainWindow

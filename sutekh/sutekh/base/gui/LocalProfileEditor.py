@@ -26,7 +26,7 @@ class LocalProfileEditor(SutekhDialog):
     RESPONSE_CANCEL = 2
 
     def __init__(self, oParent, oConfig, sFrame, sCardSet):
-        super(LocalProfileEditor, self).__init__(
+        super().__init__(
             "Edit Local Profile", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
 

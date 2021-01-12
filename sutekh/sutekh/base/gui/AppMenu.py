@@ -26,7 +26,7 @@ class AppMenu(SutekhMenu):
     # Gtk.Widget, so many public methods
     # We keep a lot of state here (menu's available, etc.)
     def __init__(self, oWindow, oConfig):
-        super(AppMenu, self).__init__(oWindow)
+        super().__init__(oWindow)
         self._oConfig = oConfig
         self._create_file_menu()
         self._create_pane_menu()

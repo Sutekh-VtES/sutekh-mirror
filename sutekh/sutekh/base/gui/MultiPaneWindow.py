@@ -21,7 +21,7 @@ class MultiPaneWindow(Gtk.Window):
     # we need to keep a lot of state, so many instance attributes
     # Gtk.Widget, so many public methods
     def __init__(self):
-        super(MultiPaneWindow, self).__init__(type=Gtk.WindowType.TOPLEVEL)
+        super().__init__(type=Gtk.WindowType.TOPLEVEL)
         self.set_border_width(2)
 
         # This always increments when panes are added, so the number is unique

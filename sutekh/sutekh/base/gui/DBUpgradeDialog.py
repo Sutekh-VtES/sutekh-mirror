@@ -20,7 +20,7 @@ class DBUpgradeDialog(SutekhDialog):
        """
     def __init__(self, aMessages):
         # Create Dialog
-        super(DBUpgradeDialog, self).__init__(
+        super().__init__(
             "Memory Copy Created", None,
             Gtk.DialogFlags.MODAL, ("_Cancel", Gtk.ResponseType.CANCEL,
                                     "_OK", Gtk.ResponseType.OK))

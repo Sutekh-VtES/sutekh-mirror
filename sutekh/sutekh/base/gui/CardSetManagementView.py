@@ -25,8 +25,7 @@ class CardSetManagementView(CardSetsListView):
     # deep Gtk one
 
     def __init__(self, oController, oMainWindow):
-        super(CardSetManagementView, self).__init__(oController,
-                                                    oMainWindow)
+        super().__init__(oController, oMainWindow)
 
         # Selecting rows
         self.set_select_single()
@@ -49,8 +48,7 @@ class CardSetManagementView(CardSetsListView):
         sSetName = self.get_selected_card_set()
         if sSetName:
             # defer to CustomDragIcon
-            super(CardSetManagementView, self).make_drag_icon(oWidget,
-                                                              oDragContext)
+            super().make_drag_icon(oWidget, oDragContext)
         else:
             # use pane icon
             self.frame.make_drag_icon(self, oDragContext)

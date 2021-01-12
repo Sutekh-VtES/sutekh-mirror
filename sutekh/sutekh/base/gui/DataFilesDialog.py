@@ -55,7 +55,7 @@ class DataFilesDialog(SutekhDialog):
         # pylint: disable=too-many-locals, too-many-branches
         # pylint: disable=too-many-statements
         # Lots of stuff we need to setup to handle all the download options
-        super(DataFilesDialog, self).__init__(
+        super().__init__(
             "Choose CardList Files", oParent,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK, "_Cancel",

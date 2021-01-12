@@ -28,7 +28,7 @@ class CardSetMenu(CardListMenu):
     # pylint: disable=too-many-instance-attributes
     # we are keeping a lot of state, so many instance variables
     def __init__(self, oFrame, oController, oWindow, cPCSWriter):
-        super(CardSetMenu, self).__init__(oFrame, oWindow, oController)
+        super().__init__(oFrame, oWindow, oController)
         # Reference to the card set writer
         self._cPCSWriter = cPCSWriter
         self._create_card_set_menu()

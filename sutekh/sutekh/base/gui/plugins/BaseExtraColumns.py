@@ -61,7 +61,7 @@ class BaseExtraColumns(BasePlugin):
     }
 
     def __init__(self, *args, **kwargs):
-        super(BaseExtraColumns, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._dCols = {}
         self._dWidths = {}
         self._dSortDataFuncs = {}

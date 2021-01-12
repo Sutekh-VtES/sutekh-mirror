@@ -59,8 +59,7 @@ class ACLLookupView(PhysicalCardView):
 
     def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
-        super(ACLLookupView, self).__init__(oController, oDialogWindow,
-                                            oConfig)
+        super().__init__(oController, oDialogWindow, oConfig)
         self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
         self._oModel.bExpansions = False
 
@@ -94,8 +93,7 @@ class PCLLookupView(PhysicalCardView):
 
     def __init__(self, oDialogWindow, oConfig):
         oController = DummyController('PhysicalCard')
-        super(PCLLookupView, self).__init__(oController, oDialogWindow,
-                                            oConfig)
+        super().__init__(oController, oDialogWindow, oConfig)
         self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
 
     def get_selected_card(self):
@@ -137,7 +135,7 @@ class ReplacementTreeView(Gtk.TreeView):
                                GObject.TYPE_STRING, GObject.TYPE_INT,
                                GObject.TYPE_PYOBJECT)
 
-        super(ReplacementTreeView, self).__init__(oModel)
+        super().__init__(oModel)
         self.oCardListView = oCardListView
         self.oModel = oModel
         self.oFilterToggleButton = oFilterToggleButton
@@ -301,7 +299,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
        """
 
     def __init__(self, oConfig):
-        super(GuiLookup, self).__init__()
+        super().__init__()
         self._oConfig = oConfig
 
     def lookup(self, aNames, sInfo):

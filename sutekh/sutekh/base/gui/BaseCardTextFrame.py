@@ -19,7 +19,7 @@ class BaseCardTextFrame(ScrolledFrame):
     _sName = 'Card Text'
 
     def __init__(self, oView, oMainWindow):
-        super(BaseCardTextFrame, self).__init__(oView, oMainWindow)
+        super().__init__(oView, oMainWindow)
         self._oView.clear_text()
 
     def frame_setup(self):
@@ -27,13 +27,13 @@ class BaseCardTextFrame(ScrolledFrame):
         self._oView.clear_text()
         MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                              self.set_card_text)
-        super(BaseCardTextFrame, self).frame_setup()
+        super().frame_setup()
 
     def cleanup(self, bQuit=False):
         """Cleanup the listeners"""
         MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
                                self.set_card_text)
-        super(BaseCardTextFrame, self).cleanup(bQuit)
+        super().cleanup(bQuit)
 
     def set_card_text(self, oCard):
         """Hand off card text update to the view"""

@@ -46,7 +46,7 @@ class CellRendererIcons(Gtk.CellRenderer):
     }
 
     def __init__(self, iIconPad=2):
-        super(CellRendererIcons, self).__init__()
+        super().__init__()
         self.aData = []
         self.sText = None
         self.eMode = DisplayOption.SHOW_ICONS_AND_TEXT

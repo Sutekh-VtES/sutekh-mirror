@@ -193,7 +193,7 @@ class CardSetCardListModel(CardListModel):
        response to calls from CardSetController.
        """
     def __init__(self, sSetName, oConfig):
-        super(CardSetCardListModel, self).__init__(oConfig)
+        super().__init__(oConfig)
         self._cCardClass = MapPhysicalCardToPhysicalCardSet
         self._oBaseFilter = CachedFilter(PhysicalCardSetFilter(sSetName))
         self._oCardSet = IPhysicalCardSet(sSetName)
@@ -257,7 +257,7 @@ class CardSetCardListModel(CardListModel):
         disconnect_row_destroy(self.card_set_deleted_created, PhysicalCardSet)
         disconnect_row_created(self.card_set_deleted_created, PhysicalCardSet)
         MessageBus.clear(self)
-        super(CardSetCardListModel, self).cleanup()
+        super().cleanup()
 
     def set_count_colour(self):
         """Format the card count accordingly"""

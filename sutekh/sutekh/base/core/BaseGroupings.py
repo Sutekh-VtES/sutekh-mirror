@@ -53,7 +53,7 @@ class CardTypeGrouping(IterGrouping):
     """Group by card type. This is the default grouping. This grouping
        places cards with multiple types in each group to which it belongs."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(CardTypeGrouping, self).__init__(
+        super().__init__(
             oIter, lambda x: [y.name for y in fGetCard(x).cardtype])
 
 
@@ -69,24 +69,21 @@ class MultiTypeGrouping(IterGrouping):
             aTypes = [y.name for y in fGetCard(x).cardtype]
             aTypes.sort()
             return [" / ".join(aTypes)]
-        super(MultiTypeGrouping, self).__init__(oIter, multitype)
+        super().__init__(oIter, multitype)
 
 
 class ExpansionGrouping(IterGrouping):
     """Group by the expansions in which the cards have been printed."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(ExpansionGrouping, self).__init__(oIter,
-                                                lambda x: [y.expansion.name
-                                                           for y in
-                                                           fGetCard(x).rarity])
+        super().__init__(
+            oIter, lambda x: [y.expansion.name for y in fGetCard(x).rarity])
 
 
 class RarityGrouping(IterGrouping):
     """ Group the cards by the published rarity."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(RarityGrouping, self).__init__(oIter,
-                                             lambda x: [y.rarity.name for y in
-                                                        fGetCard(x).rarity])
+        super().__init__(
+            oIter, lambda x: [y.rarity.name for y in fGetCard(x).rarity])
 
 
 class BaseExpansionRarityGrouping(IterGrouping):
@@ -103,8 +100,7 @@ class BaseExpansionRarityGrouping(IterGrouping):
                                                      oRarity.rarity.name))
                 self._handle_extra_expansions(oRarity, aRarities, aExpRarities)
             return aExpRarities
-        super(BaseExpansionRarityGrouping, self).__init__(
-            oIter, expansion_rarity)
+        super().__init__(oIter, expansion_rarity)
 
     def _handle_extra_expansions(self, oRarity, aRarities, aExpRarities):
         # Hook for subclasses to add extra fake expansion / rarity
@@ -115,19 +111,18 @@ class BaseExpansionRarityGrouping(IterGrouping):
 class ArtistGrouping(IterGrouping):
     """Group by Artist"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(ArtistGrouping, self).__init__(oIter,
-                                             lambda x: [y.name for y in
-                                                        fGetCard(x).artists])
+        super().__init__(
+            oIter, lambda x: [y.name for y in fGetCard(x).artists])
 
 
 class KeywordGrouping(IterGrouping):
     """Group by Keyword"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
-        super(KeywordGrouping, self).__init__(
+        super().__init__(
             oIter, lambda x: [y.keyword for y in fGetCard(x).keywords])
 
 
 class NullGrouping(IterGrouping):
     """Group everything into a single group named 'All'."""
     def __init__(self, oIter, _fGetCard=DEF_GET_CARD):
-        super(NullGrouping, self).__init__(oIter, lambda x: ["All"])
+        super().__init__(oIter, lambda x: ["All"])

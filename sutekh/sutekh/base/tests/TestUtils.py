@@ -206,14 +206,14 @@ class GuiBaseTest(unittest.TestCase):
             self.skipTest("No graphics capable screen available for testing")  # pragma: no cover
         # avoid menu proxy stuff on Ubuntu
         os.environ["UBUNTU_MENUPROXY"] = "0"
-        super(GuiBaseTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         """Cleanup Gtk state after test."""
         # Process pending Gtk events so cleanup completes
         while Gtk.events_pending():
             Gtk.main_iteration()
-        super(GuiBaseTest, self).tearDown()
+        super().tearDown()
 
 
 def make_null_handler():

@@ -23,7 +23,7 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
        """
 
     def __init__(self, *aArgs, **kwargs):
-        super(SOCachedRelatedJoin, self).__init__(*aArgs, **kwargs)
+        super().__init__(*aArgs, **kwargs)
         self._dJoinCache = {}
         self._oOtherJoin = None
         self._bOtherJoinCached = None
@@ -89,12 +89,12 @@ class SOCachedRelatedJoin(joins.SORelatedJoin):
     def add(self, oInst, oOther):
         """Add an item to the join."""
         self.invalidate_cache_item(oInst, oOther)
-        super(SOCachedRelatedJoin, self).add(oInst, oOther)
+        super().add(oInst, oOther)
 
     def remove(self, oInst, oOther):
         """Remove an item from the join."""
         self.invalidate_cache_item(oInst, oOther)
-        super(SOCachedRelatedJoin, self).remove(oInst, oOther)
+        super().remove(oInst, oOther)
 
 
 class CachedRelatedJoin(joins.RelatedJoin):

@@ -23,7 +23,7 @@ class LogViewMenu(SutekhMenu):
        and an options to export the current filtered list to a file.
        """
     def __init__(self, oFrame, oWindow):
-        super(LogViewMenu, self).__init__(oWindow)
+        super().__init__(oWindow)
         self._oLogFrame = oFrame
         self._create_actions_menu()
 
