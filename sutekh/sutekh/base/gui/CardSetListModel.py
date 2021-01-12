@@ -11,7 +11,7 @@
 
 import enum
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk
 
 from ..core.BaseFilters import (FilterAndBox, NullFilter,
                                 PhysicalCardFilter,
@@ -539,8 +539,7 @@ class CardSetCardListModel(CardListModel):
         iDepth = self.iter_depth(oIter)
         if iDepth == 0:
             return None, None, None, iDepth
-        else:
-            oAbsID = self.get_abstract_card_from_iter(oIter).id
+        oAbsID = self.get_abstract_card_from_iter(oIter).id
         if iDepth < 2:
             oPhysID = None
         elif iDepth == 2 and (self._eExtraLevelsMode == ExtraLevels.SHOW_EXPANSIONS
@@ -1619,7 +1618,7 @@ class CardSetCardListModel(CardListModel):
                 and self._eShowCardMode == ShowMode.ALL_CARDS:
             # We don't delete expansion entries in this case
             return True
-        elif iDepth == 3 and self._eExtraLevelsMode in BOTH_EXP_CARD_SETS:
+        if iDepth == 3 and self._eExtraLevelsMode in BOTH_EXP_CARD_SETS:
             # Since we're not editable here, we always remove these
             return False
         iParCnt = self.get_value(oIter, 2)
@@ -2332,13 +2331,13 @@ class CardSetCardListModel(CardListModel):
 
     def profile_option_changed(self, sType, _sProfile, _sKey):
         """A profile option changed with a cardset changed."""
-        if sType != CARDSET and sType != FRAME:
+        if sType not in (CARDSET, FRAME):
             return
         self.update_options()
 
     def profile_changed(self, sType, sId):
         """The profile associated with a cardset changed."""
-        if sType != CARDSET and sType != FRAME:
+        if sType not in (CARDSET, FRAME):
             return
         if sType == CARDSET and sId != self.cardset_id:
             return

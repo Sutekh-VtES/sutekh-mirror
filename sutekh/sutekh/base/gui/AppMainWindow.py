@@ -484,7 +484,8 @@ class AppMainWindow(MultiPaneWindow):
 
     def prepare_for_db_update(self):
         """Handle any preparation for the database upgrade"""
-        MessageBus.publish(MessageBus.Type.DATABASE_MSG, "prepare_for_db_update")
+        MessageBus.publish(MessageBus.Type.DATABASE_MSG,
+                           "prepare_for_db_update")
 
     def clear_cache(self):
         """Clear any cached objects."""
@@ -592,8 +593,7 @@ class AppMainWindow(MultiPaneWindow):
         sResource = '/docs/html_docs/%s' % sLocalUrl
         if resource_exists(self._sResourceName, sResource):
             return resource_stream(self._sResourceName, sResource)
-        else:
-            raise ValueError("Unknown resource %s" % sLocalUrl)
+        raise ValueError("Unknown resource %s" % sLocalUrl)
 
     # pylint: enable=no-self-use
 

@@ -344,7 +344,7 @@ def _unzip_helper(oZipFile, dList, oLogger, dRemaining, oMainWindow,
             # Do have a parent to look at later, so skip for now
             dRemaining[sName] = tInfo
             continue
-        elif sParentName is not None:
+        if sParentName is not None:
             if not check_cs_exists(sParentName):
                 # Missing parent, so it the file is invalid
                 return False

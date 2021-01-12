@@ -35,7 +35,7 @@ def _sort_replacement(oModel, oIter1, oIter2, _oCol):
     oVal2 = oModel.get_value(oIter2, 2)
     if oVal1 < oVal2:
         return -1
-    elif oVal1 > oVal2:
+    if oVal1 > oVal2:
         return 1
     return 0
 
@@ -470,10 +470,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oIter = oModel.get_iter_first()
             while oIter is not None:
                 sFullName, sNewFullName, oAbsCard = oModel.get(oIter, 1, 2, 4)
-                # GtK returns encoded strings - see get_name_from_iter in
-                # CardListModel
-                sNewFullName = sNewFullName
-                sFullName = sFullName
                 sName, sExpPrintName = \
                     oReplacementView.parse_card_name(sFullName)
 
@@ -644,10 +640,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             oIter = oModel.get_iter_first()
             while oIter is not None:
                 sName, oAbsCard = oModel.get(oIter, 1, 4)
-                if sName not in dUnknownCards:
-                    # GtK sometimes returns encoded strings - see
-                    # get_name_from_iter in CardListModel,
-                    sName = sName
                 if oAbsCard is not None:
                     dUnknownCards[sName] = oAbsCard
                 oIter = oModel.iter_next(oIter)
@@ -744,7 +736,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 if iPos < 0 or iPos >= len(aKnownPrintings):
                     sNewPrint = NO_EXP_AND_PRINT
                 else:
-                    sNewPrint = aKnownPrintins[iPos]
+                    sNewPrint = aKnownPrintings[iPos]
                 if sNewPrint != NO_EXP_AND_PRINT:
                     dUnknownPrintings[tUnknownExpPrint] = \
                         dKnownPrintings[sNewPrint]

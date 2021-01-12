@@ -131,9 +131,9 @@ class FileOrUrlWidget(Gtk.VBox):
         sName = self._oSrcCombo.get_active_text()
         if sName == self.OTHER_URL:
             return self._oUrlEntry.get_text(), True
-        elif sName == self.OTHER_FILE:
+        if sName == self.OTHER_FILE:
             return self._oFileButton.get_filename(), False
-        elif sName in self._dUrls:
+        if sName in self._dUrls:
             return self._dUrls[sName], True
         # something weird happened
         return None, False
@@ -147,7 +147,8 @@ class FileOrUrlWidget(Gtk.VBox):
 
         if bUrl:
             oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler,
-                                         dHeaders=self._dReqHeaders, bBinary=False)
+                                         dHeaders=self._dReqHeaders,
+                                         bBinary=False)
         else:
             oFile = EncodedFile(sUrl, bUrl=bUrl).open()
 
@@ -169,7 +170,8 @@ class FileOrUrlWidget(Gtk.VBox):
 
         if bUrl:
             oFile = urlopen_with_timeout(sUrl, fErrorHandler=gui_error_handler,
-                                         dHeaders=self._dReqHeaders, bBinary=True)
+                                         dHeaders=self._dReqHeaders,
+                                         bBinary=True)
         else:
             oFile = open(sUrl, "rb")
 
