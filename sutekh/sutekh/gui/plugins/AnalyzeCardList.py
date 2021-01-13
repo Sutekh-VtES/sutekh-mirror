@@ -30,7 +30,7 @@ from sutekh.core.Abbreviations import Titles
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
-SPECIAL = set(['Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'])
+SPECIAL = {'Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'}
 
 RT_WATCHLIST = 'RT:Watchlist'
 RT_BANNED = 'RT:Banned'
@@ -324,7 +324,7 @@ def _group_backs(dCards, aCards, iNum, dBacks):
                             dBacks[oCard.printing] == sGrpName])
     for aExpCards in aCardsByExp:
         # For each expansion, count number of distinct cards
-        aNames = set([x.abstractCard.name for x in aExpCards])
+        aNames = {x.abstractCard.name for x in aExpCards}
         if len(aNames) < iNum:
             sText += ("Group of fewer than %d different cards"
                       " with the same back.\n" % iNum)
@@ -353,7 +353,8 @@ class DisciplineNumberSelect(Gtk.HBox):
             self._oComboBox.append_text('%d' % iNum)
         self._oComboBox.append_text(self._sUseList)
         self._oComboBox.set_active(1)
-        self.pack_start(Gtk.Label(label='Number of Disciplines'), False, True, 0)
+        self.pack_start(Gtk.Label(label='Number of Disciplines'),
+                        False, True, 0)
         self.pack_start(self._oComboBox, False, True, 0)
         self.pack_start(Gtk.Label(label=' : '), False, True, 0)
         self._oDiscWidget = MultiSelectComboBox(oDlg)
@@ -1150,7 +1151,7 @@ class AnalyzeCardList(SutekhPlugin):
                 aTypes = [y.name for y in oCard.abstractCard.cardtype]
                 aAllTypes.add("/".join(aTypes))
             if len(aAllTypes) < 3:
-                aNames = set([x.abstractCard.name for x in aExpCards])
+                aNames = {x.abstractCard.name for x in aExpCards}
                 sText += ("Group of cards with the same back"
                           " containing less than 3 different card types.\n")
                 sText += "\t" + ", ".join(aNames) + "\n"

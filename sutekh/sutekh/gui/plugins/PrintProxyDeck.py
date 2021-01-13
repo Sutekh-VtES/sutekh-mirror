@@ -18,6 +18,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 
 @enum.unique
 class PrintExpOption(enum.Enum):
+    """The choices of which cards to use for proxy images"""
     PRINT_LATEST = 1
     PRINT_EXACT = 2
 
@@ -206,7 +207,8 @@ class PrintProxyPlugin(SutekhPlugin):
             # We probably should be cleverer with scaling here
             oPixbuf = oPixbuf.scale_simple(IMG_WIDTH, IMG_HEIGHT,
                                            GdkPixbuf.InterpType.HYPER)
-            Gdk.cairo_set_source_pixbuf(oCairoContext, oPixbuf, iOffsetX, iOffsetY)
+            Gdk.cairo_set_source_pixbuf(oCairoContext, oPixbuf,
+                                        iOffsetX, iOffsetY)
             oCairoContext.rectangle(iOffsetX, iOffsetY,
                                     IMG_WIDTH, IMG_HEIGHT)
             oCairoContext.paint()

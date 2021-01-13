@@ -65,7 +65,8 @@ class ImportExportBase(SutekhDialog):
 
         self._sNewName = ""
         self._oAsDeckButton = Gtk.RadioButton(group=None, label="Deck")
-        self._oAsInvButton = Gtk.RadioButton(group=self._oAsDeckButton, label="Inventory")
+        self._oAsInvButton = Gtk.RadioButton(group=self._oAsDeckButton,
+                                             label="Inventory")
         self._oAsDeckButton.connect("toggled", self._deck_inv_changed)
 
         self.vbox.pack_start(
@@ -87,7 +88,8 @@ class ImportExportBase(SutekhDialog):
         self._oUrlEntry.append_text(SecretLibrary.SL_API_URL)
         self._oUrlEntry.set_active(0)
 
-        self.vbox.pack_start(Gtk.Label(label="Secret Library API URL"), False, False, 0)
+        self.vbox.pack_start(Gtk.Label(label="Secret Library API URL"),
+                                       False, False, 0)
         self.vbox.pack_start(self._oUrlEntry, False, False, 0)
 
         # Username
@@ -152,8 +154,8 @@ class ImportDialog(ImportExportBase):
 
     def __init__(self, oParent, sUsername, sPassword):
         super().__init__(
-            'Import from Secret Library',
-            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            'Import from Secret Library', oParent,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
              "_Cancel", Gtk.ResponseType.CANCEL))
 
@@ -182,8 +184,8 @@ class ExportDialog(ImportExportBase):
 
     def __init__(self, oParent, sUsername, sPassword):
         super().__init__(
-            'Export to Secret Library',
-            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            'Export to Secret Library', oParent,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
              "_Cancel", Gtk.ResponseType.CANCEL))
 

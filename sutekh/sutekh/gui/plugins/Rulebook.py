@@ -168,7 +168,8 @@ class RulebookPlugin(SutekhPlugin):
 
     def do_update(self):
         """Download rulebooks and update the menu"""
-        sZipUrl, sHash = find_data_pack('rulebooks', fErrorHandler=gui_error_handler)
+        sZipUrl, sHash = find_data_pack('rulebooks',
+                                        fErrorHandler=gui_error_handler)
         if not sZipUrl:
             return
         oFile = urlopen_with_timeout(sZipUrl,
@@ -176,6 +177,8 @@ class RulebookPlugin(SutekhPlugin):
                                      bBinary=True)
         if not oFile:
             return
+        # pylint: disable=broad-except
+        # We do want everything here
         try:
             sData = progress_fetch_data(oFile, None, sHash)
             oRawFile = BytesIO(sData)
@@ -184,6 +187,7 @@ class RulebookPlugin(SutekhPlugin):
         except Exception:
             do_exception_complaint('Unable to successfully download or '
                                    'the rulebook files')
+        # pylint: enable=broad-except
         self._update_menu()
 
     def _recreate_menu_items(self):

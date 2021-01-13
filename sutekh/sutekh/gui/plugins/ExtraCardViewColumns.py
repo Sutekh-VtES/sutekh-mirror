@@ -98,14 +98,13 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                     if dIcons:
                         aIcons = [dIcons[x] for x in aClans]
                 return " /|".join(aClans).split("|"), aIcons
-            else:
-                aCreed = [x.name for x in oCard.creed]
-                aCreed.sort()
-                if bGetIcons:
-                    dIcons = self.icon_manager.get_icon_list(oCard.creed)
-                    if dIcons:
-                        aIcons = [dIcons[x] for x in aCreed]
-                return " /|".join(aCreed).split("|"), aIcons
+            aCreed = [x.name for x in oCard.creed]
+            aCreed.sort()
+            if bGetIcons:
+                dIcons = self.icon_manager.get_icon_list(oCard.creed)
+                if dIcons:
+                    aIcons = [dIcons[x] for x in aCreed]
+            return " /|".join(aCreed).split("|"), aIcons
         return [], []
 
     def _render_clan(self, _oColumn, oCell, _oModel, oIter, _oDummy):
@@ -132,17 +131,16 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                     aIcons = []
                 aDis = ", ".join([x[0] for x in aInfo]).split(" ")
                 return aDis, aIcons
-            else:
-                aInfo = [oV.name for oV in oCard.virtue]
-                if aInfo:
-                    aInfo.sort()
-                    if bGetIcons:
-                        dIcons = self.icon_manager.get_icon_list(oCard.virtue)
-                        aIcons = [dIcons[x] for x in aInfo]
-                    else:
-                        aIcons = []
-                    aVirt = ", ".join(aInfo).split(" ")
-                    return aVirt, aIcons
+            aInfo = [oV.name for oV in oCard.virtue]
+            if aInfo:
+                aInfo.sort()
+                if bGetIcons:
+                    dIcons = self.icon_manager.get_icon_list(oCard.virtue)
+                    aIcons = [dIcons[x] for x in aInfo]
+                else:
+                    aIcons = []
+                aVirt = ", ".join(aInfo).split(" ")
+                return aVirt, aIcons
         return [], []
 
     def _render_disciplines(self, _oColumn, oCell, _oModel, oIter, _oDummy):
@@ -166,7 +164,8 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
             if iGrp == -1:
                 oCell.set_data(['Any'], aIcons, DisplayOption.SHOW_TEXT_ONLY)
             else:
-                oCell.set_data([str(iGrp)], aIcons, DisplayOption.SHOW_TEXT_ONLY)
+                oCell.set_data([str(iGrp)], aIcons,
+                               DisplayOption.SHOW_TEXT_ONLY)
         else:
             oCell.set_data([""], aIcons, DisplayOption.SHOW_TEXT_ONLY)
 

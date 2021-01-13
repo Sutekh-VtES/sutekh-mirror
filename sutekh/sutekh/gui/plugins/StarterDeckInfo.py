@@ -219,8 +219,8 @@ class StarterInfoPlugin(SutekhPlugin):
                                    PhysicalCardSet)
             disconnect_row_created(self.card_set_added_deleted,
                                    PhysicalCardSet)
-            MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
-                                   self.post_set_card_text)
+            MessageBus.unsubscribe(MessageBus.Type.CARD_TEXT_MSG,
+                                   'post_set_text', self.post_set_card_text)
         super().cleanup()
 
     def get_menu_item(self):
@@ -419,7 +419,8 @@ class StarterInfoPlugin(SutekhPlugin):
         """Toggle the show info flag"""
         self.bShowInfo = oToggle.get_active()
         # Update the card text pane to reflect changes
-        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text', self.oLastCard)
+        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text',
+                           self.oLastCard)
         if self.bShowInfo:
             self.set_config_item('show starters', 'Yes')
         else:

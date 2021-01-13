@@ -28,8 +28,8 @@ class RandomPromoDialog(SutekhDialog):
 
     def __init__(self, oParent, aCards):
         super().__init__(
-            'Generate random groups of cards',
-            oParent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            'Generate random groups of cards', oParent,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("_OK", Gtk.ResponseType.OK,
              "_Cancel", Gtk.ResponseType.CANCEL))
 

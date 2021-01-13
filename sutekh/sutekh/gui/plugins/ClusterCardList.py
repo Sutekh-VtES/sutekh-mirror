@@ -70,7 +70,8 @@ class ClusterCardList(SutekhPlugin):
                               Gtk.DialogFlags.DESTROY_WITH_PARENT)
         oDlg.add_button("_Close", Gtk.ResponseType.CLOSE)
         oBut = oDlg.add_button("Execute", Gtk.ResponseType.APPLY)
-        oImage = Gtk.Image.new_from_icon_name('system-run', Gtk.IconSize.BUTTON)
+        oImage = Gtk.Image.new_from_icon_name('system-run',
+                                              Gtk.IconSize.BUTTON)
         oBut.set_image(oImage)
         oBut.set_always_show_image(True)
 
@@ -130,7 +131,8 @@ class ClusterCardList(SutekhPlugin):
                     oHbx.pack_start(oVbx, False, True, 0)
 
                 oBut = Gtk.CheckButton(sName)
-                oVbx.pack_start(oBut, False, True, 0)  # pack at top, don't expand
+                # pack at top, don't expand
+                oVbx.pack_start(oBut, False, True, 0)
 
                 self._dPropButtons[sGroup][sName] = oBut
 
@@ -290,12 +292,14 @@ class ClusterCardList(SutekhPlugin):
             oTable.attach(oCenterLabel, 3, 4, iRow, iRow + 1)
 
         # top align, using viewport to scroll
-        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable), True, True, 0)
+        self._oResultsVbox.pack_start(AutoScrolledWindow(oTable),
+                                      True, True, 0)
 
         oMakeCardSetsButton = Gtk.Button("Make Card Sets from Selected"
                                          " Clusters")
         oMakeCardSetsButton.connect("clicked", self.handle_make_card_sets)
-        self._oResultsVbox.pack_end(oMakeCardSetsButton, False, False, 0)  # bottom align
+        # bottom align
+        self._oResultsVbox.pack_end(oMakeCardSetsButton, False, False, 0)
 
         self._oResultsVbox.show_all()
 

@@ -188,6 +188,7 @@ def fix_nickname(sName):
 
 
 def make_json_name(oCard):
+    """Create the corresponding TTS json name for the given card"""
     sJSONName = norm_name(oCard).lower()
     sJSONName = NONNAME.sub('', sJSONName)
     if sJSONName in SPECIAL_CASES:
@@ -273,9 +274,9 @@ class TTSExport(SutekhPlugin):
                     for oObj in dJsonData['ObjectStates'][0]['ContainedObjects']:
                         sKey = fix_nickname(oObj['Nickname'])
                         if sKey in dCards:
-                            idnum1 = int(dCards[sKey]["CardID"])
-                            idnum2 = int(oObj["CardID"])
-                            if idnum2 > idnum1:
+                            iIDNum1 = int(dCards[sKey]["CardID"])
+                            iIDNum2 = int(oObj["CardID"])
+                            if iIDNum2 > iIDNum1:
                                 dCards[sKey] = oObj
                         else:
                             dCards[sKey] = oObj
@@ -283,9 +284,9 @@ class TTSExport(SutekhPlugin):
                     for oObj in dJsonData['ObjectStates'][1]['ContainedObjects']:
                         sKey = fix_nickname(oObj['Nickname'])
                         if sKey in dCards:
-                            idnum1 = int(dCards[sKey]["CardID"])
-                            idnum2 = int(oObj["CardID"])
-                            if idnum2 > idnum1:
+                            iIDNum1 = int(dCards[sKey]["CardID"])
+                            iIDNum2 = int(oObj["CardID"])
+                            if iIDNum2 > iIDNum1:
                                 dCards[sKey] = oObj
                         else:
                             dCards[sKey] = oObj
@@ -294,12 +295,12 @@ class TTSExport(SutekhPlugin):
                 except (KeyError, IndexError) as oErr:
                     logging.warning(
                         "Failed to extract data from TTS Module file: %s",
-                        sTTSModuleFile)
+                        sTTSModulePath)
                     logging.warning("Exception: %s", oErr)
         except json.JSONDecodeError as oErr:
             # Log error for verbose out
             logging.warning("Failed to parse TTS Module file: %s",
-                            sTTSModuleFile)
+                            sTTSModulePath)
             logging.warning("Exception: %s", oErr)
 
     def check_enabled(self):
@@ -310,6 +311,7 @@ class TTSExport(SutekhPlugin):
         return True
 
     def find_tts_file(self, _oWidget):
+        """Try find the TTS json file in the most likely location"""
         sCand = ''
         if sys.platform.startswith("win"):
             if "APPDATA" in os.environ:
@@ -348,6 +350,7 @@ class TTSExport(SutekhPlugin):
         return ('Export Card Set', oExport)
 
     def do_export(self, _oWidget):
+        """Display the export dialog and hand off the response"""
         oDlg = self.make_dialog()
         oDlg.run()
         self.handle_response(oDlg.get_name())
@@ -399,7 +402,7 @@ class TTSExport(SutekhPlugin):
             dLibrary['DeckIDs'].append(dTTSCard['CardID'])
             dLibrary['CustomDeck'].update(dTTSCard['CustomDeck'])
             dLibrary['ContainedObjects'].append(dTTSCard)
-        with open(sFilename, 'w') as oFileF:
+        with open(sFilename, 'w') as oFile:
             json.dump(dDeck, oFile, indent=2)
 
     def list_unmatched_cards(self):
