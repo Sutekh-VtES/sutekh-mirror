@@ -99,5 +99,6 @@ class CardSetManagementModelTests(SutekhTest):
         # test filter results
         self.assertEqual(oModel.get_path_from_name('Root'), Gtk.TreePath("0"))
         self.assertEqual(oModel.get_path_from_name('Sib'), None)
-        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'), Gtk.TreePath("0:0"))
+        self.assertEqual(oModel.get_path_from_name('Child 2 Branch'),
+                         Gtk.TreePath("0:0"))
         self.assertEqual(oModel.get_path_from_name('Child 2 Card Set 0'), None)

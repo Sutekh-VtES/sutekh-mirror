@@ -90,6 +90,8 @@ def gen_name_lookups():
 
 class HolderWithCacheState(HolderState):
     """State holder with a lookup cache for matching variant names, etc."""
+    # pylint: disable=abstract-method
+    # This is still an abstract class
 
     def __init__(self, oHolder, dNameCache):
         super().__init__(oHolder)

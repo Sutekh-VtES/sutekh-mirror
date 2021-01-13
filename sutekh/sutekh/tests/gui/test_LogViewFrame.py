@@ -27,12 +27,14 @@ class TestLogViewFrame(GuiSutekhTest):
     ERROR_MSG = b'Error message 3'
     WARN_MSG = b'Warn message 4'
 
+    # pylint: disable=invalid-name
+    # caplog is the pytest required name
     @pytest.fixture(autouse=True)
     def fix_log_level(self, caplog):
         """Set the correct log state for the tests."""
-        self._caplog = caplog
-        self._caplog.clear()
-        self._caplog.set_level(logging.DEBUG)
+        caplog.clear()
+        caplog.set_level(logging.DEBUG)
+    # pylint: enable=invalid-name
 
     def test_basic(self):
         """Set of simple tests of the LogViewFrame"""

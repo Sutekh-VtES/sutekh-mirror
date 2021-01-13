@@ -31,7 +31,7 @@ from sutekh.SutekhInfo import SutekhInfo
 SUTEKH_IMAGE_SITE = 'https://sutekh.vtes.za.net'
 IMAGE_DATE_FILE = "image_dates.txt"
 
-SUTEKH_USER_AGENT= {
+SUTEKH_USER_AGENT = {
     'User-Agent': 'Sutekh Image Plugin'
 }
 
@@ -115,7 +115,8 @@ class CardImageFrame(BaseImageFrame):
         # check special cases
         # Promos always get the full name, so we can find the right image
         # for cards printed in multiple different promo sets
-        if oExpansion.name in self.SPECIAL_EXPANSIONS or oExpansion.name.startswith('Promo'):
+        if oExpansion.name in self.SPECIAL_EXPANSIONS or \
+                oExpansion.name.startswith('Promo'):
             sExpName = oExpansion.name.lower()
         else:
             sExpName = oExpansion.shortname.lower()

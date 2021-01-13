@@ -238,7 +238,8 @@ class TTSExport(SutekhPlugin):
                    'Saved Objects' menu.
 
                    This plugin needs to read data from the TTS VtES module,
-                   so it will not work unless that module has been installed."""
+                   so it will not work unless that module has been
+                   installed."""
 
     sConfigKey = 'tts module file'
 
@@ -309,11 +310,13 @@ class TTSExport(SutekhPlugin):
         sCand = ''
         if sys.platform.startswith("win"):
             if "APPDATA" in os.environ:
-                sCand = os.path.join(os.environ["APPDATA"], "Tabletop Simulator", "Mods", "Workshop",
-                                      MODULE_NAME)
+                sCand = os.path.join(os.environ["APPDATA"],
+                                     "Tabletop Simulator", "Mods",
+                                     "Workshop", MODULE_NAME)
         else:
-            sCand = os.path.join(os.path.expanduser("~"), ".local", "share", "Tabletop Simulator",
-                                 "Mods", "Workshop", MODULE_NAME)
+            sCand = os.path.join(os.path.expanduser("~"), ".local", "share",
+                                 "Tabletop Simulator", "Mods",
+                                 "Workshop", MODULE_NAME)
         oDlg = ImportDialog("Select TTS VtES plugin file", self.parent)
         if os.path.exists(sCand):
             # If the module is where we expect, set it as the default choice

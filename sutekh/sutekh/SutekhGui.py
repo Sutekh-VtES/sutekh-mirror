@@ -13,11 +13,13 @@ import os
 from sqlobject import sqlhub, connectionForURI
 
 
+# pylint: disable=wrong-import-position, wrong-import-order, ungrouped-imports
+# We need to call fix_gui_env before we can import gi and specify versions,
+# and we need to import Gtk before importing the rest of the gui stuff,
+# so we need to order imports oddly.
 from sutekh.base.Utility import (prefs_dir, ensure_dir_exists, sqlite_uri,
                                  setup_logging, fix_gui_env)
 
-# pylint: disable=wrong-import-position
-# We need to call this before importing gtk
 fix_gui_env()
 
 # import gi and specify required versions
@@ -32,7 +34,7 @@ from sutekh.SutekhInfo import SutekhInfo
 
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.gui.ConfigFile import ConfigFile
-# pylint: enable=wrong-import-position
+# pylint: enble=wrong-import-position, wrong-import-order, ungrouped-imports
 
 
 def parse_options(aArgs):

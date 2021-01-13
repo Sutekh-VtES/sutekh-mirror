@@ -201,9 +201,9 @@ class FindLikeVampires(SutekhPlugin):
         oDialog.vbox.pack_start(oUseCardSet, False, True, 0)
         if aSuperior:
             oDisciplines = Gtk.RadioButton(
-                    group=None, label="Match Disciplines")
+                group=None, label="Match Disciplines")
             oSuperior = Gtk.RadioButton(
-                    group=oDisciplines, label="Match Superior Disciplines")
+                group=oDisciplines, label="Match Superior Disciplines")
             oDisciplines.set_active(True)
         else:
             oDisciplines = Gtk.Label(label="Match Disciplines")

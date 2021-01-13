@@ -662,10 +662,12 @@ class CardSetListModelTests(ConfigSutekhTest):
         oEmptyPCS.syncUpdate()
         for sName in self.aNames[:4]:
             oModelCache = self._get_model(sName)
-            oModelCache._change_parent_count_mode(ParentCountMode.MINUS_SETS_IN_USE)
+            oModelCache._change_parent_count_mode(
+                ParentCountMode.MINUS_SETS_IN_USE)
             aCache.append(oModelCache)
             oModelNoCache = self._get_model(sName)
-            oModelNoCache._change_parent_count_mode(ParentCountMode.MINUS_SETS_IN_USE)
+            oModelNoCache._change_parent_count_mode(
+                ParentCountMode.MINUS_SETS_IN_USE)
             aNoCache.append(oModelNoCache)
         aModels = aCache + aNoCache
         # See test_cache_simple
@@ -674,7 +676,8 @@ class CardSetListModelTests(ConfigSutekhTest):
         for bEditFlag in (False, True):
             for oModel in aModels:
                 oModel.bEditable = bEditFlag
-            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL, ExtraLevels.SHOW_EXPANSIONS):
+            for iLevelMode in (ExtraLevels.NO_SECOND_LEVEL,
+                               ExtraLevels.SHOW_EXPANSIONS):
                 for oModel in aModels:
                     oModel._change_level_mode(iLevelMode)
                 for iShowMode in ShowMode:

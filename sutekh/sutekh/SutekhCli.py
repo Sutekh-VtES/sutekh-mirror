@@ -279,15 +279,14 @@ def main_with_args(aTheArgs):
         if not oOpts.refresh_tables:
             print("reload should be called with --refresh-tables")
             return 1
-        else:
-            sTempdir = gen_temp_dir()
-            (fTemp, sReloadZipName) = \
-                tempfile.mkstemp('.zip', 'sutekh', sTempdir)
-            os.close(fTemp)
-            oZipFile = ZipFileWrapper(sReloadZipName)
-            oZipFile.do_dump_all_to_zip(oLogHandler)
-            # We dump the databases here
-            # We will reload them later
+        sTempdir = gen_temp_dir()
+        (fTemp, sReloadZipName) = \
+            tempfile.mkstemp('.zip', 'sutekh', sTempdir)
+        os.close(fTemp)
+        oZipFile = ZipFileWrapper(sReloadZipName)
+        oZipFile.do_dump_all_to_zip(oLogHandler)
+        # We dump the databases here
+        # We will reload them later
 
     if oOpts.refresh_ruling_tables:
         if not refresh_tables([Ruling], sqlhub.processConnection):

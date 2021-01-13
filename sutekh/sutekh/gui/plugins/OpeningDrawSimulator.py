@@ -208,11 +208,13 @@ class OpeningHandSimulator(SutekhPlugin, BaseOpeningDraw):
         """Fill in the details for the given hand"""
         oDetailBox = Gtk.VBox(homogeneous=False, spacing=2)
         oHBox = Gtk.HBox(False, 2)
-        oHBox.pack_start(fill_frame(
-            self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'),
+        oHBox.pack_start(
+            fill_frame(
+                self.aDrawnHands[self.iCurHand - 1].sType, 'Card Types'),
             True, True, 0)
-        oHBox.pack_start(fill_frame(
-            self.aDrawnHands[self.iCurHand - 1].sProp, 'Card Properties'),
+        oHBox.pack_start(
+            fill_frame(
+                self.aDrawnHands[self.iCurHand - 1].sProp, 'Card Properties'),
             True, True, 0)
         oDetailBox.pack_start(oHBox, False, True, 0)
         return oDetailBox

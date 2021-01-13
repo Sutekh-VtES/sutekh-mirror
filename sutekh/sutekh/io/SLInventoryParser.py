@@ -51,9 +51,8 @@ class SLInventoryParser(CardSetParser):
         sSection = sLine[len('***SL***'):-len('***')].lower()
         if sSection in self._dSectionParsers:
             return self._dSectionParsers[sSection]
-        else:
-            raise IOError('Unknown section heading in Secret'
-                          ' Library inventory format')
+        raise IOError('Unknown section heading in Secret'
+                      ' Library inventory format')
 
     # pylint: disable=no-self-use
     # Making these functions for clarity

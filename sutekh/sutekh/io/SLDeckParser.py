@@ -61,9 +61,8 @@ class SLDeckParser(CardSetParser):
         sSection = sLine[len('***SL***'):-len('***')].lower()
         if sSection in self._dSectionParsers:
             return self._dSectionParsers[sSection]
-        else:
-            raise IOError('Unknown section heading in Secret'
-                          ' Library Deck Format')
+        raise IOError('Unknown section heading in Secret'
+                      ' Library Deck Format')
 
     # pylint: disable=no-self-use
     # Making these functions for clarity

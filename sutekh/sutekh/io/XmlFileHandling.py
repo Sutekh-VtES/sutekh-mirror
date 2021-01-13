@@ -105,18 +105,18 @@ class PhysicalCardSetXmlFile:
         return _do_read(oParser, self.sXmlFile, self.oCardLookup,
                         bIgnoreWarnings)
 
-    def write(self, sPhysicalCardSetName):
+    def write(self, sPCSName):
         """Write the given card set to the file"""
         oWriter = PhysicalCardSetWriter()
         if self.sXmlFile is None:
-            sFileName = safe_filename(sPhysicalCardSetName) + '.xml'
+            sFileName = safe_filename(sPCSName) + '.xml'
         else:
             sFileName = self.sXmlFile
         fOut = open(sFileName, 'w')
         try:
-            oPCS = IPhysicalCardSet(sPhysicalCardSetName)
-        except SQLObjectNotFound:
-            raise IOError('No card set named %s ' % sPhysicalCardSetName)
+            oPCS = IPhysicalCardSet(sPCSName)
+        except SQLObjectNotFound as oExp:
+            raise IOError(f'No card set named {sPCSName}') from oExp
         oHolder = CardSetWrapper(oPCS)
         oWriter.write(fOut, oHolder)
         fOut.close()

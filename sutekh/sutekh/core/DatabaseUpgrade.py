@@ -377,9 +377,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         elif oVer.check_tables_and_versions([Metadata], [1], oOrigConn):
             # Rename the 'key' field to 'dataKey' so it works on mysql
             for oObj in Metadata_v1.select(connection=oOrigConn):
-                oCopy = Metadata(id=oObj.id, dataKey=oObj.key,
-                                 value=oObj.value,
-                                 connection=oTrans)
+                _oCopy = Metadata(id=oObj.id, dataKey=oObj.key,
+                                  value=oObj.value,
+                                  connection=oTrans)
         else:
             return (False, ["Unknown Version for Metadata"])
         return (True, aMessages)
@@ -791,7 +791,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                             [2, PhysicalCard.tableversion],
                                             oOrigConn):
             return (False, ["Unknown PhysicalCard version"])
-        elif oVer.check_tables_and_versions([AbstractCard], [5], oOrigConn):
+        if oVer.check_tables_and_versions([AbstractCard], [5], oOrigConn):
             for oCard in PhysicalCard_ACv5.select(
                     connection=oOrigConn).orderBy('id'):
                 oPrintingID = _lookup_printing_for_exp(oCard.expansionID,

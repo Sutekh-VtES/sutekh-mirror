@@ -427,7 +427,8 @@ class CardDict(dict):
             elif aPair[1].strip().startswith('Promo-'):
                 # Handle the TR:Promo special case
                 aExp.append((aPair[1].strip(), 'NA'))
-            elif 'anthology' in aPair[0].lower() and 'larp' not in aPair[1].lower():
+            elif 'anthology' in aPair[0].lower() and \
+                    'larp' not in aPair[1].lower():
                 # Add the Anthology reprint cases
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
                 aExp.append(('AnthologyI', aPair[1].strip()))
@@ -620,7 +621,7 @@ class CardDict(dict):
     def _add_physical_cards(self, oCard):
         """Create a physical card for each expansion."""
         self._oMaker.make_physical_card(oCard, None)
-        for oExp in set([oRarity.expansion for oRarity in oCard.rarity]):
+        for oExp in {oRarity.expansion for oRarity in oCard.rarity}:
             oPrinting = self._oMaker.make_default_printing(oExp)
             self._oMaker.make_physical_card(oCard, oPrinting)
 
@@ -834,23 +835,22 @@ class InCardText(LogStateWithInfo):
                 self._dInfo['text'].strip())
             oInCard = InCard(self._dInfo, self._oLogger)
             return oInCard.transition(sLine, None)
+        if 'text' not in self._dInfo:
+            self._dInfo['text'] = sLine.strip() + '\n'
+            # This newline is added so there's a separation between the
+            # requirements and the rest of the card text, since otherwise
+            # there's no marker for that.
+            # For cards with only a single line, such as Bum's rush,
+            # this will be stripped when we add it to the database
         else:
-            if 'text' not in self._dInfo:
-                self._dInfo['text'] = sLine.strip() + '\n'
-                # This newline is added so there's a separation between the
-                # requirements and the rest of the card text, since otherwise
-                # there's no marker for that.
-                # For cards with only a single line, such as Bum's rush,
-                # this will be stripped when we add it to the database
-            else:
-                # Since we're building this up a line at a time, we add a
-                # trailing space, which we strip before we exit this parser
-                self._dInfo['text'] += sLine.strip() + ' '
-            # Note that we do no other formatting of the card text. This
-            # is handled by the format_text helper function. This makes
-            # it easy to change text display without needed to update
-            # the database
-            return self
+            # Since we're building this up a line at a time, we add a
+            # trailing space, which we strip before we exit this parser
+            self._dInfo['text'] += sLine.strip() + ' '
+        # Note that we do no other formatting of the card text. This
+        # is handled by the format_text helper function. This makes
+        # it easy to change text display without needed to update
+        # the database
+        return self
 
 
 # Parser
