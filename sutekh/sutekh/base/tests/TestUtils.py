@@ -14,16 +14,19 @@ from io import StringIO
 from xml.etree.ElementTree import fromstring
 from logging import FileHandler
 
+# pylint: disable=wrong-import-position
+# We need to call gi.require_version before importing Gtk
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('PangoCairo', '1.0')
 
-# importing Gtk will specify the version requirements for Gdk, GLib, GObject and Pango,
-# but we need to import Gtk first for this to work
+# importing Gtk will specify the version requirements for Gdk, GLib,
+# GObject and Pango, but we need to import Gtk first for this to work
 from gi.repository import Gtk, Gdk
 
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
                                  IPrinting)
+# pylint: enable=wrong-import-position
 
 
 def make_card(sCardName, sExpName, sPrinting=None):
@@ -140,16 +143,17 @@ class BaseTestCase(unittest.TestCase):
         return oHolder
 
     def _compare_xml_strings(self, sXMLData1, sXMLData2):
-        """Parse and compare two XML files, returning True if they are equivilant.
+        """Parse and compare two XML files, returning True if they are
+           equivilant.
 
-           We define equivilant as a) have all the same elements and b) elements have
-           the same attributes and values.
+           We define equivilant as a) have all the same elements and
+           b) elements have the same attributes and values.
 
-           We assume the head and tail attributes are not significant, and only the
-           text attribute may contain significant information.
+           We assume the head and tail attributes are not significant, and
+           only the text attribute may contain significant information.
 
-           We use this to work around different XML outputs between different ElementTree
-           versions."""
+           We use this to work around different XML outputs between different
+           ElementTree versions."""
         oRoot1 = fromstring(sXMLData1)
         oRoot2 = fromstring(sXMLData2)
         aTree1 = []

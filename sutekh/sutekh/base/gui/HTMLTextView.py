@@ -110,6 +110,9 @@ class HtmlHandler(HTMLParser):
 
     def _get_current_attributes(self):
         """Get current attributes."""
+        # pylint: disable=invalid-name, attribute-defined-outside-init
+        # We must use the gtk names 'font' and 'font_size' here
+        # Because of how they're handled, defining these here is fine
         # gi's handling of Gtk.TextAttribute is a bit wonky, due
         # to the way Gtk3 does TextAttribute updates, so we fake
         # it by using less efficient logic
@@ -420,10 +423,10 @@ class HtmlHandler(HTMLParser):
         elif sName == 'title':
             self._bInTitle = True
             return
-        elif sName == 'em' or sName == 'i':
+        elif sName in ('em', 'i'):
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('style', Pango.Style.ITALIC)
-        elif sName == 'strong' or sName == 'b':
+        elif sName in ('strong', 'b'):
             oTag = self._oTextBuf.create_tag()
             oTag.set_property('weight', Pango.Weight.BOLD)
         elif sName == 'font':
@@ -517,9 +520,9 @@ class HtmlHandler(HTMLParser):
             pass
         elif sName in HTML_HEADING_TAGS:
             pass
-        elif sName == 'em' or sName == 'i':
+        elif sName in ('em', 'i'):
             pass
-        elif sName == 'strong' or sName == 'b':
+        elif sName in ('strong', 'b'):
             pass
         elif sName == 'font':
             pass
@@ -566,9 +569,9 @@ class HtmlHandler(HTMLParser):
         elif sName in HTML_HEADING_TAGS:
             if not self._oIter.starts_line():
                 self._insert_text("\n")
-        elif sName == 'em' or sName == 'i':
+        elif sName in ('em', 'i'):
             pass
-        elif sName == 'strong' or sName == 'b':
+        elif sName in ('strong', 'b'):
             pass
         elif sName == 'font':
             pass
@@ -606,8 +609,10 @@ class HTMLTextView(Gtk.TextView):
         self._dTargets = {}
         self._fLinkLoader = fLinkLoader
         oDisplay = Gdk.Display.get_default()
-        self._oTermCursor = Gdk.Cursor.new_for_display(oDisplay, Gdk.CursorType.XTERM)
-        self._oHandCursor = Gdk.Cursor.new_for_display(oDisplay, Gdk.CursorType.HAND2)
+        self._oTermCursor = Gdk.Cursor.new_for_display(oDisplay,
+                                                      Gdk.CursorType.XTERM)
+        self._oHandCursor = Gdk.Cursor.new_for_display(oDisplay,
+                                                       Gdk.CursorType.HAND2)
 
     def __leave_event(self, oWidget, _oEvent):
         """Cursor has left the widget."""

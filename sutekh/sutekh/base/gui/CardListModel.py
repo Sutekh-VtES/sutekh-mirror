@@ -74,12 +74,15 @@ class CardListModel(Gtk.TreeStore):
         self._bHideIllegal = True
         self._oController = None
         self._oFilterParser = FilterParser()
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter', self.replace_filter)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
+                             self.replace_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'profile_option_changed',
                              self.profile_option_changed)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'set_postfix_the_display',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'set_postfix_the_display',
                              self.set_postfix_the_display)
 
     # pylint: disable=protected-access, invalid-name
@@ -122,10 +125,14 @@ class CardListModel(Gtk.TreeStore):
         self._oController = None
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
                                self.replace_filter)
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'profile_option_changed',
                                self.profile_option_changed)
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'set_postfix_the_display',
+                               self.set_postfix_the_display)
         # Ensure we clean up all subscribers
         MessageBus.clear(self)
 
@@ -139,7 +146,7 @@ class CardListModel(Gtk.TreeStore):
         oVal2 = self.get_value(oIter2, iCol)
         if oVal1 < oVal2:
             return -1
-        elif oVal1 > oVal2:
+        if oVal1 > oVal2:
             return 1
         return self.sort_equal_iters(oIter1, oIter2)
 
@@ -369,19 +376,19 @@ class CardListModel(Gtk.TreeStore):
             if self.applyfilter and self._bHideIllegal and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter,
                                      self.oLegalFilter])
-            elif self._bHideIllegal:
+            if self._bHideIllegal:
                 # either not self.apply, or self.selectfilter is None
                 return FilterAndBox([self.configfilter, self.oLegalFilter])
-            elif self.applyfilter and self.selectfilter:
+            if self.applyfilter and self.selectfilter:
                 return FilterAndBox([self.configfilter, self.selectfilter])
             # either not self.apply, or self.selectfilter is None
             return self.configfilter
-        elif self.applyfilter and self._bHideIllegal and self.selectfilter:
+        if self.applyfilter and self._bHideIllegal and self.selectfilter:
             return FilterAndBox([self.selectfilter, self.oLegalFilter])
-        elif self._bHideIllegal:
+        if self._bHideIllegal:
             # either not self.apply, or self.selectfilter is None
             return self.oLegalFilter
-        elif self.applyfilter:
+        if self.applyfilter:
             return self.selectfilter
         return None
 

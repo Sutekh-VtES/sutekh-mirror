@@ -38,8 +38,11 @@ class CardSetMenu(CardListMenu):
         self.add_plugins_to_menus(self._oFrame)
         self.sort_menu(self._dMenus['Export Card Set'])
         self.sort_menu(self._dMenus['Analyze'])
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile', self.remove_profile)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'remove_profile',
+                             self.remove_profile)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'profile_option_changed',
                              self.profile_option_changed)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
@@ -127,7 +130,8 @@ class CardSetMenu(CardListMenu):
         """Remove the menu listener"""
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile',
                                self.remove_profile)
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'profile_option_changed',
                                self.profile_option_changed)
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
@@ -237,12 +241,12 @@ class CardSetMenu(CardListMenu):
 
     def remove_profile(self, sType, _sProfile):
         """A profile has been removed"""
-        if sType == CARDSET or sType == FRAME:
+        if sType in (CARDSET, FRAME):
             self._fix_profile_menu()
 
     def profile_option_changed(self, sType, _sProfile, sKey):
         """Update menu if profiles are renamed."""
-        if (sType == CARDSET or sType == FRAME) and sKey == 'name':
+        if sType in (CARDSET, FRAME) and sKey == 'name':
             self._fix_profile_menu()
 
     def profile_changed(self, sType, sId):
