@@ -34,7 +34,7 @@ from sutekh.SutekhInfo import SutekhInfo
 
 from sutekh.gui.SutekhMainWindow import SutekhMainWindow
 from sutekh.gui.ConfigFile import ConfigFile
-# pylint: enble=wrong-import-position, wrong-import-order, ungrouped-imports
+# pylint: enable=wrong-import-position, wrong-import-order, ungrouped-imports
 
 
 def parse_options(aArgs):

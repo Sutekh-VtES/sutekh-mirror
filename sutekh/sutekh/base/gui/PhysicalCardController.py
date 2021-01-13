@@ -43,6 +43,7 @@ class PhysicalCardController:
     # making this a function would not be convenient
     def set_card_text(self, oCard):
         """Set the card text to reflect the selected card."""
-        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'set_card_text', oCard)
+        MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG,
+                           'set_card_text', oCard)
 
     # pylint: enable=no-self-use

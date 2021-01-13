@@ -1646,7 +1646,7 @@ class DatabaseUpgradeTests(SutekhTest):
         oConn = sqlhub.processConnection
 
         # Save current state to restore later
-        aCurData = [s for s in oConn.getConnection().iterdump()]
+        aCurData = list(oConn.getConnection().iterdump())
 
         # Create the database to upgrade
         sDbFile = self._create_tmp_file()

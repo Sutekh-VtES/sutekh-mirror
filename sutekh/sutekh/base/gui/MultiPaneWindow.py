@@ -41,8 +41,8 @@ class MultiPaneWindow(Gtk.Window):
 
         self._oFocussed = None
 
-        self._oBusyCursor = Gdk.Cursor.new_for_display(Gdk.Display.get_default(),
-                                                       Gdk.CursorType.WATCH)
+        self._oBusyCursor = Gdk.Cursor.new_for_display(
+            Gdk.Display.get_default(), Gdk.CursorType.WATCH)
 
         # Flag to block calling reloads during a refresh process
         self._bBlockReload = False
@@ -143,7 +143,6 @@ class MultiPaneWindow(Gtk.Window):
 
     def reset_menu(self):
         """Children will override this"""
-        pass
 
     def win_focus(self, _oWidget, _oEvent, oFrame):
         """Respond to focus change events.
@@ -166,7 +165,7 @@ class MultiPaneWindow(Gtk.Window):
                 oKeyVal == Gdk.keyval_from_name('KP_Tab'):
             self.move_to_frame(+1)
             return True
-        elif oKeyVal == Gdk.keyval_from_name('ISO_Left_Tab'):
+        if oKeyVal == Gdk.keyval_from_name('ISO_Left_Tab'):
             # Shift & tab should always be this, AFAICT
             self.move_to_frame(-1)
             return True
@@ -380,9 +379,8 @@ class MultiPaneWindow(Gtk.Window):
                 # Get the HPane this belongs to
                 oParent = oParent.get_parent()
             return oParent
-        else:
-            # Return the last added pane, for automatic adds
-            return self._aHPanes[-1]
+        # Return the last added pane, for automatic adds
+        return self._aHPanes[-1]
 
     # Utility functions for add_pane
     def _get_pane_to_replace(self):

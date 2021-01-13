@@ -28,9 +28,9 @@ def _gen_subsets(aData, iSetSize, iDepth=1):
     """Generate subsets of the given size from a list"""
     if iDepth > iSetSize:
         return []
-    elif iDepth < 1:
+    if iDepth < 1:
         return []
-    elif iDepth == iSetSize:
+    if iDepth == iSetSize:
         return [set([x]) for x in aData]
     # I'm arguably overly fond of recursion
     aNewSets = []
@@ -72,7 +72,7 @@ def _make_superset(oCard, bSuperior, bVampire):
     if bSuperior:
         return set([oP.discipline for oP in oCard.discipline if
                     oP.level == 'superior'])
-    elif bVampire:
+    if bVampire:
         return set([oP.discipline for oP in oCard.discipline])
     # Imbued
     return set(oCard.virtue)
@@ -264,7 +264,8 @@ class FindLikeVampires(SutekhPlugin):
             False, False, 0)
         oUseCardSet = Gtk.CheckButton("Only match cards visible in this pane")
         oDialog.vbox.pack_start(oUseCardSet, False, True, 0)
-        oDialog.vbox.pack_start(Gtk.Label(label="Match Virtues"), False, True, 0)
+        oDialog.vbox.pack_start(Gtk.Label(label="Match Virtues"),
+                                False, True, 0)
         oComboBox = Gtk.ComboBoxText()
         for iNum in range(1, len(self.oSelCard.virtue) + 1):
             oComboBox.append_text('%d' % iNum)
@@ -473,8 +474,7 @@ class LikeCardsModel(Gtk.ListStore):
             sName = self.get_value(oIter, 0)
             if sName == oCard.name:
                 break
-            else:
-                oIter = self.iter_next(oIter)
+            oIter = self.iter_next(oIter)
         if oIter:
             # Delete the card from the view
             self.remove(oIter)

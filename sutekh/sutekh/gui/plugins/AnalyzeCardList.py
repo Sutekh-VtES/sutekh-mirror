@@ -198,13 +198,13 @@ def _crypt_avg(iCostTot, iCryptSize):
     return fAvg, fAvgDraw
 
 
-def _format_disciplines(sDiscType, dDisc, iNum):
+def _format_disciplines(sDiscType, dDisc):
     """Format the display of disciplines and virtues"""
     sText = ''
-    for sDisc, iNum in sorted(dDisc.items(), key=lambda x: x[1],
+    for sDisc, iCnt in sorted(dDisc.items(), key=lambda x: x[1],
                               reverse=True):
         sText += 'Number of cards requiring %s %s = %d\n' % (sDiscType,
-                                                             sDisc, iNum)
+                                                             sDisc, iCnt)
     return sText
 
 
@@ -283,11 +283,11 @@ def _simple_back_checks(dCards, sType):
         sText = "%s has cards from a V:EKN pdf expansion.\n" % sType
         sText += SLEEVED % sType
         return sText
-    elif len(dCards) == 1 and None not in dCards:
+    if len(dCards) == 1 and None not in dCards:
         sText = "All %s cards have identical backs\n" % sType.lower()
         sText += UNSLEEVED % sType
         return sText
-    elif None in dCards:
+    if None in dCards:
         sText = ("%s has cards from unspecified expansions."
                  " Ignoring the %s\n" % (sType, sType.lower()))
         return sText
@@ -977,9 +977,9 @@ class AnalyzeCardList(SutekhPlugin):
         sText += ('Number of cards with no discipline/virtue requirement = '
                   '%d\n' % iNoneCount)
         if dDisciplines:
-            sText += _format_disciplines('discipline', dDisciplines, iNum)
+            sText += _format_disciplines('discipline', dDisciplines)
         if dVirtues:
-            sText += _format_disciplines('virtue', dVirtues, iNum)
+            sText += _format_disciplines('virtue', dVirtues)
         if dMulti:
             sText += '\n' + _format_multi(sType, dMulti, iNum)
         return sText

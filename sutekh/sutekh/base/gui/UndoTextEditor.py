@@ -23,7 +23,8 @@ class SearchDialog(Gtk.Dialog):
         super().__init__(title="Search", transient_for=oParent, modal=True)
         self.add_buttons("_Find", Gtk.ResponseType.OK,
                          "_Cancel", Gtk.ResponseType.CANCEL)
-        self.vbox.pack_start(Gtk.Label("Enter text to search for"), False, False, 0)
+        self.vbox.pack_start(Gtk.Label("Enter text to search for"),
+                             False, False, 0)
         self._oEntry = Gtk.Entry()
         self.vbox.pack_start(self._oEntry, True, True, 0)
         self.show_all()
@@ -123,7 +124,7 @@ class UndoEditBuffer(Gtk.TextBuffer):
     def undo(self):
         """Undo the last action in the undo stack"""
         if not self._aUndoStack:
-            return
+            return None
         oAction = self._aUndoStack.pop()
         self._aRedoStack.append(oAction)
         self.bUndoRedo = True
@@ -134,7 +135,7 @@ class UndoEditBuffer(Gtk.TextBuffer):
     def redo(self):
         """Rodo the last action in the redo stack"""
         if not self._aRedoStack:
-            return
+            return None
         oAction = self._aRedoStack.pop()
         self._aUndoStack.append(oAction)
         self.bUndoRedo = True
@@ -158,7 +159,7 @@ class UndoEditBuffer(Gtk.TextBuffer):
 
         if oMatch is None:
             do_info_message("Search string not found")
-            return
+            return None
 
         # Match found - tuple of (start, end) iters
         self.place_cursor(oMatch[0])

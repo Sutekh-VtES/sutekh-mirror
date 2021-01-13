@@ -205,14 +205,14 @@ def fix_deck_ids(dCards):
        the wrong images, even though the actual urls in the section
        are correct.
        """
-    for sName, dCardData in dCards.items():
+    for _sName, dCardData in dCards.items():
         sTrueID = "%d" % (dCardData["CardID"] // 100)
         if sTrueID not in dCardData["CustomDeck"]:
             # they lied to us
             # CustomDeck is a dict with a single entry
             _sKey, dContent = dCardData["CustomDeck"].popitem()
             # The values are correct enough, but the key is wrong
-            # logging.info(f"Fixing {sTrueID} in {sName} - saw {_sKey}")
+            # logging.info(f"Fixing {sTrueID} in {_sName} - saw {_sKey}")
             dCardData["CustomDeck"][sTrueID] = dContent
 
 
@@ -264,8 +264,8 @@ class TTSExport(SutekhPlugin):
         if not os.path.exists(sTTSModulePath):
             return
         try:
-            with open(sTTSModulePath, 'r') as oF:
-                dJsonData = json.load(oF)
+            with open(sTTSModulePath, 'r') as oFile:
+                dJsonData = json.load(oFile)
                 # Extract the relevant chunks from the file
                 try:
                     # Extract crypt
@@ -292,11 +292,14 @@ class TTSExport(SutekhPlugin):
                     fix_deck_ids(dCards)
                     self._dTTSData = dCards
                 except (KeyError, IndexError) as oErr:
-                    logging.warning("Failed to extract data from TTS Module file: %s", sTTSModuleFile)
+                    logging.warning(
+                        "Failed to extract data from TTS Module file: %s",
+                        sTTSModuleFile)
                     logging.warning("Exception: %s", oErr)
         except json.JSONDecodeError as oErr:
             # Log error for verbose out
-            logging.warning("Failed to parse TTS Module file: %s", sTTSModuleFile)
+            logging.warning("Failed to parse TTS Module file: %s",
+                            sTTSModuleFile)
             logging.warning("Exception: %s", oErr)
 
     def check_enabled(self):
@@ -371,8 +374,8 @@ class TTSExport(SutekhPlugin):
             # Need to turn name into the JSON file version
             sJSONName = make_json_name(oCard.abstractCard)
             if sJSONName not in self._dTTSData:
-                do_complaint_error("Unable to find an entry for %s (%s)" % (oCard.abstractCard.name,
-                                                                            sJSONName))
+                do_complaint_error("Unable to find an entry for %s (%s)" %
+                                   (oCard.abstractCard.name, sJSONName))
                 logging.warning("Unable to find an entry for %s (%s)",
                                 oCard.abstractCard.name, sJSONName)
                 return
@@ -396,8 +399,8 @@ class TTSExport(SutekhPlugin):
             dLibrary['DeckIDs'].append(dTTSCard['CardID'])
             dLibrary['CustomDeck'].update(dTTSCard['CustomDeck'])
             dLibrary['ContainedObjects'].append(dTTSCard)
-        with open(sFilename, 'w') as oF:
-            json.dump(dDeck, oF, indent=2)
+        with open(sFilename, 'w') as oFileF:
+            json.dump(dDeck, oFile, indent=2)
 
     def list_unmatched_cards(self):
         """List any unmatched cards in the full cardlist"""

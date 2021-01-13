@@ -26,7 +26,7 @@ def _safe_load(oIconTheme, sName):
     try:
         return oIconTheme.load_icon(sName, Gtk.IconSize.MENU, 0)
     except GLib.Error as oErr:
-        logging.warning(f"Unable to load icon {sName} - {oErr}")
+        logging.warning("Unable to load icon %s - %s", sName, oErr)
     return None
 
 
@@ -75,8 +75,7 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
         """Allow reading the showicon property"""
         if oProp.name == 'showicon':
             return self.bShowIcon
-        else:
-            raise AttributeError('unknown property %s' % oProp.name)
+        raise AttributeError('unknown property %s' % oProp.name)
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the showicon property"""
@@ -149,7 +148,7 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
             oPixRect.x += 1
             oPixRect.y += 1
             # We add a timeout to force a redraw to unbump the button
-            GObject.timeout_add(200, self.restore_offset, oWindow,
+            GObject.timeout_add(200, self.restore_offset, oWidget.get_window(),
                                 oBackgroundArea)
 
         oDrawRect = oCellArea.intersect(oPixRect)[1]

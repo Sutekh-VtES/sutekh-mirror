@@ -29,8 +29,10 @@ class CardSetManagementMenu(FilteredViewMenu):
         self.create_edit_menu()
         self.create_filter_menu()
         self.add_plugins_to_menus(self._oFrame)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile', self.remove_profile)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'remove_profile', self.remove_profile)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'profile_option_changed',
                              self.profile_option_changed)
 
     # pylint: disable=attribute-defined-outside-init
@@ -69,7 +71,8 @@ class CardSetManagementMenu(FilteredViewMenu):
         """Remove the menu listener"""
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'remove_profile',
                                self.remove_profile)
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'profile_option_changed',
                                self.profile_option_changed)
 
     def _edit_profiles(self, _oWidget):

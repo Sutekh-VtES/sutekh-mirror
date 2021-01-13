@@ -35,9 +35,9 @@ def urlopen_with_timeout(sUrl, fErrorHandler=None, dHeaders=None, sData=None,
                          bBinary=False):
     """Wrap urlopen to handle timeouts nicely.
 
-       If bBinary is False, this will return an wrapped object that returns unicode
-       data, otherwise, if bBinary is True, it will return raw a file that returns raw
-       bytes."""
+       If bBinary is False, this will return an wrapped object that returns
+       unicode data, otherwise, if bBinary is True, it will return raw a file
+       that returns raw bytes."""
     # Note: The global timeout is currently set to the
     # config value at startup
     oReq = Request(sUrl)

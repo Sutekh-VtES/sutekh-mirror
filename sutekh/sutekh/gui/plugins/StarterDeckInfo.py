@@ -351,7 +351,7 @@ class StarterInfoPlugin(SutekhPlugin):
             # Unable to extract the dates correctly, so we treat this as
             # something to replace
             return True
-        elif oDeckDate < oUrlDate:
+        if oDeckDate < oUrlDate:
             # Url is newer, so we replace
             return True
         return False

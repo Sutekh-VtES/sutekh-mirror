@@ -162,7 +162,8 @@ class BaseCardTextView(Gtk.TextView):
         self.set_wrap_mode(Gtk.WrapMode.WORD)
         self._oIconManager = oIconManager
         oContext = self.get_pango_context()
-        logging.info('Pango Language : %s', oContext.get_language().to_string())
+        logging.info('Pango Language : %s',
+                     oContext.get_language().to_string())
         logging.info('Pango Font Description : %s',
                      oContext.get_font_description().to_string())
 
@@ -178,7 +179,6 @@ class BaseCardTextView(Gtk.TextView):
         """Handle any database changes as required"""
         # The default is to do nothing.
         # Subclasses will implement logic as needed
-        pass
 
     def set_card_text(self, oPhysCard):
         """Add the text for oCard to the TextView."""
@@ -191,7 +191,8 @@ class BaseCardTextView(Gtk.TextView):
             self.print_card_to_buffer(self._oLastCard.abstractCard)
             # Signal plugins that want to do something after text has been
             # updated
-            MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text', self._oLastCard)
+            MessageBus.publish(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
+                               self._oLastCard)
 
     def add_button_to_text(self, oButton, sPrefix='\n'):
         """Adds a button to the text view."""

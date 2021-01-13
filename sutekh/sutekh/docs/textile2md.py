@@ -48,7 +48,8 @@ def main():
     oPluginMngr.load_plugins()
     aPlugins = oPluginMngr.get_all_plugins()
     DocUtils.make_filter_txt('textile_docs', FilterParser.PARSER_FILTERS)
-    DocUtils.convert_to_markdown("textile_docs", "md_docs", aPlugins, replace_version)
+    DocUtils.convert_to_markdown("textile_docs", "md_docs", aPlugins,
+                                 replace_version)
     DocUtils.cleanup('textile_docs')
 
 
