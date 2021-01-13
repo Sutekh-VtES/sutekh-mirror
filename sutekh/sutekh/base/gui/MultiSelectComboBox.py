@@ -40,7 +40,8 @@ class MultiSelectComboBox(Gtk.HBox):
         self._aOldSelection = []
 
         self._oDialog = Gtk.Dialog(
-            "Select ...", None, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+            "Select ...", None,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
         self._oDialog.set_decorated(False)
         self._oDialog.action_area.set_size_request(-1, 0)
         self._oDialog.vbox.pack_start(oScrolled, True, True, 0)

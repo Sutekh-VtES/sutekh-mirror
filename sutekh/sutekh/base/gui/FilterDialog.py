@@ -107,9 +107,12 @@ class FilterDialog(SutekhDialog):
 
         self.add_accel_group(self._oAccelGroup)
 
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter', self.replace_filter)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'add_filter', self.add_filter)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_filter', self.remove_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
+                             self.replace_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'add_filter',
+                             self.add_filter)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_filter',
+                             self.remove_filter)
 
         self.show_all()
 

@@ -185,16 +185,15 @@ class FilterNot(Filter):
             return NOT(IN(AbstractCard.q.id, Select(AbstractCard.q.id,
                                                     oExpression,
                                                     join=aJoins)))
-        elif 'PhysicalCard' in self.__oSubFilter.types:
+        if 'PhysicalCard' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCard.q.id, Select(PhysicalCard.q.id,
                                                     oExpression,
                                                     join=aJoins)))
-        elif 'PhysicalCardSet' in self.__oSubFilter.types:
+        if 'PhysicalCardSet' in self.__oSubFilter.types:
             return NOT(IN(PhysicalCardSet.q.id, Select(PhysicalCardSet.q.id,
                                                        oExpression,
                                                        join=aJoins)))
-        else:
-            raise RuntimeError("FilterNot unable to handle sub-filter type.")
+        raise RuntimeError("FilterNot unable to handle sub-filter type.")
 
 
 class CachedFilter(Filter):
@@ -692,7 +691,7 @@ class CardSetMultiCardCountFilter(DirectFilter):
             aCounts = []
         # strip whitespace before comparing stuff
         # aCounts may be a single string, so we can't use 'for x in aCounts'
-        aCounts = set([x.strip() for x in list(aCounts)])
+        aCounts = {x.strip() for x in list(aCounts)}
         self._oFilters = []
         self._aCardSetIds = aIds
         self._oZeroQuery = None
@@ -843,7 +842,7 @@ class MultiPhysicalExpansionFilter(DirectFilter):
         if self.__bOrUnspec and self._aIds:
             return OR(IN(oTable.printing_id, self._aIds),
                       oTable.printing_id == None)
-        elif self.__bOrUnspec:
+        if self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
             return oTable.printing_id == None
         return IN(oTable.printing_id, self._aIds)
@@ -906,7 +905,7 @@ class MultiPhysicalPrintingFilter(DirectFilter):
         if self.__bOrUnspec and self._aIds:
             return OR(IN(oTable.printing_id, self._aIds),
                       oTable.printing_id == None)
-        elif self.__bOrUnspec:
+        if self.__bOrUnspec:
             # Psycopg2 doesn't like IN(a, []) constructions
             return oTable.printing_id == None
         return IN(oTable.printing_id, self._aIds)

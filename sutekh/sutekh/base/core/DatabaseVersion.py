@@ -56,8 +56,7 @@ class DatabaseVersion:
             if oVer.TableName in dCache:
                 raise RuntimeError("Multiple version entries for %s"
                                    " found in the database." % oVer.TableName)
-            else:
-                dCache[oVer.TableName] = oVer.Version
+            dCache[oVer.TableName] = oVer.Version
 
     @classmethod
     def ensure_table_exists(cls, oConn):

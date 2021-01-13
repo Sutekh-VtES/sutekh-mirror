@@ -30,8 +30,7 @@ def make_adapter_caches():
        been imported before make_adapter_caches is called, since this
        uses introspection to find the adapters to cache."""
 
-    aLookupHintsAbbrevs = [x for x in find_subclasses(DatabaseAbbreviation)]
-    for cAbbrev in aLookupHintsAbbrevs:
+    for cAbbrev in find_subclasses(DatabaseAbbreviation):
         cAbbrev.make_lookup()
 
     aCachedAdapters = [x for x in find_subclasses(Adapter)

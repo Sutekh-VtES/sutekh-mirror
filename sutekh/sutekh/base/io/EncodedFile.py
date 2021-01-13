@@ -60,7 +60,7 @@ class EncodedFile:
            returns a file object producing utf8 strings."""
         if self.bFileObj:
             return self.sfFile
-        elif self.bUrl:
+        if self.bUrl:
             if isinstance(self.sfFile, str):
                 # Only create a custom Request if we have a bare url
                 oReq = Request(self.sfFile)

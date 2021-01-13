@@ -608,7 +608,7 @@ class BaseConfigFile:
 
     def set_profile(self, sType, sId, sProfile):
         """Set the profile associated of the given type."""
-        if sType == CARDSET or sType == FRAME:
+        if sType in (CARDSET, FRAME):
             if sType == CARDSET:
                 dProfiles = self._oConfig['per_deck']['cardset_profiles']
             else:
@@ -637,9 +637,9 @@ class BaseConfigFile:
         """Return the current profile of the cardset/cardlist/cardset list."""
         if sType == CARDSET:
             return self._oConfig['per_deck']['cardset_profiles'].get(sId)
-        elif sType == FRAME:
+        if sType == FRAME:
             return self._oConfig['per_deck']['frame_profiles'].get(sId)
-        elif (sType == FULL_CARDLIST and sId == FULL_CARDLIST) or \
+        if (sType == FULL_CARDLIST and sId == FULL_CARDLIST) or \
                 (sType == CARDSET_LIST and sId == CARDSET_LIST):
             return self._oConfig[sType].get('current profile')
         return None
@@ -647,7 +647,7 @@ class BaseConfigFile:
     def clear_profiles(self, sType, sProfile):
         """Find all cardsets/frames using this profile, and change them to
           the default"""
-        if sType == CARDSET or sType == FRAME:
+        if sType in (CARDSET, FRAME):
             if sType == CARDSET:
                 dProfiles = self._oConfig['per_deck']['cardset_profiles']
             else:
@@ -664,14 +664,14 @@ class BaseConfigFile:
     def remove_profile(self, sType, sProfile):
         """Remove a profile from the file"""
         dData = {}
-        if sType == FRAME or sType == CARDSET:
+        if sType in (CARDSET, FRAME):
             dData = self._oConfig['per_deck']['profiles']
         elif sType == CARDSET_LIST:
             dData = self._oConfig['cardset list']['profiles']
         elif sType == FULL_CARDLIST:
             dData = self._oConfig['cardlist']['profiles']
         if sProfile in dData:
-            if sType == FRAME or sType == CARDSET:
+            if sType in (CARDSET, FRAME):
                 # Need to clear both lists in this case
                 self.clear_profiles(FRAME, sProfile)
                 self.clear_profiles(CARDSET, sProfile)
@@ -708,40 +708,39 @@ class BaseConfigFile:
 
     def profiles(self, sType):
         """Return a list of profile keys."""
-        if sType == FRAME or sType == CARDSET:
+        if sType in (CARDSET, FRAME):
             return list(self._oConfig['per_deck']['profiles'].keys())
-        elif sType == CARDSET_LIST:
+        if sType == CARDSET_LIST:
             return list(self._oConfig['cardset list']['profiles'].keys())
-        elif sType == FULL_CARDLIST:
+        if sType == FULL_CARDLIST:
             return list(self._oConfig['cardlist']['profiles'].keys())
         # Unkown type
         return None
 
     def profile_options(self, sType):
         """Return a list of per-deck option names."""
-        if sType == FRAME or sType == CARDSET:
+        if sType in (CARDSET, FRAME):
             return self._oConfig['per_deck']['defaults'].keys()
         return self._oConfig[sType]['defaults'].keys()
 
     def get_option_spec(self, sType, sKey):
         """Return the config spec for a given option."""
-        if sType == FRAME or sType == CARDSET:
+        if sType in (CARDSET, FRAME):
             return self._oConfigSpec['per_deck']['defaults'][sKey]
         return self._oConfigSpec[sType]['defaults'][sKey]
 
     def get_profile_option(self, sType, sProfile, sKey):
         """Get the value of a per-deck option for a profile."""
-        if sType == FRAME or sType == CARDSET:
+        if sType in (CARDSET, FRAME):
             return self.get_deck_profile_option(sProfile, sKey)
         try:
             if sProfile is None or sProfile.lower() == "default":
                 return self._oConfig[sType]['defaults'][sKey]
-            else:
-                # We fall back to the defaults if the key isn't set yet
-                try:
-                    return self._oConfig[sType]['profiles'][sProfile][sKey]
-                except KeyError:
-                    return self._oConfig[sType]['defaults'][sKey]
+            # We fall back to the defaults if the key isn't set yet
+            try:
+                return self._oConfig[sType]['profiles'][sProfile][sKey]
+            except KeyError:
+                return self._oConfig[sType]['defaults'][sKey]
         except KeyError:
             return None
 

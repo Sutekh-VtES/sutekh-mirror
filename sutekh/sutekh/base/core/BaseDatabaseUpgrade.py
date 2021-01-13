@@ -736,11 +736,10 @@ class BaseDBUpgradeManager:
                 if aMessages:
                     oLogger.info("Messages reported %s", aMessages)
                 return True
-            else:
-                oLogger.critical("Unable to perform upgrade.")
-                if aMessages:
-                    oLogger.error("Errors reported: %s", aMessages)
-                oLogger.critical("!!YOUR DATABASE MAY BE CORRUPTED!!")
+            oLogger.critical("Unable to perform upgrade.")
+            if aMessages:
+                oLogger.error("Errors reported: %s", aMessages)
+            oLogger.critical("!!YOUR DATABASE MAY BE CORRUPTED!!")
         else:
             oLogger.error(
                 "Unable to create memory copy. Database not upgraded.")

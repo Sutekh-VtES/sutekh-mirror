@@ -148,7 +148,6 @@ class StrAdaptMeta(type):
 class Adapter:
     """Base class for adapter objects.
        Makes introspection less messy,"""
-    pass
 
 
 class CardTypeAdapter(Adapter, metaclass=StrAdaptMeta):
@@ -248,11 +247,11 @@ class CardNameLookupAdapter(Adapter):
                     oCard = AbstractCard.byCanonicalName(
                         oLookup.value.lower())
                 except SQLObjectNotFound:
-                   # Possible error in the lookup data - warn about it,
-                   # but we don't want to fail here.
-                   logging.warning("Unable to create %s mapping (%s -> %s)",
-                                   oLookup.domain, oLookup.lookup,
-                                   oLookup.value)
+                    # Possible error in the lookup data - warn about it,
+                    # but we don't want to fail here.
+                    logging.warning("Unable to create %s mapping (%s -> %s)",
+                                    oLookup.domain, oLookup.lookup,
+                                    oLookup.value)
                 if oCard is not None:
                     for sKey in [oLookup.lookup]:
                         cls.__dCache[sKey] = oCard

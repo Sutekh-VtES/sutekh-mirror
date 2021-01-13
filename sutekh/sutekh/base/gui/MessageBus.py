@@ -19,6 +19,7 @@ class MessageBus:
     # Useful constants to avoid typoes
     @enum.unique
     class Type(enum.Enum):
+        """The different message types"""
         CONFIG_MSG = 1
         CARD_TEXT_MSG = 2
         DATABASE_MSG = 3

@@ -400,7 +400,7 @@ class CardSetView(CardListView):
         # Styles don't seem to be applied to TreeView text, so we default
         # to black text for non-editable, and work out editable from the
         # style
-        self.oCellColor = Gdk.RGBA(0,0,0,1)
+        self.oCellColor = Gdk.RGBA(0, 0, 0, 1)
         # oCurBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
         # self.set_name('editable_view')
         # oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(self.get_settings(),

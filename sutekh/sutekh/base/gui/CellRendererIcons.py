@@ -14,6 +14,7 @@ from gi.repository import Gdk, GLib, GObject, Gtk, Pango, PangoCairo
 # consts for the different display modes we need
 @enum.unique
 class DisplayOption(enum.Enum):
+    """Possible modes for the icon renderer"""
     SHOW_TEXT_ONLY = 1
     SHOW_ICONS_ONLY = 2
     SHOW_ICONS_AND_TEXT = 3
@@ -56,12 +57,11 @@ class CellRendererIcons(Gtk.CellRenderer):
         """Allow reading the properties"""
         if oProp.name == 'icons':
             return [x[1] for x in self.aData]
-        elif oProp.name == 'textlist':
+        if oProp.name == 'textlist':
             return [x[0] for x in self.aData]
-        elif oProp.name == 'text':
+        if oProp.name == 'text':
             return self.sText
-        else:
-            raise AttributeError('unknown property %s' % oProp.name)
+        raise AttributeError('unknown property %s' % oProp.name)
 
     def do_set_property(self, oProp, oValue):
         """Allow setting the properties"""
@@ -77,7 +77,8 @@ class CellRendererIcons(Gtk.CellRenderer):
                 else:
                     self.aData = [(None, x) for x in oValue]
             else:
-                raise AttributeError('Incorrect type for icons: %s' % type(oValue))
+                raise AttributeError(
+                    'Incorrect type for icons: %s' % type(oValue))
         elif oProp.name == 'textlist':
             if oValue is None:
                 # Special case
@@ -88,7 +89,8 @@ class CellRendererIcons(Gtk.CellRenderer):
                 else:
                     self.aData = [(x, None) for x in oValue]
             else:
-                raise AttributeError('Incorrect type of textlist: %s' % type(oValue))
+                raise AttributeError(
+                    'Incorrect type of textlist: %s' % type(oValue))
         elif oProp.name == 'text':
             # Just the text string, so no icon info possible
             self.sText = oValue
@@ -175,9 +177,9 @@ class CellRendererIcons(Gtk.CellRenderer):
                 if oIcon and self.eMode != DisplayOption.SHOW_TEXT_ONLY:
                     # Render icon
                     Gdk.cairo_set_source_pixbuf(oCairoContext,
-                                                    oIcon,
-                                                    oDrawRect.x,
-                                                    oDrawRect.y)
+                                                oIcon,
+                                                oDrawRect.x,
+                                                oDrawRect.y)
                     oCairoContext.paint()
                     oDrawRect.x += oIcon.get_width() + self.iIconPad
                 if sText and (self.eMode != DisplayOption.SHOW_ICONS_ONLY or oIcon is None):

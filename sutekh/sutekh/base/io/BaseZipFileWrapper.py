@@ -100,7 +100,8 @@ class BaseZipFileWrapper:
             sZName = sZName.replace(" ", "_")
             sZName = sZName.replace("/", "_")
             sZipName = '%s.xml' % sZName
-            sZipName = sZipName.encode('ascii', 'xmlcharrefreplace').decode('ascii')
+            sZipName = sZipName.encode('ascii',
+                                       'xmlcharrefreplace').decode('ascii')
             aList.append(sZipName)
             # ZipInfo will just use the 1st 6 fields in tTime
             oInfoObj = zipfile.ZipInfo(sZipName, tTime)

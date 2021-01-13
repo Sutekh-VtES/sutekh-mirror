@@ -103,7 +103,8 @@ class BasePrint(BasePlugin):
         fWidth, fHeight = oContext.get_width(), oContext.get_height()
 
         oLayout = oContext.create_pango_layout()
-        oLayout.set_font_description(Pango.FontDescription.from_string(self._sFontName))
+        oLayout.set_font_description(
+            Pango.FontDescription.from_string(self._sFontName))
         oLayout.set_width(int(fWidth * Pango.SCALE))
 
         oLayout.set_markup(self.cardlist_markup())
@@ -238,7 +239,7 @@ class BasePrint(BasePlugin):
 
             # Fill in Cards
             for sCardName, iCardCnt in sorted(dCardInfo.items()):
-                if self._ePrintExpansions in (PrintExpOption.NO_EXPANSION, 
+                if self._ePrintExpansions in (PrintExpOption.NO_EXPANSION,
                                               PrintExpOption.LONG_INDENT):
                     aMarkup.append(
                         u"  %i \u00D7 %s" % (iCardCnt,

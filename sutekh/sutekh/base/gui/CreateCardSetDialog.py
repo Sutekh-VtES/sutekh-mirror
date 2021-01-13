@@ -60,7 +60,8 @@ class CreateCardSetDialog(SutekhDialog):
         self.vbox.pack_start(self.oAuthor, False, True, 0)
         self.vbox.pack_start(self.oCommentWin, True, True, 0)
         self.vbox.pack_start(oParentLabel, False, True, 0)
-        self.vbox.pack_start(AutoScrolledWindow(self.oParentList), True, True, 0)
+        self.vbox.pack_start(AutoScrolledWindow(self.oParentList),
+                             True, True, 0)
         self.vbox.pack_start(self.oAnnotateWin, True, True, 0)
         self.vbox.pack_start(self.oInUse, False, True, 0)
 

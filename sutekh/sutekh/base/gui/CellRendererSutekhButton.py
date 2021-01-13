@@ -42,7 +42,8 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
     # is visible or not
     __gproperties__ = {
         'showicon': (GObject.TYPE_BOOLEAN, 'showicon property',
-                     'whether to show the icon', 0, GObject.ParamFlags.READWRITE),
+                     'whether to show the icon', 0,
+                     GObject.ParamFlags.READWRITE),
     }
 
     def __init__(self, bShowIcon=False):
@@ -60,14 +61,15 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
         self.oPixbuf = _safe_load(oIconTheme, sName)
         if not self.oPixbuf:
             # try fallback to symbolic version
-            # This isn't always going to work, but it is available for some icons,
-            # so it's worth trying
+            # This isn't always going to work, but it is available for some
+            # icons, so it's worth trying
             self.oPixbuf = _safe_load(oIconTheme, sName + '-symbolic')
         if not self.oPixbuf:
-            # This is supposed to always be there, so we don't wrap it in safe load
-            # If this fails, we're arguably in enough trouble anyway that we should just
-            # bail out regardless
-            self.oPixbuf = oIconTheme.load_icon('image-missing', Gtk.IconSize.MENU, 0)
+            # This is supposed to always be there, so we don't wrap it in
+            # safe load. If this fails, we're arguably in enough trouble
+            # anyway that we should just bail out regardless
+            self.oPixbuf = oIconTheme.load_icon('image-missing',
+                                                Gtk.IconSize.MENU, 0)
 
     def do_get_property(self, oProp):
         """Allow reading the showicon property"""
@@ -153,9 +155,9 @@ class CellRendererSutekhButton(Gtk.CellRenderer):
         oDrawRect = oCellArea.intersect(oPixRect)[1]
 
         Gdk.cairo_set_source_pixbuf(oCairoContext,
-                                        self.oPixbuf,
-                                        oDrawRect.x,
-                                        oDrawRect.y)
+                                    self.oPixbuf,
+                                    oDrawRect.x,
+                                    oDrawRect.y)
         oCairoContext.paint()
         return None
 

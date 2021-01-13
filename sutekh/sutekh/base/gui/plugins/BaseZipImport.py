@@ -95,10 +95,10 @@ class SelectZipFileContents(SutekhDialog):
         # Select all and unselect all
         oSelectAll = Gtk.Button('Select All')
         oUnSelectAll = Gtk.Button('Unselect All')
-        oSelectAll.connect('clicked', _set_selected_rows, self.oScrolledList,
-                           self.dEscapedList)
-        oUnSelectAll.connect('clicked', _set_selected_rows, self.oScrolledList,
-                             [])
+        oSelectAll.connect('clicked', _set_selected_rows,
+                           self.oScrolledList, self.dEscapedList)
+        oUnSelectAll.connect('clicked', _set_selected_rows,
+                             self.oScrolledList, [])
         oSelectButtons = Gtk.VBox(homogeneous=False, spacing=2)
         oSelectButtons.pack_start(oSelectAll, False, True, 0)
         oSelectButtons.pack_start(oUnSelectAll, False, True, 0)

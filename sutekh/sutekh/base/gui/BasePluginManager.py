@@ -13,7 +13,11 @@ import re
 import zipfile
 import zipimport
 
-# Needed so we can import this into the documentation generator
+# pylint: disable=wrong-import-position
+# We need to import call gi.require_version before importing
+# Gtk
+# This is needed so we can import this into the documentation
+# generator
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib
@@ -26,6 +30,8 @@ from ..core.BaseAdapters import IAbstractCard
 from .BaseConfigFile import CARDSET, FULL_CARDLIST, CARDSET_LIST, FRAME
 from .MessageBus import MessageBus
 from .SutekhDialog import do_complaint_warning
+
+# pylint: enable=wrong-import-position
 
 
 def submodules(oPackage):
@@ -286,7 +292,10 @@ class BasePlugin:
 
     def add_to_menu(self, dAllMenus, oCatchAllMenu):
         """Grunt work of adding menu item to the frame"""
+        # pylint: disable=assignment-from-none
+        # This will be overriden to not return None by many plugins
         aMenuItems = self.get_menu_item()
+        # pylint: enable=assignment-from-none
         if aMenuItems is not None:
             if not isinstance(aMenuItems, list):
                 if not isinstance(aMenuItems, tuple):

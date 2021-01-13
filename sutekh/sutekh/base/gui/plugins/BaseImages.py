@@ -37,12 +37,14 @@ from ..SutekhFileWidget import add_filter
 
 @enum.unique
 class Direction(enum.Enum):
+    """Options to cycle through the images"""
     FORWARD = 1
     BACKWARD = 2
 
 
 @enum.unique
 class Size(enum.Enum):
+    """Different resize options we support"""
     FULL = 1
     VIEW_FIXED = 2
     FIT = 3
@@ -261,7 +263,7 @@ class BaseImageFrame(BasicFrame):
 
     def check_for_all_cards(self):
         """Print details of missing card images.
-        
+
            This is a helper method used to ensure that files are placed
            and named as expected. It generally shouldn't be called
            in general usage.
@@ -279,11 +281,12 @@ class BaseImageFrame(BasicFrame):
         print()
         for oCard in sorted(dOutdated, key=lambda x: x.abstractCard.name):
             print("Outdated images for %s (%s)" % (oCard.abstractCard.name,
-                                                  IPrintingName(oCard)))
+                                                   IPrintingName(oCard)))
             for sName in dOutdated[oCard]:
                 print("    %s   is out of date" % sName)
 
     def count_missing_outdated_images(self):
+        """Count how many images are missing / not downloaded"""
         dMissing, dOutdated = self._find_missing_outdated_images()
         return len(dMissing), len(dOutdated)
 
@@ -924,16 +927,13 @@ class BaseImagePlugin(BasePlugin):
         iMissing, iOutdated = self.image_frame.count_missing_outdated_images()
         if not iMissing and not iOutdated:
             _iMesg = do_complaint_buttons(
-                    "All images already downloaded.",
-                    Gtk.MessageType.INFO,
-                    ("_OK", Gtk.ResponseType.OK))
+                "All images already downloaded.", Gtk.MessageType.INFO,
+                ("_OK", Gtk.ResponseType.OK))
             return
         iQuery = do_complaint_buttons(
-                f"Download {iMissing} missing and {iOutdated} outdated"
-                 " images now?",
-                Gtk.MessageType.QUESTION,
-                ("Yes", Gtk.ResponseType.YES,
-                 "No", Gtk.ResponseType.NO))
+            f"Download {iMissing} missing and {iOutdated} outdated"
+            " images now?", Gtk.MessageType.QUESTION,
+            ("Yes", Gtk.ResponseType.YES, "No", Gtk.ResponseType.NO))
         if iQuery != Gtk.ResponseType.YES:
             return
         self.image_frame.download_all_missing_outdated_images()

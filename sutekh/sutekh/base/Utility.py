@@ -263,10 +263,12 @@ def fix_ssl_env():
     # We split this off from fix_gui_env for use by command line scripts
     if hasattr(sys, 'frozen'):
         # Point at the frozen certificates
-        prefix = os.path.dirname(sys.executable)
-        etc = os.path.join(prefix, 'etc')
-        os.environ.setdefault('SSL_CERT_FILE', os.path.join(etc, 'ssl', 'cert.pem'))
-        os.environ.setdefault('SSL_CERT_DIR', os.path.join(etc, 'ssl', 'certs'))
+        sPrefix = os.path.dirname(sys.executable)
+        sEtc = os.path.join(sPrefix, 'etc')
+        os.environ.setdefault('SSL_CERT_FILE',
+                              os.path.join(sEtc, 'ssl', 'cert.pem'))
+        os.environ.setdefault('SSL_CERT_DIR',
+                              os.path.join(sEtc, 'ssl', 'certs'))
 
 
 def fix_gui_env():
@@ -287,21 +289,21 @@ def fix_gui_env():
     # List is taken from various bug reports and other gtk3 + python projects,
     # so it may be excessive
     if hasattr(sys, 'frozen'):
-        prefix = os.path.dirname(sys.executable)
-        os.environ['GTK_EXE_PREFIX'] = prefix
-        os.environ['GTK_DATA_PREFIX'] = prefix
-        os.environ['XDG_DATA_DIRS'] = os.path.join(prefix, 'share')
-        os.environ['GI_TYPELIB_PATH'] = os.path.join(prefix, 'lib',
+        sPrefix = os.path.dirname(sys.executable)
+        os.environ['GTK_EXE_PREFIX'] = sPrefix
+        os.environ['GTK_DATA_PREFIX'] = sPrefix
+        os.environ['XDG_DATA_DIRS'] = os.path.join(sPrefix, 'share')
+        os.environ['GI_TYPELIB_PATH'] = os.path.join(sPrefix, 'lib',
                                                      'girepository-1.0')
         fix_ssl_env()
         # Fix paths for windows gtk loaders
         if sys.platform.startswith('win'):
             os.environ.setdefault('GDK_PIXBUF_MODULEDIR',
-                                  os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
+                                  os.path.join(sPrefix, 'lib', 'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders'))
         elif sys.platform.startswith('darwin'):
             # MacOS seems to prefer this setting
             os.environ.setdefault('GDK_PIXBUF_MODULE_FILE',
-                                  os.path.join(prefix, 'lib', 'gdk-pixbuf-2.0',
+                                  os.path.join(sPrefix, 'lib', 'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders.cache'))
-            os.environ['YLD_FALLBACK_LIBRARY_PATH'] = prefix
+            os.environ['DYLD_FALLBACK_LIBRARY_PATH'] = sPrefix

@@ -24,14 +24,14 @@ from ..Utility import find_subclasses
 PARSER_FILTERS = [x for x in find_subclasses(Filter) if hasattr(x, 'keyword')]
 
 
-ENTRY_FILTERS = set([x.keyword for x in PARSER_FILTERS
-                     if hasattr(x, 'istextentry') and x.istextentry])
-WITH_FILTERS = set([x.keyword for x in PARSER_FILTERS
-                    if hasattr(x, 'iswithfilter') and x.iswithfilter])
-FROM_FILTERS = set([x.keyword for x in PARSER_FILTERS
-                    if hasattr(x, 'isfromfilter') and x.isfromfilter])
-LIST_FILTERS = set([x.keyword for x in PARSER_FILTERS
-                    if hasattr(x, 'islistfilter') and x.islistfilter])
+ENTRY_FILTERS = {x.keyword for x in PARSER_FILTERS
+                 if hasattr(x, 'istextentry') and x.istextentry}
+WITH_FILTERS = {x.keyword for x in PARSER_FILTERS
+                if hasattr(x, 'iswithfilter') and x.iswithfilter}
+FROM_FILTERS = {x.keyword for x in PARSER_FILTERS
+                if hasattr(x, 'isfromfilter') and x.isfromfilter}
+LIST_FILTERS = {x.keyword for x in PARSER_FILTERS
+                if hasattr(x, 'islistfilter') and x.islistfilter}
 
 
 # Misc utility functions
@@ -52,7 +52,7 @@ def get_filters_for_type(sFilterType):
 class ParseFilterDefinitions:
     """Provides the lexer used by PLY"""
     # pylint: disable=invalid-name, no-self-use
-    aKeywords = set([x.keyword for x in PARSER_FILTERS])
+    aKeywords = {x.keyword for x in PARSER_FILTERS}
 
     tokens = (
         'NOT',
@@ -229,14 +229,12 @@ class FilterYaccParser:
 
     def p_empty(self, p):
         """empty :"""
-        pass
 
     def p_error(self, p):
         """Parsing error handler"""
         if p is None:
             raise ValueError("No valid identifier or missing variable name")
-        else:
-            raise ValueError("Invalid identifier: %s " % p.value)
+        raise ValueError("Invalid identifier: %s " % p.value)
 
 
 # Wrapper objects around the parser
@@ -356,19 +354,15 @@ class AstBaseNode:
 
     def get_values(self):
         """Get the values associated with this node"""
-        pass
 
     def get_filter(self):
         """Get the filter associated with the node"""
-        pass
 
     def get_invalid_values(self):
         """Get values which are invalid for the associated filter"""
-        pass
 
     def get_type(self):
         """Get type information of the associated filter"""
-        pass
 
 
 class FilterNode(AstBaseNode):
@@ -410,7 +404,6 @@ class FilterNode(AstBaseNode):
 
 class OperatorNode(AstBaseNode):
     """Base class for nodes involving operators"""
-    pass
 
 
 class TermNode(AstBaseNode):
@@ -539,7 +532,7 @@ class FilterPartNode(OperatorNode):
         if not aVals:
             # Skip empty values
             return
-        elif self.sFilterName in FROM_FILTERS:
+        if self.sFilterName in FROM_FILTERS:
             sCountList = ",".join(aVals[0])
             sSetList = ",".join(aVals[1])
             sInternalFilter = '%s=%s from %s' % (self.sFilterName,
@@ -627,7 +620,7 @@ class BinOpNode(OperatorNode):
         aRight = self.oRight.get_invalid_values()
         if aLeft is None:
             return aRight
-        elif aRight is None:
+        if aRight is None:
             return aLeft
         return aLeft + aRight
 
@@ -637,7 +630,7 @@ class BinOpNode(OperatorNode):
         aRight = self.oRight.get_values()
         if aLeft is None:
             return aRight
-        elif aRight is None:
+        if aRight is None:
             return aLeft
         # Add the extra brackets so the display in the dialog
         # reflects the correct precedence
@@ -652,11 +645,11 @@ class BinOpNode(OperatorNode):
         oRightFilter = self.oRight.get_filter()
         if oLeftFilter is None:
             return oRightFilter
-        elif oRightFilter is None:
+        if oRightFilter is None:
             return oLeftFilter
         if self.oOp == 'and':
             return FilterAndBox([oLeftFilter, oRightFilter])
-        elif self.oOp == 'or':
+        if self.oOp == 'or':
             return FilterOrBox([oLeftFilter, oRightFilter])
         raise RuntimeError('Unknown operator in AST')
 

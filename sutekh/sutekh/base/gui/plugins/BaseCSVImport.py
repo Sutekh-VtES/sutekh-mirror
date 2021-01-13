@@ -82,7 +82,8 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oCountBox, True, True, 0)
 
         oExpansionBox = Gtk.HBox()
-        oExpansionBox.pack_start(Gtk.Label(label="Expansion name (optional):"), True, True, 0)
+        oExpansionBox.pack_start(Gtk.Label(label="Expansion name (optional):"),
+                                 True, True, 0)
         self.oExpansionCombo = self._create_column_selector()
         oExpansionBox.pack_start(self.oExpansionCombo, True, True, 0)
         self.oDlg.vbox.pack_start(oExpansionBox, True, True, 0)
@@ -97,7 +98,8 @@ class BaseCSVImport(BasePlugin):
         self.oDlg.vbox.pack_start(oLabel, True, True, 0)
 
         oCardSetNameBox = Gtk.HBox()
-        oCardSetNameBox.pack_start(Gtk.Label(label="Card Set Name:"), True, True, 0)
+        oCardSetNameBox.pack_start(Gtk.Label(label="Card Set Name:"),
+                                   True, True, 0)
         self.oSetNameEntry = Gtk.Entry()
         oCardSetNameBox.pack_start(self.oSetNameEntry, True, True, 0)
         self.oDlg.vbox.pack_start(oCardSetNameBox, True, True, 0)

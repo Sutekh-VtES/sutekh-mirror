@@ -7,11 +7,13 @@
 # This is a simple editor widget for the card text properties,
 # Adding a undo / redo stack and simple search functionality
 
+"""A widget that holds a text view with a text buffer that implements
+   some useful functions -- undo, redo and search."""
+
 from gi.repository import Gtk
 
 from .SutekhDialog import do_info_message
 from .AutoScrolledWindow import AutoScrolledWindow
-
 
 
 class SearchDialog(Gtk.Dialog):
@@ -82,6 +84,7 @@ class Delete:
 
 
 class UndoEditBuffer(Gtk.TextBuffer):
+    """A text buffer with an automatically managed undo/redo stack"""
 
     def __init__(self):
         super().__init__()

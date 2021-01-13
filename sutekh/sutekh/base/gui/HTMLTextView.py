@@ -646,7 +646,7 @@ class HTMLTextView(Gtk.TextView):
 
     def display_html(self, fHTMLInput):
         """Display the HTML from the file-like object fHTMLInput.
-        
+
            We assume the file is opened in binary mode and returns
            utf-8 encoded data."""
         oBuffer = self.get_buffer()

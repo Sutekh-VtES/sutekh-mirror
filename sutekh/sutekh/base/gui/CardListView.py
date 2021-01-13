@@ -46,7 +46,8 @@ class CardListView(FilteredView):
         # Key combination for searching
 
         # Drag and Drop
-        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                             Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
 
         self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)

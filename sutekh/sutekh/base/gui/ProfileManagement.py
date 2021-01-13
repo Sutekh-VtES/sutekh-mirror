@@ -117,7 +117,7 @@ class ProfileMngDlg(NotebookDialog):
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             ("Edit Profile", self.RESPONSE_EDIT,
              "Delete", self.RESPONSE_DELETE,
-              "_Close", Gtk.ResponseType.CLOSE
+             "_Close", Gtk.ResponseType.CLOSE
             ))
 
         self.__oParent = oParent

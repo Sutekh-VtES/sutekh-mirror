@@ -188,6 +188,7 @@ class BaseOpeningDraw(BasePlugin):
     aModelsSupported = (PhysicalCardSet,)
     # responses for the hand dialog
     class Choice(IntEnum):
+        """Choices we offer the user on the window"""
         BACK = 1
         FORWARD = 2
         BREAKDOWN = 3
@@ -283,12 +284,14 @@ class BaseOpeningDraw(BasePlugin):
         oShowButton = oDialog.add_button('Show details', self.Choice.BREAKDOWN)
         oDialog.action_area.pack_start(Gtk.VSeparator(), True, True, 0)
         oBackButton = oDialog.add_button("Back", self.Choice.BACK)
-        oBackImage = Gtk.Image.new_from_icon_name('go-previous', Gtk.IconSize.BUTTON)
+        oBackImage = Gtk.Image.new_from_icon_name('go-previous',
+                                                  Gtk.IconSize.BUTTON)
         oBackButton.set_image(oBackImage)
         oBackButton.set_always_show_image(True)
         oBackButton.set_sensitive(False)
         oForwardButton = oDialog.add_button("Forward", self.Choice.FORWARD)
-        oForwardImage = Gtk.Image.new_from_icon_name('go-next', Gtk.IconSize.BUTTON)
+        oForwardImage = Gtk.Image.new_from_icon_name('go-next',
+                                                     Gtk.IconSize.BUTTON)
         oForwardButton.set_image(oForwardImage)
         oForwardButton.set_always_show_image(True)
         oDialog.add_button("_Close", Gtk.ResponseType.CLOSE)

@@ -59,7 +59,7 @@ class CardSetHolder:
         if sName not in self._dCards or self._dCards[sName] < iCnt:
             raise RuntimeError("Not enough of card '%s' to remove '%d'."
                                % (sName, iCnt))
-        elif sName not in self._dCardExpansions \
+        if sName not in self._dCardExpansions \
                 or tExp not in self._dCardExpansions[sName] \
                 or self._dCardExpansions[sName][tExp] < iCnt:
             raise RuntimeError("Not enough of card '%s' from expansion"

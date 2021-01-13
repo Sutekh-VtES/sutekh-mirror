@@ -75,7 +75,8 @@ class BaseImport(BasePlugin):
 
         self.oUri = Gtk.Entry()
         self.oUri.set_max_length(150)
-        self.oUri.connect("activate", self.handle_response, Gtk.ResponseType.OK)
+        self.oUri.connect("activate", self.handle_response,
+                          Gtk.ResponseType.OK)
         self.oDlg.vbox.pack_start(self.oUri, False, True, 0)
 
         self.oDlg.vbox.pack_start(Gtk.Label(label="OR"), False, True, 0)
@@ -93,7 +94,8 @@ class BaseImport(BasePlugin):
 
         # If there's a 'Guess File Format' option, set it to the first button
         if GUESS_FILE_FORMAT in self.PARSERS:
-            self._oFirstBut = Gtk.RadioButton(group=None, label=GUESS_FILE_FORMAT)
+            self._oFirstBut = Gtk.RadioButton(group=None,
+                                              label=GUESS_FILE_FORMAT)
             self._oFirstBut.set_active(True)
             self.oDlg.vbox.pack_start(self._oFirstBut, False, True, 0)
 
