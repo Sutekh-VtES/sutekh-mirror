@@ -38,7 +38,6 @@ class SutekhLogHandler(Handler):
 
     def emit(self, _oRecord):
         """Default emit handler"""
-        pass
 
 
 class SutekhHTMLLogHandler(SutekhLogHandler):

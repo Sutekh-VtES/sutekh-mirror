@@ -123,7 +123,8 @@ class BaseDBUpgradeManager:
 
     def old_database_count(self, oConn):
         """Check number of items in old DB for progress bars, etc."""
-        raise NotImplementedError('Implement old_database_count')  # pragma: no cover
+        raise NotImplementedError(
+            'Implement old_database_count')  # pragma: no cover
 
     def _get_card_counts(self, oConn):
         """Get the count of AbstractCards, PhysicalCards and PhysicalCardSets
@@ -135,7 +136,8 @@ class BaseDBUpgradeManager:
 
     def cur_database_count(self, oConn):
         """Check number of items in upgraded DB for progress bars, etc."""
-        raise NotImplementedError('Implement cur_database_count')  # pragma: no cover
+        raise NotImplementedError(
+            'Implement cur_database_count')  # pragma: no cover
 
     def _copy_rarity(self, oOrigConn, oTrans):
         """Copy rarity tables, assuming same version"""
@@ -220,7 +222,9 @@ class BaseDBUpgradeManager:
                          " table. You will need to reimport the cardlist"
                          " information."]
         else:
-            return (False, ["Unknown Version for Metadata"])  # pragma: no cover
+            return (
+                False,
+                ["Unknown Version for Metadata"])  # pragma: no cover
         return (True, aMessages)
 
     def _copy_print_properties(self, oOrigConn, oTrans):
@@ -250,7 +254,9 @@ class BaseDBUpgradeManager:
                          " table. You will need to reimport the cardlist"
                          " information."]
         else:
-            return (False, ["Unknown Version for PrintingProperty"])  # pragma: no cover
+            return (
+                False,
+                ["Unknown Version for PrintingProperty"])  # pragma: no cover
         return (True, aMessages)
 
     def _upgrade_printing(self, _oOrigConn, _oTrans, _oVer):
@@ -479,7 +485,8 @@ class BaseDBUpgradeManager:
 
     def _make_abs_card(self, oOldCard, oTrans):
         """Copy the details of the old card to a new card."""
-        raise NotImplementedError("Implement _make_abs_card")  # pragma: no cover
+        raise NotImplementedError(
+            "Implement _make_abs_card")  # pragma: no cover
 
     def _copy_old_abstract_card(self, oOrigConn, oTrans, oLogger, oVer):
         """Copy AbstractCard, upgrading as needed"""
@@ -648,7 +655,8 @@ class BaseDBUpgradeManager:
     def drop_old_tables(self, _oConn):
         """Drop tables which are no longer used from the database.
            Needed for postgres and other such things."""
-        raise NotImplementedError("implement drop_old_tables")  # pragma: no cover
+        raise NotImplementedError(
+            "implement drop_old_tables")  # pragma: no cover
 
     def copy_database(self, oOrigConn, oDestConnn, oLogHandler=None):
         """Copy the database, with no attempts to upgrade.

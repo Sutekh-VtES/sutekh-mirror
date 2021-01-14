@@ -71,13 +71,14 @@ def do_complaint_buttons(sMessage, oType, aButtonInfo, bMarkup=False):
 
 def do_complaint_error(sMessage):
     """Error dialog with close button"""
-    return do_complaint(sMessage, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, False)
+    return do_complaint(sMessage, Gtk.MessageType.ERROR,
+                        Gtk.ButtonsType.CLOSE, False)
 
 
 def do_complaint_warning(sMessage):
     """Warning dialog with OK and CANCEL buttons"""
-    return do_complaint(sMessage, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK_CANCEL,
-                        False)
+    return do_complaint(sMessage, Gtk.MessageType.WARNING,
+                        Gtk.ButtonsType.OK_CANCEL, False)
 
 
 def do_info_message(sMessage, bMarkup=True):
@@ -86,7 +87,8 @@ def do_info_message(sMessage, bMarkup=True):
        We default to markup enabled as that's generally useful in this case
        and we're usually not including tracebacks or other text that will
        break the markup parser."""
-    return do_complaint(sMessage, Gtk.MessageType.INFO, Gtk.ButtonsType.CLOSE, bMarkup)
+    return do_complaint(sMessage, Gtk.MessageType.INFO,
+                        Gtk.ButtonsType.CLOSE, bMarkup)
 
 
 class DetailDialog(SutekhDialog):
@@ -100,7 +102,8 @@ class DetailDialog(SutekhDialog):
             oButtons=("_Close", Gtk.ResponseType.CLOSE))
         oHBox = Gtk.HBox(False, 2)
         oMessageBox = Gtk.VBox(homogeneous=False, spacing=2)
-        oImage = Gtk.Image.new_from_icon_name('dialog-error', Gtk.IconSize.DIALOG)
+        oImage = Gtk.Image.new_from_icon_name('dialog-error',
+                                              Gtk.IconSize.DIALOG)
         oImage.set_alignment(0, 0)
         oHBox.pack_start(oImage, False, True, 0)
         oInfo = Gtk.Label()

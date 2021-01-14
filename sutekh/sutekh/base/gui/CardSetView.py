@@ -258,7 +258,7 @@ class CardSetView(CardListView):
                                                           iXPos, iYPos, oData,
                                                           oInfo, oTime)
                 return
-            elif not self._oModel.bEditable:
+            if not self._oModel.bEditable:
                 # Don't accept cards when not editable
                 bSkip = True
             elif sSource == self.sDragPrefix:
@@ -391,56 +391,10 @@ class CardSetView(CardListView):
 
     def _determine_edit_colour(self):
         """Determine which colour to use for the editable hint"""
-        def _compare_colors(oColor1, oColor2):
-            """Compare the RGB values for 2 Gdk.Colors. Return True if
-               they're the same, false otherwise."""
-            return oColor1.to_string() == oColor2.to_string()
-
-        # oCurStyle = self.rc_get_style()
-        # Styles don't seem to be applied to TreeView text, so we default
-        # to black text for non-editable, and work out editable from the
-        # style
+        # For now we go with black and red - at some point we should
+        # revist checking the theme / background, but that's more
+        # complicated with gtk3.
         self.oCellColor = Gdk.RGBA(0, 0, 0, 1)
-        # oCurBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
-        # self.set_name('editable_view')
-        # oDefaultSutekhStyle = Gtk.rc_get_style_by_paths(self.get_settings(),
-        #                                                '', self.class_path(),
-        #                                                self)
-        # We want the class style for this widget, ignoring set_name effects
-        # oSpecificStyle = self.rc_get_style()
-        #if (oSpecificStyle == oDefaultSutekhStyle or
-        #        oDefaultSutekhStyle is None):
-        #    # No specific style set
-        #    sColour = 'red'
-        #    if _compare_colors(Gdk.color_parse(sColour),
-        #                       oCurStyle.fg[Gtk.StateFlags.NORMAL]):
-        #        sColour = 'green'
-        #    # FIXME: rc_parse_string doesn't play nicely with
-        #    # theme changes, which cause a rcfile reparse.
-        #    sStyleInfo = """
-        #    style "internal_sutekh_editstyle" {
-        #        fg[NORMAL] = "%(colour)s"
-        #        }
-        #    widget "%(path)s" style "internal_sutekh_editstyle"
-        #    """ % {'colour': sColour, 'path': self.path()}
-        #    Gtk.rc_parse_string(sStyleInfo)
-        #    # Need to force re-assesment of styles
-        #    self.set_name('editable_view')
-        #oCurStyle = self.rc_get_style()
-        # Force a hint on the number column as well
-        # oEditColor = oCurStyle.fg[Gtk.StateFlags.NORMAL]
-        # oEditBackColor = oCurStyle.base[Gtk.StateFlags.NORMAL]
-        #if not _compare_colors(oEditColor, self.oCellColor) or \
-        #        not _compare_colors(oEditBackColor, oCurBackColor):
-        #    # Visiually distinct, so honour user's choice
-        #     self._oModel.oEditColour = oEditColor
-        #else:
-        #    # If the theme change isn't visually distinct here, we go
-        #    # with red  as the default - this is safe,
-        #    # since CellRenderers aren't
-        #    # themed, so the default color will not be red
-        #    # (famous last words)
-        #    # If the default background color is red, too bad
         self._oModel.oEditColour = Gdk.RGBA()
         self._oModel.oEditColour.parse('red')
 

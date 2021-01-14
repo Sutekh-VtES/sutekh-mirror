@@ -299,11 +299,13 @@ def fix_gui_env():
         # Fix paths for windows gtk loaders
         if sys.platform.startswith('win'):
             os.environ.setdefault('GDK_PIXBUF_MODULEDIR',
-                                  os.path.join(sPrefix, 'lib', 'gdk-pixbuf-2.0',
+                                  os.path.join(sPrefix, 'lib',
+                                               'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders'))
         elif sys.platform.startswith('darwin'):
             # MacOS seems to prefer this setting
             os.environ.setdefault('GDK_PIXBUF_MODULE_FILE',
-                                  os.path.join(sPrefix, 'lib', 'gdk-pixbuf-2.0',
+                                  os.path.join(sPrefix, 'lib',
+                                               'gdk-pixbuf-2.0',
                                                '2.10.0', 'loaders.cache'))
             os.environ['DYLD_FALLBACK_LIBRARY_PATH'] = sPrefix

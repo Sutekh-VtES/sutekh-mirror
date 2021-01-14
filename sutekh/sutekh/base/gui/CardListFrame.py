@@ -26,7 +26,6 @@ class CardListFrame(BasicFrame):
         self._oConfig = oMainWindow.config_file
 
         # Subclasses will override these
-        self._oController = None
         self._oMenu = None
 
     # pylint: disable=protected-access

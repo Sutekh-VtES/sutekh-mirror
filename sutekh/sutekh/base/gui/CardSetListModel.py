@@ -756,7 +756,7 @@ class CardSetCardListModel(CardListModel):
                         iIterCnt < 200:
                     # Restrict filter to the cards in this set, to save time
                     # oCardIter.count() > 0, due to check in grouped_card_iter
-                    aAbsCardIds = set([IAbstractCard(x).id for x in oCardIter])
+                    aAbsCardIds = {IAbstractCard(x).id for x in oCardIter}
                     self._dCache['cardset cards filter'] = CachedFilter(
                         MultiSpecificCardIdFilter(aAbsCardIds))
                     aFilters.append(self._dCache['cardset cards filter'])

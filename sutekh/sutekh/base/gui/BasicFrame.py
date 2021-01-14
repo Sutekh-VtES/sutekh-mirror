@@ -27,10 +27,10 @@ LABEL_CSS = b"""
 def pack_resizable(oBox, oWidget):
     """Pack a widget into oBox so it is horizontally resizable without
        a visible scrollbar."""
-    Scrollable = Gtk.ScrolledWindow()
-    Scrollable.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.NEVER)
-    Scrollable.add(oWidget)
-    oBox.pack_start(Scrollable, False, False, 0)
+    oScrollable = Gtk.ScrolledWindow()
+    oScrollable.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.NEVER)
+    oScrollable.add(oWidget)
+    oBox.pack_start(oScrollable, False, False, 0)
     oBox.show_all()
 
 
@@ -63,8 +63,10 @@ class BasicFrame(Gtk.Frame):
 
         self._bNeedReload = False
 
-        self._oTitle.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
-        self._oTitle.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        self._oTitle.drag_dest_set(Gtk.DestDefaults.ALL, [],
+                                   Gdk.DragAction.COPY)
+        self._oTitle.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                                     Gdk.DragAction.COPY)
 
         self._oTitle.drag_source_add_text_targets()
         self._oTitle.drag_dest_add_text_targets()
@@ -88,6 +90,9 @@ class BasicFrame(Gtk.Frame):
                               Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.set_unique_id()
+
+        # subclasses will override this if required
+        self._oController = None
 
     # pylint: disable=protected-access
     # explicitly allow access to these values via thesep properties
@@ -137,7 +142,8 @@ class BasicFrame(Gtk.Frame):
 
     def set_drag_handler(self, oWidget):
         """Enable dragging of the frame via given widget"""
-        oWidget.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        oWidget.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                                Gdk.DragAction.COPY)
         oWidget.drag_source_add_text_targets()
         oWidget.connect('drag-data-get', self.create_drag_data)
         oWidget.connect_after('drag-begin', self.make_drag_icon)
@@ -192,8 +198,8 @@ class BasicFrame(Gtk.Frame):
     def cleanup(self, _bQuit=False):
         """Hook for cleanup actions when the frame is removed."""
         # do per-plugin cleanup
-        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, "update_to_new_db",
-                               self.update_to_new_db)
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG,
+                               "update_to_new_db", self.update_to_new_db)
         for oPlugin in self._aPlugins:
             oPlugin.cleanup()
         # Don't hold references to the plugins

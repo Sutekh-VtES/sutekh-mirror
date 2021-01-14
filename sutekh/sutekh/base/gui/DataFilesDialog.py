@@ -174,7 +174,7 @@ class DataFilesDialog(SutekhDialog):
                 if bUseZip and sName != COMBINED_ZIP:
                     # Only take from the zip file entry
                     continue
-                elif not bUseZip and sName == COMBINED_ZIP:
+                if not bUseZip and sName == COMBINED_ZIP:
                     # Skip the zip file settings
                     continue
                 if oWidgets.oUrlButton and oWidgets.oUrlButton.get_active():

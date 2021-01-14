@@ -28,7 +28,6 @@ class FilteredViewMenu(SutekhMenu):
 
     def cleanup(self):
         """Cleanup hook for menus"""
-        pass
 
     def create_filter_menu(self):
         """Create the Filter Menu."""

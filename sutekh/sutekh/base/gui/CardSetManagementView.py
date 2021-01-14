@@ -31,7 +31,8 @@ class CardSetManagementView(CardSetsListView):
         self.set_select_single()
 
         # Need this so we can drag the pane in the same way as the card list
-        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                             Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
 
         self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
@@ -83,7 +84,7 @@ class CardSetManagementView(CardSetsListView):
                                                       iXPos, iYPos, oData,
                                                       oInfo, oTime)
             return
-        elif sSource == "Card Set:":
+        if sSource == "Card Set:":
             # Find the card set at iXPos, iYPos
             # Need to do this to avoid headers and such confusing us
             oPath = self.get_path_at_pointer(oContext.get_device())
@@ -117,7 +118,8 @@ class CardSetManagementView(CardSetsListView):
 
     def get_path_at_pointer(self, oDevice):
         """Get the path at the current pointer position"""
-        _oWin, iXPos, iYPos, _oMask = self.get_bin_window().get_device_position(oDevice)
+        _oWin, iXPos, iYPos, _oMask = \
+            self.get_bin_window().get_device_position(oDevice)
         tRes = self.get_path_at_pos(iXPos, iYPos)
         if tRes:
             return tRes[0]

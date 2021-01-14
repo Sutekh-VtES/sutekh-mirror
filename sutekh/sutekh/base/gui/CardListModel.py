@@ -398,9 +398,9 @@ class CardListModel(Gtk.TreeStore):
            This handles the cases where either filter is None properly."""
         if self.basefilter is None and oOtherFilter is None:
             return NullFilter()
-        elif self.basefilter is None:
+        if self.basefilter is None:
             return oOtherFilter
-        elif oOtherFilter is None:
+        if oOtherFilter is None:
             return self.basefilter
         return FilterAndBox([self.basefilter, oOtherFilter])
 

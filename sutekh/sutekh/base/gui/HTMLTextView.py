@@ -179,7 +179,7 @@ class HtmlHandler(HTMLParser):
             pass
         else:
             oAttrs = self._get_current_attributes()
-            oTag.set_property("scale", iScale / oAttrs.font_scale)
+            oTag.set_property("scale", iScale / oAttrs.font_size)
             return
         self._parse_length(sValue, True, self.__parse_font_size_cb, oTag)
 

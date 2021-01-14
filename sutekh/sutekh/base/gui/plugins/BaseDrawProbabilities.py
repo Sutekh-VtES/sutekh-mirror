@@ -233,11 +233,14 @@ class BaseDrawProbPlugin(BasePlugin):
 
         oRecalcButton.connect('clicked', self._fill_table)
 
-        oWidgetBox.pack_start(Gtk.Label('columns in table : '), True, True, 0)
+        oWidgetBox.pack_start(Gtk.Label('columns in table : '),
+                              True, True, 0)
         oWidgetBox.pack_start(oNumDraws, True, True, 0)
-        oWidgetBox.pack_start(Gtk.Label(' Step between columns : '), True, True, 0)
+        oWidgetBox.pack_start(Gtk.Label(' Step between columns : '),
+                              True, True, 0)
         oWidgetBox.pack_start(oStepSize, True, True, 0)
-        oWidgetBox.pack_start(Gtk.Label(' cards of interest : '), True, True, 0)
+        oWidgetBox.pack_start(Gtk.Label(' cards of interest : '),
+                              True, True, 0)
         oWidgetBox.pack_start(oCardToDrawCount, True, True, 0)
         oWidgetBox.pack_start(Gtk.Label(' : '), True, True, 0)
         oWidgetBox.pack_start(oRecalcButton, True, True, 0)
@@ -261,10 +264,12 @@ class BaseDrawProbPlugin(BasePlugin):
         oResultsBox = Gtk.VBox(homogeneous=False, spacing=2)
         oResultsBox.pack_start(oTitleLabel, False, False, 0)
 
-        oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable), True, True, 0)
+        oResultsBox.pack_start(AutoScrolledWindow(self.oResultsTable),
+                               True, True, 0)
 
         oDialog.vbox.pack_start(oMainTitle, False, False, 0)
-        oDialog.vbox.pack_start(Gtk.Label('Card Probablities'), False, False, 0)
+        oDialog.vbox.pack_start(Gtk.Label('Card Probablities'),
+                                False, False, 0)
         oDialog.vbox.pack_start(oDescLabel, False, False, 0)
         oDialog.vbox.pack_start(oWidgetBox, False, False, 0)
         oDialog.vbox.pack_start(oResultsBox, True, True, 0)
@@ -302,7 +307,8 @@ class BaseDrawProbPlugin(BasePlugin):
         if iOffset > 0:
             self.oResultsTable.attach(Gtk.VSeparator(), 3, 4, 2, iNumRows,
                                       xpadding=0, ypadding=0,
-                                      xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                      xoptions=Gtk.AttachOptions.FILL,
+                                      yoptions=Gtk.AttachOptions.FILL)
             oLabel = Gtk.Label('Count')
             self.oResultsTable.attach(oLabel, 2, 3, 2, 3)
             self._setup_count_rows()
@@ -310,20 +316,24 @@ class BaseDrawProbPlugin(BasePlugin):
                                   4 + iOffset, 5 + iOffset, 2, 3)
         self.oResultsTable.attach(Gtk.HSeparator(), iOffset, iNumCols,
                                   1, 2, xpadding=0, ypadding=0,
-                                  xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                  xoptions=Gtk.AttachOptions.FILL,
+                                  yoptions=Gtk.AttachOptions.FILL)
         self.oResultsTable.attach(Gtk.VSeparator(), 1, 2, 1, iNumRows,
                                   xpadding=0, ypadding=0,
-                                  xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                  xoptions=Gtk.AttachOptions.FILL,
+                                  yoptions=Gtk.AttachOptions.FILL)
         self.oResultsTable.attach(Gtk.VSeparator(), 3 + iOffset, 4 + iOffset,
                                   2, iNumRows, xpadding=0, ypadding=0,
-                                  xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                  xoptions=Gtk.AttachOptions.FILL,
+                                  yoptions=Gtk.AttachOptions.FILL)
         for iCol in range(1, self.iNumSteps):
             oLabel = Gtk.Label('+ %d' % (iCol * self.iDrawStep))
             iTableCol = 2 * iCol + 3 + iOffset
             self.oResultsTable.attach(Gtk.VSeparator(), iTableCol,
                                       iTableCol + 1, 2, iNumRows,
                                       xpadding=0, ypadding=0,
-                                      xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                      xoptions=Gtk.AttachOptions.FILL,
+                                      yoptions=Gtk.AttachOptions.FILL)
             self.oResultsTable.attach(oLabel, iTableCol + 1, iTableCol + 2,
                                       2, 3)
 
@@ -335,7 +345,8 @@ class BaseDrawProbPlugin(BasePlugin):
             self.oResultsTable.attach(Gtk.HSeparator(), 1 + iOffset,
                                       iNumCols, iTableRow, iTableRow + 1,
                                       xpadding=0, ypadding=0,
-                                      xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                      xoptions=Gtk.AttachOptions.FILL,
+                                      yoptions=Gtk.AttachOptions.FILL)
             self.oResultsTable.attach(oLabel, 2 + iOffset, 3 + iOffset,
                                       iTableRow + 1, iTableRow + 2)
         # Fill in zero row
@@ -365,7 +376,8 @@ class BaseDrawProbPlugin(BasePlugin):
         for iCardRow in range(self.iCardsToDraw + 1):
             self.oResultsTable.attach(Gtk.HSeparator(), 1, 3, iBottomRow,
                                       iBottomRow + 1, xpadding=0, ypadding=0,
-                                      xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+                                      xoptions=Gtk.AttachOptions.FILL,
+                                      yoptions=Gtk.AttachOptions.FILL)
             oLabel = Gtk.Label('%d' % iCardRow)
             iNumRows = len([x for x in self.aAllChoices if
                             sum(x) == iCardRow])

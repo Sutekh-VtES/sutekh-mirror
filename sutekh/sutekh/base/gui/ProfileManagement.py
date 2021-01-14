@@ -156,7 +156,7 @@ class ProfileMngDlg(NotebookDialog):
         if iResponse == self.RESPONSE_EDIT:
             self._edit_profile()
             return self.run()
-        elif iResponse == self.RESPONSE_DELETE:
+        if iResponse == self.RESPONSE_DELETE:
             self._delete_profile()
             return self.run()
         # else CLOSE was pressed, so exit
@@ -192,41 +192,40 @@ class ProfileMngDlg(NotebookDialog):
         """Return a suitable 'profile in use' message for profile deletion"""
         if sType in (CARDSET_LIST, FULL_CARDLIST):
             return 'Profile is in use. Really delete?'
-        else:
-            # card set pane, so find names
-            aOpenPanes = []
-            aClosedPanes = []
-            for sId in aPanes:
-                if sId.startswith('cs'):
-                    iCSid = int(sId[2:])  # cs<num>
-                    # lookup name for card set id
-                    try:
-                        oCS = PhysicalCardSet.get(iCSid)
-                    except SQLObjectNotFound:
-                        # Remove defunct profile entry from the config
-                        # file
-                        self.__oConfig. clear_cardset_profile(sId)
-                        continue
-                    aCSPanes = self.__oParent.find_cs_pane_by_set_name(
-                        oCS.name)
-                    if aCSPanes:
-                        for oPane in aCSPanes:
-                            aOpenPanes.append(oPane.title)
-                    else:
-                        aClosedPanes.append(oCS.name)
+        # card set pane, so find names
+        aOpenPanes = []
+        aClosedPanes = []
+        for sId in aPanes:
+            if sId.startswith('cs'):
+                iCSid = int(sId[2:])  # cs<num>
+                # lookup name for card set id
+                try:
+                    oCS = PhysicalCardSet.get(iCSid)
+                except SQLObjectNotFound:
+                    # Remove defunct profile entry from the config
+                    # file
+                    self.__oConfig. clear_cardset_profile(sId)
+                    continue
+                aCSPanes = self.__oParent.find_cs_pane_by_set_name(
+                    oCS.name)
+                if aCSPanes:
+                    for oPane in aCSPanes:
+                        aOpenPanes.append(oPane.title)
                 else:
-                    iPaneId = int(sId[4:])  # pane<num>
-                    oCSFrame = self.__oParent.find_pane_by_id(iPaneId)
-                    aOpenPanes.append(oCSFrame.title)
-            sMesg = "This profile is in use. Really delete?\n"
-            if aOpenPanes:
-                sMesg += ('\nThe following open panes reference this '
-                          ' profile\n' + '\n'.join(aOpenPanes))
-            if aClosedPanes:
-                sMesg += ('\nThe following card closed card sets '
-                          'reference this profile\n' +
-                          '\n'.join(aClosedPanes))
-            return sMesg
+                    aClosedPanes.append(oCS.name)
+            else:
+                iPaneId = int(sId[4:])  # pane<num>
+                oCSFrame = self.__oParent.find_pane_by_id(iPaneId)
+                aOpenPanes.append(oCSFrame.title)
+        sMesg = "This profile is in use. Really delete?\n"
+        if aOpenPanes:
+            sMesg += ('\nThe following open panes reference this '
+                      ' profile\n' + '\n'.join(aOpenPanes))
+        if aClosedPanes:
+            sMesg += ('\nThe following card closed card sets '
+                      'reference this profile\n' +
+                      '\n'.join(aClosedPanes))
+        return sMesg
 
     def _delete_profile(self):
         """Delete the given profile"""

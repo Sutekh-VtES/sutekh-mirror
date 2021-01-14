@@ -107,7 +107,8 @@ class FilterEditorToolbar(CustomDragIconView):
         for oFilterType in sorted(get_filters_for_type(self._sFilterType),
                                   key=lambda x: x.description):
             aFilters.append((oFilterType.description, oFilterType.keyword))
-        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                             Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
         self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.drag_dest_add_text_targets()
@@ -185,7 +186,8 @@ class FilterValuesBox(Gtk.VBox):
     def _set_drop_for_widget(self, oWidget):
         """Set the correct drop dest behaviour for the given widget"""
         oViewWidget = self._get_view_widget(oWidget)
-        oViewWidget.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+        oViewWidget.drag_dest_set(Gtk.DestDefaults.ALL, [],
+                                  Gdk.DragAction.COPY)
         oViewWidget.drag_dest_add_text_targets()
         oViewWidget.connect('drag-data-received', self.drag_drop_handler)
 
@@ -195,7 +197,8 @@ class FilterValuesBox(Gtk.VBox):
     def _set_drag_for_widget(self, oWidget, fCallback, oFilter):
         """Set the correct drag source behaviour for the widget"""
         oViewWidget = self._get_view_widget(oWidget)
-        oViewWidget.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        oViewWidget.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                                    Gdk.DragAction.COPY)
         oViewWidget.drag_source_add_text_targets()
         oViewWidget.connect('drag-data-get', fCallback, oFilter, oWidget)
 
@@ -837,7 +840,8 @@ class FilterBoxModelEditView(CustomDragIconView):
                                      foreground_rgba=2)
         self.append_column(oColumn)
 
-        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.COPY)
+        self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [],
+                             Gdk.DragAction.COPY)
         self.drag_source_add_text_targets()
 
         self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
@@ -876,7 +880,7 @@ class FilterBoxModelEditView(CustomDragIconView):
         if oFilterObj is None:
             self._oValuesWidget.set_widget(None, self)
             return
-        elif oFilterObj.bDisabled:
+        if oFilterObj.bDisabled:
             self._oValuesWidget.set_widget(None, self)
         else:
             self._oValuesWidget.set_widget(oFilterObj, self)
@@ -1115,7 +1119,8 @@ class FilterBoxModelEditView(CustomDragIconView):
                 # Set highlight on the root of the tree
                 oIter = self._oStore.get_iter_first()
                 oDropPath = self._oStore.get_path(oIter)
-                self.set_drag_dest_row(oDropPath, Gtk.TreeViewDropPosition.AFTER)
+                self.set_drag_dest_row(oDropPath,
+                                       Gtk.TreeViewDropPosition.AFTER)
             if bFixHighlight:
                 self._fix_highlight(tCurTarget)
         # Ensure we don't propogate this signal further
@@ -1131,10 +1136,10 @@ class FilterBoxModelEditView(CustomDragIconView):
             if not hasattr(oDropFilter, 'sFilterName'):
                 # Can't drop values onto a box filter
                 return False
-            elif oDropFilter.iValueType not in LIST_TYPES:
+            if oDropFilter.iValueType not in LIST_TYPES:
                 # Not sensible to drop onto entry or null filters
                 return False
-            elif sFilterName != oDropFilter.sFilterName:
+            if sFilterName != oDropFilter.sFilterName:
                 # Only drag between the same filter types
                 return False
             return True
@@ -1187,13 +1192,13 @@ class FilterBoxModelEditView(CustomDragIconView):
             if not hasattr(oDropFilter, 'sFilterName'):
                 # Can't drop values onto a box filter
                 return False
-            elif oDropFilter.iValueType not in LIST_TYPES:
+            if oDropFilter.iValueType not in LIST_TYPES:
                 # Not sensible to drop onto entry or null filters
                 return False
-            elif oSourceFilter.sFilterName != oDropFilter.sFilterName:
+            if oSourceFilter.sFilterName != oDropFilter.sFilterName:
                 # Only drag between the same filter types
                 return False
-            elif oSourceFilter is oDropFilter:
+            if oSourceFilter is oDropFilter:
                 # Don't drag onto ourselves
                 return False
             return True

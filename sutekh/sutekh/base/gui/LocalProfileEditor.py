@@ -45,7 +45,8 @@ class LocalProfileEditor(SutekhDialog):
 
         self.__oOptionsTable = PreferenceTable(aOptions,
                                                oConfig.get_validator())
-        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable), True, True, 0)
+        self.vbox.pack_start(AutoScrolledWindow(self.__oOptionsTable),
+                             True, True, 0)
 
         self.set_default_size(700, 550)
         self.connect("response", self._button_response)

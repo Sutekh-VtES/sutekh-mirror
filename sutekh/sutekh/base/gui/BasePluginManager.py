@@ -135,16 +135,20 @@ class PluginConfigFileListener:
     # no point in calling __init__, since it doesn't exist
     def __init__(self, oPlugin):
         self._oPlugin = oPlugin
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'profile_option_changed',
                              self.profile_option_changed)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
+                             'profile_changed',
                              self.profile_changed)
 
     def cleanup(self):
         """Unhook from the message bus"""
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_option_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'profile_option_changed',
                                self.profile_option_changed)
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
+        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
+                               'profile_changed',
                                self.profile_changed)
 
     def profile_option_changed(self, sType, sProfile, sKey):
@@ -204,7 +208,8 @@ class BasePlugin:
             self._oListener = PluginConfigFileListener(self)
         MessageBus.subscribe(MessageBus.Type.DATABASE_MSG, 'update_to_new_db',
                              self.update_to_new_db)
-        MessageBus.subscribe(MessageBus.Type.DATABASE_MSG, 'prepare_for_db_update',
+        MessageBus.subscribe(MessageBus.Type.DATABASE_MSG,
+                             'prepare_for_db_update',
                              self.prepare_for_db_update)
 
     # pylint: disable=protected-access
@@ -231,7 +236,6 @@ class BasePlugin:
         """Handle any tweaks to the config that need to happen before
            register_config, but that can't be specified statically."""
         # Default is to do nothing here
-        pass
 
     @classmethod
     def register_with_config(cls, oConfig):
@@ -355,9 +359,11 @@ class BasePlugin:
            Used for things like database signal cleanup, etc."""
         if self._oListener:
             self._oListener.cleanup()
-        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, 'update_to_new_db',
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG,
+                               'update_to_new_db',
                                self.update_to_new_db)
-        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG, 'prepare_for_db_update',
+        MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG,
+                               'prepare_for_db_update',
                                self.prepare_for_db_update)
         return None
 
@@ -385,31 +391,26 @@ class BasePlugin:
 
     def do_update(self):
         """Called to handle any pending updates."""
-        pass
 
     # pylint: enable=no-self-use
 
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
-        pass
 
     def update_to_new_db(self):
         """Plugins should override this to be informed of database changes."""
-        pass
 
     def prepare_for_db_update(self):
         """Hook for any preparations needed before a database upgrade.
 
            Mainly useful for disconnecting database signals and such
            during a database upgrade"""
-        pass
 
     def run_checks(self):
         """Hook for missing data / debugging / etc. checks for the plugin.
 
            This is assumed to be run after setup and plugin initialisation,
            but should not depend on specific application state."""
-        pass
 
     # Utility Functions / Internal Plugin API
     # This functions are for use by the plugins, and should not be
