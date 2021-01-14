@@ -209,16 +209,19 @@ class BaseZipFileWrapper:
 
     def _check_forced_reparent(self, oIdParser):
         """Do we need to force the parent of this to be 'My Collection'?"""
-        raise NotImplementedError("implement _check_forced_reparent")
+        raise NotImplementedError(
+            "implement _check_forced_reparent")  # pragma: no cover
 
     def _should_force_reparent(self, oIdParser):
         """Check if we may need to force reparenting of card sets to
            'My Collection'"""
-        raise NotImplementedError("implement _should_force_reparent")
+        raise NotImplementedError(
+            "implement _should_force_reparent")  # pragma: no cover
 
     def _check_refresh(self, oIdParser):
         """Does this require we refresh the card set list?"""
-        raise NotImplementedError("implement _check_refresh")
+        raise NotImplementedError(
+            "implement _check_refresh")  # pragma: no cover
 
     def do_dump_all_to_zip(self, oLogHandler=None):
         """Dump all the database contents to the zip file"""

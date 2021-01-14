@@ -47,7 +47,7 @@ from sutekh.SutekhCli import main_with_args
 
 # start() method for use when working in the Python interpreter
 # pylint: disable=dangerous-default-value
-def start(aArgs=['sutekh']):
+def start(aArgs=['sutekh']):  # pragma: no cover
     """Initialise SQLObject connection and so forth, for working in the
        python interpreter"""
     main_with_args(aArgs)

@@ -38,7 +38,7 @@ class BaseState:
 
     def transition(self, sTag, dAttr):
         """Transition from one state to another"""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def data(self, sData):
         """Add data to the state"""
@@ -107,10 +107,10 @@ class SutekhBaseHTMLParser(HTMLParser):
         self._oState.data(sData)
 
     def handle_charref(self, sName):
-        pass
+        pass  # pragma: no cover
 
     def handle_entityref(self, sName):
-        pass
+        pass  # pragma: no cover
 
     # pylint: enable=missing-docstring, arguments-differ
 

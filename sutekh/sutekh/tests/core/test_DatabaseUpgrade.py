@@ -1567,7 +1567,8 @@ class DatabaseUpgradeTests(SutekhTest):
 
         sDbFile = self._create_tmp_file()
         # windows is different, since we don't have a starting / for the path
-        if sys.platform.startswith("win"):
+        # We exclude this because of the platform specific branches
+        if sys.platform.startswith("win"):  # pragma: no cover
             oNewConn = connectionForURI("sqlite:///%s" % sDbFile)
         else:
             oNewConn = connectionForURI("sqlite://%s" % sDbFile)
