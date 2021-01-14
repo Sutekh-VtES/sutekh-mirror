@@ -274,6 +274,7 @@ class BaseDBUpgradeManager:
                 # pylint: disable=no-member
                 # SQLObject confuses pylint
                 oPrintCopy.addPrintingProperty(oData)
+                oPrintCopy.syncUpdate()
 
     def _copy_old_printing(self, oOrigConn, oTrans, oVer):
         """Copy printing table, upgrading versions as needed"""
