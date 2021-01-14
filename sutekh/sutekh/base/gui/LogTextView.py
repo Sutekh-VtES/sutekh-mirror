@@ -16,9 +16,6 @@ class LogTextBuffer(Gtk.TextBuffer):
 
     # pylint: disable=too-many-public-methods
     # Gtk.Widget, so many public methods
-    def __init__(self):
-        super().__init__()
-
     def clear(self):
         """Clear all messages"""
         oStart, oEnd = self.get_bounds()

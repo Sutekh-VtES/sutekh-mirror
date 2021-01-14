@@ -349,7 +349,6 @@ class BasePlugin:
 
            Currently used to prompt for downloads, etc.
            """
-        return None
 
     def cleanup(self):
         """Handle any cleanup needed by the plugin when the window or
@@ -364,7 +363,6 @@ class BasePlugin:
         MessageBus.unsubscribe(MessageBus.Type.DATABASE_MSG,
                                'prepare_for_db_update',
                                self.prepare_for_db_update)
-        return None
 
     def get_toolbar_widget(self):
         """Return an arbitary Gtk.Widget which is added to a VBox between the
@@ -372,21 +370,18 @@ class BasePlugin:
 
            Return None is no toolbar Widget is needed
            """
-        return None
 
     def get_frame_from_config(self, _sType):
         """Hook for plugins which supply a frame in the Main window.
 
            Allows them to restore from the config file properly.
            """
-        return None
 
     def check_for_updates(self):
         """Called to check if the plugin has newer data to download.
 
            Should return a string with a message, or None if there's
            nothing to download."""
-        return None
 
     def do_update(self):
         """Called to handle any pending updates."""
