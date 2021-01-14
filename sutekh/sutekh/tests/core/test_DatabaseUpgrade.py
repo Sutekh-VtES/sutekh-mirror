@@ -22,7 +22,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCardSet,
                                            IPhysicalCard, IPrinting,
                                            IExpansion)
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
-from sutekh.base.core.DBUtility import flush_cache
+from sutekh.base.core.DBUtility import init_cache
 from sutekh.base.tests.TestUtils import make_null_handler, make_card
 
 from sutekh.core.DatabaseUpgrade import DBUpgradeManager
@@ -1634,6 +1634,24 @@ class DatabaseUpgradeTests(SutekhTest):
 
         oPCS1 = IPhysicalCardSet("PCS1")
         assert oPCS1.parent == oMyCollection
+
+        for sExp in ('Jyhad', 'SW'):
+            oExp = IExpansion(sExp)
+            oDefPrint = IPrinting((oExp, None))
+            assert len(oDefPrint.properties) == 2
+            bBack = False
+            bDate = False
+            for oProp in oDefPrint.properties:
+                if oProp.value.startswith('Back Type:'):
+                    bBack = True
+                    continue
+                if oProp.value.startswith('Release Date:'):
+                    bDate = True
+                    continue
+                self.fail(f"Unexpected property name {oProp.value}")
+            self.assertTrue(bBack)
+            self.assertTrue(bDate)
+
         oNewConn.close()
 
     def test_upgrade_old_version(self):
@@ -1722,4 +1740,21 @@ class DatabaseUpgradeTests(SutekhTest):
             oCursor.execute(sSQL)
         oCursor.close()
         oConn.cache.clear()
-        flush_cache()
+        init_cache()
+
+        for sExp in ('Jyhad', 'SW'):
+            oExp = IExpansion(sExp)
+            oDefPrint = IPrinting((oExp, None))
+            assert len(oDefPrint.properties) == 2
+            bBack = False
+            bDate = False
+            for oProp in oDefPrint.properties:
+                if oProp.value.startswith('Back Type:'):
+                    bBack = True
+                    continue
+                if oProp.value.startswith('Release Date:'):
+                    bDate = True
+                    continue
+                self.fail(f"Unexpected property name {oProp.value}")
+            self.assertTrue(bBack)
+            self.assertTrue(bDate)
