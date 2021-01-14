@@ -1648,7 +1648,10 @@ class DatabaseUpgradeTests(SutekhTest):
                 if oProp.value.startswith('Release Date:'):
                     bDate = True
                     continue
-                self.fail(f"Unexpected property name {oProp.value}")
+                # We don't expect to trigger this
+                # pylint: disable: line-too-long
+                # formatting this to fit the line length doesn't improve clarity
+                self.fail(f"Unexpected property name {oProp.value}")  # pragma: no cover
             self.assertTrue(bBack)
             self.assertTrue(bDate)
 
@@ -1755,6 +1758,9 @@ class DatabaseUpgradeTests(SutekhTest):
                 if oProp.value.startswith('Release Date:'):
                     bDate = True
                     continue
-                self.fail(f"Unexpected property name {oProp.value}")
+                # We don't expect to trigger this
+                # pylint: disable: line-too-long
+                # formatting this to fit the line length doesn't improve clarity
+                self.fail(f"Unexpected property name {oProp.value}")  # pragma: no cover
             self.assertTrue(bBack)
             self.assertTrue(bDate)

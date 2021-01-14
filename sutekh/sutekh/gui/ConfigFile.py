@@ -70,4 +70,7 @@ class ConfigFile(BaseConfigFile):
                            False, -1, None)
         # Remove the old 'last cardlist update' setting from the config file
         if 'last cardlist update' in self._oConfig['main']:
-            self._oConfig['main'].pop('last cardlist update')
+            # We don't test this since this is for old config files
+            # pylint: disable: line-too-long
+            # formatting this to fit the line length doesn't improve clarity
+            self._oConfig['main'].pop('last cardlist update')  # pragma: no cover
