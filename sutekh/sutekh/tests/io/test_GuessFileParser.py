@@ -6,6 +6,7 @@
 """Test guessing the file format"""
 
 import unittest
+from sutekh.base.io.BaseGuessFileParser import BaseGuessFileParser
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.GuessFileParser import GuessFileParser
 from sutekh.io.AbstractCardSetParser import AbstractCardSetParser
@@ -66,6 +67,44 @@ class TestGuessFileParser(SutekhTest):
                              " %s vs %s, using %s, correct %s" % (
                                  oHolder1.get_cards(), oHolder2.get_cards(),
                                  oGuessParser.oChosenParser, cCorrectParser))
+
+    def test_junk(self):
+        """Test the failure mode of the parser"""
+        class LocalGuess(BaseGuessFileParser):
+            """Test guess parser that allows failures."""
+            # Unfortunately, the JOL parser has to be incredibly permissive, because
+            # JOL accepts crazy input, so it will try and treat any string as a card
+            # name, so to fail with invoking the card lookup, we need a parser that
+            # tests a stricter list
+            PARSERS = [
+                AbstractCardSetParser,
+                PhysicalCardSetParser,
+            ]
+
+        # Total junk
+        oGuessParser = LocalGuess()
+        # check the restricted guess works as expected on correct input
+        oHolder1 = self._make_holder_from_string(oGuessParser, ACS_EXAMPLE_1)
+        oHolder2 = self._make_holder_from_string(AbstractCardSetParser(),
+                                                 ACS_EXAMPLE_1)
+
+        self.assertEqual(oHolder1.name, oHolder2.name,
+                         "Holder names don't match:"
+                         " %s vs %s, using %s, correct choice %s" % (
+                             oHolder1.name, oHolder2.name,
+                             oGuessParser.oChosenParser, AbstractCardSetParser))
+        self.assertEqual(oHolder1.get_cards(), oHolder2.get_cards(),
+                         "Guess cards don't match:"
+                         " %s vs %s, using %s, correct %s" % (
+                             oHolder1.get_cards(), oHolder2.get_cards(),
+                             oGuessParser.oChosenParser, AbstractCardSetParser))
+        # Check it fails as expected on junk
+        sData = 'afas;hsklghp439qyqjabfasjklgqiu4t8p7   3q'
+        self.assertRaises(IOError, self._make_holder_from_string,
+                          oGuessParser, sData)
+        # Check it fails as expected on an unsupported file format
+        self.assertRaises(IOError, self._make_holder_from_string,
+                          oGuessParser, LACKEY_EXAMPLE_1)
 
 
 if __name__ == "__main__":
