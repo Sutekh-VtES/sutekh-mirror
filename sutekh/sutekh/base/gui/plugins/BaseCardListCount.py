@@ -105,7 +105,7 @@ class BaseCardListCount(BasePlugin):
             if self._eMode == self.Modes.NO_COUNT:
                 self._oTextLabel.hide()
                 return
-            elif self._eMode == self.Modes.COUNT_CARDS:
+            if self._eMode == self.Modes.COUNT_CARDS:
                 dInfo = self._dCardTotals
             else:
                 dInfo = self._dExpTotals
@@ -195,10 +195,10 @@ class BaseCardListCount(BasePlugin):
                 iTot += self._get_count(oSubIter)
                 oSubIter = self.model.iter_next(oSubIter)
             return iTot
-        elif self.model.iter_depth(oIter) == 1:
+        if self.model.iter_depth(oIter) == 1:
             oAbsCard = self.model.get_abstract_card_from_iter(oIter)
             return self._get_card_count(oAbsCard)
-        elif self.model.iter_depth(oIter) == 2 and \
+        if self.model.iter_depth(oIter) == 2 and \
                 self._eMode == self.Modes.COUNT_EXP:
             oPhysCard = self.model.get_physical_card_from_iter(oIter)
             if oPhysCard.printingID:
@@ -219,7 +219,7 @@ class BaseCardListCount(BasePlugin):
         iVal2 = self._get_count(oIter2)
         if iVal1 < iVal2:
             return -1
-        elif iVal1 > iVal2:
+        if iVal1 > iVal2:
             return 1
         # Values agree, so do fall back sort
         return self.model.sort_equal_iters(oIter1, oIter2)

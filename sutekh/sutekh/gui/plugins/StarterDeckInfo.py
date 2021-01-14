@@ -307,7 +307,8 @@ class StarterInfoPlugin(SutekhPlugin):
                 if not bExcludeDemoDecks:
                     bExcludeDemoDecks = find_holder(DEMO_HOLDERS) is None
                 if not bExcludeStorylineDecks:
-                    bExcludeStorylineDecks = find_holder(STORYLINE_HOLDERS) is None
+                    bExcludeStorylineDecks = \
+                        find_holder(STORYLINE_HOLDERS) is None
             oFile = urlopen_with_timeout(aUrls[0],
                                          fErrorHandler=gui_error_handler,
                                          bBinary=True)

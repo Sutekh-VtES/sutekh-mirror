@@ -89,7 +89,7 @@ class ImportExportBase(SutekhDialog):
         self._oUrlEntry.set_active(0)
 
         self.vbox.pack_start(Gtk.Label(label="Secret Library API URL"),
-                                       False, False, 0)
+                             False, False, 0)
         self.vbox.pack_start(self._oUrlEntry, False, False, 0)
 
         # Username

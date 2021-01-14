@@ -104,8 +104,8 @@ class SelectZipFileContents(SutekhDialog):
         oSelectButtons.pack_start(oUnSelectAll, False, True, 0)
         self.oPrompt = Gtk.RadioButton(group=None, label='Always Ask')
         self.oPrompt.set_active(True)
-        self.oReplace = Gtk.RadioButton(group=self.oPrompt,
-                                        label='Always replace with new card set')
+        self.oReplace = Gtk.RadioButton(
+            group=self.oPrompt, label='Always replace with new card set')
         self.oReplace.set_active(False)
         self.oRename = Gtk.RadioButton(group=self.oPrompt,
                                        label='Always create unique name')
@@ -129,7 +129,7 @@ class SelectZipFileContents(SutekhDialog):
         """Return the selected clash mode"""
         if self.oRename.get_active():
             return RENAME
-        elif self.oReplace.get_active():
+        if self.oReplace.get_active():
             return REPLACE
         return PROMPT
 

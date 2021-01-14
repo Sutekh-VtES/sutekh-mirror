@@ -155,7 +155,8 @@ class TestFilterModelPane(GuiSutekhTest):
             oIter = oListStore.iter_next(oIter)
         oFilter = oFilterPanes._oSelectBar._oLastFilter
         # ENTER_KEYS contains longs, but keyval needs int
-        oFilterPanes._oSelectBar.key_press(oToolbar, oEvent.key, oFilter, 'Filter')
+        oFilterPanes._oSelectBar.key_press(oToolbar, oEvent.key,
+                                           oFilter, 'Filter')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0:2')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0:2')
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[0]

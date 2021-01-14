@@ -92,7 +92,8 @@ class ImportView(ACLLookupView):
         oUsedColumn.set_fixed_width(50)
         oUsedColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
 
-        oExistingColumn = Gtk.TreeViewColumn("Image Exists", oExistingCell, showicon=4)
+        oExistingColumn = Gtk.TreeViewColumn("Image Exists",
+                                             oExistingCell, showicon=4)
         oExistingColumn.set_fixed_width(50)
         oExistingColumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         # We insert the column before the name, so it's more visible.
@@ -228,15 +229,18 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                 iXPos = 0
                 iYPos += 1
 
-        self.oDlg.vbox.pack_start(Gtk.Label(label="Image Size to Use"), False, True, 0)
+        self.oDlg.vbox.pack_start(Gtk.Label(label="Image Size to Use"),
+                                  False, True, 0)
         oTable = Gtk.Table(len(SCALES) // 2, 2)
         self.oDlg.vbox.pack_start(oTable, False, True, 0)
         iXPos, iYPos = 0, 0
         for sScale in sorted(SCALES):
             if self._oFirstScaleBut:
-                oBut = Gtk.RadioButton(group=self._oFirstScaleBut, label=sScale)
+                oBut = Gtk.RadioButton(group=self._oFirstScaleBut,
+                                       label=sScale)
             else:
-                self._oFirstScaleBut = Gtk.RadioButton(group=None, label=sScale)
+                self._oFirstScaleBut = Gtk.RadioButton(group=None,
+                                                       label=sScale)
                 self._oFirstScaleBut.set_sensitive(True)
                 oBut = self._oFirstScaleBut
             oTable.attach(oBut, iXPos, iXPos + 1, iYPos, iYPos + 1)
@@ -334,9 +338,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._oYOffset.set_adjustment(oYOffAdj)
         self._oYOffset.set_value(0)
 
-        oOffsetBox.pack_start(Gtk.Label(label="Horizontal Offset : "), False, False, 0)
+        oOffsetBox.pack_start(Gtk.Label(label="Horizontal Offset : "),
+                              False, False, 0)
         oOffsetBox.pack_start(self._oXOffset, False, False, 0)
-        oOffsetBox.pack_start(Gtk.Label(label="Vertical Offset : "), False, False, 0)
+        oOffsetBox.pack_start(Gtk.Label(label="Vertical Offset : "),
+                              False, False, 0)
         oOffsetBox.pack_start(self._oYOffset, False, False, 0)
 
         oScaleBox = Gtk.HBox()
@@ -353,9 +359,11 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         self._oYScale.set_adjustment(oYScaleAdj)
         self._oYScale.set_value(CARD_DIM[1])
 
-        oScaleBox.pack_start(Gtk.Label(label="Horizontal Size : "), False, False, 0)
+        oScaleBox.pack_start(Gtk.Label(label="Horizontal Size : "),
+                             False, False, 0)
         oScaleBox.pack_start(self._oXScale, False, False, 0)
-        oScaleBox.pack_start(Gtk.Label(label="Vertical Size : "), False, False, 0)
+        oScaleBox.pack_start(Gtk.Label(label="Vertical Size : "),
+                             False, False, 0)
         oScaleBox.pack_start(self._oYScale, False, False, 0)
 
         oApplyButton = Gtk.Button('Apply offsets')

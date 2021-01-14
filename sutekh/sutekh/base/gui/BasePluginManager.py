@@ -153,7 +153,7 @@ class PluginConfigFileListener:
 
     def profile_option_changed(self, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
-        if sType == CARDSET or sType == FRAME:
+        if sType in (CARDSET, FRAME):
             dConfig = self._oPlugin.dPerPaneConfig
         elif sType == FULL_CARDLIST:
             dConfig = self._oPlugin.dCardListConfig
@@ -163,7 +163,7 @@ class PluginConfigFileListener:
             dConfig = {}
         if sKey in dConfig:
             oConfig = self._oPlugin.config
-            if sType == CARDSET or sType == FRAME:
+            if sType in (CARDSET, FRAME):
                 # Handle the cardset_profile, frame_profile case
                 tProfiles = (
                     oConfig.get_profile(FRAME, self._oPlugin.model.frame_id),
@@ -328,8 +328,7 @@ class BasePlugin:
         oModel = self.model
         if oModel is None or not hasattr(oModel, "cardset_id"):
             return None
-        if oModel.cardset_id == FULL_CARDLIST or \
-                oModel.cardset_id == CARDSET_LIST:
+        if oModel.cardset_id in (FULL_CARDLIST, CARDSET_LIST):
             sProfile = self.config.get_profile(oModel.cardset_id,
                                                oModel.cardset_id)
             return self.config.get_profile_option(oModel.cardset_id,

@@ -196,7 +196,8 @@ class BaseDBUpgradeManager:
                                           value=oObj.name,
                                           connection=oTrans)
         else:
-            return (False, ["Unknown Version for LookupHints"])  # pragma: no cover
+            return (
+                False, ["Unknown Version for LookupHints"])  # pragma: no cover
         return (True, aMessages)
 
     def _copy_old_metadata(self, oOrigConn, oTrans, oVer):

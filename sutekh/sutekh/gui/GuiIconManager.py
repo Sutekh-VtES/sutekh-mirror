@@ -38,18 +38,17 @@ class GuiIconManager(CachedIconManager, IconManager):
             # We accept broken links as stopping the prompt
             if os.path.lexists("%s/clans" % self._sPrefsDir):
                 return
+            # Check if we need to upgrade to the V:EKN icons
+            ensure_dir_exists("%s/clans" % self._sPrefsDir)
+            if os.path.exists('%s/IconClanAbo.gif' % self._sPrefsDir):
+                iResponse = do_complaint(
+                    "Sutekh has switched to using the icons from the "
+                    "V:EKN site.\nIcons won't work until you "
+                    "re-download them.\n\nDownload icons?",
+                    Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO, False)
             else:
-                # Check if we need to upgrade to the V:EKN icons
-                ensure_dir_exists("%s/clans" % self._sPrefsDir)
-                if os.path.exists('%s/IconClanAbo.gif' % self._sPrefsDir):
-                    iResponse = do_complaint(
-                        "Sutekh has switched to using the icons from the "
-                        "V:EKN site.\nIcons won't work until you "
-                        "re-download them.\n\nDownload icons?",
-                        Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO, False)
-                else:
-                    # Old icons not present, so skip
-                    return
+                # Old icons not present, so skip
+                return
         else:
             # Create directory, so we don't prompt next time unless the user
             # intervenes
@@ -60,7 +59,8 @@ class GuiIconManager(CachedIconManager, IconManager):
                                      "from the V:EKN site\nThese icons will "
                                      "be stored in %s\n\nDownload icons?"
                                      % self._sPrefsDir,
-                                     Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO,
+                                     Gtk.MessageType.INFO,
+                                     Gtk.ButtonsType.YES_NO,
                                      False)
         if iResponse == Gtk.ResponseType.YES:
             self.download_with_progress()

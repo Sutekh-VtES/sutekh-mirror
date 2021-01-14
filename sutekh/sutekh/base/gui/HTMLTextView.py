@@ -71,7 +71,8 @@ def _parse_css_color(sColor):
     oRGBA = Gdk.RGBA()
     if sColor.startswith("rgb(") and sColor.endswith(')'):
         oRGBA.alpha = 1
-        oRGBA.red, oRGBA.green, oRGBA.blue = [float(c) for c in sColor[4:-1].split(',')]
+        oRGBA.red, oRGBA.green, oRGBA.blue = \
+            [float(c) for c in sColor[4:-1].split(',')]
     else:
         oRGBA.parse(sColor)
     return oRGBA
@@ -610,7 +611,7 @@ class HTMLTextView(Gtk.TextView):
         self._fLinkLoader = fLinkLoader
         oDisplay = Gdk.Display.get_default()
         self._oTermCursor = Gdk.Cursor.new_for_display(oDisplay,
-                                                      Gdk.CursorType.XTERM)
+                                                       Gdk.CursorType.XTERM)
         self._oHandCursor = Gdk.Cursor.new_for_display(oDisplay,
                                                        Gdk.CursorType.HAND2)
 
@@ -624,7 +625,8 @@ class HTMLTextView(Gtk.TextView):
     def __motion_notify_event(self, oWidget, oEvent):
         """Change the cursor if the pointer is over a link"""
         oWin = oWidget.get_window(Gtk.TextWindowType.TEXT)
-        _oWin, iXPos, iYPos, _oIgnore = oWin.get_device_position(oEvent.get_device())
+        _oWin, iXPos, iYPos, _oIgnore = \
+            oWin.get_device_position(oEvent.get_device())
         aTags = oWidget.get_iter_at_location(iXPos, iYPos)[1].get_tags()
         for oTag in aTags:
             if getattr(oTag, 'is_anchor', False):
@@ -703,8 +705,8 @@ class HTMLViewDialog(SutekhDialog):
         self._oBackButton.set_label('Back')
         self._oBackButton.set_always_show_image(True)
         self._oBackButton.connect('pressed', self._go_back)
-        self._oForwardButton = Gtk.Button.new_from_icon_name('go-next',
-                                                             Gtk.IconSize.BUTTON)
+        self._oForwardButton = Gtk.Button.new_from_icon_name(
+            'go-next', Gtk.IconSize.BUTTON)
         self._oForwardButton.set_label('Forward')
         self._oForwardButton.set_always_show_image(True)
         self._oForwardButton.connect('pressed', self._go_forward)

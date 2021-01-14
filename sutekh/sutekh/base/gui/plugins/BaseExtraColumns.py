@@ -116,7 +116,7 @@ class BaseExtraColumns(BasePlugin):
             oVal2 = " ".join(oVal2)
         if oVal1 < oVal2:
             return -1
-        elif oVal1 > oVal2:
+        if oVal1 > oVal2:
             return 1
         # Values agree, so do fall back sort
         return self.model.sort_equal_iters(oIter1, oIter2)

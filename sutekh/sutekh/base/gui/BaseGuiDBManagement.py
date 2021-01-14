@@ -234,20 +234,19 @@ class BaseGuiDBManager:
              "Initialise database with cardlist and rulings?", 1))
         if iRes != 1:
             return False
-        else:
-            dFiles, _sBackup = self._get_names(True)
-            if dFiles is not None:
-                oProgressDialog = ProgressDialog()
-                try:
-                    bRet = self._read_data(dFiles, oProgressDialog)
-                    oProgressDialog.destroy()
-                except IOError as oErr:
-                    do_exception_complaint("Failed to read cardlists.\n\n%s\n"
-                                           "Aborting import." % oErr)
-                    oProgressDialog.destroy()
-                    return False
-            else:
+        dFiles, _sBackup = self._get_names(True)
+        if dFiles is not None:
+            oProgressDialog = ProgressDialog()
+            try:
+                bRet = self._read_data(dFiles, oProgressDialog)
+                oProgressDialog.destroy()
+            except IOError as oErr:
+                do_exception_complaint("Failed to read cardlists.\n\n%s\n"
+                                       "Aborting import." % oErr)
+                oProgressDialog.destroy()
                 return False
+        else:
+            return False
         if bRet:
             # Import successful
             # Create the Physical Card Collection card set
@@ -411,7 +410,7 @@ class BaseGuiDBManager:
                 if iRes == Gtk.ResponseType.OK:
                     return self._do_commit_db(oLogHandler, oTempConn,
                                               aMessages)
-                elif iRes == 1:
+                if iRes == 1:
                     # Try running with the upgraded database
                     sqlhub.processConnection = oTempConn
                     # Ensure adapters are correctly updated

@@ -10,7 +10,6 @@ import enum
 import logging
 import os
 import tempfile
-import unicodedata
 from urllib.error import HTTPError
 import zipfile
 
@@ -142,8 +141,10 @@ class CardImagePopupMenu(Gtk.Menu):
         self.oNext = Gtk.MenuItem(label='Show next expansion image')
         self.oPrev = Gtk.MenuItem(label='Show previous expansion image')
 
-        self.oPrev.connect('activate', self.cycle_expansion, Direction.BACKWARD)
-        self.oNext.connect('activate', self.cycle_expansion, Direction.FORWARD)
+        self.oPrev.connect('activate', self.cycle_expansion,
+                           Direction.BACKWARD)
+        self.oNext.connect('activate', self.cycle_expansion,
+                           Direction.FORWARD)
         self.oViewFit.connect('activate', self.set_zoom, Size.FIT)
         self.oZoom.connect('activate', self.set_zoom, Size.FULL)
         self.oViewFixed.connect('activate', self.set_zoom, Size.VIEW_FIXED)
@@ -617,8 +618,9 @@ class BaseImageFrame(BasicFrame):
                     self._oImage.set_from_pixbuf(
                         oPixbuf.scale_simple(iDestWidth, iDestHeight,
                                              GdkPixbuf.InterpType.HYPER))
-                    self._tPaneSize = (self._oView.get_hadjustment().get_page_size(),
-                                       self._oView.get_vadjustment().get_page_size())
+                    self._tPaneSize = (
+                        self._oView.get_hadjustment().get_page_size(),
+                        self._oView.get_vadjustment().get_page_size())
             elif self._iZoomMode == Size.VIEW_FIXED:
                 iDestWidth, iDestHeight = _scale_dims(iWidth, iHeight,
                                                       RATIO[0], RATIO[1])
@@ -885,7 +887,8 @@ class BaseImagePlugin(BasePlugin):
            """
         self.init_image_frame()
         # Add listener
-        self._oReplaceItem = Gtk.MenuItem(label="Replace with Card Image Frame")
+        self._oReplaceItem = Gtk.MenuItem(
+            label="Replace with Card Image Frame")
         self._oReplaceItem.connect("activate", self.replace_pane)
 
         self._oAddItem = Gtk.MenuItem(label="Add Card Image Frame")
@@ -1000,7 +1003,7 @@ class BaseImagePlugin(BasePlugin):
                 # what they're doing and they intend to download images
                 # into it
                 return True
-            elif not os.path.isdir(sTestPath):
+            if not os.path.isdir(sTestPath):
                 # Exists, but not a directory, so this is a fatal
                 # error
                 # This in general shouldn't happen, because we usually

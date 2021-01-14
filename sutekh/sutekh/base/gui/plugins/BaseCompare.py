@@ -97,10 +97,10 @@ class BaseCompare(BasePlugin):
 
     def activate(self, _oWidget):
         """Create the dialog for choosing the second card set."""
-        oDlg = SutekhDialog("Choose Card Set to Compare with", self.parent,
-                            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            ("_OK", Gtk.ResponseType.OK,
-                             "_Cancel", Gtk.ResponseType.CANCEL))
+        oDlg = SutekhDialog(
+            "Choose Card Set to Compare with", self.parent,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            ("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         oCSView = CardSetsListView(None, oDlg)
         oCSView.set_select_single()
         oCSView.exclude_set(self.view.sSetName)

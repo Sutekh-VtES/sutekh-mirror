@@ -97,7 +97,7 @@ class FilterTests(SutekhTest):
         aPhysicalCards = []
         for sName in aExpectedNames:
             oAbs = IAbstractCard(sName)
-            aExps = set([oRarity.expansion for oRarity in oAbs.rarity])
+            aExps = {oRarity.expansion for oRarity in oAbs.rarity}
 
             if None in aAllowedPrintings:
                 aPhysicalCards.append(IPhysicalCard((oAbs, None)))

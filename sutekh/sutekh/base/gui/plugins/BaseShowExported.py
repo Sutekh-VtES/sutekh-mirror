@@ -36,7 +36,8 @@ class BaseShowExported(BasePlugin):
 
     def get_menu_item(self):
         """Register on the 'Analyze' menu"""
-        oShowExported = Gtk.MenuItem(label="Display card set in alternative format")
+        oShowExported = Gtk.MenuItem(
+            label="Display card set in alternative format")
         oShowExported.connect("activate", self.activate)
         return ('Actions', oShowExported)
 

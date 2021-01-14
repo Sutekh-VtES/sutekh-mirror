@@ -196,7 +196,7 @@ def _load_textile(sTextilePath):
             else:
                 aCurLine = [sLine[:-2]]
             continue
-        elif aCurLine:
+        if aCurLine:
             aCurLine.append(sLine)
             aLines.append(''.join(aCurLine))
             aCurLine = []
@@ -408,7 +408,7 @@ def make_filter_txt(sDir, aFilters):
                 # We're going to insert new toc entries here
                 iTocIndex = len(aOutput)
                 continue
-            elif sKeyword == 'Filter_Group':
+            if sKeyword == 'Filter_Group':
                 iTocIndex = add_single_filter(aOutput, iTocIndex,
                                               sKeyword, FilterGroup)
             elif sKeyword == 'card_filters_long':

@@ -126,10 +126,10 @@ class BaseIndependence(BasePlugin):
 
         bInUseSets = PhysicalCardSet.selectBy(
             parentID=self.oThisCardSet.parent.id, inuse=True).count() > 0
-        oDlg = SutekhDialog("Choose Card Sets to Test", self.parent,
-                            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                            ("_OK", Gtk.ResponseType.OK,
-                             "_Cancel", Gtk.ResponseType.CANCEL))
+        oDlg = SutekhDialog(
+            "Choose Card Sets to Test", self.parent,
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            ("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         self.oCSView = CardSetsListView(None, oDlg)
         oDlg.vbox.pack_start(AutoScrolledWindow(self.oCSView), True, True, 0)
         self.oCSView.set_select_multiple()
