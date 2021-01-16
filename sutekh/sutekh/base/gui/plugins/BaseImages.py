@@ -749,9 +749,11 @@ class BaseImageConfigDialog(SutekhDialog):
     # Gtk Widget, so has many public methods
     """Base Dialog for configuring the Image plugin."""
 
-    sDefURLId = ''
-    sDefaultUrl = ''
     sImgDownloadSite = ''
+
+    # The list of download urls to present to the user
+    # {'User visible text': url }
+    dDownloadUrls = {}
 
     def __init__(self, oImagePlugin, bFirstTime=False):
         super().__init__(
@@ -771,15 +773,10 @@ class BaseImageConfigDialog(SutekhDialog):
                                        'configuring the images plugin\n'
                                        'You will not be prompted again')
         sDefaultDir = oImagePlugin.get_config_item(CARD_IMAGE_PATH)
-        if self.sDefaultUrl:
-            dUrls = {self.sDefURLId: self.sDefaultUrl}
-        else:
-            # Just allow the user to choose an url themselves
-            dUrls = None
         self.oChoice = FileOrDirOrUrlWidget(
             oImagePlugin.parent,
             "Choose location for images file", "Choose image directory",
-            sDefaultDir, dUrls)
+            sDefaultDir, self.dDownloadUrls)
         add_filter(self.oChoice, 'Zip Files', ['*.zip', '*.ZIP'])
         self.vbox.pack_start(self.oDescLabel, False, False, 0)
         if not bFirstTime:

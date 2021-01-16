@@ -201,11 +201,14 @@ class ImageConfigDialog(BaseImageConfigDialog):
     # Gtk Widget, so has many public methods
     """Dialog for configuring the Image plugin."""
 
-    # These two are descriptive, so set them to the final value
-    sDefURLId = 'Download zipfile from sutekh.vtes.za.net'
     sImgDownloadSite = 'sutekh.vtes.za.net'
-    # Will be changed later
-    sDefaultUrl = '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages.zip')
+
+    dDownloadUrls = {
+       'Download zipfile from sutekh.vtes.za.net (images for each expansions)':
+            '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages.zip'),
+       'Download zipfile from sutekh.vtes.za.net (only 1 image per card - no expansions)':
+            '%s/zipped/%s' % (SUTEKH_IMAGE_SITE, 'cardimages_single.zip'),
+    }
 
     def __init__(self, oImagePlugin, bFirstTime=False, bDownloadUpgrade=False):
         super().__init__(oImagePlugin, bFirstTime)
