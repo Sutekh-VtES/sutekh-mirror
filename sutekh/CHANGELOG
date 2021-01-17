@@ -1,3 +1,34 @@
+17 Jan 2021
+ * Release Sutekh 1.1.0
+
+16 Jan 2021
+ * Offer multiple zip files (expansions, no expansions) when configuring
+   the card images plugin.
+ * Update the ubuntu distibution list (drop eoan, add groovy).
+
+11 Jan 2021
+ * Include pylint and coverage reports in the github actions results
+ * Add check to ensure docs
+
+09 Jan 2021
+ * Build a NSIS based installer for windows as part of the github-actions flow.
+ * Build a MacOSX app (doesn't work correctly yet) as well.
+
+06 Jan 2021
+ * Replace travis and appveyor config with github-actions.
+
+05 Jan 2021
+ * Sort cards in the TTS export to make checking the deck easier.
+
+14 Dec 2020
+ * Add cx_Freeze based setup-freeze.py file for building a windows package.
+ * Add support for running as a frozen package and set the correct environment
+   variables.
+
+07 Dec 2020
+ * Add more looks to handle ARDB crypt lines with compressed whitespace, as seen in
+   some vekn forum posts.
+
 10 Nov 2020
  * Replace various integer constants with Enums, as a better datatype for this.
 
