@@ -17,6 +17,14 @@ from sutekh.SutekhUtility import  find_base_vampire, find_adv_vampire
 from sutekh.tests.TestCore import SutekhTest
 
 
+class FakeCard:
+
+    def __init__(self, sName):
+        # pylint: disable=invalid-name
+        # Need to match AbstractCard here
+        self.name = sName
+
+
 class MiscUtilityTests(SutekhTest):
     """class for the Card Set Utility tests"""
     # pylint: disable=too-many-public-methods
@@ -66,14 +74,14 @@ class MiscUtilityTests(SutekhTest):
         self.assertEqual(get_expansion_date(IExpansion('SW')),
                          datetime.date(year=2000, month=10, day=31))
 
-        VtES = IPrinting((IExpansion('VTES'), None))
-        SWfirst = IPrinting((IExpansion('SW'), None))
-        SWsecond = IPrinting((IExpansion('SW'), 'Second Printing'))
+        oVtES = IPrinting((IExpansion('VTES'), None))
+        oSWfirst = IPrinting((IExpansion('SW'), None))
+        oSWsecond = IPrinting((IExpansion('SW'), 'Second Printing'))
 
-        self.assertEqual(get_printing_date(VtES), None)
-        self.assertEqual(get_printing_date(SWfirst),
+        self.assertEqual(get_printing_date(oVtES), None)
+        self.assertEqual(get_printing_date(oSWfirst),
                          datetime.date(year=2000, month=10, day=31))
-        self.assertEqual(get_printing_date(SWsecond),
+        self.assertEqual(get_printing_date(oSWsecond),
                          datetime.date(year=2001, month=1, day=12))
 
     def test_find_vamps(self):
@@ -86,6 +94,15 @@ class MiscUtilityTests(SutekhTest):
 
         self.assertEqual(find_adv_vampire(oAlanBase), oAlanAdv)
         self.assertEqual(find_adv_vampire(oNewBlood), None)
+
+        # These aren't real vampires, but allows us to test the
+        # storyline logic
+        oAlanAdv = FakeCard('Alan Sovereign (EC 2013) (Advanced)')
+        self.assertEqual(find_base_vampire(oAlanAdv), oAlanBase)
+        oAlanAdv = FakeCard('Alan Sovereign (Red Sign) (Advanced)')
+        self.assertEqual(find_base_vampire(oAlanAdv), oAlanBase)
+        oAlanAdv = FakeCard('Alan Sovereign (Ascension of Caine) (Advanced)')
+        self.assertEqual(find_base_vampire(oAlanAdv), oAlanBase)
 
 
 if __name__ == "__main__":
