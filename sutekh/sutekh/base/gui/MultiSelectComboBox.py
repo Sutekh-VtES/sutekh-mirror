@@ -17,8 +17,7 @@ def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
     (iXPos, iYPos) = oButton.get_pointer()  # mouse pos relative to button
     oButtonGeom = oButton.get_allocation()
-    return ((iXPos >= 0) and (iYPos >= 0) and
-            (iXPos < oButtonGeom.width) and (iYPos < oButtonGeom.height))
+    return 0 <= XPos < oButtonGeom.width and 0 <= iYPos < oButtonGeom.height
 
 
 class MultiSelectComboBox(Gtk.HBox):
@@ -104,6 +103,8 @@ class MultiSelectComboBox(Gtk.HBox):
 
         self._oDialog.set_keep_above(True)  # Keep this above the dialog
         self._oDialog.set_transient_for(self._oParentWin)
+        # pylint: disable=no-member
+        # pylint doesn't determine the Gtk methods correctly here
         self._oDialog.show_all()
         # WM behaviour means that move is unlikely to work before _oDialog
         # is shown
@@ -142,9 +143,13 @@ class MultiSelectComboBox(Gtk.HBox):
         """Set size of the drop-down list"""
         self._oDialog.set_size_request(iWidth, iHeight)
 
+    # pylint: disable=arguments-differ
+    # pylint is mistaken here
     def set_sensitive(self, bValue):
         """Control the sensitivity of the button"""
         self._oButton.set_sensitive(bValue)
+
+    # pylint: enable=arguments-differ
 
     def get_selection(self):
         """Return a list of the selected elements of the list"""

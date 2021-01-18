@@ -30,6 +30,9 @@ class CardSetFrame(CardListFrame):
         try:
             _oCS = IPhysicalCardSet(sName)
         except SQLObjectNotFound:
+            # pylint: disable=raise-missing-from
+            # We want to hide the SQLObject error so we can
+            # provide something more directly informative to the user
             raise RuntimeError("Card Set %s does not exist" % sName)
         self._oController = CardSetController(sName,
                                               oMainWindow, self,

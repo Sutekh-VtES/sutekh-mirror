@@ -89,6 +89,8 @@ class DataFilesDialog(SutekhDialog):
                                                              oFileButton,
                                                              oUrlButton,
                                                              oReader.sUrl)
+            # pylint: disable=no-member
+            # pylint doesn't understand vbox correctly
             self.vbox.pack_start(oFileAlign, True, True, 0)
             oFileAlign.show_all()
 
@@ -132,6 +134,8 @@ class DataFilesDialog(SutekhDialog):
                                                             oZipUrlCheckBox,
                                                             sZippedUrl)
             self._oHideZip = Gtk.CheckButton("Show individual file buttons")
+            # pylint: disable=no-member
+            # pylint doesn't understand vbox correctly
             self.vbox.pack_start(oZipAlign, True, True, 0)
             self.vbox.pack_start(self._oHideZip, True, True, 0)
             # We need to show_all, even if we later hide this, to display
@@ -150,10 +154,14 @@ class DataFilesDialog(SutekhDialog):
             self._oHideZip.connect("toggled", self.hide_zip_toggled)
             self._oHideZip.show()
 
+        # pylint: disable=no-member
+        # pylint doesn't understand vbox correctly
         self.vbox.pack_start(self.oBackupFileButton, True, True, 0)
         self.vbox.pack_start(self.oBackupFileLabel, True, True, 0)
         self.oBackupFileLabel.show()
         self.oBackupFileButton.show()
+
+        # pylint: enable=no-member
 
         self.oBackupFileButton.connect("toggled", self.backup_file_toggled)
         self.connect("response", self.handle_response)

@@ -192,7 +192,6 @@ class CardListView(FilteredView):
 
     def drag_delete(self, oBtn, oContext):
         """Default drag-delete handler"""
-        pass
 
     def card_drop(self, oWdgt, oContext, iXPos, iYPos, oData, oInfo, oTime):
         """Default drag-n-drop handler."""

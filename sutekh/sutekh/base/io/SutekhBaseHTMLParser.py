@@ -13,7 +13,6 @@ from logging import Logger
 # State Base Classes
 class StateError(Exception):
     """Error case in the state"""
-    pass
 
 
 class HTMLStateError(StateError):
