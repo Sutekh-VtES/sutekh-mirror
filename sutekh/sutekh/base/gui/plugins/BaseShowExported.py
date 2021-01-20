@@ -77,7 +77,7 @@ class BaseShowExported(BasePlugin):
             if iXPos > 1:
                 iXPos = 0
                 iYPos += 1
-        oDlg.vbox.pack_start(oTable, False, True, True, 0)
+        oDlg.vbox.pack_start(oTable, False, True, 0)
         oDlg.add_button("_Close", Gtk.ResponseType.CLOSE)
         oDlg.connect("response", lambda oW, oR: oDlg.destroy())
         oDlg.show_all()
