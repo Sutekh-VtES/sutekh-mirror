@@ -193,10 +193,8 @@ class CardDict(dict):
     dEquipmentProperties = {
         'unique': re.compile(r'Unique (melee )?weapon|Unique equipment|'
                              r'represents a unique location|'
-                             r'Unique Nod|^Unique.|'
-                             r'this is a unique location|'
-                             r'as equipment (while|when) '
-                             r'in play. (Haven. )?Unique.'),
+                             r'Unique Nod|^Unique.|\. Unique\.|'
+                             r'this is a unique location'),
         'location': re.compile(r'represents a (unique )?location|'
                                r'this is a (unique )?location'),
         'melee weapon': re.compile(r'[mM]elee weapon\.'),
@@ -214,7 +212,8 @@ class CardDict(dict):
     dMasterProperties = {
         # unique isn't very consistent
         'unique': re.compile(r'[Uu]nique [mM]aster|Master[:.] unique|'
-                             r'Unique\.|Unique location\.|Unique contract\.'),
+                             r'Unique\.|Unique location\.|Unique contract\.|'
+                             r'Unique investment\.'),
         'trifle': re.compile(r'[tT]rifle\.'),
         'discipline': re.compile(r'Master: Discipline\.|'
                                  r'^Discipline\.'),
