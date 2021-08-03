@@ -146,7 +146,7 @@ class MultiDisciplineFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.fullname for x in Discipline.select().orderBy('name')]
+        return [x.fullname for x in Discipline.select().orderBy('fullname')]
 
 
 class DisciplineLevelFilter(MultiFilter):
@@ -337,7 +337,7 @@ class MultiVirtueFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.fullname for x in Virtue.select().orderBy('name')]
+        return [x.fullname for x in Virtue.select().orderBy('fullname')]
 
 
 class GroupFilter(SutekhCardFilter):
