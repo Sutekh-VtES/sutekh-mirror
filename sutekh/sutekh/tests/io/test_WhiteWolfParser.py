@@ -298,7 +298,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oKabede.costtype, None)
         self.assertEqual(oKabede.level, None)
 
-        self.assertTrue(IClan('Assamite') in oKabede.clan)
+        self.assertTrue(IClan('Banu Haqim') in oKabede.clan)
         self.assertEqual(len(oKabede.clan), 1)
         self.assertEqual(len(oKabede.discipline), 6)
         self.assertTrue(oAusSup in oKabede.discipline)
@@ -482,7 +482,7 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertEqual(oKemintiri.level, 'advanced')
         self.assertTrue(IKeyword('advanced') in oKemintiri.keywords)
 
-        self.assertTrue(IClan('Follower of Set') in oKemintiri.clan)
+        self.assertTrue(IClan('Ministry') in oKemintiri.clan)
         self.assertEqual(len(oKemintiri.clan), 1)
         self.assertEqual(len(oKemintiri.discipline), 6)
         self.assertTrue(oAusInf in oKemintiri.discipline)
@@ -513,7 +513,7 @@ class WhiteWolfParserTests(SutekhTest):
         # Check The Path
         oPath1 = IAbstractCard('The Path of Blood')
 
-        self.assertTrue(IClan('Assamite') in oPath1.clan)
+        self.assertTrue(IClan('Banu Haqim') in oPath1.clan)
         self.assertEqual(oPath1.cost, 1)
         self.assertEqual(oPath1.costtype, 'pool')
         self.assertTrue(ICardType('Master') in oPath1.cardtype)

@@ -127,7 +127,7 @@ class CliUtilsTests(SutekhTest):
 
     def test_run_filter_abstract_card(self):
         """Test running some filters on the Abstract Card list"""
-        dResults = run_filter("Clan = 'Follower of Set'", None)
+        dResults = run_filter("Clan = 'Ministry'", None)
         self.assertEqual(len(dResults), 4)
         for oCard in dResults:
             self.assertEqual(dResults[oCard], 0)

@@ -144,7 +144,7 @@ class FilterTests(SutekhTest):
         # setup filters
         aTests = [
             # Single / Multi Filters
-            (Filters.ClanFilter('Follower of Set'),
+            (Filters.ClanFilter('Ministry'),
              [u"Aabbt Kindred", u"Abdelsobek", u"Amisa",
               u"Kemintiri (Advanced)"]),
             (Filters.MultiClanFilter(['Ravnos', 'Samedi']),
@@ -460,27 +460,26 @@ class FilterTests(SutekhTest):
 
         # Filter values Tests
         self.assertEqual(Filters.MultiClanFilter.get_values(),
-                         [u"Abomination", u"Ahrimane", u"Assamite",
+                         [u"Abomination", u"Ahrimane", u"Banu Haqim",
                           u"Blood Brother", u"Brujah",
                           u"Brujah antitribu", u"Daughter of Cacophony",
-                          u"Follower of Set", u"Gangrel",
-                          u"Gangrel antitribu", u"Gargoyle", u"Giovanni",
-                          u"Harbinger of Skulls", u"Lasombra",
-                          u"Malkavian antitribu", u"Nosferatu",
-                          u"Nosferatu antitribu", u"Osebo",
-                          u"Pander", u"Ravnos", u"Samedi",
-                          u"Toreador", u"Tremere", u"Tzimisce", u"Ventrue"])
+                          u"Gangrel", u"Gangrel antitribu", u"Gargoyle",
+                          u"Giovanni", u"Harbinger of Skulls", u"Lasombra",
+                          u"Malkavian antitribu", u"Ministry", u"Nosferatu",
+                          u"Nosferatu antitribu", u"Osebo", u"Pander",
+                          u"Ravnos", u"Samedi", u"Toreador", u"Tremere",
+                          u"Tzimisce", u"Ventrue"])
         self.assertEqual(Filters.MultiCapacityFilter.get_values(),
                          [str(x) for x in range(1, 12)])
         self.assertEqual(Filters.MultiDisciplineFilter.get_values(),
-                         [u"Abombwe", u"Animalism", u"Auspex", u"Celerity",
-                          u"Chimerstry", u"Dementation", u"Dominate",
-                          u"Flight", u"Fortitude", u"Necromancy",
-                          u"Obfuscate", u"Obtenebration", u"Potence",
-                          u"Presence", u"Protean", u"Quietus", u"Sanguinus",
-                          u"Serpentis", u"Spiritus", u"Thaumaturgy",
-                          u"Thanatosis", u"Valeren", u"Vicissitude",
-                          u"Visceratika"])
+                         [u"Abombwe", u"Animalism", u"Auspex",
+                          u"Blood Sorcery", u"Celerity", u"Chimerstry",
+                          u"Dementation", u"Dominate", u"Flight",
+                          u"Fortitude", u"Necromancy", u"Obfuscate",
+                          u"Obtenebration", u"Potence", u"Presence",
+                          u"Protean", u"Quietus", u"Sanguinus",
+                          u"Serpentis", u"Spiritus", u"Thanatosis",
+                          u"Valeren", u"Vicissitude", u"Visceratika"])
         self.assertEqual(Filters.MultiCardTypeFilter.get_values(),
                          [u"Action", u"Action Modifier", u"Ally", u"Combat",
                           u"Equipment", u"Imbued", u"Master",
@@ -668,11 +667,11 @@ class FilterTests(SutekhTest):
         # Tests are MultiFilter, EquivFilter pairs - we want to assert that
         # the behaviours match
         aTests = [
-            (Filters.MultiClanFilter(['Follower of Set']),
-             Filters.ClanFilter('Follower of Set')),
-            (Filters.MultiClanFilter(['Follower of Set', 'Ravnos']),
+            (Filters.MultiClanFilter(['Ministry']),
+             Filters.ClanFilter('Ministry')),
+            (Filters.MultiClanFilter(['Ministry', 'Ravnos']),
              Filters.FilterOrBox(
-                 [Filters.ClanFilter('Follower of Set'),
+                 [Filters.ClanFilter('Ministry'),
                   Filters.ClanFilter('Ravnos')])),
             (Filters.MultiDisciplineFilter(['nec']),
              Filters.DisciplineFilter('nec')),

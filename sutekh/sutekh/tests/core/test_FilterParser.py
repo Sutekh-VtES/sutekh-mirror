@@ -62,8 +62,8 @@ class FilterParserTests(SutekhTest):
         # where the two filters should give the same results
         aTests = [
             # Single & Multiple value tests
-            ('Clan in "Follower of Set"',
-             Filters.ClanFilter('Follower of Set')),
+            ('Clan in "Ministry"',
+             Filters.ClanFilter('Ministry')),
             ('Clan in Ravnos, Samedi',
              Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
             ('Discipline in obf', Filters.DisciplineFilter('obf')),
@@ -208,8 +208,8 @@ class FilterParserTests(SutekhTest):
     def test_quoting(self):
         """Check that both single and double quotes work"""
         aTests = [
-            ('Clan in "Follower of Set"',
-             Filters.ClanFilter('Follower of Set')),
+            ('Clan in "Ministry"',
+             Filters.ClanFilter('Ministry')),
             ('Clan in "Ravnos", "Samedi"',
              Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
             ("Clan in 'Ravnos', 'Samedi'",
@@ -469,8 +469,8 @@ class FilterParserTests(SutekhTest):
         # The tests a given as "Expression", "Equivilant Filter"
         # where the two filters should give the same results
         aTests = [
-            ('Clan in "Follower of Set" and CardType in $a',
-             Filters.ClanFilter('Follower of Set')),
+            ('Clan in "Ministry" and CardType in $a',
+             Filters.ClanFilter('Ministry')),
             ('Clan in Ravnos, Samedi and Clan in $a',
              Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
             ('Discipline in obf or Discipline in $a',
@@ -500,11 +500,11 @@ class FilterParserTests(SutekhTest):
         # Test disabling sections
         # We will always disable the first section in these filters
         aDisableTests = [
-            ('Clan in "Assamite" and Clan in "Follower of Set"',
-             Filters.ClanFilter('Follower of Set')),
-            ('Clan in "Assamite" and Clan in Ravnos, Samedi',
+            ('Clan in "Banu Haqim" and Clan in "Ministry"',
+             Filters.ClanFilter('Ministry')),
+            ('Clan in "Banu Haqim" and Clan in Ravnos, Samedi',
              Filters.MultiClanFilter(['Ravnos', 'Samedi'])),
-            ('Clan in "Assamite" and Discipline in obf',
+            ('Clan in "Banu Haqim" and Discipline in obf',
              Filters.DisciplineFilter('obf')),
             ('Discipline in obf or Discipline in nec, Quietus',
              Filters.MultiDisciplineFilter(['nec', 'qui']))
