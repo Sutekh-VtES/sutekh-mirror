@@ -188,7 +188,7 @@ class GroupingsTests(SutekhTest):
         self.assertTrue('Osebo' in aGrpNames)
         self.assertTrue('Pander' in aGrpNames)
         self.assertTrue(self.oAabbt in _get_cards_for_group(
-            aGrp, 'Follower of Set'))
+            aGrp, 'Ministry'))
         self.assertTrue(self.oEarl in _get_cards_for_group(aGrp, 'Visionary'))
         self.assertTrue(self.oSwallowed in _get_cards_for_group(aGrp, None))
 
@@ -390,5 +390,5 @@ class GroupingsTests(SutekhTest):
         self.assertTrue('Pander' in aGrpNames)
 
         aFollwers = [x.abstractCard for x in
-                     _get_cards_for_group(aGrp, 'Follower of Set')]
+                     _get_cards_for_group(aGrp, 'Ministry')]
         self.assertTrue(self.oAabbt in aFollwers)

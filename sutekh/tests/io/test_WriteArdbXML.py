@@ -168,10 +168,10 @@ The anarch with this equipment gets +1 stealth on actions that require an anarch
       <name>Path of Blood, The</name>
       <set>LotN</set>
       <cost>1 pool</cost>
-      <requirement>Assamite</requirement>
+      <requirement>Banu Haqim</requirement>
       <type>Master</type>
       <text>Unique master.
-Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
+Put this card in play. Cards that require Quietus [qui] {cost Banu Haqim 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
     </card><card count="1" databaseID="81">
       <name>Walk of Flame</name>
       <set>KoT</set>

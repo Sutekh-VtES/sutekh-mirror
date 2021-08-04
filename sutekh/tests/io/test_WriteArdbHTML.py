@@ -1311,14 +1311,14 @@ EXPECTED_4 = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       <ul>
         <li>
           <span class="label">Requires:</span>
-          <span class="requirement">Assamite</span>
+          <span class="requirement">Banu Haqim</span>
         </li><li>
           <span class="label">Cost:</span>
           <span class="cost">1 pool</span>
         </li>
       </ul><div class="text">
         <p>Unique master.</p>
-        <p>Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
+        <p>Put this card in play. Cards that require Quietus [qui] {cost Banu Haqim 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</p>
       </div><h4 class="libraryttype">Reaction</h4>
       <h5 class="cardname">Hide the Heart</h5>
       <ul>
