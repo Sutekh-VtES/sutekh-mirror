@@ -100,9 +100,11 @@ Clans,Ven,Ventrue
 Clans,Caitiff,Caitiff
 Clans,Abom,Abomination
 Clans,Gangrel,Gangrel
-Clans,Assa,Assamite
-Clans,Set,Follower of Set
-Clans,FoS,Follower of Set
+Clans,Assa,Banu Haqim
+Clans,Assamite,Banu Haqim
+Clans,Follower of Set,Ministry
+Clans,Set,Ministry
+Clans,FoS,Ministry
 Clans,Giov,Giovanni
 Clans,Ravnos,Ravnos
 Clans,Baali,Baali
@@ -198,6 +200,7 @@ Disciplines,Temporis,tem
 Disciplines,TEM,tem
 Disciplines,Thanatosis,thn
 Disciplines,THN,thn
+Disciplines,Blood Sorcery,tha
 Disciplines,Thaumaturgy,tha
 Disciplines,THA,tha
 Disciplines,Valeren,val
@@ -236,7 +239,7 @@ Artist: Franz Vohwinkel
 Name: Aabbt Kindred
 [FN:U2]
 Cardtype: Vampire
-Clan: Follower of Set
+Clan: Ministry
 Group: 2
 Capacity: 4
 Discipline: for pre ser
@@ -289,7 +292,7 @@ Artist: John Bridges
 Name: Abd al-Rashid
 [AH:V3, FN:PA]
 Cardtype: Vampire
-Clan: Assamite
+Clan: Banu Haqim
 Group: 2
 Capacity: 5
 Discipline: obf CEL QUI
@@ -299,7 +302,7 @@ Artist: Tom Wänerstrand
 Name: Abdelsobek
 [LotN:U]
 Cardtype: Vampire
-Clan: Follower of Set
+Clan: Ministry
 Group: 5
 Capacity: 5
 Discipline: for nec obf pre ser
@@ -451,7 +454,7 @@ Artist: Christopher Shy
 Name: Amisa
 [AH:V3, FN:PS]
 Cardtype: Vampire
-Clan: Follower of Set
+Clan: Ministry
 Group: 2
 Capacity: 8
 Discipline: pre pro OBF SER
@@ -690,7 +693,7 @@ Artist: Jim Pavelec
 Name: Kabede Maru
 [LotN:U]
 Cardtype: Vampire
-Clan: Assamite
+Clan: Banu Haqim
 Group: 5
 Capacity: 9
 Discipline: abo pot AUS CEL OBF QUI
@@ -700,7 +703,7 @@ Artist: Ken Meyer, Jr.
 Name: Kemintiri
 [KMW:U]
 Cardtype: Vampire
-Clan: Follower of Set
+Clan: Ministry
 Group: 2
 Capacity: 10
 Level: Advanced
@@ -795,10 +798,10 @@ Artist: Pete Venters; Sam Araya
 Name: The Path of Blood
 [AH:C2, FN:PA, LotN:PA2]
 Cardtype: Master
-Clan: Assamite
+Clan: Banu Haqim
 Cost: 1 pool
 Unique master.
-Put this card in play. Cards that require Quietus [qui] {cost Assamites 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.
+Put this card in play. Cards that require Quietus [qui] {cost Banu Haqim 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.
 Artist: Drew Tucker; Jeff Holt
 
 Name: Pier 13, Port of Baltimore
@@ -1019,7 +1022,7 @@ Clan: Ravnos
 Group: 3
 Capacity: 8
 Discipline: ANI CEL CHI FOR
-Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Followers of Set, Etienne's hand damage is aggravated.
+Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Ministers, Etienne's hand damage is aggravated.
 Artist: Jeff Holt
 """
 
