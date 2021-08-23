@@ -1,3 +1,18 @@
+23 Aug 2021
+ * Add special handling for the kickstarter reprints of the PDF sets.
+ * Update test data to include examples and update tests to match.
+
+03 Aug 2021
+ * Update icon manager to pull V5 icons.
+ * Update discipline list to handle the 'Blood Sorcery' rename.
+ * Update tests to use the new 'Ministry' and 'Banu Haqim' clan names.
+
+19 Apr 2021
+ * Update detection of the 'unique' keyword to the latest cardlist.
+
+20 Jan 2021
+ * Fix a bug in the 'Show Exported' dialog.
+
 17 Jan 2021
  * Release Sutekh 1.1.0
 
