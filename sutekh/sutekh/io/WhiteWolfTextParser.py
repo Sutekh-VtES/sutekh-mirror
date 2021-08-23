@@ -21,6 +21,27 @@ from sutekh.base.Utility import move_articles_to_front
 BC_RARITIES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
                'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
 
+# Kickstarter versions aren't marked as separate expansions from the PDF
+# versions in the cardlist, so we create our own mapping.
+KICKSTARTER_EDITIONS = {
+   "au": "Anarchs Unbound (Kickstarter Edition)",
+   "tu": "The Unaligned (Kickstarter Edition)",
+   "dm": "Danse Macabre (Kickstarter Edition)",
+}
+
+
+# Special case within a special case alert
+# These cards where not printed in the original PDF set, bit as later
+# promos, and then added to the Kickstarter reprint set.
+# We can't pick this up from the promo dates, since other cards released
+# at the same time where reprinted elsewhere and not added to the kickstarter
+SPECIAL_TU_KICKSTARTER_CARDS = [
+    'Bulscu (Advanced)',
+    'Claudio Severino (Advanced)',
+    'Rise of the Fallen',
+    'Winterlich',
+]
+
 
 def strip_braces(sText):
     """Helper function for searching for keywords. Strip all {} tags from the
@@ -431,6 +452,15 @@ class CardDict(dict):
                 # Add the Anthology reprint cases
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
                 aExp.append(('AnthologyI', aPair[1].strip()))
+            elif aPair[0].strip().lower() in KICKSTARTER_EDITIONS:
+                # Add these as a fixed rarity
+                aExp.append((KICKSTARTER_EDITIONS[aPair[0].strip().lower()], 'A'))
+                if oCard.name not in SPECIAL_TU_KICKSTARTER_CARDS:
+                    # Add the PDF expansion as well
+                    # We force the PDF rarity to 'Not Applicable', as a better
+                    # fit and to distinguish it from the 'Fixed' kickstarter
+                    # editions
+                    aExp.append((aPair[0].strip(), 'NA'))
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 
