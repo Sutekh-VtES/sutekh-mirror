@@ -71,6 +71,9 @@ class WhiteWolfParserTests(SutekhTest):
         u"Bronwen",
         u"Cedric",
         u"Cesewayo",
+        u"Claudia",
+        u"Count Jocalo",
+        u"Crow",
         u"Dramatic Upheaval",
         u'Earl "Shaka74" Deams',
         u"Enkidu, The Noah",
@@ -102,6 +105,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Protracted Investment",
         u"Raven Spy",
         u"Rebekka, Chantry Elder of Munich",
+        u"Rise of the Fallen",
         u"Rock Cat",
         u'Scapelli, The Family "Mechanic"',
         u"Sha-Ennu",
@@ -673,6 +677,42 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertTrue(IRarityPair(('LoB', 'Common')) in oAye.rarity)
         self.assertTrue(IRarityPair(('EK', 'Common')) in oAye.rarity)
+
+        # Check that Anarchs Unbound cards have both PDF and kickstart versions
+
+        oCrow = IAbstractCard("Crow")
+        oPDFDM = IExpansion("Anarchs Unbound")
+        self.assertTrue(oPDFDM.shortname, "AU")
+        oKickstarterDM = IExpansion("Anarchs Unbound (Kickstarter Edition)")
+        self.assertTrue(oPDFDM in [oP.expansion for oP in oCrow.rarity])
+        self.assertTrue(oKickstarterDM in [oP.expansion for oP in oCrow.rarity])
+
+        # ditto Danse Macabre
+
+        oClaudia = IAbstractCard("Claudia")
+        oPDFDM = IExpansion("Danse Macabre")
+        self.assertTrue(oPDFDM.shortname, "DM")
+        oKickstarterDM = IExpansion("Danse Macabre (Kickstarter Edition)")
+        self.assertTrue(oPDFDM in [oP.expansion for oP in oClaudia.rarity])
+        self.assertTrue(oKickstarterDM in [oP.expansion for oP in oClaudia.rarity])
+
+        # Check The Unaligned pdf
+
+        oCountJ = IAbstractCard("Count Jocalo")
+        oPDFDM = IExpansion("The Unaligned")
+        self.assertTrue(oPDFDM.shortname, "TU")
+        oKickstarterDM = IExpansion("The Unaligned (Kickstarter Edition)")
+        self.assertTrue(oPDFDM in [oP.expansion for oP in oCountJ.rarity])
+        self.assertTrue(oKickstarterDM in [oP.expansion for oP in oCountJ.rarity])
+
+        # Check the kickstarter on reprinted promos don't have PDF versions
+
+        oRise = IAbstractCard("Rise of the Fallen")
+
+        # Must have kickstarter version
+        self.assertTrue(oKickstarterDM in [oP.expansion for oP in oRise.rarity])
+        # But not PDF
+        self.assertFalse(oPDFDM in [oP.expansion for oP in oRise.rarity])
 
 
     def test_card_type_checkers(self):
