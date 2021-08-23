@@ -47,6 +47,12 @@ Expansions,Eden's Legacy Storyline,Eden's Legacy Storyline
 Expansions,Black Chantry Reprint,Black Chantry
 Expansions,Black Chantry,Black Chantry
 Expansions,ReversePrefix:Promo-,Promo
+Expansions,AU,Anarchs Unbound
+Expansions,TU,The Unaligned
+Expansions,DM,Danse Macabre
+Expansions,Anarchs Unbound (Kickstarter Edition),Anarchs Unbound (Kickstarter Edition)
+Expansions,The Unaligned (Kickstarter Edition),The Unaligned (Kickstarter Edition)
+Expansions,Danse Macabre (Kickstarter Edition),Danse Macabre (Kickstarter Edition)
 Rarities,C,Common
 Rarities,C1,Common
 Rarities,C2,Common
@@ -578,6 +584,36 @@ Discipline: ani AUS CEL DOM POT THA
 Laibon magaji: Once each action, Cesewayo may burn 1 blood to get +1 intercept.
 Artist: Abrar Ajmal
 
+Name: Claudia
+[DM:C/2]
+Cardtype: Vampire
+Clan: Lasombra
+Group: 5
+Capacity: 2
+Discipline: obt
+Sabbat: Black Hand.
+Artist: Nicolas "Dimple" Bigot
+
+Name: Count Jocalo
+[TU:C/B2]
+Cardtype: Vampire
+Clan: Ministry
+Group: 6
+Capacity: 10
+Discipline: NEC OBF PRE SER THA
+Independent: If Jocalo is ready after your predator or prey uses a discard phase action, you can look at that Methuselah's hand (after the replacement card is drawn, if any). +1 bleed. +1 hand size.
+Artist: Ginés Quiñonero
+
+Name: Crow
+[AU:C/2]
+Cardtype: Vampire
+Clan: Gangrel
+Group: 5
+Capacity: 5
+Discipline: for pro tha ANI
+Anarch.
+Artist: Christopher Shy
+
 Name: Dramatic Upheaval
 [Jyhad:V, VTES:V, CE:U, Anarchs:PAB, BH:PM]
 Cardtype: Political Action
@@ -857,6 +893,13 @@ Capacity: 8
 Discipline: pot AUS PRE THA
 Camarilla: Rebekka gets +1 stealth on each of her actions. Rebekka gets +1 bleed when bleeding a Methuselah who controls a ready Malkavian.
 Artist: Anson Maddocks
+
+Name: Rise of the Fallen
+[Promo-20150221, TU:A1/B1]
+Cardtype: Action
++1 stealth action. Requires an infernal minion. Unique.
+Put this card in play. Your prey burns 1 pool after resolution of each action during which you have burned corruption counters. Any Methuselah can burn a vampire they control with any corruption counters during their unlock phase to burn this card.
+Artist: Ginés Quiñonero
 
 Name: Rock Cat
 [BL:R1, LoB:R, HttB:PGar]
