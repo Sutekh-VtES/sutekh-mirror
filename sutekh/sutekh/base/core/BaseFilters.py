@@ -347,6 +347,14 @@ class MultiExpansionFilter(MultiFilter):
         self._oIdField = self._oMapTable.q.rarity_pair_id
 
 
+    # pylint: disable=missing-docstring
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        return sorted([x.name for x in Expansion.select()
+                       if x.name[:5] != 'Promo'])
+
+
 class ExpansionRarityFilter(SingleFilter):
     """Filter on Expansion & Rarity combo """
     types = ('AbstractCard', 'PhysicalCard')
@@ -388,8 +396,9 @@ class MultiExpansionRarityFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        aExpansions = [x.name for x in Expansion.select().orderBy('name')
+        aExpansions = [x.name for x in Expansion.select()
                        if x.name[:5] != 'Promo']
+        aExpansions.sort()
         aResults = []
         for sExpan in aExpansions:
             oExpansion = IExpansion(sExpan)
@@ -485,7 +494,7 @@ class MultiCardTypeFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.name for x in CardType.select().orderBy('name')]
+        return sorted([x.name for x in CardType.select()])
 
 
 class ArtistFilter(SingleFilter):
@@ -516,7 +525,7 @@ class MultiArtistFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.name for x in Artist.select().orderBy('name')]
+        return sorted([x.name for x in Artist.select()])
 
 
 class KeywordFilter(SingleFilter):
@@ -547,7 +556,7 @@ class MultiKeywordFilter(MultiFilter):
     # don't need docstrings for _get_expression, get_values & _get_joins
     @classmethod
     def get_values(cls):
-        return [x.keyword for x in Keyword.select().orderBy('keyword')]
+        return sorted([x.keyword for x in Keyword.select()])
 
 
 class BaseCardTextFilter(DirectFilter):
@@ -830,8 +839,8 @@ class MultiPhysicalExpansionFilter(DirectFilter):
     @classmethod
     def get_values(cls):
         aExpansions = [cls.__sUnspec]
-        aExpansions.extend([x.name for x in Expansion.select().orderBy('name')
-                            if x.name[:5] != 'Promo'])
+        aExpansions.extend(sorted([x.name for x in Expansion.select()
+                                   if x.name[:5] != 'Promo']))
         return aExpansions
 
     def _get_expression(self):
