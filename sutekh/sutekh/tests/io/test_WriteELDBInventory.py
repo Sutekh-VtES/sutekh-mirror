@@ -100,6 +100,10 @@ EXPECTED = """"ELDB - Inventory"
 "Sheela Na Gig",0,0,"","Crypt"
 "Etienne Fauberge",0,0,"","Crypt"
 "Baron Dieudonne",0,0,"","Crypt"
+"Crow",0,0,"","Crypt"
+"Claudia",0,0,"","Crypt"
+"Count Jocalo",0,0,"","Crypt"
+"Rise of the Fallen",0,0,"","Library"
 """
 
 

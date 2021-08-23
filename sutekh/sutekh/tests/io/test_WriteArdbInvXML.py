@@ -29,15 +29,15 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
       <adv>Advanced</adv>
       <name>Alan Sovereign</name>
       <set>Promo20051001</set>
-    </vampire><vampire databaseID="47" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="50" have="1" need="0" spare="0">
       <adv />
       <name>Hektor</name>
       <set>Third</set>
-    </vampire><vampire databaseID="50" have="1" need="0" spare="0">
+    </vampire><vampire databaseID="53" have="1" need="0" spare="0">
       <adv />
       <name>Inez "Nurse216" Villagrande</name>
       <set>NoR</set>
-    </vampire><vampire databaseID="75" have="2" need="0" spare="0">
+    </vampire><vampire databaseID="79" have="2" need="0" spare="0">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -64,22 +64,22 @@ EXPECTED_1 = """<inventory databaseVersion="%s" formatVersion="-TODO-1.0" genera
     </card><card databaseID="26" have="1" need="0" spare="0">
       <name>Anarch Manifesto, An</name>
       <set>TR</set>
-    </card><card databaseID="80" have="1" need="0" spare="0">
+    </card><card databaseID="84" have="1" need="0" spare="0">
       <name>Hide the Heart</name>
       <set>HttB</set>
-    </card><card databaseID="49" have="4" need="0" spare="0">
+    </card><card databaseID="52" have="4" need="0" spare="0">
       <name>Immortal Grapple</name>
       <set>Jyhad</set>
-    </card><card databaseID="70" have="1" need="0" spare="0">
+    </card><card databaseID="74" have="1" need="0" spare="0">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
-    </card><card databaseID="74" have="2" need="0" spare="0">
+    </card><card databaseID="78" have="2" need="0" spare="0">
       <name>Swallowed by the Night</name>
       <set>Third</set>
-    </card><card databaseID="62" have="1" need="0" spare="0">
+    </card><card databaseID="65" have="1" need="0" spare="0">
       <name>Path of Blood, The</name>
       <set>LotN</set>
-    </card><card databaseID="81" have="4" need="0" spare="0">
+    </card><card databaseID="85" have="4" need="0" spare="0">
       <name>Walk of Flame</name>
       <set>KoT</set>
     </card>
