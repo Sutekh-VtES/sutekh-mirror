@@ -43,8 +43,12 @@ class TestFilterModelPane(GuiSutekhTest):
         oFilter2 = oAST2.get_filter()
         # We're not doing the PhysicalCard join, so select on abstract
         # card
-        aResults1 = list(oFilter1.select(AbstractCard))
-        aResults2 = list(oFilter2.select(AbstractCard))
+        # MySQL's optimise can decide to return different orderings
+        # for the same query, so we explicitly order by the name for
+        # consistent results
+        aResults1 = list(oFilter1.select(AbstractCard).orderBy('canonical_name'))
+        aResults2 = list(oFilter2.select(AbstractCard).orderBy('canonical_name'))
+
         self.assertEqual(aResults1, aResults2,
                          'results differ: %s (from %s) != %s (from %s)' % (
                              aResults1, oAST1, aResults2, oAST2))
