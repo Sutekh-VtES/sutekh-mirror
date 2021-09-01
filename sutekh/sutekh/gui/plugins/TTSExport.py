@@ -422,11 +422,13 @@ class TTSExport(SutekhPlugin):
         # be called by the actual gui
         oIIegal = IKeyword('not for legal play')
         dAllCards = {}
+        aFound = set()
         for oCard in AbstractCard.select():
             # We want this so we can identify missed storyline cards as such
             dAllCards[make_json_name(oCard)] = oCard
         aLegalMissed = []
         aNotLegalMissed = []
+        aTTSMissed = []
         for sName, oCard in dAllCards.items():
             if sName not in self._dTTSData:
                 sAltName = make_alternative_json_name(oCard)
@@ -436,6 +438,14 @@ class TTSExport(SutekhPlugin):
                         aNotLegalMissed.append((sName, oCard))
                     else:
                         aLegalMissed.append((sName, oCard))
+                else:
+                    aFound.add(sAltName)
+            else:
+                aFound.add(sName)
+        # Check TTS file for entries we haven't matched to a card
+        for sName in self._dTTSData:
+            if sName not in aFound:
+                aTTSMissed.append(sName)
         # We print these, because this is testing related
         print('Legal Cards Missed')
         print('------------------')
@@ -448,6 +458,11 @@ class TTSExport(SutekhPlugin):
         print()
         for sNickName, oCard in aNotLegalMissed:
             print("%s (%s)" % (oCard.name, sNickName))
+        print()
+        print('TTS Entries with no matching card')
+        print('---------------------------------')
+        for sName in aTTSMissed:
+            print("%s" % sName)
         print()
 
     def run_checks(self):
