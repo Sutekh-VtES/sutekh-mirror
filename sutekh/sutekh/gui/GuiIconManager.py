@@ -35,12 +35,19 @@ class GuiIconManager(CachedIconManager, IconManager):
         """Prompt the user to download the icons if the icon directory
            doesn't exist"""
         if os.path.lexists(self._sPrefsDir):
-            # We accept broken links as stopping the prompt
-            if os.path.lexists("%s/clans" % self._sPrefsDir):
+            # We accept empty directories and broken links as stopping the prompt
+            if os.path.lexists("%s/rulebook/clans" % self._sPrefsDir):
                 return
-            # Check if we need to upgrade to the V:EKN icons
-            ensure_dir_exists("%s/clans" % self._sPrefsDir)
-            if os.path.exists('%s/IconClanAbo.gif' % self._sPrefsDir):
+            # Check if we need to upgrade to the V5 icons
+            ensure_dir_exists("%s/rulebook/clans" % self._sPrefsDir)
+            if os.path.exists('%s/clans' % self._sPrefsDir) and \
+                    os.path.exists('%s/clans/iconclanabo.gif' % self._sPrefsDir):
+                iResponse = do_complaint(
+                    "Sutekh has switched to using the updated V5 icons "
+                    "from the V:EKN site.\nIcons won't work until you "
+                    "re-download them.\n\nDownload icons?",
+                    Gtk.MessageType.INFO, Gtk.ButtonsType.YES_NO, False)
+            elif os.path.exists('%s/IconClanAbo.gif' % self._sPrefsDir):
                 iResponse = do_complaint(
                     "Sutekh has switched to using the icons from the "
                     "V:EKN site.\nIcons won't work until you "
@@ -53,7 +60,7 @@ class GuiIconManager(CachedIconManager, IconManager):
             # Create directory, so we don't prompt next time unless the user
             # intervenes
             ensure_dir_exists(self._sPrefsDir)
-            ensure_dir_exists("%s/clans" % self._sPrefsDir)
+            ensure_dir_exists("%s/rulebook/clans" % self._sPrefsDir)
             # Ask the user if he wants to download
             iResponse = do_complaint("Sutekh can download icons for the cards "
                                      "from the V:EKN site\nThese icons will "
