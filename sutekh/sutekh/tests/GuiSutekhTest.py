@@ -40,7 +40,7 @@ class ConfigSutekhTest(SutekhTest):
         # Don't try and create a path in the user's home dir
         self.sPluginDir = tempfile.mkdtemp(suffix='dir', prefix='sutekhtests')
         # For new icon check
-        os.makedirs(os.path.join(self.sPluginDir, 'clans'))
+        os.makedirs(os.path.join(self.sPluginDir, 'rulebook', 'clans'))
         self.oConfig.set_plugin_key('CardImagePlugin', 'card image path',
                                     self.sPluginDir)
         self.oConfig.set_plugin_key('CardImagePlugin', 'download images',
@@ -63,7 +63,8 @@ class ConfigSutekhTest(SutekhTest):
     def tearDown(self):
         """Tear down config file stuff after test run"""
         os.remove(os.path.join(self.sPluginDir, 'index.txt'))
-        os.rmdir(os.path.join(self.sPluginDir, 'clans'))
+        os.rmdir(os.path.join(self.sPluginDir, 'rulebook', 'clans'))
+        os.rmdir(os.path.join(self.sPluginDir, 'rulebook'))
         os.rmdir(self.sPluginDir)
         super().tearDown()
 
