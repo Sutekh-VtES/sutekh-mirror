@@ -17,7 +17,7 @@ from sutekh.base.core.BaseTables import PhysicalCardSet, AbstractCard
 from sutekh.base.core.BaseAdapters import IKeyword
 from sutekh.base.gui.SutekhFileWidget import ExportDialog, ImportDialog
 from sutekh.base.gui.SutekhDialog import do_complaint_error
-from sutekh.base.Utility import safe_filename
+from sutekh.base.Utility import safe_filename, move_articles_to_back, to_ascii
 
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.ELDBUtilities import norm_name
@@ -194,6 +194,13 @@ def make_json_name(oCard):
     if sJSONName in SPECIAL_CASES:
         sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
+
+def make_alternative_json_name(oCard):
+    """Alternative formatting for those cards that use a different
+       convention"""
+    sJSONName = move_articles_to_back(oCard.name)
+    sJSONName = to_ascii(sJSONName)
+    return sJSONName.lower()
 
 
 def fix_deck_ids(dCards):
@@ -376,12 +383,16 @@ class TTSExport(SutekhPlugin):
         for oCard in oCardSet.cards:
             # Need to turn name into the JSON file version
             sJSONName = make_json_name(oCard.abstractCard)
+            sAltName = make_alternative_json_name(oCard.abstractCard)
             if sJSONName not in self._dTTSData:
-                do_complaint_error("Unable to find an entry for %s (%s)" %
-                                   (oCard.abstractCard.name, sJSONName))
-                logging.warning("Unable to find an entry for %s (%s)",
-                                oCard.abstractCard.name, sJSONName)
-                return
+                # Check if it's just using the card name instead
+                if sAltName not in self._dTTSData:
+                    do_complaint_error("Unable to find an entry for %s (%s)" %
+                                       (oCard.abstractCard.name, sJSONName))
+                    logging.warning("Unable to find an entry for %s (%s)",
+                                    oCard.abstractCard.name, sJSONName)
+                    return
+                sJSONName = sAltName
             if is_crypt_card(oCard.abstractCard):
                 aCrypt.append(sJSONName)
             else:
@@ -418,10 +429,13 @@ class TTSExport(SutekhPlugin):
         aNotLegalMissed = []
         for sName, oCard in dAllCards.items():
             if sName not in self._dTTSData:
-                if oIIegal in oCard.keywords:
-                    aNotLegalMissed.append((sName, oCard))
-                else:
-                    aLegalMissed.append((sName, oCard))
+                sAltName = make_alternative_json_name(oCard)
+                # Some cards just use the card name, not the nickname
+                if sAltName not in self._dTTSData:
+                    if oIIegal in oCard.keywords:
+                        aNotLegalMissed.append((sName, oCard))
+                    else:
+                        aLegalMissed.append((sName, oCard))
         # We print these, because this is testing related
         print('Legal Cards Missed')
         print('------------------')
