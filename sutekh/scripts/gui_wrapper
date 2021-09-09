@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Wrapper script actually run Sutekh on mac from the correct location
+
+dir=$(dirname $0)
+cd $dir/..
+./SutekhGui

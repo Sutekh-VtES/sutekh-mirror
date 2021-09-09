@@ -1,0 +1,27 @@
+#!/bin/bash
+
+dir=$(dirname $0)
+fulldir=$(pwd)/${dir}
+
+# This is a complicated piece of applescript, largely inspired by
+# https://superuser.com/questions/1519128/how-do-i-target-and-close-a-specific-terminal-window-in-applescript
+# to launch the wrapper script in a new terminal, wait for it to finish, and then
+# close the terminal once it's done.
+#
+# We do this because the macos default is to leave the terminal open after the sutekh process
+# exits, unless configured otherwise, and since we're using the terminal just to get around
+# issues caused by stdout/stdin being missing in a bundled app, and no for actual output,
+# this is not useful behaviour
+
+osascript <<EOF
+   tell application "Terminal"
+      set P to do script "${fulldir}/gui_wrapper ; exit"
+      set W to the id of window 1 where its tab 1 = P
+      #do script "${fulldir}/gui_wrapper; exit" in P 
+      repeat
+         delay 1
+         if not busy of P then exit repeat
+      end repeat
+      close window id W
+   end tell
+EOF
