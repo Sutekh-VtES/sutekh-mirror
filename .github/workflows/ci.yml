@@ -231,11 +231,17 @@ jobs:
         # Permissions are helpful for playing with the files in the app
         chmod 755 build/Sutekh*app*/Contents/MacOS/SutekhCli* build/Sutekh*app*/Contents/MacOS/SutekhGui*
         cd ..
+    - name: Tar cx_Freeze app
+      # We need to do this so we can preserve permissions, as the
+      # github artifact upload explicitly doesn't
+      run: |
+        cd sutekh/build/
+        tar -cf sutekh_app.tar Sutekh*app*
     - name: Upload cx_Freeze app directory
       uses: actions/upload-artifact@v2
       with:
         name: sutekh-cx_Freeze_macos-app
-        path: sutekh/build/Sutekh*app*/*
+        path: sutekh/build/sutekh_app.tar
     #- name: Build dmg file
       #run: |
         #cd sutekh
