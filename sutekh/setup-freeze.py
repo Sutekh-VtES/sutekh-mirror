@@ -168,6 +168,15 @@ if os.path.exists(ssl_paths.openssl_capath):
     build_exe_options['include_files'].append(
         (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
 
+# The logic here is a bit fincky - on MacOS we need to use the shell script to
+# launch the actual app in a terminal, but because of how app packages
+# work, we need to fiddle with the included file and the Info.plist
+# file via the plist_items options
+if sys.platform == 'darwin':
+    build_exe_options['include_files'].append('scripts/macos_launcher')
+    build_exe_options['include_files'].append('scripts/gui_wrapper')
+    build_mac_options = {'plist_items': [('CFBundleExecutable', 'scripts/macos_launcher')]}
+
 
 setup   (   # Metadata
             name = SutekhInfo.NAME,
@@ -214,6 +223,7 @@ setup   (   # Metadata
             },
             options = {
                 "build_exe": build_exe_options,
+                "bdist_mac": build_mac_options,
             },
             executables = [Executable("sutekh/SutekhGui.py", icon="artwork/sutekh-icon-inkscape.ico",
                                       base=guibase),
