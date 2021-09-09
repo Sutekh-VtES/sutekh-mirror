@@ -47,6 +47,8 @@ build_exe_options = {
     'packages': ['gi', 'cairo', 'sutekh.base.gui.plugins', 'sutekh.gui.plugins'],
 }
 
+build_mac_options = {}
+
 
 # Heavily based off https://github.com/achadwick/hello-cxfreeze-gtk
 if sys.platform == 'win32':
@@ -173,9 +175,9 @@ if os.path.exists(ssl_paths.openssl_capath):
 # work, we need to fiddle with the included file and the Info.plist
 # file via the plist_items options
 if sys.platform == 'darwin':
-    build_exe_options['include_files'].append('scripts/macos_launcher')
-    build_exe_options['include_files'].append('scripts/gui_wrapper')
-    build_mac_options = {'plist_items': [('CFBundleExecutable', 'scripts/macos_launcher')]}
+    build_exe_options['include_files'].append(('scripts/macos_launcher', 'scripts/macos_launcher'))
+    build_exe_options['include_files'].append(('scripts/gui_wrapper', 'scripts/gui_wrapper'))
+    build_mac_options['plist_items'] = [('CFBundleExecutable', 'scripts/macos_launcher')]
 
 
 setup   (   # Metadata
