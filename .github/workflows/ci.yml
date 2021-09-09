@@ -236,16 +236,16 @@ jobs:
       with:
         name: sutekh-cx_Freeze_macos-app
         path: sutekh/build/Sutekh*app*/*
-    - name: Build dmg file
-      run: |
-        cd sutekh
-        python3 setup-freeze.py bdist_dmg
-        cd ..
-    - name: Upload cx_Freeze dmg file
-      uses: actions/upload-artifact@v2
-      with:
-        name: sutekh-cx_Freeze_macos-dmg
-        path: sutekh/build/Sutekh*dmg
+    #- name: Build dmg file
+      #run: |
+        #cd sutekh
+        #python3 setup-freeze.py bdist_dmg
+        #cd ..
+    #- name: Upload cx_Freeze dmg file
+      #uses: actions/upload-artifact@v2
+      #with:
+        #name: sutekh-cx_Freeze_macos-dmg
+        #path: sutekh/build/Sutekh*dmg
 
 
   sqlite-linux-checks:
