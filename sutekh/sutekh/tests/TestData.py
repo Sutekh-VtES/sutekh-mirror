@@ -14,7 +14,7 @@
 # that duplicates in the cardlist are handled properly
 
 TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
-CardNames,Anastaszdi Zagreb,Anastasz di Zagreb
+CardNames,Anastaszdi Zagreb,Anastasz di Zagreb (Group 3)
 CardNames,"Pier 13","Pier 13, Port of Baltimore"
 Expansions,Jyhad,Jyhad
 Expansions,VTES,VTES
@@ -1067,6 +1067,26 @@ Capacity: 8
 Discipline: ANI CEL CHI FOR
 Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Ministers, Etienne's hand damage is aggravated.
 Artist: Jeff Holt
+
+Name: Victoria Ash
+[Promo-20211015]
+Cardtype: Vampire
+Clan: Toreador
+Group: 7
+Capacity: 6
+Discipline: aus cel dom PRE
+Camarilla: While Victoria is ready, you can discard 1 card during a bleed action to give an acting Banu Haqim +1 bleed. +1 bleed.
+Artist: Carmen Cornet
+
+Name: Victoria Ash
+[FN:U, CE:PTo]
+Cardtype: Vampire
+Clan: Toreador
+Group: 2
+Capacity: 6
+Discipline: aus cel dom PRE
+Camarilla primogen: Victoria can lock a younger ready vampire as a +1 stealth (D) action.
+Artist: John Van Fleet
 """
 
 TEST_EXP_INFO = """
