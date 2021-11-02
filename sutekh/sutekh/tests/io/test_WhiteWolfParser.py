@@ -34,69 +34,69 @@ class WhiteWolfParserTests(SutekhTest):
     aExpectedCards = [
         u".44 Magnum",
         u"AK-47",
-        u"Aabbt Kindred",
-        u"Aaron Bathurst",
-        u"Aaron Duggan, Cameron's Toady",
+        u"Aabbt Kindred (Group 2)",
+        u"Aaron Bathurst (Group 4)",
+        u"Aaron Duggan, Cameron's Toady (Group 2)",
         u"Aaron's Feeding Razor",
         u"Abandoning the Flesh",
         u"Abbot",
-        u"Abd al-Rashid",
-        u"Abdelsobek",
-        u"Abebe",
+        u"Abd al-Rashid (Group 2)",
+        u"Abdelsobek (Group 5)",
+        u"Abebe (Group 4)",
         u"Abjure",
         u"Ablative Skin",
         u"Abombwe",
-        u"Aeron",
+        u"Aeron (Group 3)",
         u"Agent of Power",
         u"Aire of Elation",
-        u"Akram",
-        u"Alabástrom",
-        u"Alan Sovereign",
-        u"Alan Sovereign (Advanced)",
-        u"Alexandra",
-        u"Alfred Benezri",
-        u"Ambrogino Giovanni",
-        u"Amisa",
+        u"Akram (Group 2)",
+        u"Alabástrom (Group 6)",
+        u"Alan Sovereign (Advanced) (Group 3)",
+        u"Alan Sovereign (Group 3)",
+        u"Alexandra (Group 2)",
+        u"Alfred Benezri (Group 3)",
+        u"Ambrogino Giovanni (Group 2)",
+        u"Amisa (Group 2)",
         u"An Anarch Manifesto",
         u"Anarch Railroad",
         u"Anarch Revolt",
-        u"Anastasz di Zagreb",
-        u"Angelica, The Canonicus",
-        u'Anna "Dictatrix11" Suljic',
-        u"Anson",
+        u"Anastasz di Zagreb (Group 3)",
+        u"Angelica, The Canonicus (Group 2)",
+        u'Anna "Dictatrix11" Suljic (Group 4)',
+        u"Anson (Group 1)",
         u"Ashur Tablets",
         u"Aye",
-        u"Baron Dieudonne",
+        u"Baron Dieudonne (Group 4)",
         u"Bravo",
-        u"Bronwen",
-        u"Cedric",
-        u"Cesewayo",
-        u"Claudia",
-        u"Count Jocalo",
-        u"Crow",
+        u"Bronwen (Group 2)",
+        u"Cedric (Group 4)",
+        u"Cesewayo (Group 4)",
+        u"Claudia (Group 5)",
+        u"Count Jocalo (Group 6)",
+        u"Crow (Group 5)",
         u"Dramatic Upheaval",
-        u'Earl "Shaka74" Deams',
-        u"Enkidu, The Noah",
-        u"Fidus, The Shrunken Beast",
+        u'Earl "Shaka74" Deams (Group 4)',
+        u"Enkidu, The Noah (Group 4)",
+        u"Fidus, The Shrunken Beast (Group 2)",
         u"Ghoul Retainer",
-        u"Gracis Nostinus",
+        u"Gracis Nostinus (Group 3)",
         u"Gypsies",
-        u"Harold Zettler, Pentex Director",
-        u"Hektor",
+        u"Harold Zettler, Pentex Director (Group 4)",
+        u"Hektor (Group 4)",
         u"Hide the Heart",
         u"High Top",
         u"Immortal Grapple",
-        u'Inez "Nurse216" Villagrande',
-        u"Kabede Maru",
-        u"Kemintiri (Advanced)",
+        u'Inez "Nurse216" Villagrande (Group 4)',
+        u"Kabede Maru (Group 5)",
+        u"Kemintiri (Advanced) (Group 2)",
         u"Living Manse",
-        u"L\xe1z\xe1r Dobrescu",
+        u"L\xe1z\xe1r Dobrescu (Group 2)",
         u"Motivated by Gehenna",
         u"Necromancy",
         u"New Blood",
         u"Off Kilter",
         u"Ossian",
-        u"Pariah",
+        u"Pariah (Group 2)",
         u"Paris Opera House",
         u"Park Hunting Ground",
         u"Pier 13, Port of Baltimore",
@@ -104,27 +104,30 @@ class WhiteWolfParserTests(SutekhTest):
         u"Predator's Communion",
         u"Protracted Investment",
         u"Raven Spy",
-        u"Rebekka, Chantry Elder of Munich",
+        u"Rebekka, Chantry Elder of Munich (Group 2)",
         u"Rise of the Fallen",
         u"Rock Cat",
         u'Scapelli, The Family "Mechanic"',
-        u"Sha-Ennu",
+        u"Sha-Ennu (Group 4)",
         u"Shade",
-        u"Sheela Na Gig",
+        u"Sheela Na Gig (Group 5)",
         u"Smite",
         u"Swallowed by the Night",
         u"The Ankara Citadel, Turkey",
         u"The Path of Blood",
-        u"The Siamese",
+        u"The Siamese (Group 2)",
         u"The Slaughterhouse",
         u"Two Wrongs",
+        u"Victoria Ash (Group 2)",
+        u"Victoria Ash (Group 7)",
         u"Vox Domini",
         u"Walk of Flame",
-        u"Yvette, The Hopeless",
-        u"Étienne Fauberge",
+        u"Yvette, The Hopeless (Group 3)",
+        u"Étienne Fauberge (Group 3)",
         ]
 
     def test_basic(self):
+
         """Basic WW list parser tests"""
         # pylint: disable=too-many-statements, too-many-locals
         # Want a long, sequential test case to minimise repeated setups
@@ -185,8 +188,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Dobrescu
         oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
-        self.assertEqual(oDob.canonicalName, u"l\xe1z\xe1r dobrescu")
-        self.assertEqual(oDob.name, u"L\xe1z\xe1r Dobrescu")
+        self.assertEqual(oDob.canonicalName, u"l\xe1z\xe1r dobrescu (group 2)")
+        self.assertEqual(oDob.name, u"L\xe1z\xe1r Dobrescu (Group 2)")
         self.assertTrue(oDob.text.startswith(
             u"Independent: L\xe1z\xe1r may move"))
         self.assertTrue(oDob.text.endswith(u"as a (D) action."))
@@ -232,8 +235,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Yvette
         oYvette = IAbstractCard(u"Yvette, The Hopeless")
-        self.assertEqual(oYvette.canonicalName, u"yvette, the hopeless")
-        self.assertEqual(oYvette.name, u"Yvette, The Hopeless")
+        self.assertEqual(oYvette.canonicalName, u"yvette, the hopeless (group 3)")
+        self.assertEqual(oYvette.name, u"Yvette, The Hopeless (Group 3)")
         self.assertTrue(oYvette.text.startswith("Camarilla."))
         self.assertEqual(oYvette.group, 3)
         self.assertEqual(oYvette.capacity, 3)
@@ -257,8 +260,8 @@ class WhiteWolfParserTests(SutekhTest):
         # Check Sha-Ennu
 
         oShaEnnu = IAbstractCard(u"Sha-Ennu")
-        self.assertEqual(oShaEnnu.canonicalName, u"sha-ennu")
-        self.assertEqual(oShaEnnu.name, u"Sha-Ennu")
+        self.assertEqual(oShaEnnu.canonicalName, u"sha-ennu (group 4)")
+        self.assertEqual(oShaEnnu.name, u"Sha-Ennu (Group 4)")
         self.assertTrue(oShaEnnu.text.startswith("Sabbat regent:"))
         self.assertTrue(oShaEnnu.text.endswith("+2 bleed."))
         self.assertEqual(oShaEnnu.group, 4)
@@ -288,11 +291,14 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(IKeyword('1 strength') in oShaEnnu.keywords)
         self.assertTrue(IKeyword('3 bleed') in oShaEnnu.keywords)
 
+        oShaEnnu2 = IAbstractCard(u"Sha-Ennu (Group 4)")
+        self.assertEqual(oShaEnnu2.id, oShaEnnu.id)
+
         # Check Kabede
 
         oKabede = IAbstractCard(u"Kabede Maru")
-        self.assertEqual(oKabede.canonicalName, u"kabede maru")
-        self.assertEqual(oKabede.name, u"Kabede Maru")
+        self.assertEqual(oKabede.canonicalName, u"kabede maru (group 5)")
+        self.assertEqual(oKabede.name, u"Kabede Maru (Group 5)")
         self.assertTrue(oKabede.text.startswith("Laibon magaji:"))
         self.assertTrue(oKabede.text.endswith("affect Kabede.)"))
         self.assertEqual(oKabede.group, 5)
@@ -346,8 +352,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Earl
         oEarl = IAbstractCard(u'Earl "Shaka74" Deams')
-        self.assertEqual(oEarl.canonicalName, u'earl "shaka74" deams')
-        self.assertEqual(oEarl.name, u'Earl "Shaka74" Deams')
+        self.assertEqual(oEarl.canonicalName, u'earl "shaka74" deams (group 4)')
+        self.assertEqual(oEarl.name, u'Earl "Shaka74" Deams (Group 4)')
         self.assertTrue(oEarl.text.startswith("Earl gets +1 stealth"))
         self.assertTrue(oEarl.text.endswith("[1 CONVICTION]."))
         self.assertEqual(oEarl.group, 4)
@@ -475,8 +481,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Kemintiri
         oKemintiri = IAbstractCard(u"Kemintiri (Advanced)")
-        self.assertEqual(oKemintiri.canonicalName, u"kemintiri (advanced)")
-        self.assertEqual(oKemintiri.name, u"Kemintiri (Advanced)")
+        self.assertEqual(oKemintiri.canonicalName, u"kemintiri (advanced) (group 2)")
+        self.assertEqual(oKemintiri.name, u"Kemintiri (Advanced) (Group 2)")
         self.assertTrue(oKemintiri.text.startswith("Advanced, Independent."))
         self.assertEqual(oKemintiri.group, 2)
         self.assertEqual(oKemintiri.capacity, 10)
@@ -713,6 +719,13 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(oKickstarterDM in [oP.expansion for oP in oRise.rarity])
         # But not PDF
         self.assertFalse(oPDFDM in [oP.expansion for oP in oRise.rarity])
+
+        # Check that we create the correct lookup for Victoria Ash (to group 2)
+        oVicAsh2 = IAbstractCard("Victoria Ash (Group 2)")
+        oVicAsh7 = IAbstractCard("Victoria Ash (Group 7)")
+        oVicAsh = IAbstractCard("Victoria Ash")
+        self.assertNotEqual(oVicAsh2.id, oVicAsh7.id)
+        self.assertEqual(oVicAsh2.id, oVicAsh.id)
 
 
     def test_card_type_checkers(self):
