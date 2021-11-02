@@ -34,7 +34,7 @@ Expansions:
 Artists:
 *\tGreg Simanson"""
 
-ALEXANDRA = """Alexandra
+ALEXANDRA = """Alexandra (Group 2)
 Capacity: 11
 Group: 2
 Card Type:

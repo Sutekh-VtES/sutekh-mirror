@@ -1096,7 +1096,7 @@ class CardSetListModelTests(ConfigSutekhTest):
         tTotals = (oModel.iter_n_children(None),
                    count_all_cards(oModel),
                    count_second_level(oModel))
-        tExpected = (1, 41, 4)
+        tExpected = (1, 43, 4)
         self.assertEqual(tTotals, tExpected,
                          'Wrong results from filter : %s vs %s' % (
                              tTotals, tExpected))
@@ -1322,9 +1322,9 @@ class CardSetListModelTests(ConfigSutekhTest):
 
         self.assertEqual(aNormal,
                          [(8, 0, 'All'),
-                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Alexandra (Group 2)'),
                           (1, 0, 'All:An Anarch Manifesto'),
-                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Anson (Group 1)'),
                           (1, 0, 'All:Ossian'),
                           (1, 0, 'All:Raven Spy'),
                           (1, 0, 'All:The Ankara Citadel, Turkey'),
@@ -1337,10 +1337,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         aPostfix = get_all_counts(oModel)
         self.assertEqual(aPostfix,
                          [(8, 0, 'All'),
-                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Alexandra (Group 2)'),
                           (1, 0, 'All:Anarch Manifesto, An'),
                           (1, 0, 'All:Ankara Citadel, Turkey, The'),
-                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Anson (Group 1)'),
                           (1, 0, 'All:Ossian'),
                           (1, 0, 'All:Path of Blood, The'),
                           (1, 0, 'All:Raven Spy'),
@@ -1359,10 +1359,10 @@ class CardSetListModelTests(ConfigSutekhTest):
         aUpdated = get_all_counts(oModel)
         self.assertEqual(aUpdated,
                          [(10, 0, 'All'),
-                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Alexandra (Group 2)'),
                           (1, 0, 'All:Anarch Manifesto, An'),
                           (1, 0, 'All:Ankara Citadel, Turkey, The'),
-                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Anson (Group 1)'),
                           (1, 0, 'All:Ossian'),
                           (1, 0, 'All:Path of Blood, The'),
                           (1, 0, 'All:Raven Spy'),
@@ -1374,9 +1374,9 @@ class CardSetListModelTests(ConfigSutekhTest):
         aNormal = get_all_counts(oModel)
         self.assertEqual(aNormal,
                          [(10, 0, 'All'),
-                          (1, 0, 'All:Alexandra'),
+                          (1, 0, 'All:Alexandra (Group 2)'),
                           (1, 0, 'All:An Anarch Manifesto'),
-                          (1, 0, 'All:Anson'),
+                          (1, 0, 'All:Anson (Group 1)'),
                           (1, 0, 'All:Ossian'),
                           (1, 0, 'All:Raven Spy'),
                           (1, 0, 'All:The Ankara Citadel, Turkey'),

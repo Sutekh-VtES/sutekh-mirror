@@ -103,9 +103,9 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          oModel.sUnknownExpansion)
         self.assertEqual(oModel.get_card_name_from_path(oPath),
-                         u'Aabbt Kindred')
+                         u'Aabbt Kindred (Group 2)')
         tAll = oModel.get_all_from_path(oPath)
-        self.assertEqual(tAll[0], u'Aabbt Kindred')
+        self.assertEqual(tAll[0], u'Aabbt Kindred (Group 2)')
         self.assertEqual(tAll[1], oModel.sUnknownExpansion)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 2)
@@ -117,11 +117,11 @@ class CardListModelTests(ConfigSutekhTest):
                          (False, False))
         oIter = oModel.get_iter(oPath)
         tAll = oModel.get_all_from_path(oPath)
-        self.assertEqual(tAll[0], u'Aabbt Kindred')
+        self.assertEqual(tAll[0], u'Aabbt Kindred (Group 2)')
         self.assertEqual(tAll[1], None)
         self.assertEqual(tAll[2], 0)
         self.assertEqual(tAll[3], 1)
-        oAbbt = IAbstractCard(u'Aabbt Kindred')
+        oAbbt = IAbstractCard(u'Aabbt Kindred (Group 2)')
         oFirst = IPhysicalCard((oAbbt, None))
         oSecond = IPhysicalCard((oAbbt, IExpansion('Final Nights')))
         self.assertEqual(oModel.get_child_entries_from_iter(oIter),
@@ -129,17 +129,17 @@ class CardListModelTests(ConfigSutekhTest):
         # Test that the different variants show correctly
         oPath = '0:28:0'  # Harold's position
         self.assertEqual(oModel.get_card_name_from_path(oPath),
-                         u"Harold Zettler, Pentex Director")
+                         u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          oModel.sUnknownExpansion)
         oPath = '0:28:1'
         self.assertEqual(oModel.get_card_name_from_path(oPath),
-                         u"Harold Zettler, Pentex Director")
+                         u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          "Third Edition")
         oPath = '0:28:2'
         self.assertEqual(oModel.get_card_name_from_path(oPath),
-                         u"Harold Zettler, Pentex Director")
+                         u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          "Third Edition (Sketch)")
         oListener.bLoadCalled = False
@@ -155,19 +155,19 @@ class CardListModelTests(ConfigSutekhTest):
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('Path of Blood, The' in aCards, False)
-        self.assertEqual('The Siamese' in aCards, True)
+        self.assertEqual('The Siamese (Group 2)' in aCards, True)
         self.oConfig.set_postfix_the_display(True)
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, False)
         self.assertEqual('Path of Blood, The' in aCards, True)
-        self.assertEqual('Siamese, The' in aCards, True)
+        self.assertEqual('Siamese (Group 2), The' in aCards, True)
 
         # Check load works as expected
         oModel.load()
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, False)
         self.assertEqual('Path of Blood, The' in aCards, True)
-        self.assertEqual('Siamese, The' in aCards, True)
+        self.assertEqual('Siamese (Group 2), The' in aCards, True)
         self.oConfig.set_postfix_the_display(False)
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)

@@ -182,7 +182,7 @@ class TestCardSetFrame(GuiSutekhTest):
         # Verify that trying to paste the selection does nothing
         self._select_cards(oFrame, [(u'AK-47', None),
                                     ('Ablative Skin', 'Sabbat'),
-                                    ('Alexandra', 'Camarilla Edition')])
+                                    ('Alexandra (Group 2)', 'Camarilla Edition')])
         oFrame.view.copy_selection()
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 2)
@@ -192,7 +192,7 @@ class TestCardSetFrame(GuiSutekhTest):
         # We should get 5 copies of Alexandra from My Collection
         self.assertEqual(len(oPCS2.cards), 9)
         self.assertEqual(len([x for x in oPCS2.cards if
-                              IAbstractCard(x).name == 'Alexandra']), 5)
+                              IAbstractCard(x).name == 'Alexandra (Group 2)']), 5)
         # Tests involving the top level selection
         oFrame = oWWList
         self._select_cards(oFrame, [(u'AK-47', ),
@@ -201,7 +201,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oNewFrame.view.do_paste()
         self.assertEqual(len(oPCS2.cards), 11)
         self.assertEqual(len([x for x in oPCS2.cards if
-                              IAbstractCard(x).name == 'Alexandra']), 5)
+                              IAbstractCard(x).name == 'Alexandra (Group 2)']), 5)
         self.assertEqual(len([x for x in oPCS2.cards if
                               IAbstractCard(x).name == 'AK-47']), 4)
         aCardNames = [oCard.abstractCard.name for oCard in oPCS2.cards]
@@ -431,7 +431,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.oWin.do_all_queued_reloads()
         self._select_cards(oMyColl, [(u'AK-47', u'Lords of the Night'),
                                      (u'Ablative Skin', ),
-                                     (u'Alexandra', u'Camarilla Edition')])
+                                     (u'Alexandra (Group 2)', u'Camarilla Edition')])
         oMyColl.view.copy_selection()
         oCS2Frame.view.do_paste()
         # 2 x AK + 6 x Ablative + 5 x Alexandra
@@ -449,7 +449,7 @@ class TestCardSetFrame(GuiSutekhTest):
         oMyColl.view.get_model().load()
         self._select_cards(oMyColl, [(u'AK-47', u'Test Set 1'),
                                      (u'Ablative Skin', ),
-                                     (u'Alexandra', u'Test Set 1')])
+                                     (u'Alexandra (Group 2)', u'Test Set 1')])
         oMyColl.view.copy_selection()
         oCS2Frame.view.do_paste()
         # 5 x AK + 6 x Ablative + 3 x Alexandra
@@ -469,7 +469,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self._select_cards(oMyColl, [(u'AK-47', u'Test Set 1',
                                       u'Lords of the Night'),
                                      (u'Ablative Skin', ),
-                                     (u'Alexandra', u'Test Set 1')])
+                                     (u'Alexandra (Group 2)', u'Test Set 1')])
         oMyColl.view.copy_selection()
         oCS2Frame.view.do_paste()
         # 3 x AK + 6 x Ablative + 3 x Alexandra
@@ -488,7 +488,7 @@ class TestCardSetFrame(GuiSutekhTest):
         self.oWin.do_all_queued_reloads()
         self._select_cards(oMyColl, [(u'AK-47', u'Lords of the Night'),
                                      (u'Ablative Skin', ),
-                                     (u'Alexandra', u'Camarilla Edition',
+                                     (u'Alexandra (Group 2)', u'Camarilla Edition',
                                       u'Test Set 1')])
         oMyColl.view.copy_selection()
         oCS2Frame.view.do_paste()
