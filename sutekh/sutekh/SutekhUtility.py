@@ -104,7 +104,10 @@ def is_trifle(oAbsCard):
 # Helper functions for the io routines
 def monger_url(oCard, bVamp):
     """Return a monger url for the given AbstractCard"""
-    sName = move_articles_to_back(oCard.name)
+    sName = oCard.name
+    if bVamp:
+        sName = strip_group_from_name(sName)
+    sName = move_articles_to_back(sName)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
@@ -121,7 +124,10 @@ def monger_url(oCard, bVamp):
 
 def secret_library_url(oCard, bVamp):
     """Return a Secret Library url for the given AbstractCard"""
-    sName = move_articles_to_back(oCard.name)
+    sName = oCard.name
+    if bVamp:
+        sName = strip_group_from_name(sName)
+    sName = move_articles_to_back(sName)
     if bVamp:
         if oCard.level is not None:
             sName = sName.replace(' (Advanced)', '')
@@ -158,11 +164,17 @@ def find_base_vampire(oVampire):
         return None
 
 
+def strip_group_from_name(sName):
+    return re.sub(r' \(Group [0-9]\)$', '', sName)
+
+
 def find_adv_vampire(oVampire):
     """Find the corresponding advanced vampire
 
        Returns None if the vampre cannout be found."""
-    sAdvName = oVampire.name + ' (Advanced)'
+    sBaseName = strip_group_from_name(oVampire.name)
+    sGroup = oVampire.name.replace(sBaseName, '')
+    sAdvName = sBaseName + ' (Advanced)' + sGroup
     # Note that base Brunhilde links to the non-storyline advanced version
     try:
         return IAbstractCard(sAdvName)
