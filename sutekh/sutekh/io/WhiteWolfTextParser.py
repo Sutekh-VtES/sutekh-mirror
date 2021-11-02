@@ -14,6 +14,7 @@ from logging import Logger
 from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 
 from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, set_metadata_date
+from sutekh.base.core.BaseTables import LookupHints
 
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
@@ -154,6 +155,7 @@ def _find_sect_and_title(aLines):
     return sSect, sTitle
 
 
+
 class CardDict(dict):
     """Dictionary object which holds the extracted card info."""
 
@@ -162,6 +164,8 @@ class CardDict(dict):
     oWhiteSp = re.compile(r'[{}\s]+')
     oDispCard = re.compile(r'\[[^\]]+\]$')
     oArtistSp = re.compile(r'[&;]')
+
+    oGroupFromName = re.compile(r'\(Group ([0-9]+)\)$$')
     # Use regexp lookahead for the last '.', so it can anchor the next match
     # Use non-grouping parentheses so we ca can catch either . or the end of
     # the text
@@ -282,15 +286,25 @@ class CardDict(dict):
     }
     # These vampires aren't templated as normal
     dCryptKeywordSpecial = {
-        'Spider-Killer': {'stealth': 1},
-        'Muaziz, Archon of Ulugh Beg': {'stealth': 1},
-        'Rebekka, Chantry Elder of Munich': {'stealth': 1},
+        'Muaziz, Archon of Ulugh Beg (Group 2)': {'stealth': 1},
+        'Rebekka, Chantry Elder of Munich (Group 2)': {'stealth': 1},
     }
 
     def __init__(self, oLogger):
         super().__init__()
         self._oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
+
+    def convert_group_to_int(self, sGroup):
+        """Standard means to convert a group to an integer"""
+        sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
+
+        if sGroup.lower() in ('*', 'any'):
+            iGroup = -1
+        else:
+            iGroup = int(sGroup, 10)
+        return iGroup
+
 
     def _find_crypt_keywords(self, oCard):
         """Extract the bleed, strength & stealth keywords from the card text"""
@@ -552,14 +566,7 @@ class CardDict(dict):
 
     def _add_group(self, oCard, sGroup):
         """Add the group to the card. Replace '*' with -1."""
-        sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
-
-        if sGroup.lower() in ('*', 'any'):
-            iGroup = -1
-        else:
-            iGroup = int(sGroup, 10)
-
-        oCard.group = iGroup
+        oCard.group = self.convert_group_to_int(sGroup)
 
     def _add_life(self, oCard, sLife):
         """Add the life to the card."""
@@ -590,10 +597,43 @@ class CardDict(dict):
             sAlias = self['name'] + ' (Adv)'
             self['name'] += ' (Advanced)'
         if sAlias:
+            iGroup = self.convert_group_to_int(self['group'])
+            sValue = self['name']
+            if iGroup > 0:
+                sValue = self['name'] + ' (Group %d)' % iGroup
             # Add lookups for the '.. (Adv)' and '.. (ADV)' variations
             for sLookup in [sAlias, sAlias.replace('(Adv)', '(ADV)')]:
                 oLookup = self._oMaker.make_lookup_hint("CardNames", sLookup,
-                                                        self['name'])
+                                                        sValue)
+                oLookup.syncUpdate()
+
+    def _add_group_to_name(self):
+        """Rewrite vampire / imbued names to be Name (Group X) and
+           add lookups for backwards compatibility"""
+        if 'group' not in self:
+            return
+        iGroup = self.convert_group_to_int(self['group'])
+        if iGroup < 0:
+            # Skip this for group Any vampires
+            return
+        sAlias = self['name']
+        # FIXME: Should we zero-pad this for better sorting for
+        #        when we get to group 10?
+        self['name'] = self['name'] + ' (Group %d)' % iGroup
+        # We want to be robust against unexpected ordering issues with
+        # the cardlist, so we add a lookup if it doesn't exist,
+        # otherwise we replace the lookup if the group number of
+        # this card is lower than that of the lookup
+        oLookup =  oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias, self['name'])
+        if oLookup.value != self['name']:
+            # Need to check the group number for the existing value
+            if 'Group' not in oLookup.value:
+                raise RuntimeError(
+                    f"Invalid Lookup for {self['name']} : ({oLookup.key}, {oLookup.value})")
+            iOldGroup = int(self.oGroupFromName.search(oLookup.value).groups()[0])
+            if iOldGroup > iGroup:
+                # Replace the lookup with our name
+                oLookup.value = self['name']
                 oLookup.syncUpdate()
 
     def _add_capacity(self, oCard, sCap):
@@ -666,6 +706,8 @@ class CardDict(dict):
             return
 
         self._fix_advanced_name()
+
+        self._add_group_to_name()
 
         oCard = self._make_card(self['name'])
 
