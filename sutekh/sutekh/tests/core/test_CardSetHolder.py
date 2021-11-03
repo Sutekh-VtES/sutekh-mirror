@@ -62,7 +62,9 @@ class CardSetHolderTests(SutekhTest):
             oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
         aPrintings = [oCard.printing for oCard in oCS.cards]
         aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
@@ -90,7 +92,9 @@ class CardSetHolderTests(SutekhTest):
             oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
 
         # Misspelt cards - the default lookup should exclude these
         dSet2 = {
@@ -158,7 +162,9 @@ class CardSetHolderTests(SutekhTest):
             oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
 
         aPrintings = [oCard.printing for oCard in oCS.cards]
         aPrintings.sort(key=lambda x: x.id if x else -1)
@@ -208,7 +214,9 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
         aPrintings = [oCard.printing for oCard in oCS.cards]
         aPrintings.sort(key=lambda x: x.id if x else -1)
         self.assertEqual(aPrintings, aExpectedPrintings)
@@ -239,7 +247,9 @@ class CardSetHolderTests(SutekhTest):
             oPCSFilter, BaseFilters.CardTypeFilter('Vampire')])
         aCSCards = [IAbstractCard(x).name for x in oVampireFilter.select(
             MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
 
         dLookupCache = {}
 
@@ -306,7 +316,9 @@ class CardSetHolderTests(SutekhTest):
         aCSCards = [IAbstractCard(x).name for x in
                     oVampireFilter.select(
                         MapPhysicalCardToPhysicalCardSet).distinct()]
-        self.assertEqual(aCSCards, [u'Abebe', u'Abebe', u'Abebe'])
+        self.assertEqual(aCSCards, [u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)',
+                                    u'Abebe (Group 4)'])
 
         aPrintings = [oCard.printing for oCard in oCS.cards]
         aPrintings.sort(key=lambda x: x.id if x else -1)
