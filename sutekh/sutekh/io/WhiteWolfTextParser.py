@@ -653,6 +653,12 @@ class CardDict(dict):
         # the cardlist, so we add a lookup if it doesn't exist,
         # otherwise we replace the lookup if the group number of
         # this card is lower than that of the lookup
+        # We don't do this for advanced vampires, because of the more
+        # complicated set of lookups we create in _fix_advanced_name
+        if 'level' in self and self._get_level(self['level']) == 'advanced':
+            return
+        if ' (Adv) ' in self['name']:
+            return
         oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias, self['name'])
         self._check_group_lookup(oLookup, iGroup)
 
