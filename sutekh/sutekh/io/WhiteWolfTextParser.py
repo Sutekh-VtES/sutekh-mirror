@@ -14,7 +14,6 @@ from logging import Logger
 from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 
 from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, set_metadata_date
-from sutekh.base.core.BaseTables import LookupHints
 
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
@@ -295,7 +294,7 @@ class CardDict(dict):
         self._oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
 
-    def convert_group_to_int(self, sGroup):
+    def _convert_group_to_int(self, sGroup):
         """Standard means to convert a group to an integer"""
         sGroup = self.oWhiteSp.sub(' ', sGroup).strip()
 
@@ -304,6 +303,23 @@ class CardDict(dict):
         else:
             iGroup = int(sGroup, 10)
         return iGroup
+
+    def _check_group_lookup(self, oLookup, iGroup):
+        """Check if we have a lookup is for a higher group, and change
+           it if that is the case."""
+        if oLookup.value != self['name']:
+            # Need to check the group number for the existing value
+            if 'Group' not in oLookup.value:
+                raise RuntimeError(
+                    f"Invalid Lookup for {self['name']} :"
+                    f" ({oLookup.key}, {oLookup.value})")
+            iOldGroup = int(self.oGroupFromName.search(oLookup.value).groups()[0])
+            if iOldGroup > iGroup:
+                # Replace the lookup with our name
+                oLookup.value = self['name']
+        # Simplest to always sync, since this will usually be
+        # a newly added lookup
+        oLookup.syncUpdate()
 
 
     def _find_crypt_keywords(self, oCard):
@@ -566,7 +582,7 @@ class CardDict(dict):
 
     def _add_group(self, oCard, sGroup):
         """Add the group to the card. Replace '*' with -1."""
-        oCard.group = self.convert_group_to_int(sGroup)
+        oCard.group = self._convert_group_to_int(sGroup)
 
     def _add_life(self, oCard, sLife):
         """Add the life to the card."""
@@ -588,31 +604,44 @@ class CardDict(dict):
     def _fix_advanced_name(self):
         """Check if this is an advanced vampire."""
         sAlias = None
-        if self['name'].endswith(' (Adv)'):
+        if ' (Adv) ' in self['name']:
             self['level'] = 'advanced'
-            sAlias = self['name']
-            self['name'] = self['name'].replace(' (Adv)',
-                                                ' (Advanced)')
-        elif 'level' in self and self._get_level(self['level']) == 'advanced':
+            self['name'] = self['name'].replace(' (Adv)', '')
+        if 'level' in self and self._get_level(self['level']) == 'advanced':
             sAlias = self['name'] + ' (Adv)'
             self['name'] += ' (Advanced)'
         if sAlias:
-            iGroup = self.convert_group_to_int(self['group'])
-            sValue = self['name']
+            aAliases = [sAlias]
+            iGroup = self._convert_group_to_int(self['group'])
+            # FIXME: This list is probably too long, but we don't know what
+            # else we'll see in the wild yet
             if iGroup > 0:
-                sValue = self['name'] + ' (Group %d)' % iGroup
-            # Add lookups for the '.. (Adv)' and '.. (ADV)' variations
-            for sLookup in [sAlias, sAlias.replace('(Adv)', '(ADV)')]:
+                sGroup = f' (Group {iGroup})'
+                # Alias for versions without group info
+                sAlias2 = sAlias.replace(sGroup, '')
+                # (Adv) (Group X)
+                sAlias3 = sAlias2 + sGroup
+                aAliases.append(sAlias2)
+                aAliases.append(sAlias3)
+                # (Advanced) (Group)
+                aAliases.append(sAlias3.replace('(Adv)', '(Advanced)'))
+                # old 'Name (Advanced)'
+                aAliases.append(sAlias2.replace('(Adv)', '(Advanced)'))
+            for sValue in aAliases[:]:
+                if '(Adv)' in sValue:
+                    aAliases.append(sValue.replace('(Adv)', '(ADV)'))
+            # Add lookups for the variations
+            for sLookup in aAliases:
                 oLookup = self._oMaker.make_lookup_hint("CardNames", sLookup,
-                                                        sValue)
-                oLookup.syncUpdate()
+                                                        self['name'])
+                self._check_group_lookup(oLookup, iGroup)
 
     def _add_group_to_name(self):
         """Rewrite vampire / imbued names to be Name (Group X) and
            add lookups for backwards compatibility"""
         if 'group' not in self:
             return
-        iGroup = self.convert_group_to_int(self['group'])
+        iGroup = self._convert_group_to_int(self['group'])
         if iGroup < 0:
             # Skip this for group Any vampires
             return
@@ -624,17 +653,8 @@ class CardDict(dict):
         # the cardlist, so we add a lookup if it doesn't exist,
         # otherwise we replace the lookup if the group number of
         # this card is lower than that of the lookup
-        oLookup =  oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias, self['name'])
-        if oLookup.value != self['name']:
-            # Need to check the group number for the existing value
-            if 'Group' not in oLookup.value:
-                raise RuntimeError(
-                    f"Invalid Lookup for {self['name']} : ({oLookup.key}, {oLookup.value})")
-            iOldGroup = int(self.oGroupFromName.search(oLookup.value).groups()[0])
-            if iOldGroup > iGroup:
-                # Replace the lookup with our name
-                oLookup.value = self['name']
-                oLookup.syncUpdate()
+        oLookup = self._oMaker.make_lookup_hint("CardNames", sAlias, self['name'])
+        self._check_group_lookup(oLookup, iGroup)
 
     def _add_capacity(self, oCard, sCap):
         """Add the capacity to the card."""
@@ -705,9 +725,9 @@ class CardDict(dict):
         if 'name' not in self:
             return
 
-        self._fix_advanced_name()
-
         self._add_group_to_name()
+
+        self._fix_advanced_name()
 
         oCard = self._make_card(self['name'])
 
