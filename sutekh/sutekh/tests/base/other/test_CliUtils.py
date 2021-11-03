@@ -34,7 +34,7 @@ TREE_2 = """ Child 1
     GC 3
 """
 
-CARD_DETAILS_1 = """Alexandra
+CARD_DETAILS_1 = """Alexandra (Group 2)
 CardType: Vampire
 Clan: Toreador
 Capacity: 11
@@ -108,6 +108,10 @@ class CliUtilsTests(SutekhTest):
             self.assertEqual(oMock.getvalue(), CARD_DETAILS_1)
 
         with patch('sys.stdout', new_callable=StringIO) as oMock:
+            do_print_card('Alexandra (Group 2)', print_card_details)
+            self.assertEqual(oMock.getvalue(), CARD_DETAILS_1)
+
+        with patch('sys.stdout', new_callable=StringIO) as oMock:
             do_print_card('Swallowed by the Night', print_card_details)
             self.assertEqual(oMock.getvalue(), CARD_DETAILS_2)
 
@@ -132,8 +136,8 @@ class CliUtilsTests(SutekhTest):
         for oCard in dResults:
             self.assertEqual(dResults[oCard], 0)
         aNames = [x.name for x in dResults]
-        self.assertTrue('Aabbt Kindred' in aNames)
-        self.assertTrue('Amisa' in aNames)
+        self.assertTrue('Aabbt Kindred (Group 2)' in aNames)
+        self.assertTrue('Amisa (Group 2)' in aNames)
 
         dResults = run_filter("CardType = 'Reaction'", None)
         self.assertEqual(len(dResults), 3)
@@ -153,12 +157,12 @@ class CliUtilsTests(SutekhTest):
         self.assertEqual(len(dResults), 1)
         oCard = list(dResults)[0]
         self.assertEqual(dResults[oCard], 2)
-        self.assertEqual(oCard.name, 'The Siamese')
+        self.assertEqual(oCard.name, 'The Siamese (Group 2)')
 
         dResults = run_filter("Discipline = 'Potence'", 'Test Set 1')
         self.assertEqual(len(dResults), 2)
         dNameResults = {x.name: dResults[x] for x in dResults}
-        self.assertEqual(dNameResults['Hektor'], 1)
+        self.assertEqual(dNameResults['Hektor (Group 4)'], 1)
         self.assertEqual(dNameResults['Immortal Grapple'], 4)
 
     def test_print_card_filter_list(self):
