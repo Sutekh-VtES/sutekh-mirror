@@ -51,8 +51,8 @@ class WhiteWolfParserTests(SutekhTest):
         u"Aire of Elation",
         u"Akram (Group 2)",
         u"Alabástrom (Group 6)",
-        u"Alan Sovereign (Advanced) (Group 3)",
         u"Alan Sovereign (Group 3)",
+        u"Alan Sovereign (Group 3) (Advanced)",
         u"Alexandra (Group 2)",
         u"Alfred Benezri (Group 3)",
         u"Ambrogino Giovanni (Group 2)",
@@ -88,7 +88,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Immortal Grapple",
         u'Inez "Nurse216" Villagrande (Group 4)',
         u"Kabede Maru (Group 5)",
-        u"Kemintiri (Advanced) (Group 2)",
+        u"Kemintiri (Group 2) (Advanced)",
         u"Living Manse",
         u"L\xe1z\xe1r Dobrescu (Group 2)",
         u"Motivated by Gehenna",
@@ -481,8 +481,8 @@ class WhiteWolfParserTests(SutekhTest):
 
         # Check Kemintiri
         oKemintiri = IAbstractCard(u"Kemintiri (Advanced)")
-        self.assertEqual(oKemintiri.canonicalName, u"kemintiri (advanced) (group 2)")
-        self.assertEqual(oKemintiri.name, u"Kemintiri (Advanced) (Group 2)")
+        self.assertEqual(oKemintiri.canonicalName, u"kemintiri (group 2) (advanced)")
+        self.assertEqual(oKemintiri.name, u"Kemintiri (Group 2) (Advanced)")
         self.assertTrue(oKemintiri.text.startswith("Advanced, Independent."))
         self.assertEqual(oKemintiri.group, 2)
         self.assertEqual(oKemintiri.capacity, 10)
@@ -507,6 +507,16 @@ class WhiteWolfParserTests(SutekhTest):
         # Make sure we're not picking up the Merged title
         self.assertEqual(len(oKemintiri.title), 0)
         self.assertTrue(IRarityPair(('KMW', 'Uncommon')) in oKemintiri.rarity)
+
+        # Check lookups
+        for sLookup in ["Kemintiri (Adv)", "Kemintiri (ADV)",
+                        "Kemintiri (Group 2) (Adv)",
+                        "Kemintiri (Group 2) (ADV)",
+                        "Kemintiri (Advanced) (Group 2)",
+                        "Kemintiri (Adv) (Group 2)",
+                        "Kemintiri (ADV) (Group 2)"]:
+            oKem2 = IAbstractCard(sLookup)
+            self.assertEqual(oKem2.id, oKemintiri.id)
 
         # Check ANY group handling
         oNewBlood = IAbstractCard('New Blood')
