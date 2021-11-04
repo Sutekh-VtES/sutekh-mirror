@@ -34,7 +34,7 @@
 # pylint: enable=line-too-long
 import time
 from sutekh.core.ArdbInfo import ArdbInfo
-from sutekh.SutekhUtility import secret_library_url
+from sutekh.SutekhUtility import codex_of_the_damned_url 
 from sutekh.SutekhInfo import SutekhInfo
 
 
@@ -101,7 +101,7 @@ class WriteVEKNForum(ArdbInfo):
                 dLine['disc'] = dLine['disc'].replace(":FLI:", ":flight:")
             else:
                 dLine['disc'] = ""
-            dLine['url'] = secret_library_url(oCard, True)
+            dLine['url'] = codex_of_the_damned_url(oCard, True)
 
             aCryptLines.append(dLine)
 
@@ -148,7 +148,7 @@ class WriteVEKNForum(ArdbInfo):
 
             for oCard, iCount in sorted(dCards.items(),
                                         key=lambda x: x[0].name):
-                sUrl = secret_library_url(oCard, False)
+                sUrl = codex_of_the_damned_url(oCard, False)
                 sLib += " %dx [url=%s]%s[/url]\n" % (iCount, sUrl, oCard.name)
 
             sLib += "\n"

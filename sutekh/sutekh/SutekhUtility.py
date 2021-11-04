@@ -11,6 +11,8 @@
 import re
 import string
 
+from urllib.parse import quote_plus
+
 from sqlobject import SQLObjectNotFound
 
 from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
@@ -102,47 +104,15 @@ def is_trifle(oAbsCard):
 
 
 # Helper functions for the io routines
-def monger_url(oCard, bVamp):
-    """Return a monger url for the given AbstractCard"""
+def codex_of_the_damned_url(oCard, bVamp):
+    """Return a Codex of the Damned url for the given AbstractCard"""
     sName = oCard.name
     if bVamp:
         sName = strip_group_from_name(sName)
-    sName = move_articles_to_back(sName)
     if bVamp:
         if oCard.level is not None:
-            sName = sName.replace(' (Advanced)', '')
-            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s ADV" \
-                         % sName
-        else:
-            sMongerURL = "http://monger.vekn.org/showvamp.html?NAME=%s" % sName
-    else:
-        sMongerURL = "http://monger.vekn.org/showcard.html?NAME=%s" % sName
-    # May not need this, but play safe
-    sMongerURL = sMongerURL.replace(' ', '%20')
-    return sMongerURL
-
-
-def secret_library_url(oCard, bVamp):
-    """Return a Secret Library url for the given AbstractCard"""
-    sName = oCard.name
-    if bVamp:
-        sName = strip_group_from_name(sName)
-    sName = move_articles_to_back(sName)
-    if bVamp:
-        if oCard.level is not None:
-            sName = sName.replace(' (Advanced)', '')
-            sURL = "http://www.secretlibrary.info/?crypt=%s+Adv" \
-                   % sName
-        else:
-            sURL = "http://www.secretlibrary.info/?crypt=%s" \
-                   % sName
-    else:
-        sURL = "http://www.secretlibrary.info/?lib=%s" \
-               % sName
-    sURL = sURL.replace(' ', '+')
-    # ET will replace " with &quot;, which can lead to issues with SL, so we
-    # drop double quotes entirely
-    sURL = sURL.replace('"', '')
+            sName = sName.replace(' (Advanced)', ' (ADV)')
+    sURL = 'https://codex-of-the-damned.org/en/card-search.html?card=' + quote_plus(sName)
     return sURL
 
 

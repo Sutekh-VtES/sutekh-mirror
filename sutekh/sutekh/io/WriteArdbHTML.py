@@ -13,7 +13,7 @@ from sutekh.base.Utility import pretty_xml, norm_xml_quotes
 
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import (monger_url, secret_library_url,
+from sutekh.SutekhUtility import (codex_of_the_damned_url,
                                   strip_group_from_name)
 
 # Style used by the HTML file
@@ -186,7 +186,7 @@ class WriteArdbHTML(ArdbInfo):
        This tries to match the HTML file produced by ARDB.
        """
 
-    def __init__(self, sLinkMode='Monger', bDoText=False):
+    def __init__(self, sLinkMode='Codex of the Damned', bDoText=False):
         super().__init__()
         self._sLinkMode = sLinkMode
         self._bDoText = bDoText
@@ -274,12 +274,9 @@ class WriteArdbHTML(ArdbInfo):
         """Add a href for the card"""
         # Just add text to the span by default
         oRowHREF = oSpan
-        if self._sLinkMode == 'Monger':
+        if self._sLinkMode == 'Codex of the Damned':
             oRowHREF = SubElement(oSpan, "a",
-                                  href=monger_url(oCard, bVamp))
-        elif self._sLinkMode == 'Secret Library':
-            oRowHREF = SubElement(oSpan, "a",
-                                  href=secret_library_url(oCard, bVamp))
+                                  href=codex_of_the_damned_url(oCard, bVamp))
         if bVamp:
             oRowHREF.text = sName.replace(' (Advanced)', '')
         else:
