@@ -40,7 +40,7 @@ class TestELDBInventoryParser(SutekhTest):
 
         self.assertEqual(len(aCards), 6)
         self.assertTrue(("Test Vamp 1", 2) in aCards)
-        self.assertTrue((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
+        self.assertTrue((u"L\xe1z\xe1r Dobrescu (Group 2)", 1) in aCards)
         self.assertTrue(("Test Card 1", 2) in aCards)
         self.assertTrue(("Test Card 2", 4) in aCards)
         self.assertTrue(("Test Card 3", 12) in aCards)

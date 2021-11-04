@@ -173,10 +173,10 @@ class ARDBTextParserTests(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertTrue(("Hektor", 1) in aCards)
-        self.assertTrue(("Enkidu, The Noah", 1) in aCards)
-        self.assertTrue(("Aaron Bathurst", 2) in aCards)
-        self.assertTrue(("Aaron Duggan, Cameron's Toady", 1) in aCards)
+        self.assertTrue(("Hektor (Group 4)", 1) in aCards)
+        self.assertTrue(("Enkidu, The Noah (Group 4)", 1) in aCards)
+        self.assertTrue(("Aaron Bathurst (Group 4)", 2) in aCards)
+        self.assertTrue(("Aaron Duggan, Cameron's Toady (Group 2)", 1) in aCards)
         self.assertTrue(("Test Card 1", 2) in aCards)
         self.assertTrue(("Test Card 2", 4) in aCards)
 

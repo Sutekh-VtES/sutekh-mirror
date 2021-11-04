@@ -67,13 +67,13 @@ class TestELDBDeckFileParser(SutekhTest):
 
         self.assertEqual(len(aCards), 10)
         self.assertTrue(("Test Vamp 1", 2) in aCards)
-        self.assertTrue((u"L\xe1z\xe1r Dobrescu", 1) in aCards)
-        self.assertTrue(('Inez "Nurse216" Villagrande', 1) in aCards)
+        self.assertTrue((u"L\xe1z\xe1r Dobrescu (Group 2)", 1) in aCards)
+        self.assertTrue(('Inez "Nurse216" Villagrande (Group 4)', 1) in aCards)
         self.assertTrue(("Test Card 1", 2) in aCards)
         self.assertTrue(("Test Card 2", 4) in aCards)
         self.assertTrue(("Test Card 3", 12) in aCards)
         self.assertTrue(("Test Card 4", 1) in aCards)
-        self.assertTrue(("Alan Sovereign (Advanced)", 1) in aCards)
+        self.assertTrue(("Alan Sovereign (Group 3) (Advanced)", 1) in aCards)
         self.assertTrue(('Scapelli, The Family "Mechanic"', 1) in aCards)
         self.assertTrue(("The Path of Blood", 1) in aCards)
 
