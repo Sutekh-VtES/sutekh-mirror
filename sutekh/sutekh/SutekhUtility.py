@@ -165,7 +165,7 @@ def find_base_vampire(oVampire):
 
 
 def strip_group_from_name(sName):
-    return re.sub(r' \(Group [0-9]\)$', '', sName)
+    return re.sub(r' \(Group [0-9]+\)', '', sName)
 
 
 def find_adv_vampire(oVampire):
