@@ -19,6 +19,7 @@
 
 from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.core.ELDBUtilities import type_of_card
+from sutekh.SutekhUtility import strip_group_from_name
 
 
 class WriteJOL:
@@ -40,7 +41,9 @@ class WriteJOL:
         for oCard in oHolder.cards:
             oAbsCard = IAbstractCard(oCard)
             sType = type_of_card(oAbsCard)
-            sName = self._escape(oAbsCard.name)
+            # FIXME: JOL will presumably add support for multi-group
+            # cards at some point, so we will need to change this.
+            sName = self._escape(strip_group_from_name(oAbsCard.name))
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
