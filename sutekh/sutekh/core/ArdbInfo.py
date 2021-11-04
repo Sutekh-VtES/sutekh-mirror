@@ -11,7 +11,7 @@
 
 from sutekh.base.core.BaseAdapters import IAbstractCard, IPhysicalCard
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import is_crypt_card, is_trifle
+from sutekh.SutekhUtility import is_crypt_card, is_trifle, strip_group_from_name
 
 
 def escape_ardb_expansion_name(oExpansion):
@@ -168,7 +168,7 @@ class ArdbInfo:
         else:
             dLine['clan'] = [x.name for x in oCard.clan][0]
             dLine['capacity'] = oCard.capacity
-        dLine['name'] = oCard.name
+        dLine['name'] = strip_group_from_name(oCard.name)
         dLine['adv'] = '   '
         if oCard.level is not None:
             dLine['name'] = dLine['name'].replace(' (Advanced)', '')
