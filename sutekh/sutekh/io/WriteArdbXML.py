@@ -13,6 +13,7 @@ from xml.etree.ElementTree import Element, SubElement
 
 from sutekh.base.Utility import move_articles_to_back
 from sutekh.core.ArdbInfo import ArdbInfo
+from sutekh.SutekhUtility import strip_group_from_name
 from sutekh.base.io.IOBase import BaseXMLWriter
 
 
@@ -35,7 +36,7 @@ class WriteArdbXML(ArdbInfo, BaseXMLWriter):
         """Fill in name, set and advanced elements for a crypt card"""
         oAdvElem = SubElement(oCardElem, 'adv')
         oNameElem = SubElement(oCardElem, 'name')
-        sName = move_articles_to_back(oAbsCard.name)
+        sName = move_articles_to_back(strip_group_from_name(oAbsCard.name))
         if oAbsCard.level is not None:
             oAdvElem.text = 'Advanced'
             # This is a bit hackish

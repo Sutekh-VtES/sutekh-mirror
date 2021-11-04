@@ -13,7 +13,8 @@ from sutekh.base.Utility import pretty_xml, norm_xml_quotes
 
 from sutekh.core.ArdbInfo import ArdbInfo
 from sutekh.SutekhInfo import SutekhInfo
-from sutekh.SutekhUtility import monger_url, secret_library_url
+from sutekh.SutekhUtility import (monger_url, secret_library_url,
+                                  strip_group_from_name)
 
 # Style used by the HTML file
 HTML_STYLE = """
@@ -135,7 +136,8 @@ def _sort_vampires(dVamps):
         else:
             iCapacity = oCard.capacity
             sClan = [oClan.name for oClan in oCard.clan][0]
-        aSortedVampires.append(((iCount, iCapacity, oCard.name, sClan),
+        aSortedVampires.append(((iCount, iCapacity,
+                                 strip_group_from_name(oCard.name), sClan),
                                 oCard))
     # We reverse sort by Capacity and Count, normal sort by name
     # fortunately, python's sort is stable, so this works
