@@ -39,13 +39,13 @@ class TestCSVParser(SutekhTest):
 
             self.assertEqual(len(aCards), 18)
             self.assertTrue((".44 Magnum", 4) in aCards)
-            self.assertTrue(("Abebe", 1) in aCards)
-            self.assertTrue(("Alan Sovereign (Advanced)", 1) in aCards)
+            self.assertTrue(("Abebe (Group 4)", 1) in aCards)
+            self.assertTrue(("Alan Sovereign (Group 3) (Advanced)", 1) in aCards)
             self.assertTrue(("Aaron's Feeding Razor", 1) in aCards)
-            self.assertTrue(('Inez "Nurse216" Villagrande', 1) in aCards)
+            self.assertTrue(('Inez "Nurse216" Villagrande (Group 4)', 1) in aCards)
             self.assertTrue(('Scapelli, The Family "Mechanic"', 1) in aCards)
             self.assertTrue(('Swallowed by the Night', 2) in aCards)
-            self.assertTrue(("The Siamese", 2) in aCards)
+            self.assertTrue(("The Siamese (Group 2)", 2) in aCards)
             self.assertTrue(("Abbot", 2) in aCards)
             self.assertTrue(("Immortal Grapple", 4) in aCards)
 
