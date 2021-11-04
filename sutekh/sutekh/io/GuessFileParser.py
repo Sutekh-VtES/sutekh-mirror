@@ -19,8 +19,6 @@ from sutekh.io.ELDBInventoryParser import ELDBInventoryParser
 from sutekh.io.ELDBDeckFileParser import ELDBDeckFileParser
 from sutekh.io.ELDBHTMLParser import ELDBHTMLParser
 from sutekh.io.LackeyDeckParser import LackeyDeckParser
-from sutekh.io.SLDeckParser import SLDeckParser
-from sutekh.io.SLInventoryParser import SLInventoryParser
 
 
 class GuessFileParser(BaseGuessFileParser):
@@ -36,8 +34,6 @@ class GuessFileParser(BaseGuessFileParser):
         ELDBInventoryParser,
         ELDBDeckFileParser,
         ELDBHTMLParser,
-        SLDeckParser,
-        SLInventoryParser,
         LackeyDeckParser,
         # JOL is the most permissive, so must be last
         JOLDeckParser,
