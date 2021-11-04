@@ -7,7 +7,7 @@
 
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.Utility import move_articles_to_back, to_ascii
-from sutekh.SutekhUtility import is_crypt_card
+from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name
 
 SINGLE_QUOTE_NAMES = [
     "Al-Muntathir, God's Witness",
@@ -30,7 +30,7 @@ def type_of_card(oCard):
 
 def norm_name(oCard):
     """Transform a card name to the ELDB equivalent"""
-    sName = oCard.name
+    sName = strip_group_from_name(oCard.name)
     sType = oCard.cardtype[0].name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "(ADV)")
