@@ -34,6 +34,6 @@ class PhysicalCardSetParser(BaseCardSetParser, BaseSutekhXMLParser):
        read the tree into an ElementTree, and walk the tree to find the
        cards.
        """
-    aSupportedVersions = ['1.4', '1.3', '1.2', '1.1', '1.0']
+    aSupportedVersions = ['1.5', '1.4', '1.3', '1.2', '1.1', '1.0']
     sTypeTag = 'physicalcardset'
     sTypeName = 'Physical Card Set list'

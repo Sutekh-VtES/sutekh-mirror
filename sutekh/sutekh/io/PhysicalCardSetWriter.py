@@ -29,6 +29,6 @@ class PhysicalCardSetWriter(BaseCardXMLWriter):
        We generate an ElementTree representation of the Card Set, which
        can then easily be converted to an appropriate XML representation.
        """
-    sMyVersion = "1.4"
+    sMyVersion = "1.5"
     sTypeTag = "physicalcardset"
     sVersionTag = "sutekh_xml_version"
