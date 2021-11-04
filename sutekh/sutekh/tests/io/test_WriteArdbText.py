@@ -9,6 +9,8 @@ import unittest
 
 from sutekh.base.core.CardSetHolder import CardSetWrapper
 
+from sutekh.SutekhUtility import strip_group_from_name
+
 from sutekh.io.WriteArdbText import WriteArdbText
 from sutekh.io.ARDBTextParser import ARDBTextParser
 from sutekh.tests.TestCore import SutekhTest
@@ -102,6 +104,7 @@ class ArdbTextWriterTests(SutekhTest):
             # We truncate Inez here to match the writer output
             if sName.startswith('Inez'):
                 sName = sName[:18]
+            sName = strip_group_from_name(sName)
             dSetCards.setdefault(sName, 0)
             dSetCards[sName] += 1
         # pylint: enable=not-an-iterable
