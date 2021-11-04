@@ -16,6 +16,7 @@
 
 from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.core.BaseAdapters import IAbstractCard
+from sutekh.SutekhUtility import is_crypt_card
 from sutekh.core.ELDBUtilities import norm_name, type_of_card
 
 
@@ -31,14 +32,23 @@ class WriteELDBInventory:
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
         dCards = {}
+        aSeen = set()
         sResult = ""
         for oCard in AbstractCard.select():
             dCards[oCard] = 0
         for oCard in oHolder.cards:
             oAbsCard = IAbstractCard(oCard)
             dCards[oAbsCard] += 1
-        for oCard, iNum in dCards.items():
-            sResult += '"%s",%d,0,"","%s"\n' % (norm_name(oCard), iNum,
+        # We sort to ensure we process multi-group cards in the right order
+        for oCard in sorted(dCards, key=lambda x: x.name):
+            iNum = dCards[oCard]
+            sName = norm_name(oCard)
+            # FIXME: It's not clear if ELDB is still being developed enough
+            # to support the multi-group vampires, but we try this anyway
+            if sName in aSeen and is_crypt_card(oCard):
+                sName = f'{sName} (Group {oCard.group})'
+            aSeen.add(sName)
+            sResult += '"%s",%d,0,"","%s"\n' % (sName, iNum,
                                                 type_of_card(oCard))
         return sResult
 
