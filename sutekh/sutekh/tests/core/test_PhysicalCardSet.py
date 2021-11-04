@@ -130,7 +130,7 @@ def make_set_3():
         # pylint: disable=no-member
         # SQLObect confused pylint
         oPC = aAddedPhysCards[iLoop]
-        if IAbstractCard(oPC).name == 'Abebe':
+        if IAbstractCard(oPC).name == 'Abebe (Group 4)':
             continue
         oPhysCardSet3.addPhysicalCard(oPC.id)
     for sName, sExpansion, iCount in SET_2_ONLY_CARDS:
