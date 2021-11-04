@@ -136,6 +136,39 @@ PCS_EXAMPLE_NO_AUTH = ('<physicalcardset '
                        '<card count="1" expansion="Lords of the Night" id="2" '
                        'name="AK-47" />\n</physicalcardset>')
 
+PCS_EXAMPLE_VER_1_4 = """<physicalcardset author="A test author" name="Test Set 1.4" sutekh_xml_version="1.5">
+  <comment>A test comment</comment>
+  <annotations />
+  <card count="1" expansion="Jyhad" name=".44 Magnum" printing="No Printing" />
+  <card count="3" expansion="None Specified" name=".44 Magnum" printing="No Printing" />
+  <card count="1" expansion="Lords of the Night" name="AK-47" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="AK-47" printing="No Printing" />
+  <card count="1" expansion="Keepers of Tradition" name="Aaron's Feeding Razor" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abbot" printing="No Printing" />
+  <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
+  <card count="1" expansion="Legacy of Blood" name="Abombwe" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
+  <card count="3" expansion="Camarilla Edition" name="Aire of Elation" printing="No Printing" />
+  <card count="1" expansion="Promo-20051001" name="Alan Sovereign (Group 3) (Advanced)" printing="No Printing" />
+  <card count="1" expansion="Twilight Rebellion" name="An Anarch Manifesto" printing="No Printing" />
+  <card count="1" expansion="Third Edition" name="Hektor (Group 4)" printing="Sketch" />
+  <card count="1" expansion="Heirs to the Blood" name="Hide the Heart" printing="No Printing" />
+  <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="No Printing" />
+  <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="Variant Printing" />
+  <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Draft Text" />
+  <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Printing" />
+  <card count="1" expansion="Nights of Reckoning" name="Inez &quot;Nurse216&quot; Villagrande (Group 4)" printing="No Printing" />
+  <card count="1" expansion="Dark Sovereigns" name="Scapelli, The Family &quot;Mechanic&quot;" printing="No Printing" />
+  <card count="1" expansion="Third Edition" name="Swallowed by the Night" printing="No Draft Text" />
+  <card count="1" expansion="Third Edition" name="Swallowed by the Night" printing="No Printing" />
+  <card count="1" expansion="Lords of the Night" name="The Path of Blood" printing="No Printing" />
+  <card count="2" expansion="Bloodlines" name="The Siamese (Group 2)" printing="No Printing" />
+  <card count="1" expansion="Keepers of Tradition" name="Walk of Flame" printing="No Printing" />
+  <card count="2" expansion="Third Edition" name="Walk of Flame" printing="No Draft Text" />
+  <card count="1" expansion="Third Edition" name="Walk of Flame" printing="No Printing" />
+</physicalcardset>"""
+
 
 class PhysicalCardSetParserTests(SutekhTest):
     """class for the Card Set Parser tests"""
@@ -308,6 +341,30 @@ class PhysicalCardSetParserTests(SutekhTest):
         # This test is a bit funky, as we may get either None or ''
         # depending on sqlobject version,
         self.assertTrue(oPhysCardSet3.author in (None, ''))
+
+
+    def test_card_set_parser_ver1_4(self):
+        """Test physical card set reading for a version 1.4 card set"""
+        oParser = PhysicalCardSetParser()
+
+        oHolder = CardSetHolder()
+        oParser.parse(StringIO(PCS_EXAMPLE_VER_1_4), oHolder)
+        oHolder.create_pcs()
+
+        oPhysCardSet14 = IPhysicalCardSet("Test Set 1.4")
+        self.assertEqual(len(oPhysCardSet14.cards), 34)
+
+        self.assertEqual(oPhysCardSet14.comment, 'A test comment')
+
+        oOrig = make_set_1()
+        oOrig.name = 'Original for 1.4 test'
+        # pylint: disable=not-an-iterable
+        # SQLObject confuses pylint here
+        for oCard in oOrig.cards:
+            self.assertTrue(oCard in oPhysCardSet14.cards,
+                            "%s and %s differ on card %s" % (
+                            oPhysCardSet14.name, oOrig.name,
+                            oCard.abstractCard.name))
 
     def test_roundtrip(self):
         """Test that we round trip one of the card sets from the

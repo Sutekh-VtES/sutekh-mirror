@@ -21,7 +21,7 @@ from sutekh.tests.core.test_PhysicalCardSet import (CARD_SET_NAMES,
 
 # pylint: disable=line-too-long
 # Long lines for this test data ease comparison with the actual files produced
-EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh_xml_version="1.4">
+EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh_xml_version="1.5">
   <comment>A test comment</comment>
   <annotations />
   <card count="1" expansion="Jyhad" name=".44 Magnum" printing="No Printing" />
@@ -31,30 +31,30 @@ EXPECTED_1 = """<physicalcardset author="A test author" name="Test Set 1" sutekh
   <card count="1" expansion="Keepers of Tradition" name="Aaron's Feeding Razor" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abbot" printing="No Printing" />
   <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
-  <card count="1" expansion="None Specified" name="Abebe" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
   <card count="1" expansion="Legacy of Blood" name="Abombwe" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
   <card count="3" expansion="Camarilla Edition" name="Aire of Elation" printing="No Printing" />
-  <card count="1" expansion="Promo-20051001" name="Alan Sovereign (Advanced)" printing="No Printing" />
+  <card count="1" expansion="Promo-20051001" name="Alan Sovereign (Group 3) (Advanced)" printing="No Printing" />
   <card count="1" expansion="Twilight Rebellion" name="An Anarch Manifesto" printing="No Printing" />
-  <card count="1" expansion="Third Edition" name="Hektor" printing="Sketch" />
+  <card count="1" expansion="Third Edition" name="Hektor (Group 4)" printing="Sketch" />
   <card count="1" expansion="Heirs to the Blood" name="Hide the Heart" printing="No Printing" />
   <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="No Printing" />
   <card count="1" expansion="Jyhad" name="Immortal Grapple" printing="Variant Printing" />
   <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Draft Text" />
   <card count="1" expansion="Keepers of Tradition" name="Immortal Grapple" printing="No Printing" />
-  <card count="1" expansion="Nights of Reckoning" name="Inez &quot;Nurse216&quot; Villagrande" printing="No Printing" />
+  <card count="1" expansion="Nights of Reckoning" name="Inez &quot;Nurse216&quot; Villagrande (Group 4)" printing="No Printing" />
   <card count="1" expansion="Dark Sovereigns" name="Scapelli, The Family &quot;Mechanic&quot;" printing="No Printing" />
   <card count="1" expansion="Third Edition" name="Swallowed by the Night" printing="No Draft Text" />
   <card count="1" expansion="Third Edition" name="Swallowed by the Night" printing="No Printing" />
   <card count="1" expansion="Lords of the Night" name="The Path of Blood" printing="No Printing" />
-  <card count="2" expansion="Bloodlines" name="The Siamese" printing="No Printing" />
+  <card count="2" expansion="Bloodlines" name="The Siamese (Group 2)" printing="No Printing" />
   <card count="1" expansion="Keepers of Tradition" name="Walk of Flame" printing="No Printing" />
   <card count="2" expansion="Third Edition" name="Walk of Flame" printing="No Draft Text" />
   <card count="1" expansion="Third Edition" name="Walk of Flame" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_2 = """<physicalcardset author="A test author" name="Test Set 2" sutekh_xml_version="1.4">
+EXPECTED_2 = """<physicalcardset author="A test author" name="Test Set 2" sutekh_xml_version="1.5">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -63,12 +63,12 @@ A third line</comment>
   <card count="1" expansion="Lords of the Night" name="AK-47" printing="No Printing" />
   <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" printing="No Printing" />
   <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
-  <card count="1" expansion="None Specified" name="Abebe" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
-  <card count="2" expansion="Dark Sovereigns" name="Alexandra" printing="No Printing" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.4">
+EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.5">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -77,12 +77,12 @@ A third line</comment>
   <card count="1" expansion="Lords of the Night" name="AK-47" printing="No Printing" />
   <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" printing="No Printing" />
   <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
-  <card count="1" expansion="None Specified" name="Abebe" printing="No Printing" />
+  <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
-  <card count="2" expansion="Dark Sovereigns" name="Alexandra" printing="No Printing" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
 </physicalcardset>"""
 
-EXPECTED_4 = """<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.4">
+EXPECTED_4 = """<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.5">
   <comment>A formatted test comment
 A second line
 A third line</comment>
@@ -92,8 +92,8 @@ A third line</comment>
   <card count="1" expansion="Camarilla Edition" name="Abandoning the Flesh" printing="No Printing" />
   <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
-  <card count="2" expansion="Dark Sovereigns" name="Alexandra" printing="No Printing" />
-  <card count="1" expansion="Anarchs" name="&#201;tienne Fauberge" printing="No Printing" />
+  <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
+  <card count="1" expansion="Anarchs" name="&#201;tienne Fauberge (Group 3)" printing="No Printing" />
 </physicalcardset>"""
 
 # pylint: enable=line-too-long
