@@ -47,6 +47,8 @@
 
 from sutekh.base.Utility import move_articles_to_back
 
+from sutekh.SutekhUtility import strip_group_from_name
+
 from sutekh.core.ArdbInfo import ArdbInfo
 
 
@@ -87,7 +89,7 @@ def format_avg(fAvg):
 
 def normalise_card_name(sName):
     """Normalise the name as needed for the TWDA"""
-    sName = move_articles_to_back(sName)
+    sName = move_articles_to_back(strip_group_from_name(sName))
     return SPECIAL_NAMES.get(sName, sName)
 
 
