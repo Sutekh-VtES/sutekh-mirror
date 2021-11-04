@@ -104,6 +104,8 @@ EXPECTED = """"ELDB - Inventory"
 "Claudia",0,0,"","Crypt"
 "Count Jocalo",0,0,"","Crypt"
 "Rise of the Fallen",0,0,"","Library"
+"Victoria Ash",0,0,"","Crypt"
+"Victoria Ash (Group 7)",0,0,"","Crypt"
 """
 
 
