@@ -10,7 +10,7 @@ from gi.repository import Gtk
 from sutekh.base.core.BaseTables import PhysicalCardSet
 from sutekh.io.WriteArdbHTML import WriteArdbHTML
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.base.gui.SutekhDialog import do_complaint_error
+from sutekh.base.gui.SutekhDialog import do_complaint_error, do_info_message
 from sutekh.base.gui.SutekhFileWidget import ExportDialog
 from sutekh.base.Utility import safe_filename
 from sutekh.base.gui.GuiCardSetFunctions import write_cs_to_file
@@ -30,6 +30,18 @@ class CardSetExportHTML(SutekhPlugin):
         'HTML export mode': 'string(default=None)',
     }
 
+    def setup(self):
+        """Check if an old value was used for the HTML links option"""
+        sDefault = self.get_config_item('HTML export mode')
+        if sDefault in ['Monger', 'Secret Library']:
+            # Set to the new default and inform the user
+            self.set_config_item('HTML export mode', 'Codex of the Damned')
+            do_info_message(
+                "Sutekh no longer produces urls linking to "
+                "monger.vekn.org or to secretlibrary.info\n"
+                "Both are obselete. Changing to producing"
+                "links to the Codex of the Damned")
+
     def get_menu_item(self):
         """Register on the Plugins Menu"""
         if self._cModelType == "MainWindow":
@@ -39,12 +51,11 @@ class CardSetExportHTML(SutekhPlugin):
             oGroup = None
             sDefault = self.get_config_item('HTML export mode')
             if sDefault is None:
-                sDefault = 'Secret Library'
+                sDefault = 'Codex of the Damned'
                 self.set_config_item('HTML export mode',
                                      sDefault)
-            for sString, sVal in (("Add links to The Secret Library",
-                                   'Secret Library'),
-                                  ("Add links to VTES Monger", 'Monger'),
+            for sString, sVal in (("Add links to The Codex of the Damned",
+                                   'Codex of the Damned'),
                                   ("Don't add links in the HTML file",
                                    'None')):
                 oItem = Gtk.RadioMenuItem(group=oGroup, label=sString)
