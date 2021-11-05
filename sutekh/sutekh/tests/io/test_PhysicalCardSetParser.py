@@ -177,6 +177,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_physical_card_set_parser(self):
         """Test physical card set reading"""
+        self.maxDiff = None
         # pylint: disable=too-many-statements, too-many-locals
         # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables
@@ -265,6 +266,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_card_set_parser_no_id(self):
         """Test physical card set reading for new card sets"""
+        self.maxDiff = None
         aAddedPhysCards = get_phys_cards()
         # We have a physical card list, so create some physical card sets
 
@@ -324,6 +326,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_card_set_parser_no_author(self):
         """Test physical card set reading for card sets without an author"""
+        self.maxDiff = None
         oParser = PhysicalCardSetParser()
 
         oHolder = CardSetHolder()
@@ -345,6 +348,7 @@ class PhysicalCardSetParserTests(SutekhTest):
 
     def test_card_set_parser_ver1_4(self):
         """Test physical card set reading for a version 1.4 card set"""
+        self.maxDiff = None
         oParser = PhysicalCardSetParser()
 
         oHolder = CardSetHolder()
@@ -371,6 +375,7 @@ class PhysicalCardSetParserTests(SutekhTest):
            writer successfully"""
         # We rely on the writer tests to ensure that the strings
         # are the output of the card sets
+        self.maxDiff = None
         oParser = PhysicalCardSetParser()
         for sData, fCardSet, sName in [
                 (EXPECTED_1, make_set_1, CARD_SET_NAMES[0]),

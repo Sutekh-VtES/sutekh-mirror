@@ -23,6 +23,7 @@ class TestIdentifyXMLFile(SutekhTest):
     def test_identify_xml_file(self):
         """Test IdentifyXMLFile"""
         # test IO
+        self.maxDiff = None
         sExample = make_example_pcxml()
 
         sTempFileName = self._create_tmp_file()

@@ -23,6 +23,7 @@ class RulingParserTests(SutekhTest):
 
     def test_basic(self):
         """Basic test method for ruling parser tests."""
+        self.maxDiff = None
         aRulings = sorted(list(Ruling.select()), key=lambda oR: oR.code)
 
         self.assertEqual([oR.code for oR in aRulings], self.aExpectedRulings)

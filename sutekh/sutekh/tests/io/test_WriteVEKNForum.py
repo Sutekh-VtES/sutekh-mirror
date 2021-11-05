@@ -101,6 +101,7 @@ class VEKNForumWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test VEKN bbcode file writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
 
         sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())
@@ -114,6 +115,7 @@ class VEKNForumWriterTests(SutekhTest):
 
     def test_unicode(self):
         """Test unicode card names"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_3()
 
         sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())

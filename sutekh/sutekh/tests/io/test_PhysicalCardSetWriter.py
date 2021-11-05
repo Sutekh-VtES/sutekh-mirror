@@ -106,6 +106,7 @@ class PhysicalCardSetWriterTests(SutekhTest):
 
     def test_physical_card_set_writer(self):
         """Test physical card set writing"""
+        self.maxDiff = None
         # pylint: disable=too-many-statements, too-many-locals
         # Want a long, sequential test case to minimise
         # repeated setups, so it has lots of lines + variables

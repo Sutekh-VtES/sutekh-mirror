@@ -120,6 +120,7 @@ class TWDATextWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test TWDA text file writing"""
+        self.maxDiff = None
         oPhysCardSet = make_set_1()
 
         # Check output
@@ -130,6 +131,7 @@ class TWDATextWriterTests(SutekhTest):
 
     def test_deck_with_titles(self):
         """Test TWDA writing with a titled vampire."""
+        self.maxDiff = None
         oPhysCardSet = make_set_2()
 
         # Check output
@@ -140,6 +142,7 @@ class TWDATextWriterTests(SutekhTest):
 
     def test_deck_with_int_avg(self):
         """Test TWDA writing with a titled vampire and accented characters."""
+        self.maxDiff = None
         oPhysCardSet = make_set_3()
 
         # Check output

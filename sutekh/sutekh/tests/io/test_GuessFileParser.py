@@ -51,6 +51,7 @@ class TestGuessFileParser(SutekhTest):
 
     def test_guess(self):
         """test guess against the correct parser."""
+        self.maxDiff = None
         oGuessParser = GuessFileParser()
         for cCorrectParser, sData in self.TESTS:
             oHolder1 = self._make_holder_from_string(oGuessParser, sData)
@@ -70,6 +71,7 @@ class TestGuessFileParser(SutekhTest):
 
     def test_junk(self):
         """Test the failure mode of the parser"""
+        self.maxDiff = None
         class LocalGuess(BaseGuessFileParser):
             """Test guess parser that allows failures."""
             # Unfortunately, the JOL parser has to be incredibly permissive, because

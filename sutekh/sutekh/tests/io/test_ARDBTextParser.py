@@ -115,6 +115,7 @@ class ARDBTextParserTests(SutekhTest):
 
     def test_basic(self):
         """Run the input test."""
+        self.maxDiff = None
         oParser = ARDBTextParser()
         oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_1)
 

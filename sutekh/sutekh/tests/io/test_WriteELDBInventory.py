@@ -116,6 +116,7 @@ class ELDBInventoryWriterTests(SutekhTest):
 
     def test_inventory_writer(self):
         """Test ELDB inventory writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
 
         # Check output

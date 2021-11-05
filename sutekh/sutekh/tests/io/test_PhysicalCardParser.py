@@ -42,6 +42,7 @@ class PhysicalCardTests(SutekhTest):
     def test_physical(self):
         """Test physical card handling"""
         # test IO
+        self.maxDiff = None
         sExample = make_example_pcxml()
         oParser = PhysicalCardParser()
         oHolder = CardSetHolder()

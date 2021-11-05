@@ -48,6 +48,7 @@ class AbstractCardSetParserTest(SutekhTest):
         # Support for everything except reading has been removed.
         # It is expected that reading in an ACS will create an
         # equivalent PCS.
+        self.maxDiff = None
 
         oParser = AbstractCardSetParser()
 

@@ -199,6 +199,7 @@ class ArdbXMLWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test ARDB XML deck writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
         sCurDate = time.strftime('>%Y-%m-%d<', time.localtime())
 

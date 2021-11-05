@@ -72,6 +72,7 @@ class ArdbTextWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test ARDB text file writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
 
         # Check output
@@ -83,6 +84,7 @@ class ArdbTextWriterTests(SutekhTest):
 
     def test_roundtrip(self):
         """Test we can round-trip a deck"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
         oParser = ARDBTextParser()
 

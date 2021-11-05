@@ -30,6 +30,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_zip_file(self):
         """Test zip file handling"""
+        self.maxDiff = None
         # pylint: disable=too-many-statements
         # Want a single test case to avoid re-initialising the database
         sTempFileName = self._create_tmp_file()
@@ -122,6 +123,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_read_single(self):
         """Check read_single_works"""
+        self.maxDiff = None
         sTempFileName = self._create_tmp_file()
         oZipFile = ZipFileWrapper(sTempFileName)
         aPhysCards = get_phys_cards()
@@ -150,6 +152,7 @@ class ZipFileWrapperTest(SutekhTest):
 
     def test_old_format(self):
         """Test that an old zip file loads correctly"""
+        self.maxDiff = None
         # Create a test zipfile with old data
         sPhysicalCards = make_example_pcxml()
 

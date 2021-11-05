@@ -103,6 +103,7 @@ class ArdbXMLDeckParserTests(SutekhTest):
 
     def test_basic(self):
         """Run the input test."""
+        self.maxDiff = None
         oHolder = self._make_holder_from_string(ARDBXMLDeckParser(),
                                                 ARDB_DECK_EXAMPLE_1)
 

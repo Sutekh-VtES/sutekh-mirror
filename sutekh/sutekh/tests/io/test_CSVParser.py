@@ -22,6 +22,7 @@ class TestCSVParser(SutekhTest):
         """Run the input test."""
 
         # Check we can round trip from our own CSV files
+        self.maxDiff = None
         aTests = [
             (0, 2, 1, True, EXPECTED_1),
             (0, 2, 1, False, EXPECTED_2),

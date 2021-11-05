@@ -62,6 +62,7 @@ class ELDBDeckWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test ELDB deck writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
 
         # Check output

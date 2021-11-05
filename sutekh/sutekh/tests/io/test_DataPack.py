@@ -67,6 +67,7 @@ class DataPackTest(SutekhTest):
 
     def test_find_data_pack(self):
         """Test finding data pack in sane documentation page"""
+        self.maxDiff = None
         sTempUrl = self.create_index(TEST_DATA)
 
         sUrl, sHash = find_data_pack('starters', sTempUrl)
@@ -107,6 +108,7 @@ class DataPackTest(SutekhTest):
 
     def test_error_handler_bad_index(self):
         """Test error handling for badly formatted index files."""
+        self.maxDiff = None
         sTempUrl = self.create_index("""Not JSON""")
         aErrors = []
 

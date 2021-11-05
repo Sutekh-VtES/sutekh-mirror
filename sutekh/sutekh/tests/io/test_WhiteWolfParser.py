@@ -127,10 +127,10 @@ class WhiteWolfParserTests(SutekhTest):
         ]
 
     def test_basic(self):
-
         """Basic WW list parser tests"""
         # pylint: disable=too-many-statements, too-many-locals
         # Want a long, sequential test case to minimise repeated setups
+        self.maxDiff = None
 
         # Check that we've added the 'last updated' date entry
         oToday = datetime.date.today()
@@ -741,6 +741,7 @@ class WhiteWolfParserTests(SutekhTest):
     def test_card_type_checkers(self):
         """Check the various utilities for checking card type
            and properties."""
+        self.maxDiff = None
         oDob = IAbstractCard(u"L\xe1z\xe1r Dobrescu")
         self.assertTrue(is_vampire(oDob))
         self.assertTrue(is_crypt_card(oDob))
@@ -768,6 +769,7 @@ class WhiteWolfParserTests(SutekhTest):
 
     def test_adapters(self):
         """Extra sanity checks on the adapaters."""
+        self.maxDiff = None
         for oAdapter in (IAbstractCard, IPhysicalCard,
                          IExpansion, IRarity, IRarityPair,
                          ICardType, IArtist, IKeyword):

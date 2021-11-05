@@ -43,6 +43,7 @@ class TestJOLDeckParser(SutekhTest):
 
     def test_basic(self):
         """Run the JOL input test."""
+        self.maxDiff = None
         oHolder = self._make_holder_from_string(JOLDeckParser(), JOL_EXAMPLE_1)
 
         aCards = oHolder.get_cards()

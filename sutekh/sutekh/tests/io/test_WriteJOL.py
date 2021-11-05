@@ -42,6 +42,7 @@ class JOLWriterTests(SutekhTest):
 
     def test_deck_writer(self):
         """Test JOL deck writing"""
+        self.maxDiff = None
         oPhysCardSet1 = make_set_1()
 
         # Check output
