@@ -13,7 +13,7 @@ from sutekh.base.core.CardSetHolder import CardSetWrapper
 from sutekh.io.WriteVEKNForum import WriteVEKNForum
 from sutekh.SutekhInfo import SutekhInfo
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1, make_set_3
 
 VEKN_EXPECTED_1 = """[size=18][b]Deck Name : Test Set 1[/b][/size]
 [b][u]Author :[/u][/b] A test author
@@ -63,6 +63,37 @@ Recorded with : Sutekh %s [ DATE ]
 """ % SutekhInfo.VERSION_STR
 
 
+VEKN_EXPECTED_2 = """[size=18][b]Deck Name : Test Set 3[/b][/size]
+[b][u]Author :[/u][/b] A test author
+[b][u]Description :[/u][/b]
+A formatted test comment
+A second line
+A third line
+
+[size=18][u]Crypt [3 vampires] Capacity min: 8 max: 11 average: 10.00[/u][/size]
+[table]
+[tr][td]2x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=Alexandra]Alexandra[/url][/td][td][/td][td](11)[/td][td]:ANI: :AUS: :CEL: :PRE: :dom:[/td][td]Inner Circle[/td][td]:tore: Toreador[/td][td](group 2)[/td][/tr]
+[tr][td]1x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=%%C3%%89tienne+Fauberge]Étienne Fauberge[/url][/td][td][/td][td](8)[/td][td]:ANI: :CEL: :CHI: :FOR:[/td][td]   [/td][td]:ravn: Ravnos[/td][td](group 3)[/td][/tr]
+[/table]
+[size=18][u]Library [5 cards][/u][/size]
+[b][u]Action [1][/u][/b]
+ 1x [url=https://codex-of-the-damned.org/en/card-search.html?card=Abbot]Abbot[/url]
+
+[b][u]Combat/Reaction [1][/u][/b]
+ 1x [url=https://codex-of-the-damned.org/en/card-search.html?card=Abandoning+the+Flesh]Abandoning the Flesh[/url]
+
+[b][u]Equipment [2][/u][/b]
+ 1x [url=https://codex-of-the-damned.org/en/card-search.html?card=.44+Magnum].44 Magnum[/url]
+ 1x [url=https://codex-of-the-damned.org/en/card-search.html?card=AK-47]AK-47[/url]
+
+[b][u]Master [1] (1 trifle)[/u][/b]
+ 1x [url=https://codex-of-the-damned.org/en/card-search.html?card=Abombwe]Abombwe[/url]
+
+
+Recorded with : Sutekh %s [ DATE ]
+""" % SutekhInfo.VERSION_STR
+
+
 class VEKNForumWriterTests(SutekhTest):
     """class for the VEKN bbcode file writer tests"""
     # pylint: disable=too-many-public-methods
@@ -80,6 +111,19 @@ class VEKNForumWriterTests(SutekhTest):
         sData = sData.replace(sCurDate, '[ DATE ]')
 
         self.assertEqual(sData, VEKN_EXPECTED_1)
+
+    def test_unicode(self):
+        """Test unicode card names"""
+        oPhysCardSet1 = make_set_3()
+
+        sCurDate = time.strftime('[ %Y-%m-%d ]', time.localtime())
+
+        # Check output
+        oWriter = WriteVEKNForum()
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
+        sData = sData.replace(sCurDate, '[ DATE ]')
+
+        self.assertEqual(sData, VEKN_EXPECTED_2)
 
 
 if __name__ == "__main__":
