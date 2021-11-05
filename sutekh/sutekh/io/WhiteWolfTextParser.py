@@ -29,7 +29,6 @@ KICKSTARTER_EDITIONS = {
    "dm": "Danse Macabre (Kickstarter Edition)",
 }
 
-
 # Special case within a special case alert
 # These cards where not printed in the original PDF set, bit as later
 # promos, and then added to the Kickstarter reprint set.
@@ -41,6 +40,14 @@ SPECIAL_TU_KICKSTARTER_CARDS = [
     'Rise of the Fallen',
     'Winterlich',
 ]
+
+# The White Wolf list keeps flipping between 'Pentex(TM) Loves You!' and 'Pentex™ Loves You!'
+# which causes continous queries when importing card lists, so we have this mapping to
+# ensure that we always use the same version
+PENTEX_NAMES = {
+    'Pentex(TM) Subversion': 'Pentex™ Subversion',
+    'Pentex(TM) Loves You!': 'Pentex™ Loves You!',
+}
 
 
 def strip_braces(sText):
@@ -734,6 +741,9 @@ class CardDict(dict):
         self._add_group_to_name()
 
         self._fix_advanced_name()
+
+        if self['name'] in PENTEX_NAMES:
+            self['name'] = PENTEX_NAMES[self['name']]
 
         oCard = self._make_card(self['name'])
 
