@@ -16,6 +16,8 @@
 TEST_LOOKUP_LIST = """CardNames,"Ankara Citadel","The Ankara Citadel, Turkey"
 CardNames,Anastaszdi Zagreb,Anastasz di Zagreb (Group 3)
 CardNames,"Pier 13","Pier 13, Port of Baltimore"
+CardNames,Pentex Subversion,Pentex™ Subversion
+CardNames,Pentex(TM) Subversion,Pentex™ Subversion
 Expansions,Jyhad,Jyhad
 Expansions,VTES,VTES
 Expansions,Sabbat,Sabbat
@@ -839,6 +841,14 @@ Cost: 1 pool
 Unique master.
 Put this card in play. Cards that require Quietus [qui] {cost Banu Haqim 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.
 Artist: Drew Tucker; Jeff Holt
+
+Name: Pentex(TM) Subversion
+[DS:U3, FN:PS, Third:U, 25th:1, Promo-20200511, V5:PTr1]
+Cardtype: Master
+Cost: 2 pool
+Unique.
+Put this card on a ready minion. This minion cannot block. Any other minion can burn this card as a (D) action.
+Artist: Pete Venters; Riccardo Fabiani
 
 Name: Pier 13, Port of Baltimore
 [SW:U/PB, Third:U, KoT:U]

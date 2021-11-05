@@ -99,6 +99,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Pariah (Group 2)",
         u"Paris Opera House",
         u"Park Hunting Ground",
+        u"Pentex™ Subversion",
         u"Pier 13, Port of Baltimore",
         u"Political Hunting Ground",
         u"Predator's Communion",
@@ -736,6 +737,15 @@ class WhiteWolfParserTests(SutekhTest):
         oVicAsh = IAbstractCard("Victoria Ash")
         self.assertNotEqual(oVicAsh2.id, oVicAsh7.id)
         self.assertEqual(oVicAsh2.id, oVicAsh.id)
+
+        # Check that we have the Pentex lookups correct
+        # The list checks that we have handled the rename correctly
+        oPentex1 = IAbstractCard('Pentex Subversion')
+        oPentex2 = IAbstractCard('Pentex(TM) Subversion')
+        oPentex3 = IAbstractCard('Pentex™ Subversion')
+
+        self.assertEqual(oPentex1.id, oPentex2.id)
+        self.assertEqual(oPentex1.id, oPentex3.id)
 
 
     def test_card_type_checkers(self):
