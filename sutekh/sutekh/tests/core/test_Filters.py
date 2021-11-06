@@ -184,7 +184,7 @@ class FilterTests(SutekhTest):
             (Filters.MultiExpansionRarityFilter([('Third', 'Uncommon'),
                                                  ('Jyhad', 'Rare')]),
              [u"Aaron's Feeding Razor", u"Abbot", u"Anarch Revolt",
-              u"Ghoul Retainer", u"Immortal Grapple",
+              u"Ghoul Retainer", u"Immortal Grapple", u"Pentex™ Subversion",
               u"Pier 13, Port of Baltimore"]),
             (Filters.PrintingFilter('Third Edition (No Draft Text)'),
              [u"Swallowed by the Night", u"Walk of Flame"]),
@@ -288,7 +288,7 @@ class FilterTests(SutekhTest):
             (Filters.CostFilter(5), [u"AK-47"]),
             (Filters.MultiCostFilter([2, 5]),
              [u".44 Magnum", u"AK-47", u"Anarch Railroad", u"Ghoul Retainer",
-              u"Paris Opera House", u"Park Hunting Ground",
+              u"Paris Opera House", u"Park Hunting Ground", "Pentex™ Subversion",
               u"Pier 13, Port of Baltimore", u"Political Hunting Ground",
               u"Protracted Investment", u"The Ankara Citadel, Turkey"]),
             (Filters.CostFilter(0),
@@ -357,6 +357,7 @@ class FilterTests(SutekhTest):
              [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor",
               u"Anarch Railroad", u"Ghoul Retainer", u"Gypsies", u"High Top",
               u"Ossian", u"Paris Opera House", u"Park Hunting Ground",
+              "Pentex™ Subversion",
               u"Political Hunting Ground", u"Protracted Investment",
               u"Rock Cat", u'Scapelli, The Family "Mechanic"',
               u"The Path of Blood", u"The Slaughterhouse", u"Vox Domini"]),
@@ -368,7 +369,7 @@ class FilterTests(SutekhTest):
              [u".44 Magnum", u"AK-47", u"Aaron's Feeding Razor",
               u"Aire of Elation", u"Anarch Railroad", u"Ghoul Retainer",
               u"Gypsies", u"High Top", u"Living Manse", u"Ossian",
-              u"Paris Opera House", u"Park Hunting Ground",
+              u"Paris Opera House", u"Park Hunting Ground", "Pentex™ Subversion",
               u"Pier 13, Port of Baltimore", u"Political Hunting Ground",
               u"Protracted Investment", u"Raven Spy", u"Rock Cat",
               u'Scapelli, The Family "Mechanic"', u"Shade",
@@ -398,7 +399,8 @@ class FilterTests(SutekhTest):
             (Filters.KeywordFilter('unique'),
              [u"Aaron's Feeding Razor", u"Agent of Power", u"Anarch Railroad",
               u"Gypsies", u"High Top", u"Ossian", u"Paris Opera House",
-              u"Park Hunting Ground", u"Pier 13, Port of Baltimore",
+              u"Park Hunting Ground", "Pentex™ Subversion",
+              u"Pier 13, Port of Baltimore",
               u"Political Hunting Ground", u"Rise of the Fallen",
               u'Scapelli, The Family "Mechanic"',
               u"The Ankara Citadel, Turkey", u"The Path of Blood"]),
@@ -452,6 +454,7 @@ class FilterTests(SutekhTest):
               u'Inez "Nurse216" Villagrande (Group 4)',
               u'Motivated by Gehenna', u"Necromancy", u"Off Kilter",
               u"Ossian", u"Paris Opera House", u"Park Hunting Ground",
+              u"Pentex™ Subversion",
               u"Political Hunting Ground", u"Predator's Communion",
               u"Protracted Investment", u"Raven Spy",
               u"Rise of the Fallen", u"Rock Cat",
@@ -619,7 +622,7 @@ class FilterTests(SutekhTest):
         # Test we get the right values from the physical expansion and
         # printing filters
         self.assertEqual(Filters.MultiPhysicalExpansionFilter.get_values(),
-                         ["  Unspecified Expansion", "Anarchs",
+                         ["  Unspecified Expansion", "25th", "Anarchs",
                           "Anarchs Unbound",
                           "Anarchs Unbound (Kickstarter Edition)",
                           "Anarchs and Alastors Storyline", "Ancient Hearts",
@@ -639,11 +642,12 @@ class FilterTests(SutekhTest):
                           'Sabbat Wars', 'Tenth Anniversary',
                           'The Unaligned',
                           'The Unaligned (Kickstarter Edition)',
-                          'Third Edition', 'Twilight Rebellion', 'VTES']
+                          'Third Edition', 'Twilight Rebellion', "V5", 'VTES']
                         )
 
         self.assertEqual(Filters.MultiPhysicalPrintingFilter.get_values(),
                          ["  Unspecified Expansion",
+                          "25th",
                           "Anarchs",
                           "Anarchs Unbound",
                           "Anarchs Unbound (Kickstarter Edition)",
@@ -684,6 +688,7 @@ class FilterTests(SutekhTest):
                           'Third Edition (No Draft Text)',
                           'Third Edition (Sketch)',
                           'Twilight Rebellion',
+                          "V5",
                           'VTES']
                         )
 
