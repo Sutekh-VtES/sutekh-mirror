@@ -44,7 +44,10 @@ def norm_name(oCard):
         # usual ELDB quoting
         sName = sName.replace('"', "`")
         sName = sName.replace("'", "`")
-    return to_ascii(sName)
+    sName = to_ascii(sName)
+    if 'PentexTM' in sName:
+        sName = sName.replace('PentexTM', 'Pentex(TM)')
+    return sName
 
 
 def gen_name_lookups():
