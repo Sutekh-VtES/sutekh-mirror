@@ -106,6 +106,7 @@ EXPECTED = """"ELDB - Inventory"
 "Rise of the Fallen",0,0,"","Library"
 "Victoria Ash",0,0,"","Crypt"
 "Victoria Ash (Group 7)",0,0,"","Crypt"
+"Pentex(TM) Subversion",0,0,"","Library"
 """
 
 

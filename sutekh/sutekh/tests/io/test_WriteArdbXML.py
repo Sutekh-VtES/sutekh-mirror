@@ -63,7 +63,7 @@ when bleeding you.</text>
       <capacity>3</capacity>
       <group>4</group>
       <text>When Inez enters play, you may search your library (shuffle afterward) or hand for a power that requires innocence and put it on her.</text>
-    </vampire><vampire count="2" databaseID="79">
+    </vampire><vampire count="2" databaseID="80">
       <adv />
       <name>Siamese, The</name>
       <set>BL</set>
@@ -128,7 +128,7 @@ Put this card on a Laibon or on a vampire with Protean [pro]. This vampire gains
       <type>Equipment</type>
       <text>Equipment.
 The anarch with this equipment gets +1 stealth on actions that require an anarch. Titled non-anarch vampires get +1 strength in combat with this minion. A minion may have only one Anarch Manifesto.</text>
-    </card><card count="1" databaseID="84">
+    </card><card count="1" databaseID="85">
       <name>Hide the Heart</name>
       <set>HttB</set>
       <type>Reaction</type>
@@ -149,7 +149,7 @@ The anarch with this equipment gets +1 stealth on actions that require an anarch
       <disciplines>POT</disciplines>
       <text>Only usable at close range before strikes are chosen. Grapple.
 [pot] Strikes that are not hand strikes may not be used this round (by either combatant). A vampire may play only one Immortal Grapple each round. [POT] As above, with an optional press. If another round of combat occurs, that round is at close range; skip the determine range step for that round.</text>
-    </card><card count="1" databaseID="74">
+    </card><card count="1" databaseID="75">
       <name>Scapelli, The Family "Mechanic"</name>
       <set>DS</set>
       <cost>3 pool</cost>
@@ -157,7 +157,7 @@ The anarch with this equipment gets +1 stealth on actions that require an anarch
       <type>Ally</type>
       <text>Unique {mortal} with 3 life. {0 strength}, 1 bleed.
 {Scapelli may strike for 2R damage.} Once each combat, Scapelli may press to continue combat.</text>
-    </card><card count="2" databaseID="78">
+    </card><card count="2" databaseID="79">
       <name>Swallowed by the Night</name>
       <set>Third</set>
       <type>Action Modifier/Combat</type>
@@ -172,14 +172,14 @@ The anarch with this equipment gets +1 stealth on actions that require an anarch
       <type>Master</type>
       <text>Unique master.
 Put this card in play. Cards that require Quietus [qui] {cost Banu Haqim 1 less blood}. Any minion may burn this card as a (D) action; if that minion is a vampire, he or she then takes 1 unpreventable damage when this card is burned.</text>
-    </card><card count="1" databaseID="85">
+    </card><card count="1" databaseID="86">
       <name>Walk of Flame</name>
       <set>KoT</set>
       <type>Combat</type>
       <disciplines>THA</disciplines>
       <text>Not usable on the first round of combat.
 [tha] Strike: 1R aggravated damage. [THA] Strike: 2R aggravated damage.</text>
-    </card><card count="3" databaseID="85">
+    </card><card count="3" databaseID="86">
       <name>Walk of Flame</name>
       <set>Third</set>
       <type>Combat</type>
