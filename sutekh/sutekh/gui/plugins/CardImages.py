@@ -7,6 +7,7 @@
 
 import datetime
 import os
+import re
 import logging
 
 from gi.repository import Gtk
@@ -35,6 +36,7 @@ SUTEKH_USER_AGENT = {
     'User-Agent': 'Sutekh Image Plugin'
 }
 
+GROUP_RE = re.compile(r'\(group ([0-9]+)\)')
 
 class CardImageFrame(BaseImageFrame):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
@@ -189,6 +191,10 @@ class CardImageFrame(BaseImageFrame):
         elif sFilename.startswith('an '):
             sFilename = sFilename[3:] + 'an'
         sFilename = sFilename.replace('(advanced)', 'adv')
+        # Convert vampire names to match krcg's group handling
+        if '(group' in sFilename:
+            iGroup = int(GROUP_RE.search(sFilename).groups()[0])
+            sFilename = GROUP_RE.sub('', sFilename) + '%02d' % iGroup
         # Should probably do this via translate
         for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
             sFilename = sFilename.replace(sChar, '')
