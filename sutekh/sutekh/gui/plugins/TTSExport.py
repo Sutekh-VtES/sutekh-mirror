@@ -21,7 +21,7 @@ from sutekh.base.Utility import safe_filename, move_articles_to_back, to_ascii
 
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.ELDBUtilities import norm_name
-from sutekh.SutekhUtility import is_crypt_card
+from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name
 
 # Not sure how stable this name is under module updates - guess we'll see
 MODULE_NAME = "1955001917.json"
@@ -189,6 +189,7 @@ def fix_nickname(sName):
 
 def make_json_name(oCard):
     """Create the corresponding TTS json name for the given card"""
+    # FIXME: Update this when we see how TTS handles multi-group cards
     sJSONName = norm_name(oCard).lower()
     sJSONName = NONNAME.sub('', sJSONName)
     if sJSONName in SPECIAL_CASES:
@@ -198,7 +199,8 @@ def make_json_name(oCard):
 def make_alternative_json_name(oCard):
     """Alternative formatting for those cards that use a different
        convention"""
-    sJSONName = move_articles_to_back(oCard.name)
+    # FIXME: Update this when we see how TTS handles multi-group cards
+    sJSONName = move_articles_to_back(strip_group_from_name(oCard.name))
     sJSONName = to_ascii(sJSONName)
     return sJSONName.lower()
 
