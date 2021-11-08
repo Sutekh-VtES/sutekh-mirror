@@ -171,7 +171,7 @@ class CardDict(dict):
     oDispCard = re.compile(r'\[[^\]]+\]$')
     oArtistSp = re.compile(r'[&;]')
 
-    oGroupFromName = re.compile(r'\(Group ([0-9]+)\)$$')
+    oGroupFromName = re.compile(r'\(Group ([0-9]+)\)')
     # Use regexp lookahead for the last '.', so it can anchor the next match
     # Use non-grouping parentheses so we ca can catch either . or the end of
     # the text
