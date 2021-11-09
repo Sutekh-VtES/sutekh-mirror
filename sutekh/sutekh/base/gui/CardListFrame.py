@@ -42,6 +42,16 @@ class CardListFrame(BasicFrame):
         # Needs to be exposed to the main window for major database changes
         self._oController.view.reload_keep_expanded()
 
+    def update_to_new_db(self, _sSignal):
+        """Re-associate internal data against the database.
+
+           Needed for re-reading WW cardlists and such.
+           By default, just reload.
+           """
+        # Ensure we update any internal state before reloading
+        self._oController.model.update_to_new_db()
+        self.reload()
+
     def get_toolbar_plugins(self):
         """Register plugins on the frame toolbar."""
         oBox = Gtk.VBox(homogeneous=False, spacing=2)

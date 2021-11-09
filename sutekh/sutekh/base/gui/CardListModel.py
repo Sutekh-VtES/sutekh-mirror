@@ -33,6 +33,63 @@ USE_ICONS = "show icons for grouping"
 HIDE_ILLEGAL = "hide cards not legal for tournament play"
 
 
+class NameTransformer:
+    """Base class for transforming names in the view"""
+
+    CONFIG_KEY = None  # Key to access the config file
+
+    def __init__(self, oConfig):
+        """Load any initial settings"""
+
+    def database_updated(self):
+        """Called on database updates to handle any caching, etc."""
+        raise NotImplementedError("Implement database_updated")
+
+    def config_changed(self, oConfig):
+        """Called when the config key is changed.
+
+           Note that the transformer doesn't subscribe to config change
+           signals - that is done by the model to control the order
+           in which the transformer config update is handled relative
+           to updating the displayed names."""
+        raise NotImplementedError("Implement config_changed")
+
+    def transform(self, sCardName, oAbsCard):
+        """Called to set the correct name.
+
+           sCardName is the current name, which could be touched by other transformers.
+           oAbsCard is the actual card, for cases where we need to query properties
+           of the card or the original unchanged name."""
+        raise NotImplementedError("Implement transform")
+
+
+class PostfixName(NameTransformer):
+    """Handle changing names form 'The X' to 'X, The'"""
+
+    CONFIG_KEY = 'set_postfix_the_display'
+
+    def __init__(self, oConfig):
+        super().__init__(oConfig)
+        self.bPostfix = oConfig.get_postfix_the_display()
+
+    def database_updated(self):
+        """We do nothing on a database update, as nothing is cached"""
+        pass
+
+    def config_changed(self, oConfig):
+        """Update the flag"""
+        self.bPostfix = oConfig.get_postfix_the_display()
+        print('Here: updated value', self.bPostfix)
+
+    def transform(self, sCardName, oAbsCard):
+        """Apply the actual change.
+
+           oAbsCard is unused, since this just works on the name"""
+        if self.bPostfix:
+            return move_articles_to_back(sCardName)
+        return sCardName
+
+
 class CardListModel(Gtk.TreeStore):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
     # need local attributes for state
@@ -74,6 +131,8 @@ class CardListModel(Gtk.TreeStore):
         self._bHideIllegal = True
         self._oController = None
         self._oFilterParser = FilterParser()
+        self._dTransformers = {}
+        self.register_transformer(PostfixName)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
                              self.replace_filter)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
@@ -81,9 +140,6 @@ class CardListModel(Gtk.TreeStore):
                              self.profile_option_changed)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                              self.profile_changed)
-        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG,
-                             'set_postfix_the_display',
-                             self.set_postfix_the_display)
 
     # pylint: disable=protected-access, invalid-name
     # we explicitly allow access via these properties
@@ -120,6 +176,13 @@ class CardListModel(Gtk.TreeStore):
 
     # pylint: enable=protected-access, invalid-name
 
+    def register_transformer(self, cTransformer):
+        """Register a name transformer"""
+        oTransformer = cTransformer(self._oConfig)
+        MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, oTransformer.CONFIG_KEY,
+                             self.update_transformers)
+        self._dTransformers[oTransformer.CONFIG_KEY] = oTransformer
+
     def cleanup(self):
         """Remove the config file listener if needed"""
         self._oController = None
@@ -130,9 +193,9 @@ class CardListModel(Gtk.TreeStore):
                                self.profile_option_changed)
         MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, 'profile_changed',
                                self.profile_changed)
-        MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG,
-                               'set_postfix_the_display',
-                               self.set_postfix_the_display)
+        for sKey in self._dTransformers:
+            MessageBus.unsubscribe(MessageBus.Type.CONFIG_MSG, sKey,
+                                   self.update_transformers)
         # Ensure we clean up all subscribers
         MessageBus.clear(self)
 
@@ -210,34 +273,43 @@ class CardListModel(Gtk.TreeStore):
 
     # pylint: enable=no-self-use
 
-    def _set_display_name(self, bPostfix):
+    def _update_display_name(self):
         """Set the correct display name for the cards.
 
            We walk all the 1st level entries, and set the name from the
-           card, based on bPostfix."""
+           card, based on the transformers."""
         oIter = self.get_iter_first()  # Grouping level items
         while oIter:
             oChildIter = self.iter_children(oIter)
             while oChildIter:
                 sName = self.get_card_name_from_iter(oChildIter)
-                if bPostfix:
-                    sName = move_articles_to_back(sName)
+                oCard = self.get_abstract_card_from_iter(oChildIter)
+                for oTransform in self._dTransformers.values():
+                    sName = oTransform.transform(sName, oCard)
                 self.set(oChildIter, 0, sName)
                 self.row_changed(self.get_path(oChildIter), oChildIter)
                 oChildIter = self.iter_next(oChildIter)
             oIter = self.iter_next(oIter)
 
-    def set_postfix_the_display(self, _sSignal, bPostfix):
+    def update_transformers(self, sSignal, _bValue):
         """Respond to config file changes. Passes straight through to
-           _set_display_name so we don't need another load."""
+           _update_display_name so we don't need another load."""
+        print('Here', sSignal, _bValue)
+        self._dTransformers[sSignal].config_changed(self._oConfig)
         # Disable sorting while we touch everything
         iSortColumn, iSortOrder = self.get_sort_column_id()
         if iSortColumn is not None:
             self.set_sort_column_id(-2, 0)
-        self._set_display_name(bPostfix)
+        self._update_display_name()
         # Enable sorting
         if iSortColumn is not None:
             self.set_sort_column_id(iSortColumn, iSortOrder)
+
+    def update_to_new_db(self):
+        """Call update on all the transforms for if they cache
+           anything."""
+        for oTransform in self._dTransformers.values():
+            oTransform.database_updated()
 
     def load(self):
         # pylint: disable=too-many-locals
@@ -259,7 +331,6 @@ class CardListModel(Gtk.TreeStore):
 
         # Iterate over groups
         bEmpty = True
-        bPostfix = self._oConfig.get_postfix_the_display()
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             sGroup = self._fix_group_name(sGroup)
@@ -273,10 +344,9 @@ class CardListModel(Gtk.TreeStore):
                 oChildIter = self.prepend(oSectionIter)
                 # We need to lookup the card directly, since aExpansionInfo
                 # may not have the info we need
-                # Names will be set by _set_display_name
                 sName = oCard.name
-                if bPostfix:
-                    sName = move_articles_to_back(sName)
+                for oTransform in self._dTransformers.values():
+                    sName = oTransform.transform(sName, oCard)
                 self.set(oChildIter,
                          0, sName,
                          8, oCard,
