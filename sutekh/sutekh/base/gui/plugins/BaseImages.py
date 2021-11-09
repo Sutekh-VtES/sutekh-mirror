@@ -648,7 +648,7 @@ class BaseImageFrame(BasicFrame):
         self._oImagePlugin.set_config_item(CARD_IMAGE_PATH, sNewPath)
         self._bShowExpansions = self._have_expansions()
 
-    def set_card_text(self, oPhysCard):
+    def set_card_text(self, _sSignal, oPhysCard):
         """Set the image in response to a set card name event."""
         if not oPhysCard:
             return

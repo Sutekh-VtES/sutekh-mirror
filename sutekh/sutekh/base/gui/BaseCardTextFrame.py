@@ -35,7 +35,7 @@ class BaseCardTextFrame(ScrolledFrame):
                                self.set_card_text)
         super().cleanup(bQuit)
 
-    def set_card_text(self, oCard):
+    def set_card_text(self, _sSignal, oCard):
         """Hand off card text update to the view"""
         if oCard:
             # Skip doing anything if None

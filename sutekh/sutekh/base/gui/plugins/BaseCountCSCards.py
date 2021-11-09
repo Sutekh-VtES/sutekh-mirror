@@ -63,7 +63,7 @@ class BaseCountCSCards(BasePlugin):
             self._oTextLabel.set_markup(self.TOT_FORMAT % self.dInfo)
             self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % self.dInfo)
 
-    def load(self, aCards):
+    def load(self, _sSignal, aCards):
         """Listen on load events & update counts"""
         # We cache type  lookups to save time
         # The cache is short-lived to avoid needing to deal with
@@ -81,7 +81,7 @@ class BaseCountCSCards(BasePlugin):
                 self.dInfo[sKey] += 1
         self.update_numbers()
 
-    def alter_card_count(self, oCard, iChg):
+    def alter_card_count(self, _sSignal, oCard, iChg):
         """respond to alter_card_count events"""
         self.dInfo[TOTAL] += iChg
         oAbsCard = IAbstractCard(oCard)
@@ -90,7 +90,7 @@ class BaseCountCSCards(BasePlugin):
             self.dInfo[sKey] += iChg
         self.update_numbers()
 
-    def add_new_card(self, oCard, iCnt):
+    def add_new_card(self, _sSignal, oCard, iCnt):
         """response to add_new_card events"""
         self.dInfo[TOTAL] += iCnt
         oAbsCard = IAbstractCard(oCard)

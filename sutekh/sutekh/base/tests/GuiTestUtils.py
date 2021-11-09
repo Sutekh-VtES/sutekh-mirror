@@ -28,14 +28,14 @@ class LocalTestListener:
         MessageBus.subscribe(oModel, 'alter_card_count', self.alter_count)
         MessageBus.subscribe(oModel, 'add_new_card', self.alter_count)
 
-    def load(self, aCards):
+    def load(self, _sSignal, aCards):
         """Called when the model is loaded."""
         self.bLoadCalled = True
         self.iCnt = len(aCards)
         if self._bKeepCards:
             self.aCards = [IAbstractCard(oCard) for oCard in aCards]
 
-    def alter_count(self, _oCard, iChg):
+    def alter_count(self, _sSignal, _oCard, iChg):
         """Called when the model alters the card count or adds cards"""
         self.iCnt += iChg
 

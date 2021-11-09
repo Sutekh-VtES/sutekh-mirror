@@ -97,12 +97,12 @@ class PhysicalCardMenu(CardListMenu):
 
     # Respond to profile changes
 
-    def remove_profile(self, sType, _sProfile):
+    def remove_profile(self, _sSignal, sType, _sProfile):
         """A profile has been removed"""
         if sType == FULL_CARDLIST:
             self._fix_profile_menu()
 
-    def profile_option_changed(self, sType, _sProfile, sKey):
+    def profile_option_changed(self, _sSignal, sType, _sProfile, sKey):
         """Update menu if profiles are renamed."""
         if sType == FULL_CARDLIST and sKey == 'name':
             self._fix_profile_menu()

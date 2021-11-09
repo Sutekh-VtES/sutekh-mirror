@@ -151,7 +151,7 @@ class PluginConfigFileListener:
                                'profile_changed',
                                self.profile_changed)
 
-    def profile_option_changed(self, sType, sProfile, sKey):
+    def profile_option_changed(self, _sSignal, sType, sProfile, sKey):
         """One of the per-deck configuration items changed."""
         if sType in (CARDSET, FRAME):
             dConfig = self._oPlugin.dPerPaneConfig
@@ -176,7 +176,7 @@ class PluginConfigFileListener:
             if sProfile in tProfiles:
                 self._oPlugin.perpane_config_updated()
 
-    def profile_changed(self, sType, sId):
+    def profile_changed(self, _sSignal, sType, sId):
         """The profile associated with a frame changed."""
         if sType == FRAME and self._oPlugin.model.frame_id == sId:
             self._oPlugin.perpane_config_updated()
