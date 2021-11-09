@@ -495,7 +495,7 @@ class StarterInfoPlugin(SutekhPlugin):
                         })
         return dInfo
 
-    def post_set_card_text(self, oPhysCard):
+    def post_set_card_text(self, _sSignal, oPhysCard):
         """Update the card text pane with the starter info"""
         self.oLastCard = oPhysCard
         if not self.bShowInfo:

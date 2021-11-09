@@ -423,7 +423,7 @@ class MergedVampirePlugin(SutekhPlugin):
         MessageBus.subscribe(MessageBus.Type.CARD_TEXT_MSG, 'post_set_text',
                              self.post_set_card_text)
 
-    def post_set_card_text(self, oPhysCard):
+    def post_set_card_text(self, _sSignal, oPhysCard):
         """Update the card text pane with the 'show merged', etc. buttons"""
         self._oAbsCard = oPhysCard.abstractCard
         self._oFakeCard = None
