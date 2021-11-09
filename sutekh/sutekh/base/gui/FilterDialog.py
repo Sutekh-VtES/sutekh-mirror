@@ -110,9 +110,9 @@ class FilterDialog(SutekhDialog):
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'replace_filter',
                              self.replace_filter)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'add_filter',
-                             self.add_filter)
+                             self.add_remove_filter)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'remove_filter',
-                             self.remove_filter)
+                             self.add_remove_filter)
 
         self.show_all()
 
@@ -389,14 +389,10 @@ class FilterDialog(SutekhDialog):
         return self.__bWasCancelled
 
     # Config File Listener methods
-    def replace_filter(self, _sId, _sOldFilter, _sNewFilter):
+    def replace_filter(self, _sSignal, _sId, _sOldFilter, _sNewFilter):
         """Handle a filter in the config file being replaced."""
         self.__update_sensitivity()
 
-    def add_filter(self, _sId, _sFilter):
-        """Handle filter being added to the config file."""
-        self.__update_sensitivity()
-
-    def remove_filter(self, _sId, _sFilter):
-        """Handle a filter being removed from the config file."""
+    def add_remove_filter(self, _sSignal, _sId, _sFilter):
+        """Handle filter being added to or removed from the config file."""
         self.__update_sensitivity()

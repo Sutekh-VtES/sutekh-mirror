@@ -239,17 +239,17 @@ class CardSetMenu(CardListMenu):
 
     # Respond to profile changes
 
-    def remove_profile(self, sType, _sProfile):
+    def remove_profile(self, _sSignal, sType, _sProfile):
         """A profile has been removed"""
         if sType in (CARDSET, FRAME):
             self._fix_profile_menu()
 
-    def profile_option_changed(self, sType, _sProfile, sKey):
+    def profile_option_changed(self, _sSignal, sType, _sProfile, sKey):
         """Update menu if profiles are renamed."""
         if sType in (CARDSET, FRAME) and sKey == 'name':
             self._fix_profile_menu()
 
-    def profile_changed(self, sType, sId):
+    def profile_changed(self, _sSignal, sType, sId):
         """Update the menu if the profile in use has changed"""
         if sType == FRAME and sId == self.frame_id:
             self._fix_profile_menu()

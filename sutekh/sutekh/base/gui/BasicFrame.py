@@ -222,7 +222,7 @@ class BasicFrame(Gtk.Frame):
         self._bNeedReload = True
         self._oMainWindow.queue_reload()
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Re-associate internal data against the database.
 
            Needed for re-reading WW cardlists and such.

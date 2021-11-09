@@ -113,7 +113,7 @@ class BaseCardListCount(BasePlugin):
             self._oTextLabel.set_tooltip_markup(self.TOT_TOOLTIP % dInfo)
             self._oTextLabel.show()
 
-    def load(self, aCards):
+    def load(self, _sSignal, aCards):
         """Listen on load events & update counts"""
         # The logic is a bit complicated, but it's intended that
         # filtering the WW cardlist on a card set will give sensible

@@ -2329,13 +2329,13 @@ class CardSetCardListModel(CardListModel):
     # Per-deck configuration listeners
     #
 
-    def profile_option_changed(self, sType, _sProfile, _sKey):
+    def profile_option_changed(self, _sSignal, sType, _sProfile, _sKey):
         """A profile option changed with a cardset changed."""
         if sType not in (CARDSET, FRAME):
             return
         self.update_options()
 
-    def profile_changed(self, sType, sId):
+    def profile_changed(self, _sSignal, sType, sId):
         """The profile associated with a cardset changed."""
         if sType not in (CARDSET, FRAME):
             return
@@ -2348,7 +2348,7 @@ class CardSetCardListModel(CardListModel):
     # Filter change events that affect us.
     # We can't use CardListModel's version, due to the need to
     # invalidate the cache
-    def replace_filter(self, sKey, _sOldFilter, _sNewFilter):
+    def replace_filter(self, _sSignal, sKey, _sOldFilter, _sNewFilter):
         """Reload if the current config has changed"""
         if sKey == self._sCurConfigFilter:
             self._sCurConfigFilter = None

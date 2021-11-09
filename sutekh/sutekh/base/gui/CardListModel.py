@@ -227,7 +227,7 @@ class CardListModel(Gtk.TreeStore):
                 oChildIter = self.iter_next(oChildIter)
             oIter = self.iter_next(oIter)
 
-    def set_postfix_the_display(self, bPostfix):
+    def set_postfix_the_display(self, _sSignal, bPostfix):
         """Respond to config file changes. Passes straight through to
            _set_display_name so we don't need another load."""
         # Disable sorting while we touch everything
@@ -614,13 +614,13 @@ class CardListModel(Gtk.TreeStore):
 
     # Listen for changes to the cardlist config options
 
-    def profile_option_changed(self, sType, _sProfile, _sKey):
+    def profile_option_changed(self, _sSignal, sType, _sProfile, _sKey):
         """One of the per-deck configuration items changed."""
         if sType != FULL_CARDLIST:
             return
         self.update_options()
 
-    def profile_changed(self, sType, sId):
+    def profile_changed(self, _sSignal, sType, sId):
         """A profile option changed with a cardset changed."""
         if sType != FULL_CARDLIST or sId != FULL_CARDLIST:
             return
@@ -630,7 +630,7 @@ class CardListModel(Gtk.TreeStore):
     # We don't need to listen for remove_filter, since that will
     # generate "profile_option_changed" signals
 
-    def replace_filter(self, sKey, _sOldFilter, _sNewFilter):
+    def replace_filter(self, _sSignal, sKey, _sOldFilter, _sNewFilter):
         """Reload if the current config has changed"""
         if sKey == self._sCurConfigFilter:
             self._sCurConfigFilter = None
