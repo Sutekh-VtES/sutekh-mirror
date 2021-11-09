@@ -186,6 +186,7 @@ class BaseCardTextView(Gtk.TextView):
         self._reload_card()
 
     def _reload_card(self):
+        """Reload the text of the last card if needed"""
         if self._oLastCard:
             self.clear_text()
             self.print_card_to_buffer(self._oLastCard.abstractCard)
