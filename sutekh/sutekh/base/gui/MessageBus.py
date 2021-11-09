@@ -43,7 +43,7 @@ class MessageBus:
         if sSignalName not in dCallbacks:
             return
         for fCallback in dCallbacks[sSignalName]:
-            fCallback(*args, **kwargs)
+            fCallback(sSignalName, *args, **kwargs)
 
     @classmethod
     def unsubscribe(cls, oObject, sSignalName, fCallback):
