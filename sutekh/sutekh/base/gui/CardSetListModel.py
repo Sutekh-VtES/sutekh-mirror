@@ -333,8 +333,6 @@ class CardSetCardListModel(CardListModel):
 
         # Iterate over groups
 
-        bPostfix = self._oConfig.get_postfix_the_display()
-
         for sGroup, oGroupIter in oGroupedIter:
             # Check for null group
             sGroup = self._fix_group_name(sGroup)
@@ -356,8 +354,8 @@ class CardSetCardListModel(CardListModel):
                 # Direct lookup, for same reason as in CardListModel
                 # We skip name here, as that gets reset in _set_display_name
                 sName = oCard.name
-                if bPostfix:
-                    sName = move_articles_to_back(sName)
+                for oTransform in self._dTransformers.values():
+                    sName = oTransform.transform(sName, oCard)
                 oChildIter = self.insert_with_values(oSectionIter, 0,
                                                      [0, 1, 2, 3, 4, 8, 9],
                                                      [sName, iCnt, iParCnt,
@@ -1170,7 +1168,6 @@ class CardSetCardListModel(CardListModel):
         # pylint misinterprets the number of iterms grouped_card_iter returns
         oGroupedIter, _aCards = self.grouped_card_iter(oCardIter)
         # pylint: enable=unbalanced-tuple-unpacking
-        bPostfix = self._oConfig.get_postfix_the_display()
 
         # Iterate over groups
         for sGroup, oGroupIter in oGroupedIter:
@@ -1200,10 +1197,9 @@ class CardSetCardListModel(CardListModel):
                 iGrpCnt += iCnt
                 iParGrpCnt += iParCnt
                 bIncCard, bDecCard = self.check_inc_dec(iCnt)
-                # We don't do the full _set_display_name for speed here.
                 sName = oCard.name
-                if bPostfix:
-                    sName = move_articles_to_back(sName)
+                for oTransform in self._dTransformers.values():
+                    sName = oTransform.transform(sName, oCard)
                 oChildIter = self.insert_with_values(oSectionIter, 0,
                                                      [0, 1, 2, 3, 4, 8, 9],
                                                      [sName, iCnt, iParCnt,
@@ -1229,6 +1225,7 @@ class CardSetCardListModel(CardListModel):
 
     def update_to_new_db(self, sSetName):
         """Update internal card set to the new DB."""
+        super().update_to_new_db()
         self._oCardSet = IPhysicalCardSet(sSetName)
         self._oBaseFilter = CachedFilter(PhysicalCardSetFilter(sSetName))
         self._dCache = {}
