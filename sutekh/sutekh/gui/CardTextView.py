@@ -61,7 +61,12 @@ class CardTextView(BaseCardTextView):
         oBuffer = CardTextBuffer()
         super().__init__(oBuffer, oIconManager, oMainWindow)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, 'show_errata_markers',
-                             self._reload_card)
+                             self._force_reload)
+
+    def _force_reload(self, _sSignal):
+        """Wrap _reload_card so we can call it from the MessageBus
+           listener."""
+        self._reload_card()
 
     # pylint: disable=too-many-branches, too-many-statements
     # We need to consider all cases for oCard, so need the branches
