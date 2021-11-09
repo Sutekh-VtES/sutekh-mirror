@@ -155,23 +155,23 @@ class TestCardTextFrame(GuiSutekhTest):
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), "")
         # Set a card
         oCard = make_card('Aire of Elation', None)
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), AIRE)
         # Check expansion works as expected
         oCard = make_card('Aire of Elation', 'Anarchs')
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), AIRE)
         # Check different cards
         oCard = make_card('Alexandra', None)
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), ALEXANDRA)
 
         oCard = make_card('Gypsies', None)
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), GYPSIES)
 
         oCard = make_card('High Top', None)
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), HIGH_TOP)
 
     def test_show_errata(self):
@@ -187,7 +187,7 @@ class TestCardTextFrame(GuiSutekhTest):
         self.oConfig.set_show_errata_markers(True)
 
         oCard = make_card('Gypsies', None)
-        oCardTextFrame.set_card_text(oCard)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(),
                          GYPSIES_ERRATA)
 
