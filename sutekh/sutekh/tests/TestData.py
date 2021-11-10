@@ -1078,6 +1078,37 @@ Discipline: ANI CEL CHI FOR
 Independent: Other Methuselahs' actions targeting Etienne cost 1 additional blood. When in combat with Baali or Ministers, Etienne's hand damage is aggravated.
 Artist: Jeff Holt
 
+Name: Theo Bell
+[FN:U, CE:PB]
+Cardtype: Vampire
+Clan: Brujah
+Group: 2
+Capacity: 7
+Discipline: cel dom pre POT
+Camarilla: Theo may enter combat with any ready minion controlled by another Methuselah as a (D) action. If you control a ready prince or justicar, blood hunts cannot be called on Theo.
+Artist: John Van Fleet
+
+Name: Theo Bell
+[Gehenna:U]
+Cardtype: Vampire
+Clan: Brujah
+Level: Advanced
+Group: 2
+Capacity: 7
+Discipline: aus dom CEL POT PRE
+Advanced, Independent: +1 strength. If there are any Gehenna cards in play, any justicar or Inner Circle member can call a referendum to burn Theo as a +1 stealth political action. If that referendum is canceled or fails, the acting vampire goes to torpor.
+Artist: Durwin Talon
+
+Name: Theo Bell
+[V5:PB1]
+Cardtype: Vampire
+Clan: Brujah
+Group: 6
+Capacity: 8
+Discipline: aus dom CEL POT PRE
+Anarch: Theo can enter combat with a minion as a (D) action. +1 strength
+Artist: Carmen Cornet
+
 Name: Victoria Ash
 [Promo-20211015]
 Cardtype: Vampire
