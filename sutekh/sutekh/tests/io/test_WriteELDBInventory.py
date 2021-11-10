@@ -107,6 +107,9 @@ EXPECTED = """"ELDB - Inventory"
 "Victoria Ash",0,0,"","Crypt"
 "Victoria Ash (Group 7)",0,0,"","Crypt"
 "Pentex(TM) Subversion",0,0,"","Library"
+"Theo Bell",0,0,"","Crypt"
+"Theo Bell (ADV)",0,0,"","Crypt"
+"Theo Bell (Group 6)",0,0,"","Crypt"
 """
 
 
