@@ -145,7 +145,6 @@ class TestFilterModelPane(GuiSutekhTest):
                              '(Discipline in Presence and Sect in Sabbat)')
         oFilterPanes._oEditBox._oTreeView.get_selection().select_path('0')
         oFilterPanes._oEditBox._oTreeView.set_cursor('0')
-        print(oFilterPanes._oSelectBar._oWidget.get_children())
         oWidget = oFilterPanes._oSelectBar._oWidget.get_children()[2]
         # check we can round trip setting a discipline on the list
         oToolbar = oWidget.get_child()
