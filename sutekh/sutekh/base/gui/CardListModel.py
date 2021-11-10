@@ -79,7 +79,6 @@ class PostfixName(NameTransformer):
     def config_changed(self, oConfig):
         """Update the flag"""
         self.bPostfix = oConfig.get_postfix_the_display()
-        print('Here: updated value', self.bPostfix)
 
     def transform(self, sCardName, oAbsCard):
         """Apply the actual change.
@@ -294,7 +293,6 @@ class CardListModel(Gtk.TreeStore):
     def update_transformers(self, sSignal, _bValue):
         """Respond to config file changes. Passes straight through to
            _update_display_name so we don't need another load."""
-        print('Here', sSignal, _bValue)
         self._dTransformers[sSignal].config_changed(self._oConfig)
         # Disable sorting while we touch everything
         iSortColumn, iSortOrder = self.get_sort_column_id()
