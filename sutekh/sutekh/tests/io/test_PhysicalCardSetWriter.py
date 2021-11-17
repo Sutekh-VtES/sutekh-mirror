@@ -66,6 +66,8 @@ A third line</comment>
   <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
   <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
+  <card count="1" expansion="Final Nights" name="Theo Bell (Group 2)" printing="No Printing" />
+  <card count="1" expansion="V5" name="Theo Bell (Group 6)" printing="No Printing" />
 </physicalcardset>"""
 
 EXPECTED_3 = """<physicalcardset author="" name="Test Set 2" sutekh_xml_version="1.5">
@@ -80,6 +82,8 @@ A third line</comment>
   <card count="1" expansion="None Specified" name="Abebe (Group 4)" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
   <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
+  <card count="1" expansion="Final Nights" name="Theo Bell (Group 2)" printing="No Printing" />
+  <card count="1" expansion="V5" name="Theo Bell (Group 6)" printing="No Printing" />
 </physicalcardset>"""
 
 EXPECTED_4 = """<physicalcardset author="A test author" name="Test Set 3" sutekh_xml_version="1.5">
@@ -93,6 +97,8 @@ A third line</comment>
   <card count="1" expansion="Third Edition" name="Abbot" printing="No Printing" />
   <card count="1" expansion="None Specified" name="Abombwe" printing="No Printing" />
   <card count="2" expansion="Dark Sovereigns" name="Alexandra (Group 2)" printing="No Printing" />
+  <card count="1" expansion="Final Nights" name="Theo Bell (Group 2)" printing="No Printing" />
+  <card count="1" expansion="V5" name="Theo Bell (Group 6)" printing="No Printing" />
   <card count="1" expansion="Anarchs" name="&#201;tienne Fauberge (Group 3)" printing="No Printing" />
 </physicalcardset>"""
 

@@ -70,10 +70,12 @@ A formatted test comment
 A second line
 A third line
 
-[size=18][u]Crypt [3 vampires] Capacity min: 8 max: 11 average: 10.00[/u][/size]
+[size=18][u]Crypt [5 vampires] Capacity min: 7 max: 11 average: 9.00[/u][/size]
 [table]
 [tr][td]2x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=Alexandra]Alexandra[/url][/td][td][/td][td](11)[/td][td]:ANI: :AUS: :CEL: :PRE: :dom:[/td][td]Inner Circle[/td][td]:tore: Toreador[/td][td](group 2)[/td][/tr]
+[tr][td]1x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=Theo+Bell]Theo Bell[/url][/td][td][/td][td](8)[/td][td]:CEL: :POT: :PRE: :aus: :dom:[/td][td]   [/td][td]:bruj: Brujah[/td][td](group 6)[/td][/tr]
 [tr][td]1x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=%%C3%%89tienne+Fauberge]Étienne Fauberge[/url][/td][td][/td][td](8)[/td][td]:ANI: :CEL: :CHI: :FOR:[/td][td]   [/td][td]:ravn: Ravnos[/td][td](group 3)[/td][/tr]
+[tr][td]1x[/td][td][url=https://codex-of-the-damned.org/en/card-search.html?card=Theo+Bell]Theo Bell[/url][/td][td][/td][td](7)[/td][td]:POT: :cel: :dom: :pre:[/td][td]   [/td][td]:bruj: Brujah[/td][td](group 2)[/td][/tr]
 [/table]
 [size=18][u]Library [5 cards][/u][/size]
 [b][u]Action [1][/u][/b]

@@ -54,6 +54,8 @@ CARD_EXPANSIONS = [
 SET_2_ONLY_CARDS = [
     ('alexandra', 'DS', 2),
     ('Abandoning the Flesh', 'CE', 1),
+    ('Theo Bell (Group 2)', 'FN', 1),
+    ('Theo Bell (Group 6)', 'V5', 1),
 ]
 
 SET_3_ONLY_CARDS = [

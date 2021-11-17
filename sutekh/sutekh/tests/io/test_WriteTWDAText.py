@@ -65,9 +65,11 @@ A formatted test comment
 A second line
 A third line
 
-Crypt (3 cards, min=26, max=26, avg=8.67)
------------------------------------------
+Crypt (5 cards, min=30, max=37, avg=8.2)
+----------------------------------------
 2x Alexandra\t\t11  ANI AUS CEL PRE dom\tinner circle\tToreador:2
+1x Theo Bell\t\t8   CEL POT PRE aus dom\t\t\tBrujah:6
+1x Theo Bell\t\t7   POT cel dom pre\t\t\tBrujah:2
 1x Abebe\t\t4   nec obf thn\t\t\t\tSamedi:4
 
 Library (5 cards)
@@ -92,10 +94,12 @@ A formatted test comment
 A second line
 A third line
 
-Crypt (3 cards, min=30, max=30, avg=10)
----------------------------------------
+Crypt (5 cards, min=34, max=38, avg=9)
+--------------------------------------
 2x Alexandra\t\t11  ANI AUS CEL PRE dom\tinner circle\tToreador:2
+1x Theo Bell\t\t8   CEL POT PRE aus dom\t\t\tBrujah:6
 1x Étienne Fauberge\t8   ANI CEL CHI FOR\t\t\tRavnos:3
+1x Theo Bell\t\t7   POT cel dom pre\t\t\tBrujah:2
 
 Library (5 cards)
 Master (1; 1 trifle)
