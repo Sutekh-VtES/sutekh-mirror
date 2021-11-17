@@ -32,6 +32,8 @@ Crypt:
 1\tHektor
 1\tInez ''Nurse216'' Villagrande
 2\tSiamese, The
+1\tTheo Bell
+1\tTheo Bell (G6)
 """
 
 

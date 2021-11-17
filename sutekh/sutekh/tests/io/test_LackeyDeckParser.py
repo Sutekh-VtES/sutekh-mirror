@@ -19,6 +19,10 @@ Crypt:
 2\tTest Vamp 1
 1\tLazar Dobrescu
 1\tAlan Sovereign Adv.
+1\tVictoria Ash
+1\tVictora Ash (G7)
+1\tTheo Bell (G2)
+1\tTheo Bell (G6)
 """
 
 
@@ -36,7 +40,7 @@ class TestLackeyDeckFileParser(SutekhTest):
 
         aCards = oHolder.get_cards()
 
-        self.assertEqual(len(aCards), 8)
+        self.assertEqual(len(aCards), 12)
         self.assertTrue(("Test Vamp 1", 2) in aCards)
         self.assertTrue((u"L\xe1z\xe1r Dobrescu (Group 2)", 1) in aCards)
         self.assertTrue(("Test Card 1", 2) in aCards)
@@ -45,6 +49,11 @@ class TestLackeyDeckFileParser(SutekhTest):
         self.assertTrue(("Test Card 4", 1) in aCards)
         self.assertTrue(("Alan Sovereign (Group 3) (Advanced)", 1) in aCards)
         self.assertTrue(("The Path of Blood", 1) in aCards)
+
+        self.assertTrue(("Theo Bell (Group 2)", 1) in aCards)
+        self.assertTrue(("Theo Bell (Group 6)", 1) in aCards)
+        self.assertTrue(("Victoria Ash (Group 7)", 1) in aCards)
+        self.assertTrue(("Victoria Ash (Group 2)", 1) in aCards)
 
         oParser = LackeyDeckParser()
         self.assertRaises(IOError, self._make_holder_from_string, oParser,
