@@ -38,7 +38,7 @@ class NameTransformer:
 
     CONFIG_KEY = None  # Key to access the config file
 
-    def __init__(self, oConfig):
+    def __init__(self, oConfig, **kwargs):
         """Load any initial settings"""
 
     def database_updated(self):
@@ -68,8 +68,8 @@ class PostfixName(NameTransformer):
 
     CONFIG_KEY = 'set_postfix_the_display'
 
-    def __init__(self, oConfig):
-        super().__init__(oConfig)
+    def __init__(self, oConfig, **kwargs):
+        super().__init__(oConfig, **kwargs)
         self.bPostfix = oConfig.get_postfix_the_display()
 
     def database_updated(self):
@@ -175,9 +175,9 @@ class CardListModel(Gtk.TreeStore):
 
     # pylint: enable=protected-access, invalid-name
 
-    def register_transformer(self, cTransformer):
+    def register_transformer(self, cTransformer, **kwargs):
         """Register a name transformer"""
-        oTransformer = cTransformer(self._oConfig)
+        oTransformer = cTransformer(self._oConfig, **kwargs)
         MessageBus.subscribe(MessageBus.Type.CONFIG_MSG, oTransformer.CONFIG_KEY,
                              self.update_transformers)
         self._dTransformers[oTransformer.CONFIG_KEY] = oTransformer
