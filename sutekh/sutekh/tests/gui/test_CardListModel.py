@@ -20,14 +20,48 @@ from sutekh.base.core.BaseGroupings import NullGrouping, CardTypeGrouping
 from sutekh.base.gui.CardListModel import CardListModel
 from sutekh.base.gui.MessageBus import MessageBus
 
+from sutekh.gui.plugins.HideGroupSuffix import HideGroupSuffixPlugin
+
 from sutekh.core.Groupings import CryptLibraryGrouping
 from sutekh.tests.GuiSutekhTest import ConfigSutekhTest
+
+
+class DummyMain(object):
+
+    def __init__(self, oConfig):
+        self._oConfig = oConfig
+
+    config_file = property(fget=lambda self: self._oConfig)
+
+
+class DummyView(object):
+
+    def __init__(self, oConfig):
+        self._oMain = DummyMain(oConfig)
+
+    mainwindow = property(fget=lambda self: self._oMain)
+
+
+class DummyButton(object):
+
+    def __init__(self, bValue):
+        self._bValue = bValue
+
+    def get_active(self):
+        return self._bValue
 
 
 class CardListModelTests(ConfigSutekhTest):
     """Class for the test cases"""
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
+
+    def _init_hide_plugin(self, oModel):
+        HideGroupSuffixPlugin.update_config()
+        HideGroupSuffixPlugin.register_with_config(self.oConfig)
+        self.oConfig.validate()
+        oPlugin = HideGroupSuffixPlugin(DummyView(self.oConfig), oModel, PhysicalCard)
+        return oPlugin
 
     def test_basic(self):
         """Set of simple tests of the Card List Model"""
@@ -188,6 +222,7 @@ class CardListModelTests(ConfigSutekhTest):
         """Test that the 'hide group suffix' option works as expected"""
         oModel = CardListModel(self.oConfig)
         oModel.load()
+        oPlugin = self._init_hide_plugin(oModel)
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('The Siamese' in aCards, False)
@@ -196,7 +231,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual('Theo Bell (Group 2)' in aCards, True)
         self.assertEqual('Theo Bell (Group 2) (Advanced)' in aCards, True)
         self.assertEqual('Theo Bell (Group 6)' in aCards, True)
-        self.oConfig.set_hide_group_suffix(True)
+        oPlugin.config_activate(DummyButton(True))
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('The Siamese' in aCards, True)
@@ -220,7 +255,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual('Theo Bell (Group 2) (Advanced)' in aCards, True)
         self.assertEqual('Theo Bell (Group 6)' in aCards, True)
 
-        self.oConfig.set_hide_group_suffix(False)
+        oPlugin.config_activate(DummyButton(False))
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('The Siamese' in aCards, False)
@@ -235,12 +270,13 @@ class CardListModelTests(ConfigSutekhTest):
         """Test that stacking the name transformers works"""
         oModel = CardListModel(self.oConfig)
         oModel.load()
+        oPlugin = self._init_hide_plugin(oModel)
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('Path of Blood, The' in aCards, False)
         self.assertEqual('The Siamese (Group 2)' in aCards, True)
         self.assertEqual('The Siamese' in aCards, False)
-        self.oConfig.set_hide_group_suffix(True)
+        oPlugin.config_activate(DummyButton(True))
         aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('Path of Blood, The' in aCards, False)
@@ -263,7 +299,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual('Siamese, The' in aCards, True)
         self.assertEqual('The Siamese' in aCards, False)
         # Change to just postfix
-        self.oConfig.set_hide_group_suffix(False)
+        oPlugin.config_activate(DummyButton(False))
         aCards = get_card_names(oModel)
         self.assertEqual('Path of Blood, The' in aCards, True)
         self.assertEqual('The Path of Blood' in aCards, False)
@@ -271,6 +307,7 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual('The Siamese (Group 2)' in aCards, False)
         # Revert to normal
         self.oConfig.set_postfix_the_display(False)
+        aCards = get_card_names(oModel)
         self.assertEqual('The Path of Blood' in aCards, True)
         self.assertEqual('The Siamese (Group 2)' in aCards, True)
         self.assertEqual('The Siamese' in aCards, False)
