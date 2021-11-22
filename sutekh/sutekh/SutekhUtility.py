@@ -142,9 +142,7 @@ def find_adv_vampire(oVampire):
     """Find the corresponding advanced vampire
 
        Returns None if the vampre cannout be found."""
-    sBaseName = strip_group_from_name(oVampire.name)
-    sGroup = oVampire.name.replace(sBaseName, '')
-    sAdvName = sBaseName + ' (Advanced)' + sGroup
+    sAdvName = oVampire.name + ' (Advanced)'
     # Note that base Brunhilde links to the non-storyline advanced version
     try:
         return IAbstractCard(sAdvName)

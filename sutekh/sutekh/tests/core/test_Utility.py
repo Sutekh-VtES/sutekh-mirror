@@ -86,9 +86,9 @@ class MiscUtilityTests(SutekhTest):
 
     def test_find_vamps(self):
         """Test functions for finding base/adv vampires."""
-        oAlanBase = IAbstractCard('Alan Sovereign')
+        oAlanBase = IAbstractCard('Alan Sovereign (Group 3)')
         oNewBlood = IAbstractCard('New Blood')
-        oAlanAdv = IAbstractCard('Alan Sovereign (Advanced)')
+        oAlanAdv = IAbstractCard('Alan Sovereign (Group 3) (Advanced)')
 
         self.assertEqual(find_base_vampire(oAlanAdv), oAlanBase)
 
