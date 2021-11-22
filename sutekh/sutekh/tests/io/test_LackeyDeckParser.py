@@ -20,7 +20,7 @@ Crypt:
 1\tLazar Dobrescu
 1\tAlan Sovereign Adv.
 1\tVictoria Ash
-1\tVictora Ash (G7)
+1\tVictoria Ash (G7)
 1\tTheo Bell (G2)
 1\tTheo Bell (G6)
 """

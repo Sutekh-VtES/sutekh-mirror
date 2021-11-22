@@ -27,13 +27,11 @@ EXPECTED_1 = """4\t.44 Magnum
 2\tSwallowed by the Night
 4\tWalk of Flame
 Crypt:
-1\tAbebe
-1\tAlan Sovereign Adv.
-1\tHektor
-1\tInez ''Nurse216'' Villagrande
-2\tSiamese, The
-1\tTheo Bell
-1\tTheo Bell (G6)
+1\tAbebe (G4)
+1\tAlan Sovereign (G3) Adv.
+1\tHektor (G4)
+1\tInez ''Nurse216'' Villagrande (G4)
+2\tSiamese (G2), The
 """
 
 
