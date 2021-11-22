@@ -77,12 +77,14 @@ class HideGroupSuffixPlugin(SutekhPlugin):
     aModelsSupported = ("MainWindow", PhysicalCardSet, PhysicalCard)
 
     dGlobalConfig = {
-        SuffixTransformer.CONFIG_KEY : 'boolen(default=False)',
+        SuffixTransformer.CONFIG_KEY : 'boolean(default=False)',
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.model.register_transformer(SuffixTransformer, oPlugin=self)
+        # Only try register on the actual card set frames
+        if self.model:
+            self.model.register_transformer(SuffixTransformer, oPlugin=self)
 
     def get_menu_item(self):
         """Overrides method from base class.
