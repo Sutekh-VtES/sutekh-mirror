@@ -6,6 +6,7 @@
 
 """Parser for Lackey CCG deck format"""
 
+import re
 # pylint: disable=deprecated-module
 # string.digits is OK
 import string
@@ -18,8 +19,9 @@ from sutekh.base.io.IOBase import BaseLineParser
 def gen_name_lookups():
     """Create a lookup table to map Lackey CCG names to Sutekh names -
        reduces the number of user queries"""
+    oLackeyStrip = re.compile(r' \(G[0-9]+\)')
     dNameCache = {}
-    for oCard in AbstractCard.select():
+    for oCard in AbstractCard.select().orderBy('canonicalName'):
         sSutekhName = oCard.name
         sLackeyName = lackey_name(oCard)
         if sLackeyName != sSutekhName:
@@ -27,6 +29,12 @@ def gen_name_lookups():
             # anyway (missed cases, etc), there's no point in having the
             # identity entries
             dNameCache[sLackeyName] = sSutekhName
+            # We rely on selection order to orer the group numbers
+            # correctly
+            if '(Group ' in sSutekhName:
+                sLackeyName = oLackeyStrip.sub('', sLackeyName)
+                if sLackeyName not in dNameCache:
+                    dNameCache[sLackeyName] = sSutekhName
     return dNameCache
 
 

@@ -20,7 +20,7 @@
    """
 
 from sutekh.core.ELDBUtilities import type_of_card
-from sutekh.SutekhUtility import strip_group_from_name
+from sutekh.SutekhUtility import is_crypt_card
 from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.Utility import move_articles_to_back, to_ascii
 
@@ -30,10 +30,10 @@ def lackey_name(oCard):
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "Adv.")
-    # FIXME: At some point, lackey will presumably support the
-    # multi-group vampires. Check how they do that and fix this
-    # logic
-    sName = move_articles_to_back(strip_group_from_name(sName))
+    # Current proposal is for lackey to use '(G3)', '(G7)'
+    if is_crypt_card(oCard):
+        sName = sName.replace('(Group ', '(G')
+    sName = move_articles_to_back(sName)
     # Lackey handles double-quotes a bit oddly, so we must as well
     if oCard.cardtype[0].name == 'Imbued':
         # Lackey only uses '' for Imbued
