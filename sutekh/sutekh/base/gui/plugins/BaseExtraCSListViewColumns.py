@@ -83,7 +83,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
 
     # Manage database signals around upgrades
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Reconnect the database signal listeners and queue a refresh"""
         # clear cache
         self._dCache = {}
@@ -95,7 +95,7 @@ class BaseExtraCSListViewColumns(BaseExtraColumns):
         # queue a redraw
         self.view.queue_draw()
 
-    def prepare_for_db_update(self):
+    def prepare_for_db_update(self, _sSignal):
         """Disconnect the database signals during the upgrade"""
         disconnect_changed(self.card_changed, PhysicalCardSet)
         disconnect_row_update(self.card_set_changed, PhysicalCardSet)

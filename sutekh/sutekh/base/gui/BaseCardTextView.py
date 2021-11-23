@@ -175,7 +175,7 @@ class BaseCardTextView(Gtk.TextView):
 
     # pylint: enable=protected-access
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Handle any database changes as required"""
         # The default is to do nothing.
         # Subclasses will implement logic as needed

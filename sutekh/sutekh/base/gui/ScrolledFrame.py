@@ -50,7 +50,7 @@ class ScrolledFrame(BasicFrame):
         self.add(oBox)
         self.show_all()
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Ensure we update cached results so DB changes don't cause odd
            results"""
         self._oView.update_to_new_db()

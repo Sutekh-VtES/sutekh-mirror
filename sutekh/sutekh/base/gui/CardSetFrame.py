@@ -83,7 +83,7 @@ class CardSetFrame(CardListFrame):
         """Return true if we're a copy of the given set"""
         return self.cardset_name == sSetName
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Re-associate internal data against the database.
 
            Needed for re-reading WW cardlists and such.

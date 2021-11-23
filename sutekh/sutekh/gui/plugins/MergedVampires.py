@@ -466,7 +466,7 @@ class MergedVampirePlugin(SutekhPlugin):
                 # we skip the special cases here
                 continue
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Refresh information after a database updated."""
         # clear cache
         self._aBaseVamps = set()

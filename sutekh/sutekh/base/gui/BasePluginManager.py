@@ -391,10 +391,10 @@ class BasePlugin:
     def perpane_config_updated(self, bDoReload=True):
         """Plugins should override this to be informed of config changes."""
 
-    def update_to_new_db(self):
+    def update_to_new_db(self, _sSignal):
         """Plugins should override this to be informed of database changes."""
 
-    def prepare_for_db_update(self):
+    def prepare_for_db_update(self, _sSignal):
         """Hook for any preparations needed before a database upgrade.
 
            Mainly useful for disconnecting database signals and such
