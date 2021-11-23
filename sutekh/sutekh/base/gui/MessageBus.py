@@ -9,6 +9,7 @@
 """Message Bus for Sutekh"""
 
 import enum
+import logging
 
 
 class MessageBus:
@@ -43,7 +44,13 @@ class MessageBus:
         if sSignalName not in dCallbacks:
             return
         for fCallback in dCallbacks[sSignalName]:
-            fCallback(sSignalName, *args, **kwargs)
+            try:
+                fCallback(sSignalName, *args, **kwargs)
+            except TypeError:
+                logging.error(f"Callback error calling {fCallback} from {sSignalName}")
+                logging.error(f"Arguments: Args: {args} KWargs: {kwargs}")
+                # This error is probably serious, so we bail after adding details
+                raise
 
     @classmethod
     def unsubscribe(cls, oObject, sSignalName, fCallback):
