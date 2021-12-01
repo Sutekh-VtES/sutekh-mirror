@@ -50,10 +50,10 @@ class ScrolledFrame(BasicFrame):
         self.add(oBox)
         self.show_all()
 
-    def update_to_new_db(self, _sSignal):
+    def update_to_new_db(self, sSignal):
         """Ensure we update cached results so DB changes don't cause odd
            results"""
-        self._oView.update_to_new_db()
+        self._oView.update_to_new_db(sSignal)
 
     def get_menu_name(self):
         """Get the menu key"""
