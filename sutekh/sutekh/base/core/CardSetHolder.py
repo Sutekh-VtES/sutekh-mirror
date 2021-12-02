@@ -267,6 +267,11 @@ class CachedCardSetHolder(CardSetHolder):
         # We use a lot of local variables for clarity
         dLookupCache.setdefault('cards', {})
         dLookupCache.setdefault('printings', {})
+        # Special cases are for when we have a legal card and a legal expansion
+        # but the combination doesn't actually match a real card in the database
+        # This can be due to cards having being published with the wrong expanion
+        # and later fixed, a manually created entry and so on.
+        dLookupCache.setdefault('special cases', {})
         if self.name is None:
             raise RuntimeError("No name for the card set")
 
@@ -277,12 +282,16 @@ class CachedCardSetHolder(CardSetHolder):
             'Card Set "%s"' % self.name)
         dNameCards = dict(zip(self._dCards, aAbsCards))
 
+        dReverse = {}
+
         # Update dLookupCache
         for oAbs, (sName, _iCnt) in zip(aAbsCards, aCardCnts):
             if not oAbs:
                 dLookupCache['cards'][sName] = None
             else:
                 dLookupCache['cards'][sName] = oAbs.canonicalName
+                dReverse.setdefault(oAbs.canonicalName, [])
+                dReverse[oAbs.canonicalName].append(sName)
 
         # Apply expansion and print lookups
         aExpPrintNames = []
@@ -308,9 +317,36 @@ class CachedCardSetHolder(CardSetHolder):
                 dLookupCache['printings'][tExpPrint] = \
                         (oPrinting.expansion.name, oPrinting.name)
 
+        # Apply special casesa
+        for sName in dCardExpansions:
+            if dNameCards[sName]:
+                for tExpPrint in list(dCardExpansions[sName]):
+                    iCnt = dCardExpansions[sName][tExpPrint]
+                    # Check for special cases
+                    tCachedPrint = dLookupCache['special cases'].get((sName, tExpPrint),
+                                                                      tExpPrint)
+                    # If this is a special case, point the numbers at the correct
+                    # expansion
+                    if tCachedPrint != tExpPrint:
+                        dCardExpansions[sName][tExpPrint] = 0
+                        dCardExpansions[sName][tCachedPrint] = iCnt
+
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                                                  dNameCards, dPrintingLookup,
                                                  'Card Set "%s"' % self.name)
+
+        # Update special cases map
+        for oCard in aPhysCards:
+            if oCard.printing:
+                tPrintKey = (oCard.printing.expansion.name, oCard.printing.name)
+                for sName in dReverse[oCard.abstractCard.canonicalName]:
+                    if sName not in dCardExpansions:
+                        continue
+                    if tPrintKey not in dCardExpansions[sName] and len(dCardExpansions[sName]) == 1:
+                        # We didn't look this up correctly before calling physical lookup,
+                        # and there was only 1 suggestion, so we can add a special case
+                        tOldExp = list(dCardExpansions[sName])[0]
+                        dLookupCache['special cases'][(sName, tOldExp)] = tPrintKey
 
         if hasattr(sqlhub.processConnection, 'commit'):
             self._commit_pcs(aPhysCards)
