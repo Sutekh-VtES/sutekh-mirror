@@ -20,3 +20,6 @@
 # Ignore coverage stuff
 .coverage
 htmlcov
+# misc setuptools junk
+Sutekh.egg-info
+dist
