@@ -369,7 +369,19 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 continue
             for tExpPrint in dCardExpansions[sName]:
                 iCnt = dCardExpansions[sName][tExpPrint]
-                oPrinting = dNamePrintings[tExpPrint]
+                if tExpPrint in dNamePrintings:
+                    oPrinting = dNamePrintings[tExpPrint]
+                else:
+                    # Try look this up directly, since it's some
+                    # additional modification to the lookup table
+                    try:
+                        oExp = IExpansion(tExpPrint[0])
+                        oPrinting = IPrinting((oExp, tExpPrint[1]))
+                    except SQLObjectNotFound:
+                        # We have no idea, so we bail
+                        raise LookupFailed("Unknown printing information"
+                                " in the physical card lookup: "
+                                f"{sName} - {tExpPrint[0]}: {tExpPrint[1]}")
                 if iCnt > 0:
                     try:
                         aCards.extend(
