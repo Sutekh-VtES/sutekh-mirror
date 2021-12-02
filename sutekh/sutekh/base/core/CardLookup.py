@@ -105,11 +105,15 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 for tExpPrint in dCardExpansions[sName]:
                     try:
                         iCnt = dCardExpansions[sName][tExpPrint]
-                        oPrinting = dNamePrintings[tExpPrint]
+                        if tExpPrint not in dNamePrintings:
+                            oExp = IExpansion(tExpPrint[0])
+                            oPrinting = IPrinting(oExp, tExpPrint[1])
+                        else:
+                            oPrinting = dNamePrintings[tExpPrint]
                         aCards.extend(
                             [IPhysicalCard((oAbs, oPrinting))] * iCnt)
                     except SQLObjectNotFound:
-                        # This card is missing from the PhysicalCard list, so
+                        # We can't resolve this to a card in the PhysicalCard list, so
                         # skipped
                         pass
         return aCards
