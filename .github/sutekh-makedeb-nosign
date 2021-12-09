@@ -16,7 +16,7 @@ fi
 
 # We nly run this for a single suite, to build the test package and run all the tests
 SUITE="bionic"
-SUTEKH_VERSION=`PYTHONPATH=. python3 -c "from sutekh import SutekhInfo; print(SutekhInfo.SutekhInfo.VERSION_STR)"`
+SUTEKH_VERSION=`PYTHONPATH=. /usr/bin/python3 -c "from sutekh import SutekhInfo; print(SutekhInfo.SutekhInfo.VERSION_STR)"`
 DEB_VERSION=`echo "$SUTEKH_VERSION" | sed -e "s/\(rc\|a\|b\)/~\1/"`
 SDIST_FILE="dist/Sutekh-${SUTEKH_VERSION}.orig.tar.gz"
 DEBPATCH_FOLDER="deb-patches"
