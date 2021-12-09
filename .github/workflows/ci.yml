@@ -289,3 +289,29 @@ jobs:
         # This will cause a failure if the docs have changed
         git -P diff --exit-code .
         popd
+
+
+  build-ubuntu-deb:
+
+    runs-on: ubuntu-latest
+    name: Build a deb package
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install APT Dependencies
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-stdeb python3-ply python3-keyring python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo lintian
+    - name: Create deb package
+      run: |
+        pushd sutekh
+        ../.github/sutekh-makedeb-nosign
+        popd
+    - name: Upload debian source package
+      uses: actions/upload-artifact@v2
+      with:
+        name: sutekh.deb
+        path: sutekh/build/sutekh_deb.tar
