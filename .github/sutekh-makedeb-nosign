@@ -33,6 +33,10 @@ fi
 
 make_deb () {
 
+    set -e
+
+    locale
+
     SUITE=$1
     EXTRA_CFG="deb_dist/sutekh-$SUITE.cfg"
 
