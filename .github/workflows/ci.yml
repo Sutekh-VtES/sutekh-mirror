@@ -308,7 +308,7 @@ jobs:
     - name: Create deb package
       run: |
         pushd sutekh
-        ../.github/sutekh-makedeb-nosign
+        ../.github/sutekh-makedeb-nosign '<test@nowhere.test>'
         popd
     - name: Upload debian source package
       uses: actions/upload-artifact@v2
