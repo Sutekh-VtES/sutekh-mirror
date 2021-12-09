@@ -35,8 +35,6 @@ make_deb () {
 
     set -e
 
-    locale
-
     SUITE=$1
     EXTRA_CFG="deb_dist/sutekh-$SUITE.cfg"
 
@@ -64,9 +62,11 @@ make_deb () {
     cd deb_dist/sutekh-${DEB_VERSION}
     # We pass auto-commit through to dpkg-source, so it doesn't complain about
     # any changes we've made via the py2dsc patch
-    debuild -e"$SIGNER" --source-option=--auto-commit --no-sign
+    debuild --no-lintian -e"$SIGNER" --source-option=--auto-commit --no-sign
+    lintian -I --pedantic || echo "Exit Code: $?"
+    pwd
+    ls *
     cd ../..
-
 }
 
 # santize environment
