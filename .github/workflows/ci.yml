@@ -317,5 +317,5 @@ jobs:
     - name: Upload debian source package
       uses: actions/upload-artifact@v2
       with:
-        name: sutekh.deb
-        path: sutekh/build/sutekh_deb.tar
+        name: sutekh_deb
+        path: sutekh/deb_dist/*bionic*

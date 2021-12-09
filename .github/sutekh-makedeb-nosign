@@ -64,8 +64,6 @@ make_deb () {
     # any changes we've made via the py2dsc patch
     debuild --no-lintian -e"$SIGNER" --source-option=--auto-commit --no-sign
     lintian -I --pedantic || echo "Exit Code: $?"
-    pwd
-    ls *
     cd ../..
 }
 
