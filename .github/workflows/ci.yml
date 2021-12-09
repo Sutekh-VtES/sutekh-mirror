@@ -304,6 +304,9 @@ jobs:
     - name: Create deb package
       run: |
         pushd sutekh
+        python3 ./setup.py sdist
+        DIST=$(ls dist/Sutekh*.tar.gz)
+        cp $DIST ${DIST/tar.gz/orig.tar.gz}
         ../.github/sutekh-makedeb-nosign '<test@nowhere.test>'
         popd
     - name: Upload debian source package
