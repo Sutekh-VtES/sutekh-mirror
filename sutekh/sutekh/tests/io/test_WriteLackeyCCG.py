@@ -11,7 +11,7 @@ from sutekh.base.core.CardSetHolder import CardSetWrapper
 
 from sutekh.io.WriteLackeyCCG import WriteLackeyCCG
 from sutekh.tests.TestCore import SutekhTest
-from sutekh.tests.core.test_PhysicalCardSet import make_set_1
+from sutekh.tests.core.test_PhysicalCardSet import make_set_1, make_set_2
 
 EXPECTED_1 = """4\t.44 Magnum
 2\tAK-47
@@ -27,11 +27,24 @@ EXPECTED_1 = """4\t.44 Magnum
 2\tSwallowed by the Night
 4\tWalk of Flame
 Crypt:
-1\tAbebe (G4)
-1\tAlan Sovereign (G3) Adv.
-1\tHektor (G4)
-1\tInez ''Nurse216'' Villagrande (G4)
-2\tSiamese (G2), The
+1\tAbebe
+1\tAlan Sovereign Adv.
+1\tHektor
+1\tInez ''Nurse216'' Villagrande
+2\tSiamese, The
+"""
+
+
+EXPECTED_2 = """1\t.44 Magnum
+1\tAK-47
+1\tAbandoning the Flesh
+1\tAbbot
+1\tAbombwe
+Crypt:
+1\tAbebe
+2\tAlexandra
+1\tTheo Bell
+1\tTheo Bell (G6)
 """
 
 
@@ -51,6 +64,12 @@ class LackeyWriterTests(SutekhTest):
         sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet1))
 
         self.assertEqual(sData, EXPECTED_1)
+
+        oPhysCardSet2 = make_set_2()
+        sData = self._round_trip_obj(oWriter, CardSetWrapper(oPhysCardSet2))
+
+        self.assertEqual(sData, EXPECTED_2)
+
 
 
 if __name__ == "__main__":
