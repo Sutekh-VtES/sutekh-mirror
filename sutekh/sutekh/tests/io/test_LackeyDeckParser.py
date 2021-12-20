@@ -21,7 +21,7 @@ Crypt:
 1\tAlan Sovereign Adv.
 1\tVictoria Ash
 1\tVictoria Ash (G7)
-1\tTheo Bell (G2)
+1\tTheo Bell
 1\tTheo Bell (G6)
 """
 
