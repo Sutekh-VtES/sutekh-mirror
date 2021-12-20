@@ -20,19 +20,38 @@
    """
 
 from sutekh.core.ELDBUtilities import type_of_card
-from sutekh.SutekhUtility import is_crypt_card
+from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name
 from sutekh.base.core.BaseAdapters import IAbstractCard
+from sutekh.base.core.BaseTables import AbstractCard
 from sutekh.base.Utility import move_articles_to_back, to_ascii
 
 
-def lackey_name(oCard):
+def make_unique_names():
+    """Create the list of unique crypt card names"""
+    aUnique = set()
+    for oCard in AbstractCard.select().orderBy('canonicalName'):
+        if not is_crypt_card(oCard):
+            continue
+        sBaseName = strip_group_from_name(oCard.name)
+        if sBaseName in aUnique:
+            aUnique.add(oCard.name)
+        else:
+            aUnique.add(sBaseName)
+    return aUnique
+
+
+def lackey_name(oCard, aUnique):
     """Escape the card name to Lackey CCG's requirements"""
     sName = oCard.name
     if oCard.level is not None:
         sName = sName.replace("(Advanced)", "Adv.")
-    # Current proposal is for lackey to use '(G3)', '(G7)'
+    # Lackey uses (GX) postfix for the new vampires, but old
+    # versions have no suffix
     if is_crypt_card(oCard):
-        sName = sName.replace('(Group ', '(G')
+        if sName in aUnique:
+            sName = sName.replace('(Group ', '(G')
+        else:
+            sName = strip_group_from_name(sName)
     sName = move_articles_to_back(sName)
     # Lackey handles double-quotes a bit oddly, so we must as well
     if oCard.cardtype[0].name == 'Imbued':
@@ -51,11 +70,12 @@ class WriteLackeyCCG:
     # Method for consistency
     def _gen_inv(self, oHolder):
         """Process the card set, creating the lines as needed"""
+        aUnique = make_unique_names()
         dCards = {'Crypt': {}, 'Library': {}}
         sResult = ""
         for oCard in oHolder.cards:
             sType = type_of_card(IAbstractCard(oCard))
-            sName = lackey_name(IAbstractCard(oCard))
+            sName = lackey_name(IAbstractCard(oCard), aUnique)
             dCards[sType].setdefault(sName, 0)
             dCards[sType][sName] += 1
         # Sort the output
