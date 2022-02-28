@@ -35,10 +35,10 @@ KICKSTARTER_EDITIONS = {
 # We can't pick this up from the promo dates, since other cards released
 # at the same time where reprinted elsewhere and not added to the kickstarter
 SPECIAL_TU_KICKSTARTER_CARDS = [
-    'Bulscu (Advanced)',
-    'Claudio Severino (Advanced)',
+    'Bulscu (Group 5) (Advanced)',
+    'Claudio Severino (Group 5) (Advanced)',
     'Rise of the Fallen',
-    'Winterlich',
+    'Winterlich (Group 6)',
 ]
 
 # The White Wolf list keeps flipping between 'Pentex(TM) Loves You!' and 'Pentex™ Loves You!'
