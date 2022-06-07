@@ -31,6 +31,11 @@ Sutekh maintains a list of all the cards published by the V:EKN as the
 _Full Card List_. It lists the cards and the expansions in which each card
 has appeared.
 
+To make vampires with the same name that occur in multiple groups easier
+to work with, Sutekh appends (Group X) to the names of all crypt cards. This
+can be hidden for those cards which only occur in one group via the
+preferences menu.
+
 h3. Card Text
 
 This pane displays information about the currently selected card.
@@ -393,9 +398,9 @@ name.
 h3. Organising card sets
 
 It's often useful to keep a record of card sets that are related, but aren't
-strictly subsets of another card set. One common approach is to use empty
-card sets to act as card set *holders* which group logically related
-card sets together.
+strictly subsets of another card set, such as card orders or particular deck ideas.
+One common approach is to use empty card sets to act as card set *holders*
+which group logically related card sets together.
 
 h3. Tracking the history of a card set
 

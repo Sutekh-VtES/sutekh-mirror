@@ -138,11 +138,20 @@ with "The", "An" or "A" are displayed and sorted with the prefix at the end.
 ** _Save Exact Pane Positions_: Save the exact pane positions on exit.
 ** _Save Window Size_: Save the window size on exit.
 ** _Show Errata Markers_: Show the '{' and '}' errata markers in the card text.
+** _Hide group suffix on names_: Hides the *(Group X)* suffix on cards \
+That don't have multiple variants in different groups. This will still keep \
+the suffix on cards that do have variants in different groups, so they can \
+still be distinguished.
 ** _Show Starter Information_: If the starter decks have been downloaded \
 into the database, this will add a list the starter decks a card has been \
 published in to the "Card Text":#card_text pane when the card is selected.
 ** _Export to HTML preferences_: Set the destination for the links created \
 in the exported HTML files.
+** _Configure TTS export plugin_: Specify the path to the VtES deck \
+construction plugin for Tabletop Simulator, which allows Sutekh to \
+export decks to TTS.  Sutekh will try to find the file in the default \
+steam location, so this option should only be needed if steam is \
+configured to store these files somewhere else.
 * _Manage Profiles_: Bring up the "profile management dialog":#manage_profiles \
 to edit or delete the various pane profiles
 * _Save Current Pane Set_: Save the current configuration of the panes.
@@ -473,6 +482,9 @@ manager
 ** _JOL_: A text file that can be pasted into the Jyhad Online deck \
 builder
 ** _Lackey CCG_: A text file that can be imported into the Lackey CCG client
+** _TTS json_: A json file that can be imported into Tabletop Simulator. \
+This requires the Tabletop simulator VtES deck construction plugin in order \
+to generate the file.
 * _Expand All_: Expand all the items in the tree.
 * _Collapse All_: Collapse the tree as far as possible.
 * _Delete Card Set_: Delete the card set from the database.
