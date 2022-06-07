@@ -72,8 +72,15 @@ High Top gets +1 intercept. High Top may enter combat with any minion controlled
 """
 
 FILTER_LIST = """Abandoning the Flesh
+Bait and Switch
+Deflection
+Enhanced Senses
+Eyes of Argus
 Hide the Heart
+My Enemy's Enemy
 Predator's Communion
+Telepathic Counter
+Wake with Evening's Freshness
 """
 
 
@@ -140,12 +147,13 @@ class CliUtilsTests(SutekhTest):
         self.assertTrue('Amisa (Group 2)' in aNames)
 
         dResults = run_filter("CardType = 'Reaction'", None)
-        self.assertEqual(len(dResults), 3)
+        self.assertEqual(len(dResults), 10)
         for oCard in dResults:
             self.assertEqual(dResults[oCard], 0)
         aNames = [x.name for x in dResults]
         self.assertTrue('Abandoning the Flesh' in aNames)
         self.assertTrue('Hide the Heart' in aNames)
+        self.assertTrue('Deflection' in aNames)
 
         dResults = run_filter("CardName = 'YYY'", None)
         self.assertEqual(len(dResults), 0)
