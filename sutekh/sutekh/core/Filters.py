@@ -648,8 +648,12 @@ class CardFunctionFilter(DirectFilter):
                              ])
                 ]))
         if self.__sBounce in aTypes:
-            aFilters.append(FilterAndBox([CardTypeFilter('Reaction'),
-                                          CardTextFilter('is now bleeding')]))
+            aFilters.append(FilterAndBox(
+                [CardTypeFilter('Reaction'),
+                 FilterOrBox([CardTextFilter('is now bleeding'),
+                              CardTextFilter('change the target of the bleed ')
+                             ])
+                ]))
         if self.__sEnterCombat in aTypes:
             aFilters.append(FilterAndBox([CardTypeFilter('Action'),
                                           CardTextFilter('(D) Enter combat')]))
