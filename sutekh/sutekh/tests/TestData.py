@@ -52,6 +52,11 @@ Expansions,ReversePrefix:Promo-,Promo
 Expansions,AU,Anarchs Unbound
 Expansions,TU,The Unaligned
 Expansions,DM,Danse Macabre
+Expansions,FB,First Blood
+Expansions,NB,New Blood
+Expansions,V5,Fifth Edition
+Expansions,V5A,Fifth Edition: Anarchs
+Expansions,SP,Black Chantry
 Expansions,Anarchs Unbound (Kickstarter Edition),Anarchs Unbound (Kickstarter Edition)
 Expansions,The Unaligned (Kickstarter Edition),The Unaligned (Kickstarter Edition)
 Expansions,Danse Macabre (Kickstarter Edition),Danse Macabre (Kickstarter Edition)
@@ -1128,6 +1133,86 @@ Capacity: 6
 Discipline: aus cel dom PRE
 Camarilla primogen: Victoria can lock a younger ready vampire as a +1 stealth (D) action.
 Artist: John Van Fleet
+
+Name: Govern the Unaligned
+[Jyhad:C, VTES:C, SW:PL2/PV, FN:PG2, CE:C/PV4, Anarchs:PAG, KMW:PAl3, Third:PTr5, HttB:PKia6/PSal4, SP:PoS6, 25th:7, FB:PTr6/PV6, V5:PM12/PTr12]
+Cardtype: Action
+Cost: 1 blood
+Discipline: Dominate
+[dom] (D) Bleed with +2 bleed.
+[DOM] +1 stealth action. Add 3 blood to a younger vampire in your uncontrolled region.
+Artist: Mark Poole; Oliver Meinerding; Carmen Cornet
+
+Name: Bait and Switch
+[V5A:PB2]
+Cardtype: Reaction
+Requires a baron. Only usable if a minion is bleeding you, after blocks are declined.
+Lock this reacting vampire. Change the target of the bleed to another Methuselah other than the acting minion's controller (that Methuselah can attempt to block).
+Artist: Javier Santos
+
+Name: Deflection
+[Jyhad:C, VTES:C, SW:PV2, FN:PG2, CE:C/PTr3, BH:PTr4, HttB:PGar4, SP:PoS4/PwN3, 25th:6, FB:PV4, V5:PM5/PTr4/PV6, NB:PM2/PV4]
+Cardtype: Reaction
+Cost: 1 blood
+Discipline: Dominate
+Only usable if a minion is bleeding you, after blocks are declined.
+[dom] Lock this reacting vampire. Change the target of the bleed to another Methuselah other than the acting minion's controller (that Methuselah can attempt to block).
+[DOM] As above, but do not lock this vampire.
+Artist: Larry MacDougall; Gary Chatterton; Ginés Quiñonero
+
+Name: Telepathic Counter
+[Jyhad:C, VTES:C, Sabbat:C, SW:C/PV2, CE:C/PM4, Anarchs:PAB3/PAG, BH:PTo4, Third:PM4, HttB:PSal2, NB:PTo2]
+Cardtype: Reaction
+Discipline: Auspex
+[aus] Reduce a bleed against you by 1.
+[AUS] Reduce a bleed against you by 2.
+Artist: Susan Van Camp; Darryl Elliott; Joe Slucher
+
+Name: My Enemy's Enemy
+[Sabbat:R, SW:R, Anarchs:PAG, LoB:PO2, Third:U]
+Cardtype: Reaction
+Discipline: Auspex
+[aus] +1 intercept.
+[AUS] Only usable when a minion controlled by your predator is bleeding you, after blocks are declined. Lock this reacting vampire. The acting minion is now bleeding your predator's predator.
+Artist: Dave Seeley
+
+Name: Eyes of Argus
+[KoT:C/B2, HttB:PSal3, Anthology:4, SP:DoF4/PwN2, V5:PM5/PTr6, NB:PM2/PTr2]
+Cardtype: Reaction
+Discipline: Auspex
+[aus] Only usable during an action directed at you (or a card you control). +2 intercept.
+[AUS] Only usable by a locked vampire. This vampire wakes (they ignore the requirement to be unlocked for playing reaction cards and attempting to block until the end of the action).
+Artist: Heather V. Kreiter
+
+Name: Wake with Evening's Freshness
+[Jyhad:C, VTES:C, SW:PB2/PL4/PV2, FN:PG2, CE:PB4/PM4/PTo3/PV3, Anarchs:PAB3/PAG2, BH:PTo3, KMW:PAn3/PB5/PG2, LoB:PG2/PI3, HttB:PGar6/PSal5, SP:PoS2, V5:PV4, NB:PM3/PV3]
+Cardtype: Reaction
+Only usable by a locked vampire. Do not replace until your next unlock phase.
+This vampire wakes (they ignore the requirement to be unlocked for playing reaction cards and attempting to block until the end of the action).
+Artist: Randy Gallegos; Ron Spencer
+
+Name: Enhanced Senses
+[Jyhad:C, VTES:C, Sabbat:C, SW:PT2/PV3, CE:C/PM/PTo/PTr3, Anarchs:PAG, BH:PM4/PTr4, KMW:PAl3, Third:C/PTr3/PTz5, HttB:PSal3, SP:DoF4/PwN2, FB:PTr2, NB:PTr2]
+Cardtype: Reaction
+Discipline: Auspex
+[aus] +1 intercept.
+[AUS] +2 intercept.
+Artist: Amy Weber; Phillip Tan; Bob Stevlic
+
+Name: Ambush
+[Sabbat:C, SW:C/PB5/PL, FN:PA3, Anarchs:PAG2, BH:PN5, KMW:PG3, FB:PN3]
+Cardtype: Action
+(D) Enter combat with a locked minion. This acting minion gets 1 optional maneuver during that combat.
+Artist: Mark Poole
+
+Name: Deep Song
+[KoT:C/A2, HttB:PSam2, Anthology:4, SP:DoF4, V5:PN6, V5A:PG6, NB:PN3]
+Cardtype: Action
+Discipline: Animalism
+[ani] (D) Bleed with +1 bleed.
+[ANI] Frenzy. (D) Enter combat with and lock a vampire. The target vampire is considered the acting minion during that combat.
+Artist: Jeremy McHugh
+
 """
 
 TEST_EXP_INFO = """
