@@ -486,6 +486,36 @@ class FilterTests(SutekhTest):
                              "Filter Object %s failed. %s != %s." % (
                                  oFilter, aNames, aExpectedNames))
 
+        # Test all the card function filters
+        # These are mainly to check for new / changed wording breaking stuff
+        # when we update the test data
+        aFunctionTests = [
+            (Filters.CardFunctionFilter('Stealth action modifiers'),
+             ['Swallowed by the Night']),
+            (Filters.CardFunctionFilter('Intercept reactions'),
+             ['Enhanced Senses', 'Eyes of Argus', "My Enemy's Enemy", "Predator's Communion"]),
+            (Filters.CardFunctionFilter('Unlock reactions (Wake)'),
+             ['Eyes of Argus', "Predator's Communion",
+              "Wake with Evening's Freshness"]),
+            (Filters.CardFunctionFilter('Bleed redirection reactions (Bounce)'),
+             ['Bait and Switch', 'Deflection', "My Enemy's Enemy"]),
+            (Filters.CardFunctionFilter('Enter combat actions (Rush)'),
+             ["Ambush", "Deep Song"]),
+            (Filters.CardFunctionFilter('Increased bleed action modifiers'),
+             ['Aire of Elation']),
+            (Filters.CardFunctionFilter('Increased bleed actions'),
+             ["Deep Song", "Govern the Unaligned"]),
+            (Filters.CardFunctionFilter('Bleed reduction reactions'),
+             ['Hide the Heart', 'Telepathic Counter']),
+        ]
+
+        for oFilter, aExpectedNames in aFunctionTests:
+            aCards = oFilter.select(AbstractCard).distinct()
+            aNames = sorted([oC.name for oC in aCards])
+            self.assertEqual(aNames, aExpectedNames,
+                             "Filter Object %s failed. %s != %s." % (
+                                 oFilter, aNames, aExpectedNames))
+
         # Filter values Tests
         self.assertEqual(Filters.MultiClanFilter.get_values(),
                          [u"Abomination", u"Ahrimane", u"Banu Haqim",
