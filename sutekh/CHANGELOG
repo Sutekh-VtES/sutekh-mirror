@@ -1,6 +1,63 @@
+07 Jun 2022
+ * Update the text of the 'Bounce' function filter to the
+   current template.
+ * Add tests for the Card Function filters.
+
+28 Feb 2022
+ * Fix handling of the special cases in the Black Chantry
+   kickstarter edition.
+
+20 Dec 2021
+ * Update lackey plugin to match latest behaviour.
+
+09 Dec 2021
+ * Extend github actions to also test building the
+   deb package.
+
+02 Dec 2021
+ * Improve lookup handling so we can better handle a card
+   moving between expansions (seen with the corrected
+   promo information for Vlad Tepes).
+
+10 Nov 2021
+ * Update the 'Hide Suffix' logic to make use of the reworked
+   name transformation code.
+
+09 Nov 2021
+ * Rewrite logic for transforming names to make it more
+   extensible.
+
+08 Nov 2021
+ * Use the same naming convention for cards images as
+   other tools.
+
+05 Nov 2021
+ * set maxDiff to 0 in tests, for better failure reports.
+ * Better handling the many Pentex variations.
+
+04 Nov 2021
+ * Update export handling to work with the new name logic.
+ * Drop secretlibrary support, since it's been down for years now.
+ * Add support for codex of the damned urls to HTML output.
+
+
+02 Nov 2021
+ * Rewrite crypt handling to append '(Group X)' to the name, so
+   we can support cards that appear in multiple groups.
+
+09 Sep 2021
+ * Various fixes and improvements to the MacOS installer build.
+
+01 Sep 2021
+ * Update TTS plugin to handle how new cards were added.
+ * Add plugin check to list unmatched cards in the TTS plugin.
+ * Support downloading the new icons from the vekn site.
+
 23 Aug 2021
  * Add special handling for the kickstarter reprints of the PDF sets.
  * Update test data to include examples and update tests to match.
+ * Use python sorting in places to avoid database dependant behaviour in
+   the tests.
 
 03 Aug 2021
  * Update icon manager to pull V5 icons.
