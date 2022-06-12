@@ -160,7 +160,7 @@ def update_open_card_sets(sSetName, oMainWindow):
     """Update open copies of the card set sSetName to database changes
        (from imports, etc.)"""
     for oFrame in oMainWindow.find_cs_pane_by_set_name(sSetName):
-        oFrame.update_to_new_db()
+        oFrame.update_to_new_db(None)
     oMainWindow.reload_pcs_list()
 
 
