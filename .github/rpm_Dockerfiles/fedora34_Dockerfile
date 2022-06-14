@@ -1,0 +1,10 @@
+# Dockerfile so we can use the action on FC 34
+FROM fedora:34
+
+# Install RPM tools requires
+RUN dnf install -y rpm-build \
+                   rpmdevtools \
+                   yum-utils
+
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
