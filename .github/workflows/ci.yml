@@ -320,7 +320,7 @@ jobs:
         name: sutekh_deb
         path: sutekh/deb_dist/*bionic*
 
-  build-fc34-rpm:
+  build-fc-rpm:
 
     runs-on: ubuntu-latest
     name: Build a RPM package
@@ -338,9 +338,9 @@ jobs:
     - name: Build RPM on FC 34
       uses: xmidt-org/rpm-package-action@v1
       with:
-        path: sutekh
-        spec: dist/Sutekh.spec
-        output: dist
+        path: sutekh/dist
+        spec: Sutekh.spec
+        output-dir: .
         dockerfile-path: .github/rpm_Dockerfiles/fedora34_Dockerfile
     - name: Upload RPM
       uses: actions/upload-artifact@v2
