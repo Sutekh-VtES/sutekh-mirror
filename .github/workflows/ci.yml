@@ -318,7 +318,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: sutekh_deb
-        path: sutekh/deb_dist/*bionic*
+        path: sutekh/deb_dist/*focal*
 
   build-fc-rpm:
 
