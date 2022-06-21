@@ -1,7 +1,12 @@
 #!/bin/bash
 
 dir=$(dirname $0)
-fulldir=$(pwd)/${dir}
+# Macos seems to vary what it passes as $0 depending on how the app is launched
+if [ -f "${dir}/gui_wrapper" ]; then
+   fulldir="$dir"
+else
+   fulldir=$(pwd)/${dir}
+fi
 
 # This is a complicated piece of applescript, largely inspired by
 # https://superuser.com/questions/1519128/how-do-i-target-and-close-a-specific-terminal-window-in-applescript
