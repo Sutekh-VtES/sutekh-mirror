@@ -149,6 +149,10 @@ The remaining required packages should be installed using pip3
 
 sutekh can then be installed from source in a virtual environment.
 
+There is an experimental MacOS bundle available. Because of how this MacOS
+bundle is built, it only supports MacOS version >= 10.15 . To use it, extract
+the tarball and launch the extracted app from the file manager.
+
 Using Sutekh from the Python Interpreter
 ========================================
 
@@ -170,7 +174,7 @@ Print all Malkavian cards:
   >>> for oC in Clan.byName('Malkavian').cards:
   ...           print oC.name
 
-  >>> oTony = AbstractCard.byName('Tony')
+  >>> oTony = AbstractCard.byName('Tony (Group 3)')
   >>> print oTony
   >>> for oP in oTony.discipline:
   ...     print oP.level, oP.discipline
@@ -393,6 +397,30 @@ not work for all versions of ARDB or FELDB.
 
 Sutekh has support for importing and exporting inventories and decks to and
 from the Secret Library (http://www.secretlibrary.info/).
+
+Sutekh also supports exporting card sets to the following VtES online
+implementations:
+* Lackey CCG
+* JOL
+* Tabletop Simulator (requires access to the VtES deck building TTS module)
+
+Card Names
+==========
+
+Sutekh maintans a unique name for every card. For library cards, this is just the
+card name, but for vampires, since there are both normal and advanced vampires, and
+some vampires have multiple versions in different groups, Sutekh appends the group
+number and the 'Advanced' status to the name.
+
+For example, the different versions of 'Theo Bell', are stored as
+* Theo Bell (Group 2)
+* Theo Bell (Group 2) (Advanced)
+* Theo Bell (Group 6)
+
+If importing a vampire, Sutekh will default to using the first version issued, if
+it can't work out the correct version, so 'Theo Bell' will be imported as
+'Theo Bell (Group 2)'
+
 
 Getting the current development code
 ====================================
