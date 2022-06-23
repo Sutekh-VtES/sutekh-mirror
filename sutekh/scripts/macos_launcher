@@ -1,11 +1,11 @@
 #!/bin/bash
 
-dir=$(dirname $0)
+dir=$(dirname "$0")
 # Macos seems to vary what it passes as $0 depending on how the app is launched
 if [ -f "${dir}/gui_wrapper" ]; then
    fulldir="$dir"
 else
-   fulldir=$(pwd)/${dir}
+   fulldir=$(pwd)/"${dir}"
 fi
 
 # This is a complicated piece of applescript, largely inspired by
@@ -15,18 +15,27 @@ fi
 #
 # We do this because the macos default is to leave the terminal open after the sutekh process
 # exits, unless configured otherwise, and since we're using the terminal just to get around
-# issues caused by stdout/stdin being missing in a bundled app, and no for actual output,
+# issues caused by stdout/stdin being missing in a bundled app, and not for actual output,
 # this is not useful behaviour
 
-osascript <<EOF
-   tell application "Terminal"
-      set P to do script "${fulldir}/gui_wrapper ; exit"
-      set W to the id of window 1 where its tab 1 = P
-      #do script "${fulldir}/gui_wrapper; exit" in P 
-      repeat
+
+osascript << 'EOF' - "$fulldir"
+    on run argv
+       tell application "Terminal"
+         # The "cd & quoted arg &" syntax is used because, although we can construct the path
+         # to the script using the quoted form, apple's shell doesn't interpret that string
+         # correctly due to the multiple levels of quoting involved, but does handle it in the case
+         # of just the quoted directory.
+         set sutekhProcess to do script "cd " & quoted form of argv's item 1 & " ; ./gui_wrapper ; exit"
+         delay 1 -- seems to be needed to ensure we get the correct window id
+         set termWin to the id of window 1 where its tab 1 = sutekhProcess
+         set miniaturized of window 1 to true -- hide the terminal
+         repeat
+            delay 1
+            if not busy of sutekhProcess then exit repeat
+         end repeat
          delay 1
-         if not busy of P then exit repeat
-      end repeat
-      close window id W
-   end tell
+         close window id termWin
+      end tell
+   end run
 EOF
