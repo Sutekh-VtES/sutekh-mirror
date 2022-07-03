@@ -546,12 +546,13 @@ class BaseImageFrame(BasicFrame):
         # and subdividing it further won't help clarity
         self._oImage.set_alignment(0.5, 0.5)  # Centre image
         # Ensure we have an up to information about the image dates
-        self._get_date_data()
+        if self._config_download_images():
+            # Only get date data if we're allowed to download stuff
+            self._get_date_data()
 
         for sFullFilename in aFullFilenames:
             if not check_file(sFullFilename):
-                if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
-                        self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES)):
+                if self._config_download_images():
                     # Attempt to download the image from the url
                     if not self._download_image(sFullFilename):
                         # No download, so fall back to the 'no image' case
@@ -560,8 +561,7 @@ class BaseImageFrame(BasicFrame):
                         self._oImage.queue_draw()
                         return
             else:
-                if (self._oImagePlugin.DOWNLOAD_SUPPORTED and
-                        self._oImagePlugin.get_config_item(DOWNLOAD_IMAGES) and
+                if (self._config_download_images() and
                         self._download_if_outdated(sFullFilename)):
                     # Try download the image
                     # We don't handle failure specially here - if it fails,
