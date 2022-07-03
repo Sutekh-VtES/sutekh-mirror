@@ -419,16 +419,25 @@ class BaseImageFrame(BasicFrame):
             # Cache fresh enough
             return
         logging.info('Downloading date cache from %s', sDateUrl)
-        oFile = urlopen_with_timeout(
-            sDateUrl, fErrorHandler=image_gui_error_handler,
-            dHeaders=self._dReqHeaders, bBinary=False)
+        try:
+            oFile = urlopen_with_timeout(
+                sDateUrl, fErrorHandler=image_gui_error_handler,
+                dHeaders=self._dReqHeaders, bBinary=False)
+        except Exception:
+            # We pass this through to the default handler, but we record it as
+            # a failed download and update cache accordingly
+            logging.warning("Error downloading date cache file")
+            logging.warning("Delaying next download attempt for 3 hours")
+            self._dDateCache[LAST_DOWNLOADED] = \
+                    datetime.datetime.now() - datetime.timedelta(hours=21)
+            raise
         if oFile:
             sDateData = progress_fetch_data(oFile)
             if self._parse_date_data(sDateData):
                 self._dDateCache[LAST_DOWNLOADED] = datetime.datetime.now()
         else:
-            logging.info("Failed to download date cache file")
-            logging.info("Delaying next download attempt for 3 hours")
+            logging.warning("Failed to download date cache file")
+            logging.warning("Delaying next download attempt for 3 hours")
             # We don't want to spam the user with repeated failues, since this
             # may be a network issues, so we delay our next download attempt.
             # XXX: Should we have a dialog informing the user in addition
