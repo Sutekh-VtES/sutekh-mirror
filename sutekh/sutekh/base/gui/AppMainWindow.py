@@ -332,6 +332,7 @@ class AppMainWindow(MultiPaneWindow):
                     Gtk.MessageType.WARNING, Gtk.ButtonsType.OK)
                 return
             # Check for updated card list
+            logging.info("Checking for updated cardlist")
             self.check_updated_cardlist()
 
     def check_for_plugin_updates(self):

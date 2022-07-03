@@ -7,6 +7,7 @@
 
 import re
 import datetime
+import logging
 from io import BytesIO
 
 from gi.repository import Gtk
@@ -269,6 +270,7 @@ class StarterInfoPlugin(SutekhPlugin):
         # Only check if we're meant to show the starters
         if sPrefsValue.lower() != 'yes':
             return None
+        logging.info("Checking for Starter Deck updates")
         aUrls, aDates, _aHashes = find_all_data_packs(
             'starters', fErrorHandler=gui_error_handler)
         if not aUrls:

@@ -10,7 +10,7 @@ import os
 from io import BytesIO
 import webbrowser
 import zipfile
-from logging import Logger
+from logging import Logger, info
 
 from gi.repository import Gtk
 
@@ -150,6 +150,7 @@ class RulebookPlugin(SutekhPlugin):
         sIndexFile = os.path.join(self._sPrefsPath, 'index.txt')
         if not os.path.isfile(sIndexFile):
             return None
+        info("Checking for Rulebook updates")
         aUrls, aDates, _aHashes = find_all_data_packs(
             'rulebooks', fErrorHandler=gui_error_handler)
         if not aUrls:

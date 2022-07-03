@@ -7,7 +7,7 @@
 
 import re
 import datetime
-from logging import Logger
+from logging import Logger, info
 from io import BytesIO
 
 from gi.repository import Gtk
@@ -374,6 +374,7 @@ class TWDAInfoPlugin(SutekhPlugin):
         sPrefsValue = self.get_config_item('twda configured')
         if sPrefsValue.lower() != 'yes':
             return None
+        info("Checking for TWDA updates")
         aUrls, aDates, aHashes = find_all_data_packs(
             'twd', fErrorHandler=gui_error_handler)
         if not aUrls:
