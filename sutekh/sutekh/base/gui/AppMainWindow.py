@@ -342,6 +342,9 @@ class AppMainWindow(MultiPaneWindow):
             # Don't check for updates with an in_memory database,
             # because we can't have handled any cardlist updates
             return
+        if not self._oConfig.get_check_for_updates():
+            # Only check for updates if that's globally allowed
+            return
         aMessages = []
         aUpdatePlugins = []
         for oPlugin in self._aPlugins:
