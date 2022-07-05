@@ -235,6 +235,11 @@ class BaseImageFrame(BasicFrame):
         self._tPaneSize = (0, 0)
         self._dFailedUrls = {}
         self._dDateCache = {}
+        # Slow networks mean we can trigger date downloads multiple times
+        # by clicking on different cards before the first one finishes.
+        # This can cause isses if the download fails as multiple dialogs can
+        # hide each other, making it hard to close everything
+        self._dDateDownloading = False
 
     type = property(fget=lambda self: "Card Image Frame", doc="Frame Type")
 
@@ -409,6 +414,9 @@ class BaseImageFrame(BasicFrame):
 
     def _get_date_data(self):
         """Get the date data from the website if available"""
+        if self._dDateDownloading:
+            # Already busy
+            return
         sDateUrl = self._make_date_url()
         if not sDateUrl:
             # No date info, so we skip this
@@ -418,6 +426,7 @@ class BaseImageFrame(BasicFrame):
         if datetime.datetime.now() - oLastFetched < datetime.timedelta(days=1):
             # Cache fresh enough
             return
+        self._dDateDownloading = True
         logging.info('Downloading date cache from %s', sDateUrl)
         try:
             oFile = urlopen_with_timeout(
@@ -430,6 +439,7 @@ class BaseImageFrame(BasicFrame):
             logging.warning("Delaying next download attempt for 3 hours")
             self._dDateCache[LAST_DOWNLOADED] = \
                     datetime.datetime.now() - datetime.timedelta(hours=21)
+            self._dDateDownloading = False
             raise
         if oFile:
             sDateData = progress_fetch_data(oFile)
@@ -444,6 +454,7 @@ class BaseImageFrame(BasicFrame):
             # to the log message?
             self._dDateCache[LAST_DOWNLOADED] = \
                     datetime.datetime.now() - datetime.timedelta(hours=21)
+        self._dDateDownloading = False
 
     def _check_outdated(self, sFullFilename):
         """Check if the image we're displaying has a more recent version
