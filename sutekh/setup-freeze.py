@@ -110,6 +110,7 @@ required_gi_namespaces = [
      "Atk-1.0",
      "HarfBuzz-0.0",
      "Poppler-0.18",
+     "freetype2-2.0",
 ]
 
 for ns in required_gi_namespaces:
