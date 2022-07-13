@@ -169,8 +169,8 @@ class CardImageFrame(BaseImageFrame):
                 if not sLine:
                     continue
                 # We are dealing with ls-lR type formatting
-                # size YYYY-mm-DD HH:MM:SS ./<dir>/<name>
-                _sSize, sDay, sTime, sName = sLine.split()
+                # size YYYY-mm-DD HH:MM:SS ./<dir>/<name> [ link info, etc ]
+                _sSize, sDay, sTime, sName = sLine.split()[:4]
                 oCacheDate = datetime.datetime.strptime(
                     "%s %s" % (sDay, sTime), "%Y-%m-%d %H:%M:%S")
                 sExpansion, sCardName = sName.replace('./', '').split('/')
