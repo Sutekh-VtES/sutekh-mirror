@@ -100,8 +100,8 @@ So:
 will list and print details of all action modifiers containing with 'stealth'
 in their card text for the card set 'Tzimisce deck'
 
-Windows Quickstart
-==================
+Windows Development Quickstart
+==============================
 
 The easiest method is to use the provided installer. This bundles the
 required files from gtk, python and the required modules for running sutekh.
@@ -127,8 +127,8 @@ Run easy_install <Sutekh Egg File>.
 
 Run <python install dir>/Scripts/sutekh
 
-MacOS Quickstart
-================
+MacOS Development Quickstart
+============================
 
 MacOS support in sutekh is not currently well tested, but it should work.
 
@@ -149,9 +149,18 @@ The remaining required packages should be installed using pip3
 
 sutekh can then be installed from source in a virtual environment.
 
+Bundled Installers
+==================
+
+We have a windows installer that installs Sutekh and all the required
+requirements as a standalone application. It can be downloaded from
+sourceforge. You will need to add a security exception to run the
+installer.
+
 There is an experimental MacOS bundle available. Because of how this MacOS
 bundle is built, it only supports MacOS version >= 10.15 . To use it, extract
-the tarball and launch the extracted app from the file manager.
+the tarball and launch the extracted app from the file manager. You will need
+to add a security exception for this to work.
 
 Using Sutekh from the Python Interpreter
 ========================================
