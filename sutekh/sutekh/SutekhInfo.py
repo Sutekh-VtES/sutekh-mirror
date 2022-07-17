@@ -19,7 +19,7 @@ PYTHON = 'License :: OSI Approved :: Python Software Foundation License'
 
 # pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo:
-    VERSION = (2, 0, 0, 'alpha', 2)
+    VERSION = (2, 0, 0, 'final', 1)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])
     VERSION_STR = {
         'final': BASE_VERSION_STR,
