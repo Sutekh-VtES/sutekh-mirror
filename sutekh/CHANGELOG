@@ -1,3 +1,34 @@
+17 Jul 2022
+ * Release Sutekh 2.0.0
+
+13 Jul 2022
+ * Make date parsing a bit more robust
+
+11 Jul 2022
+ * Fix an upgrade corner case in the deb package
+ * Add dh-python to make lintian happier
+
+05 Jul 2022
+ * Fix case where multiple attempts to download the date info could be
+   triggered at once
+
+03 Jul 2022
+ * Respect the "do not check for updates" setting in more places
+ * Delay trying to download date info if it fails due to network issues
+ * Add logging information about update queries to make debugging easier
+
+23 Jun 2022
+ * Various fixes to the MacOS app scripts to handle whitespace better
+
+14 Jun 2022
+ * Add rpm build to github actions.
+
+13 Jun 2022
+ * Update debian build setup.
+
+08 Jun 2022
+ * Update version number to 2.0.0 and regenerate documenation.
+
 07 Jun 2022
  * Update the text of the 'Bounce' function filter to the
    current template.
