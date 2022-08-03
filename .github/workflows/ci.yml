@@ -199,16 +199,17 @@ jobs:
 
   sqlite-macos:
 
-    # Because we're using the github supplied version of python, we don't get
-    # support for older releases unless we jump through more hoops,
-    # but that's not worth doing until we fix the issues with the created installer
-    # 
+    # We're using the github supplied version of python here
+    # and the homebrew gtk libraries - it's not quite clear
+    # what the minimum supported version of MacOS is with
+    # but builds on MacOS 12 currently works on MacOS 11 and
+    # newer and may wotk on MacOS 10.15.
+    #
+    # It's possible to control the supported versions directly
     # See https://github.com/actions/virtual-environments/issues/1256#issuecomment-770270252
-    # for details on the hoops
-    # 
-    # We pin to 10.15 for now, as the oldest version supplied by github actions,
-    # to at least get a bit more version coverage
-    runs-on: macos-10.15
+    # but as this will require compiling the gtk support with the
+    # correct options, it doesn't seem worthwhile.
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v3
     - name: Install Python
