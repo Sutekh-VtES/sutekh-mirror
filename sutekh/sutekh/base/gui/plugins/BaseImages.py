@@ -260,6 +260,12 @@ class BaseImageFrame(BasicFrame):
                 aNames = self.lookup_filename(oCard)
                 for sName in aNames:
                     if not check_file(sName):
+                        # A file is only missing if it can be downloaded,
+                        # so we check if it exists in the date cache
+                        if sName not in self._dDateCache:
+                            # Note this case, since it's somewhat unexpected
+                            logging.info('%s has no image, but also no download candidate', sName)
+                            continue
                         dMissing.setdefault(oCard, [])
                         dMissing[oCard].append(sName)
                     elif self._check_outdated(sName):
