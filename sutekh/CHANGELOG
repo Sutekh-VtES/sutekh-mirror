@@ -1,3 +1,20 @@
+20 Nov 2022
+ * Update github actions to remove various deprecated things.
+
+15 Nov 2022
+ * Add 'Operation Antigen' keyword for the Fall of London allies.
+
+21 Sep 2022
+ * Factor out the name normalisation code in the image plugin so it easier
+   to use in external tools that need deal with our image names.
+
+01 Sep 2022
+ * Allow importing mulitple decks from other formats at once.
+
+03 Aug 2022
+ * Add a check so we skip images that don't exist but also don't have a download
+   candidate when updating all the images.
+
 17 Jul 2022
  * Release Sutekh 2.0.0
 
