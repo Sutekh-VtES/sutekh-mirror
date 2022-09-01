@@ -118,6 +118,8 @@ class BaseImport(BasePlugin):
                 iXPos = 0
                 iYPos += 1
 
+        self.oFileChooser.set_select_multiple(True)
+
         self.oDlg.connect("response", self.handle_response)
         self.oDlg.set_size_request(600, 500)
         self.oDlg.show_all()
@@ -128,7 +130,7 @@ class BaseImport(BasePlugin):
         """Handle the user's clicking on OK or CANCEL in the dialog."""
         if oResponse == Gtk.ResponseType.OK:
             sUri = self.oUri.get_text().strip()
-            sFile = self.oFileChooser.get_filename()
+            aFiles = self.oFileChooser.get_filenames()
 
             for oBut in self._oFirstBut.get_group():
                 sName = oBut.get_label()
@@ -137,8 +139,9 @@ class BaseImport(BasePlugin):
 
             if sUri:
                 self.make_cs_from_uri(sUri, cParser)
-            elif sFile:
-                self.make_cs_from_file(sFile, cParser)
+            elif aFiles:
+                for sFile in aFiles:
+                    self.make_cs_from_file(sFile, cParser)
 
         self.oDlg.destroy()
 
