@@ -38,6 +38,25 @@ SUTEKH_USER_AGENT = {
 
 GROUP_RE = re.compile(r'\(group ([0-9]+)\)')
 
+def make_image_name(sCardName):
+    """Convert a card name to an image name"""
+    # Some symbols are converted to uppercase, so fix that
+    sFilename = to_ascii(sCardName).lower()
+    if sFilename.startswith('the '):
+        sFilename = sFilename[4:] + 'the'
+    elif sFilename.startswith('an '):
+         sFilename = sFilename[3:] + 'an'
+    sFilename = sFilename.replace('(advanced)', 'adv')
+    # Convert vampire names to match krcg's group handling
+    if '(group' in sFilename:
+        iGroup = int(GROUP_RE.search(sFilename).groups()[0])
+        sFilename = GROUP_RE.sub('', sFilename) + '%02d' % iGroup
+    # Should probably do this via translate
+    for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
+        sFilename = sFilename.replace(sChar, '')
+    return sFilename + '.jpg'
+
+
 class CardImageFrame(BaseImageFrame):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # can't not trigger these warning with pyGtk
@@ -184,22 +203,7 @@ class CardImageFrame(BaseImageFrame):
 
     def _norm_cardname(self, sCardName):
         """Normalise the card name"""
-        # Some symbols are converted to uppercase, so fix that
-        sFilename = to_ascii(sCardName).lower()
-        if sFilename.startswith('the '):
-            sFilename = sFilename[4:] + 'the'
-        elif sFilename.startswith('an '):
-            sFilename = sFilename[3:] + 'an'
-        sFilename = sFilename.replace('(advanced)', 'adv')
-        # Convert vampire names to match krcg's group handling
-        if '(group' in sFilename:
-            iGroup = int(GROUP_RE.search(sFilename).groups()[0])
-            sFilename = GROUP_RE.sub('', sFilename) + '%02d' % iGroup
-        # Should probably do this via translate
-        for sChar in (" ", ".", ",", "'", "(", ")", "-", ":", "!", '"', "/"):
-            sFilename = sFilename.replace(sChar, '')
-        sFilename = sFilename + '.jpg'
-        return [sFilename]
+        return [make_image_name(sCardName)]
 
 
 class ImageConfigDialog(BaseImageConfigDialog):
