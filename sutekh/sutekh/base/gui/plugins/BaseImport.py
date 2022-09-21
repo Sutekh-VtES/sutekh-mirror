@@ -20,9 +20,14 @@ GUESS_FILE_FORMAT = 'Guess File Format'
 
 
 class BaseImport(BasePlugin):
-    """Import a cardset in some format.
+    """Import cardsets in some format.
 
-       Allows the user to choose uri's, so decks published
+       Multiple local files can be selected to be imported simulatenously.
+       These are all asummed to be in the same format - importing multiple
+       files in different formats will not work unless using 'Guess
+       File Format'.
+
+       This allows the user to choose a single uri, so decks published
        online can be imported, and handles all the footwork
        around imports.
        """
