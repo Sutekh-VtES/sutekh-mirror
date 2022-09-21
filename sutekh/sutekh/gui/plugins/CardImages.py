@@ -38,6 +38,12 @@ SUTEKH_USER_AGENT = {
 
 GROUP_RE = re.compile(r'\(group ([0-9]+)\)')
 
+# Special cases where we don't want to use the Promo short name
+SPECIAL_EXPANSIONS = [
+    "Anarchs and Alastors Storyline",
+]
+
+
 def make_image_name(sCardName):
     """Convert a card name to an image name"""
     # Some symbols are converted to uppercase, so fix that
@@ -57,6 +63,51 @@ def make_image_name(sCardName):
     return sFilename + '.jpg'
 
 
+def make_expansion_pathname(sExpansionName):
+    """Convert an expansion name to the directory name"""
+    bOK = False
+    # pylint: disable=no-member
+    # pylint doesn't pick up IExpansion methods correctly
+    try:
+        oExpansion = IExpansion(sExpansionName)
+        oPrinting = None
+        bOK = True
+    except SQLObjectNotFound:
+        if '(' in sExpansionName:
+            # Maybe a Printing?
+            sSplitExp, sPrintName = [x.strip() for x in
+                                     sExpansionName.split('(', 1)]
+            sPrintName = sPrintName.replace(')', '')
+            try:
+                oExpansion = IExpansion(sSplitExp)
+                oPrinting = IPrinting((oExpansion, sPrintName))
+                bOK = True
+            except SQLObjectNotFound:
+                pass
+    if not bOK:
+        # This can happen because we cache the expansion name and
+        # a new database import may cause that to vanish.
+        # We return just return a blank path segment, as the safest choice
+        logging.warning('Expansion %s no longer found in the database',
+                        sExpansionName)
+        return ''
+    # check special cases
+    # Promos always get the full name, so we can find the right image
+    # for cards printed in multiple different promo sets
+    if oExpansion.name in SPECIAL_EXPANSIONS or \
+            oExpansion.name.startswith('Promo'):
+        sExpName = oExpansion.name.lower()
+    else:
+        sExpName = oExpansion.shortname.lower()
+    if oPrinting:
+        sExpName += '_' + oPrinting.name.lower()
+    # Normalise storyline cards
+    sExpName = sExpName.replace(' ', '_').replace('-', '_')
+    # Strip quotes as well
+    sExpName = sExpName.replace("'", '')
+    return sExpName
+
+
 class CardImageFrame(BaseImageFrame):
     # pylint: disable=too-many-public-methods, too-many-instance-attributes
     # can't not trigger these warning with pyGtk
@@ -67,11 +118,6 @@ class CardImageFrame(BaseImageFrame):
        """
 
     APP_NAME = SutekhInfo.NAME
-
-    # Special cases where we don't want to use the Promo short name
-    SPECIAL_EXPANSIONS = [
-        "Anarchs and Alastors Storyline",
-    ]
 
     # Cloudflare doesn't like the urllib2 default
     _dReqHeaders = SUTEKH_USER_AGENT
@@ -107,47 +153,7 @@ class CardImageFrame(BaseImageFrame):
         """Convert the Full Expansion name into the abbreviation needed."""
         if sExpansionName == '':
             return ''
-        bOK = False
-        # pylint: disable=no-member
-        # pylint doesn't pick up IExpansion methods correctly
-        try:
-            oExpansion = IExpansion(sExpansionName)
-            oPrinting = None
-            bOK = True
-        except SQLObjectNotFound:
-            if '(' in sExpansionName:
-                # Maybe a Printing?
-                sSplitExp, sPrintName = [x.strip() for x in
-                                         sExpansionName.split('(', 1)]
-                sPrintName = sPrintName.replace(')', '')
-                try:
-                    oExpansion = IExpansion(sSplitExp)
-                    oPrinting = IPrinting((oExpansion, sPrintName))
-                    bOK = True
-                except SQLObjectNotFound:
-                    pass
-        if not bOK:
-            # This can happen because we cache the expansion name and
-            # a new database import may cause that to vanish.
-            # We return just return a blank path segment, as the safest choice
-            logging.warning('Expansion %s no longer found in the database',
-                            sExpansionName)
-            return ''
-        # check special cases
-        # Promos always get the full name, so we can find the right image
-        # for cards printed in multiple different promo sets
-        if oExpansion.name in self.SPECIAL_EXPANSIONS or \
-                oExpansion.name.startswith('Promo'):
-            sExpName = oExpansion.name.lower()
-        else:
-            sExpName = oExpansion.shortname.lower()
-        if oPrinting:
-            sExpName += '_' + oPrinting.name.lower()
-        # Normalise storyline cards
-        sExpName = sExpName.replace(' ', '_').replace('-', '_')
-        # Strip quotes as well
-        sExpName = sExpName.replace("'", '')
-        return sExpName
+        return make_expansion_pathname(sExpansionName)
 
     def _make_card_urls(self, _sFullFilename):
         """Return a url pointing to the scan of the image"""
