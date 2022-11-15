@@ -216,6 +216,7 @@ class CardDict(dict):
         # Red list allies are templated differently
         'red list': re.compile(r'\. Red List\.'),
         'unique': re.compile(r'Unique [A-Za-z ]+ with \d life'),
+        'operation antigen': re.compile(r'\. Operation Antigen.'),
     }
     oLifeRgx = re.compile(r'(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
                           r' with (\d) life\.')
