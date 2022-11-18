@@ -25,8 +25,8 @@ jobs:
     name: Postgres - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
-        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+        python-version: ['3.9', '3.10', '3.11']
+        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -75,8 +75,8 @@ jobs:
     name: MySQL - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
-        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+        python-version: ['3.9', '3.10', '3.11']
+        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -107,8 +107,8 @@ jobs:
     name: SQLite - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
-        ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
+        python-version: ['3.9', '3.10', '3.11']
+        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -264,7 +264,7 @@ jobs:
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
-        python-version: 3.9
+        python-version: '3.9'
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
