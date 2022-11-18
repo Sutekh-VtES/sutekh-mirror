@@ -28,9 +28,9 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
         ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install APT Dependencies
@@ -78,9 +78,9 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
         ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install APT Dependencies
@@ -110,9 +110,9 @@ jobs:
         python-version: [3.6, 3.7, 3.8, 3.9]
         ubuntu: ['ubuntu-18.04', 'ubuntu-20.04']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install APT Dependencies
@@ -134,7 +134,7 @@ jobs:
         python3 ./setup.py sdist
         popd
     - name: Upload sdist
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: matrix.python-version == '3.9' && matrix.ubuntu == 'ubuntu-20.04'
       with:
         name: sutekh-sdist
@@ -147,7 +147,7 @@ jobs:
     name: Windows
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup MSYS
       uses: msys2/setup-msys2@v2
       with:
@@ -192,7 +192,7 @@ jobs:
         cd sutekh
         ./sutekh-makensis sutekh-freeze.nsi
     - name: Upload NSIS installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sutekh-cx_Freeze_windows
         path: sutekh/dist/*exe
@@ -210,9 +210,9 @@ jobs:
     # to at least get a bit more version coverage
     runs-on: macos-10.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
     - name: Install brew dependencies
       run: |
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
@@ -238,7 +238,7 @@ jobs:
         cd sutekh/build/
         tar -cf sutekh_app.tar Sutekh*app*
     - name: Upload cx_Freeze app directory
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sutekh-cx_Freeze_macos-app
         path: sutekh/build/sutekh_app.tar
@@ -248,7 +248,7 @@ jobs:
         #python3 setup-freeze.py bdist_dmg
         #cd ..
     #- name: Upload cx_Freeze dmg file
-      #uses: actions/upload-artifact@v2
+      #uses: actions/upload-artifact@v3
       #with:
         #name: sutekh-cx_Freeze_macos-dmg
         #path: sutekh/build/Sutekh*dmg
@@ -260,9 +260,9 @@ jobs:
 
     name: SQLite - Pylint & Coverage
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: 3.9
     - name: Install APT Dependencies
@@ -296,7 +296,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build a deb package
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
@@ -315,7 +315,7 @@ jobs:
         ../.github/sutekh-makedeb-nosign 'Test Build <test@nowhere.test>'
         popd
     - name: Upload debian source package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sutekh_deb
         path: sutekh/deb_dist/*focal*
@@ -325,7 +325,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build a RPM package
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
@@ -343,7 +343,7 @@ jobs:
         output-dir: .
         dockerfile-path: .github/rpm_Dockerfiles/fedora34_Dockerfile
     - name: Upload RPM
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sutekh_rpm
         path: sutekh/dist/*rpm*
