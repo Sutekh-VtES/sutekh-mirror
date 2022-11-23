@@ -49,6 +49,9 @@ def setup_package():
     # sqlite memory DB
     sDBUrl = os.getenv('SUTEKH_TEST_DB', "sqlite:///:memory:")
     oConn = connectionForURI(sDBUrl)
+    if oConn.dbName == 'sqlite' and not oConn._memory:
+        # Turn on WAL mode to speed things up
+        oConn.query("PRAGMA journal_mode=WAL;")
     sqlhub.processConnection = oConn
     SutekhTest.set_db_conn(oConn)
 
