@@ -37,8 +37,8 @@ from sutekh.base.Utility import ensure_dir_exists
 from sutekh.gui.PluginManager import SutekhPlugin
 
 
-START = (36, 50)
-CARD_DIM = (180, 252)
+START = (36, 60)
+CARD_DIM = (178, 248)
 
 SCALES = {
     '360 x 504': 2,
@@ -101,6 +101,7 @@ class ImportView(ACLLookupView):
         self.insert_column(oExistingColumn, 1)
 
         self._oModel.selectfilter = MultiExpansionFilter(aExp)
+        self._oModel.hideillegal = False
         self._aExp = aExp
         self._oModel.applyfilter = True
 
@@ -456,6 +457,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         sFileName = lookup_card(oAbsCard, aExp, self._oImageFrame)
         if not sFileName:
             return
+        if not self._oPageImg:
+            return
         if check_file(sFileName):
             iRes = do_complaint_buttons(
                 "File %s exists. Do You want to replace it?" % sFileName,
@@ -464,9 +467,14 @@ class ImportPDFImagesPlugin(SutekhPlugin):
                  "No", Gtk.ResponseType.NO))
             if iRes == Gtk.ResponseType.NO:
                 return
+        # Calculate the position in the cairo surface
+        iPageX = START[0] + self._iXOffset + self._iXPos * CARD_DIM[0]
+        iPageX = iPageX * self._iScale
+        iPageY = START[1] + self._iYOffset + self._iYPos * CARD_DIM[1]
+        iPageY = iPageY * self._iScale
         # Actually save the image
         ensure_dir_exists(os.path.dirname(sFileName))
-        oPixbuf = Gdk.pixbuf_get_from_window(oDrawArea.get_window(), 0, 0,
+        oPixbuf = Gdk.pixbuf_get_from_surface(self._oPageImg, iPageX, iPageY,
                                              self._iScale * CARD_DIM[0],
                                              self._iScale * CARD_DIM[1])
         oPixbuf.savev(sFileName, "jpeg", ("quality",), ("98",))
