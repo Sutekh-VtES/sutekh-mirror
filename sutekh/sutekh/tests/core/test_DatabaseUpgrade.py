@@ -1679,10 +1679,12 @@ class DatabaseUpgradeTests(SutekhTest):
             oOldDB = connectionForURI("sqlite://%s" % sDbFile)
         sqlhub.processConnection = oOldDB
 
-        oCursor = oOldDB.getConnection().cursor()
+        oCursorConn = oOldDB.getConnection()
+        oCursor = oCursorConn.cursor()
         for sSQL in OLD_VERSION_DUMP:
             oCursor.execute(sSQL)
         oCursor.close()
+        oOldDB.releaseConnection(oCursorConn)
 
         # Assert that the versions fail
         oVer = DatabaseVersion(oConn=oOldDB)
@@ -1728,20 +1730,23 @@ class DatabaseUpgradeTests(SutekhTest):
         assert oDefJyhad
         assert IPhysicalCard((oMagnum, oDefJyhad))
 
+        oVer.expire_cache()
+        oVer.expire_table_conn(oOldDB)
         oOldDB.close()
 
         # Restore old state
-        oVer.expire_cache()
         sqlhub.processConnection = oConn
         oConn.cache.clear()
         aTables.reverse()
         for cCls in aTables:
             cCls.dropTable(ifExists=True, connection=oConn)
 
-        oCursor = oConn.getConnection().cursor()
+        oCursorConn = oConn.getConnection()
+        oCursor = oCursorConn.cursor()
         for sSQL in aCurData:
             oCursor.execute(sSQL)
         oCursor.close()
+        oConn.releaseConnection(oCursorConn)
         oConn.cache.clear()
         init_cache()
 
