@@ -1,6 +1,12 @@
 name: Sutekh CI
 
-on: [push, pull_request]
+on:
+  # Run on every push and PR
+  push:
+  pull_request:
+  # Run a job every Subday morning so we're aware of changes to installer builds, etc.
+  schedule:
+    - cron: '12 4 * * 0'
 
 jobs:
   postgres-linux:
