@@ -337,8 +337,6 @@ class AppMainWindow(MultiPaneWindow):
 
     def check_for_plugin_updates(self):
         """Check for any plugins that have updated data"""
-        # FIXME: We should probably add a config option so people can
-        # skip this if desirable.
         if is_memory_db():
             # Don't check for updates with an in_memory database,
             # because we can't have handled any cardlist updates
