@@ -92,7 +92,9 @@ class FilterEditor(Gtk.Alignment):
 
     def __show_help_dialog(self, _oHelpButton):
         """Show a dialog window with the helptext from the filters."""
-        # FIXME: Is there a better way to find the main window
+        # find the main window
+        # The main window should always be the fist toplevel,
+        # because of the order we create things in.
         oMainWindow = Gtk.window_list_toplevels()[0]
         if self.__sFilterType == 'PhysicalCard':
             oMainWindow.show_card_filter_help()
