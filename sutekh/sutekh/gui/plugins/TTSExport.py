@@ -226,6 +226,47 @@ def fix_deck_ids(dCards):
             dCardData["CustomDeck"][sTrueID] = dContent
 
 
+class TTSExportDialog(ExportDialog):
+    """Override the base Export Dialog so we can add Gtk.Entry fields
+       for the crypt and library nicknames"""
+
+    def __init__(self, parent, oCardSet):
+        super().__init__("Filename to save as", parent,
+                            '%s.json' % safe_filename(oCardSet.name))
+        self.add_filter_with_pattern('JSON Files', ['*.json'])
+
+        oEntryGrid = Gtk.Grid()
+        oEntryGrid.attach(Gtk.Label(label="Crypt TTS Name"), 0, 0, 1, 1)
+        self._oCryptNickName = Gtk.Entry()
+        self._oCryptNickName.set_text(f"{oCardSet.name} crypt")
+        oEntryGrid.attach(self._oCryptNickName, 1, 0, 5, 1)
+        oEntryGrid.attach(Gtk.Label(label="Library TTS Name"), 0, 1, 1, 1)
+        self._oLibNickName = Gtk.Entry()
+        self._oLibNickName.set_text(f"{oCardSet.name} library")
+        oEntryGrid.attach(self._oLibNickName, 1, 1, 5, 1)
+
+        oEntryGrid.set_column_homogeneous(True)
+        oEntryGrid.set_row_homogeneous(True)
+
+        self.vbox.pack_start(oEntryGrid, False, True, 0)
+
+        self._sCryptName = None
+        self._sLibName = None
+
+    def button_response(self, _oWidget, iResponse):
+        """Handle button press events"""
+        if iResponse == Gtk.ResponseType.OK:
+            self.sName = self.get_filename()
+            self._sCryptName = self._oCryptNickName.get_text().strip()
+            self._sLibName = self._oLibNickName.get_text().strip()
+        self.destroy()
+
+    def get_crypt_nickname(self):
+        return self._sCryptName
+
+    def get_lib_nickname(self):
+        return self._sLibName
+
 class TTSExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then generates
        a TTS readable json file"""
@@ -246,6 +287,9 @@ class TTSExport(SutekhPlugin):
                    This exports the current card set to a JSON file that
                    can be loaded into Table Top Simulator using the
                    'Saved Objects' menu.
+
+                   You can set the names TTS will display for the crypt
+                   and library decks.
 
                    This plugin needs to read data from the TTS VtES module,
                    so it will not work unless that module has been
@@ -360,24 +404,24 @@ class TTSExport(SutekhPlugin):
 
     def do_export(self, _oWidget):
         """Display the export dialog and hand off the response"""
-        oDlg = self.make_dialog()
+        oCardSet = self._get_card_set()
+        if not oCardSet:
+            return
+        oDlg = self.make_dialog(oCardSet)
         oDlg.run()
-        self.handle_response(oDlg.get_name())
+        self.handle_response(oCardSet, oDlg.get_name(),
+                             oDlg.get_crypt_nickname(),
+                             oDlg.get_lib_nickname())
 
-    def make_dialog(self):
+    def make_dialog(self, oCardSet):
         """Create the dialog"""
-        oDlg = ExportDialog("Filename to save as", self.parent,
-                            '%s.json' % safe_filename(self.view.sSetName))
-        oDlg.add_filter_with_pattern('JSON Files', ['*.json'])
+        oDlg = TTSExportDialog(self.parent, oCardSet)
         oDlg.show_all()
         return oDlg
 
-    def handle_response(self, sFilename):
+    def handle_response(self, oCardSet, sFilename, sCryptName, sLibName):
         """Actually do the export"""
         if sFilename is None:
-            return
-        oCardSet = self._get_card_set()
-        if not oCardSet:
             return
         dDeck = json.loads(DECK_TEMPLATE)
         aCrypt = []
@@ -400,7 +444,9 @@ class TTSExport(SutekhPlugin):
             else:
                 aLibrary.append(sJSONName)
         dCrypt = dDeck['ObjectStates'][0]
+        dCrypt['Nickname'] = sCryptName
         dLibrary = dDeck['ObjectStates'][1]
+        dLibrary['Nickname'] = sLibName
         for sName in sorted(aCrypt):
             oObj = self._dTTSData[sName]
             dTTSCard = oObj.copy()
