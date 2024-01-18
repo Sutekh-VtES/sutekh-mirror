@@ -426,6 +426,7 @@ class TTSExport(SutekhPlugin):
         dDeck = json.loads(DECK_TEMPLATE)
         aCrypt = []
         aLibrary = []
+        aMissing = set()
         for oCard in oCardSet.cards:
             # Need to turn name into the JSON file version
             sJSONName = make_json_name(oCard.abstractCard)
@@ -433,16 +434,22 @@ class TTSExport(SutekhPlugin):
             if sJSONName not in self._dTTSData:
                 # Check if it's just using the card name instead
                 if sAltName not in self._dTTSData:
-                    do_complaint_error("Unable to find an entry for %s (%s)" %
-                                       (oCard.abstractCard.name, sJSONName))
+                    aMissing.add((oCard.abstractCard.name, sJSONName))
                     logging.warning("Unable to find an entry for %s (%s)",
                                     oCard.abstractCard.name, sJSONName)
-                    return
-                sJSONName = sAltName
+                    continue
+                else:
+                    sJSONName = sAltName
             if is_crypt_card(oCard.abstractCard):
                 aCrypt.append(sJSONName)
             else:
                 aLibrary.append(sJSONName)
+        if aMissing:
+            aText = []
+            for tDetails in aMissing:
+                aText.append("Unable to find an entry for %s (%s)" % tDetails)
+            do_complaint_error('\n'.join(aText))
+            return
         dCrypt = dDeck['ObjectStates'][0]
         dCrypt['Nickname'] = sCryptName
         dLibrary = dDeck['ObjectStates'][1]
