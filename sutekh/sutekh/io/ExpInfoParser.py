@@ -8,6 +8,8 @@
 import json
 from logging import Logger
 
+from sqlobject import SQLObjectNotFound
+
 from sutekh.base.core.BaseAdapters import (IExpansion, IPrinting,
                                            IAbstractCard)
 
@@ -60,7 +62,11 @@ class ExpInfoParser:
 
     def _handle_expansion(self, sExp, dExpInfo):
         """Handle updating the specific expansion."""
-        oExp = IExpansion(sExp)
+        try:
+            oExp = IExpansion(sExp)
+        except SQLObjectNotFound:
+            self.oLogger.warning(f"Unable to match {sExp}")
+            return
         for sVariant in dExpInfo:
             if sVariant == "None":
                 oPrinting = IPrinting((oExp, None))
