@@ -21,7 +21,7 @@ from sutekh.base.Utility import safe_filename, move_articles_to_back, to_ascii
 
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.ELDBUtilities import norm_name
-from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name
+from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name, find_all_group_versions
 
 # Not sure how stable this name is under module updates - guess we'll see
 MODULE_NAME = "1955001917.json"
@@ -187,10 +187,24 @@ def fix_nickname(sName):
     return sName
 
 
+def add_group_if_needed(oCard, sName):
+    """Helper to add group info to cards that are not the lowest
+       group version"""
+    # TTS doens't correctly handle multi-group cards, but we
+    # don't want to create illegal decks, so we do this to
+    # ensure that the name is different
+    if oCard.group:
+        aGroups = find_all_group_versions(oCard)
+        if oCard != aGroups[0]:
+            # Not the lowest group, so re-add the group info
+            sName = f'{sName} (group {oCard.group})'
+    return sName
+
+
 def make_json_name(oCard):
     """Create the corresponding TTS json name for the given card"""
-    # FIXME: Update this when we see how TTS handles multi-group cards
     sJSONName = norm_name(oCard).lower()
+    sJSONName = add_group_if_needed(oCard, sJSONName)
     # strip quotes to simplify matching
     sJSONName = sJSONName.replace("'", "").replace('"', '').replace('`', '')
     # Advanced is different
@@ -200,11 +214,13 @@ def make_json_name(oCard):
         sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
 
+
 def make_alternative_json_name(oCard):
     """Alternative formatting for those cards that use a different
        convention"""
     # FIXME: Update this when we see how TTS handles multi-group cards
     sJSONName = move_articles_to_back(strip_group_from_name(oCard.name))
+    sJSONName = add_group_if_needed(oCard, sJSONName)
     sJSONName = to_ascii(sJSONName)
     return sJSONName.lower()
 
