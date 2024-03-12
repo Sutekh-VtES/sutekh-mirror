@@ -19,8 +19,9 @@ from sutekh.base.Utility import move_articles_to_back, gen_app_temp_dir
 from sutekh.base.io.IOBase import safe_parser
 from sutekh.base.io.LookupCSVParser import LookupCSVParser
 
-from sutekh.core.SutekhTables import CRYPT_TYPES
+from sutekh.core.SutekhTables import CRYPT_TYPES, SutekhAbstractCard
 from sutekh.base.core.BaseAdapters import IAbstractCard
+from sutekh.base.core.BaseFilters import CardNameFilter
 
 from sutekh.io.WhiteWolfTextParser import WhiteWolfTextParser
 from sutekh.io.RulingParser import RulingParser
@@ -136,6 +137,29 @@ def find_base_vampire(oVampire):
 
 def strip_group_from_name(sName):
     return re.sub(r' \(Group [0-9]+\)', '', sName)
+
+
+def find_all_group_versions(oCard):
+    """Find all the versions of a vampire in different groups,
+       retuning a list sorted from lowest group to highest.
+
+       We filter out results that are not of the same level,
+       so base searches only return base variants and advanced
+       only advanced."""
+    if not is_crypt_card(oCard):
+        return []
+    sSearch = re.sub(r' \(Group [0-9]+\)', ' (Group %)', oCard.name)
+    # Used to filter out partial name matches (Toy and Boy Toy, for example)
+    sBase = strip_group_from_name(oCard.name)
+    if oCard.level:
+        sBase = sBase.replace(' (Advanced)', '')
+    oFilter = CardNameFilter(sSearch)
+    aCards = list(oFilter.select(SutekhAbstractCard))
+    aCards = [x for x in aCards if x.level == oCard.level]
+    # Strip out matches that 
+    aCards = [x for x in aCards if x.name.startswith(sBase)]
+    aCards.sort(key=lambda x: x.group)
+    return aCards
 
 
 def find_adv_vampire(oVampire):
