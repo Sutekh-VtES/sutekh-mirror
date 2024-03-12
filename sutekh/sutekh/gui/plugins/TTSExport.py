@@ -26,6 +26,9 @@ from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name
 # Not sure how stable this name is under module updates - guess we'll see
 MODULE_NAME = "1955001917.json"
 
+# File must be newer than this date
+DATE_SUPPORTED = 1703794795
+
 # Including this directly is a bit horrible, but it's also simple
 DECK_TEMPLATE = """
 {
@@ -159,17 +162,14 @@ LIB_TRANSFORM = {
     "scaleZ": 1.0,
 }
 
-# We handle cases where the card name has not been updated in the json file
+# We handle cases where our simple normalisation fails
 SPECIAL_CASES = {
-    'pentexsubversion': 'pentextmsubversion',
-    'pentexlovesyou': 'pentextmlovesyou',
-    'regomotum': 'regomotus',
-    'masquer': 'masquerwraith',
-    'sacrecurcathedralfrance': 'sacrecoeurcathedralfrance',
-    # Other tools special case the article in "The Kikiyaon", but
-    # TTS doesn't, so we fix this here
-    'thekikiyaon': 'kikiyaonthe',
-    'siresindexfinger': 'siresfinger',
+    'bolesaw gutowski': 'boleslaw gutowski',
+    'lodin (olaf holte)': 'lodin olaf holte',
+    'bang nakh  tigers claws': 'bang nakh -- tigers claws',
+    'khazars diary (endless night)': 'khazars diary endless night',
+    'ohoyo hopoksia (bastet)' : 'ohoyo hopoksia bastet',
+    'sacre-cur cathedral, france': 'sacre-coeur cathedral, france',
 }
 
 
@@ -178,12 +178,12 @@ NONNAME = re.compile(r'\W')
 
 def fix_nickname(sName):
     """Fix unexpected issues with the nickname"""
-    # The TTS module is prone to random Capitilisation, so we
-    # explictly lower stuff
+    # We lowercase stuff as the JSON file sometimes has weird capitalisation
     sName = sName.lower()
-    # Handle the storyline cards
-    if ',cardback' in sName:
-        sName = sName.split(',', 1)[0]
+    # Quotes are a bit inconsistent, so we strip them
+    sName = sName.replace("'", "").replace('"', '').replace('`', '')
+    # Pentex can be weird
+    sName = sName.replace('PentexTM', 'Pentex(TM)')
     return sName
 
 
@@ -191,7 +191,11 @@ def make_json_name(oCard):
     """Create the corresponding TTS json name for the given card"""
     # FIXME: Update this when we see how TTS handles multi-group cards
     sJSONName = norm_name(oCard).lower()
-    sJSONName = NONNAME.sub('', sJSONName)
+    # strip quotes to simplify matching
+    sJSONName = sJSONName.replace("'", "").replace('"', '').replace('`', '')
+    # Advanced is different
+    sJSONName = sJSONName.replace('(adv)', 'adv')
+    #sJSONName = NONNAME.sub('', sJSONName)
     if sJSONName in SPECIAL_CASES:
         sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
@@ -203,6 +207,17 @@ def make_alternative_json_name(oCard):
     sJSONName = move_articles_to_back(strip_group_from_name(oCard.name))
     sJSONName = to_ascii(sJSONName)
     return sJSONName.lower()
+
+
+def is_deck(sName):
+    """Does this look like a deck to search for cards?"""
+    if sName.startswith('C: '):
+        # Crypt deck
+        return True
+    if sName.startswith('L: '):
+        # Library deck
+        return True
+    return False
 
 
 def fix_deck_ids(dCards):
@@ -267,6 +282,7 @@ class TTSExportDialog(ExportDialog):
     def get_lib_nickname(self):
         return self._sLibName
 
+
 class TTSExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then generates
        a TTS readable json file"""
@@ -320,29 +336,36 @@ class TTSExport(SutekhPlugin):
         try:
             with open(sTTSModulePath, 'r') as oFile:
                 dJsonData = json.load(oFile)
+                # Check if the file is new enough
+                if 'EpochTime' not in dJsonData:
+                    logging.warning(
+                            "Unable to determine date for: %s",
+                        sTTSModulePath)
+                    logging.warning("Skipping file")
+                    return False
+                iEpoch = int(dJsonData['EpochTime'])
+                if iEpoch < DATE_SUPPORTED:
+                    logging.warning(
+                            "TSS Module: %s is outdated",
+                        sTTSModulePath)
+                    logging.warning("Skipping file")
+                    return False
                 # Extract the relevant chunks from the file
                 try:
-                    # Extract crypt
                     dCards = {}
-                    for oObj in dJsonData['ObjectStates'][0]['ContainedObjects']:
-                        sKey = fix_nickname(oObj['Nickname'])
-                        if sKey in dCards:
-                            iIDNum1 = int(dCards[sKey]["CardID"])
-                            iIDNum2 = int(oObj["CardID"])
-                            if iIDNum2 > iIDNum1:
+                    for oCandidate in dJsonData['ObjectStates']:
+                        if not is_deck(oCandidate['Nickname']):
+                            continue
+                        # Extract cards
+                        for oObj in oCandidate['ContainedObjects']:
+                            sKey = fix_nickname(oObj['Nickname'])
+                            if sKey in dCards:
+                                iIDNum1 = int(dCards[sKey]["CardID"])
+                                iIDNum2 = int(oObj["CardID"])
+                                if iIDNum2 > iIDNum1:
+                                    dCards[sKey] = oObj
+                            else:
                                 dCards[sKey] = oObj
-                        else:
-                            dCards[sKey] = oObj
-                    # Extract library
-                    for oObj in dJsonData['ObjectStates'][1]['ContainedObjects']:
-                        sKey = fix_nickname(oObj['Nickname'])
-                        if sKey in dCards:
-                            iIDNum1 = int(dCards[sKey]["CardID"])
-                            iIDNum2 = int(oObj["CardID"])
-                            if iIDNum2 > iIDNum1:
-                                dCards[sKey] = oObj
-                        else:
-                            dCards[sKey] = oObj
                     fix_deck_ids(dCards)
                     self._dTTSData = dCards
                 except (KeyError, IndexError) as oErr:
