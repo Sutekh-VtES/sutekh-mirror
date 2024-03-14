@@ -80,7 +80,7 @@ def format_text(sCardText):
     # We also split the various [ACTION MODIFIER]...[REACTION] cards
     # the same way
     sResult = re.sub(r'(\.|\.\)) (\[(ACTION|ACTION MODIFIER|REACTION|COMBAT)\])',
-                     '\\1\n\\2', sCardText)
+                     '\\1\n\\2', sResult)
     # But don't split the 'is not a discpline'
     return re.sub(r'\n(\[...\] is not a Dis)', ' \\1', sResult)
 
