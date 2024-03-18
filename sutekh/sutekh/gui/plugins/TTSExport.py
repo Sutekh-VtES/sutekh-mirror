@@ -545,13 +545,15 @@ class TTSExport(SutekhPlugin):
         print('------------------')
         print()
         for sNickName, oCard in aLegalMissed:
-            print("%s (%s)" % (oCard.name, sNickName))
+            aExpansions = sorted(set([x.expansion.name for x in oCard.rarity]))
+            print("%s (%s) - (from %s)" % (oCard.name, sNickName, " , ".join(aExpansions)))
         print()
         print('Not Legal Cards Missed')
         print('----------------------')
         print()
         for sNickName, oCard in aNotLegalMissed:
-            print("%s (%s)" % (oCard.name, sNickName))
+            aExpansions = sorted(set([x.expansion.name for x in oCard.rarity]))
+            print("%s (%s) - (from %s)" % (oCard.name, sNickName, " , ".join(aExpansions)))
         print()
         print('TTS Entries with no matching card')
         print('---------------------------------')
