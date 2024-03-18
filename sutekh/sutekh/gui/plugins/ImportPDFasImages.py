@@ -511,7 +511,6 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         if iNewPage != iOldPage:
             # Changed page
             self._load_page()
-        # Force redraw
         if (self._iCurPageNo == self._iNumPages - 1 and
                 self._iXPos == 2 and self._iYPos == 2):
             self._oNextButton.set_sensitive(False)
@@ -523,6 +522,8 @@ class ImportPDFImagesPlugin(SutekhPlugin):
         else:
             self._oPrevButton.set_sensitive(True)
         self._draw_pdf_section(oDrawArea, None)
+        # Force redraw
+        oDrawArea.queue_draw()
 
 
 plugin = ImportPDFImagesPlugin
