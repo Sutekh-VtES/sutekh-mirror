@@ -183,7 +183,7 @@ def fix_nickname(sName):
     # Quotes are a bit inconsistent, so we strip them
     sName = sName.replace("'", "").replace('"', '').replace('`', '')
     # Pentex can be weird
-    sName = sName.replace('PentexTM', 'Pentex(TM)')
+    sName = sName.replace('pentextm', 'pentex(tm)')
     return sName
 
 
