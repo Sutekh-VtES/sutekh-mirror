@@ -182,7 +182,7 @@ class StatsView(Gtk.TreeView):
             oColumn.set_sort_column_id(iCol)
             self.append_column(oColumn)
 
-        self.set_grid_lines(Gtk.TreeViewGridLine._BOTH)
+        self.set_grid_lines(Gtk.TreeViewGridLines.BOTH)
 
 
 class StatsModel(Gtk.TreeStore):
