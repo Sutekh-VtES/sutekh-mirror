@@ -83,7 +83,7 @@ class ClanDisciplineStats(SutekhPlugin):
 
         # pylint: disable=no-member
         # vbox methods not seen
-        oDlg.vbox.pack_start(self._oStatsVbox, False, True, 0)
+        oDlg.vbox.pack_start(self._oStatsVbox, True, True, 0)
         oDlg.set_size_request(600, 400)
         oDlg.show_all()
 
