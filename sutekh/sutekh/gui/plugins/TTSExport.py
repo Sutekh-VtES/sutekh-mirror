@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import string
 import sys
 
 from gi.repository import Gtk
@@ -166,10 +167,11 @@ LIB_TRANSFORM = {
 SPECIAL_CASES = {
     'bolesaw gutowski': 'boleslaw gutowski',
     'lodin (olaf holte)': 'lodin olaf holte',
-    'bang nakh  tigers claws': 'bang nakh -- tigers claws',
+    'bang nakh  tigers claws': 'bang nakh - tigers claws',
     'khazars diary (endless night)': 'khazars diary endless night',
     'ohoyo hopoksia (bastet)' : 'ohoyo hopoksia bastet',
     'sacre-cur cathedral, france': 'sacre-coeur cathedral, france',
+    'kpist m/45': 'kpist m45'
 }
 
 
@@ -190,14 +192,13 @@ def fix_nickname(sName):
 def add_group_if_needed(oCard, sName):
     """Helper to add group info to cards that are not the lowest
        group version"""
-    # TTS doens't correctly handle multi-group cards, but we
-    # don't want to create illegal decks, so we do this to
-    # ensure that the name is different
+    # TTS handles multi group cards as "X G?" for the cards in the
+    # later groups
     if oCard.group:
         aGroups = find_all_group_versions(oCard)
         if oCard != aGroups[0]:
             # Not the lowest group, so re-add the group info
-            sName = f'{sName} (group {oCard.group})'
+            sName = f'{sName} G{oCard.group}'
     return sName
 
 
@@ -225,13 +226,15 @@ def make_alternative_json_name(oCard):
     return sJSONName.lower()
 
 
-def is_deck(sName):
-    """Does this look like a deck to search for cards?"""
-    if sName.startswith('C: '):
-        # Crypt deck
+def is_card_bag(oData):
+    """Does this look like a bag to search for cards?"""
+    if oData['Name'] != 'Bag':
+        return False
+    # Bags for non-letter cards and custom additions
+    if oData['Nickname'].startswith('Other'):
         return True
-    if sName.startswith('L: '):
-        # Library deck
+    # Alphabetical bags (2 for each letter - crypt & library)
+    if oData['Nickname'] in string.ascii_uppercase:
         return True
     return False
 
@@ -346,8 +349,10 @@ class TTSExport(SutekhPlugin):
         """Load the info from the TTS module"""
         sTTSModulePath = self.get_config_item(self.sConfigKey)
         if not sTTSModulePath:
+            logging.warning("No config item")
             return
         if not os.path.exists(sTTSModulePath):
+            logging.warning("Path not found: %s", sTTSModulePath)
             return
         try:
             with open(sTTSModulePath, 'r') as oFile:
@@ -370,9 +375,12 @@ class TTSExport(SutekhPlugin):
                 try:
                     dCards = {}
                     for oCandidate in dJsonData['ObjectStates']:
-                        if not is_deck(oCandidate['Nickname']):
+                        if not is_card_bag(oCandidate):
                             continue
                         # Extract cards
+                        if 'ContainedObjects' not in oCandidate:
+                            # Some bags may be empty. Bleh.
+                            continue
                         for oObj in oCandidate['ContainedObjects']:
                             sKey = fix_nickname(oObj['Nickname'])
                             if sKey in dCards:
@@ -388,6 +396,9 @@ class TTSExport(SutekhPlugin):
                     logging.warning(
                         "Failed to extract data from TTS Module file: %s",
                         sTTSModulePath)
+                    logging.warning("Error in bag: %s (GUID: %s)",
+                                     oCandidate['Nickname'], oCandidate['GUID'])
+                    logging.warning("Error in bag: %s", oCandidate['Nickname'])
                     logging.warning("Exception: %s", oErr)
         except json.JSONDecodeError as oErr:
             # Log error for verbose out
