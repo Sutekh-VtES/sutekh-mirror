@@ -260,6 +260,58 @@ def fix_deck_ids(dCards):
             dCardData["CustomDeck"][sTrueID] = dContent
 
 
+def parse_tts_file(sFileName):
+    """Internal function to parse the TTS file and create the
+       dictionary of cards."""
+    try:
+        with open(sFileName, 'r') as oFile:
+            dJsonData = json.load(oFile)
+            # Check if the file is new enough
+            if 'EpochTime' not in dJsonData:
+                logging.warning(
+                        "Unable to determine date for: %s", sFileName)
+                logging.warning("Skipping file")
+                return False
+            iEpoch = int(dJsonData['EpochTime'])
+            if iEpoch < DATE_SUPPORTED:
+                logging.warning(
+                        "TSS Module: %s is outdated", sFileName)
+                logging.warning("Skipping file")
+                return False
+            # Extract the relevant chunks from the file
+            try:
+                dCards = {}
+                for oCandidate in dJsonData['ObjectStates']:
+                    if not is_card_bag(oCandidate):
+                        continue
+                    # Extract cards
+                    if 'ContainedObjects' not in oCandidate:
+                        # Some bags may be empty. Bleh.
+                        continue
+                    for oObj in oCandidate['ContainedObjects']:
+                        sKey = fix_nickname(oObj['Nickname'])
+                        if sKey in dCards:
+                            iIDNum1 = int(dCards[sKey]["CardID"])
+                            iIDNum2 = int(oObj["CardID"])
+                            if iIDNum2 > iIDNum1:
+                                dCards[sKey] = oObj
+                        else:
+                            dCards[sKey] = oObj
+                fix_deck_ids(dCards)
+                return dCards
+            except (KeyError, IndexError) as oErr:
+                logging.warning(
+                    "Failed to extract data from TTS Module file: %s", sFileName)
+                logging.warning("Error in bag: %s (GUID: %s)",
+                                 oCandidate['Nickname'], oCandidate['GUID'])
+                logging.warning("Error in bag: %s", oCandidate['Nickname'])
+                logging.warning("Exception: %s", oErr)
+    except json.JSONDecodeError as oErr:
+        # Log error for verbose out
+        logging.warning("Failed to parse TTS Module file: %s", sFileName)
+        logging.warning("Exception: %s", oErr)
+
+
 class TTSExportDialog(ExportDialog):
     """Override the base Export Dialog so we can add Gtk.Entry fields
        for the crypt and library nicknames"""
@@ -354,57 +406,7 @@ class TTSExport(SutekhPlugin):
         if not os.path.exists(sTTSModulePath):
             logging.warning("Path not found: %s", sTTSModulePath)
             return
-        try:
-            with open(sTTSModulePath, 'r') as oFile:
-                dJsonData = json.load(oFile)
-                # Check if the file is new enough
-                if 'EpochTime' not in dJsonData:
-                    logging.warning(
-                            "Unable to determine date for: %s",
-                        sTTSModulePath)
-                    logging.warning("Skipping file")
-                    return False
-                iEpoch = int(dJsonData['EpochTime'])
-                if iEpoch < DATE_SUPPORTED:
-                    logging.warning(
-                            "TSS Module: %s is outdated",
-                        sTTSModulePath)
-                    logging.warning("Skipping file")
-                    return False
-                # Extract the relevant chunks from the file
-                try:
-                    dCards = {}
-                    for oCandidate in dJsonData['ObjectStates']:
-                        if not is_card_bag(oCandidate):
-                            continue
-                        # Extract cards
-                        if 'ContainedObjects' not in oCandidate:
-                            # Some bags may be empty. Bleh.
-                            continue
-                        for oObj in oCandidate['ContainedObjects']:
-                            sKey = fix_nickname(oObj['Nickname'])
-                            if sKey in dCards:
-                                iIDNum1 = int(dCards[sKey]["CardID"])
-                                iIDNum2 = int(oObj["CardID"])
-                                if iIDNum2 > iIDNum1:
-                                    dCards[sKey] = oObj
-                            else:
-                                dCards[sKey] = oObj
-                    fix_deck_ids(dCards)
-                    self._dTTSData = dCards
-                except (KeyError, IndexError) as oErr:
-                    logging.warning(
-                        "Failed to extract data from TTS Module file: %s",
-                        sTTSModulePath)
-                    logging.warning("Error in bag: %s (GUID: %s)",
-                                     oCandidate['Nickname'], oCandidate['GUID'])
-                    logging.warning("Error in bag: %s", oCandidate['Nickname'])
-                    logging.warning("Exception: %s", oErr)
-        except json.JSONDecodeError as oErr:
-            # Log error for verbose out
-            logging.warning("Failed to parse TTS Module file: %s",
-                            sTTSModulePath)
-            logging.warning("Exception: %s", oErr)
+        self._dTTSData = parse_tts_file(sTTSModulePath)
 
     def check_enabled(self):
         """Only enable the export menu if we successfully loaded the TTS
