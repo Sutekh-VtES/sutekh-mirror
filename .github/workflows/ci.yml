@@ -236,7 +236,7 @@ jobs:
         cd sutekh
         python3 setup-freeze.py bdist_mac
         # Permissions are helpful for playing with the files in the app
-        chmod 755 build/Sutekh*app*/Contents/MacOS/SutekhCli* build/Sutekh*app*/Contents/MacOS/SutekhGui*
+        chmod 755 build/[Ss]utekh*app*/Contents/MacOS/SutekhCli* build/[Ss]utekh*app*/Contents/MacOS/SutekhGui*
         cd ..
     - name: Tar cx_Freeze app
       # We need to do this so we can preserve permissions, as the
