@@ -243,7 +243,7 @@ jobs:
       # github artifact upload explicitly doesn't
       run: |
         cd sutekh/build/
-        tar -cf sutekh_app.tar Sutekh*app*
+        tar -cf sutekh_app.tar [Ss]utekh*app*
     - name: Upload cx_Freeze app directory
       uses: actions/upload-artifact@v3
       with:
