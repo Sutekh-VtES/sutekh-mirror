@@ -220,6 +220,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Python
       uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
     - name: Install brew dependencies
       run: |
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
