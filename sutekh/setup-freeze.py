@@ -162,6 +162,23 @@ else:
     ])
 
 
+# Import ssl for the ssl hook
+import ssl
+ssl_paths = ssl.get_default_verify_paths()
+try:
+    # Need to use certifi if it's there, as it overwrites the ssl
+    # one
+    import certifi
+    build_exe_options['include_files'].append(
+        (certifi.where(), os.path.join('etc', 'ssl', 'cert.pem')))
+except ImportError:
+    build_exe_options['include_files'].append(
+        (ssl_paths.openssl_cafile, os.path.join('etc', 'ssl', 'cert.pem')))
+if os.path.exists(ssl_paths.openssl_capath):
+    build_exe_options['include_files'].append(
+        (ssl_paths.openssl_capath, os.path.join('etc', 'ssl', 'certs')))
+
+
 # The logic here is a bit fincky - on MacOS we need to use the shell script to
 # launch the actual app in a terminal, but because of how app packages
 # work, we need to fiddle with the included file and the Info.plist
