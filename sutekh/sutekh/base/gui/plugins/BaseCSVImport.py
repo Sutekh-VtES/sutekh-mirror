@@ -6,6 +6,7 @@
 """plugin for managing CSV file imports"""
 
 import csv
+import logging
 
 from gi.repository import GObject, Gtk
 
@@ -117,15 +118,17 @@ class BaseCSVImport(BasePlugin):
         # pylint: disable=broad-except
         # We want to catch all exceptions here
         try:
-            fIn = open(sFile, "rb")
-        except Exception:
+            fIn = open(sFile, "r")
+        except Exception as oErr:
+            logging.info('Unable to open file: %s', oErr)
             self._clear_column_selectors()
             return
 
         try:
-            sLine1 = fIn.next()
-            sLine2 = fIn.next()
-        except Exception:
+            sLine1 = next(fIn)
+            sLine2 = next(fIn)
+        except Exception as oErr:
+            logging.info('Unable to read data from file: %s', oErr)
             fIn.close()
             self._clear_column_selectors()
             return
@@ -134,11 +137,12 @@ class BaseCSVImport(BasePlugin):
 
         try:
             oCsv = csv.reader([sLine1, sLine2])
-            aRow = oCsv.next()
+            aRow = next(oCsv)
             sSample = sLine1 + "\n" + sLine2
             oSniff = csv.Sniffer()
             bHasHeader = oSniff.has_header(sSample)
-        except (Exception, csv.Error):
+        except (Exception, csv.Error) as oErr:
+            logging.info('CSV header check failed: %s', oErr)
             self._clear_column_selectors()
             return
 
@@ -207,7 +211,7 @@ class BaseCSVImport(BasePlugin):
             # pylint: disable=broad-except
             # We want to catch all exceptions here
             try:
-                fIn = open(sFile, "rb")
+                fIn = open(sFile, "r")
             except Exception:
                 do_complaint_error("Could not open file '%s'." % sFile)
                 self.oDlg.destroy()
