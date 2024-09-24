@@ -1,0 +1,35 @@
+name: sutekh
+summary: VtES Card Collection Manager
+description: |
+    A python Gtk application and library for searching and managing a collection
+    of Vampire: The Eternal Struggle (V:tES) trading cards and for facilitating
+    V:tES deck construction.
+version: 2.0.0
+grade: devel
+base: core22
+confinement: devmode
+parts:
+  sutekh:
+    plugin: python
+    source: .
+    stage-packages:
+      - librsvg2-common
+      - librsvg2-2
+      - python3-gi
+      - gir1.2-gtk-3.0
+apps:
+  sutekh:
+    command: bin/sutekh
+    extensions: [gnome]
+    plugs:
+      - home
+      - network
+    environment:
+      # It seems that the python snap base disables the distro ist-packages search for some reason,
+      # so we need to re-add it manually to get the gi libraries
+      PYTHONPATH: $SNAP/usr/lib/python3/site-packages:$SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
+  sutekh-cli:
+    command: bin/sutekh-cli
+    plugs:
+      - home
+      - network
