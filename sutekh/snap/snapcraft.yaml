@@ -12,11 +12,8 @@ parts:
   sutekh:
     plugin: python
     source: .
-    stage-packages:
-      - librsvg2-common
-      - librsvg2-2
-      - python3-gi
-      - gir1.2-gtk-3.0
+    python-packages:
+      - pycairo
 apps:
   sutekh:
     command: bin/sutekh
