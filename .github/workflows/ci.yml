@@ -356,3 +356,18 @@ jobs:
       with:
         name: sutekh_rpm
         path: sutekh/dist/*rpm*
+
+  build-snap:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build snap
+      uses: snapcore/action-build@v1
+      with:
+        path: sutekh
+    - name: Upload Snap
+      uses: actions/upload-artifact@v4
+      with:
+        name: sutekh_snap
+        path: ${{ steps.snapcraft.outputs.snap }}
