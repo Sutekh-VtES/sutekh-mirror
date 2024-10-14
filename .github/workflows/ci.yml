@@ -302,7 +302,7 @@ jobs:
 
   build-ubuntu-deb:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build a deb package
     steps:
     - uses: actions/checkout@v4
