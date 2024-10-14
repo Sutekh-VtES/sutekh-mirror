@@ -10,16 +10,14 @@
 
 from setuptools import setup, find_packages
 
-# avoid importing all of Sutkeh and its dependencies
-import imp
+# We use importlib here avoid importing all of Sutkeh and its dependencies
+import importlib
 import os
 import sys
-import types
-sys.modules['sutekh'] = types.ModuleType('sutekh')
-SutekhInfoMod = imp.load_source("sutekh.SutekhInfo",
-                                os.path.join(os.path.dirname(__file__),
-                                             "sutekh", "SutekhInfo.py"))
-SutekhInfo = SutekhInfoMod.SutekhInfo
+
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'sutekh'))
+SutekhInfo = importlib.import_module("SutekhInfo").SutekhInfo
 
 
 try:
