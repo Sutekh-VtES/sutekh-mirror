@@ -91,7 +91,14 @@ if sys.platform == 'win32':
         binary_include_files.append((dll_path, dll))
 
 elif sys.platform == 'darwin':
-    sysbase = os.path.join('/', 'usr', 'local')
+    # Homebrew uses different prefixes depending on platform, so we need to
+    # check both
+    opt_path = os.path.join('/', 'opt', 'homebrew')
+    usr_path = os.path.join('/', 'usr', 'local')
+    if os.path.exists(opt_path):
+        sysbase = opt_path
+    else:
+        sysbase = usr_path
 else:
     raise RuntimeError("Our setup-freeze.py currently only supports windows or MacOS")
 
@@ -153,8 +160,8 @@ else:
     new_cache = open(os.path.join(tempdir, 'loaders.cache'), 'w')
     for line in data.splitlines():
         line=line.strip()
-        if '/usr/local' in line:
-            line = line.replace('/usr/local/', '@executable_path/')
+        if sysbase in line:
+            line = line.replace(sysbase + '/', '@executable_path/')
         new_cache.write(line)
         new_cache.write('\n')
     new_cache.close()
