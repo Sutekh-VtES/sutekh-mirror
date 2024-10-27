@@ -203,7 +203,7 @@ jobs:
         name: sutekh-cx_Freeze_windows
         path: sutekh/dist/*exe
 
-  sqlite-macos:
+  sqlite-macos-intel:
 
     # We use macos-13 since macos-latest is arm unless we use the
     # large runner that requires a paid package
@@ -237,22 +237,54 @@ jobs:
       # github artifact upload explicitly doesn't
       run: |
         cd sutekh/build/
-        tar -cf sutekh_app.tar [Ss]utekh*app*
+        tar -cf sutekh_app_intel.tar [Ss]utekh*app*
     - name: Upload cx_Freeze app directory
       uses: actions/upload-artifact@v4
       with:
-        name: sutekh-cx_Freeze_macos-app
-        path: sutekh/build/sutekh_app.tar
-    #- name: Build dmg file
-      #run: |
-        #cd sutekh
-        #python3 setup-freeze.py bdist_dmg
-        #cd ..
-    #- name: Upload cx_Freeze dmg file
-      #uses: actions/upload-artifact@v4
-      #with:
-        #name: sutekh-cx_Freeze_macos-dmg
-        #path: sutekh/build/Sutekh*dmg
+        name: sutekh-cx_Freeze_macos-intel-app
+        path: sutekh/build/sutekh_app_intel.tar
+
+  sqlite-macos-arm:
+
+    # We use macos-14 to get an arm runner
+    runs-on: macos-14
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install brew dependencies
+      run: |
+        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
+    - name: Install PIP dependencies
+      run: |
+        pip install keyring ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
+    - name: Run tests
+      run: |
+        cd sutekh
+        pytest
+        cd ..
+    - name: Build Mac packages
+      run: |
+        cd sutekh
+        python3 setup-freeze.py bdist_mac
+        # Permissions are helpful for playing with the files in the app
+        chmod 755 build/[Ss]utekh*app*/Contents/MacOS/SutekhCli* build/[Ss]utekh*app*/Contents/MacOS/SutekhGui*
+        cd ..
+    - name: Tar cx_Freeze app
+      # We need to do this so we can preserve permissions, as the
+      # github artifact upload explicitly doesn't
+      run: |
+        cd sutekh/build/
+        tar -cf sutekh_app_arm.tar [Ss]utekh*app*
+    - name: Upload cx_Freeze app directory
+      uses: actions/upload-artifact@v4
+      with:
+        name: sutekh-cx_Freeze_macos-arm-app
+        path: sutekh/build/sutekh_app_arm.tar
+
+
 
 
   sqlite-linux-checks:
