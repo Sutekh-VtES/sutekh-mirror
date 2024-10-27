@@ -205,9 +205,9 @@ jobs:
 
   sqlite-macos:
 
-    # We use macos-14 to make github happy, and this should
-    # cover the most likely used MacOS versions
-    runs-on: macos-14
+    # We use macos-13 since macos-latest is arm unless we use the
+    # large runner that requires a paid package
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
     - name: Install Python
