@@ -224,6 +224,8 @@ def do_card_checks(oAbsCard):
         aMessages.append('%s has no Type' % sName)
         # We skip the other checks, as this is a badly broken card
         return aMessages
+    if not oAbsCard.text.strip():
+        aMessages.append('%s has no Card Text' % sName)
     if oAbsCard.cost is not None:
         if not oAbsCard.costtype:
             aMessages.append('%s has a cost, but no cost type' % sName)
