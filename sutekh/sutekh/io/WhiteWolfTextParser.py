@@ -739,6 +739,9 @@ class CardDict(dict):
         if 'name' not in self:
             return
 
+        seen_keys = set()
+        seen_keys.add('name')
+
         self._add_group_to_name()
 
         self._fix_advanced_name()
@@ -863,7 +866,7 @@ class WaitingForCardName(LogStateWithInfo):
         """Save any existing card and clear out dInfo"""
         if 'name' in self._dInfo:
             # Ensure we've saved existing card
-            self._dInfo.save()
+            self._dInfo.save(self._aMessages)
         self._dInfo = CardDict(self._oLogger)
 
 
@@ -992,6 +995,7 @@ class WhiteWolfTextParser:
             raise IOError('Failed to parse card list - '
                           'unexpected state at end of file.\n'
                           'Card list probably truncated.')
+        return self._aMessages
 
     def feed(self, sLine):
         """Feed the line to the current state"""

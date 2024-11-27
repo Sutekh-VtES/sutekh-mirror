@@ -49,9 +49,10 @@ class LogState(BaseState):
 
     # pylint: disable=abstract-method
     # descendants will override transition, so still abstract here.
-    def __init__(self, oLogger):
+    def __init__(self, oLogger, aMessages=None):
         super().__init__()
         self._oLogger = oLogger
+        self._aMessages = aMessages
 
 
 class LogStateWithInfo(LogState):
@@ -59,8 +60,8 @@ class LogStateWithInfo(LogState):
 
     # pylint: disable=abstract-method
     # transition method is still abstract here
-    def __init__(self, dInfo, oLogger):
-        super().__init__(oLogger)
+    def __init__(self, dInfo, oLogger, aMessages=None):
+        super().__init__(oLogger, aMessages)
         self._dInfo = dInfo
 
 
