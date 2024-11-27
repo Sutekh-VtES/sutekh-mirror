@@ -27,7 +27,6 @@ PROGRESS_CSS = b'''
 
 class SutekhLogHandler(Handler):
     """Base class for loggers to talk to the dialog"""
-    # We explicitly inherit from object, since Handler is a classic class
     def __init__(self):
         super().__init__()
         self.oDialog = None
