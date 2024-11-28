@@ -35,7 +35,7 @@ def read_white_wolf_list(oFile, oLogHandler=None):
        sutekh.base.io.EncodedFile.EncodedFile)
        """
     oParser = WhiteWolfTextParser(oLogHandler)
-    safe_parser(oFile, oParser)
+    return safe_parser(oFile, oParser)
 
 
 def read_rulings(oFile, oLogHandler=None):

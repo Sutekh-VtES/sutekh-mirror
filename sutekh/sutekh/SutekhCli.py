@@ -253,6 +253,7 @@ def main_with_args(aTheArgs):
         oOpts.db = sqlite_uri(os.path.join(sPrefsDir, "sutekh.db"))
 
     bDoCardListChecks = False
+    aWarnings = []
 
     oConn = connectionForURI(oOpts.db)
     sqlhub.processConnection = oConn
@@ -307,11 +308,11 @@ def main_with_args(aTheArgs):
         read_lookup_data(EncodedFile(oOpts.lookup_file), oLogHandler)
 
     if oOpts.ww_file is not None:
-        read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler)
+        aWarnings.extend(read_white_wolf_list(EncodedFile(oOpts.ww_file), oLogHandler))
         bDoCardListChecks = True
 
     if oOpts.extra_file is not None:
-        read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler)
+        aWarnings.extend(read_white_wolf_list(EncodedFile(oOpts.extra_file), oLogHandler))
         bDoCardListChecks = True
 
     if oOpts.exp_data_file is not None:
@@ -322,18 +323,26 @@ def main_with_args(aTheArgs):
 
     if oOpts.fetch:
         read_lookup_data(EncodedFile(LOOKUP_DATA_URL, True), oLogHandler)
-        read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
+        aWarnings = read_white_wolf_list(EncodedFile(WW_CARDLIST_URL, True), oLogHandler)
         read_rulings(EncodedFile(WW_RULINGS_URL, True), oLogHandler)
-        read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler)
+        aWarnings.extend(read_white_wolf_list(EncodedFile(EXTRA_CARD_URL, True), oLogHandler))
         read_exp_info_file(EncodedFile(EXP_DATA_URL, True), oLogHandler)
         bDoCardListChecks = True
 
     if bDoCardListChecks:
         # Run the consistency checks on the database
+        if aWarnings:
+            print("Warning messages")
+            print()
+            print("\n".join(aWarnings))
+            print()
         for oAbsCard in AbstractCard.select():
             aMessages = do_card_checks(oAbsCard)
             if aMessages:
+                print("Consistency checks")
+                print()
                 print('\n'.join(aMessages))
+                print()
 
     if oOpts.upgrade_db:
         oDBUpgrade = DBUpgradeManager()
