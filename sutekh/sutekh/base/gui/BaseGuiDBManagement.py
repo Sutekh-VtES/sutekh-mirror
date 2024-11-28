@@ -42,8 +42,9 @@ def wrapped_read(oFile, fDoRead, sDesc, oProgressDialog, oLogHandler):
     """Wrap the reading of a file in a ProgressDialog."""
     oProgressDialog.set_description(sDesc)
     oProgressDialog.show()
-    fDoRead(oFile, oLogHandler)
+    aMessages = fDoRead(oFile, oLogHandler)
     oProgressDialog.set_complete()
+    return aMessages
 
 
 # Information about a data file
@@ -188,6 +189,7 @@ class BaseGuiDBManager:
                                        "Missing required data files",
                                        "\n".join(aMissing))
             return False
+        aMessages = []
         refresh_tables(self.aTables, sqlhub.processConnection)
         oProgressDialog.reset()
         for oReader in self.tReaders:
@@ -198,8 +200,16 @@ class BaseGuiDBManager:
             else:
                 oLogHandler = SutekhHTMLLogHandler()
             oLogHandler.set_dialog(oProgressDialog)
-            wrapped_read(dFiles[oReader.sName], oReader.fReader,
-                         oReader.sDescription, oProgressDialog, oLogHandler)
+            aReadMessages = wrapped_read(dFiles[oReader.sName],
+                                         oReader.fReader,
+                                         oReader.sDescription,
+                                         oProgressDialog, oLogHandler)
+            if aReadMessages:
+                aMessages.extend(aReadMessages)
+        if aMessages:
+            sMesg = "<b>Possible issues with reading the data:</b>\n\n"
+            sMesg += '\n'.join(aMessages)
+            do_info_message(sMesg)
         return True
 
     def copy_to_new_db(self, oOldConn, oTempConn, oProgressDialog,

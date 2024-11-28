@@ -728,7 +728,7 @@ class CardDict(dict):
             oPrinting = self._oMaker.make_default_printing(oExp)
             self._oMaker.make_physical_card(oCard, oPrinting)
 
-    def save(self):
+    def save(self, aMessages):
         # pylint: disable=too-many-branches
         # Need to consider all cases, so many branches
         """Commit the card to the database.
@@ -737,6 +737,9 @@ class CardDict(dict):
            tables as needed.
            """
         if 'name' not in self:
+            # Shouldn't ever happen, because of other checks, but
+            # we really should know about it if it does
+            aMessages.append(f"Invalid card data {self}")
             return
 
         seen_keys = set()
@@ -753,66 +756,85 @@ class CardDict(dict):
 
         if 'aka' in self:
             self._make_aliases()
+            seen_keys.add('aka')
 
         self._oLogger.info('Card: %s', self['name'])
 
         if 'text' in self:
             self._parse_text(oCard)
+            seen_keys.add('text')
 
         if 'group' in self:
             self._add_group(oCard, self['group'])
+            seen_keys.add('group')
 
         if 'capacity' in self:
             self._add_capacity(oCard, self['capacity'])
+            seen_keys.add('capacity')
 
         if 'cost' in self:
             self._add_cost(oCard, self['cost'])
+            seen_keys.add('cost')
 
         if 'life' in self:
             self._add_life(oCard, self['life'])
+            seen_keys.add('life')
 
         if 'level' in self:
             self._add_level(oCard, self['level'])
             # Also add a keyword for this
             self._add_keyword(oCard, oCard.level)
+            seen_keys.add('level')
 
         if 'expansion' in self:
             self._add_expansions(oCard, self['expansion'])
+            seen_keys.add('expansion')
 
         if 'keywords' in self:
             for sKeyword in self['keywords'].split(','):
                 self._add_keyword(oCard, sKeyword)
+            seen_keys.add('keywords')
 
         if 'discipline' in self:
             self._add_disciplines(oCard, self['discipline'])
+            seen_keys.add('discipline')
 
         if 'virtue' in self:
             self._add_virtues(oCard, self['virtue'])
+            seen_keys.add('virtue')
 
         if 'clan' in self:
             self._add_clans(oCard, self['clan'])
+            seen_keys.add('clan')
 
         if 'creed' in self:
             self._add_creeds(oCard, self['creed'])
+            seen_keys.add('creed')
 
         if 'cardtype' in self:
             self._add_card_type(oCard, self['cardtype'])
+            seen_keys.add('cardtype')
 
         if 'burn option' in self:
             self._add_keyword(oCard, "burn option")
+            seen_keys.add('burn option')
 
         if 'title' in self:
             self._add_title(oCard, self['title'])
+            seen_keys.add('title')
 
         if 'sect' in self:
             self._add_sect(oCard, self['sect'])
+            seen_keys.add('sect')
 
         if 'artist' in self:
             self._add_artists(oCard, self['artist'])
+            seen_keys.add('artist')
 
         if 'text' in self:
             oCard.text = self['text'].replace('\r', '')
             oCard.search_text = strip_braces(oCard.text)
+            seen_keys.add('text')
 
         self._add_blood_shadowed_court(oCard)
 
@@ -826,7 +848,10 @@ class CardDict(dict):
         # pylint: disable=protected-access
         # Need to access _parent here
         oCard._parent.syncUpdate()
-        # FIXME: Pass back any error confitions? Missing text, etc.
+        # Pass back any unknown/new fields in the card list
+        for sKey in self:
+            if sKey not in seen_keys:
+                aMessages.append(f"Unknown card list key {sKey} in {oCard.name}")
 
 
 # Parsing helper functions
@@ -853,12 +878,12 @@ class WaitingForCardName(LogStateWithInfo):
             # CSV style names sometimes creep into the cardlist.txt,
             # so ensure we normalise them consistently
             self._dInfo['name'] = move_articles_to_front(sData.strip())
-            return InExpansion(self._dInfo, self._oLogger)
+            return InExpansion(self._dInfo, self._oLogger, self._aMessages)
         if sLine.strip():
             if 'name' in self._dInfo and 'text' not in self._dInfo:
                 # We've it a blank line in the middle of a card, so bounce
                 # back to InCard stuff
-                oCard = InCard(self._dInfo, self._oLogger)
+                oCard = InCard(self._dInfo, self._oLogger, self._aMessages)
                 return oCard.transition(sLine, None)
         return self
 
@@ -894,7 +919,7 @@ class InCard(LogStateWithInfo):
         if ':' in sLine:
             sTag = fix_clarification_markers(sLine.split(':', 1)[0].lower())
             if sTag in self.aTextTags or ' ' in sTag or '{' in sTag:
-                oCardText = InCardText(self._dInfo, self._oLogger)
+                oCardText = InCardText(self._dInfo, self._oLogger, self._aMessages)
             else:
                 sData = fix_clarification_markers(sLine.split(':', 1)[1])
                 # We don't want clarification markers here
@@ -902,13 +927,13 @@ class InCard(LogStateWithInfo):
                 self._dInfo[sTag] = sData.strip()
         elif not sLine.strip():
             # Empty line, so probably end of the card
-            return WaitingForCardName(self._dInfo, self._oLogger)
+            return WaitingForCardName(self._dInfo, self._oLogger, self._aMessages)
         else:
             if sLine.strip().lower() == 'burn option':
                 # Annoying special case
                 self._dInfo['burn option'] = None
             else:
-                oCardText = InCardText(self._dInfo, self._oLogger)
+                oCardText = InCardText(self._dInfo, self._oLogger, self._aMessages)
         if oCardText:
             # Hand over the line to the card text parser
             return oCardText.transition(sLine, None)
@@ -924,7 +949,7 @@ class InExpansion(LogStateWithInfo):
         """Transition back to InCard if needed."""
         if sLine.startswith('[') and sLine.strip().endswith(']'):
             self._dInfo['expansion'] = sLine.strip()
-            return InCard(self._dInfo, self._oLogger)
+            return InCard(self._dInfo, self._oLogger, self._aMessages)
         if sLine.startswith('AKA:'):
             # We force this in here, since otherwise we need to bounce back and
             # force between InExpansion and InCard in an unpleasant way
@@ -944,7 +969,7 @@ class InCardText(LogStateWithInfo):
         if sLine.startswith('Artist:') or not sLine.strip():
             self._dInfo['text'] = fix_clarification_markers(
                 self._dInfo['text'].strip())
-            oInCard = InCard(self._dInfo, self._oLogger)
+            oInCard = InCard(self._dInfo, self._oLogger, self._aMessages)
             return oInCard.transition(sLine, None)
         if 'text' not in self._dInfo:
             self._dInfo['text'] = sLine.strip() + '\n'
@@ -973,11 +998,13 @@ class WhiteWolfTextParser:
         if oLogHandler is not None:
             self._oLogger.addHandler(oLogHandler)
         self._oState = None
+        self._aMessages = []
         self.reset()
 
     def reset(self):
         """Reset the parser"""
-        self._oState = WaitingForCardName({}, self._oLogger)
+        self._aMessages = []
+        self._oState = WaitingForCardName({}, self._oLogger, self._aMessages)
 
     def parse(self, fIn):
         """Feed lines to the state machine"""
