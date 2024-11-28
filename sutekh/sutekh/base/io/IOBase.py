@@ -163,7 +163,7 @@ def safe_parser(oFile, oParser):
     sqlhub.processConnection = oOldConn.transaction()
     try:
         fIn = oFile.open()
-        oParser.parse(fIn)
+        oRes = oParser.parse(fIn)
         sqlhub.processConnection.commit(close=True)
     finally:
         # We use the fIn check so we don't swallow any exceptions raised
@@ -172,3 +172,5 @@ def safe_parser(oFile, oParser):
             fIn.close()
         # Always restore connection
         sqlhub.processConnection = oOldConn
+    # Return any messages from the parser
+    return oRes
