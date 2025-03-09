@@ -87,7 +87,15 @@ class CardTextView(BaseCardTextView):
                                       "capacity")
 
         if oCard.life is not None:
-            self._oBuf.labelled_value("Life", str(oCard.life), "life")
+            if oCard.life > 0:
+                self._oBuf.labelled_value("Life", str(oCard.life), "life")
+            else:
+                # -1 = X, -2 = X+1, etc
+                if oCard.life == -1:
+                    self._oBuf.labelled_value("Life", 'X', "life")
+                else:
+                    iOffset = -oCard.life - 1
+                    self._oBuf.labelled_value("Life", f'X+{iOffset}', "life")
 
         if oCard.group is not None:
             if oCard.group == -1:

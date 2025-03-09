@@ -215,11 +215,11 @@ class CardDict(dict):
     dAllyProperties = {
         # Red list allies are templated differently
         'red list': re.compile(r'\. Red List\.'),
-        'unique': re.compile(r'Unique [A-Za-z ]+ with \d life'),
+        'unique': re.compile(r'Unique [A-Za-z ]+ with (\d|X|X+\d) life'),
         'operation antigen': re.compile(r'\. Operation Antigen.'),
     }
     oLifeRgx = re.compile(r'(Unique )?\[?(Gargoyle creature|[A-Za-z]+)\]?'
-                          r' with (\d) life\.')
+                          r' with (\d|X|X\+\d) life\.')
 
     # equipment properties
     dEquipmentProperties = {
@@ -596,10 +596,23 @@ class CardDict(dict):
         """Add the life to the card."""
         sLife = self.oWhiteSp.sub(' ', sLife).strip()
         aLife = sLife.split()
-        try:
-            oCard.life = int(aLife[0], 10)
-        except ValueError:
-            pass
+        if 'X' not in aLife[0]:
+            try:
+                oCard.life = int(aLife[0], 10)
+            except ValueError:
+                pass
+        else:
+            # We use negative numbers to hanlde X life
+            # -1 == X life, -2 == X+1 life, etc
+            try:
+                if 'X+' in aLife[0]:
+                    iExtraLife = aLife[0].split('+', 1)[-1]
+                    iLife = -1 - int(iExtraLife, 10)
+                else:
+                    iLife = -1
+                oCard.life = iLife
+            except ValueError:
+                pass
 
     def _get_level(self, sLevel):
         """Normalised the level string."""
