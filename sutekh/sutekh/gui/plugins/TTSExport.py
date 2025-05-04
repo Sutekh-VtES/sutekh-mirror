@@ -21,14 +21,14 @@ from sutekh.base.gui.SutekhDialog import do_complaint_error
 from sutekh.base.Utility import safe_filename, move_articles_to_back, to_ascii
 
 from sutekh.gui.PluginManager import SutekhPlugin
-from sutekh.core.ELDBUtilities import norm_name
+from sutekh.base.Utility import to_ascii
 from sutekh.SutekhUtility import is_crypt_card, strip_group_from_name, find_all_group_versions
 
 # Not sure how stable this name is under module updates - guess we'll see
-MODULE_NAME = "1955001917.json"
+MODULE_NAME = "VtES_TTS_Module.json"
 
 # File must be newer than this date
-DATE_SUPPORTED = 1703794795
+DATE_SUPPORTED = 1745563000
 
 # Including this directly is a bit horrible, but it's also simple
 DECK_TEMPLATE = """
@@ -182,6 +182,7 @@ def fix_nickname(sName):
     """Fix unexpected issues with the nickname"""
     # We lowercase stuff as the JSON file sometimes has weird capitalisation
     sName = sName.lower()
+    sName = to_ascii(sName)
     # Quotes are a bit inconsistent, so we strip them
     sName = sName.replace("'", "").replace('"', '').replace('`', '')
     # Pentex can be weird
@@ -189,39 +190,39 @@ def fix_nickname(sName):
     return sName
 
 
-def add_group_if_needed(oCard, sName):
-    """Helper to add group info to cards that are not the lowest
-       group version"""
-    # TTS handles multi group cards as "X G?" for the cards in the
-    # later groups
+def add_group_and_advanced(oCard, sName):
+    """KRCG names cards as 'Card Name (GX)', so we need to match that"""
     if oCard.group:
-        aGroups = find_all_group_versions(oCard)
-        if oCard != aGroups[0]:
-            # Not the lowest group, so re-add the group info
-            sName = f'{sName} G{oCard.group}'
+        if oCard.level:
+            sName = f'{sName} (g{oCard.group} adv)'
+        else:
+            if oCard.group == -1:
+                sName = f'{sName} (any)'
+            else:
+                sName = f'{sName} (g{oCard.group})'
     return sName
 
 
 def make_json_name(oCard):
     """Create the corresponding TTS json name for the given card"""
-    sJSONName = norm_name(oCard).lower()
-    sJSONName = add_group_if_needed(oCard, sJSONName)
+    sJSONName = strip_group_from_name(oCard.name)
+    sJSONName = to_ascii(sJSONName.lower())
+    # Advanced is handled in the group name
+    sJSONName = sJSONName.replace(' (advanced)', '')
+    sJSONName = add_group_and_advanced(oCard, sJSONName)
     # strip quotes to simplify matching
     sJSONName = sJSONName.replace("'", "").replace('"', '').replace('`', '')
-    # Advanced is different
-    sJSONName = sJSONName.replace('(adv)', 'adv')
     #sJSONName = NONNAME.sub('', sJSONName)
-    if sJSONName in SPECIAL_CASES:
-        sJSONName = SPECIAL_CASES[sJSONName]
+    #if sJSONName in SPECIAL_CASES:
+    #    sJSONName = SPECIAL_CASES[sJSONName]
     return sJSONName
 
 
 def make_alternative_json_name(oCard):
     """Alternative formatting for those cards that use a different
        convention"""
-    # FIXME: Update this when we see how TTS handles multi-group cards
     sJSONName = move_articles_to_back(strip_group_from_name(oCard.name))
-    sJSONName = add_group_if_needed(oCard, sJSONName)
+    sJSONName = add_group_and_advanced(oCard, sJSONName)
     sJSONName = to_ascii(sJSONName)
     return sJSONName.lower()
 
@@ -230,11 +231,10 @@ def is_card_bag(oData):
     """Does this look like a bag to search for cards?"""
     if oData['Name'] != 'Bag':
         return False
-    # Bags for non-letter cards and custom additions
-    if oData['Nickname'].startswith('Other'):
+    if oData['Nickname'].startswith('Cards: '):
         return True
-    # Alphabetical bags (2 for each letter - crypt & library)
-    if oData['Nickname'] in string.ascii_uppercase:
+    # Custom bags
+    if oData['Nickname'].startswith('Other: New '):
         return True
     return False
 
@@ -297,7 +297,7 @@ def parse_tts_file(sFileName):
                                 dCards[sKey] = oObj
                         else:
                             dCards[sKey] = oObj
-                fix_deck_ids(dCards)
+                #fix_deck_ids(dCards)
                 return dCards
             except (KeyError, IndexError) as oErr:
                 logging.warning(
@@ -378,9 +378,16 @@ class TTSExport(SutekhPlugin):
                    You can set the names TTS will display for the crypt
                    and library decks.
 
-                   This plugin needs to read data from the TTS VtES module,
-                   so it will not work unless that module has been
-                   installed."""
+                   This plugin needs to read data from the TTS VtES module.
+
+
+                   Due to slow updates with the steam workshop module,
+                   this requires the custom module hosted at
+                   https://github.com/drnlm/VtES_TTS_Module_Generator
+
+                   It will not work unless that module has been
+                   installed.
+                   """
 
     sConfigKey = 'tts module file'
 
