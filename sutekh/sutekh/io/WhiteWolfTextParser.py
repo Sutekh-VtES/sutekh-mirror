@@ -416,7 +416,7 @@ class CardDict(dict):
                             'Equipment', 'Master', 'Event']:
                     sType = sVal
         # Check for REFLEX card type
-        if self['text'].find(' [REFLEX] ') != -1:
+        if self['text'].find('[REFLEX] ') != -1:
             if 'cardtype' in self:
                 # append to card types
                 self['cardtype'] += '/Reflex'
