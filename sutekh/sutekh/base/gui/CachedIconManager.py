@@ -27,7 +27,7 @@ def _crop_alpha(oPixbuf):
             iMax = iVal
         return iMax, iMin
     # We don't use get_pixels_array, since numeric support is optional
-    # These are gif's so the transparency is either 255 - opaque or 0 -
+    # The krcg pngs have simple transparency, so the alpha is either 255 - opaque or 0 -
     # transparent. We want the bounding box of the non-transparent pixels
     iRowLength = oPixbuf.get_width() * 4
     iMaxX, iMaxY = -1, -1
