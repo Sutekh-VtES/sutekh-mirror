@@ -18,95 +18,64 @@ from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
 # Utilty functions - convert object to a filename
 def _get_clan_filename(oClan):
     """Get the icon filename for the clan"""
-    sClanName = oClan.name
-    # Handle the special cases and the split between pre-V5 and V5 icons
-    if sClanName == 'Lasombra':
-        sClanName = 'Lasombra_symbol.png'
-    elif sClanName == 'Banu Haqim':
-        sClanName = 'Banu-Haqim-V5.png'
-    elif sClanName == 'Ministry':
-        sClanName = 'Ministry.png'
-    elif sClanName in ['Brujah', 'Caitiff', 'Gangrel', 'Malkavian',
-                       'Nosferatu', 'Ravnos', 'Toreador', 'Tremere',
-                       'Ventrue']:
-        sClanName = sClanName + '-V5.png'
-    elif 'antitribu' in sClanName:
-        sClanName = sClanName.replace('antitribu', 'anti')
-    elif sClanName == 'Abomination':
-        sClanName = 'abo'
-    elif sClanName == 'Daughter of Cacophony':
-        sClanName = 'daughters'
-    elif sClanName == 'Harbinger of Skulls':
-        sClanName = 'harbingers'
-    elif sClanName == 'Blood Brother':
-        sClanName = 'bloodbrothers'
-    elif sClanName == 'Ahrimane':
+    sClanName = oClan.name.lower().replace(' ', '')
+    # Handle special cases
+    if sClanName == 'harbingerofskulls':
+        sClanName = 'harbingersofskulls'
+    elif sClanName == 'ahrimane':
         sClanName = 'ahrimanes'
-    if '.png' in sClanName:
-        # New reference symbol location
-        sFileName = 'rulebook/clans/%s' % sClanName
-    else:
-        # old icon location
-        sClanName = sClanName.lower().replace(' ', '')
-        sFileName = 'icons/clans/iconclan%s.gif' % sClanName
+    elif sClanName == 'daughterofcacophony':
+        sClanName = 'daughtersofcacophony'
+    elif sClanName == 'gargoyle':
+        sClanName = 'gargoyles'
+    elif sClanName == 'abomination':
+        sClanName = 'abominations'
+    sFileName = 'clan/%s.png' % sClanName
     return sFileName
 
 
 def _get_card_type_filename(oType):
     """Get the filename for the card type"""
     if oType.name == 'Action Modifier':
-        sFileName = 'cardtype/icontypemodifier.gif'
+        sFileName = 'icon/modifier.png'
     elif oType.name == 'Political Action':
-        sFileName = 'cardtype/icontypepolitical.gif'
+        sFileName = 'icon/political.png'
     elif oType.name in ('Master', 'Vampire', 'Imbued'):
         # These types have no icon
         sFileName = None
     else:
-        sFileName = 'icons/cardtype/icontype%s.gif' % oType.name.lower()
+        sFileName = 'icon/%s.png' % oType.name.lower()
     return sFileName
 
 
 def _get_creed_filename(oCreed):
     """Get the filename for the creed"""
-    sFileName = 'icons/creeds/iconcre%s.gif' % oCreed.name.lower()
+    sFileName = 'clan/%s.png' % oCreed.name.lower()
     return sFileName
 
 
 def _get_discipline_filename(oDiscipline):
     """Get the filename for the discipline."""
-    if oDiscipline.discipline.name.lower() in ['mal', 'str', 'fli']:
-        # These are misc icons
-        if oDiscipline.discipline.fullname == 'Flight':
-            sFileName = 'misc/iconmiscflight.gif'
-        elif oDiscipline.level == 'inferior':
-            sFileName = ('misc/iconmisc%s.gif' %
-                         oDiscipline.discipline.fullname.lower())
-        else:
-            sFileName = ('misc/iconmisc%ssup.gif' %
-                         oDiscipline.discipline.fullname.lower())
-    elif oDiscipline.discipline.name.lower() == 'tha':
-        # Blood Sorcery / Thaumaturgy still uses the old symbol, even
-        # though the name has changed
-        if oDiscipline.level == 'inferior':
-            sFileName = 'disciplines/icondisthaumaturgy.gif'
-        else:
-            sFileName = 'disciplines/icondisthaumaturgysup.gif'
+    if oDiscipline.discipline.fullname == 'Flight':
+        sFileName = 'disc/inf/flight.png'
     elif oDiscipline.level == 'inferior':
-        sFileName = ('disciplines/icondis%s.gif' %
-                     oDiscipline.discipline.fullname.lower())
+        sFileName = ('disc/inf/%s.png' %
+                     oDiscipline.discipline.name.lower())
     else:
-        sFileName = ('disciplines/icondis%ssup.gif' %
-                     oDiscipline.discipline.fullname.lower())
-    return 'icons/' + sFileName
+        sFileName = ('disc/sup/%s.png' %
+                     oDiscipline.discipline.name.lower())
+    return sFileName
 
 
 def _get_virtue_filename(oVirtue):
     """Get the filename for the virtue"""
-    if oVirtue.name != 'jud':
-        sFileName = 'icons/virtues/iconvirtue%s.gif' % oVirtue.fullname.lower()
+    # KRCG uses its own abbrevation convention
+    if oVirtue.name == 'jud':
+        sFileName = 'disc/inf/jus.png'
+    elif oVirtue.name == 'viz':
+        sFileName = 'disc/inf/vin.png'
     else:
-        # Annoying special case
-        sFileName = 'icons/virtues/iconvirtuejustice.gif'
+        sFileName = 'disc/inf/%s.png' % oVirtue.name.lower()
     return sFileName
 
 
@@ -115,11 +84,11 @@ class IconManager(BaseIconManager):
 
        Given the text and the tag name, look up the suitable matching icon
        filename for it. Return none if no suitable icon is found.
-       Also provide an option to download the icons form the v:ekn
+       Also provide an option to download the icons form the krcg
        site.
        """
 
-    sBaseUrl = "http://www.vekn.net/images/stories/"
+    sBaseUrl = "https://static.krcg.org/png/"
 
     def _get_clan_icons(self, aValues):
         """Get the icons for the clans"""
@@ -168,11 +137,11 @@ class IconManager(BaseIconManager):
     def get_icon_by_name(self, sName):
         """Lookup an icon that's a card property"""
         if sName == 'burn option':
-            sFileName = 'icons/misc/iconmiscburnoption.gif'
+            sFileName = 'icon/burn.png'
         elif sName == 'advanced':
-            sFileName = 'icons/misc/iconmiscadvanced.gif'
+            sFileName = 'icon/adv.png'
         elif sName == 'merged':
-            sFileName = 'icons/misc/iconmiscmerged.gif'
+            sFileName = 'icon/merged.png'
         else:
             return None
         return self._get_icon(sFileName)
@@ -245,9 +214,10 @@ class IconManager(BaseIconManager):
 
     def get_icon_total(self):
         """Total number of icons we must download"""
+        # +3 for burn, adv & merged
         return (Creed.select().count() + DisciplinePair.select().count() +
                 Clan.select().count() + Virtue.select().count() +
-                CardType.select().count() + 2)
+                CardType.select().count() + 3)
 
     def download_icons(self, oLogHandler=None):
         """Download the icons from the WW site"""
@@ -266,6 +236,6 @@ class IconManager(BaseIconManager):
         for oType in CardType.select():
             self._download(_get_card_type_filename(oType), oLogger)
         # download the special cases
-        self._download('icons/misc/iconmiscburnoption.gif', oLogger)
-        self._download('icons/misc/iconmiscadvanced.gif', oLogger)
-        self._download('icons/misc/iconmiscmerged.gif', oLogger)
+        self._download('icon/burn.png', oLogger)
+        self._download('icon/adv.png', oLogger)
+        self._download('icon/merged.png', oLogger)
