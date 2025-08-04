@@ -228,7 +228,8 @@ class CardDict(dict):
                              r'Unique Nod|^Unique.|\. Unique\.|'
                              r'this is a unique location'),
         'location': re.compile(r'represents a (unique )?location|'
-                               r'this is a (unique )?location'),
+                               r'this is a (unique )?location|'
+                               r'Location.'),
         'melee weapon': re.compile(r'[mM]elee weapon\.'),
         'cold iron': re.compile(r'weapon\. Cold iron\.'),
         'gun': re.compile(r'[wW]eapon[:,.] [gG]un\.'),
