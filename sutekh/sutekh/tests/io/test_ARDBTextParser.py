@@ -106,6 +106,28 @@ Action [6]
 ...
 """
 
+ARDB_TEXT_EXAMPLE_5 = """
+Deck Name : Test Deck 5
+Created By: Anon Y Mous
+
+Crypt: (5 vampires, Min: 2, Max: 10 Ave: 7.33)
+------------------------------------------------------------
+1x Theo Bell           8  CEL POT PRE aus dom         Brujah:6   
+1x Kalinda    6  CEL OBF tha      primogen  Assamite:6
+2x Kalinda                     6  CEL OBF tha      Assamite:2  
+2x Evan Klein            5  OBF aus dom pre            Malkavian:6
+1x Evan Klein                      5  OBF aus dem pre           Malkavian:3
+...
+
+Library [6 cards]
+------------------------------------------------------------
+Action [6]
+2 x Test Card 1
+4 x Test Card 2
+...
+"""
+
+
 
 
 class ARDBTextParserTests(SutekhTest):
@@ -178,6 +200,21 @@ class ARDBTextParserTests(SutekhTest):
         self.assertTrue(("Enkidu, The Noah (Group 4)", 1) in aCards)
         self.assertTrue(("Aaron Bathurst (Group 4)", 2) in aCards)
         self.assertTrue(("Aaron Duggan, Cameron's Toady (Group 2)", 1) in aCards)
+        self.assertTrue(("Test Card 1", 2) in aCards)
+        self.assertTrue(("Test Card 2", 4) in aCards)
+
+        oHolder = self._make_holder_from_string(oParser, ARDB_TEXT_EXAMPLE_5)
+
+        self.assertEqual(oHolder.name, "Test Deck 5")
+        self.assertEqual(oHolder.author, "Anon Y Mous")
+
+        aCards = oHolder.get_cards()
+
+        self.assertTrue(("Theo Bell (Group 6)", 1) in aCards)
+        self.assertTrue(("Evan Klein (Group 3)", 1) in aCards)
+        self.assertTrue(("Evan Klein (Group 6)", 2) in aCards)
+        self.assertTrue(("Kalinda (Group 6)", 1) in aCards)
+        self.assertTrue(("Kalinda (Group 2)", 2) in aCards)
         self.assertTrue(("Test Card 1", 2) in aCards)
         self.assertTrue(("Test Card 2", 4) in aCards)
 

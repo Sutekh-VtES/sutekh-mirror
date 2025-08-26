@@ -38,7 +38,7 @@ from sutekh.core.ArdbInfo import ArdbInfo
 
 
 class SingleCard(ArdbInfo):
-    """Class to formate a single card appropriately"""
+    """Class to format a single card appropriately"""
 
     def format_crypt_card(self, oCard):
         """Format the crypt card to possible ARDB outputs so we can match
@@ -159,6 +159,7 @@ class Cards(HolderWithCacheState):
     _oCardRe = re.compile(
         r'\s*(?P<cnt>[0-9]+)(\s)*(x)*\s+(?P<name>[^\t\r\n]+)')
     _oAdvRe = re.compile(r'\sAdv\s')
+    _oGroupEnd = re.compile(r':(?P<group>[0-9])$')
 
     # pylint: disable=arguments-differ
     # pylint doesn't like that we mark dAttr as unused here
@@ -176,6 +177,10 @@ class Cards(HolderWithCacheState):
             sName = sName.strip()
             if sName.lower() in self._dNameCache:
                 sName = self._dNameCache[sName.lower()]
+            # Check for group info
+            oGroupMatch = self._oGroupEnd.search(sLine.strip())
+            if oGroupMatch and 'Group ' not in sName:
+                sName += ' (Group %s)' % oGroupMatch.group('group')
             # Check for the advacned string and append advanced if needed
             if self._oAdvRe.search(sLine) and 'Adv' not in sName:
                 sName += ' (Advanced)'
