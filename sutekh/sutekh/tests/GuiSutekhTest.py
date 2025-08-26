@@ -65,6 +65,8 @@ class ConfigSutekhTest(SutekhTest):
         os.remove(os.path.join(self.sPluginDir, 'index.txt'))
         os.rmdir(os.path.join(self.sPluginDir, 'rulebook', 'clans'))
         os.rmdir(os.path.join(self.sPluginDir, 'rulebook'))
+        if os.path.exists(os.path.join(self.sPluginDir, 'disc')):
+            os.rmdir(os.path.join(self.sPluginDir, 'disc'))
         os.rmdir(self.sPluginDir)
         super().tearDown()
 
