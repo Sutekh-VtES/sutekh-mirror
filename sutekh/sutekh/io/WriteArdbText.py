@@ -71,9 +71,9 @@ class WriteArdbText(ArdbInfo):
                 dLine['clan'] = '!' + dLine['clan'].replace(' antitribu',
                                                             '')
             elif 'Imbued' not in dLine['clan']:
-                dLine['clan'] = dLine['clan'][:10]  # truncate if needed
+                dLine['clan'] = dLine['clan']
 
-            dLine['name'] = dLine['name'].ljust(18)[:18]  # truncate if needed
+            dLine['name'] = dLine['name'].ljust(18)
             dLine['disc'] = self._gen_disciplines(oCard)
             iDiscJust = max(iDiscJust, len(dLine['disc']))
 

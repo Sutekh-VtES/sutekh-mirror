@@ -29,7 +29,7 @@ Crypt [6 vampires] Capacity min: 3 max: 9 average: 6.00
  1x Hektor                 9 CEL POT PRE QUI for Priscus !Brujah:4
  1x Alan Sovereign     Adv 6 AUS DOM for pre             Ventrue:3
  1x Abebe                  4 nec obf thn                 Samedi:4
- 1x Inez "Nurse216" Vi     3 inn                         Innocent (Imbued):4
+ 1x Inez "Nurse216" Villagrande     3 inn                         Innocent (Imbued):4
 
 Library [28 cards]
 ------------------------------------------------------------
@@ -103,10 +103,6 @@ class ArdbTextWriterTests(SutekhTest):
         # pylint: disable=not-an-iterable
         # SQLObject confuses pylint
         for sName in [x.abstractCard.name for x in oPhysCardSet1.cards]:
-            # We truncate Inez here to match the writer output
-            if sName.startswith('Inez'):
-                sName = sName[:18]
-            sName = strip_group_from_name(sName)
             dSetCards.setdefault(sName, 0)
             dSetCards[sName] += 1
         # pylint: enable=not-an-iterable
