@@ -42,6 +42,9 @@ ILLEGAL_LOOKUP = {
     'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
 }
 
+# Used for printings where we don't know the back (custom added expansions, etc)
+UNKNOWN_BACK = 'Other'
+
 
 # utility functions
 def _percentage(iNum, iTot, sDesc):
@@ -241,9 +244,7 @@ def _get_back_counts(aPhysCards, dBacks):
     """Get the counts of the different expansions for the list"""
     dCounts = {}
     for oCard in aPhysCards:
-        # We get 'Other' if we have a printing that is missing
-        # Back information
-        oKey = dBacks.get(oCard.printing, 'Other')
+        oKey = dBacks.get(oCard.printing, UNKNOWN_BACK)
         dCounts.setdefault(oKey, 0)
         dCounts[oKey] += 1
     return dCounts
@@ -321,7 +322,7 @@ def _group_backs(dCards, aCards, iNum, dBacks):
     sText = ""
     for sGrpName in dCards:
         aCardsByExp.append([oCard for oCard in aCards if
-                            dBacks[oCard.printing] == sGrpName])
+                            dBacks.get(oCard.printing, UNKNOWN_BACK) == sGrpName])
     for aExpCards in aCardsByExp:
         # For each expansion, count number of distinct cards
         aNames = {x.abstractCard.name for x in aExpCards}
