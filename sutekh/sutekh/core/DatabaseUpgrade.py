@@ -30,7 +30,7 @@ from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          MAX_ID_LENGTH)
 from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Virtue,
                                       Discipline, Creed, DisciplinePair,
-                                      Sect, Title, TABLE_LIST)
+                                      Sect, Title, Path, TABLE_LIST)
 from sutekh.io.WhiteWolfTextParser import strip_braces
 from sutekh.base.core.BaseDatabaseUpgrade import BaseDBUpgradeManager
 from sutekh.base.core.DatabaseVersion import DatabaseVersion
@@ -300,6 +300,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         'Sect': (Sect, (Sect.tableversion,)),
         'DisciplinePair': (DisciplinePair, (DisciplinePair.tableversion,)),
         'Title': (Title, (Title.tableversion,)),
+        'Path': (Path, (-1, Path.tableversion,)),
+        'SutekhAbstractCard': (SutekhAbstractCard, (-1, 1, SutekhAbstractCard.tableversion,)),
     })
     # We override the default values for these
     SUPPORTED_TABLES['Expansion'] = (Expansion, (Expansion.tableversion, 3, 4))
@@ -307,7 +309,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                         (AbstractCard.tableversion, 5, 6))
     SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
                                            (PhysicalCardSet.tableversion, 6))
-    SUPPORTED_TABLES['Metadata'] = (Metadata, (-1, 1, Expansion.tableversion))
+    SUPPORTED_TABLES['Metadata'] = (Metadata, (-1, 1, Metadata.tableversion))
 
     COPY_OLD_DB = [
         ('_copy_old_discipline', 'Discipline table', False),
@@ -317,6 +319,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         ('_copy_old_discipline_pair', 'DisciplinePair table', False),
         ('_copy_old_sect', 'Sect table', False),
         ('_copy_old_title', 'Title table', False),
+        ('_copy_old_path', 'Path table', False),
     ] + BaseDBUpgradeManager.COPY_OLD_DB
 
     COPY_DB = [
@@ -327,6 +330,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         ('_copy_discipline_pair', 'DisciplinePair table', False),
         ('_copy_sect', 'Sect table', False),
         ('_copy_title', 'Title table', False),
+        ('_copy_path', 'Path table', False),
     ] + BaseDBUpgradeManager.COPY_DB
 
     cAbstractCardCls = SutekhAbstractCard
@@ -618,6 +622,27 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             return (False, ["Unknown Sect Version"])
         return (True, [])
 
+    def _copy_path(self, oOrigConn, oTrans):
+        """Copy Sect, assuming versions match"""
+        for oObj in Path.select(connection=oOrigConn):
+            _oCopy = Path(id=oObj.id, name=oObj.name, connection=oTrans)
+
+    def _copy_old_path(self, oOrigConn, oTrans, oVer):
+        """Copy Sect, updating if needed"""
+        aMessages = []
+        if oVer.check_tables_and_versions([Path], [-1], oOrigConn):
+            # We're upgrading from no table, and so we don't have the data
+            # available in the database, so we can't fill the table.
+            aMessages = ["Incomplete information to fill the Path"
+                         " table. You will need to reimport the cardlist"
+                         " information."]
+        elif oVer.check_tables_and_versions([Path], [Sect.tableversion],
+                                          oOrigConn):
+            self._copy_path(oOrigConn, oTrans)
+        else:
+            return (False, ["Unknown Sect Version"])
+        return (True, aMessages)
+
     def _copy_title(self, oOrigConn, oTrans):
         """Copy Title, assuming versions match"""
         for oObj in Title.select(connection=oOrigConn):
@@ -660,6 +685,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             oCardCopy.addClan(oData)
         for oData in oOldCard.sect:
             oCardCopy.addSect(oData)
+        for oData in oOldCard.path:
+            oCardCopy.addPath(oData)
         for oData in oOldCard.title:
             oCardCopy.addTitle(oData)
         for oData in oOldCard.creed:
@@ -734,6 +761,57 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             sqlhub.processConnection = oTrans
             sqlhub.processConnection = oTempConn
             for oCard in AbstractCard_v6.select(
+                    connection=oOrigConn).orderBy('id'):
+                # pylint: disable=protected-access
+                # Need to access _connection here
+                # force issue for SQObject >= 0.11.4
+                oCard._connection = oOrigConn
+                # pylint: enable=protected-access
+
+                # pylint: disable=no-member
+                # SQLObject confuses pylint
+                oCardCopy = SutekhAbstractCard(
+                    id=oCard.id, canonicalName=oCard.canonicalName,
+                    name=oCard.name, text=oCard.text, connection=oTrans)
+                oCardCopy.group = oCard.group
+                oCardCopy.capacity = oCard.capacity
+                oCardCopy.cost = oCard.cost
+                oCardCopy.costtype = oCard.costtype
+                oCardCopy.level = oCard.level
+                oCardCopy.life = oCard.life
+                oCardCopy.search_text = oCard.search_text
+                for oData in oCard.rarity:
+                    oCardCopy.addRarityPair(oData)
+                for oData in oCard.discipline:
+                    oCardCopy.addDisciplinePair(oData)
+                for oData in oCard.rulings:
+                    oCardCopy.addRuling(oData)
+                for oData in oCard.clan:
+                    oCardCopy.addClan(oData)
+                for oData in oCard.cardtype:
+                    oCardCopy.addCardType(oData)
+                for oData in oCard.sect:
+                    oCardCopy.addSect(oData)
+                for oData in oCard.title:
+                    oCardCopy.addTitle(oData)
+                for oData in oCard.creed:
+                    oCardCopy.addCreed(oData)
+                for oData in oCard.virtue:
+                    oCardCopy.addVirtue(oData)
+                for oData in oCard.keywords:
+                    oCardCopy.addKeyword(oData)
+                for oData in oCard.artists:
+                    oCardCopy.addArtist(oData)
+                oCardCopy.syncUpdate()
+                # pylint: disable=protected-access
+                # Need to access _parent here
+                oCardCopy._parent.syncUpdate()
+                oLogger.info('copied AC %s', oCardCopy.name)
+        elif oVer.check_tables_and_versions([SutekhAbstractCard], [1], oOrigConn):
+            oTempConn = sqlhub.processConnection
+            sqlhub.processConnection = oTrans
+            sqlhub.processConnection = oTempConn
+            for oCard in SutekhAbstractCard.select(
                     connection=oOrigConn).orderBy('id'):
                 # pylint: disable=protected-access
                 # Need to access _connection here
