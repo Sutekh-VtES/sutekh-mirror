@@ -33,7 +33,7 @@ class SutekhAbstractCard(AbstractCard):
     """The abstract card specialised to the needs of VtES."""
 
     _inheritable = False
-    tableversion = 1
+    tableversion = 2
 
     search_text = UnicodeCol(default="")
     group = IntCol(default=None, dbName='grp')
@@ -66,6 +66,9 @@ class SutekhAbstractCard(AbstractCard):
     virtue = CachedRelatedJoin('Virtue', intermediateTable='abs_virtue_map',
                                joinColumn="abstract_card_id",
                                createRelatedTable=False)
+    path = CachedRelatedJoin('Path', intermediateTable='abs_path_map',
+                             joinColumn="abstract_card_id",
+                             createRelatedTable=False)
 
 
 class DisciplinePair(SQLObject):
@@ -137,6 +140,16 @@ class Title(SQLObject):
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     cards = RelatedJoin('SutekhAbstractCard',
                         intermediateTable='abs_title_map',
+                        otherColumn="abstract_card_id",
+                        createRelatedTable=False)
+
+
+class Path(SQLObject):
+
+    tableversion = 1
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    cards = RelatedJoin('SutekhAbstractCard',
+                        intermediateTable='abs_path_map',
                         otherColumn="abstract_card_id",
                         createRelatedTable=False)
 
@@ -228,6 +241,20 @@ class MapAbstractCardToVirtue(SQLObject):
     virtueIndex = DatabaseIndex(virtue, unique=False)
 
 
+class MapAbstractCardToPath(SQLObject):
+
+    class sqlmeta:
+        table = 'abs_path_map'
+
+    tableversion = 1
+
+    abstractCard = ForeignKey('SutekhAbstractCard', notNull=True)
+    path = ForeignKey('Path', notNull=True)
+
+    abstractCardIndex = DatabaseIndex(abstractCard, unique=False)
+    pathIndex = DatabaseIndex(path, unique=False)
+
+
 # pylint: enable=no-init, too-many-instance-attributes
 # pylint: enable=attribute-defined-outside-init, invalid-name
 
@@ -236,6 +263,7 @@ class MapAbstractCardToVirtue(SQLObject):
 TABLE_LIST = BASE_TABLE_LIST + [SutekhAbstractCard,
                                 Discipline, DisciplinePair,
                                 Clan, Sect, Title, Virtue, Creed,
+                                Path,
                                 # Mapping tables from here on out
                                 MapAbstractCardToClan,
                                 MapAbstractCardToDisciplinePair,
@@ -243,6 +271,7 @@ TABLE_LIST = BASE_TABLE_LIST + [SutekhAbstractCard,
                                 MapAbstractCardToTitle,
                                 MapAbstractCardToVirtue,
                                 MapAbstractCardToCreed,
+                                MapAbstractCardToPath,
                                ]
 
 # Generically useful constant
