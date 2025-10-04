@@ -59,9 +59,10 @@ from sutekh.base.core.BaseFilters import (IN, Filter, FilterAndBox,
 # pylint: enable=unused-import
 
 from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Discipline,
-                                      Title, Creed, Virtue, Sect, CRYPT_TYPES)
+                                      Title, Creed, Virtue, Sect, Path,
+                                      CRYPT_TYPES)
 from sutekh.core.SutekhAdapters import (ICreed, IVirtue, IClan, IDiscipline,
-                                        ITitle, ISect, IDisciplinePair)
+                                        ITitle, ISect, IPath, IDisciplinePair)
 
 
 class SutekhCardFilter(Filter):
@@ -338,6 +339,38 @@ class MultiVirtueFilter(MultiFilter):
     @classmethod
     def get_values(cls):
         return [x.fullname for x in Virtue.select().orderBy('fullname')]
+
+
+class PathFilter(SingleFilter):
+    """Filter on Path"""
+    types = ('AbstractCard', 'PhysicalCard')
+
+    def __init__(self, sPath):
+        self._oId = IPath(sPath).id
+        self._oMapTable = make_table_alias('abs_path_map')
+        self._oIdField = self._oMapTable.q.path_id
+
+
+class MultiPathFilter(MultiFilter):
+    """Filter on Multiple Paths"""
+    keyword = "Path"
+    description = "Path"
+    helptext = "a list of Path.\nReturns all cards belonging to the given" \
+            " paths"
+    islistfilter = True
+    types = ('AbstractCard', 'PhysicalCard')
+
+    def __init__(self, aPath):
+        self._aIds = [IPath(x).id for x in aPaths]
+        self._oMapTable = make_table_alias('abs_path_map')
+        self._oIdField = self._oMapTable.q.path_id
+
+    # pylint: disable=missing-docstring
+    # don't need docstrings for _get_expression, get_values & _get_joins
+    @classmethod
+    def get_values(cls):
+        return [x.name for x in Path.select().orderBy('name')]
+
 
 
 class GroupFilter(SutekhCardFilter):

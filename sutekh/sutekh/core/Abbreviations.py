@@ -52,6 +52,11 @@ class Sects(DatabaseAbbreviation):
     sLookupDomain = 'Sects'
 
 
+class Paths(DatabaseAbbreviation):
+    """Common strings for the different paths."""
+    sLookupDomain = 'Paths'
+
+
 class Titles(AbbreviationLookup):
     """Common strings used to refer to the different titles."""
     dKeys = {

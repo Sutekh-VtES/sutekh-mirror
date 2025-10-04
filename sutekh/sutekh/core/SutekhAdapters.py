@@ -12,9 +12,9 @@ from sutekh.base.core.BaseAdapters import (Adapter, StrAdaptMeta,
                                            fail_adapt, passthrough)
 
 from sutekh.core.SutekhTables import (Clan, Creed, Discipline, DisciplinePair,
-                                      Sect, Title, Virtue)
+                                      Sect, Path, Title, Virtue)
 from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
-                                       Titles, Virtues)
+                                       Titles, Virtues, Paths)
 
 
 # pylint: disable=missing-docstring
@@ -42,6 +42,12 @@ def IClan(oUnknown):
 def ISect(oUnknown):
     """Default Sect adapter"""
     return fail_adapt(oUnknown, 'Sect')
+
+
+@singledispatch
+def IPath(oUnknown):
+    """Default Path adapter"""
+    return fail_adapt(oUnknown, 'Path')
 
 
 @singledispatch
@@ -109,6 +115,18 @@ class SectAdapter(Adapter, metaclass=StrAdaptMeta):
 ISect.register(Sect, passthrough)
 
 ISect.register(str, SectAdapter.lookup)
+
+
+class PathAdapter(Adapter, metaclass=StrAdaptMeta):
+
+    @classmethod
+    def lookup(cls, sName):
+        return cls.fetch(Paths.canonical(sName), Path)
+
+
+IPath.register(Path, passthrough)
+
+IPath.register(str, PathAdapter.lookup)
 
 
 class TitleAdapter(Adapter, metaclass=StrAdaptMeta):
