@@ -34,6 +34,7 @@ class CardTextBuffer(BaseCardTextBuffer):
         self.add_tag('group')
         self.add_tag('level')
         self.add_tag("sect")
+        self.add_tag("path")
         self.add_tag("title")
         self.add_list_tag('keywords')
         self.add_list_tag("card_type")
@@ -143,7 +144,10 @@ class CardTextView(BaseCardTextView):
             self._oBuf.labelled_compact_list("Sect",
                                              [oC.name for oC in oCard.sect],
                                              "sect")
-
+        if oCard.path:
+            self._oBuf.labelled_compact_list("Path",
+                                             [oC.name for oC in oCard.path],
+                                             "path")
         if oCard.title:
             self._oBuf.labelled_compact_list("Title",
                                              [oC.name for oC in oCard.title],
