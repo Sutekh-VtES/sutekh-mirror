@@ -299,12 +299,34 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
+    _sDomain = "PrintingRenames"
+
     def __init__(self, oConfig):
         super().__init__()
         self._oConfig = oConfig
+        self._dLookupPrintings = self._get_printing_lookups()
 
     def refresh_from_new_db(self):
         """Reload info from the daabase to pick up new lookups, etc"""
+        self._dLookupPrintings = self._get_printing_lookups()
+
+    def _get_printing_lookups(self):
+        """Return a dictionary created from data in the lookup table"""
+        dResults = {}
+        aWarnings = []
+        for oLookup in LookupHints.selectBy(domain=self._sDomain):
+            sOrigExp, sOrigPrinting = oLookup.lookup.split('|||', 1)
+            sNewExp, sNewPrinting = oLookup.value.split('|||', 1)
+            try:
+                oExp = IExpansion(sNewExp)
+                oPrinting = IPrinting((oExp, sNewPrinting))
+            except SQLObjectNotFound as e:
+                aWarning.append(f'Invalid lookup for {sOrigExp}, {sOrigPrinting}: {e}')
+                continue
+            dResults[(sOrigExp, sOrigPrinting)] = oPrinting
+        if aWarnings:
+            do_complaint_warning("\n".join(aWarnings))
+        return dResults
 
     def lookup(self, aNames, sInfo):
         """Lookup missing abstract cards.
