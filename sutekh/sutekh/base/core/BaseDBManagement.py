@@ -70,6 +70,7 @@ def copy_to_new_abstract_card_db(oOrigConn, oNewConn, oCardLookup,
     # Create the cardsets from the holders
     dLookupCache = {}
     sqlhub.processConnection = oNewConn
+    oCardLookup.refresh_from_new_db()
     for oSet in aPhysCardSets:
         # create_pcs will manage transactions for us
         oSet.create_pcs(oCardLookup, dLookupCache)

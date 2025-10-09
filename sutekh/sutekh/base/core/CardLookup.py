@@ -81,6 +81,10 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
        The default when we don't have a more cunning plan.
        """
 
+    def refresh_from_new_db(self):
+        """Reload info from the daabase to pick up new lookups, etc"""
+        # Nothing in the simple case
+
     def lookup(self, aNames, _sInfo):
         """A lookup method that excludes unknown cards."""
         aCards = []

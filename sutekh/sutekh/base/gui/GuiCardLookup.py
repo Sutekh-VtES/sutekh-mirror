@@ -11,7 +11,8 @@ import re
 from gi.repository import GObject, Gtk, Pango
 
 from sqlobject import SQLObjectNotFound
-from ..core.BaseTables import AbstractCard, PhysicalCard, Printing
+from ..core.BaseTables import (AbstractCard, PhysicalCard, Printing,
+                               LookupHints)
 from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
                                  IPrinting, IPrintingName)
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
@@ -301,6 +302,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     def __init__(self, oConfig):
         super().__init__()
         self._oConfig = oConfig
+
+    def refresh_from_new_db(self):
+        """Reload info from the daabase to pick up new lookups, etc"""
 
     def lookup(self, aNames, sInfo):
         """Lookup missing abstract cards.
