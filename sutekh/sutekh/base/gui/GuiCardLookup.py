@@ -18,7 +18,7 @@ from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
                                PrintingLookup, LookupFailed)
 from ..core.BaseFilters import best_guess_filter
-from .SutekhDialog import SutekhDialog, do_complaint_error
+from .SutekhDialog import SutekhDialog, do_complaint_error, do_complaint_warning
 from .CellRendererSutekhButton import CellRendererSutekhButton
 from .PhysicalCardView import PhysicalCardView
 from .AutoScrolledWindow import AutoScrolledWindow
@@ -315,13 +315,17 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         dResults = {}
         aWarnings = []
         for oLookup in LookupHints.selectBy(domain=self._sDomain):
-            sOrigExp, sOrigPrinting = oLookup.lookup.split('|||', 1)
-            sNewExp, sNewPrinting = oLookup.value.split('|||', 1)
+            sOrigExp, sOrigPrinting = [x.strip() for x in oLookup.lookup.split('|||', 1)]
+            if sOrigPrinting == 'None':
+                sOrigPrinting = None
+            sNewExp, sNewPrinting = [x.strip() for x in oLookup.value.split('|||', 1)]
+            if sNewPrinting == 'None':
+                sNewPrinting = None
             try:
                 oExp = IExpansion(sNewExp)
                 oPrinting = IPrinting((oExp, sNewPrinting))
             except SQLObjectNotFound as e:
-                aWarning.append(f'Invalid lookup for {sOrigExp}, {sOrigPrinting}: {e}')
+                aWarnings.append(f'Invalid lookup for {sOrigExp} ({sOrigPrinting}) -> {sNewExp} ({sNewPrinting}): {e}')
                 continue
             dResults[(sOrigExp, sOrigPrinting)] = oPrinting
         if aWarnings:
@@ -430,6 +434,9 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         dPrintings = {}
         dUnknownPrintings = {}
         for sExp, sPrintName in aExpPrintNames:
+            if (sExp, sPrintName) in self._dLookupPrintings:
+                dPrintings[(sExp, sPrintName)] = self._dLookupPrintings[(sExp, sPrintName)]
+                continue
             oTrueExp = None
             if sExp:
                 try:
@@ -484,15 +491,29 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         # Populate the model with the card names and best guesses
         for (sName, tExpPrint), iCnt in dUnknownCards.items():
             sBestGuess = NO_CARD
+            oGuessCard = None
             sExpName, sPrintName = tExpPrint
             if sPrintName:
                 sFullName = "%s [%s (%s)]" % (sName, sExpName, sPrintName)
             else:
                 sFullName = "%s [%s]" % (sName, sExpName)
+            if tExpPrint in self._dLookupPrintings:
+                # We have a mapping for this, but the printing lookup didn't
+                # work, so lets try falling back to the expansion for suggestions
+                oGuessExp = self._dLookupPrintings[tExpPrint].expansion
+                oAbsCard = IAbstractCard(sName)
+                for oCandCard in oAbsCard.physicalCards:
+                    if oCandCard.printing:
+                        if oGuessExp == oCandCard.printing.expansion:
+                            # It's not clear what the best guess of the options will be,
+                            # so we just take the first one
+                            sBestGuess = f"{sName} [{oCandCard.printing.expansion.name} ({oCandCard.printing.name})]"
+                            oGuessCard = oAbsCard
+                            break
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
-                       3, Pango.Weight.BOLD, 4, None)
+                       3, Pango.Weight.BOLD, 4, oGuessCard)
 
         oUnknownDialog.vbox.show_all()
         oPhysCardView.load()
