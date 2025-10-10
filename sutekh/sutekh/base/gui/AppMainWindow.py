@@ -145,8 +145,6 @@ class AppMainWindow(MultiPaneWindow):
         self._oIconManager = oIconManager
         self._oCardTextPane = oCardTextFrame
 
-        self._oCardLookup = GuiLookup(self._oConfig)
-
         # Check database is correctly populated
         self._verify_database()
 
@@ -173,6 +171,8 @@ class AppMainWindow(MultiPaneWindow):
                 "The configuration file validation failed:",
                 "\n".join(aErrors))
         oConfig.sanitize()
+
+        self._oCardLookup = GuiLookup(self._oConfig)
 
         self._create_app_menu()
 
