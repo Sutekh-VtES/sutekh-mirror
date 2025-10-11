@@ -54,7 +54,7 @@ jobs:
         createdb -U postgres -h localhost -w --lc-collate=C.UTF-8 --template template0 -w sutekh_test
     - name: Run Tests
       env:
-        SUTEKH_TEST_DB: postgres://postgres:postgres@localhost/sutekh_test?driver=psycopg&charset=utf-8
+        SUTEKH_TEST_DB: postgres://postgres:postgres@localhost/sutekh_test?driver=psycopg2&charset=utf-8
       run: |
         cd sutekh
         xvfb-run --auto-servernum pytest
