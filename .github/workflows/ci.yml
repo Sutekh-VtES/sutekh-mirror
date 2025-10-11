@@ -267,6 +267,9 @@ jobs:
         cd ..
     - name: Build Mac packages
       run: |
+        # Seems there are issues with getting the github installed python to play with
+        # homebrew stuff
+        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         cd sutekh
         python3 setup-freeze.py bdist_mac
         # Permissions are helpful for playing with the files in the app
@@ -304,7 +307,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo pylint pytest-cov textile
+        pip install mock pytest keyring ply sqlobject configobj 'PyGObject<3.50' pycairo pylint pytest-cov textile
     - name: Run Pylint
       run: |
         pushd sutekh
