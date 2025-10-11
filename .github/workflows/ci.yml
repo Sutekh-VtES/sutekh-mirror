@@ -45,7 +45,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo psycopg2
+        pip install mock pytest keyring ply sqlobject configobj 'PyGObject<3.50' pycairo psycopg2
     - name: Create Postgres DB
       env:
         PGPASSWORD: postgres
@@ -95,7 +95,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo mysql-connector
+        pip install mock pytest keyring ply sqlobject configobj 'PyGObject<3.50' pycairo mysql-connector
     - name: Create MySQL DB
       run: |
         mysql -uroot -h 127.0.0.1 -e 'create database sutekh_test;'
@@ -127,7 +127,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest keyring ply sqlobject configobj PyGObject pycairo
+        pip install mock pytest keyring ply sqlobject configobj 'PyGObject<3.50' pycairo
     - name: Run Tests
       run: |
         pushd sutekh
