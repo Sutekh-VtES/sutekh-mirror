@@ -262,13 +262,14 @@ jobs:
         pip install keyring ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
     - name: Run tests
       run: |
+        # Seems there are issues with getting the github installed python to play with
+        # homebrew stuff
+        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         cd sutekh
         pytest
         cd ..
     - name: Build Mac packages
       run: |
-        # Seems there are issues with getting the github installed python to play with
-        # homebrew stuff
         export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         cd sutekh
         python3 setup-freeze.py bdist_mac
