@@ -31,8 +31,8 @@ jobs:
     name: Postgres - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
-        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
+        python-version: ['3.11', '3.12']
+        ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -81,8 +81,8 @@ jobs:
     name: MySQL - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
-        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
+        python-version: ['3.11', '3.12']
+        ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -113,8 +113,8 @@ jobs:
     name: SQLite - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
-        ubuntu: ['ubuntu-20.04', 'ubuntu-22.04']
+        python-version: ['3.11', '3.12']
+        ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -134,14 +134,14 @@ jobs:
         xvfb-run --auto-servernum pytest
         popd
     - name: Build sdist
-      if: matrix.python-version == '3.9' && matrix.ubuntu == 'ubuntu-20.04'
+      if: matrix.python-version == '3.11' && matrix.ubuntu == 'ubuntu-22.04'
       run: |
         pushd sutekh
         python3 ./setup.py sdist
         popd
     - name: Upload sdist
       uses: actions/upload-artifact@v4
-      if: matrix.python-version == '3.9' && matrix.ubuntu == 'ubuntu-20.04'
+      if: matrix.python-version == '3.11' && matrix.ubuntu == 'ubuntu-22.04'
       with:
         name: sutekh-sdist
         path: sutekh/dist/Sutekh*tar*
@@ -298,10 +298,10 @@ jobs:
     name: SQLite - Pylint & Coverage
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.9
+    - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: '3.11'
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
