@@ -294,17 +294,27 @@ class ReplacementTreeView(Gtk.TreeView):
         assert oMatch is not None
         return oMatch.group('name'), oMatch.group('exp')
 
+def _format_guess_name(oPhysCard):
+    """Format the displayed name for a guessed card"""
+    if oPhysCard.printing.name:
+        sBestGuess = f"{oPhysCard.abstractCard.name} [{oPhysCard.printing.expansion.name} ({oPhysCard.printing.name})]"
+    else:
+        sBestGuess = f"{oPhysCard.abstractCard.name} [{oPhysCard.printing.expansion.name}]"
+    return sBestGuess
+
 
 class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     """Lookup AbstractCards. Use the user as the AI if a simple lookup fails.
        """
 
-    _sDomain = "PrintingRenames"
+    _sExpDomain = "PrintingRenames"
+    _sCardMovedDomain = "CardExpansionMoves"
 
     def __init__(self, oConfig):
         super().__init__()
         self._oConfig = oConfig
         self._dLookupPrintings = self._get_printing_lookups()
+        self._dCardMoves = self._get_card_moved_lookups()
 
     def refresh_from_new_db(self):
         """Reload info from the daabase to pick up new lookups, etc"""
@@ -314,11 +324,15 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         """Return a dictionary created from data in the lookup table"""
         dResults = {}
         aWarnings = []
-        for oLookup in LookupHints.selectBy(domain=self._sDomain):
-            sOrigExp, sOrigPrinting = [x.strip() for x in oLookup.lookup.split('|||', 1)]
+        for oLookup in LookupHints.selectBy(domain=self._sExpDomain):
+            try:
+                sOrigExp, sOrigPrinting = [x.strip() for x in oLookup.lookup.split('|||', 1)]
+                sNewExp, sNewPrinting = [x.strip() for x in oLookup.value.split('|||', 1)]
+            except ValueError:
+                aWarnings.append(f'Invalid Printing lookup entry - {oLookup.lookup} -> {oLookup.value}')
+                continue
             if sOrigPrinting == 'None':
                 sOrigPrinting = None
-            sNewExp, sNewPrinting = [x.strip() for x in oLookup.value.split('|||', 1)]
             if sNewPrinting == 'None':
                 sNewPrinting = None
             try:
@@ -328,6 +342,34 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 aWarnings.append(f'Invalid lookup for {sOrigExp} ({sOrigPrinting}) -> {sNewExp} ({sNewPrinting}): {e}')
                 continue
             dResults[(sOrigExp, sOrigPrinting)] = oPrinting
+        if aWarnings:
+            do_complaint_warning("\n".join(aWarnings))
+        return dResults
+
+    def _get_card_moved_lookups(self):
+        """Return a dictionary created from data in the lookup table"""
+        dResults = {}
+        aWarnings = []
+        for oLookup in LookupHints.selectBy(domain=self._sCardMovedDomain):
+            # Don't crash on bad lookups
+            try:
+                sCardName, sOrigExp, sOrigPrinting = [x.strip() for x in oLookup.lookup.split('|||', 2)]
+                sNewExp, sNewPrinting = [x.strip() for x in oLookup.value.split('|||', 1)]
+            except ValueError:
+                aWarnings.append(f'Invalid Card Move lookup entry - {oLookup.lookup} -> {oLookup.value}')
+                continue
+            if sOrigPrinting == 'None':
+                sOrigPrinting = None
+            if sNewPrinting == 'None':
+                sNewPrinting = None
+            try:
+                oAbsCard = IAbstractCard(sCardName)
+                oExp = IExpansion(sNewExp)
+                oPrinting = IPrinting((oExp, sNewPrinting))
+            except SQLObjectNotFound as e:
+                aWarnings.append(f'Invalid lookup for {sCardName} {sOrigExp} ({sOrigPrinting}) -> {sNewExp} ({sNewPrinting}): {e}')
+                continue
+            dResults[(oAbsCard, sOrigExp, sOrigPrinting)] = oPrinting
         if aWarnings:
             do_complaint_warning("\n".join(aWarnings))
         return dResults
@@ -493,23 +535,34 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
             sBestGuess = NO_CARD
             oGuessCard = None
             sExpName, sPrintName = tExpPrint
+            oAbsCard = IAbstractCard(sName)
             if sPrintName:
                 sFullName = "%s [%s (%s)]" % (sName, sExpName, sPrintName)
             else:
                 sFullName = "%s [%s]" % (sName, sExpName)
-            if tExpPrint in self._dLookupPrintings:
+            if (oAbsCard, sExpName, sPrintName) in self._dCardMoves:
+                # We have a card moved lookup, so use that us our guess
+                # We don't automatically do this, so the user can confirm
+                # cases where this is wrong for some reason
+                oGuessPrinting = self._dCardMoves[(oAbsCard, sExpName, sPrintName)]
+                for oCandCard in oAbsCard.physicalCards:
+                    if oCandCard.printing and oGuessPrinting == oCandCard.printing:
+                        # It's not clear what the best guess of the options will be,
+                        # so we just take the first one
+                        sBestGuess = _format_guess_name(oCandCard)
+                        oGuessCard = oAbsCard
+                        break
+            elif tExpPrint in self._dLookupPrintings:
                 # We have a mapping for this, but the printing lookup didn't
                 # work, so lets try falling back to the expansion for suggestions
                 oGuessExp = self._dLookupPrintings[tExpPrint].expansion
-                oAbsCard = IAbstractCard(sName)
                 for oCandCard in oAbsCard.physicalCards:
-                    if oCandCard.printing:
-                        if oGuessExp == oCandCard.printing.expansion:
-                            # It's not clear what the best guess of the options will be,
-                            # so we just take the first one
-                            sBestGuess = f"{sName} [{oCandCard.printing.expansion.name} ({oCandCard.printing.name})]"
-                            oGuessCard = oAbsCard
-                            break
+                    if oCandCard.printing and oGuessExp == oCandCard.printing.expansion:
+                        # It's not clear what the best guess of the options will be,
+                        # so we just take the first one
+                        sBestGuess = _format_guess_name(oCandCard)
+                        oGuessCard = oAbsCard
+                        break
 
             oIter = oModel.append(None)
             oModel.set(oIter, 0, iCnt, 1, sFullName, 2, sBestGuess,
