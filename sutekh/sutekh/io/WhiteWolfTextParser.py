@@ -14,6 +14,7 @@ from logging import Logger
 from sutekh.base.io.SutekhBaseHTMLParser import LogStateWithInfo
 
 from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, set_metadata_date
+from sutekh.base.core.BaseTables import LookupHints
 
 from sutekh.core.SutekhObjectMaker import SutekhObjectMaker
 from sutekh.base.Utility import move_articles_to_front
@@ -161,6 +162,12 @@ def _find_sect_and_title(aLines):
     return sSect, sTitle
 
 
+def _get_v5_lookups():
+    dResults = {}
+    for oLookup in LookupHints.selectBy(domain="ExpansionPreconMap"):
+        dResults[oLookup.lookup] = oLookup.value
+    return dResults
+
 
 class CardDict(dict):
     """Dictionary object which holds the extracted card info."""
@@ -302,6 +309,7 @@ class CardDict(dict):
         super().__init__()
         self._oLogger = oLogger
         self._oMaker = SutekhObjectMaker()
+        self._dV5Map = _get_v5_lookups()
 
     def _convert_group_to_int(self, sGroup):
         """Standard means to convert a group to an integer"""
@@ -500,6 +508,19 @@ class CardDict(dict):
                     # fit and to distinguish it from the 'Fixed' kickstarter
                     # editions
                     aExp.append((aPair[0].strip(), 'NA'))
+            elif 'v5' in aPair[0].lower().strip():
+                # Need to create the sExp:Deck key
+                sCandExp = aPair[0].strip()
+                for sCandDeck in aPair[1].split('/'):
+                    # Strip numbers
+                    sDeck = ''.join([x for x in sCandDeck if x.isalpha()])
+                    sKey = f'{sCandExp}:{sDeck}'
+                    if sKey in self._dV5Map:
+                        aExp.append((self._dV5Map[sKey], sDeck))
+                    else:
+                        self._oLogger.warning("Unmatched V5 deck: %s", sKey)
+                        # Fall back to default so we have an expansion
+                        aExp.append((aPair[0].strip(), aPair[1].strip()))
             else:
                 aExp.append((aPair[0].strip(), aPair[1].strip()))
 
