@@ -54,12 +54,17 @@ Expansions,TU,The Unaligned
 Expansions,DM,Danse Macabre
 Expansions,FB,First Blood
 Expansions,NB,New Blood
-Expansions,V5,Fifth Edition
-Expansions,V5A,Fifth Edition: Anarchs
+Expansions,NB2,New Blood
+Expansions,NB3,New Blood
 Expansions,SP,Black Chantry
 Expansions,Anarchs Unbound (Kickstarter Edition),Anarchs Unbound (Kickstarter Edition)
 Expansions,The Unaligned (Kickstarter Edition),The Unaligned (Kickstarter Edition)
 Expansions,Danse Macabre (Kickstarter Edition),Danse Macabre (Kickstarter Edition)
+Expansions,V5,Fifth Edition: Camarilla Ankh
+Expansions,V5A,Fifth Edition: Anarchs Ankh
+Expansions,V5C,Fifth Edition: Independent Ankh
+Expansions,25th,Twenty-Fifth Anniversary
+Expansions,30th,Thirtieth Anniversary
 Rarities,C,Common
 Rarities,C1,Common
 Rarities,C2,Common
@@ -230,6 +235,20 @@ Virtues,Martyrdom,mar
 Virtues,Redemption,red
 Virtues,Vengeance,ven
 Virtues,Vision,vis
+ExpansionPreconMap,V5:PM,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5:PN,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5:PTo,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5:PTr,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5:PV,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5:PH,Fifth Edition: Independent Ankh
+ExpansionPreconMap,V5:PL,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5A:PB,Fifth Edition: Anarchs Ankh
+ExpansionPreconMap,V5A:PBh,Fifth Edition: Camarilla Ankh
+ExpansionPreconMap,V5A:PG,Fifth Edition: Anarchs Ankh
+ExpansionPreconMap,V5A:PMin,Fifth Edition: Anarchs Ankh
+ExpansionPreconMap,V5C:PR,Fifth Edition: Anarchs Ankh
+ExpansionPreconMap,V5C:PSal,Fifth Edition: Independent Ankh
+ExpansionPreconMap,V5C:PTz,Fifth Edition: Anarchs Ankh
 """
 
 TEST_CARD_LIST = """
@@ -1105,7 +1124,7 @@ Advanced, Independent: +1 strength. If there are any Gehenna cards in play, any 
 Artist: Durwin Talon
 
 Name: Theo Bell
-[V5:PB1]
+[V5A:PB1]
 Cardtype: Vampire
 Clan: Brujah
 Group: 6
@@ -1151,7 +1170,7 @@ Lock this reacting vampire. Change the target of the bleed to another Methuselah
 Artist: Javier Santos
 
 Name: Deflection
-[Jyhad:C, VTES:C, SW:PV2, FN:PG2, CE:C/PTr3, BH:PTr4, HttB:PGar4, SP:PoS4/PwN3, 25th:6, FB:PV4, V5:PM5/PTr4/PV6, NB:PM2/PV4]
+[Jyhad:C, VTES:C, SW:PV2, FN:PG2, CE:C/PTr3, BH:PTr4, HttB:PGar4, SP:PoS4/PwN3, 25th:6, FB:PV4, V5:PL6/PM5/PTr4/PV6, NB:PM2/PV4,  V5C:PSal3/PTz3, NB3:PL3]
 Cardtype: Reaction
 Cost: 1 blood
 Discipline: Dominate
@@ -1177,7 +1196,7 @@ Discipline: Auspex
 Artist: Dave Seeley
 
 Name: Eyes of Argus
-[KoT:C/B2, HttB:PSal3, Anthology:4, SP:DoF4/PwN2, V5:PM5/PTr6, NB:PM2/PTr2]
+[KoT:C/B2, HttB:PSal3, Anthology:4, SP:DoF4/PwN2, V5:PH3/PM5/PTr6, NB:PM2/PTr2, V5C:PSal4, 30th:2, NB3:PH2]
 Cardtype: Reaction
 Discipline: Auspex
 [aus] Only usable during an action directed at you (or a card you control). +2 intercept.
@@ -1212,6 +1231,33 @@ Discipline: Animalism
 [ani] (D) Bleed with +1 bleed.
 [ANI] Frenzy. (D) Enter combat with and lock a vampire. The target vampire is considered the acting minion during that combat.
 Artist: Jeremy McHugh
+
+Name: Abaddon
+[V5C:PSal2]
+Cardtype: Vampire
+Clan: Salubri
+Group: 7
+Capacity: 8
+Discipline: cel pot AUS DOM FOR
+Independent: Abaddon gets 1 optional maneuver and 1 optional press each combat.
+Artist: Ken Meyer, Jr.
+
+Name: Break the Bonds
+[V5C:PR8]
+Cardtype: Action
+Discipline: Animalism/Obfuscate/Presence
+Requires an Anarch. More than one Discipline can be used to play this card. (D) Bleed.
+[ani] The bleed is with +1 bleed.
+[obf] If the bleed is successful, you can lock a minion controlled by the target Methuselah.
+[pre] If the bleed is successful, add 1 blood to a vampire in your uncontrolled region.
+Artist: Cos Koniotis
+
+Name: Oblivion
+[V5:PH1/PL1]
+Cardtype: Master
+Discipline.
+Put this card on a vampire. This vampire gets +1 level of Oblivion [obl] and +1 capacity. Cannot be put on a vampire with superior Oblivion [OBL].
+Artist: Raquel Cornejo
 
 """
 
@@ -1309,6 +1355,31 @@ TEST_EXP_INFO = """
     "None": {
       "date": "2008-08-10",
       "back": "VtES"
+    }
+  },
+  "V5": {
+    "None": {
+      "back": "Black Chantry",
+      "date": "2020-11-30"
+    },
+    "Card Updates 1": {
+      "date": "2024-10-31",
+      "back": "Black Chantry",
+      "cards": [
+        "Deflection"
+      ]
+    }
+  },
+  "V5A": {
+    "None": {
+      "back": "Black Chantry",
+      "date": "2021-12-01"
+    }
+  },
+  "V5C": {
+    "None": {
+      "back": "Black Chantry",
+      "date": "2024-01-01"
     }
   }
 }
