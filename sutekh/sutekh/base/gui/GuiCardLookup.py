@@ -18,7 +18,8 @@ from ..core.BaseAdapters import (IAbstractCard, IPhysicalCard, IExpansion,
 from ..core.CardLookup import (AbstractCardLookup, PhysicalCardLookup,
                                PrintingLookup, LookupFailed)
 from ..core.BaseFilters import best_guess_filter
-from .SutekhDialog import SutekhDialog, do_complaint_error, do_complaint_warning
+from .SutekhDialog import (SutekhDialog, do_complaint_error, do_complaint_warning,
+                           do_complaint_buttons)
 from .CellRendererSutekhButton import CellRendererSutekhButton
 from .PhysicalCardView import PhysicalCardView
 from .AutoScrolledWindow import AutoScrolledWindow
@@ -367,7 +368,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 oExp = IExpansion(sNewExp)
                 oPrinting = IPrinting((oExp, sNewPrinting))
             except SQLObjectNotFound as e:
-                aWarnings.append(f'Invalid lookup for {sCardName} {sOrigExp} ({sOrigPrinting}) -> {sNewExp} ({sNewPrinting}): {e}')
+                aWarnings.append(f'Invalid lookup for {sCardName} {sOrigExp} ({sOrigPrinting}) -> {sNewExp} ({sNewPrinting})')
                 continue
             dResults[(oAbsCard, sOrigExp, sOrigPrinting)] = oPrinting
         if aWarnings:
@@ -571,7 +572,33 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
         oUnknownDialog.vbox.show_all()
         oPhysCardView.load()
 
-        iResponse = oUnknownDialog.run()
+        while True:
+            iResponse = oUnknownDialog.run()
+            # Check if the are cards mapped to None and make sure the user
+            # is OK with that
+            if iResponse == Gtk.ResponseType.OK:
+                aUnmapped = []
+                oIter = oModel.get_iter_first()
+                while oIter is not None:
+                    sFullName, sNewFullName = oModel.get(oIter, 1, 2)
+                    if sNewFullName.strip() == 'No Card':
+                        aUnmapped.append(sFullName)
+                    oIter = oModel.iter_next(oIter)
+                if aUnmapped:
+                    sMessage = "The following cards will be removed: \n%s" % "\n".join(aUnmapped)
+                    sMessage += "   Do you want to create the card set now?"
+                    aButtons = ("Yes, I'm sure", Gtk.ResponseType.YES,
+                                "No, go back", Gtk.ResponseType.NO)
+                    iQuery = do_complaint_buttons(sMessage, Gtk.MessageType.QUESTION, aButtons)
+                    if iQuery == Gtk.ResponseType.YES:
+                        break
+                else:
+                    # All cards accounted for, so create the card set
+                    break
+            else:
+                # Cancels are assumed final
+                break
+
         oUnknownDialog.destroy()
 
         oPhysCardView.cleanup()
