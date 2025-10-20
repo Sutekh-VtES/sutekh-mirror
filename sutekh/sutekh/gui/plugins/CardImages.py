@@ -77,7 +77,9 @@ def make_expansion_pathname(sExpansionName):
             # Maybe a Printing?
             sSplitExp, sPrintName = [x.strip() for x in
                                      sExpansionName.split('(', 1)]
-            sPrintName = sPrintName.replace(')', '')
+            # Remove trailing ')'
+            if sPrintName.endswith(')'):
+                sPrintName = sPrintName[:-1]
             try:
                 oExpansion = IExpansion(sSplitExp)
                 oPrinting = IPrinting((oExpansion, sPrintName))
