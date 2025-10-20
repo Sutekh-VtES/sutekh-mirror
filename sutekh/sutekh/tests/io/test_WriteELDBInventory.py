@@ -120,6 +120,9 @@ EXPECTED = """"ELDB - Inventory"
 "Deep Song",0,0,"","Library"
 "Deflection",0,0,"","Library"
 "Govern the Unaligned",0,0,"","Library"
+"Abaddon",0,0,"","Crypt"
+"Oblivion",0,0,"","Library"
+"Break the Bonds",0,0,"","Library"
 """
 
 
