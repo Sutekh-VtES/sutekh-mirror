@@ -161,17 +161,17 @@ class CardListModelTests(ConfigSutekhTest):
         self.assertEqual(oModel.get_child_entries_from_iter(oIter),
                          [(oFirst, 0), (oSecond, 0)])
         # Test that the different variants show correctly
-        oPath = '0:28:0'  # Harold's position
+        oPath = '0:29:0'  # Harold's position
         self.assertEqual(oModel.get_card_name_from_path(oPath),
                          u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          oModel.sUnknownExpansion)
-        oPath = '0:28:1'
+        oPath = '0:29:1'
         self.assertEqual(oModel.get_card_name_from_path(oPath),
                          u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
                          "Third Edition")
-        oPath = '0:28:2'
+        oPath = '0:29:2'
         self.assertEqual(oModel.get_card_name_from_path(oPath),
                          u"Harold Zettler, Pentex Director (Group 4)")
         self.assertEqual(oModel.get_exp_name_from_path(oPath),
