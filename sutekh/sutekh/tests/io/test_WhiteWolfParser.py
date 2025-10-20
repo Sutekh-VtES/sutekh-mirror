@@ -38,6 +38,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Aaron Bathurst (Group 4)",
         u"Aaron Duggan, Cameron's Toady (Group 2)",
         u"Aaron's Feeding Razor",
+        "Abaddon (Group 7)",
         u"Abandoning the Flesh",
         u"Abbot",
         u"Abd al-Rashid (Group 2)",
@@ -70,6 +71,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Bait and Switch",
         u"Baron Dieudonne (Group 4)",
         u"Bravo",
+        "Break the Bonds",
         u"Bronwen (Group 2)",
         u"Cedric (Group 4)",
         u"Cesewayo (Group 4)",
@@ -102,6 +104,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"My Enemy's Enemy",
         u"Necromancy",
         u"New Blood",
+        "Oblivion",
         u"Off Kilter",
         u"Ossian",
         u"Pariah (Group 2)",
@@ -759,6 +762,25 @@ class WhiteWolfParserTests(SutekhTest):
 
         self.assertEqual(oPentex1.id, oPentex2.id)
         self.assertEqual(oPentex1.id, oPentex3.id)
+
+        # Check the Fifth Edition expaansion naming
+        ov5Cam = IExpansion('Fifth Edition: Camarilla Ankh')
+        ov5Anarchs = IExpansion('Fifth Edition: Anarchs Ankh')
+        ov5Indep = IExpansion('Fifth Edition: Independent Ankh')
+
+        self.assertTrue(ov5Cam in [oP.expansion for oP in oPentex1.rarity])
+        oTheo = IAbstractCard('Theo Bell (Group 6)')
+        self.assertTrue(ov5Anarchs in [oP.expansion for oP in oTheo.rarity])
+        # Oblivion should have both independent and cam expansions, but not Anarch
+        oObl = IAbstractCard('Oblivion')
+        self.assertTrue(ov5Anarchs not in [oP.expansion for oP in oObl.rarity])
+        self.assertTrue(ov5Cam in [oP.expansion for oP in oObl.rarity])
+        self.assertTrue(ov5Indep in [oP.expansion for oP in oObl.rarity])
+        # Deflection should have all V5 expansions
+        oDeflect = IAbstractCard('Deflection')
+        self.assertTrue(ov5Anarchs in [oP.expansion for oP in oDeflect.rarity])
+        self.assertTrue(ov5Cam in [oP.expansion for oP in oDeflect.rarity])
+        self.assertTrue(ov5Indep in [oP.expansion for oP in oDeflect.rarity])
 
 
     def test_card_type_checkers(self):
