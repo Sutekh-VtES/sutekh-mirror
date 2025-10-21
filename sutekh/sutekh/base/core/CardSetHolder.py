@@ -316,6 +316,16 @@ class CachedCardSetHolder(CardSetHolder):
             else:
                 dLookupCache['printings'][tExpPrint] = \
                         (oPrinting.expansion.name, oPrinting.name)
+        # Apply any new lookups to ensure we're consistent
+        for sName in self._dCardExpansions:
+            for tExpPrint, iCnt in self._dCardExpansions[sName].items():
+                tNewExpPrint = dLookupCache['printings'].get(tExpPrint,
+                                                             tExpPrint)
+                if tExpPrint in dCardExpansions[sName] and tNewExpPrint != tExpPrint:
+                    del dCardExpansions[sName][tExpPrint]
+                    # Handle the case we need to merge expansions
+                    dCardExpansions[sName].setdefault(tNewExpPrint, 0)
+                    dCardExpansions[sName][tNewExpPrint] += iCnt
 
         # Apply special casesa
         for sName in dCardExpansions:
