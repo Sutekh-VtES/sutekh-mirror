@@ -29,12 +29,15 @@ class WhiteWolfParserTests(SutekhTest):
        Check the parsing done in SutekhTest setup and verify the results
        are correct.
        """
+
+
     # pylint: disable=too-many-public-methods
     # unittest.TestCase, so many public methods
     aExpectedCards = [
         u".44 Magnum",
         u"AK-47",
         u"Aabbt Kindred (Group 2)",
+        "Aaradhya, The Callous Tyrant (Group 6)",
         u"Aaron Bathurst (Group 4)",
         u"Aaron Duggan, Cameron's Toady (Group 2)",
         u"Aaron's Feeding Razor",
@@ -47,6 +50,7 @@ class WhiteWolfParserTests(SutekhTest):
         u"Abjure",
         u"Ablative Skin",
         u"Abombwe",
+        "Absolute Tyranny",
         u"Aeron (Group 3)",
         u"Agent of Power",
         u"Aire of Elation",
@@ -120,10 +124,12 @@ class WhiteWolfParserTests(SutekhTest):
         u"Rise of the Fallen",
         u"Rock Cat",
         u'Scapelli, The Family "Mechanic"',
+        "Serhat Gunde, Combat Junkie (Group 6)",
         u"Sha-Ennu (Group 4)",
         u"Shade",
         u"Sheela Na Gig (Group 5)",
         u"Smite",
+        "Surapong (Group 6)",
         u"Swallowed by the Night",
         u"Telepathic Counter",
         u"The Ankara Citadel, Turkey",
@@ -139,8 +145,12 @@ class WhiteWolfParserTests(SutekhTest):
         u"Vox Domini",
         u"Wake with Evening's Freshness",
         u"Walk of Flame",
+        "Wall of Filth",
+        "Ximena (Group 6)",
         u"Yvette, The Hopeless (Group 3)",
+        "Zbigniew, Hunter of Mekhet (Group 6)",
         u"Étienne Fauberge (Group 3)",
+        "Üresség (Group 6)",
         ]
 
     def test_basic(self):

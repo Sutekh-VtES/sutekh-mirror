@@ -163,6 +163,7 @@ class GroupingsTests(SutekhTest):
         aGrp = list(MultiTypeGrouping(self.aCards, DEF_GET_CARD))
         self.assertEqual(['Action', 'Action Modifier',
                           'Action Modifier / Combat',
+                          'Action Modifier / Reaction',
                           'Ally', 'Combat', 'Combat / Reaction',
                           'Equipment', 'Imbued', 'Master',
                           'Political Action', 'Power', 'Reaction',

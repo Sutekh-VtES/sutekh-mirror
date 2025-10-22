@@ -72,6 +72,7 @@ High Top gets +1 intercept. High Top may enter combat with any minion controlled
 """
 
 FILTER_LIST = """Abandoning the Flesh
+Absolute Tyranny
 Bait and Switch
 Deflection
 Enhanced Senses
@@ -139,7 +140,7 @@ class CliUtilsTests(SutekhTest):
     def test_run_filter_abstract_card(self):
         """Test running some filters on the Abstract Card list"""
         dResults = run_filter("Clan = 'Ministry'", None)
-        self.assertEqual(len(dResults), 5)
+        self.assertEqual(len(dResults), 6)
         for oCard in dResults:
             self.assertEqual(dResults[oCard], 0)
         aNames = [x.name for x in dResults]
@@ -147,7 +148,7 @@ class CliUtilsTests(SutekhTest):
         self.assertTrue('Amisa (Group 2)' in aNames)
 
         dResults = run_filter("CardType = 'Reaction'", None)
-        self.assertEqual(len(dResults), 10)
+        self.assertEqual(len(dResults), 11)
         for oCard in dResults:
             self.assertEqual(dResults[oCard], 0)
         aNames = [x.name for x in dResults]

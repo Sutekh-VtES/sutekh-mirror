@@ -731,6 +731,14 @@ class CardDict(dict):
             # SQLObject confuses pylint
             oCard.addTitle(oTitle)
 
+    def _add_path(self, oCard, sPath):
+        """Add the title to the card."""
+        oPath = self._oMaker.make_path(sPath)
+        if oPath not in oCard.path:
+            # pylint: disable=no-member
+            # SQLObject confuses pylint
+            oCard.addPath(oPath)
+
     def _add_sect(self, oCard, sSect):
         """Add the sect to the card."""
         oSect = self._oMaker.make_sect(sSect)
@@ -861,6 +869,10 @@ class CardDict(dict):
         if 'sect' in self:
             self._add_sect(oCard, self['sect'])
             seen_keys.add('sect')
+
+        if 'path' in self:
+            self._add_path(oCard, self['path'])
+            seen_keys.add('path')
 
         if 'artist' in self:
             self._add_artists(oCard, self['artist'])

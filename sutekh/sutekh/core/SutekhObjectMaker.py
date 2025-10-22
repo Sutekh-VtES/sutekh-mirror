@@ -12,13 +12,13 @@ from sutekh.base.core.BaseAdapters import IAbstractCard
 from sutekh.base.core.BaseObjectMaker import BaseObjectMaker
 
 from sutekh.core.SutekhTables import (SutekhAbstractCard, Clan, Creed,
-                                      Discipline, DisciplinePair, Sect,
-                                      Title, Virtue)
+                                      Discipline, DisciplinePair, Path,
+                                      Sect, Title, Virtue)
 from sutekh.core.SutekhAdapters import (IClan, ICreed, IDiscipline,
-                                        IDisciplinePair, ISect, ITitle,
-                                        IVirtue)
-from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Sects,
-                                       Titles, Virtues)
+                                        IDisciplinePair, IPath, ISect,
+                                        ITitle, IVirtue)
+from sutekh.core.Abbreviations import (Clans, Creeds, Disciplines, Paths,
+                                       Sects, Titles, Virtues)
 
 
 # Object Maker API
@@ -49,6 +49,9 @@ class SutekhObjectMaker(BaseObjectMaker):
 
     def make_title(self, sTitle):
         return self._make_object(Title, ITitle, Titles, sTitle)
+
+    def make_path(self, sPath):
+        return self._make_object(Path, IPath, Paths, sPath)
 
     def make_virtue(self, sVirtue):
         return self._make_object(Virtue, IVirtue, Virtues, sVirtue,
