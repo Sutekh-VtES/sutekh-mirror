@@ -138,6 +138,36 @@ Expansions:
 Artists:
 *\tMark Nelson"""
 
+AARADHYA = """Aaradhya, The Callous Tyrant (Group 6)
+Capacity: 10
+Group: 6
+Card Type:
+*\tVampire
+Keywords:
+*\t2 bleed
+*\t0 intercept
+*\t0 stealth
+*\t1 strength
+Clan:
+*\tVentrue
+Sect: Sabbat
+Path: Power and the Inner Voice
+Title: Cardinal
+Disciplines:
+*\tANI
+*\tDOM
+*\tFOR
+*\tPOT
+*\tPRE
+
+Sabbat cardinal: Aaradhya can unlock after performing a successful political action (even if the referendum failed). +1 bleed.
+
+Expansions:
+*\tFifth Edition: Sabbat (Precon)
+
+Artists:
+*\tNoora Hirvonen"""
+
 
 class TestCardTextFrame(GuiSutekhTest):
     """Class for the LogViewFrame test cases"""
@@ -173,6 +203,10 @@ class TestCardTextFrame(GuiSutekhTest):
         oCard = make_card('High Top', None)
         oCardTextFrame.set_card_text('set_card_text', oCard)
         self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), HIGH_TOP)
+
+        oCard = make_card('Aaradhya, The Callous Tyrant', None)
+        oCardTextFrame.set_card_text('set_card_text', oCard)
+        self.assertEqual(oCardTextFrame.view._oBuf.get_all_text(), AARADHYA)
 
     def test_show_errata(self):
         """Test with 'show errata markers' set"""
