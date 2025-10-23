@@ -26,6 +26,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         'Group': (40, '_render_group', '_get_data_group'),
         'Title': (100, '_render_title', '_get_data_title'),
         'Sect': (100, '_render_sect', '_get_data_sect'),
+        'Path': (100, '_render_path', '_get_data_path'),
         'Capacity or Life': (40, '_render_capacity', '_get_data_capacity'),
         'Cost': (100, '_render_cost', '_get_data_cost_sortkey'),
     })
@@ -52,6 +53,7 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
                    * _Capacity or Life:_ Show the capacity associated with \
                      the card, or its life.
                    * _Sect_: Show the Sect associated with the card.
+                   * _Path_: Show the Sabbat Path associated with the card.
                    * _Title_: Show the political titles listed on the card, \
                      if it is a crypt card.  Titles listed on library cards \
                      will not be shown.
@@ -253,6 +255,23 @@ class ExtraCardViewColumns(SutekhPlugin, BaseExtraCardViewColumns):
         oCard = self._get_iter_data(oIter)
         aSects, aIcons = self._get_data_sect(oCard)
         oCell.set_data(aSects, aIcons, DisplayOption.SHOW_TEXT_ONLY)
+
+    def _get_data_path(self, oCard, bGetIcons=True):
+        """Get the card's path."""
+        if oCard is not None:
+            aPaths = [oS.name for oS in oCard.path]
+            aPaths.sort()
+            aIcons = []
+            if bGetIcons:
+                aIcons = [None] * len(aPaths)
+            return aPaths, aIcons
+        return [], []
+
+    def _render_path(self, _oColumn, oCell, _oModel, oIter, _oDummy):
+        """Display path in the column"""
+        oCard = self._get_iter_data(oIter)
+        aPaths, aIcons = self._get_data_path(oCard)
+        oCell.set_data(aPaths, aIcons, DisplayOption.SHOW_TEXT_ONLY)
 
 
 plugin = ExtraCardViewColumns
