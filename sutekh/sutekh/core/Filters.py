@@ -360,7 +360,7 @@ class MultiPathFilter(MultiFilter):
     islistfilter = True
     types = ('AbstractCard', 'PhysicalCard')
 
-    def __init__(self, aPath):
+    def __init__(self, aPaths):
         self._aIds = [IPath(x).id for x in aPaths]
         self._oMapTable = make_table_alias('abs_path_map')
         self._oIdField = self._oMapTable.q.path_id

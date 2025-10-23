@@ -18,7 +18,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
 from sutekh.base.core.DBUtility import CARDLIST_UPDATE_DATE, get_metadata_date
 
 from sutekh.core.SutekhAdapters import (IClan, IDisciplinePair, ISect,
-                                        ITitle, ICreed, IVirtue)
+                                        IPath, ITitle, ICreed, IVirtue)
 from sutekh.SutekhUtility import is_crypt_card, is_vampire, is_trifle
 from sutekh.tests.TestCore import SutekhTest
 
@@ -777,6 +777,7 @@ class WhiteWolfParserTests(SutekhTest):
         ov5Cam = IExpansion('Fifth Edition: Camarilla Ankh')
         ov5Anarchs = IExpansion('Fifth Edition: Anarchs Ankh')
         ov5Indep = IExpansion('Fifth Edition: Independent Ankh')
+        ov5Sabbat = IExpansion('Fifth Edition: Sabbat Ankh')
 
         self.assertTrue(ov5Cam in [oP.expansion for oP in oPentex1.rarity])
         oTheo = IAbstractCard('Theo Bell (Group 6)')
@@ -791,7 +792,20 @@ class WhiteWolfParserTests(SutekhTest):
         self.assertTrue(ov5Anarchs in [oP.expansion for oP in oDeflect.rarity])
         self.assertTrue(ov5Cam in [oP.expansion for oP in oDeflect.rarity])
         self.assertTrue(ov5Indep in [oP.expansion for oP in oDeflect.rarity])
+        self.assertTrue(ov5Sabbat in [oP.expansion for oP in oDeflect.rarity])
 
+        # Test Sabbat Path
+        oWall = IAbstractCard('Wall of Filth')
+        self.assertTrue(IPath('Caine') in oWall.path)
+        self.assertTrue(IPath('Cathari') not in oWall.path)
+        self.assertTrue(ov5Sabbat in [oP.expansion for oP in oWall.rarity])
+
+        oAaradhya = IAbstractCard('Aaradhya, The Callous Tyrant')
+        self.assertFalse(IPath('Caine') in oAaradhya.path)
+        self.assertFalse(IPath('Cathari') in oAaradhya.path)
+        self.assertTrue(IPath('Power and the Inner Voice') in oAaradhya.path)
+        self.assertTrue(ISect('Sabbat') in oAaradhya.sect)
+        self.assertTrue(ov5Sabbat in [oP.expansion for oP in oAaradhya.rarity])
 
     def test_card_type_checkers(self):
         """Check the various utilities for checking card type

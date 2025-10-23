@@ -1177,7 +1177,7 @@ Lock this reacting vampire. Change the target of the bleed to another Methuselah
 Artist: Javier Santos
 
 Name: Deflection
-[Jyhad:C, VTES:C, SW:PV2, FN:PG2, CE:C/PTr3, BH:PTr4, HttB:PGar4, SP:PoS4/PwN3, 25th:6, FB:PV4, V5:PL6/PM5/PTr4/PV6, NB:PM2/PV4,  V5C:PSal3/PTz3, NB3:PL3]
+[Jyhad:C, VTES:C, SW:PV2, FN:PG2, CE:C/PTr3, BH:PTr4, HttB:PGar4, SP:PoS4/PwN3, 25th:6, FB:PV4, V5:PL6/PM5/PTr4/PV6, NB:PM2/PV4,  V5C:PSal3/PTz3, NB3:PL3, SV5:PPower5]
 Cardtype: Reaction
 Cost: 1 blood
 Discipline: Dominate
