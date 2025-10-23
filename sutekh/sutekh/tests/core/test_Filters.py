@@ -508,6 +508,14 @@ class FilterTests(SutekhTest):
               u"The Slaughterhouse", u"Two Wrongs",
               u"Vox Domini", "Wake with Evening's Freshness",
               u"Walk of Flame", 'Wall of Filth']),
+             (Filters.PathFilter('Caine'), [
+              'Serhat Gunde, Combat Junkie (Group 6)', 'Surapong (Group 6)',
+              'Wall of Filth',
+             ]),
+             (Filters.MultiPathFilter(['Caine', 'Death and the Soul']), [
+              'Serhat Gunde, Combat Junkie (Group 6)', 'Surapong (Group 6)',
+              'Wall of Filth', 'Zbigniew, Hunter of Mekhet (Group 6)',
+             ]),
         ]
 
         aPhysicalTests = [self._physical_test(tTest) for tTest in aTests]

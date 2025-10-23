@@ -159,6 +159,9 @@ class FilterParserTests(SutekhTest):
                      [Filters.CardTypeFilter('Equipment'),
                       Filters.CostFilter(5)]))
             ),
+            ('Path = Caine', Filters.PathFilter('Caine')),
+            ('Path in "Caine", "Death and the Soul"',
+             Filters.MultiPathFilter(['Caine', 'Death and the Soul'])),
         ]
 
         # Abstract Card Filtering Tests
