@@ -110,8 +110,11 @@ class SimpleLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                     try:
                         iCnt = dCardExpansions[sName][tExpPrint]
                         if tExpPrint not in dNamePrintings:
-                            oExp = IExpansion(tExpPrint[0])
-                            oPrinting = IPrinting(oExp, tExpPrint[1])
+                            if tExpPrint[0]:
+                                oExp = IExpansion(tExpPrint[0])
+                                oPrinting = IPrinting((oExp, tExpPrint[1]))
+                            else:
+                                oPrinting = None
                         else:
                             oPrinting = dNamePrintings[tExpPrint]
                         aCards.extend(
