@@ -56,7 +56,12 @@ def _get_creed_filename(oCreed):
 
 def _get_path_filename(oPath):
     """Get the filename for the path"""
-    sFileName = 'path/%s.png' % oPath.name.lower()
+    sPath = oPath.name.lower()
+    if sPath == 'power and the inner voice':
+        sPath = 'power'
+    elif sPath == 'death and the soul':
+        sPath = 'death'
+    sFileName = 'path/%s.png' % sPath
     return sFileName
 
 
