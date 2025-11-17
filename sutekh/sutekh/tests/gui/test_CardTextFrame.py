@@ -163,7 +163,7 @@ Disciplines:
 Sabbat cardinal: Aaradhya can unlock after performing a successful political action (even if the referendum failed). +1 bleed.
 
 Expansions:
-*\tFifth Edition: Sabbat (Precon)
+*\tFifth Edition: Sabbat Ankh (Precon)
 
 Artists:
 *\tNoora Hirvonen"""

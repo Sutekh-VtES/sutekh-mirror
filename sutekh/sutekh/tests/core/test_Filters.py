@@ -254,7 +254,7 @@ class FilterTests(SutekhTest):
               'Ximena (Group 6)', 'Zbigniew, Hunter of Mekhet (Group 6)', 'Üresség (Group 6)',
               ]),
             (Filters.MultiSectFilter(['Sabbat', 'Independent']),
-             [u"Aabbt Kindred (Group 2)", 'Aaradhya, The Callous Tyrant (Group 6)'
+             [u"Aabbt Kindred (Group 2)", 'Aaradhya, The Callous Tyrant (Group 6)',
               "Aaron Bathurst (Group 4)",
               u"Aaron Duggan, Cameron's Toady (Group 2)", "Abaddon (Group 7)",
               u"Abd al-Rashid (Group 2)",
