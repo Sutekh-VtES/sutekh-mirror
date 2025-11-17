@@ -145,9 +145,10 @@ class CardTextView(BaseCardTextView):
                                              [oC.name for oC in oCard.sect],
                                              "sect")
         if oCard.path:
-            self._oBuf.labelled_compact_list("Path",
-                                             [oC.name for oC in oCard.path],
-                                             "path")
+            oPath = [oP for oP in oCard.path][0]
+            dIcons = self._oIconManager.get_icon_list(oCard.path)
+            self._oBuf.labelled_value("Path", oPath.name, "path", dIcons[oPath.name])
+
         if oCard.title:
             self._oBuf.labelled_compact_list("Title",
                                              [oC.name for oC in oCard.title],

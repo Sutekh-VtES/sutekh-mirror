@@ -10,8 +10,8 @@ from sutekh.base.core.BaseAdapters import ICardType
 from sutekh.base.core.BaseGroupings import CardTypeGrouping, MultiTypeGrouping
 from sutekh.base.io.BaseIconManager import BaseIconManager
 
-from sutekh.core.SutekhTables import Clan, Creed, DisciplinePair, Virtue
-from sutekh.core.SutekhAdapters import IDisciplinePair, IVirtue, ICreed, IClan
+from sutekh.core.SutekhTables import Clan, Creed, DisciplinePair, Virtue, Path
+from sutekh.core.SutekhAdapters import IDisciplinePair, IVirtue, ICreed, IClan, IPath
 from sutekh.core.Groupings import ClanGrouping, DisciplineGrouping
 
 
@@ -51,6 +51,12 @@ def _get_card_type_filename(oType):
 def _get_creed_filename(oCreed):
     """Get the filename for the creed"""
     sFileName = 'clan/%s.png' % oCreed.name.lower()
+    return sFileName
+
+
+def _get_path_filename(oPath):
+    """Get the filename for the path"""
+    sFileName = 'path/%s.png' % oPath.name.lower()
     return sFileName
 
 
@@ -112,6 +118,14 @@ class IconManager(BaseIconManager):
         for oCreed in aValues:
             sFileName = _get_creed_filename(oCreed)
             dIcons[oCreed.name] = self._get_icon(sFileName)
+        return dIcons
+
+    def _get_path_icons(self, aValues):
+        """Get the icons for the paths."""
+        dIcons = {}
+        for oPath in aValues:
+            sFileName = _get_path_filename(oPath)
+            dIcons[oPath.name] = self._get_icon(sFileName)
         return dIcons
 
     def _get_discipline_icons(self, aValues):
@@ -210,6 +224,8 @@ class IconManager(BaseIconManager):
             dIcons = self._get_clan_icons(aValues)
         elif isinstance(aValues[0], Creed):
             dIcons = self._get_creed_icons(aValues)
+        elif isinstance(aValues[0], Path):
+            dIcons = self._get_path_icons(aValues)
         return dIcons
 
     def get_icon_total(self):
@@ -235,6 +251,8 @@ class IconManager(BaseIconManager):
             self._download(_get_virtue_filename(oVirtue), oLogger)
         for oType in CardType.select():
             self._download(_get_card_type_filename(oType), oLogger)
+        for oPath in Path.select():
+            self._download(_get_path_filename(oPath), oLogger)
         # download the special cases
         self._download('icon/burn.png', oLogger)
         self._download('icon/adv.png', oLogger)
