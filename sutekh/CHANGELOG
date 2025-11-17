@@ -1,3 +1,64 @@
+17 Nove 2025
+ * Add path icons
+
+23 Oct 2025
+ * Add basic support for Sabbat Paths.
+
+21 Oct 2025
+ * Add support for passing hints through to the card lookup plugin
+   to make updating to the new expansion handling easier
+
+20 Oct 2025
+ * Change how we handle Fifth Edition cards. We use the card ankh
+   symbol to decide the expansion, and use the precon information
+   in the cardlist to decide this correctly, so the Hecata Oblivion
+   card will have a different expansion than the Lasombra Oblivion
+   card, since they have differing ankh symbol.s
+
+19 Oct 2025
+ * Fix a bug in the handling of printing names in the card image plugin
+
+11 Oct 2025
+ * Update CI pipleine build to work with latest Mingw32 and so forth
+
+03 Oct 2025
+ * Add basic scaffolding for the forthcoming Sabbat Paths (database table,
+   database upgrade logic, etc.)
+
+16 July 2025
+ * Switch to using https://static.krcg.org/ as the source for icons.
+
+04 May 2025
+ * Rework the TTS export plugin to not use the outdated steam workshop source.
+   but use one built from the KRCG api.
+
+28 Nov 2024
+ * Add warnings to the card list parser for unknown keys in the cardlist,
+   rather than crashin
+
+27 Oct 2024
+ * Fix and improve the Mac build on github
+
+26 Sep 2024
+ * Add experimental snap build
+
+13 Sep 2024
+ * Various fixes to the github build action
+
+10 Apr 2024
+ * Fix some display issue with the clan statistics plugin
+
+18 Mar 2024
+ * Improve error reporting of the TTS exporter
+
+21 Nov 2023
+ * Allow adding nicknames to the decks exported by the TTS plugin
+
+31 Jul 2023
+ * Various fixes to the import PDF as images plugin
+ * Added explicit connection cleanups to the tests to work with changes to
+   the sqlite module in Python 3.11
+
 20 Nov 2022
  * Update github actions to remove various deprecated things.
 
