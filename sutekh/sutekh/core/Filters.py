@@ -355,7 +355,7 @@ class MultiPathFilter(MultiFilter):
     """Filter on Multiple Paths"""
     keyword = "Path"
     description = "Path"
-    helptext = "a list of Path.\nReturns all cards belonging to the given" \
+    helptext = "a list of paths.\nReturns all cards belonging to the given" \
             " paths"
     islistfilter = True
     types = ('AbstractCard', 'PhysicalCard')
