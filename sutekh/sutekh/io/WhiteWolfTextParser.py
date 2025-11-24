@@ -494,6 +494,12 @@ class CardDict(dict):
             elif aPair[1].strip().startswith('Promo-'):
                 # Handle the TR:Promo special case
                 aExp.append((aPair[1].strip(), 'NA'))
+            elif aPair[0].strip() == 'Promo' and aPair[1].isdigit():
+                # Handle the Promo:[DATE][NUM] case
+                # We take the first 8 characters as the date, since
+                # there may be number of copies info as well
+                sPromo = f"Promo-{aPair[1][:8]}"
+                aExp.append((sPromo, 'NA'))
             elif 'anthology' in aPair[0].lower() and \
                     'larp' not in aPair[1].lower():
                 # Add the Anthology reprint cases
