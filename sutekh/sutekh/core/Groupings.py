@@ -77,6 +77,12 @@ class SectGrouping(IterGrouping):
             oIter, lambda x: [y.name for y in fGetCard(x).sect])
 
 
+class PathGrouping(IterGrouping):
+    """Group by Sect"""
+    def __init__(self, oIter, fGetCard=DEF_GET_CARD):
+        super().__init__(
+            oIter, lambda x: [y.name for y in fGetCard(x).path])
+
 class TitleGrouping(IterGrouping):
     """Group by the political title of the vampire."""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):

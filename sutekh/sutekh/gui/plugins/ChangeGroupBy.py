@@ -8,7 +8,8 @@
 from sutekh.core.Groupings import (ClanGrouping, DisciplineGrouping,
                                    CryptLibraryGrouping, SectGrouping,
                                    TitleGrouping, CostGrouping, GroupGrouping,
-                                   GroupPairGrouping, DisciplineLevelGrouping)
+                                   GroupPairGrouping, DisciplineLevelGrouping,
+                                   PathGrouping)
 
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.base.gui.plugins.BaseChangeGroupBy import BaseGroupBy
@@ -29,6 +30,7 @@ class GroupCardList(SutekhPlugin, BaseGroupBy):
         'Cost': CostGrouping,
         'Group': GroupGrouping,
         'Group pairs': GroupPairGrouping,
+        'Sabbat Path': PathGrouping,
     })
 
 
