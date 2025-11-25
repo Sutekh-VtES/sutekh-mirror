@@ -6,7 +6,7 @@
 """Data about the urls for the cardlist and other useful data files.
    """
 
-WW_CARDLIST_DATAPACK = "cardlist"
+WW_CARDLIST_DATAPACK = "cardlist_2.2"
 
 WW_CARDLIST_URL = ("https://gitlab.com/sutekh/sutekh-extras/"
                    "-/raw/master/CardList/cardlist-data/cardlist.txt")

@@ -141,7 +141,7 @@ class StarterConfigDialog(SutekhDialog):
         sData = None
         if sFile == self.sDocUrl:
             # Downloading from sutekh datapack, so need magic to get right file
-            sZipUrl, sHash = find_data_pack('starters',
+            sZipUrl, sHash = find_data_pack('starters_2.2',
                                             fErrorHandler=gui_error_handler)
             if not sZipUrl:
                 # Error getting the data pack, so we fail
