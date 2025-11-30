@@ -548,8 +548,6 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
                 oGuessPrinting = self._dCardMoves[(oAbsCard, sExpName, sPrintName)]
                 for oCandCard in oAbsCard.physicalCards:
                     if oCandCard.printing and oGuessPrinting == oCandCard.printing:
-                        # It's not clear what the best guess of the options will be,
-                        # so we just take the first one
                         sBestGuess = _format_guess_name(oCandCard)
                         oGuessCard = oAbsCard
                         break
