@@ -320,6 +320,7 @@ class GuiLookup(AbstractCardLookup, PhysicalCardLookup, PrintingLookup):
     def refresh_from_new_db(self):
         """Reload info from the daabase to pick up new lookups, etc"""
         self._dLookupPrintings = self._get_printing_lookups()
+        self._dCardMoves = self._get_card_moved_lookups()
 
     def _get_printing_lookups(self):
         """Return a dictionary created from data in the lookup table"""
