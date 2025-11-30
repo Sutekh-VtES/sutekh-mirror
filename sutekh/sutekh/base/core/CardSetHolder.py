@@ -304,7 +304,9 @@ class CachedCardSetHolder(CardSetHolder):
             for tExpPrint, iCnt in self._dCardExpansions[sName].items():
                 tNewExpPrint = dLookupCache['printings'].get(tExpPrint,
                                                              tExpPrint)
-                dCardExpansions[sName][tNewExpPrint] = iCnt
+                # Hangle the case of merging expansions here
+                dCardExpansions[sName].setdefault(tNewExpPrint, 0)
+                dCardExpansions[sName][tNewExpPrint] += iCnt
 
         dPrintingLookup = oCardLookup.printing_lookup(aExpPrintNames,
                                                       "Physical Card List",
