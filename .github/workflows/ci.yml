@@ -144,7 +144,7 @@ jobs:
       if: matrix.python-version == '3.11' && matrix.ubuntu == 'ubuntu-22.04'
       with:
         name: sutekh-sdist
-        path: sutekh/dist/Sutekh*tar*
+        path: sutekh/dist/*tar*
 
 
   sqlite-win:
