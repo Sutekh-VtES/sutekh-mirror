@@ -78,7 +78,7 @@ class SectGrouping(IterGrouping):
 
 
 class PathGrouping(IterGrouping):
-    """Group by Sect"""
+    """Group by Sabbat Path"""
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
         super().__init__(
             oIter, lambda x: [y.name for y in fGetCard(x).path])
