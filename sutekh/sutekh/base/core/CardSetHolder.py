@@ -338,8 +338,10 @@ class CachedCardSetHolder(CardSetHolder):
                     # If this is a special case, point the numbers at the correct
                     # expansion
                     if tCachedPrint != tExpPrint:
+                        # Expansions can merge here too
                         dCardExpansions[sName][tExpPrint] = 0
-                        dCardExpansions[sName][tCachedPrint] = iCnt
+                        dCardExpansions[sName].setdefault(tCachedPrint, 0)
+                        dCardExpansions[sName][tCachedPrint] += iCnt
 
         aPhysCards = oCardLookup.physical_lookup(dCardExpansions,
                                                  dNameCards, dPrintingLookup,
