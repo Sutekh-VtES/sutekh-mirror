@@ -1,3 +1,11 @@
+30 Nov 2025
+ * Fix some bugs in handling expansion name changes on imports
+ * Fix missing sdist artifact in the github action build
+
+24 Nov 2025
+ * Add a grouping for paths
+ * Improve parsing of promo dates in the cardlist
+
 17 Nove 2025
  * Add path icons
 
