@@ -223,10 +223,12 @@ jobs:
     - name: Run tests
       run: |
         cd sutekh
+        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         pytest
         cd ..
     - name: Build Mac packages
       run: |
+        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         cd sutekh
         python3 setup-freeze.py bdist_mac
         # Permissions are helpful for playing with the files in the app
