@@ -1,3 +1,6 @@
+09 Dec 2025
+ * Release Sutekh 2.2.0
+
 30 Nov 2025
  * Fix some bugs in handling expansion name changes on imports
  * Fix missing sdist artifact in the github action build
