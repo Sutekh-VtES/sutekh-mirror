@@ -207,7 +207,7 @@ jobs:
 
     # We use macos-13 since macos-latest is arm unless we use the
     # large runner that requires a paid package
-    runs-on: macos-13
+    runs-on: macos-15-intel
     steps:
     - uses: actions/checkout@v4
     - name: Install Python
