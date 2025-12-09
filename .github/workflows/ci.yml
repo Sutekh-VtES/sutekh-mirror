@@ -216,19 +216,20 @@ jobs:
         python-version: '3.12'
     - name: Install brew dependencies
       run: |
-        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme glib
+        brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
         pip install keyring ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
     - name: Run tests
       run: |
+        # Annoyingly different path from the arm runner
+        export DYLD_LIBRARY_PATH=/usr/local/lib
         cd sutekh
-        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
         pytest
         cd ..
     - name: Build Mac packages
       run: |
-        export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+        export DYLD_LIBRARY_PATH=/usr/local/lib
         cd sutekh
         python3 setup-freeze.py bdist_mac
         # Permissions are helpful for playing with the files in the app
