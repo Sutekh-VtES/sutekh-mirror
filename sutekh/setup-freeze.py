@@ -32,7 +32,6 @@ base = None
 build_exe_options = {
     'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
                  'packaging.specifiers', 'packaging.requirements', 'packaging.version',
-                 'jaraco.classes', 'jaraco.context', 'jaraco.functools', 'jaraco.text',
                  'plistlib', 'platformdirs'],
     # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
     # in col.py
