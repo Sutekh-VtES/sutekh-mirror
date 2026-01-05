@@ -14,8 +14,6 @@ The Python modules required are:
 * PyGtk (for the GUI) [ https://pypi.org/project/pygtk/ ]
 * librsvg2 for the sutekh icon
 * configobj to manage the config file [ https://pypi.org/project/configobj/ ]
-* keyring so the secret library plugin can store credentials in the system
-  keyring [ https://pypi.org/project/keyring/ ]
 
 Sutekh can download the official cardlist and rulings. If you have limited
 connectivity, you will need to download the official cardlist from

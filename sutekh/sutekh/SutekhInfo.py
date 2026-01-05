@@ -89,7 +89,6 @@ class SutekhInfo:
         'SQLObject >= 3.0.0',
         'ply',
         'configobj',
-        'keyring',  # Needed to store the SecretLibrary password
     ]
 
     # Install these manually
@@ -125,10 +124,6 @@ class SutekhInfo:
             'License :: OSI Approved :: BSD License',
             'https://raw.githubusercontent.com/DiffSK/configobj/master/LICENSE',
             'New-BSD license'),
-        'keyring': (
-            MIT,
-            'https://raw.githubusercontent.com/jaraco/keyring/master/LICENSE',
-            'MIT license'),
         'setuptools': (
             PYTHON,
             'http://www.python.org/psf/license/',
