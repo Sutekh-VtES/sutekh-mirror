@@ -35,6 +35,9 @@ SPECIAL = {'Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'}
 RT_WATCHLIST = 'RT:Watchlist'
 RT_BANNED = 'RT:Banned'
 
+TWO_PLAYER = "2-Player Format Legal"
+V5_LEGAL = "V5 Format Legal"
+
 # Lookup for titles for the not legal tabs
 ILLEGAL_LOOKUP = {
     RT_BANNED: 'Cards Banned in Rapid Thoughts',
