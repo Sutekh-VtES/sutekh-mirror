@@ -53,7 +53,7 @@ build_mac_options = {}
 
 # Heavily based off https://github.com/achadwick/hello-cxfreeze-gtk
 if sys.platform == 'win32':
-    guibase = "Win32GUI"
+    guibase = "gui"
     sysbase = sys.prefix
 
     # Include MS redistributable stuff
