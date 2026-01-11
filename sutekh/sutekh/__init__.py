@@ -33,6 +33,7 @@ from sutekh.base.core.DBUtility import make_adapter_caches
 
 from sutekh.core.Filters import (ClanFilter, DisciplineFilter, CardTextFilter,
                                  MultiDisciplineFilter, MultiClanFilter,
+                                 MultiSectFilter, MultiPathFilter,
                                  GroupFilter, MultiGroupFilter)
 
 from sutekh.base.core.BaseGroupings import (CardTypeGrouping,
@@ -69,7 +70,7 @@ ALL = [
     ExpansionFilter, MultiExpansionFilter, CardNameFilter,
     CardSetNameFilter, CardSetAuthorFilter, CardSetDescriptionFilter,
     CardSetAnnotationsFilter, PhysicalExpansionFilter,
-    MultiPhysicalExpansionFilter,
+    MultiPhysicalExpansionFilter, MultiSectFilter, MultiPathFilter,
     # Groupings
     CardTypeGrouping, ClanGrouping, DisciplineGrouping,
     ExpansionGrouping, RarityGrouping,
