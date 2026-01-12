@@ -28,6 +28,9 @@ from sutekh.core.SutekhTables import CRYPT_TYPES
 from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.Abbreviations import Titles
 
+
+DEFAULT, RAPID, TWO_PLAYER, V5_FORMAT = range(4)
+
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
 SPECIAL = {'Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'}
@@ -35,14 +38,19 @@ SPECIAL = {'Not Tournament Legal Cards', 'Multirole', 'Mixed Card Backs'}
 RT_WATCHLIST = 'RT:Watchlist'
 RT_BANNED = 'RT:Banned'
 
-TWO_PLAYER = "2-Player Format Legal"
+TWO_PLAYER_LEGAL = "2-Player Format Legal"
 V5_LEGAL = "V5 Format Legal"
+
+NOT_TWO_PLAYER_LEGAL = "Cards not in the 2-Player card list"
+NOT_V5_LEGAL = "Cards not in the V5 Format card list"
 
 # Lookup for titles for the not legal tabs
 ILLEGAL_LOOKUP = {
     RT_BANNED: 'Cards Banned in Rapid Thoughts',
     RT_WATCHLIST: 'Cards on the Rapid Thoughts Watchlist',
     'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
+    NOT_TWO_PLAYER_LEGAL: NOT_TWO_PLAYER_LEGAL,
+    NOT_V5_LEGAL: NOT_V5_LEGAL,
 }
 
 # Used for printings where we don't know the back (custom added expansions, etc)
@@ -444,17 +452,33 @@ class AnalyzeCardList(SutekhPlugin):
         """Register on the 'Analyze' Menu"""
         oAnalyze = Gtk.MenuItem(label=self.sMenuName)
         oAnalyze.connect("activate", self.activate)
+        oAnalyzeV5 = Gtk.MenuItem(label="Analyze Deck (V5 Format)")
+        oAnalyzeV5.connect("activate", self.activate_v5)
         oAnalyzeRT = Gtk.MenuItem(label="Analyze Deck (Rapids Thoughts)")
         oAnalyzeRT.connect("activate", self.activate_rt)
-        return [('Analyze', oAnalyze), ('Analyze', oAnalyzeRT)]
+        oAnalyze2P = Gtk.MenuItem(label="Analyze Deck (2 Player Format)")
+        oAnalyze2P.connect("activate", self.activate_2p)
+        return [('Analyze', oAnalyze),
+                ('Analyze', oAnalyzeV5),
+                ('Analyze', oAnalyzeRT),
+                ('Analyze', oAnalyze2P),
+               ]
 
     def activate(self, _oWidget):
         """Activate for non RT analysis"""
-        self.activate_heart(False)
+        self.activate_heart(DEFAULT)
+
+    def activate_v5(self, _oWidget):
+        """Activate for V5 format analysis"""
+        self.activate_heart(V5_FORMAT)
 
     def activate_rt(self, _oWidget):
-        """Activate for non RT analysis"""
-        self.activate_heart(True)
+        """Activate for Rapid Thoughts analysis"""
+        self.activate_heart(RAPID)
+
+    def activate_2p(self, _oWidget):
+        """Activate for 2 Player analysis"""
+        self.activate_heart(TWO_PLAYER)
 
     # pylint: disable=attribute-defined-outside-init
     # We define a lot of class variables here, because a) this is the
@@ -464,7 +488,7 @@ class AnalyzeCardList(SutekhPlugin):
     # This is responsible for filling the whole notebook, so quite a long
     # function with several branches and variables, and there's no benefit
     # to splitting it up further
-    def activate_heart(self, bRapid=False):
+    def activate_heart(self, iAnalysisType=DEFAULT):
         """Create the actual dialog, and populate it"""
         if not self._check_cs_size('Analyze Deck', 500):
             return
@@ -494,7 +518,7 @@ class AnalyzeCardList(SutekhPlugin):
                     self.model.get_card_iterator(
                         FilterNot(self.model.oLegalFilter)))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
-                if bRapid:
+                if iAanalysisType == RAPID:
                     try:
                         for sType in [RT_BANNED, RT_WATCHLIST]:
                             dCardLists[sType] = _get_abstract_cards(
@@ -506,6 +530,23 @@ class AnalyzeCardList(SutekhPlugin):
                         # We ignore this if the keywords aren't present
                         self.dTypeNumbers[RT_BANNED] = 0
                         self.dTypeNumbers[RT_WATCHLIST] = 0
+                elif iAnalysisType == TWO_PLAYER:
+                    try:
+                        dCardLists[NOT_TWO_PLAYER_LEGAL] = _get_abstract_cards(
+                                self.model.get_card_iterator(
+                                    FilterNot(KeywordFilter(IKeyword(TWO_PLAYER_LEGAL)))))
+                        self.dTypeNumbers[NOT_TWO_PLAYER_LEGAL] = \
+                              len(dCardLists[NOT_TWO_PLAYER_LEGAL])
+                    except SQLObjectNotFound:
+                        dCardLists[NOT_TWO_PLAYER_LEGAL] = 0
+                elif iAnalysisType == V5_FORMAT:
+                    try:
+                        dCardLists[NOT_V5_LEGAL] = _get_abstract_cards(
+                                self.model.get_card_iterator(
+                                    FilterNot(KeywordFilter(IKeyword(V5LEGAL)))))
+                        self.dTypeNumbers[NOT_V5_LEGAL] = len(dCardLists[NOT_V5_LEGAL])
+                    except SQLObjectNotFound:
+                        dCardLists[NOT_V5_LEGAL] = 0
             elif sCardType == 'Mixed Card Backs':
                 # Assume not mixed, so we skip
                 self.dTypeNumbers[sCardType] = 0
@@ -534,24 +575,39 @@ class AnalyzeCardList(SutekhPlugin):
         # overly clever? crypt cards first, then alphabetical, then specials
         aOrderToList = (sorted(CRYPT_TYPES) +
                         [x for x in sorted(self.dTypeNumbers) if
-                         (x not in CRYPT_TYPES and x not in SPECIAL
-                          and x not in [RT_BANNED, RT_WATCHLIST])] +
+                         x not in CRYPT_TYPES and x not in SPECIAL
+                          and x not in [RT_BANNED, RT_WATCHLIST, 
+                                        NOT_V5_LEGAL, NOT_TWO_PLAYER_LEGAL]] +
                         sorted(SPECIAL))
         for sCardType in aOrderToList:
             if self.dTypeNumbers[sCardType]:
                 fProcess = self._dConstruct[sCardType]
                 oDlg.add_widget_page(wrap(fProcess(dCardLists[sCardType])),
                                      sCardType)
-        if bRapid:
+        if iAnalysisType == RAPID:
             fProcess = self._dConstruct['Not Tournament Legal Cards']
             for sType in [RT_BANNED, RT_WATCHLIST]:
                 if self.dTypeNumbers[sType]:
                     oDlg.add_widget_page(wrap(fProcess(dCardLists[sType],
                                                        sType)),
                                          ILLEGAL_LOOKUP[sType])
+        elif iAnalysisType == TWO_PLAYER:
+            fProcess = self._dConstruct['Not Tournament Legal Cards']
+            for sType in [NOT_TWO_PLAYER_LEGAL]:
+                if self.dTypeNumbers[sType]:
+                    oDlg.add_widget_page(wrap(fProcess(dCardLists[sType],
+                                                       sType)),
+                                         ILLEGAL_LOOKUP[sType])
+        elif  iAnalysisType == V5_FORMAT:
+            fProcess = self._dConstruct['Not Tournament Legal Cards']
+            for sType in [NOT_V5_LEGAL]:
+                if self.dTypeNumbers[sType]:
+                    oDlg.add_widget_page(wrap(fProcess(dCardLists[sType],
+                                                       sType)),
+                                         ILLEGAL_LOOKUP[sType])
 
         # Setup the main notebook
-        oTitle, oDesc, oDetails = self._prepare_main(bRapid)
+        oTitle, oDesc, oDetails = self._prepare_main(iAnalysisType)
         oMainBox.pack_start(oTitle, False, True, 0)
         # Excess Space goes to the description
         oMainBox.pack_start(oDesc, True, True, 0)
@@ -650,7 +706,7 @@ class AnalyzeCardList(SutekhPlugin):
     # We need to check all these cases to present a sensible
     # summary - there isn't a benefit to splitting these into different
     # functions
-    def _prepare_main(self, bRapid):
+    def _prepare_main(self, iAnalysisType):
         """Setup the main notebook display"""
         oCS = self._get_card_set()
 
@@ -672,8 +728,12 @@ class AnalyzeCardList(SutekhPlugin):
         oScrolledBox.pack_start(oDescTitle, False, True, 0)
         oScrolledBox.pack_start(AutoScrolledWindow(oDesc), True, True, 0)
 
-        if bRapid:
+        if iAnalysisType == RAPID:
             sMainText = '<i>Rapid Thoughts Analysis</i>\n'
+        elif iAnalysisType == V5_FORMAT:
+            sMainText = '<i>V5 Format Analysis</i>\n'
+        elif iAnalysisType == TWO_PLAYER:
+            sMainText = '<i>2 Player Format Analysis</i>\n'
         else:
             sMainText = '<i>V:EKN Constructed Analysis</i>\n'
         # Set main notebook text
@@ -689,7 +749,7 @@ class AnalyzeCardList(SutekhPlugin):
                           self.dCryptStats['min group'])
             sMainText += ("Maximum Group in Crypt = %d\n" %
                           self.dCryptStats['max group'])
-        if bRapid:
+        if iAnalysisType == RAPID:
             if self.iCryptSize < 6:
                 sMainText += ('<span foreground = "red">Less than 6 Crypt'
                               ' Cards</span>\n')
@@ -705,13 +765,21 @@ class AnalyzeCardList(SutekhPlugin):
             sMainText += ('<span foreground = "red">Card Set uses cards that '
                           'are not legal for tournament play</span>\n')
 
-        if bRapid and self.dTypeNumbers[RT_BANNED]:
+        if iAnalysisType == RAPID and self.dTypeNumbers[RT_BANNED]:
             sMainText += ('<span foreground = "red">Card Set uses cards that '
                           'are not legal for rapid thought play</span>\n')
 
-        if bRapid and self.dTypeNumbers[RT_WATCHLIST]:
+        if iAnalysisType == RAPID and self.dTypeNumbers[RT_WATCHLIST]:
             sMainText += ('<span foreground = "yellow">Card Set uses cards '
                           'that are on the rapid thoughts watchlist</span>\n')
+
+        if iAnalysisType == TWO_PLAYER and self.dTypeNumbers[NOT_TWO_PLAYER_LEGAL]:
+            sMainText += ('<span foreground = "red">Card Set uses cards that '
+                          'are not legal for 2 player play</span>\n')
+
+        if iAnalysisType == V5_FORMAT and self.dTypeNumbers[NOT_V5_LEGAL]:
+            sMainText += ('<span foreground = "red">Card Set uses cards that '
+                          'are not legal for V5 format tournaments</span>\n')
 
         if self.iCryptSize > 0:
             sMainText += ('\nMaximum cost in crypt = %d\n' %
@@ -731,7 +799,7 @@ class AnalyzeCardList(SutekhPlugin):
         if self.iLibSize < 40:
             sMainText += ('<span foreground = "red">Less than 40 Library'
                           ' Cards</span>\n')
-        elif self.iLibSize < 60 and not bRapid:
+        elif self.iLibSize < 60 and iAnalysisType not in [RAPID, TWO_PLAYER]:
             sMainText += ('<span foreground = "orange">Less than 60 Library'
                           ' Cards - this deck is not legal for standard'
                           ' constructed tournaments</span>')
