@@ -185,10 +185,16 @@ def keyword_sort_key(sName):
        to sort before the others, but we want a consistent alphabetical
        ordering of the numerical ones as well (so X bleed is always
        before Y strength, regardless of X and Y), so a simple
-       sort isn't sufficient"""
-    if sName[0] in string.digits:
-        return '1 %s' % sName.split(' ')[1].lower()
-    return sName.lower()
+       sort isn't sufficient. We also want legal and banned keywords
+       to sort at the end"""
+    sName = sName.lower()
+    if 'legal' in sName or 'banned' in sName:
+        sName = 'zzzz ' + sName
+    elif 'watchlist' in sName:
+        sName = 'zzz ' + sName
+    elif sName[0] in string.digits:
+        return '1 %s' % sName.split(' ')[1]
+    return sName
 
 
 def _check_ally_keywords(aKeywords, sKeywordType, sName):
