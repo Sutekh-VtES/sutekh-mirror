@@ -518,7 +518,7 @@ class AnalyzeCardList(SutekhPlugin):
                     self.model.get_card_iterator(
                         FilterNot(self.model.oLegalFilter)))
                 self.dTypeNumbers[sCardType] = len(dCardLists[sCardType])
-                if iAanalysisType == RAPID:
+                if iAnalysisType == RAPID:
                     try:
                         for sType in [RT_BANNED, RT_WATCHLIST]:
                             dCardLists[sType] = _get_abstract_cards(
@@ -543,7 +543,7 @@ class AnalyzeCardList(SutekhPlugin):
                     try:
                         dCardLists[NOT_V5_LEGAL] = _get_abstract_cards(
                                 self.model.get_card_iterator(
-                                    FilterNot(KeywordFilter(IKeyword(V5LEGAL)))))
+                                    FilterNot(KeywordFilter(IKeyword(V5_LEGAL)))))
                         self.dTypeNumbers[NOT_V5_LEGAL] = len(dCardLists[NOT_V5_LEGAL])
                     except SQLObjectNotFound:
                         dCardLists[NOT_V5_LEGAL] = 0
