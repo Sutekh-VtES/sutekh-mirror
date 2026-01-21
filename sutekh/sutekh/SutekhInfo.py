@@ -16,6 +16,7 @@ LGPL = 'License :: OSI Approved :: GNU Library or Lesser General ' \
     'Public License (LGPL)'
 MIT = 'License :: OSI Approved :: MIT License'
 PYTHON = 'License :: OSI Approved :: Python Software Foundation License'
+BSD = 'License :: OSI Approved :: BSD License',
 
 # pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo:
@@ -61,7 +62,7 @@ class SutekhInfo:
     SOURCEFORGE_URL = 'https://sourceforge.net/projects/sutekh/'
     PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
-    LICENSE = 'GPL'
+    LICENSE = "GPL-2.0-or-later"
     # resource_string returns bytes, because reasons
     LICENSE_TEXT = resource_string(__name__, 'COPYING').decode('utf8')
 
@@ -72,7 +73,6 @@ class SutekhInfo:
         'Environment :: X11 Applications :: GTK',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
-        GPL,
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
         'Programming Language :: Python :: 3.7',
@@ -117,11 +117,11 @@ class SutekhInfo:
             # Note: ply changed to a BSD license in version 3.2
             # The license doesn't appear to be anywhere other than the readme,
             # so we point to the readme for the 3.11 release.
-            'License :: OSI Approved :: BSD License',
+            BSD,
             'https://raw.githubusercontent.com/dabeaz/ply/0f398b72618c1564d71f7dc0558e6722b241875a/README.md',
             'New-BSD license'),
         'configobj': (
-            'License :: OSI Approved :: BSD License',
+            BSD,
             'https://raw.githubusercontent.com/DiffSK/configobj/master/LICENSE',
             'New-BSD license'),
         'setuptools': (
