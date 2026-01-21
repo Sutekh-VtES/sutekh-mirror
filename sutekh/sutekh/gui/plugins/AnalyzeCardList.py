@@ -19,7 +19,7 @@ from sutekh.base.core.BaseAdapters import (IAbstractCard, IPhysicalCard,
                                            IKeyword)
 from sutekh.base.core.BaseFilters import (CardTypeFilter, FilterNot,
                                           KeywordFilter)
-from sutekh.base.gui.SutekhDialog import NotebookDialog
+from sutekh.base.gui.SutekhDialog import NotebookDialog, SutekhDialog
 from sutekh.base.gui.GuiUtils import wrap
 from sutekh.base.gui.MultiSelectComboBox import MultiSelectComboBox
 from sutekh.base.gui.AutoScrolledWindow import AutoScrolledWindow
@@ -29,7 +29,7 @@ from sutekh.gui.PluginManager import SutekhPlugin
 from sutekh.core.Abbreviations import Titles
 
 
-DEFAULT, RAPID, TWO_PLAYER, V5_FORMAT = range(4)
+DEFAULT, V5_FORMAT, TWO_PLAYER, RAPID = range(4)
 
 UNSLEEVED = "<span foreground='green'>%s may be played unsleeved</span>\n"
 SLEEVED = "<span foreground='orange'>%s should be sleeved</span>\n"
@@ -46,11 +46,18 @@ NOT_V5_LEGAL = "Cards not in the V5 Format card list"
 
 # Lookup for titles for the not legal tabs
 ILLEGAL_LOOKUP = {
-    RT_BANNED: 'Cards Banned in Rapid Thoughts',
-    RT_WATCHLIST: 'Cards on the Rapid Thoughts Watchlist',
+    RT_BANNED: 'Cards Banned in Rapid Thought',
+    RT_WATCHLIST: 'Cards on the Rapid Thought Watchlist',
     'Not Tournament Legal Cards': 'Not Tournament Legal Cards',
     NOT_TWO_PLAYER_LEGAL: NOT_TWO_PLAYER_LEGAL,
     NOT_V5_LEGAL: NOT_V5_LEGAL,
+}
+
+TOURNAMENT_FORMATS = {
+    "Standard Constructed": DEFAULT,
+    "V5 Format": V5_FORMAT,
+    "2-Payer Format": TWO_PLAYER,
+    "Rapid Thought (Revised)": RAPID,
 }
 
 # Used for printings where we don't know the back (custom added expansions, etc)
@@ -452,33 +459,11 @@ class AnalyzeCardList(SutekhPlugin):
         """Register on the 'Analyze' Menu"""
         oAnalyze = Gtk.MenuItem(label=self.sMenuName)
         oAnalyze.connect("activate", self.activate)
-        oAnalyzeV5 = Gtk.MenuItem(label="Analyze Deck (V5 Format)")
-        oAnalyzeV5.connect("activate", self.activate_v5)
-        oAnalyzeRT = Gtk.MenuItem(label="Analyze Deck (Rapids Thoughts)")
-        oAnalyzeRT.connect("activate", self.activate_rt)
-        oAnalyze2P = Gtk.MenuItem(label="Analyze Deck (2 Player Format)")
-        oAnalyze2P.connect("activate", self.activate_2p)
-        return [('Analyze', oAnalyze),
-                ('Analyze', oAnalyzeV5),
-                ('Analyze', oAnalyzeRT),
-                ('Analyze', oAnalyze2P),
-               ]
+        return [('Analyze', oAnalyze)]
 
     def activate(self, _oWidget):
         """Activate for non RT analysis"""
-        self.activate_heart(DEFAULT)
-
-    def activate_v5(self, _oWidget):
-        """Activate for V5 format analysis"""
-        self.activate_heart(V5_FORMAT)
-
-    def activate_rt(self, _oWidget):
-        """Activate for Rapid Thoughts analysis"""
-        self.activate_heart(RAPID)
-
-    def activate_2p(self, _oWidget):
-        """Activate for 2 Player analysis"""
-        self.activate_heart(TWO_PLAYER)
+        self.activate_heart()
 
     # pylint: disable=attribute-defined-outside-init
     # We define a lot of class variables here, because a) this is the
@@ -488,11 +473,48 @@ class AnalyzeCardList(SutekhPlugin):
     # This is responsible for filling the whole notebook, so quite a long
     # function with several branches and variables, and there's no benefit
     # to splitting it up further
-    def activate_heart(self, iAnalysisType=DEFAULT):
+    def activate(self, iAnalysisType=DEFAULT):
         """Create the actual dialog, and populate it"""
         if not self._check_cs_size('Analyze Deck', 500):
             return
-        oDlg = NotebookDialog("Analysis of Card List", self.parent,
+        self.oDlg = SutekhDialog("Analysis type", self.parent,
+                               Gtk.DialogFlags.MODAL |
+                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                               ("_Analyze", Gtk.ResponseType.OK,
+                                "_Close", Gtk.ResponseType.CLOSE))
+        oLabel = Gtk.Label()
+        oLabel.set_markup("<b>Select Tournament type for legality checks</b>")
+        oLabel.set_alignment(0.0, 0.5)
+        self.oDlg.vbox.pack_start(oLabel, False, False, 5)
+
+        oGroup = None
+        self.aRadioButtons = []
+        for sBut, iValue in TOURNAMENT_FORMATS.items():
+            oBut = Gtk.RadioButton(group=oGroup, label=sBut)
+            if iValue == DEFAULT:
+                oBut.set_active(True)
+                oGroup = oBut
+            self.oDlg.vbox.pack_start(oBut, False, False, 0)
+            self.aRadioButtons.append(oBut)
+        self.oDlg.show_all()
+        self.oDlg.connect("response", self.handle_response)
+        self.oDlg.run()
+
+    def handle_response(self,  _oWidget, oResponse):
+        """Launch the analysis with the correct type"""
+        if oResponse == Gtk.ResponseType.OK:
+            for oBut in self.aRadioButtons:
+                if oBut.get_active():
+                    iAnalysisType = TOURNAMENT_FORMATS[oBut.get_label()]
+                    break
+            self.make_analysis_dialog(iAnalysisType)
+        else:
+            self.oDlg.destroy()
+
+
+    def make_analysis_dialog(self, iAnalysisType=DEFAULT):
+        """Make the dialog for the given analysis type"""
+        oDlg = NotebookDialog("Analysis of Card List", self.oDlg,
                               Gtk.DialogFlags.DESTROY_WITH_PARENT,
                               ("_Close", Gtk.ResponseType.CLOSE))
         oDlg.connect("response", lambda oDlg, resp: oDlg.destroy())
@@ -735,7 +757,7 @@ class AnalyzeCardList(SutekhPlugin):
         elif iAnalysisType == TWO_PLAYER:
             sMainText = '<i>2 Player Format Analysis</i>\n'
         else:
-            sMainText = '<i>V:EKN Constructed Analysis</i>\n'
+            sMainText = '<i>V:EKN Standard Constructed Analysis</i>\n'
         # Set main notebook text
         for sCardType in CRYPT_TYPES:
             if self.dTypeNumbers[sCardType] > 0:
