@@ -755,7 +755,7 @@ class CardDict(dict):
 
     def _add_keyword(self, oCard, sKeyword):
         """Add the keyword to the card."""
-        oKeyword = self._oMaker.make_keyword(sKeyword)
+        oKeyword = self._oMaker.make_keyword(sKeyword.strip())
         if oKeyword not in oCard.keywords:
             # pylint: disable=no-member
             # SQLObject confuses pylint
