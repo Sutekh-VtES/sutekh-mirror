@@ -8,8 +8,9 @@
 import json
 import unittest
 
+from pathlib import Path
+
 from urllib.parse import urljoin
-from urllib.request import pathname2url
 
 from sutekh.tests.TestCore import SutekhTest
 from sutekh.io.DataPack import find_data_pack, find_all_data_packs
@@ -62,7 +63,10 @@ class DataPackTest(SutekhTest):
         fFile = open(sTempFileName, 'w')
         fFile.write(sData)
         fFile.close()
-        sTempUrl = 'file://%s' % pathname2url(sTempFileName)
+
+        oPath = Path(sTempFileName).absolute()
+        sTempUrl = oPath.as_uri()
+
         return sTempUrl
 
     def test_find_data_pack(self):
