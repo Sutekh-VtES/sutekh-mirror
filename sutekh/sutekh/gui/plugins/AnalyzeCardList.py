@@ -420,6 +420,10 @@ class AnalyzeCardList(SutekhPlugin):
                    some indication of how the card set will operate as
                    a deck.
 
+                   It also checks the legality of the card set as a deck
+                   for tournament play. Currently, the supported options
+                   are standard, V5, 2-player and Rapid Thought.
+
                    It displays several tabs, each of which summarises
                    different aspects of the card set. The first tab
                    summarises some basic information about the entire set.
