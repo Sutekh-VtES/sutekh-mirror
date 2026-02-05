@@ -167,6 +167,7 @@ class BaseIndependence(BasePlugin):
     def handle_response(self, oDlg, oResponse):
         """Handle the response from the dialog."""
         if oResponse == Gtk.ResponseType.OK:
+            oDlg.hide()
             bIgnoreExpansions = self.oIgnoreExpansions.get_active()
             if self.oInUseButton.get_active():
                 oInUseSets = PhysicalCardSet.selectBy(
@@ -235,7 +236,7 @@ class BaseIndependence(BasePlugin):
             oResultDlg.add_widget_page(
                 AutoScrolledWindow(_make_align_list(aMsgs)),
                 'Missing in %s' % self._escape(sCardSet), bMarkup=True)
-        oResultDlg.set_size_request(600, 600)
+        oResultDlg.set_size_request(800, 600)
         oResultDlg.show_all()
         oResultDlg.run()
         oResultDlg.destroy()
