@@ -17,7 +17,7 @@ def mouse_in_button(oButton):
     """Check if mouse pointer is inside the button"""
     (iXPos, iYPos) = oButton.get_pointer()  # mouse pos relative to button
     oButtonGeom = oButton.get_allocation()
-    return 0 <= XPos < oButtonGeom.width and 0 <= iYPos < oButtonGeom.height
+    return 0 <= iXPos < oButtonGeom.width and 0 <= iYPos < oButtonGeom.height
 
 
 class MultiSelectComboBox(Gtk.HBox):
