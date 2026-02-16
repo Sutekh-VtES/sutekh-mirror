@@ -663,8 +663,9 @@ class HTMLTextView(Gtk.TextView):
 
         oHandler = HtmlHandler(self, oEndOfBuf, self._fLinkLoader)
 
-        # This isn't ideal, but we want to use
-        # pkg_resources, which gives us a byte stream.
+        # We expect the link loader to return binary files,
+        # because of images, but this is assumed to be text,
+        # so we need to decode
         oHandler.feed(fHTMLInput.read().decode('utf8'))
 
         if not oEndOfBuf.starts_line():

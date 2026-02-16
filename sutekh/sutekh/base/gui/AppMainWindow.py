@@ -8,14 +8,10 @@
 
 import logging
 import socket
+import importlib.resources
 from itertools import chain
 
 from gi.repository import Gtk
-
-# pylint: disable=no-name-in-module
-# pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream, resource_exists
-# pylint: enable=no-name-in-module
 
 from ..Utility import is_memory_db
 from ..core.BaseTables import PhysicalCardSet, PhysicalCard, VersionTable
@@ -590,11 +586,12 @@ class AppMainWindow(MultiPaneWindow):
             Gtk.main_quit()
 
     def _link_resource(self, sLocalUrl):
-        """Return a file-like object which sLocalUrl can be read from."""
+        """Return a binary file-like object which sLocalUrl can be read from."""
         # Subclasses need to provide self._sResourceName
-        sResource = '/docs/html_docs/%s' % sLocalUrl
-        if resource_exists(self._sResourceName, sResource):
-            return resource_stream(self._sResourceName, sResource)
+        oResource = importlib.resources.files(self._sResourceName)
+        oResource = oResource.joinpath('docs', 'html_docs', sLocalUrl)
+        if oResource.is_file():
+            return oResource.open('rb')
         raise ValueError("Unknown resource %s" % sLocalUrl)
 
     # pylint: enable=no-self-use
