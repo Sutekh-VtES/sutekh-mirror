@@ -9,7 +9,7 @@
 """Base classes and constants for configuation management."""
 
 import datetime
-import importlib.resources
+import importlib_resources
 
 from configobj import ConfigObj, flatten_errors
 from validate import Validator, is_option, is_list, VdtTypeError
@@ -105,7 +105,7 @@ class BaseConfigFile:
 
     def validate(self):
         """Validate a configuration object."""
-        fConfigSpec = importlib.resources.open_text(__name__,
+        fConfigSpec = importlib_resources.open_text(__name__,
                                                     "baseconfigspec.ini")
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
                                 file_error=True, list_values=False,

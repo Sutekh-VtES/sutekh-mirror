@@ -8,7 +8,7 @@
 
 import logging
 import socket
-import importlib.resources
+import importlib_resources
 from itertools import chain
 
 from gi.repository import Gtk
@@ -588,7 +588,7 @@ class AppMainWindow(MultiPaneWindow):
     def _link_resource(self, sLocalUrl):
         """Return a binary file-like object which sLocalUrl can be read from."""
         # Subclasses need to provide self._sResourceName
-        oResource = importlib.resources.files(self._sResourceName)
+        oResource = importlib_resources.files(self._sResourceName)
         oResource = oResource.joinpath('docs', 'html_docs', sLocalUrl)
         if oResource.is_file():
             return oResource.open('rb')

@@ -5,7 +5,7 @@
 
 """Provide a base class for handling the application icon"""
 
-import importlib.resources
+import importlib_resources
 
 from gi.repository import GdkPixbuf
 
@@ -15,7 +15,7 @@ class PkgIcon:
 
     def __init__(self, sPkg, sResource):
         oLoader = GdkPixbuf.PixbufLoader.new_with_type('svg')
-        oFile = importlib.resources.open_binary(sPkg, sResource)
+        oFile = importlib_resources.open_binary(sPkg, sResource)
         oLoader.write(oFile.read())
         oFile.close()
         oLoader.close()

@@ -5,7 +5,7 @@
 
 """Requirements and such for setuptools"""
 
-import importlib.resources
+import importlib_resources
 
 # license constants to simplify things a bit
 
@@ -61,7 +61,7 @@ class SutekhInfo:
     PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = "GPL-2.0-or-later"
-    LICENSE_TEXT = importlib.resources.read_text('sutekh', 'COPYING')
+    LICENSE_TEXT = importlib_resources.read_text(__name__, 'COPYING')
 
     CLASSIFIERS = [
         'Development Status :: 4 - Beta',
@@ -86,6 +86,7 @@ class SutekhInfo:
         'SQLObject >= 3.0.0',
         'ply',
         'configobj',
+        'importlib_resources > 5.10'
     ]
 
     # Install these manually

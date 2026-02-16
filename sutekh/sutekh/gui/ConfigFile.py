@@ -8,7 +8,7 @@
 
 """Configuration handling for the Sutekh GUI."""
 
-import importlib.resources
+import importlib_resources
 
 from sutekh.base.gui.BaseConfigFile import BaseConfigFile
 from sutekh.base.gui.MessageBus import MessageBus
@@ -39,7 +39,7 @@ class ConfigFile(BaseConfigFile):
 
     def _get_app_configspec_file(self):
         """Get the application specific config file"""
-        fConfigSpec = importlib.resources.open_text(__name__, "configspec.ini")
+        fConfigSpec = importlib_resources.open_text(__name__, "configspec.ini")
         return fConfigSpec
 
     def get_show_errata_markers(self):
