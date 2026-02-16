@@ -1,3 +1,6 @@
+16 Feb 2026
+ * Replace the use of deprecated pkg_resources with importlib.resources.
+
 05 Feb 2026
  * Hide the cardset choice dialog in the "Test Independence" plugin when
    displaying the results, to avoid issues where some window managers will
