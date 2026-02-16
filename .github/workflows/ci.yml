@@ -136,6 +136,7 @@ jobs:
     - name: Build sdist
       if: matrix.python-version == '3.13' && matrix.ubuntu == 'ubuntu-22.04'
       run: |
+        pip install setuptools
         pushd sutekh
         python3 ./setup.py sdist
         popd
