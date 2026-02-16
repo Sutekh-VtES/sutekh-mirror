@@ -15,7 +15,8 @@ class PkgIcon:
 
     def __init__(self, sPkg, sResource):
         oLoader = GdkPixbuf.PixbufLoader.new_with_type('svg')
-        oFile = importlib_resources.open_binary(sPkg, sResource)
+        oRef = importlib_resources.files(sPkg).joinpath(sResource)
+        oFile = oRef.open('rb')
         oLoader.write(oFile.read())
         oFile.close()
         oLoader.close()

@@ -61,7 +61,8 @@ class SutekhInfo:
     PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = "GPL-2.0-or-later"
-    LICENSE_TEXT = importlib_resources.read_text(__name__, 'COPYING')
+    oRef = importlib_resources.files(__name__).joinpath('COPYING')
+    LICENSE_TEXT = oRef.read_text()
 
     CLASSIFIERS = [
         'Development Status :: 4 - Beta',

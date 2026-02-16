@@ -39,7 +39,8 @@ class ConfigFile(BaseConfigFile):
 
     def _get_app_configspec_file(self):
         """Get the application specific config file"""
-        fConfigSpec = importlib_resources.open_text(__name__, "configspec.ini")
+        oRef = importlib_resources.files(__name__).joinpath( "configspec.ini")
+        fConfigSpec = oRef.open('r')
         return fConfigSpec
 
     def get_show_errata_markers(self):

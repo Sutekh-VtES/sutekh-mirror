@@ -105,8 +105,8 @@ class BaseConfigFile:
 
     def validate(self):
         """Validate a configuration object."""
-        fConfigSpec = importlib_resources.open_text(__name__,
-                                                    "baseconfigspec.ini")
+        oRef = importlib_resources.files(__name__).joinpath("baseconfigspec.ini")
+        fConfigSpec = oRef.open('r')
         oConfigSpec = ConfigObj(fConfigSpec, raise_errors=True,
                                 file_error=True, list_values=False,
                                 encoding='utf8')
