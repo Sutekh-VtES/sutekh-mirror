@@ -5,9 +5,7 @@
 
 """Requirements and such for setuptools"""
 
-# pylint doesn't see resource_string for some reason
-# pylint: disable=no-name-in-module
-from pkg_resources import resource_string
+import importlib.resources
 
 # license constants to simplify things a bit
 
@@ -63,8 +61,7 @@ class SutekhInfo:
     PYPI_URL = 'https://pypi.python.org/pypi/Sutekh/'
 
     LICENSE = "GPL-2.0-or-later"
-    # resource_string returns bytes, because reasons
-    LICENSE_TEXT = resource_string(__name__, 'COPYING').decode('utf8')
+    LICENSE_TEXT = importlib.resources.read_text(__name__, 'COPYING')
 
     CLASSIFIERS = [
         'Development Status :: 4 - Beta',
