@@ -45,7 +45,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo psycopg2
+        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo psycopg2 importlib_resources
     - name: Create Postgres DB
       env:
         PGPASSWORD: postgres
@@ -95,7 +95,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo mysql-connector
+        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo mysql-connector importlib_resources
     - name: Create MySQL DB
       run: |
         mysql -uroot -h 127.0.0.1 -e 'create database sutekh_test;'
@@ -127,7 +127,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo
+        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo importlib_resources
     - name: Run Tests
       run: |
         pushd sutekh
@@ -169,7 +169,7 @@ jobs:
     - name: Install PIP dependencies
       shell: msys2 {0}
       run: |
-        pip install ply sqlobject configobj pytest mock
+        pip install ply sqlobject configobj pytest mock importlib_resources
     - name: Run tests
       shell: msys2 {0}
       run: |
@@ -220,7 +220,7 @@ jobs:
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
-        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
+        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze importlib_resources
     - name: Run tests
       run: |
         # Annoyingly different path from the arm runner
@@ -263,7 +263,7 @@ jobs:
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
-        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
+        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze importlib_resources
     - name: Run tests
       run: |
         # Seems there are issues with getting the github installed python to play with
@@ -312,7 +312,7 @@ jobs:
         sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18
     - name: Install PIP Dependencies
       run: |
-        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo pylint pytest-cov textile
+        pip install mock pytest ply sqlobject configobj 'PyGObject<3.50' pycairo pylint pytest-cov textile importlib_resources
     - name: Run Pylint
       run: |
         pushd sutekh
@@ -334,14 +334,14 @@ jobs:
 
   build-ubuntu-deb:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Build a deb package
     steps:
     - uses: actions/checkout@v4
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
-        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-ply python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo lintian debhelper python3-all python3-pytest python3-mock dh-python devscripts
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-ply python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo lintian debhelper python3-all python3-pytest python3-mock dh-python devscripts python3-importlib-resources
     - name: pip install stdeb
       run: |
         mkdir $HOME/stdebve
@@ -364,7 +364,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: sutekh_deb
-        path: sutekh/deb_dist/*focal*
+        path: sutekh/deb_dist/*noble*
 
   build-fc-rpm:
 
@@ -375,7 +375,7 @@ jobs:
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
-        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-ply python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo python3-all python3-pytest python3-mock
+        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-ply python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo python3-all python3-pytest python3-mock python3-importlib-resources
     - name: Create SPEC file and tarball
       run: |
         cd sutekh
