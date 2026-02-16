@@ -5,10 +5,8 @@
 
 """Provide a base class for handling the application icon"""
 
-# pylint: disable=no-name-in-module
-# pylint doesn't see resource_stream here, for some reason
-from pkg_resources import resource_stream
-# pylint: enable=no-name-in-module
+import importlib.resources
+
 from gi.repository import GdkPixbuf
 
 
@@ -17,7 +15,7 @@ class PkgIcon:
 
     def __init__(self, sPkg, sResource):
         oLoader = GdkPixbuf.PixbufLoader.new_with_type('svg')
-        oFile = resource_stream(sPkg, sResource)
+        oFile = importlib.resources.open_binary(sPkg, sResource)
         oLoader.write(oFile.read())
         oFile.close()
         oLoader.close()
