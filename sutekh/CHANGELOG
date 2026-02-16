@@ -1,3 +1,32 @@
+05 Feb 2026
+ * Hide the cardset choice dialog in the "Test Independence" plugin when
+   displaying the results, to avoid issues where some window managers will
+   display it over the results dialog.
+
+03 Feb 2026
+ * Remove unused cruft from py2exe
+
+01 Feb 2026
+ * Replace pathname2url with pathlib.Path.as_url to address the differences
+   between 3.13 and 3.14 behaviour.
+ * Update help to include changes to the Analyze plugin
+
+21 Jan 2026
+ * Add a dialog to select which legality criteria should be used, rather than
+   multiple menu entries
+
+15 Jan 2026
+ * Tweak keyword sorting logic, so new legality keywords are separated
+   from bleed values, etc
+
+12 Jan 2026
+ * Add initial support for checking deck legality for 2-player or V5 options
+   to the "Analyze Deck" plugin
+
+11 Jan 2026
+ * Update cx_Freeze config to work with Python 3.13
+ * Export Sect and Path filters in the main import
+
 05 Jan 2026
  * Drop keyring requirment, since we no longer use it
 
