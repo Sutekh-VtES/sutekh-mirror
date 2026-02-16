@@ -366,34 +366,6 @@ jobs:
         name: sutekh_deb
         path: sutekh/deb_dist/*noble*
 
-  build-fc-rpm:
-
-    runs-on: ubuntu-latest
-    name: Build a RPM package
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install APT Dependencies
-      run: |
-        sudo apt-get -y -q update
-        sudo apt-get -y -q install gir1.2-gtk-3.0 python3-gi librsvg2-common libgirepository1.0-dev pkg-config libcairo2-dev xvfb gir1.2-poppler-0.18 python3-ply python3-sqlobject python3-configobj  python3-gi-cairo python3-cairo python3-all python3-pytest python3-mock python3-importlib-resources
-    - name: Create SPEC file and tarball
-      run: |
-        cd sutekh
-        python3 setup.py sdist
-        python3 setup.py bdist_rpm --spec-only
-    - name: Build RPM on FC 34
-      uses: xmidt-org/rpm-package-action@v2
-      with:
-        path: sutekh/dist
-        spec: Sutekh.spec
-        output-dir: .
-        dockerfile-path: .github/rpm_Dockerfiles/fedora34_Dockerfile
-    - name: Upload RPM
-      uses: actions/upload-artifact@v4
-      with:
-        name: sutekh_rpm
-        path: sutekh/dist/*rpm*
-
   build-snap:
 
     runs-on: ubuntu-latest
