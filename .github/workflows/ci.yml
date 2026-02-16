@@ -31,7 +31,7 @@ jobs:
     name: Postgres - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.10', '3.11']
+        python-version: ['3.12', '3.13']
         ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
@@ -81,7 +81,7 @@ jobs:
     name: MySQL - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.10', '3.11']
+        python-version: ['3.12', '3.13']
         ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
     name: SQLite - Python ${{ matrix.python-version }}, Ubuntu ${{ matrix.ubuntu }}
     strategy:
       matrix:
-        python-version: ['3.10', '3.11']
+        python-version: ['3.12', '3.13']
         ubuntu: ['ubuntu-22.04']
     steps:
     - uses: actions/checkout@v4
@@ -134,14 +134,14 @@ jobs:
         xvfb-run --auto-servernum pytest
         popd
     - name: Build sdist
-      if: matrix.python-version == '3.11' && matrix.ubuntu == 'ubuntu-22.04'
+      if: matrix.python-version == '3.13' && matrix.ubuntu == 'ubuntu-22.04'
       run: |
         pushd sutekh
         python3 ./setup.py sdist
         popd
     - name: Upload sdist
       uses: actions/upload-artifact@v4
-      if: matrix.python-version == '3.11' && matrix.ubuntu == 'ubuntu-22.04'
+      if: matrix.python-version == '3.13' && matrix.ubuntu == 'ubuntu-22.04'
       with:
         name: sutekh-sdist
         path: sutekh/dist/*tar*
@@ -301,10 +301,10 @@ jobs:
     name: SQLite - Pylint & Coverage
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.11
+    - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13'
     - name: Install APT Dependencies
       run: |
         sudo apt-get -y -q update
