@@ -327,7 +327,9 @@ jobs:
         pushd sutekh/sutekh/docs
         python3 ./textile2html.py
         # This will cause a failure if the docs have changed
-        git -P diff --exit-code .
+        # We ignore whitespace, because textile produces different
+        # formating with different python versions
+        git -P diff -w --exit-code .
         popd
 
 
