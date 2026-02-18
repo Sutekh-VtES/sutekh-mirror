@@ -20,7 +20,7 @@ BSD = 'License :: OSI Approved :: BSD License',
 
 # pylint: disable=too-few-public-methods, missing-docstring
 class SutekhInfo:
-    VERSION = (2, 2, 1, 'alpha', 1)
+    VERSION = (2, 2, 1, 'final', 0)
     BASE_VERSION_STR = '.'.join([str(x) for x in VERSION[:3]])
     VERSION_STR = {
         'final': BASE_VERSION_STR,
