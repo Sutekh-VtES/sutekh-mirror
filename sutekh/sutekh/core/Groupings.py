@@ -123,8 +123,8 @@ class GroupGrouping(IterGrouping):
 
 
 class GroupPairGrouping(IterGrouping):
-    """Group cards into pairs of adjacent groups. Cards marked as
-       *Any Group* are considered to belong to all group pairs."""
+    """Group cards into pairs of adjacent groups. Cards marked
+       as *Any Group* are considered to belong to all group pairs."""
     TEXT = "Groups %d, %d"
 
     def __init__(self, oIter, fGetCard=DEF_GET_CARD):
