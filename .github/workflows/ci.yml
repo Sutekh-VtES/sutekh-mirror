@@ -219,7 +219,7 @@ jobs:
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
-        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
+        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze 'setuptools<82.0.0'
     - name: Run tests
       run: |
         # Annoyingly different path from the arm runner
@@ -262,7 +262,7 @@ jobs:
         brew install gtk+3 gobject-introspection librsvg adwaita-icon-theme gtk-mac-integration poppler hicolor-icon-theme
     - name: Install PIP dependencies
       run: |
-        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze
+        pip install ply sqlobject configobj pytest mock PyGObject pycairo cx_Freeze 'setuptools<82.0.0'
     - name: Run tests
       run: |
         # Seems there are issues with getting the github installed python to play with
