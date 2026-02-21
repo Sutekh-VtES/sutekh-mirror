@@ -4,7 +4,7 @@ description: |
     A python Gtk application and library for searching and managing a collection
     of Vampire: The Eternal Struggle (V:tES) trading cards and for facilitating
     V:tES deck construction.
-version: 2.2.0
+version: 2.2.1
 grade: devel
 base: core22
 confinement: devmode
