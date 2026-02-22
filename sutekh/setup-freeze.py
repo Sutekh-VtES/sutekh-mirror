@@ -32,7 +32,7 @@ base = None
 build_exe_options = {
     'includes': ['sqlobject.boundattributes', 'sqlobject.declarative',
                  'packaging.specifiers', 'packaging.requirements', 'packaging.version',
-                 'plistlib', 'platformdirs'],
+                 'plistlib'],
     # We need to exclude DateTime to avoid sqlobject trying (and failing) to import it
     # in col.py
     # We exclude some other unneeded packages to reduce bloat
