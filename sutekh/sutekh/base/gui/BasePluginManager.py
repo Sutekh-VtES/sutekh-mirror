@@ -34,6 +34,19 @@ from .SutekhDialog import do_complaint_warning
 # pylint: enable=wrong-import-position
 
 
+# Wrapper around the plugin constructor, that logs a warning and
+# returns None if it fails, to ensure robust handling of
+# fragile plugins
+def create_plugin(cPlugin, *args):
+    oNewPlugin = None
+    try:
+        oNewPlugin = cPlugin(*args)
+    except Exception as oError:
+        logging.warning("Failed to load %s (%s).",
+                         cPlugin, oError, exc_info=1)
+    return oNewPlugin
+
+
 def submodules(oPackage):
     """List all the submodules in a package."""
     oLoader = getattr(oPackage, "__loader__", None)
