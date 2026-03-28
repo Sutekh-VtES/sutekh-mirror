@@ -136,7 +136,7 @@ class BaseGuiDBManager:
         return iRes == 2
 
     def read_zip_file(self, oZipDetails, sHash):
-        """open (Downlaoding it if required) a zip file and split it into
+        """open (Downloading it if required) a zip file and split it into
            the required bits.
 
            We provide a parameter for hashes, so it can be used when a
