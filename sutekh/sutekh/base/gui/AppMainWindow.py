@@ -29,6 +29,7 @@ from .SutekhDialog import (do_complaint_error_details, do_exception_complaint,
                            do_complaint)
 from .UpdateDialog import UpdateDialog
 from .DataFilesDialog import Result
+from .BasePluginManager import create_plugin
 from .QueueLogHandler import QueueLogHandler
 # pylint: enable=wrong-import-position
 
@@ -154,8 +155,9 @@ class AppMainWindow(MultiPaneWindow):
 
         # Initiliase plugins that will work on the Main Window
         for cPlugin in self._oPluginManager.get_plugins_for('MainWindow'):
-            self._aPlugins.append(cPlugin(self, None,
-                                          "MainWindow"))
+            oPlugin = create_plugin(cPlugin, self, None, "MainWindow")
+            if oPlugin:
+                self._aPlugins.append(oPlugin)
 
         # Re-validate config after adding plugin specs
         oValidationResults = oConfig.validate()
@@ -168,6 +170,7 @@ class AppMainWindow(MultiPaneWindow):
                 "\n".join(aErrors))
         oConfig.sanitize()
 
+        # Load card lookup plugin
         self._oCardLookup = GuiLookup(self._oConfig)
 
         self._create_app_menu()

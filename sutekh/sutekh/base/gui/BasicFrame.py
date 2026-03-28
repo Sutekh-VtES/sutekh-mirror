@@ -8,6 +8,7 @@
 
 from gi.repository import Gdk, Gtk, GLib
 
+from .BasePluginManager import create_plugin
 from .MessageBus import MessageBus
 
 # Style the selected label to be bold
@@ -122,9 +123,11 @@ class BasicFrame(Gtk.Frame):
         """Loop through the plugins, and enable those appropriate for us."""
         oPluginMgr = self._oMainWindow.plugin_manager
         for cPlugin in oPluginMgr.get_plugins_for(self._cModelType):
-            self._aPlugins.append(cPlugin(self._oController.view,
-                                          self._oController.view.get_model(),
-                                          self._cModelType))
+            oPlugin = create_plugin(cPlugin, self._oController.view,
+                                    self._oController.view.get_model(),
+                                    self._cModelType)
+            if oPlugin:
+                self._aPlugins.append(oPlugin)
 
     def set_title(self, sTitle):
         """Set the title of the pane to sTitle"""
