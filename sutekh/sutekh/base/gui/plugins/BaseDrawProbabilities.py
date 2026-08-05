@@ -33,7 +33,7 @@ def _choose(iChoices, iTotal):
 def _gen_choice_list(dSelectedCounts):
     """Recursively generate all possible choices"""
     aList = []
-    aSelectOrder = sorted(dSelectedCounts.items(), key=lambda x: (x[1], x[0]),
+    aSelectOrder = sorted(dSelectedCounts.items(), key=lambda x: (x[1], x[0].name),
                           reverse=True)
     sThisItem = aSelectOrder[0][0]
     if len(dSelectedCounts) > 1:
@@ -338,7 +338,7 @@ class BaseDrawProbPlugin(BasePlugin):
                                       2, 3)
 
         aSelectOrder = sorted(self.dSelectedCounts.items(),
-                              key=lambda x: (x[1], x[0]), reverse=True)
+                              key=lambda x: (x[1], x[0].name), reverse=True)
         for iRow in range(iNumCardRows):
             oLabel = Gtk.Label(self._gen_row_label(iRow, aSelectOrder))
             iTableRow = 2 * iRow + 3
@@ -430,14 +430,20 @@ class BaseDrawProbPlugin(BasePlugin):
     def _check_selection(self, aSelectedCards):
         """Check that the selection is suitable.
            Return False if the list can't be used, True if it's acceptable"""
+        # This is to check that the selection is sensible by the game rules
+        # i.e. all cards are from the same deck, honour card limits, etc.
         raise NotImplementedError("Implement _check_selection")
 
     def _setup_cardlists(self, aSelectedCards):
-        """Extract infomation from model and conver selection into format
+        """Extract infomation from model and convert selection into format
            sutaible for the statistical tools.
 
            Fills in the dSelectedCounts dictionary and sets
            iSelectedCount and iTotal correctly."""
+        # The dSelectedCounts dictionary should be a dict mapping
+        # oAbstractCard -> Number
+        # This needs to be over-ridden the subclass to handle
+        # game specific logic (different card types, etc)
         raise NotImplementedError("Implement _setup_cardlists")
 
     def _get_table_draw_title(self):
