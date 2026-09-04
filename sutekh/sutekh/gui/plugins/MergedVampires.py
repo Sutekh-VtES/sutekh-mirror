@@ -93,6 +93,8 @@ class FakeCard:
         self.cardtype = self.oAdvanced.cardtype
         self.clan = self.oAdvanced.clan
         self.sect = self.oAdvanced.sect
+        # Seems the likely choice if this ever happens
+        self.path = self.oAdvanced.path
         self.discipline = [x for x in self.oAdvanced.discipline]
         self.keywords = [x for x in self.oBase.keywords]
         for oKeyword in self.oAdvanced.keywords:
