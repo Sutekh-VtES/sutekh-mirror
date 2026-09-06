@@ -1,3 +1,15 @@
+04 Sep 2026
+ * Fix an error in the merged vampire plugin introduced with the addition
+   of Sabbat paths.
+
+06 Aug 2026
+ * Fix the handling of multiple cards in the card probability plugin.
+
+28 Mar 2026
+ * Add helper function to load plugins.
+   - This makes loading plugins more robust and allows us to properly
+     skip broken plugins.
+
 21 Feb 2026
  * Release Sutekh 2.2.1
  * Exclude platformlibs from the cs_Freeze config, since that breaks
