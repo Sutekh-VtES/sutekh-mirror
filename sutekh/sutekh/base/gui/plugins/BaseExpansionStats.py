@@ -153,7 +153,7 @@ class StatsModel(Gtk.TreeStore):
             oExp = None
             sDate = 'Unknown Date'
             if sGroup != 'Promo':
-                sExp, sRarity = sGroup.split(':')
+                sExp, sRarity = sGroup.split(' : ')
                 oExp = IExpansion(sExp.strip())
                 oRelDate = get_expansion_date(oExp)
                 if oRelDate:
