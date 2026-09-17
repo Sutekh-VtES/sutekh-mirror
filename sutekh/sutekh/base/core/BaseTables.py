@@ -17,6 +17,7 @@ from sqlobject.inheritance import InheritableSQLObject
 # pylint: enable=no-name-in-module
 
 from .CachedRelatedJoin import CachedRelatedJoin
+from .CustomUnicodeCol import CustomUnicodeCol
 
 # Table Objects
 
@@ -103,11 +104,13 @@ class PhysicalCard(SQLObject):
 
 
 class PhysicalCardSet(SQLObject):
-    tableversion = 7
+    tableversion = 8
     name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
     author = UnicodeCol(default='')
-    comment = UnicodeCol(default='')
-    annotations = UnicodeCol(default='')
+    # We use our custom column for comments and annotations
+    # as those are potentially lengthy
+    comment = CustomUnicodeCol(default='')
+    annotations = CustomUnicodeCol(default='')
     inuse = BoolCol(default=False)
     parent = ForeignKey('PhysicalCardSet', default=None)
     cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
