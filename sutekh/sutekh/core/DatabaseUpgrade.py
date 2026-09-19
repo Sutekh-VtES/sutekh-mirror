@@ -20,7 +20,7 @@
 # sqlobject confuses pylint here
 from sqlobject import (sqlhub, SQLObject, IntCol, UnicodeCol, RelatedJoin,
                        EnumCol, MultipleJoin, ForeignKey, DateCol, BoolCol,
-                       SQLObjectNotFound)
+                       SQLObjectNotFound, DatabaseIndex)
 # pylint: enable=no-name-in-module
 from sutekh.base.core.BaseTables import (PhysicalCard, AbstractCard,
                                          PhysicalCardSet,
@@ -43,6 +43,21 @@ from sutekh.base.core.DatabaseVersion import DatabaseVersion
 # names set largely by SQLObject conventions, so ours don't apply
 # SQLObject classes don't have user defined __init__
 
+# For upgrading comment/annotations column size for mysql
+class PhysicalCardSet_v7(SQLObject):
+
+    class sqlmeta:
+        table = PhysicalCardSet.sqlmeta.table
+
+    name = UnicodeCol(alternateID=True, length=MAX_ID_LENGTH)
+    author = UnicodeCol(default='')
+    comment = UnicodeCol(default='')
+    annotations = UnicodeCol(default='')
+    inuse = BoolCol(default=False)
+    parent = ForeignKey('PhysicalCardSet', default=None)
+    cards = RelatedJoin('PhysicalCard', intermediateTable='physical_map',
+                        createRelatedTable=False)
+    parentIndex = DatabaseIndex(parent)
 
 # pylint: enable=invalid-name, no-init
 
@@ -68,6 +83,9 @@ class DBUpgradeManager(BaseDBUpgradeManager):
         'SutekhAbstractCard': (SutekhAbstractCard, (1, SutekhAbstractCard.tableversion,)),
     })
     # We override the default values for these
+    SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
+                                           (PhysicalCardSet.tableversion, 7))
+                                           (7, PhysicalCardSet.tableversion))
 
     COPY_OLD_DB = [
         ('_copy_old_discipline', 'Discipline table', False),
@@ -110,6 +128,8 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                                           [PhysicalCardSet.tableversion],
                                           oConn):
             iCount += PhysicalCardSet.select(connection=oConn).count()
+        elif oVer.check_tables_and_versions([PhysicalCardSet], [7], oConn):
+            iCount += PhysicalCardSet_v7.select(connection=oConn).count()
         return iCount
 
     def cur_database_count(self, oConn):
@@ -347,4 +367,19 @@ class DBUpgradeManager(BaseDBUpgradeManager):
                 oLogger.info('copied AC %s', oCardCopy.name)
         else:
             return (False, ["Unknown AbstractCard version"])
+        return (True, aMessages)
+
+    def _copy_old_pcs_loop(self, oOrigConn, oTrans, oLogger):
+        """Loop over the old card sets, copying them to the new database."""
+        aSets = list(PhysicalCardSet_v7.select(connection=oOrigConn))
+        self._copy_physical_card_set_loop(aSets, oTrans, oOrigConn, oLogger)
+
+    def _upgrade_physical_card_set(self, oOrigConn, oTrans, oLogger, oVer):
+        """Copy PCS, upgrading as needed."""
+        aMessages = []
+        if oVer.check_tables_and_versions([PhysicalCardSet],
+                                            [7], oOrigConn):
+            self._copy_old_pcs_loop(oOrigConn, oTrans, oLogger)
+        else:
+            return (False, ["Unknown PhysicalCardSet version"])
         return (True, aMessages)
