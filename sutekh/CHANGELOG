@@ -1,4 +1,19 @@
-21 Feb 206
+19 Sep 2026
+ * Release Sutekh 2.2.2
+
+07 Sep 2026
+ * Update the ExpansionStats plugin to handle the updated V5 expansions
+   correctly.
+ * Also added a missed gtk3 update to the plugin.
+
+04 Sep 2026
+ * Fix an error in the merged vampire plugin introduced with the addition
+   of Sabbat paths.
+
+06 Aug 2026
+ * Fix the handling of multiple cards in the card probability plugin.
+
+21 Feb 2026
  * Release Sutekh 2.2.1
 
 20 Feb 2026
