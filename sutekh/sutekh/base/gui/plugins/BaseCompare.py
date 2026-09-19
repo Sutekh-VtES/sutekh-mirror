@@ -65,7 +65,7 @@ class BaseCompare(BasePlugin):
        Display a Gtk.Notebook containing tabs for common cards, and cards
        only in each of the card sets.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8, )}
     aModelsSupported = (PhysicalCardSet,)
 
     sMenuName = "Compare with another Card Set"

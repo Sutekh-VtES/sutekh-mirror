@@ -186,7 +186,7 @@ def _check_exp_name(sExpName, oAbsCard):
 
 class StarterInfoPlugin(SutekhPlugin):
     """Plugin providing access to starter deck info."""
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = ("MainWindow",)
 
     dGlobalConfig = {

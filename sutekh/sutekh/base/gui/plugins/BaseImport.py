@@ -31,7 +31,7 @@ class BaseImport(BasePlugin):
        online can be imported, and handles all the footwork
        around imports.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = ("MainWindow",)
 
     PARSERS = {

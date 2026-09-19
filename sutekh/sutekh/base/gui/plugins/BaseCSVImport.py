@@ -26,7 +26,7 @@ class BaseCSVImport(BasePlugin):
        The list of the columns available is updated to reflect the
        currently selected file.
        """
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = ("MainWindow",)
 
     def get_menu_item(self):

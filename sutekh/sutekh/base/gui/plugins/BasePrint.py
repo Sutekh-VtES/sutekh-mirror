@@ -40,7 +40,7 @@ class BasePrint(BasePlugin):
        in the card set. This has less formatting than exporting via
        HTML, for instance, but does print directly.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8)}
     aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {

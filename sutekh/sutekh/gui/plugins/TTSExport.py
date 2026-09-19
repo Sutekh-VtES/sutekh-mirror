@@ -358,7 +358,7 @@ class TTSExport(SutekhPlugin):
     """Provides a dialog for selecting a filename, then generates
        a TTS readable json file"""
 
-    dTableVersions = {PhysicalCardSet: (7,)}
+    dTableVersions = {PhysicalCardSet: (7, 8,)}
     aModelsSupported = (PhysicalCardSet, 'MainWindow')
 
     dGlobalConfig = {

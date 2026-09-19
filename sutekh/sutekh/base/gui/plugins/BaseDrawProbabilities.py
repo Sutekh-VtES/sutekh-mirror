@@ -125,7 +125,7 @@ class BaseDrawProbPlugin(BasePlugin):
        selection."""
     # pylint: disable=too-many-instance-attributes
     # we use a lot of attributes to pass the data around
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     sMenuName = "Card Draw probabilities"

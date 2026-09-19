@@ -388,7 +388,7 @@ class MergedVampirePlugin(SutekhPlugin):
     # pylint: disable=too-many-instance-attributes
     # Need all these instance variables to track the plugin state
     # across the differ parts of showing the base, adv & merged vamps
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = ("MainWindow",)
 
     def __init__(self, *args, **kwargs):

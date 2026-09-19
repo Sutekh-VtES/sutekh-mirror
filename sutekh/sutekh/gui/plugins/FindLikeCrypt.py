@@ -81,7 +81,7 @@ def _make_superset(oCard, bSuperior, bVampire):
 class FindLikeVampires(SutekhPlugin):
     """Create a list of vampires 'like' the selected vampire."""
 
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
     sMenuName = "Find similar crypt cards"

@@ -184,7 +184,7 @@ def fill_frame(sDetails, sHeading):
 
 class BaseOpeningDraw(BasePlugin):
     """Simulate opening hands."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
     # responses for the hand dialog
     class Choice(IntEnum):

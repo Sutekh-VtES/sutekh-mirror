@@ -97,7 +97,7 @@ class RandomPromoDialog(SutekhDialog):
 
 class RandomPromoSelector(SutekhPlugin):
     """Generate random groups of cards."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     def __init__(self, *args, **kwargs):

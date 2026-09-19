@@ -22,7 +22,7 @@ class BaseSnapshot(BasePlugin):
        date and time appended to the name, and it is a child of the card set.
        """
 
-    dTableVersions = {PhysicalCardSet: (6, 7)}
+    dTableVersions = {PhysicalCardSet: (6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):

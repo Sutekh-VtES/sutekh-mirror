@@ -32,7 +32,7 @@ IMG_HEIGHT = 1008
 class PrintProxyPlugin(SutekhPlugin):
     """Plugin for printing a deck using proxy images"""
 
-    dTableVersions = {PhysicalCardSet: (7,)}
+    dTableVersions = {PhysicalCardSet: (7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     dOptions = {

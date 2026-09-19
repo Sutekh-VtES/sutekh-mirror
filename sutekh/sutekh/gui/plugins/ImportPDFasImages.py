@@ -133,7 +133,7 @@ class ImportPDFImagesPlugin(SutekhPlugin):
     # no benefit to defining them earlier, and the plugin entry point ensures
     # it will be safe.
 
-    dTableVersions = {PhysicalCardSet: (7, )}
+    dTableVersions = {PhysicalCardSet: (7, 8,)}
     aModelsSupported = ("MainWindow",)
 
     sMenuName = "Import VEKN pdf file as card images"

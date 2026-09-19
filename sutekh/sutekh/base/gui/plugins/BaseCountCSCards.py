@@ -20,7 +20,7 @@ class BaseCountCSCards(BasePlugin):
        containing a label with a running count of the cards in the card
        set.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     # Subclasses should provide this

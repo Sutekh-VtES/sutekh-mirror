@@ -408,7 +408,7 @@ class AnalyzeCardList(SutekhPlugin):
       Displays various interesting stats, and does a Happy Family
       analysis of the deck
        """
-    dTableVersions = {PhysicalCardSet: (6, 7)}
+    dTableVersions = {PhysicalCardSet: (6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     sMenuName = "Analyze Deck"

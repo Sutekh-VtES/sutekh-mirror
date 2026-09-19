@@ -130,7 +130,7 @@ class TWDAConfigDialog(SutekhDialog):
 
 class TWDAInfoPlugin(SutekhPlugin):
     """Plugin providing access to TWDA decks."""
-    dTableVersions = {PhysicalCardSet: (5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard, 'MainWindow')
 
     # pattern for TWDA holders

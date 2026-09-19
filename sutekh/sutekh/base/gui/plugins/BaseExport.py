@@ -14,7 +14,7 @@ from ..GuiCardSetFunctions import export_cs
 class BaseCardSetExport(BasePlugin):
     """Provides a dialog for selecting a filename, then calls on
        the appropriate writer to produce the required output."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     # Subclasses should fill this in as needed

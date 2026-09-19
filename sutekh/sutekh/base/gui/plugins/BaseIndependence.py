@@ -68,7 +68,7 @@ class BaseIndependence(BasePlugin):
        particularly sensible to say there. We also don't do anything
        when there is only 1 child, for similiar justification.
        """
-    dTableVersions = {PhysicalCardSet: (5, 6, 7, )}
+    dTableVersions = {PhysicalCardSet: (5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     sMenuName = "Test Card Set Independence"

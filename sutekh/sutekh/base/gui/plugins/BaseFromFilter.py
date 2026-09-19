@@ -15,7 +15,7 @@ from ..GuiCardSetFunctions import create_card_set
 class BaseFromFilter(BasePlugin):
     """Converts a filter into a Card Set."""
 
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet, PhysicalCard)
 
     sMenuName = "Card Set From Filter"

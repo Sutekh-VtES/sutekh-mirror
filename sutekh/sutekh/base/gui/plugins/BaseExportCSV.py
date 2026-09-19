@@ -17,7 +17,7 @@ from ..GuiCardSetFunctions import write_cs_to_file
 class BaseExportCSV(BasePlugin):
     """Provides a dialog for selecting a filename, then calls on
        WriteCSV to produce the required output."""
-    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7)}
+    dTableVersions = {PhysicalCardSet: (4, 5, 6, 7, 8,)}
     aModelsSupported = (PhysicalCardSet,)
 
     def get_menu_item(self):
