@@ -40,7 +40,6 @@ from .DatabaseVersion import DatabaseVersion
 # duplicated copies for upgrading base classes, but avoids issues of
 # when to remove upgrade logic from here.
 
-
 class BaseDBUpgradeManager:
     """Convience class to define and manage all the various aspects
        around database upgrades."""
@@ -59,13 +58,13 @@ class BaseDBUpgradeManager:
         'Ruling': (Ruling, (Ruling.tableversion,)),
         'RarityPair': (RarityPair, (RarityPair.tableversion,)),
         'AbstractCard': (AbstractCard, (AbstractCard.tableversion,)),
-        'PhysicalCard': (PhysicalCard, (2, PhysicalCard.tableversion,)),
+        'PhysicalCard': (PhysicalCard, (PhysicalCard.tableversion,)),
         'PhysicalCardSet': (PhysicalCardSet, (PhysicalCardSet.tableversion,)),
         'LookupHints': (LookupHints, (-1, LookupHints.tableversion,)),
         'Printing': (Printing, (-1, Printing.tableversion,)),
         'PrintingProperty': (PrintingProperty,
                              (-1, PrintingProperty.tableversion,)),
-        'Metadata': (Metadata, (-1, 1, Metadata.tableversion,)),
+        'Metadata': (Metadata, (-1, Metadata.tableversion,)),
     }
 
     # List of functions for upgrading databases
