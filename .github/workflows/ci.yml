@@ -168,7 +168,7 @@ jobs:
     - name: Install PIP dependencies
       shell: msys2 {0}
       run: |
-        pip install ply sqlobject configobj pytest mock
+        pip install ply sqlobject configobj pytest mock 'setuptools<82.0.0'
     - name: Run tests
       shell: msys2 {0}
       run: |
