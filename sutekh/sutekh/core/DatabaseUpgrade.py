@@ -628,7 +628,7 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             _oCopy = Path(id=oObj.id, name=oObj.name, connection=oTrans)
 
     def _copy_old_path(self, oOrigConn, oTrans, oVer):
-        """Copy Sect, updating if needed"""
+        """Copy Path, updating if needed"""
         aMessages = []
         if oVer.check_tables_and_versions([Path], [-1], oOrigConn):
             # We're upgrading from no table, and so we don't have the data
@@ -636,11 +636,11 @@ class DBUpgradeManager(BaseDBUpgradeManager):
             aMessages = ["Incomplete information to fill the Path"
                          " table. You will need to reimport the cardlist"
                          " information."]
-        elif oVer.check_tables_and_versions([Path], [Sect.tableversion],
+        elif oVer.check_tables_and_versions([Path], [Path.tableversion],
                                           oOrigConn):
             self._copy_path(oOrigConn, oTrans)
         else:
-            return (False, ["Unknown Sect Version"])
+            return (False, ["Unknown Path Version"])
         return (True, aMessages)
 
     def _copy_title(self, oOrigConn, oTrans):
