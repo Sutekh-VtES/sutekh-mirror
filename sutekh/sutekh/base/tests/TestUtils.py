@@ -14,6 +14,8 @@ from io import StringIO
 from xml.etree.ElementTree import fromstring
 from logging import FileHandler
 
+from sqlobject import sqlhub
+
 # pylint: disable=wrong-import-position
 # We need to call gi.require_version before importing Gtk
 import gi
@@ -237,3 +239,22 @@ class FailFile:
     def read(self):
         """Dummy method"""
         raise self._oExp
+
+
+def make_db_dump():
+    """Helper function to dump the database to a file
+       using sqlite `iterdump` method.
+       This is mostly intended for generating data for
+       database upgrade tests and the like, but may
+       also be useful for debugging.
+
+       This isn't something that we expect to use by default.
+       It should be added in when needed and then removed."""
+    sDBuri = sqlhub.processConnection.uri()
+    if not sDBuri.startswith('sqlite:'):
+        raise RuntimeError("dump_db requires a sqlite database")
+    oConn = sqlhub.processConnection
+    aCurData = list(oConn.getConnection().iterdump())
+    with open("/tmp/db.dump", "w") as f:
+        for x in aCurData:
+            f.write(f'"""{x}""",\n')
