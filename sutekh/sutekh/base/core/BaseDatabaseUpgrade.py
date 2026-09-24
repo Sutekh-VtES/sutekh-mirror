@@ -60,11 +60,10 @@ class BaseDBUpgradeManager:
         'AbstractCard': (AbstractCard, (AbstractCard.tableversion,)),
         'PhysicalCard': (PhysicalCard, (PhysicalCard.tableversion,)),
         'PhysicalCardSet': (PhysicalCardSet, (PhysicalCardSet.tableversion,)),
-        'LookupHints': (LookupHints, (-1, LookupHints.tableversion,)),
-        'Printing': (Printing, (-1, Printing.tableversion,)),
-        'PrintingProperty': (PrintingProperty,
-                             (-1, PrintingProperty.tableversion,)),
-        'Metadata': (Metadata, (-1, Metadata.tableversion,)),
+        'LookupHints': (LookupHints, (LookupHints.tableversion,)),
+        'Printing': (Printing, (Printing.tableversion,)),
+        'PrintingProperty': (PrintingProperty, (PrintingProperty.tableversion,)),
+        'Metadata': (Metadata, (Metadata.tableversion,)),
     }
 
     # List of functions for upgrading databases
@@ -155,49 +154,9 @@ class BaseDBUpgradeManager:
         return (True, [])
 
     def _upgrade_lookup_hints(self, oOrigConn, oTrans, oVer):
-        """Upgrade lookup hints table"""
-        if oVer.check_tables_and_versions([LookupHints], [-1], oOrigConn):
-            # We're upgrading from no lookup hints table to having one.
-            # We populate the table with the some initial data for
-            # database backed abbrevation lookups, but this will
-            # be incomplete.
-            # Subclasses should extend this to cover other
-            # database backed lookups.
-            aMessages = ["Incomplete information to fill the LookupHints"
-                         " table. You will need to reimport the cardlist"
-                         " information."]
-            # Rarity
-            for oObj in Rarity.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="Rarities",
-                                      lookup=oObj.name,
-                                      value=oObj.name,
-                                      connection=oTrans)
-                if oObj.name != oObj.shortname:
-                    _oEntry = LookupHints(domain="Rarities",
-                                          lookup=oObj.shortname,
-                                          value=oObj.name,
-                                          connection=oTrans)
-            # CardType
-            for oObj in CardType.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="CardTypes",
-                                      lookup=oObj.name,
-                                      value=oObj.name,
-                                      connection=oTrans)
-            # Expansion
-            for oObj in Expansion.select(connection=oOrigConn):
-                _oEntry = LookupHints(domain="Expansions",
-                                      lookup=oObj.name,
-                                      value=oObj.name,
-                                      connection=oTrans)
-                if oObj.name != oObj.shortname:
-                    _oEntry = LookupHints(domain="Expansions",
-                                          lookup=oObj.shortname,
-                                          value=oObj.name,
-                                          connection=oTrans)
-        else:
-            return (
-                False, ["Unknown Version for LookupHints"])  # pragma: no cover
-        return (True, aMessages)
+        """Default fail - subclasses should implement this as
+           required"""
+        return (False, ["Unknown Version for LookupHints"])  # pragma: no cover
 
     def _copy_old_metadata(self, oOrigConn, oTrans, oVer):
         """Copy Metadata table, upgrading versions as needed"""
@@ -210,22 +169,9 @@ class BaseDBUpgradeManager:
         return (True, [])
 
     def _upgrade_metadata(self, oOrigConn, _oTrans, oVer):
-        """Upgrade Metadata table"""
-        if oVer.check_tables_and_versions([Metadata], [-1], oOrigConn):
-            # We're upgrading from no table, and so we don't have the data
-            # available in the database, so we can't fill the table.
-            # We just fall back onto the default warning, since that
-            # at least covers the most common use-case.
-            #
-            # subclasses should extend/replace this if required.
-            aMessages = ["Incomplete information to fill the Metadata"
-                         " table. You will need to reimport the cardlist"
-                         " information."]
-        else:
-            return (
-                False,
-                ["Unknown Version for Metadata"])  # pragma: no cover
-        return (True, aMessages)
+        """Default fail - subclasses should override this
+           when needed."""
+        return ( False, ["Unknown Version for Metadata"])  # pragma: no cover
 
     def _copy_print_properties(self, oOrigConn, oTrans):
         """Copy Keyword, assuming versions match"""
@@ -246,18 +192,9 @@ class BaseDBUpgradeManager:
         return (True, [])
 
     def _upgrade_print_properties(self, oOrigConn, _oTrans, oVer):
-        """Upgrade PrintingProperty hints table"""
-        if oVer.check_tables_and_versions([PrintingProperty], [-1], oOrigConn):
-            # We're upgrading from no printing data table
-            # So we need to flag that we don't have the data
-            aMessages = ["Incomplete information to fill the PrintingProperty"
-                         " table. You will need to reimport the cardlist"
-                         " information."]
-        else:
-            return (
-                False,
-                ["Unknown Version for PrintingProperty"])  # pragma: no cover
-        return (True, aMessages)
+        """Default fail - subclasses should implement this as
+           required"""
+        return (False, ["Unknown Version for PrintingProperty"])  # pragma: no cover
 
     def _upgrade_printing(self, _oOrigConn, _oTrans, _oVer):
         """Default fail - subclasses should override this
