@@ -13,7 +13,8 @@ import logging
 
 from sqlobject import SQLObjectNotFound
 
-from .BaseTables import VersionTable, PhysicalCardSet, AbstractCard, Metadata
+from .BaseTables import (VersionTable, PhysicalCardSet, AbstractCard,
+                         Metadata, Printing)
 from .BaseAdapters import Adapter
 from .BaseAbbreviations import DatabaseAbbreviation
 from .DatabaseVersion import DatabaseVersion
@@ -51,6 +52,9 @@ def flush_cache(bMakeCache=True):
         for oJoin in oChild.sqlmeta.joins:
             if isinstance(oJoin, SOCachedRelatedJoin):
                 oJoin.flush_cache()
+    for oJoin in Printing.sqlmeta.joins:
+        if isinstance(oJoin, SOCachedRelatedJoin):
+            oJoin.flush_cache()
     if bMakeCache:
         make_adapter_caches()
 
