@@ -3216,7 +3216,7 @@ class DatabaseUpgradeTests(SutekhTest):
                                                           aVersions)
 
         self.assertEqual(len(aHigherTables), 0)
-        self.assertEqual(len(aLowerTables), 3)
+        self.assertEqual(len(aLowerTables), 4)
 
         # Run the upgrade code
         oDBManager = DBUpgradeManager()

@@ -84,7 +84,6 @@ class DBUpgradeManager(BaseDBUpgradeManager):
     })
     # We override the default values for these
     SUPPORTED_TABLES['PhysicalCardSet'] = (PhysicalCardSet,
-                                           (PhysicalCardSet.tableversion, 7))
                                            (7, PhysicalCardSet.tableversion))
 
     COPY_OLD_DB = [
