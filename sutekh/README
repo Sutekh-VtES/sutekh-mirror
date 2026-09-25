@@ -230,24 +230,24 @@ To use a PostgresSQL database with Sutekh, specify:::
 
   sutekh -d postgres://username@host/database
 
-With SQLObject 0.9, the url syntax for MySQL is somewhat complex, due
-to the encoding issues involved. We have had good results using utf8 as the
-encoding, specified as:
+To use a MySQL database, use the following schema:::
 
-::
+  mysql://username@host/database
 
-  mysql://username@host/database?sqlobject_encoding=utf8&charset=utf8
 
-In our experience, utf8 is the most robust and portable choice.
+Note that, when creating a mysql database, it is best to specify the
+character and collation defaults, as otherwise encoding can break in
+various exciting ways.
 
-When using sqlobject 0.10 or later, the sqlobjct_encoding parameter is no
-longer needed, and the URI can be simplified to:
+We've found the following to work best:::
 
-::
+CREATE DATABASE database CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
-  mysql://username@host/database?charset=utf8
-
-MySQL 4 or earlier will definitely NOT work. This is unlikely to ever change.
+There are a number of different python mysql drivers available that
+SQLObject can use.  All of them should work with sutekh, but
+most of our testing has used either the official
+mariadb connector ( https://mariadb.com/docs/connectors/mariadb-connector-python )
+or mysqlclient ( https://pypi.org/project/mysqlclient/ ).
 
 Other databases are untested.
 
